@@ -1,16 +1,20 @@
 import React from "react";
-import { AspectRatio, Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
+import { AspectRatio, Box, Image, ImageProps, Link, PinInputField, useDisclosure } from "@chakra-ui/react";
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
 import { normalizeToHex } from "../../helpers/nip-19";
+import { NostrEvent } from "../../types/nostr-event";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
   return <Image onClick={onToggle} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />;
 };
 
-const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boolean) => JSX.Element | string }[] = [
+const embeds: {
+  regexp: RegExp;
+  render: (match: RegExpMatchArray, event?: NostrEvent, trusted?: boolean) => JSX.Element | string;
+}[] = [
   // Lightning Invoice
   {
     regexp: /(lightning:)?(LNBC[A-Za-z0-9]+)/im,
@@ -105,6 +109,20 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
       }
     },
   },
+  // Nostr Embeds
+  {
+    regexp: /#\[(\d+)\]/,
+    render: (match, event) => {
+      const index = parseInt(match[1]);
+      const tag = event?.tags[index];
+
+      if (tag && tag[0] === "p" && tag[1]) {
+        return <UserLink color="blue.500" pubkey={tag[1]} />;
+      }
+
+      return match[0];
+    },
+  },
   // bold text
   {
     regexp: /\*\*([^\n]+)\*\*/im,
@@ -112,26 +130,30 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
   },
 ];
 
-function embedContent(content: string, trusted: boolean): (string | JSX.Element)[] {
+function embedContent(content: string, event?: NostrEvent, trusted: boolean = false): (string | JSX.Element)[] {
   for (const { regexp, render } of embeds) {
     const match = content.match(regexp);
 
     if (match && match.index !== undefined) {
       const before = content.slice(0, match.index);
       const after = content.slice(match.index + match[0].length, content.length);
-      return [...embedContent(before, trusted), render(match, trusted ?? false), ...embedContent(after, trusted)];
+      return [
+        ...embedContent(before, event, trusted),
+        render(match, event, trusted ?? false),
+        ...embedContent(after, event, trusted),
+      ];
     }
   }
   return [content];
 }
 
 export type PostContentsProps = {
-  content: string;
+  event: NostrEvent;
   trusted?: boolean;
 };
 
-export const PostContents = React.memo(({ content, trusted }: PostContentsProps) => {
-  const parts = embedContent(content, trusted ?? false);
+export const PostContents = React.memo(({ event, trusted }: PostContentsProps) => {
+  const parts = embedContent(event.content, event, trusted ?? false);
 
   return (
     <Box whiteSpace="pre-wrap">{parts.map((part) => (typeof part === "string" ? <span>{part}</span> : part))}</Box>

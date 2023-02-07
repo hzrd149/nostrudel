@@ -64,7 +64,7 @@ export const Post = React.memo(({ event }: PostProps) => {
       <CardBody padding="0" mb="2">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box overflow="hidden" width="100%">
-            <PostContents content={event.content} trusted={following.includes(event.pubkey)} />
+            <PostContents event={event} trusted={following.includes(event.pubkey)} />
           </Box>
         </VStack>
       </CardBody>
