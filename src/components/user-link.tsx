@@ -6,15 +6,17 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;
+  showAt?: boolean;
 };
 
-export const UserLink = ({ pubkey, ...props }: UserLinkProps) => {
+export const UserLink = ({ pubkey, showAt, ...props }: UserLinkProps) => {
   const metadata = useUserMetadata(pubkey);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   return (
     <Link as={RouterLink} to={`/u/${npub}`} whiteSpace="nowrap" {...props}>
-      @{getUserDisplayName(metadata, pubkey)}
+      {showAt && "@"}
+      {getUserDisplayName(metadata, pubkey)}
     </Link>
   );
 };

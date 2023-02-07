@@ -199,7 +199,7 @@ const embeds: EmbedType[] = [
       switch (match[2]) {
         case "npub1":
           const id = normalizeToHex(match[1]);
-          return id ? <UserLink color="blue.500" pubkey={id} /> : match[0];
+          return id ? <UserLink color="blue.500" pubkey={id} showAt /> : match[0];
         default:
           return match[0];
       }
@@ -215,7 +215,7 @@ const embeds: EmbedType[] = [
 
       if (tag) {
         if (tag[0] === "p" && tag[1]) {
-          return <UserLink color="blue.500" pubkey={tag[1]} />;
+          return <UserLink color="blue.500" pubkey={tag[1]} showAt />;
         }
         if (tag[0] === "e" && tag[1]) {
           return <NoteLink color="blue.500" noteId={tag[1]} />;
