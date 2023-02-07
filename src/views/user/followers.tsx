@@ -2,8 +2,10 @@ import { Flex, FormControl, FormLabel, Grid, SkeletonText, Switch, useDisclosure
 
 import { UserCard } from "./components/user-card";
 import { useUserFollowers } from "../../hooks/use-user-followers";
+import { useOutletContext } from "react-router-dom";
 
-export const UserFollowersTab = ({ pubkey }: { pubkey: string }) => {
+const UserFollowersTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
   const { isOpen, onToggle } = useDisclosure();
   const followers = useUserFollowers(pubkey, [], isOpen);
 
@@ -29,3 +31,5 @@ export const UserFollowersTab = ({ pubkey }: { pubkey: string }) => {
     </Flex>
   );
 };
+
+export default UserFollowersTab;

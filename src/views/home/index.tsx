@@ -1,15 +1,17 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-// import { useMatch, useNavigate } from "react-router-dom";
-import { DiscoverTab } from "./discover-tab";
-import { FollowingTab } from "./following-tab";
-import { GlobalTab } from "./global-tab";
+import { Outlet, useMatches, useNavigate } from "react-router-dom";
+
+const tabs = [
+  { label: "Following", path: "/following" },
+  { label: "Discover", path: "/discover" },
+  { label: "Global", path: "/global" },
+];
 
 export const HomeView = () => {
-  // const navigate = useNavigate();
-  // const followingMatch = useMatch("/following");
-  // const discoverMatch = useMatch("/discover");
+  const navigate = useNavigate();
+  const matches = useMatches();
 
-  // const tabs = ["/following", "/discover", "/global"];
+  const activeTab = tabs.indexOf(tabs.find((t) => matches[matches.length - 1].pathname === t.path) ?? tabs[0]);
 
   return (
     <Tabs
@@ -18,24 +20,20 @@ export const HomeView = () => {
       flexGrow="1"
       overflow="hidden"
       isLazy
-      // index={discoverMatch ? 1 : 0}
-      // onChange={(v) => navigate(tabs[v])}
+      index={activeTab}
+      onChange={(v) => navigate(tabs[v].path)}
     >
       <TabList>
-        <Tab>Following</Tab>
-        <Tab>Discover</Tab>
-        <Tab>Global</Tab>
+        {tabs.map(({ label }) => (
+          <Tab>{label}</Tab>
+        ))}
       </TabList>
       <TabPanels overflow="auto" height="100%">
-        <TabPanel pr={0} pl={0}>
-          <FollowingTab />
-        </TabPanel>
-        <TabPanel pr={0} pl={0}>
-          <DiscoverTab />
-        </TabPanel>
-        <TabPanel pr={0} pl={0}>
-          <GlobalTab />
-        </TabPanel>
+        {tabs.map(({ label }) => (
+          <TabPanel key={label} pr={0} pl={0}>
+            <Outlet />
+          </TabPanel>
+        ))}
       </TabPanels>
     </Tabs>
   );

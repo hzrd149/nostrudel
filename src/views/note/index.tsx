@@ -1,42 +1,13 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex, Spinner, Text } from "@chakra-ui/react";
-import { Page } from "../../components/page";
-import { useParams } from "react-router-dom";
-import { normalizeToHex } from "../../helpers/nip-19";
+import { Flex, Spinner } from "@chakra-ui/react";
+import { useLoaderData } from "react-router-dom";
 import { Note } from "../../components/note";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./thread-post";
 
-export const EventPage = () => {
-  const params = useParams();
-  let id = normalizeToHex(params.id ?? "");
+const NoteView = () => {
+  const { id } = useLoaderData() as { id: string };
 
-  if (!id) {
-    return (
-      <Page>
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Invalid event id</AlertTitle>
-          <AlertDescription>"{params.id}" dose not look like a valid event id</AlertDescription>
-        </Alert>
-      </Page>
-    );
-  }
-
-  return (
-    <Page>
-      <EventView eventId={id} />
-    </Page>
-  );
-};
-
-export type EventViewProps = {
-  eventId: string;
-};
-
-export const EventView = ({ eventId }: EventViewProps) => {
-  const id = normalizeToHex(eventId) ?? "";
   const { thread, events, rootId, focusId, loading } = useThreadLoader(id, { enabled: !!id });
-
   if (loading) return <Spinner />;
 
   let pageContent = <span>Missing Event</span>;
@@ -76,3 +47,5 @@ export const EventView = ({ eventId }: EventViewProps) => {
     </Flex>
   );
 };
+
+export default NoteView;

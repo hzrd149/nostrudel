@@ -1,10 +1,10 @@
 import { Avatar, MenuItem } from "@chakra-ui/react";
-import { MenuIconButton } from "../../components/menu-icon-button";
+import { MenuIconButton } from "../../../components/menu-icon-button";
 
-import { ClipboardIcon, IMAGE_ICONS } from "../../components/icons";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { ClipboardIcon, IMAGE_ICONS } from "../../../components/icons";
+import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
 import { useCopyToClipboard } from "react-use";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../../helpers/nostr-event";
 
 export const UserProfileMenu = ({ pubkey }: { pubkey: string }) => {
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();

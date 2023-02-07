@@ -1,14 +1,24 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import React from "react";
+import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
 import { HomeView } from "./views/home";
-import { UserPage } from "./views/user";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
-import { EventPage } from "./views/event";
 import useSubject from "./hooks/use-subject";
 import identity from "./services/identity";
+import { FollowingTab } from "./views/home/following-tab";
+import { DiscoverTab } from "./views/home/discover-tab";
+import { GlobalTab } from "./views/home/global-tab";
+import { normalizeToHex } from "./helpers/nip-19";
+import UserView from "./views/user";
+import UserNotesTab from "./views/user/notes";
+import UserRepliesTab from "./views/user/replies";
+import UserFollowersTab from "./views/user/followers";
+import UserRelaysTab from "./views/user/relays";
+import UserFollowingTab from "./views/user/following";
+import NoteView from "./views/note";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -19,57 +29,72 @@ const RequireSetup = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
-const HomePage = () => (
+const RootPage = () => (
   <RequireSetup>
     <Page>
-      <HomeView />
+      <Outlet />
     </Page>
   </RequireSetup>
 );
 
-export const App = () => {
-  return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="/login" element={<LoginView />} />
-        <Route
-          path="/u/:pubkey"
-          element={
-            <RequireSetup>
-              <UserPage />
-            </RequireSetup>
-          }
-        />
-        <Route
-          path="/n/:id"
-          element={
-            <RequireSetup>
-              <EventPage />
-            </RequireSetup>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <RequireSetup>
-              <Page>
-                <SettingsView />
-              </Page>
-            </RequireSetup>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <RequireSetup>
-              <Page>
-                <ProfileView />
-              </Page>
-            </RequireSetup>
-          }
-        />
-        <Route path="/*" element={<HomePage />} />
-      </Routes>
-    </ErrorBoundary>
-  );
-};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootPage />,
+    children: [
+      {
+        path: "/u/:pubkey",
+        loader: ({ params }) => {
+          if (!params.pubkey) throw new Error("Missing pubkey");
+          const hexKey = normalizeToHex(params.pubkey);
+          if (!hexKey) throw new Error(params.pubkey + " is not a valid pubkey");
+          return { pubkey: hexKey };
+        },
+        element: <UserView />,
+        children: [
+          { path: "", element: <UserNotesTab /> },
+          { path: "notes", element: <UserNotesTab /> },
+          { path: "replies", element: <UserRepliesTab /> },
+          { path: "followers", element: <UserFollowersTab /> },
+          { path: "following", element: <UserFollowingTab /> },
+          { path: "relays", element: <UserRelaysTab /> },
+        ],
+      },
+      {
+        path: "/n/:id",
+        loader: ({ params }) => {
+          if (!params.id) throw new Error("Missing pubkey");
+          const hex = normalizeToHex(params.id);
+          if (!hex) throw new Error(params.id + " is not a valid event id");
+          return { id: hex };
+        },
+        element: <NoteView />,
+      },
+      {
+        path: "settings",
+        element: <SettingsView />,
+      },
+      {
+        path: "profile",
+        element: <ProfileView />,
+      },
+      { path: "login", element: <LoginView /> },
+      {
+        path: "",
+        element: <HomeView />,
+        children: [
+          { path: "", element: <FollowingTab /> },
+          { path: "following", element: <FollowingTab /> },
+          { path: "discover", element: <DiscoverTab /> },
+          { path: "global", element: <GlobalTab /> },
+        ],
+      },
+    ],
+  },
+]);
+
+export const App = () => (
+  <ErrorBoundary>
+    <RouterProvider router={router} />
+  </ErrorBoundary>
+);

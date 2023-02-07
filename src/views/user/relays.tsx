@@ -3,8 +3,10 @@ import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button, SkeletonText }
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
 import { useUserContacts } from "../../hooks/use-user-contacts";
+import { useOutletContext } from "react-router-dom";
 
-export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
+const UserRelaysTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
   const contacts = useUserContacts(pubkey);
 
   const relays = useSubject(settings.relays);
@@ -44,3 +46,5 @@ export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
     </TableContainer>
   );
 };
+
+export default UserRelaysTab;

@@ -1,10 +1,13 @@
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
+import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
-export const UserNotesTab = ({ pubkey }: { pubkey: string }) => {
+const UserNotesTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
+
   const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey} notes`,
     { authors: [pubkey], kinds: [1], since: moment().subtract(1, "day").unix() },
@@ -21,3 +24,5 @@ export const UserNotesTab = ({ pubkey }: { pubkey: string }) => {
     </Flex>
   );
 };
+
+export default UserNotesTab;

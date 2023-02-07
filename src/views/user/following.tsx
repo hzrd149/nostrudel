@@ -3,8 +3,10 @@ import { Flex, Grid, SkeletonText, Text } from "@chakra-ui/react";
 
 import { UserCard } from "./components/user-card";
 import { useUserContacts } from "../../hooks/use-user-contacts";
+import { useOutletContext } from "react-router-dom";
 
-export const UserFollowingTab = ({ pubkey }: { pubkey: string }) => {
+const UserFollowingTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
   const contacts = useUserContacts(pubkey, [], true);
 
   return (
@@ -24,3 +26,5 @@ export const UserFollowingTab = ({ pubkey }: { pubkey: string }) => {
     </Flex>
   );
 };
+
+export default UserFollowingTab;

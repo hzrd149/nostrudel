@@ -1,10 +1,12 @@
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
+import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import { isReply } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
-export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
+const UserRepliesTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
   const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey} replies`,
     { authors: [pubkey], kinds: [1], since: moment().subtract(4, "hours").unix() },
@@ -21,3 +23,5 @@ export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
     </Flex>
   );
 };
+
+export default UserRepliesTab;
