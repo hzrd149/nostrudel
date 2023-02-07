@@ -49,7 +49,12 @@ export const PostMenu = ({ event }: { event: NostrEvent }) => {
         >
           Open in BRB
         </MenuItem>
-        <MenuItem as="a" href={`https://snort.social/e/${noteId}`} target="_blank">
+        <MenuItem
+          as="a"
+          icon={<Avatar src={IMAGE_ICONS.snortSocialIcon} size="xs" />}
+          href={`https://snort.social/e/${noteId}`}
+          target="_blank"
+        >
           Open in snort.social
         </MenuItem>
         {noteId && (

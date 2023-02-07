@@ -1,40 +1,19 @@
-import { useEffect } from "react";
-import { Flex, SkeletonText } from "@chakra-ui/react";
-import { useSubscription } from "../../hooks/use-subscription";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 import { Post } from "../../components/post";
-import settings from "../../services/settings";
-import useSubject from "../../hooks/use-subject";
-import { useEventDir } from "../../hooks/use-event-dir";
+import { isPost } from "../../helpers/nostr-event";
+import { useUserTimeline } from "../../hooks/use-user-timeline";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
-  const relays = useSubject(settings.relays);
-
-  const sub = useSubscription(
-    relays,
-    { authors: [pubkey], kinds: [1] },
-    `${pubkey} posts`
-  );
-
-  const { events, reset } = useEventDir(sub);
-
-  // clear events when pubkey changes
-  useEffect(() => reset(), [pubkey]);
-
-  const timeline = Object.values(events).sort(
-    (a, b) => b.created_at - a.created_at
-  );
-
-  if (timeline.length === 0) {
-    return <SkeletonText />;
-  }
-
-  if (timeline.length > 30) timeline.length = 30;
+  const { timeline, more } = useUserTimeline(pubkey, isPost);
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
-      {timeline.map((event) => (
-        <Post key={event.id} event={event} />
-      ))}
+      {timeline.length > 0 ? (
+        timeline.map((event) => <Post key={event.id} event={event} />)
+      ) : (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      )}
+      <Button onClick={() => more(1)}>Load More</Button>
     </Flex>
   );
 };

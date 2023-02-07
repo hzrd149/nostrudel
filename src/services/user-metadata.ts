@@ -39,6 +39,8 @@ function parseMetadata(event: NostrEvent): Metadata | undefined {
 }
 
 function flushRequests() {
+  if (!subjects.dirty) return;
+
   const pubkeys = new Set<string>();
   const relays = new Set<string>();
 
@@ -58,6 +60,7 @@ function flushRequests() {
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();
   }
+  subjects.dirty = false;
 }
 
 subscription.onEvent.subscribe((event) => {

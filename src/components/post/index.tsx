@@ -23,6 +23,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { PostContents } from "./post-contents";
 import { PostMenu } from "./post-menu";
 import { PostCC } from "./post-cc";
+import { isReply } from "../../helpers/nostr-event";
 
 export type PostProps = {
   event: NostrEvent;
@@ -40,19 +41,14 @@ export const Post = React.memo(({ event }: PostProps) => {
 
             <Box>
               <Heading size="sm" display="inline">
-                <Link
-                  to={`/u/${normalizeToBech32(
-                    event.pubkey,
-                    Bech32Prefix.Pubkey
-                  )}`}
-                >
+                <Link to={`/u/${normalizeToBech32(event.pubkey, Bech32Prefix.Pubkey)}`}>
                   {getUserDisplayName(metadata, event.pubkey)}
                 </Link>
               </Heading>
               <Text display="inline" ml="2">
                 {moment(event.created_at * 1000).fromNow()}
               </Text>
-              <PostCC event={event} />
+              {isReply(event) && <PostCC event={event} />}
             </Box>
           </Flex>
           <PostMenu event={event} />
@@ -70,9 +66,7 @@ export const Post = React.memo(({ event }: PostProps) => {
           <Button
             size="sm"
             variant="link"
-            onClick={() =>
-              navigate(`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)
-            }
+            onClick={() => navigate(`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)}
           >
             Replies
           </Button>

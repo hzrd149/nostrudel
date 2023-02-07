@@ -1,20 +1,27 @@
 import { useRef } from "react";
-import { useMount, useUnmount } from "react-use";
+import { useDeepCompareEffect, useUnmount } from "react-use";
 import { NostrSubscription } from "../classes/nostr-subscription";
+import settings from "../services/settings";
 import { NostrQuery } from "../types/nostr-query";
+import useSubject from "./use-subject";
 
-/** @deprecated */
-export function useSubscription(
-  urls: string[],
-  query: NostrQuery,
-  name?: string
-) {
+type Options = {
+  name?: string;
+  enabled?: boolean;
+};
+
+export function useSubscription(query: NostrQuery, opts?: Options) {
+  const relays = useSubject(settings.relays);
   const sub = useRef<NostrSubscription | null>(null);
-  sub.current = sub.current || new NostrSubscription(urls, query, name);
+  sub.current = sub.current || new NostrSubscription(relays, undefined, opts?.name);
 
-  useMount(() => {
-    if (sub.current) sub.current.open();
-  });
+  useDeepCompareEffect(() => {
+    if (sub.current) {
+      sub.current.update(query);
+      if (opts?.enabled ?? true) sub.current.open();
+      else sub.current.close();
+    }
+  }, [query]);
   useUnmount(() => {
     if (sub.current) {
       sub.current.close();

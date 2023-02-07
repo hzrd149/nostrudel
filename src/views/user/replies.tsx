@@ -1,43 +1,21 @@
-import { useEffect } from "react";
-import { Flex, SkeletonText } from "@chakra-ui/react";
-import { useSubscription } from "../../hooks/use-subscription";
+import { Button, Flex, SkeletonText } from "@chakra-ui/react";
 import { Post } from "../../components/post";
-import settings from "../../services/settings";
-import useSubject from "../../hooks/use-subject";
-import { useEventDir } from "../../hooks/use-event-dir";
+import { isReply } from "../../helpers/nostr-event";
+import { useUserTimeline } from "../../hooks/use-user-timeline";
 
 export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
-  const relays = useSubject(settings.relays);
-
-  const sub = useSubscription(
-    relays,
-    { authors: [pubkey], kinds: [1] },
-    `${pubkey} posts`
-  );
-
-  const { events, reset } = useEventDir(
-    sub,
-    (event) => !!event.tags.find((t) => t[0] === "e")
-  );
-
-  // clear events when pubkey changes
-  useEffect(() => reset(), [pubkey]);
-
-  const timeline = Object.values(events).sort(
-    (a, b) => b.created_at - a.created_at
-  );
+  const { timeline, more } = useUserTimeline(pubkey, isReply);
 
   if (timeline.length === 0) {
     return <SkeletonText />;
   }
-
-  if (timeline.length > 30) timeline.length = 30;
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
+      <Button onClick={() => more(1)}>Load More</Button>
     </Flex>
   );
 };

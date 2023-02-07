@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs";
 export class PubkeySubjectCache<T> {
   subjects = new Map<string, BehaviorSubject<T | null>>();
   relays = new Map<string, Set<string>>();
+  dirty = false;
 
   hasSubject(pubkey: string) {
     return this.subjects.has(pubkey);
@@ -12,6 +13,7 @@ export class PubkeySubjectCache<T> {
     if (!subject) {
       subject = new BehaviorSubject<T | null>(null);
       this.subjects.set(pubkey, subject);
+      this.dirty = true;
     }
     return subject;
   }
@@ -19,6 +21,7 @@ export class PubkeySubjectCache<T> {
     const set = this.relays.get(pubkey) ?? new Set();
     for (const url of relays) set.add(url);
     this.relays.set(pubkey, set);
+    this.dirty = true;
   }
 
   getAllPubkeysMissingData(include: string[] = []) {
@@ -44,6 +47,7 @@ export class PubkeySubjectCache<T> {
         this.subjects.delete(key);
         this.relays.delete(key);
         prunedKeys.push(key);
+        this.dirty = true;
       }
     }
     return prunedKeys;

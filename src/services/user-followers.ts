@@ -28,16 +28,18 @@ function requestFollowers(pubkey: string, relays: string[] = [], alwaysRequest =
 
   if (relays.length) subjects.addRelays(pubkey, relays);
 
-  if (alwaysRequest) forceRequestedKeys.add(pubkey);
-
   db.getAllKeysFromIndex("user-contacts", "contacts", pubkey).then((cached) => {
     mergeNext(subject, cached);
   });
+
+  if (alwaysRequest) forceRequestedKeys.add(pubkey);
 
   return subject;
 }
 
 function flushRequests() {
+  if (!subjects.dirty) return;
+
   const pubkeys = new Set<string>();
   const relays = new Set<string>();
 
@@ -57,6 +59,7 @@ function flushRequests() {
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();
   }
+  subjects.dirty = false;
 }
 
 function receiveEvent(event: NostrEvent) {

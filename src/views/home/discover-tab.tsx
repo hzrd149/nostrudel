@@ -39,7 +39,6 @@ function useExtendedContacts(pubkey: string) {
 }
 
 export const DiscoverTab = () => {
-  const relays = useSubject(settings.relays);
   const pubkey = useSubject(identity.pubkey);
 
   const contactsOfContacts = useExtendedContacts(pubkey);
@@ -48,13 +47,12 @@ export const DiscoverTab = () => {
   const [after, setAfter] = useState(moment());
 
   const sub = useSubscription(
-    relays,
     {
       authors: contactsOfContacts,
       kinds: [1],
       since: since.unix(),
     },
-    "home-discover"
+    { name: "home-discover", enabled: contactsOfContacts.length > 0 }
   );
 
   const { events } = useEventDir(sub);

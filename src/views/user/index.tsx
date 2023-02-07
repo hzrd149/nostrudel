@@ -13,6 +13,7 @@ import {
   Tabs,
   Text,
   Box,
+  Image,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
@@ -27,6 +28,7 @@ import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowersTab } from "./followers";
 import { useUserFollowers } from "../../hooks/use-user-followers";
+import { UserRepliesTab } from "./replies";
 
 export const UserPage = () => {
   const params = useParams();
@@ -64,6 +66,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
 
   return (
     <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" height="100%">
+      {/* {metadata?.banner && <Image src={metadata.banner} />} */}
       <Flex gap="4" padding="2">
         <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
         <Flex direction="column" gap={isMobile ? 0 : 2}>
@@ -76,7 +79,8 @@ export const UserView = ({ pubkey }: UserViewProps) => {
       </Flex>
       <Tabs display="flex" flexDirection="column" flexGrow="1" overflow="hidden" isLazy>
         <TabList>
-          <Tab>Notes</Tab>
+          <Tab>Posts</Tab>
+          <Tab>Replies</Tab>
           <Tab>Followers ({followers?.length})</Tab>
           <Tab>Following</Tab>
           <Tab>Relays</Tab>
@@ -85,6 +89,9 @@ export const UserView = ({ pubkey }: UserViewProps) => {
         <TabPanels overflow="auto" height="100%">
           <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
+          </TabPanel>
+          <TabPanel pr={0} pl={0}>
+            <UserRepliesTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel>
             <UserFollowersTab pubkey={pubkey} />

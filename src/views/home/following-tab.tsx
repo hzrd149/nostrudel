@@ -10,7 +10,6 @@ import identity from "../../services/identity";
 import settings from "../../services/settings";
 
 export const FollowingTab = () => {
-  const relays = useSubject(settings.relays);
   const pubkey = useSubject(identity.pubkey);
   const contacts = useUserContacts(pubkey);
 
@@ -19,13 +18,12 @@ export const FollowingTab = () => {
 
   const following = contacts?.contacts || [];
   const sub = useSubscription(
-    relays,
     {
       authors: following,
       kinds: [1],
       since: since.unix(),
     },
-    "home-following"
+    { name: "home-following", enabled: following.length > 0 }
   );
 
   const { events } = useEventDir(sub);

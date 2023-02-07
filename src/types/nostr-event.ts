@@ -25,6 +25,7 @@ export type Kind0ParsedContent = {
   display_name?: string;
   about?: string;
   picture?: string;
+  banner?: string;
 };
 
 export function isETag(tag: Tag): tag is ETag {

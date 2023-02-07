@@ -14,7 +14,3 @@
 - add emoji reaction button
 - save relay list as note
 - load relays from note
-
-create a subscription manager that takes a "canMerge" function and batches requests
-create a template for a cached subscription service
-create a template for a cached request service
