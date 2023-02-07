@@ -22,19 +22,19 @@ import { UserAvatarLink } from "../user-avatar-link";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
-import { PostContents } from "./post-contents";
-import { PostMenu } from "./post-menu";
-import { PostCC } from "./post-cc";
+import { NoteContents } from "./note-contents";
+import { NoteMenu } from "./note-menu";
+import { NoteCC } from "./note-cc";
 import { isReply } from "../../helpers/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import identity from "../../services/identity";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { ArrowDownS } from "../icons";
 
-export type PostProps = {
+export type NoteProps = {
   event: NostrEvent;
 };
-export const Post = React.memo(({ event }: PostProps) => {
+export const Note = React.memo(({ event }: NoteProps) => {
   const metadata = useUserMetadata(event.pubkey);
 
   const pubkey = useSubject(identity.pubkey);
@@ -54,27 +54,25 @@ export const Post = React.memo(({ event }: PostProps) => {
                   {getUserDisplayName(metadata, event.pubkey)}
                 </Link>
               </Heading>
-              <Link as={RouterLink} to={`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} ml="2">
+              <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} ml="2">
                 {moment(event.created_at * 1000).fromNow()}
               </Link>
-              {isReply(event) && <PostCC event={event} />}
+              {isReply(event) && <NoteCC event={event} />}
             </Box>
           </Flex>
-          <PostMenu event={event} />
+          <NoteMenu event={event} />
         </HStack>
       </CardHeader>
       <CardBody padding="0">
-        <VStack alignItems="flex-start" justifyContent="stretch">
-          <Box overflow="hidden" width="100%">
-            <PostContents event={event} trusted={following.includes(event.pubkey)} />
-          </Box>
-        </VStack>
+        <Box overflow="hidden" width="100%">
+          <NoteContents event={event} trusted={following.includes(event.pubkey)} />
+        </Box>
       </CardBody>
       {/* <CardFooter padding="0" gap="2"> */}
       {/* <Button
           size="sm"
           variant="link"
-          onClick={() => navigate(`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)}
+          onClick={() => navigate(`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)}
         >
           Replies
         </Button> */}

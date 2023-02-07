@@ -1,5 +1,5 @@
 import { Kind0ParsedContent } from "../types/nostr-event";
-import { normalizeToBech32 } from "./nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "./nip-19";
 import { truncatedId } from "./nostr-event";
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
@@ -8,5 +8,5 @@ export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pub
   } else if (metadata?.name) {
     return metadata.name;
   }
-  return truncatedId(normalizeToBech32(pubkey) ?? pubkey);
+  return truncatedId(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? pubkey);
 }

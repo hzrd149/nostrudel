@@ -2,7 +2,7 @@ import { Text } from "@chakra-ui/react";
 import { isPTag, NostrEvent } from "../../types/nostr-event";
 import { UserLink } from "../user-link";
 
-export const PostCC = ({ event }: { event: NostrEvent }) => {
+export const NoteCC = ({ event }: { event: NostrEvent }) => {
   const hasCC = event.tags.some(isPTag);
   if (!hasCC) return null;
 

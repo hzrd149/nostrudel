@@ -16,8 +16,9 @@ import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton } from "../menu-icon-button";
 
 import { ClipboardIcon, CodeIcon, IMAGE_ICONS } from "../icons";
+import { getReferences } from "../../helpers/nostr-event";
 
-export const PostMenu = ({ event }: { event: NostrEvent }) => {
+export const NoteMenu = ({ event }: { event: NostrEvent }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
   const noteId = normalizeToBech32(event.id, Bech32Prefix.Note);
@@ -74,6 +75,7 @@ export const PostMenu = ({ event }: { event: NostrEvent }) => {
             <ModalCloseButton />
             <ModalBody overflow="auto">
               <pre>{JSON.stringify(event, null, 2)}</pre>
+              <pre>{JSON.stringify(getReferences(event), null, 2)}</pre>
             </ModalBody>
           </ModalContent>
         </Modal>

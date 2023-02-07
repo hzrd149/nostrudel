@@ -4,7 +4,7 @@ export function isReply(event: NostrEvent) {
   return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
 }
 
-export function isPost(event: NostrEvent) {
+export function isNote(event: NostrEvent) {
   return !isReply(event);
 }
 

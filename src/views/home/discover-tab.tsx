@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { mergeAll, from } from "rxjs";
-import { Post } from "../../components/post";
+import { Note } from "../../components/note";
 import useSubject from "../../hooks/use-subject";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
 import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import { isPost } from "../../helpers/nostr-event";
+import { isNote } from "../../helpers/nostr-event";
 
 function useExtendedContacts(pubkey: string) {
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
@@ -42,17 +42,17 @@ export const DiscoverTab = () => {
 
   const contactsOfContacts = useExtendedContacts(pubkey);
   const { events, loading, loadMore } = useTimelineLoader(
-    `discover-posts`,
+    `discover`,
     { authors: contactsOfContacts, kinds: [1], since: moment().subtract(1, "hour").unix() },
     { pageSize: moment.duration(1, "hour").asSeconds(), enabled: contactsOfContacts.length > 0 }
   );
 
-  const timeline = events.filter(isPost);
+  const timeline = events.filter(isNote);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">
       {timeline.map((event) => (
-        <Post key={event.id} event={event} />
+        <Note key={event.id} event={event} />
       ))}
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>

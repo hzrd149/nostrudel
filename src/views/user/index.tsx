@@ -15,7 +15,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { UserPostsTab } from "./posts";
+import { UserNotesTab } from "./notes";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
 import { getUserDisplayName } from "../../helpers/user-metadata";
@@ -80,7 +80,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
       {header}
       <Tabs display="flex" flexDirection="column" flexGrow="1" overflow={isMobile ? undefined : "hidden"} isLazy>
         <TabList overflow={isMobile ? "auto" : undefined}>
-          <Tab>Posts</Tab>
+          <Tab>Notes</Tab>
           <Tab>Replies</Tab>
           <Tab>Followers</Tab>
           <Tab>Following</Tab>
@@ -89,7 +89,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
 
         <TabPanels overflow={isMobile ? undefined : "auto"} height="100%">
           <TabPanel pr={0} pl={0}>
-            <UserPostsTab pubkey={pubkey} />
+            <UserNotesTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel pr={0} pl={0}>
             <UserRepliesTab pubkey={pubkey} />

@@ -10,9 +10,10 @@ export type UserLinkProps = LinkProps & {
 
 export const UserLink = ({ pubkey, ...props }: UserLinkProps) => {
   const metadata = useUserMetadata(pubkey);
+  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   return (
-    <Link as={RouterLink} to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`} {...props}>
+    <Link as={RouterLink} to={`/u/${npub}`} {...props}>
       @{getUserDisplayName(metadata, pubkey)}
     </Link>
   );

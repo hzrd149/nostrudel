@@ -1,7 +1,7 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 // import { useMatch, useNavigate } from "react-router-dom";
 import { DiscoverTab } from "./discover-tab";
-import { FollowingPostsTab } from "./following-posts-tab";
+import { FollowingTab } from "./following-tab";
 import { GlobalTab } from "./global-tab";
 
 export const HomeView = () => {
@@ -28,7 +28,7 @@ export const HomeView = () => {
       </TabList>
       <TabPanels overflow="auto" height="100%">
         <TabPanel pr={0} pl={0}>
-          <FollowingPostsTab />
+          <FollowingTab />
         </TabPanel>
         <TabPanel pr={0} pl={0}>
           <DiscoverTab />

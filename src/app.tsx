@@ -41,7 +41,7 @@ export const App = () => {
           }
         />
         <Route
-          path="/e/:id"
+          path="/n/:id"
           element={
             <RequireSetup>
               <EventPage />

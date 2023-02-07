@@ -20,10 +20,6 @@ export function linkEvents(events: NostrEvent[]) {
       idToChildren[refs.replyId] = idToChildren[refs.replyId] || [];
       idToChildren[refs.replyId].push(event);
     }
-    if (refs.rootId && refs.rootId !== refs.replyId) {
-      idToChildren[refs.rootId] = idToChildren[refs.rootId] || [];
-      idToChildren[refs.rootId].push(event);
-    }
 
     replies.set(event.id, {
       event,
