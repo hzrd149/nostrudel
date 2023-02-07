@@ -9,7 +9,7 @@ export type ThreadItemProps = {
 };
 
 export const ThreadPost = ({ post, initShowReplies }: ThreadItemProps) => {
-  const [showReplies, setShowReplies] = useState(!!initShowReplies);
+  const [showReplies, setShowReplies] = useState(initShowReplies ?? post.replies.length === 1);
   const toggle = () => setShowReplies((v) => !v);
 
   const numberOfReplies = countReplies(post);
