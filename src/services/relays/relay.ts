@@ -16,6 +16,13 @@ export type IncomingEOSE = {
   subId: string;
 };
 
+export enum Permission {
+  NONE = 0,
+  READ = 1,
+  WRITE = 2,
+  ALL = 1 | 2,
+}
+
 export class Relay {
   url: string;
   onOpen: Subject<Relay>;
@@ -24,8 +31,9 @@ export class Relay {
   onNotice: Subject<IncomingNotice>;
   onEndOfStoredEvents: Subject<IncomingEOSE>;
   ws?: WebSocket;
+  permission: Permission = Permission.ALL;
 
-  constructor(url: string) {
+  constructor(url: string, permission: Permission = Permission.ALL) {
     this.url = url;
 
     this.onOpen = new Subject();
@@ -33,6 +41,8 @@ export class Relay {
     this.onEvent = new Subject();
     this.onNotice = new Subject();
     this.onEndOfStoredEvents = new Subject();
+
+    this.permission = permission;
   }
 
   open() {
@@ -56,8 +66,10 @@ export class Relay {
     this.ws.onmessage = this.handleMessage.bind(this);
   }
   send(json: NostrOutgoingMessage) {
-    if (this.connected) {
-      this.ws?.send(JSON.stringify(json));
+    if (this.permission & Permission.WRITE) {
+      if (this.connected) {
+        this.ws?.send(JSON.stringify(json));
+      }
     }
   }
   close() {
@@ -86,6 +98,8 @@ export class Relay {
   handleMessage(event: MessageEvent<string>) {
     // skip empty events
     if (!event.data) return;
+
+    if (!(this.permission & Permission.READ)) return;
 
     try {
       const data: IncomingNostrEvent = JSON.parse(event.data);

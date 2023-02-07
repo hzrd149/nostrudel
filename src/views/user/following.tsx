@@ -21,8 +21,11 @@ export const UserFollowingTab = ({ pubkey }: { pubkey: string }) => {
       {contacts ? (
         <>
           <Flex flexWrap="wrap" gap="2">
-            {contacts.contacts.map((contact) => (
-              <UserAvatarLink key={contact.pubkey} pubkey={contact.pubkey} />
+            {contacts.contacts.map((contact, i) => (
+              <UserAvatarLink
+                key={contact.pubkey + i}
+                pubkey={contact.pubkey}
+              />
             ))}
           </Flex>
           <Text>{`Updated ${moment(contacts?.updated).fromNow()}`}</Text>

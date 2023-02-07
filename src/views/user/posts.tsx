@@ -5,10 +5,10 @@ import { Post } from "../../components/post";
 import { NostrEvent } from "../../types/nostr-event";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
+import { useEventDir } from "../../hooks/use-event-dir";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
   const relays = useSubject(settings.relays);
-  const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   const sub = useSubscription(
     relays,
@@ -16,21 +16,10 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
     `${pubkey} posts`
   );
 
-  useEffect(() => {
-    const s = sub.onEvent.subscribe((event) => {
-      setEvents((dir) => {
-        if (!dir[event.id]) {
-          return { [event.id]: event, ...dir };
-        }
-        return dir;
-      });
-    });
-
-    return () => s.unsubscribe();
-  }, [sub]);
+  const { events, reset } = useEventDir(sub);
 
   // clear events when pubkey changes
-  useEffect(() => setEvents({}), [pubkey]);
+  useEffect(() => reset(), [pubkey]);
 
   const timeline = Object.values(events).sort(
     (a, b) => b.created_at - a.created_at

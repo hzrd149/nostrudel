@@ -14,10 +14,14 @@ import { ConnectedRelays } from "./connected-relays";
 import homeIcon from "./icons/home.svg";
 import globalIcon from "./icons/global.svg";
 import settingsIcon from "./icons/settings.svg";
+import profileIcon from "./icons/profile.svg";
 import { useIsMobile } from "../hooks/use-is-mobile";
+import useSubject from "../hooks/use-subject";
+import identity from "../services/identity";
 
 const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const pubkey = useSubject(identity.pubkey);
 
   return (
     <Flex direction="column" height="100%">
@@ -40,6 +44,13 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
           size="lg"
         />
         <IconButton
+          icon={<img src={profileIcon} />}
+          aria-label="Profile"
+          onClick={() => navigate(`/user/${pubkey}`)}
+          flexGrow="1"
+          size="lg"
+        />
+        <IconButton
           icon={<img src={settingsIcon} />}
           aria-label="Settings"
           onClick={() => navigate("/settings")}
@@ -52,6 +63,7 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
 };
 const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const pubkey = useSubject(identity.pubkey);
 
   return (
     <Container
@@ -63,6 +75,7 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
         <Button onClick={() => navigate("/")}>Home</Button>
+        <Button onClick={() => navigate(`/user/${pubkey}`)}>Profile</Button>
         <Button onClick={() => navigate("/global")}>Global Feed</Button>
         <Button onClick={() => navigate("/settings")}>Settings</Button>
         <ConnectedRelays />

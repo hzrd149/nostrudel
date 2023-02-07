@@ -19,7 +19,6 @@ export const HomeView = () => {
         <UserAvatarLink pubkey="c5cfda98d01f152b3493d995eed4cdb4d9e55a973925f6f9ea24769a5a21e778" />
         <UserAvatarLink pubkey="3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d" />
         <UserAvatarLink pubkey="04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9" />
-        <UserAvatarLink pubkey="266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5" />
       </HStack>
     </>
   );

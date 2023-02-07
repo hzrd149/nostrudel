@@ -1,10 +1,10 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { HashRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import theme from "../theme";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => (
   <ChakraProvider theme={theme}>
-    <HashRouter>{children}</HashRouter>
+    <BrowserRouter>{children}</BrowserRouter>
   </ChakraProvider>
 );

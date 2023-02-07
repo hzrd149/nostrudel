@@ -10,32 +10,9 @@ import {
   Button,
   SkeletonText,
 } from "@chakra-ui/react";
-import { NostrEvent } from "../../types/nostr-event";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
-import { Subscription } from "../../services/subscriptions";
 import userContacts from "../../services/user-contacts";
-
-// function useEventDir(subscription: Subscription) {
-//   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
-
-//   useEffect(() => {
-//     const s = subscription.onEvent.subscribe((event) => {
-//       setEvents((dir) => {
-//         if (!dir[event.id]) {
-//           return { [event.id]: event, ...dir };
-//         }
-//         return dir;
-//       });
-//     });
-
-//     return () => s.unsubscribe();
-//   }, [subscription]);
-
-//   const reset = () => setEvents({});
-
-//   return { events, reset };
-// }
 
 export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
   const relays = useSubject(settings.relays);

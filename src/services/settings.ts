@@ -7,7 +7,6 @@ function log(message: string) {
 
 const settings = {
   relays: new BehaviorSubject<string[]>([]),
-  corsProxy: new BehaviorSubject<string>(""),
 };
 
 async function loadSettings() {
@@ -18,14 +17,6 @@ async function loadSettings() {
     if (loading) return;
     log("saving relay urls");
     db.put("settings", newUrls, "relays");
-  });
-
-  const corsProxy = await db.get("settings", "cors-proxy");
-  if (corsProxy) settings.corsProxy.next(corsProxy);
-  settings.corsProxy.subscribe((newUrl) => {
-    if (loading) return;
-    log("saving cors-proxy url");
-    db.put("settings", newUrl, "cors-proxy");
   });
 
   loading = false;
