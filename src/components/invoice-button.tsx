@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Button } from "@chakra-ui/react";
 import { requestProvider } from "webln";
 import { getReadableAmount, parsePaymentRequest } from "../helpers/bolt11";
+import { useAsync } from "react-use";
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
 };
 export const InvoiceButton = ({ paymentRequest }: InvoiceButtonProps) => {
-  const invoice = parsePaymentRequest(paymentRequest);
+  const { value: invoice, error } = useAsync(async () =>
+    parsePaymentRequest(paymentRequest)
+  );
   const [loading, setLoading] = useState(false);
   const handleClick = async () => {
     setLoading(true);
@@ -25,6 +28,10 @@ export const InvoiceButton = ({ paymentRequest }: InvoiceButtonProps) => {
     setLoading(false);
   };
 
+  if (error) {
+    <>{paymentRequest}</>;
+  }
+
   return (
     <Button
       colorScheme="yellow"
@@ -32,7 +39,8 @@ export const InvoiceButton = ({ paymentRequest }: InvoiceButtonProps) => {
       onClick={handleClick}
       isLoading={loading}
     >
-      ⚡ Invoice for {invoice.amount ? getReadableAmount(invoice.amount) : "♾️"}
+      ⚡ Invoice for{" "}
+      {invoice?.amount ? getReadableAmount(invoice.amount) : "♾️"}
     </Button>
   );
 };
