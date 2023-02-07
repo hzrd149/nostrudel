@@ -46,14 +46,37 @@ const embeds: EmbedType[] = [
     name: "Tweet",
     isMedia: true,
   },
+  // Youtube Playlist
+  // note12vqqte3gtd729gp65tgdk0a8yym5ynwqjuhk5s6l333yethlvlcsqptvmk
+  {
+    regexp: /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)\/(?:playlist\?list=)([\w\-]+)(\S+)?/im,
+    render: (match) => (
+      <AspectRatio ratio={560 / 315} maxWidth="30rem">
+        <iframe
+          // width="560"
+          // height="315"
+          width="100%"
+          height="100%"
+          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${match[1]}`}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
+      </AspectRatio>
+    ),
+    name: "Youtube Playlist",
+    isMedia: true,
+  },
   // Youtube Video
+  // note1apu56y4h2ms5uwpzz209vychr309kllhq6wz46te84u9rus5x7kqj5f5n9
   {
     regexp:
-      /https?:\/\/(?:(?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/)?)([\w\-]+)(\S+)?/im,
+      /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/)?)([\w\-]+)(\S+)?/im,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
-          src={`https://www.youtube.com/embed/${match[3]}`}
+          src={`https://www.youtube-nocookie.com/embed/${match[2]}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
