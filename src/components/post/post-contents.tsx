@@ -2,6 +2,8 @@ import React from "react";
 import { AspectRatio, Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
+import { UserLink } from "../user-link";
+import { normalizeToHex } from "../../helpers/nip-19";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -61,6 +63,19 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
         {match[0]}
       </Link>
     ),
+  },
+  // npub1 and note1 links
+  {
+    regexp: /@?((npub1|note1)[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/m,
+    render: (match) => {
+      switch (match[2]) {
+        case "npub1":
+          const id = normalizeToHex(match[1]);
+          return id ? <UserLink color="blue.500" pubkey={id} /> : match[0];
+        default:
+          return match[0];
+      }
+    },
   },
 ];
 
