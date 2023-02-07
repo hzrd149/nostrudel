@@ -3,11 +3,15 @@ import { Flex, FormControl, FormLabel, Grid, SkeletonText, Switch, useDisclosure
 import { UserCard } from "./components/user-card";
 import { useUserFollowers } from "../../hooks/use-user-followers";
 import { useOutletContext } from "react-router-dom";
+import { usePaginatedList } from "../../hooks/use-paginated-list";
+import { PaginationControls } from "../../components/pagination-controls";
 
 const UserFollowersTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const { isOpen, onToggle } = useDisclosure();
   const followers = useUserFollowers(pubkey, [], isOpen);
+
+  const pagination = usePaginatedList(followers ?? [], { pageSize: 3 * 10 });
 
   return (
     <Flex gap="2" direction="column">
@@ -20,10 +24,11 @@ const UserFollowersTab = () => {
       {followers ? (
         <>
           <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)", "2xl": "repeat(3, 1fr)" }} gap="2">
-            {Array.from(followers).map((pubkey) => (
+            {pagination.pageItems.map((pubkey) => (
               <UserCard key={pubkey} pubkey={pubkey} />
             ))}
           </Grid>
+          <PaginationControls {...pagination} buttonSize="sm" />
         </>
       ) : (
         <SkeletonText />
