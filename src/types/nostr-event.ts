@@ -18,7 +18,13 @@ export type NostrEvent = {
   sig: string;
 };
 
-export type IncomingNostrEvent = ["EVENT", string, NostrEvent] | ["NOTICE", string] | ["EOSE", string];
+export type DraftNostrEvent = Omit<NostrEvent, "pubkey" | "id" | "sig">;
+
+export type RawIncomingEvent = ["EVENT", string, NostrEvent];
+export type RawIncomingNotice = ["NOTICE", string];
+export type RawIncomingEOSE = ["EOSE", string];
+export type RawIncomingCommandResult = ["OK", string, boolean, string];
+export type RawIncomingNostrEvent = RawIncomingEvent | RawIncomingNotice | RawIncomingEOSE | RawIncomingCommandResult;
 
 export type Kind0ParsedContent = {
   name?: string;

@@ -9,7 +9,7 @@ export const LoginView = () => {
   const location = useLocation();
 
   if (loading) return <Spinner />;
-  if (setup) return <Navigate to={location.state.from} replace />;
+  if (setup) return <Navigate to={location.state?.from ?? "/"} replace />;
 
   return (
     <Flex direction="column" alignItems="center" justifyContent="center">

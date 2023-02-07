@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import db from "./db";
 import settings from "./settings";
 
 export type SavedIdentity = {

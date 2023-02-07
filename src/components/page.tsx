@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Container, Flex, Heading, IconButton, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { GlobalIcon, HomeIcon, LogoutIcon, ProfileIcon, SettingsIcon } from "./icons";
+import { HomeIcon, LogoutIcon, ProfileIcon, SettingsIcon } from "./icons";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
@@ -45,7 +45,15 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Container size="lg" display="flex" gap="2" flexDirection="column" height="100vh" overflow="hidden">
+      <Container
+        size="lg"
+        display="flex"
+        gap="2"
+        flexDirection="column"
+        height="100vh"
+        overflow="hidden"
+        position="relative"
+      >
         <ReloadPrompt />
         <Flex gap="4" grow={1} overflow="hidden">
           <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>

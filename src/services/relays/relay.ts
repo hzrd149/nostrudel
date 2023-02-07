@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { IncomingNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { RawIncomingNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NostrOutgoingMessage } from "../../types/nostr-query";
 
 export type IncomingEvent = {
@@ -15,6 +15,13 @@ export type IncomingEOSE = {
   type: "EOSE";
   subId: string;
 };
+// NIP-20
+export type IncomingCommandResult = {
+  type: "OK";
+  eventId: string;
+  status: boolean;
+  message?: string;
+};
 
 export enum Permission {
   NONE = 0,
@@ -25,11 +32,12 @@ export enum Permission {
 
 export class Relay {
   url: string;
-  onOpen: Subject<Relay>;
-  onClose: Subject<Relay>;
-  onEvent: Subject<IncomingEvent>;
-  onNotice: Subject<IncomingNotice>;
-  onEndOfStoredEvents: Subject<IncomingEOSE>;
+  onOpen = new Subject<Relay>();
+  onClose = new Subject<Relay>();
+  onEvent = new Subject<IncomingEvent>();
+  onNotice = new Subject<IncomingNotice>();
+  onEndOfStoredEvents = new Subject<IncomingEOSE>();
+  onCommandResult = new Subject<IncomingCommandResult>();
   ws?: WebSocket;
   permission: Permission = Permission.ALL;
 
@@ -37,13 +45,6 @@ export class Relay {
 
   constructor(url: string, permission: Permission = Permission.ALL) {
     this.url = url;
-
-    this.onOpen = new Subject();
-    this.onClose = new Subject();
-    this.onEvent = new Subject();
-    this.onNotice = new Subject();
-    this.onEndOfStoredEvents = new Subject();
-
     this.permission = permission;
   }
 
@@ -118,7 +119,7 @@ export class Relay {
     if (!(this.permission & Permission.READ)) return;
 
     try {
-      const data: IncomingNostrEvent = JSON.parse(event.data);
+      const data: RawIncomingNostrEvent = JSON.parse(event.data);
       const type = data[0];
 
       switch (type) {
@@ -130,6 +131,9 @@ export class Relay {
           break;
         case "EOSE":
           this.onEndOfStoredEvents.next({ type, subId: data[1] });
+          break;
+        case "OK":
+          this.onCommandResult.next({ type, eventId: data[1], status: data[2], message: data[3] });
           break;
       }
     } catch (e) {

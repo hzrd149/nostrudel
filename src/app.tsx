@@ -38,6 +38,7 @@ const RootPage = () => (
 );
 
 const router = createBrowserRouter([
+  { path: "login", element: <LoginView /> },
   {
     path: "/",
     element: <RootPage />,
@@ -78,7 +79,6 @@ const router = createBrowserRouter([
         path: "profile",
         element: <ProfileView />,
       },
-      { path: "login", element: <LoginView /> },
       {
         path: "",
         element: <HomeView />,

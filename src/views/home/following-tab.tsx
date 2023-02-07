@@ -8,6 +8,7 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
 import settings from "../../services/settings";
+import { InlineNewPost } from "../../components/inline-new-post";
 
 export const FollowingTab = () => {
   const pubkey = useSubject(identity.pubkey);
@@ -31,6 +32,7 @@ export const FollowingTab = () => {
 
   return (
     <Flex direction="column" gap="2">
+      <InlineNewPost />
       <FormControl display="flex" alignItems="center">
         <FormLabel htmlFor="show-replies" mb="0">
           Show Replies

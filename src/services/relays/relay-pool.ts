@@ -29,6 +29,9 @@ export class RelayPool {
     }
     return relay;
   }
+  requestRelays(urls: string[], connect = true) {
+    return urls.map((url) => this.requestRelay(url, connect));
+  }
 
   pruneRelays() {
     for (const [url, relay] of this.relays.entries()) {
