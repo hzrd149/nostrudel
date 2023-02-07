@@ -28,8 +28,7 @@ const embeds: {
   },
   // Youtube Video
   {
-    regexp:
-      /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/im,
+    regexp: /https?:\/\/((?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/im,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
@@ -41,6 +40,20 @@ const embeds: {
           width="100%"
         ></iframe>
       </AspectRatio>
+    ),
+  },
+  // Youtube Music
+  {
+    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)[^\s]+/,
+    render: (match) => (
+      <iframe
+        width="480"
+        height="360"
+        src={`https://youtube.com/embed/${match[1]}`}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      ></iframe>
     ),
   },
   // Tidal
