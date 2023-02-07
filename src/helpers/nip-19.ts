@@ -59,10 +59,7 @@ export function fromHexString(str: string) {
   return buffer;
 }
 
-export function normalizeToBech32(
-  key: string,
-  prefix: Bech32Prefix = Bech32Prefix.Pubkey
-) {
+export function normalizeToBech32(key: string, prefix: Bech32Prefix = Bech32Prefix.Pubkey) {
   if (isHex(key)) return hexToBech32(key, prefix);
   if (isBech32Key(key)) return key;
   return null;

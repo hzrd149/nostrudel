@@ -1,10 +1,4 @@
-import {
-  decode,
-  Section,
-  AmountSection,
-  DescriptionSection,
-  TimestampSection,
-} from "light-bolt11-decoder";
+import { decode, Section, AmountSection, DescriptionSection, TimestampSection } from "light-bolt11-decoder";
 import { convertTimestampToDate } from "./date";
 
 export type ParsedInvoice = {

@@ -14,9 +14,7 @@ export const LoginView = () => {
   return (
     <Flex direction="column" alignItems="center" justifyContent="center">
       <Heading>Login</Heading>
-      <Button onClick={() => identity.loginWithExtension()}>
-        Use browser extension
-      </Button>
+      <Button onClick={() => identity.loginWithExtension()}>Use browser extension</Button>
     </Flex>
   );
 };

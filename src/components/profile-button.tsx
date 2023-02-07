@@ -15,17 +15,7 @@ export const ProfileButton = ({ to }: ProfileButtonProps) => {
   const metadata = useUserMetadata(pubkey);
 
   return (
-    <LinkBox
-      as={Link}
-      maxW="sm"
-      p="2"
-      borderWidth="1px"
-      rounded="md"
-      to={to}
-      display="flex"
-      gap="2"
-      overflow="hidden"
-    >
+    <LinkBox as={Link} maxW="sm" p="2" borderWidth="1px" rounded="md" to={to} display="flex" gap="2" overflow="hidden">
       <UserAvatar pubkey={pubkey} />
       <Box>
         <Text fontWeight="bold">{metadata?.name}</Text>

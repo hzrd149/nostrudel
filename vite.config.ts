@@ -7,5 +7,17 @@ export default defineConfig({
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
   },
-  plugins: [react(), VitePWA({ registerType: "autoUpdate" })],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        name: "Personal Nostr Client",
+        description: "A simple PWA nostr client",
+        orientation: "portrait",
+        theme_color: "#c641c4",
+        categories: ["nostr"],
+      },
+    }),
+  ],
 });

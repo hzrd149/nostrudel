@@ -24,7 +24,5 @@ export const RelayStatus = ({ url }: { url: string }) => {
 
   useInterval(() => update(), 500);
 
-  return (
-    <Badge colorScheme={getStatusColor(relay)}>{getStatusText(relay)}</Badge>
-  );
+  return <Badge colorScheme={getStatusColor(relay)}>{getStatusText(relay)}</Badge>;
 };

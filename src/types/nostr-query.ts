@@ -4,10 +4,7 @@ export type NostrOutgoingEvent = ["EVENT", NostrEvent];
 export type NostrOutgoingRequest = ["REQ", string, NostrQuery];
 export type NostrOutgoingClose = ["CLOSE", string];
 
-export type NostrOutgoingMessage =
-  | NostrOutgoingEvent
-  | NostrOutgoingRequest
-  | NostrOutgoingClose;
+export type NostrOutgoingMessage = NostrOutgoingEvent | NostrOutgoingRequest | NostrOutgoingClose;
 
 export type NostrQuery = {
   ids?: string[];

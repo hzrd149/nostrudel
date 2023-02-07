@@ -6,19 +6,15 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 import { UserAvatar, UserAvatarProps } from "./user-avatar";
 import { getUserDisplayName } from "../helpers/user-metadata";
 
-export const UserAvatarLink = React.memo(
-  ({ pubkey, ...props }: UserAvatarProps) => {
-    const metadata = useUserMetadata(pubkey);
-    const label = metadata
-      ? getUserDisplayName(metadata, pubkey)
-      : "Loading...";
+export const UserAvatarLink = React.memo(({ pubkey, ...props }: UserAvatarProps) => {
+  const metadata = useUserMetadata(pubkey);
+  const label = metadata ? getUserDisplayName(metadata, pubkey) : "Loading...";
 
-    return (
-      <Tooltip label={label}>
-        <Link to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
-          <UserAvatar pubkey={pubkey} {...props} />
-        </Link>
-      </Tooltip>
-    );
-  }
-);
+  return (
+    <Tooltip label={label}>
+      <Link to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
+        <UserAvatar pubkey={pubkey} {...props} />
+      </Link>
+    </Tooltip>
+  );
+});

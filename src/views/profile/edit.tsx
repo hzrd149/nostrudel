@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  SkeletonText,
-  Textarea,
-} from "@chakra-ui/react";
+import { Avatar, Button, Flex, FormControl, FormLabel, Input, SkeletonText, Textarea } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import useSubject from "../../hooks/use-subject";
@@ -55,12 +46,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
         </Flex>
         <FormControl>
           <FormLabel>About</FormLabel>
-          <Textarea
-            placeholder="A short description"
-            resize="vertical"
-            rows={6}
-            {...register("about")}
-          />
+          <Textarea placeholder="A short description" resize="vertical" rows={6} {...register("about")} />
         </FormControl>
         <Flex alignSelf="flex-end" gap="2">
           <Button onClick={() => reset()}>Reset</Button>

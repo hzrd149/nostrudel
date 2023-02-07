@@ -22,7 +22,7 @@ export class NostrSubscription {
   seenEvents = new Set<string>();
 
   constructor(relayUrls: string[], query?: NostrQuery, name?: string) {
-    this.id = String(name||lastId++);
+    this.id = String(name || lastId++);
     this.query = query;
     this.name = name;
     this.relayUrls = relayUrls;
