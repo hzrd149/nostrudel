@@ -5,7 +5,7 @@ import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { GlobalView } from "./views/global";
-import { SetupView } from "./views/setup";
+import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
 import useSubject from "./hooks/use-subject";
 import identity from "./services/identity";
@@ -15,7 +15,7 @@ const RequireSetup = ({ children }: { children: JSX.Element }) => {
   const setup = useSubject(identity.setup);
 
   if (!setup)
-    return <Navigate to="/setup" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
   return children;
 };
@@ -24,7 +24,7 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route path="/setup" element={<SetupView />} />
+        <Route path="/login" element={<LoginView />} />
         <Route
           path="/user/:pubkey"
           element={

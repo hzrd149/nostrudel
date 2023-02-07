@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  IconButton,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, Container, Flex, IconButton, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
@@ -17,6 +10,7 @@ import settingsIcon from "./icons/settings-2-line.svg";
 import profileIcon from "./icons/user-line.svg";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { ProfileButton } from "./profile-button";
+import identity from "../services/identity";
 
 const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -75,6 +69,7 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
         <Button onClick={() => navigate("/")}>Home</Button>
         <Button onClick={() => navigate("/global")}>Global Feed</Button>
         <Button onClick={() => navigate("/settings")}>Settings</Button>
+        <Button onClick={() => identity.logout()}>Logout</Button>
         <ConnectedRelays />
       </VStack>
       <Flex flexGrow={1} direction="column" overflow="hidden">
