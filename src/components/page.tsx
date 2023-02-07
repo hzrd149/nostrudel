@@ -9,12 +9,14 @@ import { useIsMobile } from "../hooks/use-is-mobile";
 import { ProfileButton } from "./profile-button";
 import identity from "../services/identity";
 import { FollowingList } from "./following-list";
+import { ReloadPrompt } from "./reload-prompt";
 
 const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   return (
     <Flex direction="column" height="100%">
+      <ReloadPrompt />
       <Flex flexGrow={1} direction="column" overflow="hidden">
         {children}
       </Flex>
@@ -42,28 +44,33 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   return (
-    <Container size="lg" display="flex" gap="4" height="100vh" overflow="hidden">
-      <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
-        <ProfileButton to="/profile" />
-        <Button onClick={() => navigate("/")} leftIcon={<HomeIcon />}>
-          Home
-        </Button>
-        <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
-          Settings
-        </Button>
-        <Button onClick={() => identity.logout()} leftIcon={<LogoutIcon />}>
-          Logout
-        </Button>
-        <ConnectedRelays />
-      </VStack>
-      <Flex flexGrow={1} direction="column" overflow="hidden">
-        <ErrorBoundary>{children}</ErrorBoundary>
-      </Flex>
-      <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
-        <Heading size="md">Following</Heading>
-        <FollowingList />
-      </VStack>
-    </Container>
+    <>
+      <Container size="lg" display="flex" gap="2" flexDirection="column" height="100vh" overflow="hidden">
+        <ReloadPrompt />
+        <Flex gap="4" grow={1} overflow="hidden">
+          <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
+            <ProfileButton to="/profile" />
+            <Button onClick={() => navigate("/")} leftIcon={<HomeIcon />}>
+              Home
+            </Button>
+            <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
+              Settings
+            </Button>
+            <Button onClick={() => identity.logout()} leftIcon={<LogoutIcon />}>
+              Logout
+            </Button>
+            <ConnectedRelays />
+          </VStack>
+          <Flex flexGrow={1} direction="column" overflow="hidden">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </Flex>
+          <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
+            <Heading size="md">Following</Heading>
+            <FollowingList />
+          </VStack>
+        </Flex>
+      </Container>
+    </>
   );
 };
 
