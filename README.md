@@ -60,6 +60,8 @@
 - setup deploy to s3
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
   - make app handle image files
+- block notes based on content
+- implement NIP-56 and blocking
 
 ## Setup
 

@@ -2,36 +2,29 @@ import { BehaviorSubject } from "rxjs";
 import db from "./db";
 import { SavedIdentity } from "./identity";
 
-function log(message: string) {
-  console.log(`Settings: ${message}`);
-}
-
 const settings = {
   relays: new BehaviorSubject<string[]>([]),
   identity: new BehaviorSubject<SavedIdentity | null>(null),
+  blurImages: new BehaviorSubject(true),
 };
 
 async function loadSettings() {
   let loading = true;
 
   // load
-  const relays = await db.get("settings", "relays");
-  if (relays) settings.relays.next(relays);
-  const identity = await db.get("settings", "identity");
-  if (identity) settings.identity.next(identity);
+  for (const [key, subject] of Object.entries(settings)) {
+    const value = await db.get("settings", key);
+    if (value !== undefined) subject.next(value);
 
-  // save
-  settings.relays.subscribe((newUrls) => {
-    if (loading) return;
-    db.put("settings", newUrls, "relays");
-  });
-  settings.identity.subscribe((newIdentity) => {
-    if (loading) return;
-    db.put("settings", newIdentity, "identity");
-  });
+    // save
+    // @ts-ignore
+    subject.subscribe((newValue) => {
+      if (loading) return;
+      db.put("settings", newValue, key);
+    });
+  }
 
   loading = false;
-  log("loaded");
 }
 await loadSettings();
 

@@ -6,6 +6,7 @@ import { UserLink } from "../user-link";
 import { normalizeToHex } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
+import settings from "../../services/settings";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -103,8 +104,8 @@ const embeds: {
   // Image
   {
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(svg|gif|png|jpg|jpeg|webp|avif))[^\s]*/im,
-    render: (match, trusted) => {
-      const ImageComponent = trusted ? Image : BlurredImage;
+    render: (match, event, trusted) => {
+      const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
       return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
     },
   },
@@ -174,7 +175,7 @@ function embedContent(content: string, event?: NostrEvent, trusted: boolean = fa
       const after = content.slice(match.index + match[0].length, content.length);
       return [
         ...embedContent(before, event, trusted),
-        render(match, event, trusted ?? false),
+        render(match, event, trusted),
         ...embedContent(after, event, trusted),
       ];
     }

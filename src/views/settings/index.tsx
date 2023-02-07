@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 export const SettingsView = () => {
   const navigate = useNavigate();
   const relays = useSubject(settings.relays);
+  const blurImages = useSubject(settings.blurImages);
   const [relayInputValue, setRelayInputValue] = useState("");
 
   const { colorMode, setColorMode } = useColorMode();
@@ -142,6 +143,16 @@ export const SettingsView = () => {
                   id="use-dark-theme"
                   isChecked={colorMode === "dark"}
                   onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+                />
+              </FormControl>
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="blur-images" mb="0">
+                  Blur images from strangers
+                </FormLabel>
+                <Switch
+                  id="blur-images"
+                  isChecked={blurImages}
+                  onChange={(v) => settings.blurImages.next(v.target.checked)}
                 />
               </FormControl>
               <FormControl display="flex" alignItems="center">
