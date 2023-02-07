@@ -1,15 +1,26 @@
 import { Button, Flex, FormControl, FormLabel, Select, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Note } from "../../components/note";
+import { unique } from "../../helpers/array";
 import { isNote } from "../../helpers/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import settings from "../../services/settings";
 
 export const GlobalTab = () => {
-  const availableRelays = useSubject(settings.relays);
-  const [selectedRelay, setSelectedRelay] = useState("");
+  const defaultRelays = useSubject(settings.relays);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedRelay = searchParams.get("relay") ?? "";
+  const setSelectedRelay = (url: string) => {
+    if (url) {
+      setSearchParams({ relay: url });
+    } else setSearchParams({});
+  };
+
+  const availableRelays = unique([...defaultRelays, selectedRelay]).filter(Boolean);
+
   const { isOpen: showReplies, onToggle } = useDisclosure();
   const { events, loading, loadMore, loader } = useTimelineLoader(
     `global`,

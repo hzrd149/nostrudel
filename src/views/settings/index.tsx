@@ -22,15 +22,16 @@ import {
   AccordionIcon,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useState } from "react";
-import { useAsync } from "react-use";
-import { TrashIcon } from "../../components/icons";
+import { GlobalIcon, TrashIcon } from "../../components/icons";
 import { RelayStatus } from "./relay-status";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
 import { clearData } from "../../services/db";
 import { RelayUrlInput } from "../../components/relay-url-input";
+import { useNavigate } from "react-router-dom";
 
 export const SettingsView = () => {
+  const navigate = useNavigate();
   const relays = useSubject(settings.relays);
   const [relayInputValue, setRelayInputValue] = useState("");
 
@@ -85,6 +86,13 @@ export const SettingsView = () => {
                         <RelayStatus url={url} />
                       </Td>
                       <Td isNumeric>
+                        <IconButton
+                          icon={<GlobalIcon />}
+                          onClick={() => navigate("/global?relay=" + url)}
+                          size="sm"
+                          aria-label="Global Feed"
+                          mr="2"
+                        />
                         <IconButton
                           icon={<TrashIcon />}
                           title="Remove Relay"

@@ -1,13 +1,15 @@
 import { useCallback } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button, SkeletonText } from "@chakra-ui/react";
+import { SkeletonText, Text, Grid, Box, IconButton } from "@chakra-ui/react";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { AddIcon, GlobalIcon } from "../../components/icons";
 
 const UserRelaysTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contacts = useUserContacts(pubkey);
+  const navigate = useNavigate();
 
   const relays = useSubject(settings.relays);
   const addRelay = useCallback(
@@ -22,28 +24,27 @@ const UserRelaysTab = () => {
   }
 
   return (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Url</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {Object.entries(contacts.relays).map(([relay, opts]) => (
-            <Tr key={relay}>
-              <Td>{relay}</Td>
-              <Td>
-                <Button onClick={() => addRelay(relay)} isDisabled={relays.includes(relay)}>
-                  Add Relay
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)" }} gap="2">
+      {Object.entries(contacts.relays).map(([url, opts]) => (
+        <Box key={url} display="flex" gap="2" alignItems="center">
+          <Text flex={1}>{url}</Text>
+          <IconButton
+            icon={<GlobalIcon />}
+            onClick={() => navigate("/global?relay=" + url)}
+            size="sm"
+            aria-label="Global Feed"
+          />
+          <IconButton
+            icon={<AddIcon />}
+            onClick={() => addRelay(url)}
+            isDisabled={relays.includes(url)}
+            size="sm"
+            aria-label="Add Relay"
+            mr="4"
+          />
+        </Box>
+      ))}
+    </Grid>
   );
 };
 
