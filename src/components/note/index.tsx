@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
-import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Link } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
@@ -18,6 +18,7 @@ import { UserLink } from "../user-link";
 import { ReplyIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply } from "../../helpers/nostr-event";
+import { UserDnsIdentityIcon } from "../user-dns-identity";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -34,13 +35,15 @@ export const Note = React.memo(({ event }: NoteProps) => {
 
   return (
     <Card variant="outline">
-      <CardHeader padding="2" mb="2">
+      <CardHeader padding="2">
         <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
           <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
 
           <Heading size="sm" display="inline">
             <UserLink pubkey={event.pubkey} />
           </Heading>
+          <UserDnsIdentityIcon pubkey={event.pubkey} />
+          {!isMobile && <Flex grow={1} />}
           <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
             {moment(event.created_at * 1000).fromNow()}
           </Link>

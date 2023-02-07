@@ -15,7 +15,7 @@ export const IMAGE_ICONS = {
 const defaultProps: IconProps = { fontSize: "1.2em" };
 
 export const GlobalIcon = createIcon({
-  displayName: "global-line",
+  displayName: "global-icon",
   d: "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-2.29-2.333A17.9 17.9 0 0 1 8.027 13H4.062a8.008 8.008 0 0 0 5.648 6.667zM10.03 13c.151 2.439.848 4.73 1.97 6.752A15.905 15.905 0 0 0 13.97 13h-3.94zm9.908 0h-3.965a17.9 17.9 0 0 1-1.683 6.667A8.008 8.008 0 0 0 19.938 13zM4.062 11h3.965A17.9 17.9 0 0 1 9.71 4.333 8.008 8.008 0 0 0 4.062 11zm5.969 0h3.938A15.905 15.905 0 0 0 12 4.248 15.905 15.905 0 0 0 10.03 11zm4.259-6.667A17.9 17.9 0 0 1 15.973 11h3.965a8.008 8.008 0 0 0-5.648-6.667z",
   defaultProps,
 });
@@ -27,13 +27,13 @@ export const FeedIcon = createIcon({
 });
 
 export const MoreIcon = createIcon({
-  displayName: "more-line",
+  displayName: "more-icon",
   d: "M4.5 10.5c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S6 12.825 6 12s-.675-1.5-1.5-1.5zm15 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S21 12.825 21 12s-.675-1.5-1.5-1.5zm-7.5 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5 1.5-.675 1.5-1.5-.675-1.5-1.5-1.5z",
   defaultProps,
 });
 
 export const CodeIcon = createIcon({
-  displayName: "code-line",
+  displayName: "code-icon",
   d: `M23 12l-7.071 7.071-1.414-1.414L20.172 12l-5.657-5.657 1.414-1.414L23 12zM3.828 12l5.657 5.657-1.414 1.414L1 12l7.071-7.071 1.414 1.414L3.828 12z`,
   defaultProps,
 });
@@ -137,5 +137,17 @@ export const ShareIcon = createIcon({
 export const ReplyIcon = createIcon({
   displayName: "reply-icon",
   d: "M11 20L1 12l10-8v5c5.523 0 10 4.477 10 10 0 .273-.01.543-.032.81-1.463-2.774-4.33-4.691-7.655-4.805L13 15h-2v5zm-2-7h4.034l.347.007c1.285.043 2.524.31 3.676.766C15.59 12.075 13.42 11 11 11H9V8.161L4.202 12 9 15.839V13z",
+  defaultProps,
+});
+
+export const VerifiedIcon = createIcon({
+  displayName: "VerifiedIcon",
+  d: "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z",
+  defaultProps,
+});
+
+export const VerificationFailed = createIcon({
+  displayName: "VerificationFailed",
+  d: "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z",
   defaultProps,
 });

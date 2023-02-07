@@ -35,6 +35,7 @@ export type Kind0ParsedContent = {
   website?: string;
   lud16?: string;
   lud06?: string;
+  nip05?: string;
 };
 
 export function isETag(tag: Tag): tag is ETag {

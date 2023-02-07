@@ -22,6 +22,12 @@ const MIGRATIONS: MigrationFunction[] = [
     contacts.createIndex("created_at", "created_at");
     contacts.createIndex("contacts", "contacts", { multiEntry: true });
 
+    const dnsIdentifiers = db.createObjectStore("dns-identifiers");
+    dnsIdentifiers.createIndex("pubkey", "pubkey", { unique: false });
+    dnsIdentifiers.createIndex("name", "name", { unique: false });
+    dnsIdentifiers.createIndex("domain", "domain", { unique: false });
+    dnsIdentifiers.createIndex("updated", "updated", { unique: false });
+
     // setup data
     const settings = db.createObjectStore("settings");
   },
@@ -44,7 +50,7 @@ const db = await openDB<CustomSchema>("storage", version, {
 export async function clearData() {
   await db.clear("user-metadata");
   await db.clear("user-contacts");
-  await db.clear("settings");
+  await db.clear("dns-identifiers");
   window.location.reload();
 }
 

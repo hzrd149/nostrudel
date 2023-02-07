@@ -9,13 +9,13 @@
 - [x] Lighting invoices
 - [x] Blurred or hidden images and embeds for people you dont follow
 - [x] Thread view
+- [x] NIP-05 support
+- [x] Broadcast events
+- [x] User tipping
 - [ ] Manage followers ( Contact List )
 - [ ] Profile management
 - [ ] Relay management
-- [ ] NIP-05 support
-- [x] Broadcast events
 - [ ] Image upload
-- [x] User tipping
 - [ ] Reactions
 - [ ] Dynamically connect to relays (start with one relay then connect to others as required)
 - [ ] Reporting users and events
@@ -27,7 +27,7 @@
 - [ ] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
 - [ ] [NIP-03](https://github.com/nostr-protocol/nips/blob/master/03.md): OpenTimestamps Attestations for Events
 - [ ] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
-- [ ] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
+- [x] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
 - [ ] [NIP-06](https://github.com/nostr-protocol/nips/blob/master/06.md): Basic key derivation from mnemonic seed phrase
 - [ ] [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md): `window.nostr` capability for web browsers
 - [ ] [NIP-08](https://github.com/nostr-protocol/nips/blob/master/08.md): Handling Mentions
@@ -64,6 +64,7 @@
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
   - sort replies by date
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
+- Add client side relay groups
 
 ## Setup
 

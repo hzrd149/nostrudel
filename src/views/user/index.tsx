@@ -20,6 +20,7 @@ import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserProfileMenu } from "./components/user-profile-menu";
 import { LinkIcon } from "@chakra-ui/icons";
 import { UserTipButton } from "../../components/user-tip-button";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -45,7 +46,10 @@ const UserView = () => {
     <Flex gap="4" padding="2">
       <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
       <Flex direction="column" gap={isMobile ? 0 : 2}>
-        <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
+        <Heading size={isMobile ? "md" : "lg"}>
+          {getUserDisplayName(metadata, pubkey)}
+          <UserDnsIdentityIcon pubkey={pubkey} />
+        </Heading>
         {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
         {metadata?.website && (
           <Text>

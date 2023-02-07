@@ -20,6 +20,11 @@ export interface CustomSchema extends DBSchema {
     };
     indexes: { created_at: number; contacts: string };
   };
+  "dns-identifiers": {
+    key: string;
+    value: { name: string; domain: string; pubkey: string; relays: string[]; updated: number };
+    indexes: { name: string; domain: string; pubkey: string; updated: number };
+  };
   settings: {
     key: string;
     value: any;
