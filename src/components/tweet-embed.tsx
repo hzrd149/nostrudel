@@ -13,7 +13,7 @@ export const TweetEmbed = ({ href, conversation }: TweetEmbedProps) => {
   useEffect(() => {
     if (ref.current) {
       // @ts-ignore
-      window.twttr.widgets.load();
+      window.twttr?.widgets.load();
     }
   }, []);
 
