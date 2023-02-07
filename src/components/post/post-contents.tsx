@@ -70,12 +70,26 @@ const embeds: {
       ></iframe>
     ),
   },
+  // apple music
+  {
+    regexp: /https?:\/\/music\.apple\.com\/[^\s]+/im,
+    render: (match) => (
+      <iframe
+        allow="encrypted-media *; fullscreen *; clipboard-write"
+        frameBorder="0"
+        height="175"
+        style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
+        // sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+        src={match[0].replace("music.apple.com", "embed.music.apple.com")}
+      ></iframe>
+    ),
+  },
   // Image
   {
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(svg|gif|png|jpg|jpeg|webp|avif))[^\s]*/im,
     render: (match, trusted) => {
       const ImageComponent = trusted ? Image : BlurredImage;
-      return <ImageComponent key={match[0]} src={match[0]} maxWidth="30rem" />;
+      return <ImageComponent key={match[0]} src={match[0]} width="100%" maxWidth="30rem" />;
     },
   },
   // Video

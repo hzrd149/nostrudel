@@ -21,6 +21,12 @@
 - [ ] "Read more" Button for long posts
 - [ ] Dynamically connect to relays (start with one relay then connect to others as required)
 
+## TODO
+
+- Show replies in event view
+- add sub routes to profile view
+- add relay selection to global feed and allow user to specify custom relay
+
 ## Setup
 
 ```bash

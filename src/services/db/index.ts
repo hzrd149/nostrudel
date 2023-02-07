@@ -16,9 +16,6 @@ const MIGRATIONS: MigrationFunction[] = [
       keyPath: "pubkey",
     });
 
-    const eventsSeen = db.createObjectStore("events-seen", { keyPath: "id" });
-    eventsSeen.createIndex("lastSeen", "lastSeen");
-
     const contacts = db.createObjectStore("user-contacts", {
       keyPath: "pubkey",
     });
@@ -68,7 +65,7 @@ export async function clearData() {
   await db.clear("user-metadata");
   await db.clear("user-contacts");
   await db.clear("text-events");
-  await db.clear("events-seen");
+  await db.clear("identicon");
 }
 
 if (import.meta.env.DEV) {

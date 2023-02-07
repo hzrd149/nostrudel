@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Heading,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Heading, IconButton, Text } from "@chakra-ui/react";
 import { requestProvider } from "webln";
 import { getReadableAmount, parsePaymentRequest } from "../helpers/bolt11";
 import { useAsync } from "react-use";
@@ -17,9 +10,7 @@ export type InvoiceButtonProps = {
   paymentRequest: string;
 };
 export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
-  const { value: invoice, error } = useAsync(async () =>
-    parsePaymentRequest(paymentRequest)
-  );
+  const { value: invoice, error } = useAsync(async () => parsePaymentRequest(paymentRequest));
 
   const [loading, setLoading] = useState(false);
   const handleClick = async (event: React.SyntheticEvent) => {
@@ -55,6 +46,7 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
       borderWidth="1px"
       borderRadius="md"
       display="flex"
+      flexWrap="wrap"
       gap="4"
       alignItems="center"
     >
@@ -64,24 +56,12 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
       </Box>
       <Box>
         <Text color={isExpired ? "red.400" : undefined}>
-          {isExpired ? "Expired" : "Expires"}:{" "}
-          {moment(invoice.expiry).fromNow()}
+          {isExpired ? "Expired" : "Expires"}: {moment(invoice.expiry).fromNow()}
         </Text>
       </Box>
       <ButtonGroup>
-        <IconButton
-          icon={<ClipboardIcon />}
-          title="Copy to clipboard"
-          aria-label="copy invoice"
-          variant="outline"
-        />
-        <Button
-          as="a"
-          variant="outline"
-          onClick={handleClick}
-          isLoading={loading}
-          href={`lightning:${paymentRequest}`}
-        >
+        <IconButton icon={<ClipboardIcon />} title="Copy to clipboard" aria-label="copy invoice" variant="outline" />
+        <Button as="a" variant="outline" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
           ⚡ Pay {invoice.amount ? getReadableAmount(invoice.amount) : ""}
         </Button>
       </ButtonGroup>

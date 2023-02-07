@@ -25,15 +25,6 @@ export interface CustomSchema extends DBSchema {
     value: NostrEvent;
     indexes: { created_at: number; pubkey: string; kind: number };
   };
-  "events-seen": {
-    key: string;
-    value: {
-      id: string;
-      relays: string[];
-      lastSeen: Date;
-    };
-    indexes: { lastSeen: Date };
-  };
   identicon: {
     key: string;
     value: string;

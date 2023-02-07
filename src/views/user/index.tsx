@@ -61,21 +61,25 @@ export const UserView = ({ pubkey }: UserViewProps) => {
   const metadata = useUserMetadata(pubkey, [], true);
   const label = getUserDisplayName(metadata, pubkey);
 
-  return (
-    <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" height="100%">
-      {/* {metadata?.banner && <Image src={metadata.banner} />} */}
-      <Flex gap="4" padding="2">
-        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
-        <Flex direction="column" gap={isMobile ? 0 : 2}>
-          <Heading size={isMobile ? "md" : "lg"}>{label}</Heading>
-          {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
-        </Flex>
-        <Box ml="auto">
-          <UserProfileMenu pubkey={pubkey} />
-        </Box>
+  const header = (
+    <Flex gap="4" padding="2">
+      <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
+      <Flex direction="column" gap={isMobile ? 0 : 2}>
+        <Heading size={isMobile ? "md" : "lg"}>{label}</Heading>
+        {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
       </Flex>
-      <Tabs display="flex" flexDirection="column" flexGrow="1" overflow="hidden" isLazy>
-        <TabList>
+      <Box ml="auto">
+        <UserProfileMenu pubkey={pubkey} />
+      </Box>
+    </Flex>
+  );
+
+  return (
+    <Flex direction="column" alignItems="stretch" gap="2" overflow={isMobile ? "auto" : "hidden"} height="100%">
+      {/* {metadata?.banner && <Image src={metadata.banner} />} */}
+      {header}
+      <Tabs display="flex" flexDirection="column" flexGrow="1" overflow={isMobile ? undefined : "hidden"} isLazy>
+        <TabList overflow={isMobile ? "auto" : undefined}>
           <Tab>Posts</Tab>
           <Tab>Replies</Tab>
           <Tab>Followers</Tab>
@@ -83,7 +87,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
           <Tab>Relays</Tab>
         </TabList>
 
-        <TabPanels overflow="auto" height="100%">
+        <TabPanels overflow={isMobile ? undefined : "auto"} height="100%">
           <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
           </TabPanel>
