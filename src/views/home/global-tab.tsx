@@ -32,40 +32,34 @@ export const GlobalTab = () => {
   const timeline = showReplies ? events : events.filter(isNote);
 
   return (
-    <>
-      <Flex direction="column" overflow="auto" gap="2">
-        <Flex gap="2">
-          <Select
-            placeholder="All Relays"
-            maxWidth="250"
-            value={selectedRelay}
-            onChange={(e) => {
-              setSelectedRelay(e.target.value);
-              loader.forgetEvents();
-            }}
-          >
-            {availableRelays.map((url) => (
-              <option key={url} value={url}>
-                {url}
-              </option>
-            ))}
-          </Select>
-          <FormControl display="flex" alignItems="center">
-            <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
-            <FormLabel htmlFor="show-replies" mb="0">
-              Show Replies
-            </FormLabel>
-          </FormControl>
-        </Flex>
-        {timeline.map((event) => (
-          <Note key={event.id} event={event} />
-        ))}
-        {loading ? (
-          <Spinner ml="auto" mr="auto" mt="8" mb="8" />
-        ) : (
-          <Button onClick={() => loadMore()}>Load More</Button>
-        )}
+    <Flex direction="column" gap="2">
+      <Flex gap="2">
+        <Select
+          placeholder="All Relays"
+          maxWidth="250"
+          value={selectedRelay}
+          onChange={(e) => {
+            setSelectedRelay(e.target.value);
+            loader.forgetEvents();
+          }}
+        >
+          {availableRelays.map((url) => (
+            <option key={url} value={url}>
+              {url}
+            </option>
+          ))}
+        </Select>
+        <FormControl display="flex" alignItems="center">
+          <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
+          <FormLabel htmlFor="show-replies" mb="0">
+            Show Replies
+          </FormLabel>
+        </FormControl>
       </Flex>
-    </>
+      {timeline.map((event) => (
+        <Note key={event.id} event={event} />
+      ))}
+      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+    </Flex>
   );
 };

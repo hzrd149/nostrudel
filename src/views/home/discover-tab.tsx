@@ -53,7 +53,7 @@ export const DiscoverTab = () => {
   const timeline = events.filter(isNote);
 
   return (
-    <Flex direction="column" overflow="auto" gap="2">
+    <Flex direction="column" gap="2">
       {timeline.map((event) => (
         <Note key={event.id} event={event} />
       ))}

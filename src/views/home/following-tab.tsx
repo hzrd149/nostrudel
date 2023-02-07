@@ -30,7 +30,7 @@ export const FollowingTab = () => {
   const timeline = showReplies ? events : events.filter(isNote);
 
   return (
-    <Flex direction="column" overflow="auto" gap="2">
+    <Flex direction="column" gap="2">
       <FormControl display="flex" alignItems="center">
         <FormLabel htmlFor="show-replies" mb="0">
           Show Replies
