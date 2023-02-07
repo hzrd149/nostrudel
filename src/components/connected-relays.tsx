@@ -22,6 +22,8 @@ import {
 import { useInterval } from "react-use";
 import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
+import useSubject from "../hooks/use-subject";
+import settings from "../services/settings";
 
 const getRelayStatusText = (relay: Relay) => {
   if (relay.connecting) return "Connecting...";
@@ -31,12 +33,20 @@ const getRelayStatusText = (relay: Relay) => {
 };
 
 export const ConnectedRelays = () => {
+  const relayUrls = useSubject(settings.relays);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [relays, setRelays] = useState<Relay[]>([]);
 
   useInterval(() => {
     setRelays(relayPool.getRelays());
   }, 1000);
+
+  useInterval(() => {
+    for (const url of relayUrls) {
+      // ask the pool to reconnect if disconnected
+      relayPool.requestRelay(url);
+    }
+  }, 1000 * 30);
 
   const connected = relays.filter((relay) => relay.okay);
   const disconnected = relays.filter((relay) => !relay.okay);

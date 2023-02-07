@@ -72,13 +72,4 @@ if (import.meta.env.DEV) {
   window.relayPool = relayPool;
 }
 
-// TODO: move this somewhere where it makes sense
-setTimeout(async () => {
-  const urls = settings.relays.getValue();
-
-  for (const url of urls) {
-    relayPool.requestRelay(url);
-  }
-}, 1000 * 10);
-
 export default relayPool;

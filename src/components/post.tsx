@@ -27,7 +27,6 @@ export type PostProps = {
 };
 export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const corsProxy = useSubject(settings.corsProxy);
   const userMetadata = useUserMetadata(event.pubkey);
 
   const isLong = event.content.length > 800;
@@ -37,10 +36,7 @@ export const Post = React.memo(({ event }: PostProps) => {
       <CardHeader>
         <HStack spacing="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-            <Avatar
-              name={userMetadata?.display_name ?? userMetadata?.name}
-              src={userMetadata?.picture}
-            />
+            <Avatar src={userMetadata?.picture} />
 
             <Box>
               <Heading size="sm">

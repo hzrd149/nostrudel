@@ -4,7 +4,7 @@ import db from "./db";
 import settings from "./settings";
 import { Subscription } from "./subscriptions";
 
-class UserMetadata {
+class UserMetadataService {
   requests = new Set<string>();
   subjects = new Map<string, BehaviorSubject<Kind0ParsedContent | null>>();
   subscription: Subscription;
@@ -12,11 +12,17 @@ class UserMetadata {
   constructor(relayUrls: string[] = []) {
     this.subscription = new Subscription(relayUrls, undefined, "user-metadata");
 
-    this.subscription.onEvent.subscribe((event) => {
+    this.subscription.onEvent.subscribe(async (event) => {
       try {
+        const current = await db.get("user-metadata", event.pubkey);
+        if (current && current.created_at > event.created_at) {
+          // ignore this event because its older
+          return;
+        }
+        db.put("user-metadata", event);
+
         const metadata = JSON.parse(event.content);
         this.getUserSubject(event.pubkey).next(metadata);
-        db.put("user-metadata", event);
       } catch (e) {}
     });
 
@@ -89,7 +95,7 @@ class UserMetadata {
   }
 }
 
-const userMetadata = new UserMetadata(settings.relays.getValue());
+const userMetadata = new UserMetadataService(settings.relays.getValue());
 
 if (import.meta.env.DEV) {
   // @ts-ignore
