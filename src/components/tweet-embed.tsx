@@ -1,3 +1,4 @@
+import { useColorMode } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 
 export type TweetEmbedProps = {
@@ -7,6 +8,7 @@ export type TweetEmbedProps = {
 
 export const TweetEmbed = ({ href, conversation }: TweetEmbedProps) => {
   const ref = useRef<HTMLQuoteElement | null>(null);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     if (ref.current) {
@@ -20,6 +22,7 @@ export const TweetEmbed = ({ href, conversation }: TweetEmbedProps) => {
       className="twitter-tweet"
       ref={ref}
       data-conversation={conversation ? undefined : "none"}
+      data-theme={colorMode}
     >
       <a href={href}></a>
     </blockquote>
