@@ -65,7 +65,7 @@ export class Subscription {
     }
 
     if (import.meta.env.DEV) {
-      console.info(`Subscription ${this.name || this.id} opened`);
+      console.info(`Subscription: "${this.name || this.id}" opened`);
     }
   }
   close() {
@@ -80,7 +80,7 @@ export class Subscription {
     }
 
     if (import.meta.env.DEV) {
-      console.info(`Subscription ${this.name || this.id} closed`);
+      console.info(`Subscription: "${this.name || this.id}" closed`);
     }
   }
 }

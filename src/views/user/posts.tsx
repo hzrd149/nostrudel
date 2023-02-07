@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SkeletonText } from "@chakra-ui/react";
+import { Flex, SkeletonText } from "@chakra-ui/react";
 import { useSubscription } from "../../hooks/use-subscription";
 import { Post } from "../../components/post";
 import { NostrEvent } from "../../types/nostr-event";
@@ -43,10 +43,10 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
   if (timeline.length > 20) timeline.length = 20;
 
   return (
-    <>
+    <Flex direction="column" gap="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
-    </>
+    </Flex>
   );
 };

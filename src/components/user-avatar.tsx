@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Avatar } from "@chakra-ui/react";
+import { Avatar, AvatarProps } from "@chakra-ui/react";
 import Identicon from "identicon.js";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 
@@ -11,18 +11,20 @@ function getIdenticon(pubkey: string) {
   return cache[pubkey];
 }
 
-export type UserAvatarProps = {
+export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
 };
-export const UserAvatar = React.memo(({ pubkey }: UserAvatarProps) => {
-  const metadata = useUserMetadata(pubkey);
+export const UserAvatar = React.memo(
+  ({ pubkey, ...props }: UserAvatarProps) => {
+    const { metadata } = useUserMetadata(pubkey);
 
-  const url = useMemo(() => {
-    return (
-      metadata?.picture ??
-      `data:image/svg+xml;base64,${getIdenticon(pubkey).toString()}`
-    );
-  }, [metadata]);
+    const url = useMemo(() => {
+      return (
+        metadata?.picture ??
+        `data:image/svg+xml;base64,${getIdenticon(pubkey).toString()}`
+      );
+    }, [metadata]);
 
-  return <Avatar src={url} />;
-});
+    return <Avatar src={url} {...props} />;
+  }
+);

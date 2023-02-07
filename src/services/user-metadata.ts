@@ -4,6 +4,15 @@ import db from "./db";
 import settings from "./settings";
 import { Subscription } from "./subscriptions";
 
+function debounce<T>(func: T, timeout = 300) {
+  let timer: number | undefined;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    // @ts-ignore
+    timer = setTimeout(() => func(args), timeout);
+  };
+}
+
 class UserMetadataService {
   requests = new Set<string>();
   subjects = new Map<string, BehaviorSubject<Kind0ParsedContent | null>>();
@@ -23,6 +32,10 @@ class UserMetadataService {
 
         const metadata = JSON.parse(event.content);
         this.getUserSubject(event.pubkey).next(metadata);
+
+        // remove the pubkey from requests since is have the data
+        this.requests.delete(event.pubkey);
+        this.update();
       } catch (e) {}
     });
 
@@ -49,25 +62,27 @@ class UserMetadataService {
     const request = () => {
       if (!this.requests.has(pubkey)) {
         this.requests.add(pubkey);
-        this.updateSubscription();
+        this.update();
       }
     };
-    if (useCache && !subject.getValue()) {
-      db.get("user-metadata", pubkey).then((cachedEvent) => {
-        if (cachedEvent) {
-          try {
-            subject.next(JSON.parse(cachedEvent.content));
-          } catch (e) {
-            request();
-          }
-        } else request();
-      });
+    if (useCache) {
+      if (!subject.getValue()) {
+        db.get("user-metadata", pubkey).then((cachedEvent) => {
+          if (cachedEvent) {
+            try {
+              subject.next(JSON.parse(cachedEvent.content));
+            } catch (e) {
+              request();
+            }
+          } else request();
+        });
+      }
     } else request();
 
     return subject;
   }
 
-  updateSubscription() {
+  private updateSubscription() {
     const pubkeys = Array.from(this.requests.keys());
 
     if (pubkeys.length === 0) {
@@ -79,6 +94,7 @@ class UserMetadataService {
       }
     }
   }
+  update = debounce(this.updateSubscription.bind(this), 500);
 
   pruneRequests() {
     let removed = false;
@@ -91,7 +107,7 @@ class UserMetadataService {
       }
     }
 
-    if (removed) this.updateSubscription();
+    if (removed) this.update();
   }
 }
 

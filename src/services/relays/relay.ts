@@ -37,14 +37,14 @@ export class Relay {
       this.onOpen.next(this);
 
       if (import.meta.env.DEV) {
-        console.info(`Relay ${this.url} opened`);
+        console.info(`Relay: ${this.url} connected`);
       }
     };
     this.ws.onclose = () => {
       this.onClose.next(this);
 
       if (import.meta.env.DEV) {
-        console.info(`Relay ${this.url} closed`);
+        console.info(`Relay: ${this.url} disconnected`);
       }
     };
     this.ws.onmessage = this.handleMessage.bind(this);
@@ -94,7 +94,7 @@ export class Relay {
           break;
       }
     } catch (e) {
-      console.log(`Failed to parse event from ${this.url}`);
+      console.log(`Relay: Failed to parse event from ${this.url}`);
       console.log(event.data);
     }
   }

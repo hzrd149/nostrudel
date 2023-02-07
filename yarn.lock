@@ -4756,6 +4756,11 @@ react-router@6.5.0:
   dependencies:
     "@remix-run/router" "1.1.0"
 
+react-singleton-hook@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/react-singleton-hook/-/react-singleton-hook-4.0.1.tgz#98082b37be06b22845ced85eb11e02bacc3b2580"
+  integrity sha512-fWuk8VxcZPChrkQasDLM8pgd/7kyi+Cr/5FfCiD99FicjEru+JmtEZNnN4lJ8Z7KbqAST5CYPlpz6lmNsZFGNw==
+
 react-style-singleton@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-style-singleton/-/react-style-singleton-2.2.1.tgz#f99e420492b2d8f34d38308ff660b60d0b1205b4"

@@ -5,6 +5,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Code,
   Flex,
   Heading,
   HStack,
@@ -26,7 +27,7 @@ export type PostProps = {
 };
 export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const metadata = useUserMetadata(event.pubkey);
+  const { metadata } = useUserMetadata(event.pubkey);
 
   const isLong = event.content.length > 800;
   const username = metadata
@@ -34,11 +35,11 @@ export const Post = React.memo(({ event }: PostProps) => {
     : event.pubkey;
 
   return (
-    <Card>
-      <CardHeader>
+    <Card padding="4" variant="outline">
+      <CardHeader padding="0">
         <HStack spacing="4">
-          <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-            <UserAvatarLink pubkey={event.pubkey} />
+          <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
+            <UserAvatarLink pubkey={event.pubkey} size="sm" />
 
             <Box>
               <Heading size="sm">
@@ -49,7 +50,7 @@ export const Post = React.memo(({ event }: PostProps) => {
           </Flex>
         </HStack>
       </CardHeader>
-      <CardBody pt={0}>
+      <CardBody padding="0" pt={0}>
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box maxHeight="20rem" overflow="hidden" width="100%">
             <ReactMarkdown>
@@ -64,6 +65,7 @@ export const Post = React.memo(({ event }: PostProps) => {
               <PostModal event={event} isOpen={isOpen} onClose={onClose} />
             </>
           )}
+          <Code>{event.id}</Code>
         </VStack>
       </CardBody>
     </Card>
