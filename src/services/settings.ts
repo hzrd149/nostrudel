@@ -1,10 +1,10 @@
 import db from "./db";
 
-export async function getRelays() {
+export async function getRelays(): Promise<string[]> {
   return await db.get("settings", "relays");
 }
-export async function setRelays(relays = []) {
-  return await db.put("settings", relays, "relays");
+export async function setRelays(relays: string[] = []) {
+  await db.put("settings", relays, "relays");
 }
 
 const settingsService = {
@@ -13,6 +13,7 @@ const settingsService = {
 };
 
 if (import.meta.env.DEV) {
+  // @ts-ignore
   window.settingsService = settingsService;
 }
 

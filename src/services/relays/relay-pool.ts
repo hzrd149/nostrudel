@@ -3,28 +3,28 @@ import { Relay } from "./relay";
 import settingsService from "../settings";
 
 export class RelayPool {
-  relays = new Map();
-  relayClaims = new Map();
-  onRelayCreated = new Subject();
+  relays = new Map<string, Relay>();
+  relayClaims = new Map<string, Set<any>>();
+  onRelayCreated = new Subject<Relay>();
 
   getRelays() {
     return Array.from(this.relays.values());
   }
-  getRelayClaims(url) {
+  getRelayClaims(url: string) {
     if (!this.relayClaims.has(url)) {
       this.relayClaims.set(url, new Set());
     }
-    return this.relayClaims.get(url);
+    return this.relayClaims.get(url) as Set<any>;
   }
 
-  requestRelay(url, connect = true) {
+  requestRelay(url: string, connect = true) {
     if (!this.relays.has(url)) {
       const newRelay = new Relay(url);
       this.relays.set(url, newRelay);
       this.onRelayCreated.next(newRelay);
     }
 
-    const relay = this.relays.get(url);
+    const relay = this.relays.get(url) as Relay;
     if (connect && !relay.okay) {
       relay.open();
     }
@@ -49,10 +49,10 @@ export class RelayPool {
   }
 
   // id can be anything
-  addClaim(url, id) {
+  addClaim(url: string, id: any) {
     this.getRelayClaims(url).add(id);
   }
-  removeClaim(url, id) {
+  removeClaim(url: string, id: any) {
     this.getRelayClaims(url).delete(id);
   }
 
@@ -68,6 +68,7 @@ export class RelayPool {
 const relayPool = new RelayPool();
 
 if (import.meta.env.DEV) {
+  // @ts-ignore
   window.relayPool = relayPool;
 }
 

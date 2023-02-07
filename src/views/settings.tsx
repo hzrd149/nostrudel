@@ -6,14 +6,14 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import { useRelays } from "../providers/relay-provider";
 
 export const SettingsView = () => {
   const { relays, overwriteRelays } = useRelays();
   const [relayUrls, setRelayUrls] = useState(relays.join("\n"));
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newRelays = relayUrls
       .split("\n")

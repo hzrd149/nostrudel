@@ -1,5 +1,8 @@
 import React from "react";
-import { ErrorBoundary as ErrorBoundaryHelper } from "react-error-boundary";
+import {
+  ErrorBoundary as ErrorBoundaryHelper,
+  FallbackProps,
+} from "react-error-boundary";
 import {
   Alert,
   AlertIcon,
@@ -7,7 +10,7 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 
-export function ErrorFallback({ error, resetErrorBoundary }) {
+export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <Alert status="error">
       <AlertIcon />
@@ -17,7 +20,12 @@ export function ErrorFallback({ error, resetErrorBoundary }) {
   );
 }
 
-export const ErrorBoundary = ({ children, ...props }) => (
+export const ErrorBoundary = ({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+}) => (
   <ErrorBoundaryHelper FallbackComponent={ErrorFallback} {...props}>
     {children}
   </ErrorBoundaryHelper>

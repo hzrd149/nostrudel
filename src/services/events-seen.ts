@@ -22,6 +22,6 @@ relayPool.onRelayCreated.subscribe((relay) => {
   });
 });
 
-export async function getRelaysEventWasSeen(id) {
+export async function getRelaysEventWasSeen(id: string) {
   return await db.get("events-seen", id);
 }

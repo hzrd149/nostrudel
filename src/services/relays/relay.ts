@@ -1,7 +1,26 @@
 import { Subject } from "rxjs";
+import { IncomingNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { NostrOutgoingMessage } from "../../types/nostr-query";
+
+export type IncomingEvent = {
+  type: "EVENT";
+  subId: string;
+  body: NostrEvent;
+};
+export type IncomingNotice = {
+  type: "NOTICE";
+  message: string;
+};
 
 export class Relay {
-  constructor(url) {
+  url: string;
+  onOpen: Subject<Relay>;
+  onClose: Subject<Relay>;
+  onEvent: Subject<IncomingEvent>;
+  onNotice: Subject<IncomingNotice>;
+  ws?: WebSocket;
+
+  constructor(url: string) {
     this.url = url;
 
     this.onOpen = new Subject();
@@ -30,9 +49,9 @@ export class Relay {
     };
     this.ws.onmessage = this.handleMessage.bind(this);
   }
-  send(json) {
+  send(json: NostrOutgoingMessage) {
     if (this.connected) {
-      this.ws.send(JSON.stringify(json));
+      this.ws?.send(JSON.stringify(json));
     }
   }
   close() {
@@ -58,20 +77,20 @@ export class Relay {
     return this.ws?.readyState;
   }
 
-  handleMessage(event) {
+  handleMessage(event: MessageEvent<string>) {
     // skip empty events
     if (!event.data) return;
 
     try {
-      const data = JSON.parse(event.data);
+      const data: IncomingNostrEvent = JSON.parse(event.data);
       const type = data[0];
 
       switch (type) {
         case "EVENT":
-          this.onEvent.next({ type, subId: data[1], body: data[2] }, this);
+          this.onEvent.next({ type, subId: data[1], body: data[2] });
           break;
         case "NOTICE":
-          this.onNotice.next({ type, message: data[1] }, this);
+          this.onNotice.next({ type, message: data[1] });
           break;
       }
     } catch (e) {

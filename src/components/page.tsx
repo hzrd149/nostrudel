@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
-export const Page = ({ children }) => {
+export const Page = ({ children }: {children: React.ReactNode}) => {
   const navigate = useNavigate();
 
   return (

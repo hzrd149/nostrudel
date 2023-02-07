@@ -8,17 +8,17 @@ import React, {
 import settingsService from "../services/settings";
 
 const relaysContext = createContext({
-  relays: [],
+  relays: [] as string[],
   loading: true,
-  overwriteRelays: () => {},
+  overwriteRelays: (urls: string[]) => {},
 });
 
 export function useRelays() {
   return useContext(relaysContext);
 }
 
-export const RelaysProvider = ({ children }) => {
-  const [relays, setRelays] = useState([]);
+export const RelaysProvider = ({ children }: { children: React.ReactNode }) => {
+  const [relays, setRelays] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const update = useCallback(async () => {
@@ -27,7 +27,7 @@ export const RelaysProvider = ({ children }) => {
   }, [setRelays]);
 
   const overwriteRelays = useCallback(
-    async (urls) => {
+    async (urls: string[]) => {
       if (urls) await settingsService.setRelays(urls);
       await update();
     },

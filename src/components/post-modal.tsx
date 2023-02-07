@@ -10,8 +10,15 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
+import { NostrEvent } from "../types/nostr-event";
 
-export const PostModal = ({ event, onClose, isOpen }) => (
+export type PostModalProps = {
+  event: NostrEvent;
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export const PostModal = ({ event, onClose, isOpen }: PostModalProps) => (
   <Modal isOpen={isOpen} onClose={onClose} size="6xl">
     <ModalOverlay />
     <ModalContent>

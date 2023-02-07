@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { SkeletonText } from "@chakra-ui/react";
-import settingsService from "../../services/settings";
 import { useSubscription } from "../../hooks/use-subscription";
+import { useRelays } from "../../providers/relay-provider";
 import { Post } from "../../components/post";
+import moment from "moment/moment";
+import { NostrEvent } from "../../types/nostr-event";
 
-const relayUrls = await settingsService.getRelays();
-
-export const UserPostsTab = ({ pubkey }) => {
-  const [events, setEvents] = useState({});
+export const GlobalView = () => {
+  const { relays } = useRelays();
+  const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   const sub = useSubscription(
-    relayUrls,
-    { authors: [pubkey], kinds: [1] },
-    `${pubkey} posts`
+    relays,
+    { kinds: [1], limit: 10, since: moment().startOf("day").valueOf() / 1000 },
+    "global-events"
   );
 
   useEffect(() => {
@@ -36,5 +37,11 @@ export const UserPostsTab = ({ pubkey }) => {
     return <SkeletonText />;
   }
 
-  return timeline.map((event) => <Post key={event.id} event={event} />);
+  return (
+    <>
+      {timeline.map((event) => (
+        <Post key={event.id} event={event} />
+      ))}
+    </>
+  );
 };

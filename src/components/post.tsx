@@ -8,6 +8,7 @@ import {
   CardHeader,
   Flex,
   Heading,
+  HStack,
   Text,
   useDisclosure,
   VStack,
@@ -16,9 +17,12 @@ import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { PostModal } from "./post-modal";
-import { EventSeenOn } from "./event-seen-on";
+import { NostrEvent } from "../types/nostr-event";
 
-export const Post = ({ event }) => {
+export type PostProps = {
+  event: NostrEvent;
+};
+export const Post = ({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const isLong = event.content.length > 800;
@@ -26,7 +30,7 @@ export const Post = ({ event }) => {
   return (
     <Card>
       <CardHeader>
-        <Flex spacing="4">
+        <HStack spacing="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
             <Avatar name="Segun Adebayo" src="https://bit.ly/sage-adebayo" />
 
@@ -37,7 +41,7 @@ export const Post = ({ event }) => {
               <Text>{moment(event.created_at * 1000).fromNow()}</Text>
             </Box>
           </Flex>
-        </Flex>
+        </HStack>
       </CardHeader>
       <CardBody pt={0}>
         <VStack alignItems="flex-start" justifyContent="stretch">

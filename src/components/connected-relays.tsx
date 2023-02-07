@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -10,7 +11,6 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
@@ -19,11 +19,11 @@ import {
   useDisclosure,
   Badge,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
 import { useInterval } from "react-use";
+import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
 
-const getRelayStatusText = (relay) => {
+const getRelayStatusText = (relay: Relay) => {
   if (relay.connecting) return "Connecting...";
   if (relay.connected) return "Connected";
   if (relay.closing) return "Disconnecting...";
@@ -32,7 +32,7 @@ const getRelayStatusText = (relay) => {
 
 export const ConnectedRelays = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [relays, setRelays] = useState([]);
+  const [relays, setRelays] = useState<Relay[]>([]);
 
   useInterval(() => {
     setRelays(relayPool.getRelays());

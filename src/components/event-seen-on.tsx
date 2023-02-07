@@ -14,7 +14,7 @@ import {
 import { useAsync } from "react-use";
 import { getRelaysEventWasSeen } from "../services/events-seen";
 
-export const EventSeenOn = ({ id }) => {
+export const EventSeenOn = ({ id }: { id: string }) => {
   const { value } = useAsync(() => getRelaysEventWasSeen(id), [id]);
 
   if (!value) return null;

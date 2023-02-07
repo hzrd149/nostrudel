@@ -1,9 +1,14 @@
 import { useRef } from "react";
 import { useDeepCompareEffect, useMount, useUnmount } from "react-use";
 import { Subscription } from "../services/subscriptions";
+import { NostrQuery } from "../types/nostr-query";
 
-export function useSubscription(urls, query, name) {
-  const sub = useRef(null);
+export function useSubscription(
+  urls: string[],
+  query: NostrQuery,
+  name?: string
+) {
+  const sub = useRef<Subscription | null>(null);
   sub.current = sub.current || new Subscription(urls, query, name);
 
   useMount(() => {
@@ -16,5 +21,5 @@ export function useSubscription(urls, query, name) {
     if (sub.current) sub.current.close();
   });
 
-  return sub.current;
+  return sub.current as Subscription;
 }

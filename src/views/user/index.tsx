@@ -13,22 +13,23 @@ import { useObservable } from "react-use";
 import userMetadata from "../../services/user-metadata";
 
 export const UserView = () => {
-  const params = useParams();
-
-  if (!params.pubkey) {
+  const { pubkey } = useParams();
+  if (!pubkey) {
     // TODO: better 404
     throw new Error("No pubkey");
   }
 
   const observable = useMemo(
-    () => userMetadata.requestUserMetadata(params.pubkey),
-    [params.pubkey]
+    () => userMetadata.requestUserMetadata(pubkey),
+    [pubkey]
   );
+  // @ts-ignore
   const metadata = useObservable(observable);
 
   return (
     <>
-      <Heading>{metadata?.name ?? params.pubkey}</Heading>
+      {/* @ts-ignore */}
+      <Heading>{metadata?.name ?? pubkey}</Heading>
       <Tabs>
         <TabList>
           <Tab>Posts</Tab>
@@ -38,7 +39,7 @@ export const UserView = () => {
 
         <TabPanels>
           <TabPanel>
-            <UserPostsTab pubkey={params.pubkey} />
+            <UserPostsTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel>
             <p>two!</p>

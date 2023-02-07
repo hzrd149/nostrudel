@@ -1,16 +1,24 @@
-import { Subject } from "rxjs";
+import { Subject, SubscriptionLike } from "rxjs";
+import { NostrEvent } from "../types/nostr-event";
+import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
+import { Relay } from "./relays";
+import { IncomingEvent } from "./relays/relay";
 import relayPool from "./relays/relay-pool";
-import settingsService from "./settings";
 
 export class Subscription {
   static OPEN = "open";
   static CLOSED = "closed";
 
+  id: string;
+  name?: string;
+  query?: NostrQuery;
+  relayUrls: string[];
+  relays: Relay[];
   state = Subscription.CLOSED;
-  onEvent = new Subject();
-  cleanup = [];
+  onEvent = new Subject<NostrEvent>();
+  cleanup: SubscriptionLike[] = [];
 
-  constructor(relayUrls, query, name) {
+  constructor(relayUrls: string[], query?: NostrQuery, name?: string) {
     this.id = String(Math.floor(Math.random() * 1000000));
     this.query = query;
     this.name = name;
@@ -18,22 +26,23 @@ export class Subscription {
 
     this.relays = relayUrls.map((url) => relayPool.requestRelay(url));
   }
-  handleOpen(relay) {
+  handleOpen(relay: Relay) {
+    if (!this.query) return;
     // when the relay connects send the req event
     relay.send(["REQ", this.id, this.query]);
   }
-  handleEvent(event) {
+  handleEvent(event: IncomingEvent) {
     if (event.subId === this.id) {
       this.onEvent.next(event.body);
     }
   }
-  send(message) {
+  send(message: NostrOutgoingMessage) {
     for (const relay of this.relays) {
       relay.send(message);
     }
   }
 
-  setQuery(query) {
+  setQuery(query: NostrQuery) {
     this.query = query;
 
     // if open, than update remote subscription
@@ -74,9 +83,4 @@ export class Subscription {
       console.info(`Subscription ${this.name || this.id} closed`);
     }
   }
-}
-
-export async function createSubscription(query) {
-  const urls = await settingsService.getRelays();
-  return new Subscription(urls, query);
 }

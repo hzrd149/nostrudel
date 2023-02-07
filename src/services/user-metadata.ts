@@ -1,22 +1,14 @@
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
+import { NostrEvent } from "../types/nostr-event";
 import settingsService from "./settings";
 import { Subscription } from "./subscriptions";
 
-function waitOnSignal(signal) {
-  return new Promise((res) => {
-    const listener = (event) => {
-      signal.removeListener(listener);
-      res(event);
-    };
-    signal.addListener(listener);
-  });
-}
-
 class UserMetadata {
-  requests = new Map();
+  requests = new Map<string, BehaviorSubject<NostrEvent | null>>();
+  subscription: Subscription;
 
-  constructor(relayUrls = []) {
-    this.subscription = new Subscription(relayUrls, null, "user-metadata");
+  constructor(relayUrls: string[] = []) {
+    this.subscription = new Subscription(relayUrls, undefined, "user-metadata");
 
     this.subscription.onEvent.subscribe((event) => {
       try {
@@ -30,9 +22,9 @@ class UserMetadata {
     }, 1000 * 10);
   }
 
-  requestUserMetadata(pubkey) {
+  requestUserMetadata(pubkey: string) {
     if (!this.requests.has(pubkey)) {
-      this.requests.set(pubkey, new BehaviorSubject(null));
+      this.requests.set(pubkey, new BehaviorSubject<NostrEvent | null>(null));
       this.updateSubscription();
     }
     return this.requests.get(pubkey);
@@ -69,6 +61,7 @@ class UserMetadata {
 const userMetadata = new UserMetadata(await settingsService.getRelays());
 
 if (import.meta.env.DEV) {
+  // @ts-ignore
   window.userMetadata = userMetadata;
 }
 
