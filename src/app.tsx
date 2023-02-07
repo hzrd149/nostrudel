@@ -6,6 +6,7 @@ import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { GlobalView } from "./views/global";
 import { SetupView } from "./views/setup";
+import { ProfileView } from "./views/profile";
 import useSubject from "./hooks/use-subject";
 import identity from "./services/identity";
 
@@ -50,6 +51,16 @@ export const App = () => {
             <RequireSetup>
               <Page>
                 <GlobalView />
+              </Page>
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <RequireSetup>
+              <Page>
+                <ProfileView />
               </Page>
             </RequireSetup>
           }
