@@ -2,9 +2,9 @@ import { useRef } from "react";
 import { useDeepCompareEffect, useMount, useUnmount } from "react-use";
 import { Subscription } from "../services/subscriptions";
 
-export function useSubscription(urls, query, watch = []) {
+export function useSubscription(urls, query, name) {
   const sub = useRef(null);
-  sub.current = sub.current || new Subscription(urls, query);
+  sub.current = sub.current || new Subscription(urls, query, name);
 
   useMount(() => {
     if (sub.current) sub.current.open();

@@ -4,6 +4,9 @@ export class RelayPool {
   relays = new Map();
   relayClaims = new Map();
 
+  getRelays() {
+    return Array.from(this.relays.values());
+  }
   getRelayClaims(url) {
     if (!this.relayClaims.has(url)) {
       this.relayClaims.set(url, new Set());

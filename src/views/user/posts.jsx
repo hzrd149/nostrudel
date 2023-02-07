@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SkeletonText } from "@chakra-ui/react";
 import settingsService from "../../services/settings";
-import { useSignal } from "../../hooks/use-signal";
-import { useSubscription } from "../../helpers/use-subscription";
+import { useSubscription } from "../../hooks/use-subscription";
 import { Post } from "../../components/post";
 
 const relayUrls = await settingsService.getRelays();
@@ -10,20 +9,27 @@ const relayUrls = await settingsService.getRelays();
 export const UserPostsTab = ({ pubkey }) => {
   const [events, setEvents] = useState({});
 
-  const sub = useSubscription(relayUrls, { authors: [pubkey] }, [pubkey]);
-
-  useSignal(
-    sub?.onEvent,
-    (event) => {
-      if (event.kind === 1) {
-        setEvents((dir) => ({ [event.id]: event, ...dir }));
-      }
-    },
-    [setEvents]
+  const sub = useSubscription(
+    relayUrls,
+    { authors: [pubkey], kinds: [1] },
+    `${pubkey} posts`
   );
 
+  useEffect(() => {
+    const s = sub.onEvent.subscribe((event) => {
+      setEvents((dir) => {
+        if (!dir[event.id]) {
+          return { [event.id]: event, ...dir };
+        }
+        return dir;
+      });
+    });
+
+    return () => s.unsubscribe();
+  }, [sub]);
+
   const timeline = Object.values(events).sort(
-    (a, b) => a.created_at - b.created_at
+    (a, b) => b.created_at - a.created_at
   );
 
   if (timeline.length === 0) {

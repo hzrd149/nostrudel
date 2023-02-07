@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
+import moment from "moment";
 import { PostModal } from "./post-modal";
 
 export const Post = ({ event }) => {
@@ -22,7 +23,8 @@ export const Post = ({ event }) => {
       <CardBody>
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Heading size="sm">
-            <Link to={`/user/${event.pubkey}`}>{event.pubkey}</Link>
+            <Link to={`/user/${event.pubkey}`}>{event.pubkey}</Link>{" "}
+            <span>{moment(event.created_at * 1000).fromNow()}</span>
           </Heading>
           <Box maxHeight="10rem" overflow="hidden" width="100%">
             <ReactMarkdown>{event.content}</ReactMarkdown>

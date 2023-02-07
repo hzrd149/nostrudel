@@ -1,21 +1,22 @@
-import { Signal } from "../helpers/signal";
+import { Subject } from "rxjs";
 import relayPool from "./relays/relay-pool";
 import settingsService from "./settings";
 
 export class Subscription {
   static OPEN = "open";
-  static IDLE = "open";
   static CLOSED = "closed";
 
-  constructor(relayUrls, query) {
+  state = Subscription.CLOSED;
+  onEvent = new Subject();
+  cleanup = [];
+
+  constructor(relayUrls, query, name) {
     this.id = String(Math.floor(Math.random() * 1000000));
     this.query = query;
+    this.name = name;
     this.relayUrls = relayUrls;
-    this.status = Subscription.IDLE;
 
     this.relays = relayUrls.map((url) => relayPool.requestRelay(url));
-
-    this.onEvent = new Signal();
   }
   handleOpen(relay) {
     // when the relay connects send the req event
@@ -23,7 +24,7 @@ export class Subscription {
   }
   handleEvent(event) {
     if (event.subId === this.id) {
-      this.onEvent.emit(event.body);
+      this.onEvent.next(event.body);
     }
   }
   send(message) {
@@ -41,12 +42,13 @@ export class Subscription {
     }
   }
   open() {
+    if (this.state === Subscription.OPEN || !this.query) return;
     this.state = Subscription.OPEN;
     this.send(["REQ", this.id, this.query]);
 
     for (const relay of this.relays) {
-      relay.onEvent.addListener(this.handleEvent, this);
-      relay.onOpen.addListener(this.handleOpen, this);
+      this.cleanup.push(relay.onEvent.subscribe(this.handleEvent.bind(this)));
+      this.cleanup.push(relay.onOpen.subscribe(this.handleOpen.bind(this)));
     }
 
     for (const url of this.relayUrls) {
@@ -54,24 +56,22 @@ export class Subscription {
     }
 
     if (import.meta.env.DEV) {
-      console.info(`Subscription ${this.id} opened`);
+      console.info(`Subscription ${this.name || this.id} opened`);
     }
   }
   close() {
-    this.status = Subscription.CLOSED;
+    if (this.state === Subscription.CLOSED) return;
+    this.state = Subscription.CLOSED;
     this.send(["CLOSE", this.id]);
 
-    for (const relay of this.relays) {
-      relay.onEvent.removeListener(this.handleEvent, this);
-      relay.onOpen.removeListener(this.handleOpen, this);
-    }
+    this.cleanup.forEach((sub) => sub.unsubscribe());
 
     for (const url of this.relayUrls) {
       relayPool.removeClaim(url, this);
     }
 
     if (import.meta.env.DEV) {
-      console.info(`Subscription ${this.id} closed`);
+      console.info(`Subscription ${this.name || this.id} closed`);
     }
   }
 }
