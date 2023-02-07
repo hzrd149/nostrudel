@@ -46,14 +46,15 @@ const embeds: {
   {
     regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)[^\s]+/,
     render: (match) => (
-      <iframe
-        width="480"
-        height="360"
-        src={`https://youtube.com/embed/${match[1]}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      ></iframe>
+      <AspectRatio ratio={16 / 10} maxWidth="30rem">
+        <iframe
+          width="100%"
+          src={`https://youtube.com/embed/${match[1]}`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
+      </AspectRatio>
     ),
   },
   // Tidal
