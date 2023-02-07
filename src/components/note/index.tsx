@@ -1,7 +1,7 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
-import { Box, Card, CardBody, CardHeader, Flex, Heading, Link } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
@@ -29,23 +29,15 @@ export const Note = React.memo(({ event }: NoteProps) => {
   return (
     <Card padding="2" variant="outline">
       <CardHeader padding="0" mb="2">
-        <Flex gap="2">
-          <Flex flex="1" gap="2">
-            <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
+        <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
+          <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
 
-            <Box>
-              <Heading size="sm" display="inline">
-                <UserLink pubkey={event.pubkey} />
-              </Heading>
-              <span> </span>
-              <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
-                {moment(event.created_at * 1000).fromNow()}
-              </Link>
-            </Box>
-          </Flex>
-          <UserTipButton pubkey={event.pubkey} size="xs" />
-          <NoteRelays event={event} size="xs" />
-          <NoteMenu event={event} />
+          <Heading size="sm" display="inline">
+            <UserLink pubkey={event.pubkey} />
+          </Heading>
+          <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
+            {moment(event.created_at * 1000).fromNow()}
+          </Link>
         </Flex>
       </CardHeader>
       <CardBody padding="0">
@@ -53,6 +45,11 @@ export const Note = React.memo(({ event }: NoteProps) => {
           <NoteContents event={event} trusted={following.includes(event.pubkey)} />
         </Box>
       </CardBody>
+      <CardFooter padding="0" display="flex" gap="2" justifyContent="flex-end">
+        <UserTipButton pubkey={event.pubkey} size="xs" />
+        <NoteRelays event={event} size="xs" />
+        <NoteMenu event={event} />
+      </CardFooter>
     </Card>
   );
 });

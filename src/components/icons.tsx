@@ -20,9 +20,9 @@ export const GlobalIcon = createIcon({
   defaultProps,
 });
 
-export const HomeIcon = createIcon({
-  displayName: "home-line",
-  d: "M21 20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.49a1 1 0 0 1 .386-.79l8-6.222a1 1 0 0 1 1.228 0l8 6.222a1 1 0 0 1 .386.79V20zm-2-1V9.978l-7-5.444-7 5.444V19h14z",
+export const FeedIcon = createIcon({
+  displayName: "feed-icon",
+  d: "M16 18v2H5v-2h11zm5-7v2H3v-2h18zm-2-7v2H8V4h11z",
   defaultProps,
 });
 
@@ -117,13 +117,19 @@ export const RelayIcon = createIcon({
 });
 
 export const ExternalLinkIcon = createIcon({
-  displayName: "eternal-link-icon",
+  displayName: "external-link-icon",
   d: "M10 6v2H5v11h11v-5h2v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z",
   defaultProps,
 });
 
 export const SearchIcon = createIcon({
-  displayName: "eternal-link-icon",
+  displayName: "search-icon",
   d: "M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z",
+  defaultProps,
+});
+
+export const ShareIcon = createIcon({
+  displayName: "share-icon",
+  d: "M13.12 17.023l-4.199-2.29a4 4 0 1 1 0-5.465l4.2-2.29a4 4 0 1 1 .959 1.755l-4.2 2.29a4.008 4.008 0 0 1 0 1.954l4.199 2.29a4 4 0 1 1-.959 1.755zM6 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm11-6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
   defaultProps,
 });

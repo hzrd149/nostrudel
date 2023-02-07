@@ -15,7 +15,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, IMAGE_ICONS } from "../icons";
+import { ClipboardIcon, CodeIcon, IMAGE_ICONS, ShareIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
 
 export const NoteMenu = ({ event }: { event: NostrEvent }) => {
@@ -26,6 +26,10 @@ export const NoteMenu = ({ event }: { event: NostrEvent }) => {
   return (
     <>
       <MenuIconButton>
+        {/* TODO: should open the post modal and mention the note/relay */}
+        {/* <MenuItem icon={<ShareIcon />} onClick={() => console.log("Share Note", event)}>
+          Repost
+        </MenuItem> */}
         <MenuItem
           as="a"
           icon={<Avatar src={IMAGE_ICONS.nostrGuruIcon} size="xs" />}
@@ -73,8 +77,10 @@ export const NoteMenu = ({ event }: { event: NostrEvent }) => {
           <ModalContent>
             <ModalHeader>Raw Event</ModalHeader>
             <ModalCloseButton />
-            <ModalBody overflow="auto">
+            <ModalBody overflow="auto" fontSize="sm" padding="2">
+              Raw JSON:
               <pre>{JSON.stringify(event, null, 2)}</pre>
+              Parsed Refs:
               <pre>{JSON.stringify(getReferences(event), null, 2)}</pre>
             </ModalBody>
           </ModalContent>

@@ -10,7 +10,6 @@ import {
   PopoverTrigger,
   Text,
   Flex,
-  Portal,
   PopoverFooter,
 } from "@chakra-ui/react";
 import { nostrPostAction } from "../../classes/nostr-post-action";
@@ -68,26 +67,24 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
       <PopoverTrigger>
         <IconButton title="Note Relays" icon={<RelayIcon />} size={props.size ?? "sm"} aria-label="Note Relays" />
       </PopoverTrigger>
-      <Portal>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverBody>
-            {relays.map((url) => (
-              <Text key={url}>{url}</Text>
-            ))}
-          </PopoverBody>
-          <PopoverFooter>
-            <Flex gap="2">
-              <Button size="xs" onClick={queryRelays} isLoading={querying} leftIcon={<SearchIcon />}>
-                Search
-              </Button>
-              <Button size="xs" onClick={broadcast} isLoading={broadcasting} leftIcon={<RelayIcon />}>
-                Broadcast
-              </Button>
-            </Flex>
-          </PopoverFooter>
-        </PopoverContent>
-      </Portal>
+      <PopoverContent>
+        <PopoverArrow />
+        <PopoverBody>
+          {relays.map((url) => (
+            <Text key={url}>{url}</Text>
+          ))}
+        </PopoverBody>
+        <PopoverFooter>
+          <Flex gap="2">
+            <Button size="xs" onClick={queryRelays} isLoading={querying} leftIcon={<SearchIcon />}>
+              Search
+            </Button>
+            <Button size="xs" onClick={broadcast} isLoading={broadcasting} leftIcon={<RelayIcon />}>
+              Broadcast
+            </Button>
+          </Flex>
+        </PopoverFooter>
+      </PopoverContent>
     </Popover>
   );
 });
