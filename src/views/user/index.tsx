@@ -16,6 +16,7 @@ import { UserAvatar } from "../../components/user-avatar";
 import { getUserFullName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserRelaysTab } from "./relays";
+import { UserFollowingTab } from "./following";
 
 export const UserView = () => {
   const isMobile = useIsMobile();
@@ -51,7 +52,7 @@ export const UserView = () => {
       >
         <TabList>
           <Tab>Posts</Tab>
-          <Tab>Other</Tab>
+          <Tab>Following</Tab>
           <Tab>Relays</Tab>
         </TabList>
 
@@ -60,7 +61,7 @@ export const UserView = () => {
             <UserPostsTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <UserFollowingTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel pr={0} pl={0}>
             <UserRelaysTab pubkey={pubkey} />

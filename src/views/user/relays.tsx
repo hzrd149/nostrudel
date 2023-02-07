@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import {
   Table,
   Thead,
@@ -8,47 +8,44 @@ import {
   Td,
   TableContainer,
   Button,
+  SkeletonText,
 } from "@chakra-ui/react";
-import { useSubscription } from "../../hooks/use-subscription";
 import { NostrEvent } from "../../types/nostr-event";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
 import { Subscription } from "../../services/subscriptions";
+import userContacts from "../../services/user-contacts";
 
-function useEventDir(subscription: Subscription) {
-  const [events, setEvents] = useState<Record<string, NostrEvent>>({});
+// function useEventDir(subscription: Subscription) {
+//   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
-  useEffect(() => {
-    const s = subscription.onEvent.subscribe((event) => {
-      setEvents((dir) => {
-        if (!dir[event.id]) {
-          return { [event.id]: event, ...dir };
-        }
-        return dir;
-      });
-    });
+//   useEffect(() => {
+//     const s = subscription.onEvent.subscribe((event) => {
+//       setEvents((dir) => {
+//         if (!dir[event.id]) {
+//           return { [event.id]: event, ...dir };
+//         }
+//         return dir;
+//       });
+//     });
 
-    return () => s.unsubscribe();
-  }, [subscription]);
+//     return () => s.unsubscribe();
+//   }, [subscription]);
 
-  const reset = () => setEvents({});
+//   const reset = () => setEvents({});
 
-  return { events, reset };
-}
+//   return { events, reset };
+// }
 
 export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
   const relays = useSubject(settings.relays);
 
-  const sub = useSubscription(
-    relays,
-    { authors: [pubkey], kinds: [2] },
-    `${pubkey} relays`
+  const sub = useMemo(
+    () => userContacts.requestUserContacts(pubkey, relays),
+    [pubkey]
   );
 
-  const { events, reset } = useEventDir(sub);
-
-  // clear events when pubkey changes
-  useEffect(() => reset(), [pubkey]);
+  const contacts = useSubject(sub);
 
   const addRelay = useCallback(
     (url: string) => {
@@ -56,6 +53,10 @@ export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
     },
     [relays]
   );
+
+  if (!contacts) {
+    return <SkeletonText />;
+  }
 
   return (
     <TableContainer>
@@ -67,13 +68,13 @@ export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {Object.values(events).map((event) => (
-            <Tr key={event.id}>
-              <Td>{event.content}</Td>
+          {Object.entries(contacts.relays).map(([relay, opts]) => (
+            <Tr key={relay}>
+              <Td>{relay}</Td>
               <Td>
                 <Button
-                  onClick={() => addRelay(event.content)}
-                  isDisabled={relays.includes(event.content)}
+                  onClick={() => addRelay(relay)}
+                  isDisabled={relays.includes(relay)}
                 >
                   Add Relay
                 </Button>

@@ -6,6 +6,17 @@ export interface CustomSchema extends DBSchema {
     key: string;
     value: NostrEvent;
   };
+  "user-contacts": {
+    key: string;
+    value: {
+      relays: Record<string, { read: boolean; write: boolean }>;
+      contacts: {
+        pubkey: string;
+        relay?: string;
+      }[];
+      updated: Date;
+    };
+  };
   "events-seen": {
     key: string;
     value: {

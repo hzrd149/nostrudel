@@ -23,6 +23,8 @@ const MIGRATIONS: MigrationFunction[] = [
     const eventsSeen = db.createObjectStore("events-seen", { keyPath: "id" });
     eventsSeen.createIndex("lastSeen", "lastSeen");
 
+    db.createObjectStore("user-contacts", { autoIncrement: false });
+
     // setup data
     const settings = db.createObjectStore("settings");
     settings.put(

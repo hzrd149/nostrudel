@@ -1,17 +1,9 @@
-import { BehaviorSubject } from "rxjs";
+import { of, BehaviorSubject, distinctUntilKeyChanged } from "rxjs";
+import { debounce } from "../helpers/function";
 import { Kind0ParsedContent } from "../types/nostr-event";
 import db from "./db";
 import settings from "./settings";
 import { Subscription } from "./subscriptions";
-
-function debounce<T>(func: T, timeout = 300) {
-  let timer: number | undefined;
-  return (...args: any[]) => {
-    clearTimeout(timer);
-    // @ts-ignore
-    timer = setTimeout(() => func(args), timeout);
-  };
-}
 
 class UserMetadataService {
   requests = new Set<string>();

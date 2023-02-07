@@ -11,6 +11,10 @@ export type IncomingNotice = {
   type: "NOTICE";
   message: string;
 };
+export type IncomingEOSE = {
+  type: "EOSE";
+  subId: string;
+};
 
 export class Relay {
   url: string;
@@ -18,6 +22,7 @@ export class Relay {
   onClose: Subject<Relay>;
   onEvent: Subject<IncomingEvent>;
   onNotice: Subject<IncomingNotice>;
+  onEndOfStoredEvents: Subject<IncomingEOSE>;
   ws?: WebSocket;
 
   constructor(url: string) {
@@ -27,6 +32,7 @@ export class Relay {
     this.onClose = new Subject();
     this.onEvent = new Subject();
     this.onNotice = new Subject();
+    this.onEndOfStoredEvents = new Subject();
   }
 
   open() {
@@ -91,6 +97,9 @@ export class Relay {
           break;
         case "NOTICE":
           this.onNotice.next({ type, message: data[1] });
+          break;
+        case "EOSE":
+          this.onEndOfStoredEvents.next({ type, subId: data[1] });
           break;
       }
     } catch (e) {
