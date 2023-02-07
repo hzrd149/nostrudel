@@ -8,25 +8,28 @@ export class Relay {
     this.onClose = new Signal();
     this.onEvent = new Signal();
     this.onNotice = new Signal();
-
-    this.connect();
   }
 
-  connect() {
-    if (this.connected || this.connecting) return;
+  open() {
+    if (this.okay) return;
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = this.handleOpen.bind(this);
     this.ws.onclose = this.handleClose.bind(this);
     this.ws.onmessage = this.handleMessage.bind(this);
   }
-
   send(json) {
     if (this.connected) {
       this.ws.send(JSON.stringify(json));
     }
   }
+  close() {
+    this.ws?.close();
+  }
 
+  get okay() {
+    return this.connected || this.connecting;
+  }
   get connected() {
     return this.ws?.readyState === WebSocket.OPEN;
   }
@@ -38,29 +41,35 @@ export class Relay {
   }
 
   handleMessage(event) {
-    const data = JSON.parse(event.data);
-    const type = data[0];
+    try {
+      const data = JSON.parse(event.data);
+      const type = data[0];
 
-    switch (type) {
-      case "EVENT":
-        this.onEvent.emit({ subId: data[1], body: data[2] });
-        break;
-      case "NOTICE":
-        this.onEvent.emit({ message: data[1] });
-        break;
+      switch (type) {
+        case "EVENT":
+          this.onEvent.emit({ type, subId: data[1], body: data[2] }, this);
+          break;
+        case "NOTICE":
+          this.onNotice.emit({ type, message: data[1] }, this);
+          break;
+      }
+    } catch (e) {
+      console.log(`Failed to parse event from ${this.url}`);
+      console.log(event);
     }
   }
   handleOpen() {
-    console.log(this.url, "connected");
+    this.onOpen.emit(this);
 
-    this.onOpen.emit();
+    if (import.meta.env.DEV) {
+      console.info(`Relay ${this.url} opened`);
+    }
   }
   handleClose() {
-    console.log(this.url, "reconnecting in 10s");
+    this.onClose.emit(this);
 
-    this.onClose.emit();
-    setTimeout(() => {
-      this.connect();
-    }, 1000 * 10);
+    if (import.meta.env.DEV) {
+      console.info(`Relay ${this.url} closed`);
+    }
   }
 }

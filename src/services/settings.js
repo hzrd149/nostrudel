@@ -7,9 +7,13 @@ export async function setRelays(relays = []) {
   return await db.put("settings", relays, "relays");
 }
 
+const settingsService = {
+  getRelays,
+  setRelays,
+};
+
 if (import.meta.env.DEV) {
-  window.relayService = {
-    getRelays,
-    setRelays,
-  };
+  window.settingsService = settingsService;
 }
+
+export default settingsService;

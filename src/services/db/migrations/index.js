@@ -1,16 +1,17 @@
 const MIGRATIONS = [
   // 0 -> 1
   function (db, transaction, event) {
-    db.createObjectStore("users", {
+    const userMetadata = db.createObjectStore("user-metadata", {
       keyPath: "pubkey",
     });
+    userMetadata.createIndex("id", "id", { unique: true });
+
     db.createObjectStore("contacts", {
       keyPath: "pubkey",
     });
-    db.createObjectStore("settings");
 
     // setup data
-    const settings = transaction.objectStore("settings");
+    const settings = db.createObjectStore("settings");
     settings.put(["wss://nostr.rdfriedl.com"], "relays");
   },
 ];
