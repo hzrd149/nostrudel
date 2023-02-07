@@ -12,10 +12,11 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "Personal Nostr Client",
+        name: "noStrudel",
+        short_name: "noStrudel",
         description: "A simple PWA nostr client",
         orientation: "portrait",
-        theme_color: "#891993",
+        theme_color: "#8DB600",
         categories: ["nostr"],
         icons: [
           { src: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32" },
