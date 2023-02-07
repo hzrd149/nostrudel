@@ -1,6 +1,6 @@
 {
   "name": "nostr-client",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -26,6 +26,7 @@
     "rxjs": "^7.8.0"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.26.0",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^3.0.0",
