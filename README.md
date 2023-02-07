@@ -9,16 +9,14 @@
 - [x] Lighting invoices
 - [x] Blurred or hidden images and embeds for people you dont follow
 - [x] Thread view
+- [ ] Manage followers ( Contact List )
 - [ ] Profile management
-- [ ] Make post
 - [ ] Relay management
 - [ ] NIP-05 support
 - [ ] Broadcast event
-- [ ] Manage followers
 - [ ] Image upload
-- [ ] User tipping
+- [x] User tipping
 - [ ] Reactions
-- [ ] "Read more" Button for long posts
 - [ ] Dynamically connect to relays (start with one relay then connect to others as required)
 - [ ] Reporting users and events
 - [ ] Blocking users
