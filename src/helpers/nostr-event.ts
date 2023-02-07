@@ -23,16 +23,19 @@ export function getReferences(event: NostrEvent) {
   let replyId = eTags.find((t) => t[3] === "reply")?.[1];
   let rootId = eTags.find((t) => t[3] === "root")?.[1];
 
-  if (rootId && !replyId) {
+  if (!rootId || !replyId) {
     // a direct reply dose not need a "reply" reference
     // https://github.com/nostr-protocol/nips/blob/master/10.md
-    replyId = rootId;
+
+    // this is not necessarily to spec. but if there is only one id (root or reply) then assign it to both
+    // this handles the cases where a client only set a "reply" tag and no root
+    rootId = replyId = rootId || replyId;
   }
 
   // legacy behavior
   // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
   if (!rootId && !replyId && eTags.length >= 1) {
-    console.warn(`Using legacy threading behavior for ${event.id}`, event);
+    // console.info(`Using legacy threading behavior for ${event.id}`, event);
 
     // first tag is the root
     rootId = eTags[0][1];

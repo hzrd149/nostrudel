@@ -26,7 +26,7 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
-          src={`https://www.youtube.com/embed/${match[6]}`}
+          src={`https://www.youtube.com/embed/${match[5]}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -46,7 +46,7 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
   },
   // Video
   {
-    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm))/im,
+    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm|mov))/im,
     render: (match) => (
       <AspectRatio ratio={16 / 9} maxWidth="30rem">
         <video key={match[0]} src={match[0]} controls />

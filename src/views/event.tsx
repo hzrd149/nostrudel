@@ -1,11 +1,9 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex } from "@chakra-ui/react";
-import useSubject from "../hooks/use-subject";
-import settings from "../services/settings";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex, Spinner } from "@chakra-ui/react";
 import { Page } from "../components/page";
 import { useParams } from "react-router-dom";
 import { normalizeToHex } from "../helpers/nip-19";
 import { Post } from "../components/post";
-import { useMemo } from "react";
+import { useThreadLoader } from "../hooks/use-thread-loader";
 
 export const EventPage = () => {
   const params = useParams();
@@ -30,37 +28,28 @@ export const EventPage = () => {
   );
 };
 
-// function useEvent(id: string, relays: string[]) {
-//   const sub = useMemo(() => eventsService.requestEvent(id, relays), [id]);
-//   const event = useSubject(sub);
-
-//   return event;
-// }
-
 export type EventViewProps = {
-  /** id of event in hex format */
   eventId: string;
 };
 
 export const EventView = ({ eventId }: EventViewProps) => {
-  // const relays = useSubject(settings.relays);
+  const id = normalizeToHex(eventId) ?? "";
+  const { linked, events, rootId, focusId, loading } = useThreadLoader(id, { enabled: !!id });
 
-  // const event = useEvent(eventId, relays);
+  if (loading) return <Spinner />;
 
-  // const replySub = useSubscription(relays, { "#e": [eventId], kinds: [1] });
-  // const { events } = useEventDir(replySub);
+  const entry = linked.get(focusId);
+  if (entry) {
+    const isRoot = rootId === focusId;
 
-  // const timeline = Object.values(events).sort(
-  //   (a, b) => b.created_at - a.created_at
-  // );
-
-  // return (
-  //   <Flex direction="column" gap="2" flexGrow="1" overflow="auto">
-  //     {event && <Post event={event} />}
-  //     {timeline.map((event) => (
-  //       <Post key={event.id} event={event} />
-  //     ))}
-  //   </Flex>
-  // );
-  return <h1>coming soon</h1>;
+    return (
+      <Flex direction="column" gap="4">
+        {!isRoot && (entry.root ? <Post event={entry.root.event} /> : <span>Missing Root</span>)}
+        <Post event={entry.event} />
+      </Flex>
+    );
+  } else if (events[focusId]) {
+    return <Post event={events[focusId]} />;
+  }
+  return <span>Missing Event</span>;
 };

@@ -9,7 +9,7 @@ export type LinkedEvent = {
   children: LinkedEvent[];
 };
 
-export function linkEvents(events: NostrEvent[], rootId: string) {
+export function linkEvents(events: NostrEvent[]) {
   const idToChildren: Record<string, NostrEvent[]> = {};
 
   const replies = new Map<string, LinkedEvent>();
@@ -35,12 +35,9 @@ export function linkEvents(events: NostrEvent[], rootId: string) {
   for (const [id, reply] of replies) {
     reply.root = reply.refs.rootId ? replies.get(reply.refs.rootId) : undefined;
 
-    reply.reply = reply.refs.replyId
-      ? replies.get(reply.refs.replyId)
-      : undefined;
+    reply.reply = reply.refs.replyId ? replies.get(reply.refs.replyId) : undefined;
 
-    reply.children =
-      idToChildren[id]?.map((e) => replies.get(e.id) as LinkedEvent) ?? [];
+    reply.children = idToChildren[id]?.map((e) => replies.get(e.id) as LinkedEvent) ?? [];
   }
 
   return replies;

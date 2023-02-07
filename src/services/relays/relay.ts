@@ -33,6 +33,8 @@ export class Relay {
   ws?: WebSocket;
   permission: Permission = Permission.ALL;
 
+  private queue: NostrOutgoingMessage[] = [];
+
   constructor(url: string, permission: Permission = Permission.ALL) {
     this.url = url;
 
@@ -52,6 +54,8 @@ export class Relay {
     this.ws.onopen = () => {
       this.onOpen.next(this);
 
+      this.sendQueued();
+
       if (import.meta.env.DEV) {
         console.info(`Relay: ${this.url} connected`);
       }
@@ -69,11 +73,23 @@ export class Relay {
     if (this.permission & Permission.WRITE) {
       if (this.connected) {
         this.ws?.send(JSON.stringify(json));
-      }
+      } else this.queue.push(json);
     }
   }
   close() {
     this.ws?.close();
+  }
+
+  private sendQueued() {
+    if (this.connected) {
+      if (import.meta.env.DEV) {
+        console.info(`Relay: ${this.url} sending ${this.queue.length} queued messages`);
+      }
+      for (const message of this.queue) {
+        this.send(message);
+      }
+      this.queue = [];
+    }
   }
 
   get okay() {
