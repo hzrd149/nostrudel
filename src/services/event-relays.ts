@@ -1,5 +1,6 @@
 import { BehaviorSubject } from "rxjs";
-import { relayPool } from "./relays";
+import { NostrEvent } from "../types/nostr-event";
+import { Relay, relayPool } from "./relays";
 
 const eventRelays = new Map<string, BehaviorSubject<string[]>>();
 
@@ -12,12 +13,16 @@ export function getEventRelays(id: string) {
   return relays;
 }
 
+export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
+  const relays = getEventRelays(event.id);
+
+  if (!relays.value.includes(relay.url)) {
+    relays.next(relays.value.concat(relay.url));
+  }
+}
+
 relayPool.onRelayCreated.subscribe((relay) => {
   relay.onEvent.subscribe(({ body: event }) => {
-    const relays = getEventRelays(event.id);
-
-    if (!relays.value.includes(relay.url)) {
-      relays.next(relays.value.concat(relay.url));
-    }
+    handleEventFromRelay(relay, event);
   });
 });

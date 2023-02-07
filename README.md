@@ -13,7 +13,7 @@
 - [ ] Profile management
 - [ ] Relay management
 - [ ] NIP-05 support
-- [ ] Broadcast event
+- [x] Broadcast events
 - [ ] Image upload
 - [x] User tipping
 - [ ] Reactions
