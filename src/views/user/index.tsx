@@ -13,7 +13,6 @@ import {
   Tabs,
   Text,
   Box,
-  Image,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
@@ -27,7 +26,6 @@ import { normalizeToHex } from "../../helpers/nip-19";
 import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowersTab } from "./followers";
-import { useUserFollowers } from "../../hooks/use-user-followers";
 import { UserRepliesTab } from "./replies";
 
 export const UserPage = () => {
@@ -62,7 +60,6 @@ export const UserView = ({ pubkey }: UserViewProps) => {
 
   const metadata = useUserMetadata(pubkey, [], true);
   const label = getUserDisplayName(metadata, pubkey);
-  const followers = useUserFollowers(pubkey);
 
   return (
     <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" height="100%">
@@ -81,7 +78,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
         <TabList>
           <Tab>Posts</Tab>
           <Tab>Replies</Tab>
-          <Tab>Followers ({followers?.length})</Tab>
+          <Tab>Followers</Tab>
           <Tab>Following</Tab>
           <Tab>Relays</Tab>
         </TabList>

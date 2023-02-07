@@ -1,9 +1,9 @@
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Post } from "../../components/post";
 import { isPost } from "../../helpers/nostr-event";
-import { useEventTimelineLoader } from "../../hooks/use-event-timeline-loader";
 import useSubject from "../../hooks/use-subject";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
 
@@ -12,26 +12,24 @@ export const FollowingPostsTab = () => {
   const contacts = useUserContacts(pubkey);
 
   const following = contacts?.contacts || [];
-
-  const { timeline } = useEventTimelineLoader(
-    {
-      authors: following,
-      kinds: [1],
-    },
-    {
-      name: "following-posts",
-      enabled: following.length > 0,
-      filter: isPost,
-      initialSince: moment().subtract(1, "hour").unix(),
-      pageSize: moment.duration(1, "hour").asSeconds(),
-    }
+  const { loader, events, loading } = useTimelineLoader(
+    `following-posts`,
+    { authors: following, kinds: [1], since: moment().subtract(2, "hour").unix() },
+    { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
   );
+
+  const timeline = events.filter(isPost);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      ) : (
+        <Button onClick={() => loader?.loadMore()}>Load More</Button>
+      )}
     </Flex>
   );
 };

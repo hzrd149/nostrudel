@@ -1,22 +1,27 @@
 import { Button, Flex, Spinner } from "@chakra-ui/react";
+import moment from "moment";
 import { Post } from "../../components/post";
 import { isPost } from "../../helpers/nostr-event";
-import { useEventTimelineLoader } from "../../hooks/use-event-timeline-loader";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
-  const { timeline, more } = useEventTimelineLoader(
-    { authors: [pubkey], kinds: [1] },
-    { filter: isPost, name: "user posts" }
+  const { loader, events, loading } = useTimelineLoader(
+    `${pubkey} posts`,
+    { authors: [pubkey], kinds: [1], since: moment().subtract(1, "day").unix() },
+    { pageSize: moment.duration(1, "day").asSeconds() }
   );
+  const timeline = events.filter(isPost);
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
-      {timeline.length > 0 ? (
-        timeline.map((event) => <Post key={event.id} event={event} />)
-      ) : (
+      {timeline.map((event) => (
+        <Post key={event.id} event={event} />
+      ))}
+      {loading ? (
         <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      ) : (
+        <Button onClick={() => loader?.loadMore()}>Load More</Button>
       )}
-      <Button onClick={() => more(1)}>Load More</Button>
     </Flex>
   );
 };

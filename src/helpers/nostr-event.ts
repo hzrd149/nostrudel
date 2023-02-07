@@ -1,7 +1,7 @@
 import { isETag, isPTag, NostrEvent } from "../types/nostr-event";
 
 export function isReply(event: NostrEvent) {
-  return !!event.tags.find(isETag);
+  return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
 }
 
 export function isPost(event: NostrEvent) {

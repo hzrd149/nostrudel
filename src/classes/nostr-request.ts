@@ -3,7 +3,6 @@ import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
-import { IncomingEvent } from "../services/relays/relay";
 
 let lastId = 0;
 
@@ -73,8 +72,11 @@ export class NostrRequest {
     }
 
     setTimeout(() => {
+      console.log(`NostrRequest: ${this.id} timed out`);
       this.cancel();
     }, this.timeout);
+
+    console.log(`NostrRequest: ${this.id} started`);
 
     return this;
   }
@@ -91,6 +93,8 @@ export class NostrRequest {
     this.relayCleanup = new Map();
     this.relays = new Set();
     this.onEvent.complete();
+
+    console.log(`NostrRequest: ${this.id} complete`);
 
     return this;
   }

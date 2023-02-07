@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { mergeAll, from } from "rxjs";
 import { Post } from "../../components/post";
-import { useEventDir } from "../../hooks/use-event-dir";
 import useSubject from "../../hooks/use-subject";
-import { useSubscription } from "../../hooks/use-subscription";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
-import settings from "../../services/settings";
 import userContactsService from "../../services/user-contacts";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { isPost } from "../../helpers/nostr-event";
 
 function useExtendedContacts(pubkey: string) {
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
@@ -42,27 +41,24 @@ export const DiscoverTab = () => {
   const pubkey = useSubject(identity.pubkey);
 
   const contactsOfContacts = useExtendedContacts(pubkey);
-
-  const [since, setSince] = useState(moment().subtract(1, "hour"));
-  const [after, setAfter] = useState(moment());
-
-  const sub = useSubscription(
-    {
-      authors: contactsOfContacts,
-      kinds: [1],
-      since: since.unix(),
-    },
-    { name: "home-discover", enabled: contactsOfContacts.length > 0 }
+  const { loader, events, loading } = useTimelineLoader(
+    `discover-posts`,
+    { authors: contactsOfContacts, kinds: [1], since: moment().subtract(1, "hour").unix() },
+    { pageSize: moment.duration(1, "hour").asSeconds(), enabled: contactsOfContacts.length > 0 }
   );
 
-  const { events } = useEventDir(sub);
-  const timeline = Object.values(events).sort((a, b) => b.created_at - a.created_at);
+  const timeline = events.filter(isPost);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      ) : (
+        <Button onClick={() => loader?.loadMore()}>Load More</Button>
+      )}
     </Flex>
   );
 };
