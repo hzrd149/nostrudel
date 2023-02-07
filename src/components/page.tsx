@@ -1,24 +1,5 @@
 import React from "react";
-import {
-  Avatar,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  IconButton,
-  LinkOverlay,
-  Text,
-  VStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-  Box,
-} from "@chakra-ui/react";
+import { Avatar, Button, Container, Flex, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, SettingsIcon } from "./icons";
 import { ErrorBoundary } from "./error-boundary";
@@ -31,28 +12,15 @@ import { ReloadPrompt } from "./reload-prompt";
 import { PostModalProvider } from "../providers/post-modal-provider";
 import { useReadonlyMode } from "../hooks/use-readonly-mode";
 import { ProfileButton } from "./profile-button";
-import { UserAvatar } from "./user-avatar";
 import useSubject from "../hooks/use-subject";
+import { UserAvatarLink } from "./user-avatar-link";
 
 const MobileProfileHeader = () => {
-  const navigate = useNavigate();
   const pubkey = useSubject(identity.pubkey);
 
   return (
     <Flex justifyContent="space-between" px="2" pt="2">
-      <Menu>
-        <MenuButton as={Box}>
-          <UserAvatar pubkey={pubkey} size="sm" />
-        </MenuButton>
-        <MenuList>
-          <MenuItem icon={<ProfileIcon />} as={Link} to={`/u/${pubkey}`}>
-            Profile
-          </MenuItem>
-          <MenuItem icon={<LogoutIcon />} onClick={() => identity.logout()}>
-            Logout
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      <UserAvatarLink pubkey={pubkey} size="sm" />
       <IconButton
         variant="ghost"
         icon={<NotificationIcon />}

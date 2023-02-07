@@ -30,7 +30,7 @@ import settings from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { useNavigate } from "react-router-dom";
-import { useAsyncFn } from "react-use";
+import identity from "../../services/identity";
 
 export const SettingsView = () => {
   const navigate = useNavigate();
@@ -210,6 +210,9 @@ export const SettingsView = () => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+      <Flex gap="2">
+        <Button onClick={() => identity.logout()}>Logout</Button>
+      </Flex>
     </Flex>
   );
 };

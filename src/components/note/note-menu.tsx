@@ -40,14 +40,6 @@ export const NoteMenu = ({ event }: { event: NostrEvent }) => {
         </MenuItem>
         <MenuItem
           as="a"
-          icon={<Avatar src={IMAGE_ICONS.astralIcon} size="xs" />}
-          href={`https://astral.ninja/${noteId}`}
-          target="_blank"
-        >
-          Open in astral
-        </MenuItem>
-        <MenuItem
-          as="a"
           icon={<Avatar src={IMAGE_ICONS.brbIcon} size="xs" />}
           href={`https://brb.io/n/${noteId}`}
           target="_blank"

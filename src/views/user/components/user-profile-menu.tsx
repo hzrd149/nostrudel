@@ -33,14 +33,6 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
       </MenuItem>
       <MenuItem
         as="a"
-        icon={<Avatar src={IMAGE_ICONS.astralIcon} size="xs" />}
-        href={`https://astral.ninja/${npub}`}
-        target="_blank"
-      >
-        Open in astral
-      </MenuItem>
-      <MenuItem
-        as="a"
         icon={<Avatar src={IMAGE_ICONS.brbIcon} size="xs" />}
         href={`https://brb.io/u/${npub}`}
         target="_blank"

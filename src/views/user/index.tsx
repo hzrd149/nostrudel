@@ -24,8 +24,9 @@ import { UserTipButton } from "../../components/user-tip-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity";
 import { truncatedId } from "../../helpers/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
-import { KeyIcon } from "../../components/icons";
+import { KeyIcon, SettingsIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
+import identity from "../../services/identity";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -47,6 +48,7 @@ const UserView = () => {
 
   const metadata = useUserMetadata(pubkey, [], true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
+  const isSelf = pubkey === identity.pubkey.value;
 
   const header = (
     <Flex direction="column" gap="2" px="2" pt="2">
@@ -58,15 +60,15 @@ const UserView = () => {
               <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
               <UserDnsIdentityIcon pubkey={pubkey} />
             </Flex>
-            <ButtonGroup>
+            <Flex gap="2">
               <UserTipButton pubkey={pubkey} size="xs" />
               <UserProfileMenu pubkey={pubkey} />
-            </ButtonGroup>
+            </Flex>
           </Flex>
           {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
         </Flex>
       </Flex>
-      <Flex wrap="wrap" gap={isMobile ? "0" : "4"}>
+      <Flex wrap="wrap" gap="2">
         {metadata?.website && (
           <Text>
             <LinkIcon />{" "}
@@ -79,11 +81,20 @@ const UserView = () => {
           <KeyIcon /> {truncatedId(npub ?? "", 10)}{" "}
           <CopyIconButton text={npub ?? ""} title="Copy npub" aria-label="Copy npub" />
         </Text>
-        <ButtonGroup ml="auto">
+        <Flex gap="2" ml="auto">
+          {isMobile && isSelf && (
+            <IconButton
+              icon={<SettingsIcon />}
+              aria-label="Settings"
+              title="Settings"
+              size="sm"
+              onClick={() => navigate("/settings")}
+            />
+          )}
           <Button colorScheme="brand" size="sm">
             Follow
           </Button>
-        </ButtonGroup>
+        </Flex>
       </Flex>
     </Flex>
   );
@@ -101,7 +112,7 @@ const UserView = () => {
         index={activeTab}
         onChange={(v) => navigate(tabs[v].path)}
       >
-        <TabList overflowY="auto">
+        <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           {tabs.map(({ label }) => (
             <Tab key={label}>{label}</Tab>
           ))}
