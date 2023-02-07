@@ -3,7 +3,7 @@ import { useDnsIdentity } from "../hooks/use-dns-identity";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { VerificationFailed, VerifiedIcon } from "./icons";
 
-export const UserDnsIdentityIcon = ({ pubkey }: { pubkey: string }) => {
+export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) => {
   const metadata = useUserMetadata(pubkey);
   const { identity, loading, error } = useDnsIdentity(metadata?.nip05);
 
@@ -24,5 +24,12 @@ export const UserDnsIdentityIcon = ({ pubkey }: { pubkey: string }) => {
     }
   };
 
-  return <Tooltip label={title}>{renderIcon()}</Tooltip>;
+  if (onlyIcon) {
+    return <Tooltip label={title}>{renderIcon()}</Tooltip>;
+  }
+  return (
+    <span>
+      {metadata.nip05} {renderIcon()}
+    </span>
+  );
 };

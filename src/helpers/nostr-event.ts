@@ -10,8 +10,8 @@ export function isNote(event: NostrEvent | DraftNostrEvent) {
   return !isReply(event);
 }
 
-export function truncatedId(id: string) {
-  return id.substring(0, 6) + "..." + id.substring(id.length - 6);
+export function truncatedId(id: string, keep = 6) {
+  return id.substring(0, keep) + "..." + id.substring(id.length - keep);
 }
 
 export type EventReferences = ReturnType<typeof getReferences>;

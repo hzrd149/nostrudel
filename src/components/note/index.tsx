@@ -44,7 +44,7 @@ export const Note = React.memo(({ event }: NoteProps) => {
           <Heading size="sm" display="inline">
             <UserLink pubkey={event.pubkey} />
           </Heading>
-          <UserDnsIdentityIcon pubkey={event.pubkey} />
+          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
           {!isMobile && <Flex grow={1} />}
           <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
             {moment(event.created_at * 1000).fromNow()}

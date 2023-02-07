@@ -8,9 +8,10 @@ import {
   TabPanels,
   Tabs,
   Text,
-  Box,
   Link,
   IconButton,
+  ButtonGroup,
+  Button,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -21,6 +22,10 @@ import { UserProfileMenu } from "./components/user-profile-menu";
 import { LinkIcon } from "@chakra-ui/icons";
 import { UserTipButton } from "../../components/user-tip-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity";
+import { truncatedId } from "../../helpers/nostr-event";
+import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { ClipboardIcon, KeyIcon } from "../../components/icons";
+import { CopyIconButton } from "../../components/copy-icon-button";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -41,16 +46,27 @@ const UserView = () => {
   const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.includes(t.path)) ?? tabs[0]);
 
   const metadata = useUserMetadata(pubkey, [], true);
+  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   const header = (
-    <Flex gap="4" padding="2">
-      <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
-      <Flex direction="column" gap={isMobile ? 0 : 2}>
-        <Heading size={isMobile ? "md" : "lg"}>
-          {getUserDisplayName(metadata, pubkey)}
-          <UserDnsIdentityIcon pubkey={pubkey} />
-        </Heading>
-        {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
+    <Flex direction="column" gap="2" px="2" pt="2">
+      <Flex gap="4">
+        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
+        <Flex direction="column" gap={isMobile ? 0 : 2} grow="1" overflow="hidden">
+          <Flex gap="2" justifyContent="space-between" width="100%">
+            <Flex gap="2" alignItems="center">
+              <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
+              <UserDnsIdentityIcon pubkey={pubkey} />
+            </Flex>
+            <ButtonGroup>
+              <UserTipButton pubkey={pubkey} size="xs" />
+              <UserProfileMenu pubkey={pubkey} />
+            </ButtonGroup>
+          </Flex>
+          {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
+        </Flex>
+      </Flex>
+      <Flex wrap="wrap" gap={isMobile ? "0" : "4"}>
         {metadata?.website && (
           <Text>
             <LinkIcon />{" "}
@@ -59,10 +75,15 @@ const UserView = () => {
             </Link>
           </Text>
         )}
-      </Flex>
-      <Flex ml="auto" gap="2">
-        <UserTipButton pubkey={pubkey} size="xs" />
-        <UserProfileMenu pubkey={pubkey} />
+        <Text>
+          <KeyIcon /> {truncatedId(npub ?? "", 10)}{" "}
+          <CopyIconButton text={npub ?? ""} title="Copy npub" aria-label="Copy npub" />
+        </Text>
+        <ButtonGroup ml="auto">
+          <Button colorScheme="brand" size="sm">
+            Follow
+          </Button>
+        </ButtonGroup>
       </Flex>
     </Flex>
   );

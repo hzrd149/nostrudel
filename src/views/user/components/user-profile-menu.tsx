@@ -1,16 +1,13 @@
 import { Avatar, MenuItem } from "@chakra-ui/react";
 import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 
-import { ClipboardIcon, IMAGE_ICONS, SpyIcon } from "../../../components/icons";
+import { IMAGE_ICONS, SpyIcon } from "../../../components/icons";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
-import { useCopyToClipboard } from "react-use";
-import { truncatedId } from "../../../helpers/nostr-event";
 import identity from "../../../services/identity";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 
 export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<MenuIconButtonProps, "children">) => {
-  const [_clipboardState, copyToClipboard] = useCopyToClipboard();
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
   const metadata = useUserMetadata(pubkey);
 
@@ -26,11 +23,6 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
       <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
         Login as {getUserDisplayName(metadata, pubkey)}
       </MenuItem>
-      {npub && (
-        <MenuItem onClick={() => copyToClipboard(npub)} icon={<ClipboardIcon fontSize="1.5em" />}>
-          Copy {truncatedId(npub)}
-        </MenuItem>
-      )}
       <MenuItem
         as="a"
         icon={<Avatar src={IMAGE_ICONS.nostrGuruIcon} size="xs" />}

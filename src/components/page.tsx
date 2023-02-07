@@ -11,6 +11,7 @@ import { FollowingList } from "./following-list";
 import { ReloadPrompt } from "./reload-prompt";
 import { PostModalProvider } from "../providers/post-modal-provider";
 import { useReadonlyMode } from "../hooks/use-readonly-mode";
+import { ProfileButton } from "./profile-button";
 
 export const Page = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
             <Avatar src="/apple-touch-icon.png" size="sm" />
             <Heading size="md">noStrudel</Heading>
           </Flex>
+          <ProfileButton />
           <Button onClick={() => navigate("/")} leftIcon={<FeedIcon />}>
             Home
           </Button>
