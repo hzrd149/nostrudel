@@ -56,7 +56,7 @@ class UserMetadataService {
     ) as BehaviorSubject<Kind0ParsedContent | null>;
   }
 
-  requestUserMetadata(pubkey: string, useCache = true) {
+  requestUserMetadata(pubkey: string, stayOpen = false) {
     const subject = this.getUserSubject(pubkey);
 
     const request = () => {
@@ -65,19 +65,20 @@ class UserMetadataService {
         this.update();
       }
     };
-    if (useCache) {
-      if (!subject.getValue()) {
-        db.get("user-metadata", pubkey).then((cachedEvent) => {
-          if (cachedEvent) {
-            try {
-              subject.next(JSON.parse(cachedEvent.content));
-            } catch (e) {
-              request();
-            }
-          } else request();
-        });
-      }
-    } else request();
+
+    if (!subject.getValue()) {
+      db.get("user-metadata", pubkey).then((cachedEvent) => {
+        if (cachedEvent) {
+          try {
+            subject.next(JSON.parse(cachedEvent.content));
+          } catch (e) {
+            request();
+          }
+        } else request();
+      });
+    }
+
+    if (stayOpen) request();
 
     return subject;
   }

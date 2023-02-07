@@ -24,7 +24,7 @@ export const UserView = () => {
     throw new Error("No pubkey");
   }
 
-  const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey);
+  const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey, true);
   const label = metadata ? getUserFullName(metadata) || pubkey : pubkey;
 
   return (
