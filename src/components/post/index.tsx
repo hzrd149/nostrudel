@@ -24,6 +24,9 @@ import { PostContents } from "./post-contents";
 import { PostMenu } from "./post-menu";
 import { PostCC } from "./post-cc";
 import { isReply } from "../../helpers/nostr-event";
+import useSubject from "../../hooks/use-subject";
+import identity from "../../services/identity";
+import { useUserContacts } from "../../hooks/use-user-contacts";
 
 export type PostProps = {
   event: NostrEvent;
@@ -31,6 +34,10 @@ export type PostProps = {
 export const Post = React.memo(({ event }: PostProps) => {
   const navigate = useNavigate();
   const metadata = useUserMetadata(event.pubkey);
+
+  const pubkey = useSubject(identity.pubkey);
+  const contacts = useUserContacts(pubkey);
+  const following = contacts?.contacts || [];
 
   return (
     <Card padding="2" variant="outline">
@@ -57,7 +64,7 @@ export const Post = React.memo(({ event }: PostProps) => {
       <CardBody padding="0" mb="2">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box overflow="hidden" width="100%">
-            <PostContents content={event.content} />
+            <PostContents content={event.content} trusted={following.includes(event.pubkey)} />
           </Box>
         </VStack>
       </CardBody>

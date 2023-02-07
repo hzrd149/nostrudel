@@ -4,20 +4,21 @@
 
 - [x] Home feed
 - [x] Discovery Feed
+- [x] Dark theme
+- [x] Preview twitter / youtube links
+- [x] Lighting invoices
 - [ ] Profile management
 - [ ] Make post
 - [ ] Relay management
-- [x] Dark theme
 - [ ] NIP-05 support
-- [x] Render markdown
-- [x] Preview twitter / youtube links
 - [ ] Broadcast event
 - [ ] Manage followers
-- [x] Lighting invoices
 - [ ] Image upload
 - [ ] Thread view
 - [ ] User tipping
 - [ ] Reactions
+- [ ] Blurred or hidden images and embeds for people you dont follow
+- [ ] "Read more" Button for long posts
 
 ## Setup
 
