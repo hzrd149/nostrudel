@@ -31,6 +31,7 @@ import identity from "../../services/identity";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { ArrowDownSIcon } from "../icons";
 import { UserTipButton } from "../user-tip-button";
+import { NoteRelays } from "./note-relays";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -62,6 +63,7 @@ export const Note = React.memo(({ event }: NoteProps) => {
             </Box>
           </Flex>
           <UserTipButton pubkey={event.pubkey} size="xs" />
+          <NoteRelays event={event} size="xs" />
           <NoteMenu event={event} />
         </Flex>
       </CardHeader>
