@@ -1,3 +1,4 @@
+import { memo, useCallback, useState } from "react";
 import {
   Button,
   IconButton,
@@ -9,8 +10,9 @@ import {
   PopoverTrigger,
   Text,
   Flex,
+  Portal,
+  PopoverFooter,
 } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import { NostrRequest } from "../../classes/nostr-request";
 import useSubject from "../../hooks/use-subject";
@@ -18,13 +20,13 @@ import { getEventRelays, handleEventFromRelay } from "../../services/event-relay
 import { relayPool } from "../../services/relays";
 import settings from "../../services/settings";
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayIcon } from "../icons";
+import { RelayIcon, SearchIcon } from "../icons";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
 };
 
-export const NoteRelays = ({ event, ...props }: NoteRelaysProps) => {
+export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
   const relays = useSubject(getEventRelays(event.id));
 
   const [querying, setQuerying] = useState(false);
@@ -64,24 +66,28 @@ export const NoteRelays = ({ event, ...props }: NoteRelaysProps) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <IconButton title="Note Relays" icon={<RelayIcon />} {...props} aria-label="Note Relays" />
+        <IconButton title="Note Relays" icon={<RelayIcon />} size={props.size ?? "sm"} aria-label="Note Relays" />
       </PopoverTrigger>
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverBody>
-          <Flex gap="2">
-            <Button size="xs" onClick={queryRelays} isLoading={querying}>
-              Search
-            </Button>
-            <Button size="xs" onClick={broadcast} isLoading={broadcasting}>
-              Broadcast
-            </Button>
-          </Flex>
-          {relays.map((url) => (
-            <Text key={url}>{url}</Text>
-          ))}
-        </PopoverBody>
-      </PopoverContent>
+      <Portal>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverBody>
+            {relays.map((url) => (
+              <Text key={url}>{url}</Text>
+            ))}
+          </PopoverBody>
+          <PopoverFooter>
+            <Flex gap="2">
+              <Button size="xs" onClick={queryRelays} isLoading={querying} leftIcon={<SearchIcon />}>
+                Search
+              </Button>
+              <Button size="xs" onClick={broadcast} isLoading={broadcasting} leftIcon={<RelayIcon />}>
+                Broadcast
+              </Button>
+            </Flex>
+          </PopoverFooter>
+        </PopoverContent>
+      </Portal>
     </Popover>
   );
-};
+});

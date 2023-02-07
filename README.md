@@ -61,6 +61,8 @@
 - block notes based on content
 - implement NIP-56 and blocking
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
+  - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
+  - sort replies by date
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 
 ## Setup
