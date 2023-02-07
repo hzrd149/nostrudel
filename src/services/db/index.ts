@@ -23,10 +23,6 @@ const MIGRATIONS: MigrationFunction[] = [
     const eventsSeen = db.createObjectStore("events-seen", { keyPath: "id" });
     eventsSeen.createIndex("lastSeen", "lastSeen");
 
-    // db.createObjectStore("contacts", {
-    //   keyPath: "pubkey",
-    // });
-
     // setup data
     const settings = db.createObjectStore("settings");
     settings.put(["wss://nostr.rdfriedl.com"], "relays");

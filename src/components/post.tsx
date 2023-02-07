@@ -18,12 +18,14 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import { PostModal } from "./post-modal";
 import { NostrEvent } from "../types/nostr-event";
+import { useUserMetadata } from "../hooks/use-user-metadata";
 
 export type PostProps = {
   event: NostrEvent;
 };
-export const Post = ({ event }: PostProps) => {
+export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const userMetadata = useUserMetadata(event.pubkey);
 
   const isLong = event.content.length > 800;
 
@@ -32,11 +34,16 @@ export const Post = ({ event }: PostProps) => {
       <CardHeader>
         <HStack spacing="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-            <Avatar name="Segun Adebayo" src="https://bit.ly/sage-adebayo" />
+            <Avatar
+              name={userMetadata?.name}
+              src="https://bit.ly/sage-adebayo"
+            />
 
             <Box>
               <Heading size="sm">
-                <Link to={`/user/${event.pubkey}`}>{event.pubkey}</Link>
+                <Link to={`/user/${event.pubkey}`}>
+                  {userMetadata?.name ?? event.pubkey}
+                </Link>
               </Heading>
               <Text>{moment(event.created_at * 1000).fromNow()}</Text>
             </Box>
@@ -62,4 +69,4 @@ export const Post = ({ event }: PostProps) => {
       </CardBody>
     </Card>
   );
-};
+});

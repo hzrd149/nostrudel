@@ -1,10 +1,12 @@
 import { BehaviorSubject } from "rxjs";
-import { NostrEvent } from "../types/nostr-event";
+import { Kind0ParsedContent } from "../types/nostr-event";
+import db from "./db";
 import settingsService from "./settings";
 import { Subscription } from "./subscriptions";
 
 class UserMetadata {
-  requests = new Map<string, BehaviorSubject<NostrEvent | null>>();
+  requests = new Set<string>();
+  subjects = new Map<string, BehaviorSubject<Kind0ParsedContent | null>>();
   subscription: Subscription;
 
   constructor(relayUrls: string[] = []) {
@@ -13,7 +15,8 @@ class UserMetadata {
     this.subscription.onEvent.subscribe((event) => {
       try {
         const metadata = JSON.parse(event.content);
-        this.requests.get(event.pubkey)?.next(metadata);
+        this.getUserSubject(event.pubkey).next(metadata);
+        db.put("user-metadata", event);
       } catch (e) {}
     });
 
@@ -22,12 +25,40 @@ class UserMetadata {
     }, 1000 * 10);
   }
 
-  requestUserMetadata(pubkey: string) {
-    if (!this.requests.has(pubkey)) {
-      this.requests.set(pubkey, new BehaviorSubject<NostrEvent | null>(null));
-      this.updateSubscription();
+  private getUserSubject(pubkey: string) {
+    if (!this.subjects.has(pubkey)) {
+      this.subjects.set(
+        pubkey,
+        new BehaviorSubject<Kind0ParsedContent | null>(null)
+      );
     }
-    return this.requests.get(pubkey);
+    return this.subjects.get(
+      pubkey
+    ) as BehaviorSubject<Kind0ParsedContent | null>;
+  }
+
+  requestUserMetadata(pubkey: string, useCache = true) {
+    const subject = this.getUserSubject(pubkey);
+
+    const request = () => {
+      if (!this.requests.has(pubkey)) {
+        this.requests.add(pubkey);
+        this.updateSubscription();
+      }
+    };
+    if (useCache && !subject.getValue()) {
+      db.get("user-metadata", pubkey).then((cachedEvent) => {
+        if (cachedEvent) {
+          try {
+            subject.next(JSON.parse(cachedEvent.content));
+          } catch (e) {
+            request();
+          }
+        } else request();
+      });
+    } else request();
+
+    return subject;
   }
 
   updateSubscription() {
@@ -45,10 +76,10 @@ class UserMetadata {
 
   pruneRequests() {
     let removed = false;
-    const requests = Array.from(this.requests.entries());
-    for (const [pubkey, subject] of requests) {
-      if (!subject.observed) {
-        subject.complete();
+    const subjects = Array.from(this.subjects.entries());
+    for (const [pubkey, subject] of subjects) {
+      // if there is a request for the pubkey and no one is observing it. close the request
+      if (this.requests.has(pubkey) && !subject.observed) {
         this.requests.delete(pubkey);
         removed = true;
       }

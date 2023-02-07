@@ -1,9 +1,10 @@
 import { DBSchema } from "idb";
+import { NostrEvent } from "../../types/nostr-event";
 
 export interface CustomSchema extends DBSchema {
   "user-metadata": {
     key: string;
-    value: any;
+    value: NostrEvent;
   };
   "events-seen": {
     key: string;

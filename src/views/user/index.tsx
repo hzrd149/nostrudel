@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Heading,
   Tab,
@@ -9,8 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
-import { useObservable } from "react-use";
-import userMetadata from "../../services/user-metadata";
+import { useUserMetadata } from "../../hooks/use-user-metadata";
 
 export const UserView = () => {
   const { pubkey } = useParams();
@@ -19,16 +18,10 @@ export const UserView = () => {
     throw new Error("No pubkey");
   }
 
-  const observable = useMemo(
-    () => userMetadata.requestUserMetadata(pubkey),
-    [pubkey]
-  );
-  // @ts-ignore
-  const metadata = useObservable(observable);
+  const metadata = useUserMetadata(pubkey);
 
   return (
     <>
-      {/* @ts-ignore */}
       <Heading>{metadata?.name ?? pubkey}</Heading>
       <Tabs>
         <TabList>

@@ -37,6 +37,8 @@ export const GlobalView = () => {
     return <SkeletonText />;
   }
 
+  if (timeline.length > 20) timeline.length = 20;
+
   return (
     <>
       {timeline.map((event) => (

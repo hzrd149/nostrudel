@@ -11,3 +11,7 @@ export type NostrEvent = {
 export type IncomingNostrEvent =
   | ["EVENT", string, NostrEvent]
   | ["NOTICE", string];
+
+export type Kind0ParsedContent = {
+  name: string;
+};
