@@ -1,5 +1,12 @@
 import React from "react";
-import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
+import {
+  AspectRatio,
+  Box,
+  Image,
+  ImageProps,
+  Link,
+  LinkProps,
+} from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkImages from "remark-images";
@@ -39,14 +46,16 @@ const HandleLinkTypes = (props: LinkProps) => {
       const parts = youtubeVideoLink.exec(href);
 
       return parts ? (
-        <iframe
-          src={`https://www.youtube.com/embed/${parts[6]}`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          width="30rem"
-        ></iframe>
+        <AspectRatio ratio={16 / 10} maxWidth="30rem">
+          <iframe
+            src={`https://www.youtube.com/embed/${parts[6]}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            width="100%"
+          ></iframe>
+        </AspectRatio>
       ) : (
         <CustomLink {...props} />
       );
