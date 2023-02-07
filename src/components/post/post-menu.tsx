@@ -40,6 +40,13 @@ export const PostMenu = ({ event }: { event: NostrEvent }) => {
       >
         Open in BRB
       </MenuItem>
+      <MenuItem
+        as="a"
+        href={`https://snort.social/e/${event.id}`}
+        target="_blank"
+      >
+        Open in snort.social
+      </MenuItem>
       <MenuItem onClick={() => copyToClipboard(event.id)}>
         Copy {truncatedId(event.id)}
       </MenuItem>

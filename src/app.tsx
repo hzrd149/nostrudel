@@ -21,6 +21,14 @@ const RequireSetup = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+const HomePage = () => (
+  <RequireSetup>
+    <Page>
+      <HomeView />
+    </Page>
+  </RequireSetup>
+);
+
 export const App = () => {
   return (
     <ErrorBoundary>
@@ -72,16 +80,7 @@ export const App = () => {
             </RequireSetup>
           }
         />
-        <Route
-          path="/"
-          element={
-            <RequireSetup>
-              <Page>
-                <HomeView />
-              </Page>
-            </RequireSetup>
-          }
-        />
+        <Route path="/*" element={<HomePage />} />
       </Routes>
     </ErrorBoundary>
   );
