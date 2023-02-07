@@ -55,7 +55,7 @@ const embeds: {
   },
   // Spotify
   {
-    regexp: /https?:\/\/open\.spotify\.com\/track\/(\w+)[^\s]+/im,
+    regexp: /https?:\/\/open\.spotify\.com\/(track|episode)\/(\w+)[^\s]+/im,
     render: (match) => (
       <iframe
         style={{ borderRadius: "12px" }}
@@ -66,7 +66,7 @@ const embeds: {
         allowFullScreen
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
-        src={`https://open.spotify.com/embed/track/${match[1]}`}
+        src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
       ></iframe>
     ),
   },
