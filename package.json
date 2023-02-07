@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite serve",
     "build": "tsc && vite build",
-    "format": "prettier --ignore-path .gitignore -w ."
+    "format": "prettier --ignore-path .prettierignore -w ."
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.14",
