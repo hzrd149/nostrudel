@@ -5,7 +5,7 @@ import { isPost } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
-  const { loader, events, loading } = useTimelineLoader(
+  const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey} posts`,
     { authors: [pubkey], kinds: [1], since: moment().subtract(1, "day").unix() },
     { pageSize: moment.duration(1, "day").asSeconds() }
@@ -17,11 +17,7 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
-      ) : (
-        <Button onClick={() => loader?.loadMore()}>Load More</Button>
-      )}
+      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
 };

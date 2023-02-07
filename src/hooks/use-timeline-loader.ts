@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useUnmount } from "react-use";
 import { NostrQueryWithStart, TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
 import settings from "../services/settings";
@@ -13,31 +13,36 @@ export function useTimelineLoader(key: string, query: NostrQueryWithStart, opts?
   if (opts && !opts.name) opts.name = key;
 
   const ref = useRef<TimelineLoader | null>(null);
-  ref.current = ref.current || new TimelineLoader(relays, query, opts);
+  const loader = (ref.current = ref.current || new TimelineLoader(relays, query, opts));
 
   useEffect(() => {
-    ref.current?.reset();
-    ref.current?.setQuery(query);
+    loader.reset();
+    loader.setQuery(query);
   }, [key]);
 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {
-    if (ref.current) {
-      if (enabled) ref.current.open();
-      else ref.current.close();
-    }
-  }, [ref, enabled]);
+    if (enabled) {
+      loader.setQuery(query);
+      loader.open();
+    } else loader.close();
+  }, [enabled]);
 
   useUnmount(() => {
-    ref.current?.close();
+    loader.close();
   });
 
-  const events = useSubject(ref.current?.events);
-  const loading = useSubject(ref.current.loading);
+  const events = useSubject(loader.events);
+  const loading = useSubject(loader.loading);
+
+  const loadMore = useCallback(() => {
+    if (enabled) loader.loadMore();
+  }, [enabled]);
 
   return {
-    loader: ref.current,
+    loader,
     events,
     loading,
+    loadMore,
   };
 }

@@ -41,7 +41,7 @@ export const DiscoverTab = () => {
   const pubkey = useSubject(identity.pubkey);
 
   const contactsOfContacts = useExtendedContacts(pubkey);
-  const { loader, events, loading } = useTimelineLoader(
+  const { events, loading, loadMore } = useTimelineLoader(
     `discover-posts`,
     { authors: contactsOfContacts, kinds: [1], since: moment().subtract(1, "hour").unix() },
     { pageSize: moment.duration(1, "hour").asSeconds(), enabled: contactsOfContacts.length > 0 }
@@ -54,11 +54,7 @@ export const DiscoverTab = () => {
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
-      ) : (
-        <Button onClick={() => loader?.loadMore()}>Load More</Button>
-      )}
+      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
 };

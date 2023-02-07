@@ -1,19 +1,20 @@
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Post } from "../../components/post";
-import { isReply } from "../../helpers/nostr-event";
+import { isPost } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
-export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
+export const GlobalTab = () => {
   const { events, loading, loadMore } = useTimelineLoader(
-    `${pubkey} replies`,
-    { authors: [pubkey], kinds: [1], since: moment().subtract(4, "hours").unix() },
-    { pageSize: moment.duration(1, "day").asSeconds() }
+    `global-posts`,
+    { kinds: [1], since: moment().subtract(5, "minutes").unix() },
+    { pageSize: moment.duration(5, "minutes").asSeconds() }
   );
-  const timeline = events.filter(isReply);
+
+  const timeline = events.filter(isPost);
 
   return (
-    <Flex direction="column" gap="2" pr="2" pl="2">
+    <Flex direction="column" overflow="auto" gap="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}

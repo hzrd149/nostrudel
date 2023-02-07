@@ -4,7 +4,6 @@ import { UserPage } from "./views/user";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
-import { GlobalView } from "./views/global";
 import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
 import { EventPage } from "./views/event";
@@ -15,8 +14,7 @@ const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
   const setup = useSubject(identity.setup);
 
-  if (!setup)
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  if (!setup) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
   return children;
 };
@@ -56,16 +54,6 @@ export const App = () => {
             <RequireSetup>
               <Page>
                 <SettingsView />
-              </Page>
-            </RequireSetup>
-          }
-        />
-        <Route
-          path="/global"
-          element={
-            <RequireSetup>
-              <Page>
-                <GlobalView />
               </Page>
             </RequireSetup>
           }

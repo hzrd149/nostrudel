@@ -12,7 +12,7 @@ export const FollowingPostsTab = () => {
   const contacts = useUserContacts(pubkey);
 
   const following = contacts?.contacts || [];
-  const { loader, events, loading } = useTimelineLoader(
+  const { events, loading, loadMore } = useTimelineLoader(
     `following-posts`,
     { authors: following, kinds: [1], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
@@ -25,11 +25,7 @@ export const FollowingPostsTab = () => {
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
-      ) : (
-        <Button onClick={() => loader?.loadMore()}>Load More</Button>
-      )}
+      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
 };
