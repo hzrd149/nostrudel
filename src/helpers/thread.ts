@@ -1,12 +1,16 @@
 import { NostrEvent } from "../types/nostr-event";
 import { EventReferences, getReferences } from "./nostr-event";
 
+export function countReplies(thread: ThreadItem): number {
+  return thread.replies.reduce((c, item) => c + countReplies(item), 0) + thread.replies.length;
+}
+
 export type ThreadItem = {
   event: NostrEvent;
   root?: ThreadItem;
   reply?: ThreadItem;
   refs: EventReferences;
-  children: ThreadItem[];
+  replies: ThreadItem[];
 };
 
 export function linkEvents(events: NostrEvent[]) {
@@ -24,7 +28,7 @@ export function linkEvents(events: NostrEvent[]) {
     replies.set(event.id, {
       event,
       refs,
-      children: [],
+      replies: [],
     });
   }
 
@@ -33,7 +37,7 @@ export function linkEvents(events: NostrEvent[]) {
 
     reply.reply = reply.refs.replyId ? replies.get(reply.refs.replyId) : undefined;
 
-    reply.children = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
+    reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
   }
 
   return replies;

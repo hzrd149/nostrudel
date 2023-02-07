@@ -25,7 +25,7 @@ export const HomeView = () => {
     >
       <TabList>
         {tabs.map(({ label }) => (
-          <Tab>{label}</Tab>
+          <Tab key={label}>{label}</Tab>
         ))}
       </TabList>
       <TabPanels overflow="auto" height="100%">

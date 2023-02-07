@@ -21,7 +21,6 @@ const UserView = () => {
 
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
-  console.log(lastMatch);
 
   const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.includes(t.path)) ?? tabs[0]);
 
@@ -55,7 +54,7 @@ const UserView = () => {
       >
         <TabList overflow={isMobile ? "auto" : undefined}>
           {tabs.map(({ label }) => (
-            <Tab>{label}</Tab>
+            <Tab key={label}>{label}</Tab>
           ))}
         </TabList>
 
