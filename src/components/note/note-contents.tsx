@@ -28,11 +28,12 @@ const embeds: {
   },
   // Youtube Video
   {
-    regexp: /https?:\/\/((?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/im,
+    regexp:
+      /https?:\/\/(?:(?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/)?)([\w\-]+)(\S+)?/im,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
-          src={`https://www.youtube.com/embed/${match[4]}`}
+          src={`https://www.youtube.com/embed/${match[3]}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
