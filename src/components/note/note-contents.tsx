@@ -23,7 +23,7 @@ const embeds: {
   },
   // Twitter tweet
   {
-    regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)/im,
+    regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]+/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
   },
   // Youtube Video

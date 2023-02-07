@@ -1,4 +1,4 @@
-import { decode, encode } from "bech32-buffer";
+import { bech32 } from "bech32";
 
 export function isHex(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
@@ -11,29 +11,29 @@ export enum Bech32Prefix {
   Note = "note",
 }
 
-export function isBech32Key(key: string) {
+export function isBech32Key(bech32String: string) {
   try {
-    let { prefix } = decode(key.toLowerCase());
+    const { prefix } = bech32.decode(bech32String.toLowerCase());
     if (!["npub", "nsec", "note"].includes(prefix)) return false;
-    if (!isHex(bech32ToHex(key))) return false;
+    if (!isHex(bech32ToHex(bech32String))) return false;
   } catch (error) {
     return false;
   }
   return true;
 }
 
-export function bech32ToHex(key: string) {
+export function bech32ToHex(bech32String: string) {
   try {
-    let { data } = decode(key);
-    return toHexString(data);
+    const { words } = bech32.decode(bech32String);
+    return toHexString(new Uint8Array(bech32.fromWords(words)));
   } catch (error) {}
   return "";
 }
 
 export function hexToBech32(hex: string, prefix: Bech32Prefix) {
   try {
-    let buffer = fromHexString(hex);
-    return buffer && encode(prefix, buffer, "bech32");
+    const hexArray = hexStringToUint8(hex);
+    return hexArray && bech32.encode(prefix, bech32.toWords(hexArray));
   } catch (error) {
     // continue
   }
@@ -48,7 +48,7 @@ export function toHexString(buffer: Uint8Array) {
   }, "");
 }
 
-export function fromHexString(str: string) {
+export function hexStringToUint8(str: string) {
   if (str.length % 2 !== 0 || !/^[0-9a-f]+$/i.test(str)) {
     return null;
   }

@@ -1,10 +1,25 @@
-import { Flex, Heading, SkeletonText, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Box } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  SkeletonText,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  Box,
+  Link,
+  IconButton,
+} from "@chakra-ui/react";
 import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserProfileMenu } from "./components/user-profile-menu";
+import { LinkIcon } from "@chakra-ui/icons";
+import { UserTipButton } from "../../components/user-tip-button";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -32,10 +47,19 @@ const UserView = () => {
       <Flex direction="column" gap={isMobile ? 0 : 2}>
         <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
         {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
+        {metadata?.website && (
+          <Text>
+            <LinkIcon />{" "}
+            <Link href={metadata.website} target="_blank" color="blue.500">
+              {metadata.website}
+            </Link>
+          </Text>
+        )}
       </Flex>
-      <Box ml="auto">
+      <Flex ml="auto" gap="2">
+        <UserTipButton pubkey={pubkey} size="xs" />
         <UserProfileMenu pubkey={pubkey} />
-      </Box>
+      </Flex>
     </Flex>
   );
 

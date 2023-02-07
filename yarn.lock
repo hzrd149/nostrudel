@@ -2719,15 +2719,15 @@ base64-js@^1.3.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-bech32-buffer@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/bech32-buffer/-/bech32-buffer-0.2.1.tgz#8106f2f51bcb2ba1d9fb7718905c3042c5be2fcd"
-  integrity sha512-fCG1TyZuCN48Sdw97p/IR39fvqpFlWDVpG7qnuU1Uc3+Xtc/0uqAp8U7bMW/bGuVF5CcNVIXwxQsWwUr6un6FQ==
-
 bech32@^1.1.2:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
+
+bech32@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-2.0.0.tgz#078d3686535075c8c79709f054b1b226a133b355"
+  integrity sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==
 
 better-path-resolve@1.0.0:
   version "1.0.0"

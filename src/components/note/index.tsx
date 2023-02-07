@@ -29,7 +29,8 @@ import { isReply } from "../../helpers/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import identity from "../../services/identity";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { ArrowDownS } from "../icons";
+import { ArrowDownSIcon } from "../icons";
+import { UserTipButton } from "../user-tip-button";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -44,7 +45,7 @@ export const Note = React.memo(({ event }: NoteProps) => {
   return (
     <Card padding="2" variant="outline">
       <CardHeader padding="0" mb="2">
-        <HStack spacing="4">
+        <Flex gap="2">
           <Flex flex="1" gap="2">
             <UserAvatarLink pubkey={event.pubkey} size="sm" />
 
@@ -60,8 +61,9 @@ export const Note = React.memo(({ event }: NoteProps) => {
               {isReply(event) && <NoteCC event={event} />}
             </Box>
           </Flex>
+          <UserTipButton pubkey={event.pubkey} size="xs" />
           <NoteMenu event={event} />
-        </HStack>
+        </Flex>
       </CardHeader>
       <CardBody padding="0">
         <Box overflow="hidden" width="100%">
