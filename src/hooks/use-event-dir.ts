@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NostrSubscription } from "../classes/nostr-subscription";
 import { NostrEvent } from "../types/nostr-event";
 
-export function useEventDir(
-  subscription: NostrSubscription,
-  filter?: (event: NostrEvent) => boolean
-) {
+export function useEventDir(subscription: NostrSubscription, filter?: (event: NostrEvent) => boolean) {
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   useEffect(() => {
@@ -23,7 +20,7 @@ export function useEventDir(
     return () => s.unsubscribe();
   }, [subscription]);
 
-  const reset = () => setEvents({});
+  const reset = useCallback(() => setEvents({}), [setEvents]);
 
   return { events, reset };
 }

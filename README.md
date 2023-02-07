@@ -1,16 +1,26 @@
-# TODO Features
+# Personal Nostr Client
 
-## MVP
+## Current Features
 
-- come up with a clever name
-- cache user timelines for performance
-- add "Load more" button for user timelines
-- build event/thread view
-- connect to browser extension for signing
-- add simple post form
-- add stats page for debugging and cool stats
-- detect LNURL
-- add user tip button
-- add emoji reaction button
-- save relay list as note
-- load relays from note
+- [x] Home feed
+- [x] Discovery Feed
+- [ ] Profile management
+- [ ] Make post
+- [ ] Relay management
+- [x] Dark theme
+- [ ] NIP-05 support
+- [x] Render markdown
+- [x] Preview twitter / youtube links
+- [ ] Broadcast event
+- [ ] Manage followers
+- [x] Lighting invoices
+- [ ] Image upload
+- [ ] Thread view
+- [ ] User tipping
+- [ ] Reactions
+
+## Setup
+
+```bash
+yarn install && yarn start
+```

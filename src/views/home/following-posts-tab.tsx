@@ -1,33 +1,31 @@
 import { Flex } from "@chakra-ui/react";
 import moment from "moment";
-import { useState } from "react";
 import { Post } from "../../components/post";
-import { useEventDir } from "../../hooks/use-event-dir";
+import { isPost } from "../../helpers/nostr-event";
+import { useEventTimelineLoader } from "../../hooks/use-event-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import { useSubscription } from "../../hooks/use-subscription";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
-import settings from "../../services/settings";
 
-export const FollowingTab = () => {
+export const FollowingPostsTab = () => {
   const pubkey = useSubject(identity.pubkey);
   const contacts = useUserContacts(pubkey);
 
-  const [since, setSince] = useState(moment().subtract(1, "hour"));
-  const [after, setAfter] = useState(moment());
-
   const following = contacts?.contacts || [];
-  const sub = useSubscription(
+
+  const { timeline } = useEventTimelineLoader(
     {
       authors: following,
       kinds: [1],
-      since: since.unix(),
     },
-    { name: "home-following", enabled: following.length > 0 }
+    {
+      name: "following-posts",
+      enabled: following.length > 0,
+      filter: isPost,
+      initialSince: moment().subtract(1, "hour").unix(),
+      pageSize: moment.duration(1, "hour").asSeconds(),
+    }
   );
-
-  const { events } = useEventDir(sub);
-  const timeline = Object.values(events).sort((a, b) => b.created_at - a.created_at);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">

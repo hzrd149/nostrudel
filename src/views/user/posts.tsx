@@ -1,10 +1,13 @@
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import { Post } from "../../components/post";
 import { isPost } from "../../helpers/nostr-event";
-import { useUserTimeline } from "../../hooks/use-user-timeline";
+import { useEventTimelineLoader } from "../../hooks/use-event-timeline-loader";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
-  const { timeline, more } = useUserTimeline(pubkey, isPost);
+  const { timeline, more } = useEventTimelineLoader(
+    { authors: [pubkey], kinds: [1] },
+    { filter: isPost, name: "user posts" }
+  );
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">

@@ -1,10 +1,13 @@
 import { Button, Flex, SkeletonText } from "@chakra-ui/react";
 import { Post } from "../../components/post";
 import { isReply } from "../../helpers/nostr-event";
-import { useUserTimeline } from "../../hooks/use-user-timeline";
+import { useEventTimelineLoader } from "../../hooks/use-event-timeline-loader";
 
 export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
-  const { timeline, more } = useUserTimeline(pubkey, isReply);
+  const { timeline, more } = useEventTimelineLoader(
+    { authors: [pubkey], kinds: [1] },
+    { filter: isReply, name: "user replies" }
+  );
 
   if (timeline.length === 0) {
     return <SkeletonText />;
