@@ -5,6 +5,7 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 
 const cache: Record<string, Identicon> = {};
 function getIdenticon(pubkey: string) {
+  if (pubkey.length < 15) return "";
   if (!cache[pubkey]) {
     cache[pubkey] = new Identicon(pubkey, { format: "svg" });
   }
@@ -14,17 +15,13 @@ function getIdenticon(pubkey: string) {
 export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
 };
-export const UserAvatar = React.memo(
-  ({ pubkey, ...props }: UserAvatarProps) => {
-    const { metadata } = useUserMetadata(pubkey);
+export const UserAvatar = React.memo(({ pubkey, ...props }: UserAvatarProps) => {
+  const metadata = useUserMetadata(pubkey);
 
-    const url = useMemo(() => {
-      return (
-        metadata?.picture ??
-        `data:image/svg+xml;base64,${getIdenticon(pubkey).toString()}`
-      );
-    }, [metadata]);
+  const url = useMemo(() => {
+    return metadata?.picture ?? `data:image/svg+xml;base64,${getIdenticon(pubkey).toString()}`;
+  }, [metadata]);
 
-    return <Avatar src={url} {...props} />;
-  }
-);
+  return <Avatar src={url} {...props} />;
+});
+UserAvatar.displayName = "UserAvatar";

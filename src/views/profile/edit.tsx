@@ -75,7 +75,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 
 export const ProfileEditView = () => {
   const pubkey = useSubject(identity.pubkey);
-  const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey);
+  const metadata = useUserMetadata(pubkey);
 
   const defaultValues = useMemo<FormData>(
     () => ({
@@ -87,7 +87,7 @@ export const ProfileEditView = () => {
     [metadata]
   );
 
-  if (loadingMetadata) return <SkeletonText />;
+  if (!metadata) return <SkeletonText />;
 
   const handleSubmit = (data: FormData) => {};
 

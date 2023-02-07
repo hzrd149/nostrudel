@@ -1,90 +1,106 @@
-import { BehaviorSubject, distinctUntilKeyChanged } from "rxjs";
-import { convertTimestampToDate } from "../helpers/date";
+import { NostrEvent } from "../types/nostr-event";
+import { NostrQuery } from "../types/nostr-query";
+import { PubkeyRequestList } from "../classes/pubkey-request-list";
+import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
+import { NostrSubscription } from "../classes/nostr-subscription";
 import { safeParse } from "../helpers/json";
+import { unique } from "../helpers/array";
 import db from "./db";
-import { Request } from "./request";
+import settings from "./settings";
 
-export type Contacts = {
+const subscription = new NostrSubscription([], undefined, "user-contacts");
+const userSubjects = new PubkeySubjectCache<UserContacts>();
+const pendingRequests = new PubkeyRequestList();
+
+export type UserContacts = {
+  pubkey: string;
   relays: Record<string, { read: boolean; write: boolean }>;
   contacts: {
     pubkey: string;
     relay?: string;
   }[];
-  updated: Date;
+  created_at: number;
 };
 
-export class UserContactsService {
-  subjects = new Map<string, BehaviorSubject<Contacts | null>>();
-  requests = new Map<string, Request>();
+function parseContacts(event: NostrEvent): UserContacts {
+  const keys = event.tags
+    .filter((tag) => tag[0] === "p" && tag[1])
+    .map((tag) => ({ pubkey: tag[1] as string, relay: tag[2] }));
 
-  private getSubject(pubkey: string) {
-    if (!this.subjects.has(pubkey)) {
-      const subject = new BehaviorSubject<Contacts | null>(null);
-      this.subjects.set(pubkey, subject);
+  const relays = safeParse(event.content, {}) as UserContacts["relays"];
+
+  return {
+    pubkey: event.pubkey,
+    relays,
+    contacts: keys,
+    created_at: event.created_at,
+  };
+}
+
+function requestContacts(pubkey: string, relays: string[] = [], alwaysRequest = false) {
+  let subject = userSubjects.getSubject(pubkey);
+
+  db.get("user-contacts", pubkey).then((cached) => {
+    if (cached) subject.next(cached);
+
+    if (alwaysRequest || !cached) {
+      pendingRequests.addPubkey(pubkey, relays);
     }
+  });
 
-    return this.subjects.get(pubkey) as BehaviorSubject<Contacts | null>;
-  }
+  return subject;
+}
 
-  requestUserContacts(pubkey: string, relays: string[]) {
-    const subject = this.getSubject(pubkey);
+function flushRequests() {
+  if (!pendingRequests.needsFlush) return;
+  const { pubkeys, relays } = pendingRequests.flush();
+  if (pubkeys.length === 0) return;
 
-    if (!subject.getValue()) {
-      db.get("user-contacts", pubkey).then((contacts) => {
-        if (contacts) {
-          // reply with cache
-          subject.next(contacts);
-        } else {
-          // there is no cache so request it from the relays
-          if (!this.requests.has(pubkey)) {
-            const request = new Request(relays);
-            this.requests.set(pubkey, request);
-            request.start({ authors: [pubkey], kinds: [3] });
+  const systemRelays = settings.relays.getValue();
+  const query: NostrQuery = { authors: pubkeys, kinds: [3] };
 
-            request.onEvent
-              .pipe(
-                // filter out duplicate events
-                distinctUntilKeyChanged("id"),
-                // filter out older events
-                distinctUntilKeyChanged(
-                  "created_at",
-                  (prev, curr) => curr < prev
-                )
-              )
-              .subscribe(async (event) => {
-                const keys = event.tags
-                  .filter((tag) => tag[0] === "p" && tag[1])
-                  .map((tag) => ({ pubkey: tag[1] as string, relay: tag[2] }));
-
-                const relays = safeParse(
-                  event.content,
-                  {}
-                ) as Contacts["relays"];
-
-                const contacts = {
-                  relays,
-                  contacts: keys,
-                  updated: convertTimestampToDate(event.created_at),
-                };
-
-                db.put("user-contacts", contacts, event.pubkey);
-
-                subject.next(contacts);
-              });
-          }
-        }
-      });
-    }
-
-    return subject;
+  subscription.setRelays(relays.length > 0 ? unique([...systemRelays, ...relays]) : systemRelays);
+  subscription.update(query);
+  if (subscription.state !== NostrSubscription.OPEN) {
+    subscription.open();
   }
 }
 
-const userContacts = new UserContactsService();
+function pruneMemoryCache() {
+  const keys = userSubjects.prune();
+  for (const [key] of keys) {
+    pendingRequests.removePubkey(key);
+  }
+}
+
+subscription.onEvent.subscribe((event) => {
+  if (userSubjects.hasSubject(event.pubkey)) {
+    const subject = userSubjects.getSubject(event.pubkey);
+    const latest = subject.getValue();
+    if (!latest || event.created_at > latest.created_at) {
+      const parsed = parseContacts(event);
+      subject.next(parsed);
+      db.put("user-contacts", parsed);
+    }
+  }
+
+  // remove the pending request for this pubkey
+  if (pendingRequests.hasPubkey(event.pubkey)) {
+    pendingRequests.removePubkey(event.pubkey);
+  }
+});
+
+// flush requests every second
+setInterval(() => {
+  flushRequests();
+  pruneMemoryCache();
+}, 1000);
+
+const userContactsService = { requestContacts, flushRequests };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.userContacts = userContacts;
+  window.userContacts = userContactsService;
 }
 
-export default userContacts;
+export default userContactsService;

@@ -8,7 +8,7 @@ import { getUserDisplayName } from "../helpers/user-metadata";
 
 export const UserAvatarLink = React.memo(
   ({ pubkey, ...props }: UserAvatarProps) => {
-    const { metadata } = useUserMetadata(pubkey);
+    const metadata = useUserMetadata(pubkey);
     const label = metadata
       ? getUserDisplayName(metadata, pubkey)
       : "Loading...";

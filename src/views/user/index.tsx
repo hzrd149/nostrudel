@@ -22,7 +22,6 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserRelaysTab } from "./relays";
 import { UserFollowingTab } from "./following";
-// import { UserRepliesTab } from "./replies";
 import { normalizeToHex } from "../../helpers/nip-19";
 import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
@@ -37,9 +36,7 @@ export const UserPage = () => {
         <Alert status="error">
           <AlertIcon />
           <AlertTitle>Invalid pubkey</AlertTitle>
-          <AlertDescription>
-            "{params.pubkey}" dose not look like a valid pubkey
-          </AlertDescription>
+          <AlertDescription>"{params.pubkey}" dose not look like a valid pubkey</AlertDescription>
         </Alert>
       </Page>
     );
@@ -59,37 +56,24 @@ export type UserViewProps = {
 export const UserView = ({ pubkey }: UserViewProps) => {
   const isMobile = useIsMobile();
 
-  const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey, true);
+  const metadata = useUserMetadata(pubkey, [], true);
   const label = metadata && getUserDisplayName(metadata, pubkey);
 
   return (
-    <Flex
-      direction="column"
-      alignItems="stretch"
-      gap="2"
-      overflow="hidden"
-      height="100%"
-    >
+    <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" height="100%">
       <Flex gap="4" padding="2">
         <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
         <Flex direction="column" gap={isMobile ? 0 : 2}>
           <Heading size={isMobile ? "md" : "lg"}>{label}</Heading>
-          {loadingMetadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
+          {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
         </Flex>
         <Box ml="auto">
           <UserProfileMenu pubkey={pubkey} />
         </Box>
       </Flex>
-      <Tabs
-        display="flex"
-        flexDirection="column"
-        flexGrow="1"
-        overflow="hidden"
-        isLazy
-      >
+      <Tabs display="flex" flexDirection="column" flexGrow="1" overflow="hidden" isLazy>
         <TabList>
           <Tab>Notes</Tab>
-          {/* <Tab>Replies</Tab> */}
           <Tab>Following</Tab>
           <Tab>Relays</Tab>
         </TabList>
@@ -98,9 +82,6 @@ export const UserView = ({ pubkey }: UserViewProps) => {
           <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
           </TabPanel>
-          {/* <TabPanel pr={0} pl={0}>
-            <UserRepliesTab pubkey={pubkey} />
-          </TabPanel> */}
           <TabPanel>
             <UserFollowingTab pubkey={pubkey} />
           </TabPanel>

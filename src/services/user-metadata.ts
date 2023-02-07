@@ -1,114 +1,96 @@
-import { of, BehaviorSubject, distinctUntilKeyChanged } from "rxjs";
-import { debounce } from "../helpers/function";
-import { Kind0ParsedContent } from "../types/nostr-event";
+import { BehaviorSubject, filter, map } from "rxjs";
 import db from "./db";
 import settings from "./settings";
-import { Subscription } from "./subscriptions";
+import { NostrSubscription } from "../classes/nostr-subscription";
+import { PubkeyRequestList } from "../classes/pubkey-request-list";
+import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
+import { Kind0ParsedContent, NostrEvent } from "../types/nostr-event";
+import { NostrQuery } from "../types/nostr-query";
+import { unique } from "../helpers/array";
 
-class UserMetadataService {
-  requests = new Set<string>();
-  subjects = new Map<string, BehaviorSubject<Kind0ParsedContent | null>>();
-  subscription: Subscription;
+const subscription = new NostrSubscription([], undefined, "user-metadata");
+const userMetadataSubjects = new PubkeySubjectCache<NostrEvent>();
+const pendingRequests = new PubkeyRequestList();
 
-  constructor(relayUrls: string[] = []) {
-    this.subscription = new Subscription(relayUrls, undefined, "user-metadata");
+function requestMetadataEvent(
+  pubkey: string,
+  relays: string[],
+  alwaysRequest = false
+): BehaviorSubject<NostrEvent | null> {
+  let subject = userMetadataSubjects.getSubject(pubkey);
 
-    this.subscription.onEvent.subscribe(async (event) => {
-      try {
-        const current = await db.get("user-metadata", event.pubkey);
-        if (current && current.created_at > event.created_at) {
-          // ignore this event because its older
-          return;
-        }
-        db.put("user-metadata", event);
+  db.get("user-metadata", pubkey).then((cached) => {
+    if (cached) subject.next(cached);
 
-        const metadata = JSON.parse(event.content);
-        this.getUserSubject(event.pubkey).next(metadata);
-
-        // remove the pubkey from requests since is have the data
-        this.requests.delete(event.pubkey);
-        this.update();
-      } catch (e) {}
-    });
-
-    setInterval(() => {
-      this.pruneRequests();
-    }, 1000 * 10);
-  }
-
-  private getUserSubject(pubkey: string) {
-    if (!this.subjects.has(pubkey)) {
-      this.subjects.set(
-        pubkey,
-        new BehaviorSubject<Kind0ParsedContent | null>(null)
-      );
+    if (alwaysRequest || !cached) {
+      pendingRequests.addPubkey(pubkey, relays);
     }
-    return this.subjects.get(
-      pubkey
-    ) as BehaviorSubject<Kind0ParsedContent | null>;
-  }
+  });
 
-  requestUserMetadata(pubkey: string, stayOpen = false) {
-    const subject = this.getUserSubject(pubkey);
+  return subject;
+}
 
-    const request = () => {
-      if (!this.requests.has(pubkey)) {
-        this.requests.add(pubkey);
-        this.update();
-      }
-    };
+function isEvent(e: NostrEvent | null): e is NostrEvent {
+  return !!e;
+}
+function parseMetadata(event: NostrEvent): Kind0ParsedContent | undefined {
+  try {
+    return JSON.parse(event.content);
+  } catch (e) {}
+}
+function requestMetadata(pubkey: string, relays: string[] = [], alwaysRequest = false) {
+  return requestMetadataEvent(pubkey, relays, alwaysRequest).pipe(filter(isEvent), map(parseMetadata));
+}
 
-    if (!subject.getValue()) {
-      db.get("user-metadata", pubkey).then((cachedEvent) => {
-        if (cachedEvent) {
-          try {
-            subject.next(JSON.parse(cachedEvent.content));
-          } catch (e) {
-            request();
-          }
-        } else request();
-      });
-    }
+function flushRequests() {
+  if (!pendingRequests.needsFlush) return;
+  const { pubkeys, relays } = pendingRequests.flush();
+  if (pubkeys.length === 0) return;
 
-    if (stayOpen) request();
+  const systemRelays = settings.relays.getValue();
+  const query: NostrQuery = { authors: pubkeys, kinds: [0] };
 
-    return subject;
-  }
-
-  private updateSubscription() {
-    const pubkeys = Array.from(this.requests.keys());
-
-    if (pubkeys.length === 0) {
-      this.subscription.close();
-    } else {
-      this.subscription.setQuery({ authors: pubkeys, kinds: [0] });
-      if (this.subscription.state === Subscription.CLOSED) {
-        this.subscription.open();
-      }
-    }
-  }
-  update = debounce(this.updateSubscription.bind(this), 500);
-
-  pruneRequests() {
-    let removed = false;
-    const subjects = Array.from(this.subjects.entries());
-    for (const [pubkey, subject] of subjects) {
-      // if there is a request for the pubkey and no one is observing it. close the request
-      if (this.requests.has(pubkey) && !subject.observed) {
-        this.requests.delete(pubkey);
-        removed = true;
-      }
-    }
-
-    if (removed) this.update();
+  subscription.setRelays(relays.length > 0 ? unique([...systemRelays, ...relays]) : systemRelays);
+  subscription.update(query);
+  if (subscription.state !== NostrSubscription.OPEN) {
+    subscription.open();
   }
 }
 
-const userMetadata = new UserMetadataService(settings.relays.getValue());
+function pruneMemoryCache() {
+  const keys = userMetadataSubjects.prune();
+  for (const [key] of keys) {
+    pendingRequests.removePubkey(key);
+  }
+}
+
+subscription.onEvent.subscribe((event) => {
+  if (userMetadataSubjects.hasSubject(event.pubkey)) {
+    const subject = userMetadataSubjects.getSubject(event.pubkey);
+    const latest = subject.getValue();
+    if (!latest || event.created_at > latest.created_at) {
+      subject.next(event);
+      db.put("user-metadata", event);
+    }
+  }
+
+  // remove the pending request for this pubkey
+  if (pendingRequests.hasPubkey(event.pubkey)) {
+    pendingRequests.removePubkey(event.pubkey);
+  }
+});
+
+// flush requests every second
+setInterval(() => {
+  flushRequests();
+  pruneMemoryCache();
+}, 1000);
+
+const userMetadataService = { requestMetadata, requestMetadataEvent, flushRequests };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.userMetadata = userMetadata;
+  window.userMetadata = userMetadataService;
 }
 
-export default userMetadata;
+export default userMetadataService;

@@ -29,7 +29,7 @@ export type PostProps = {
 };
 export const Post = React.memo(({ event }: PostProps) => {
   const navigate = useNavigate();
-  const { metadata } = useUserMetadata(event.pubkey);
+  const metadata = useUserMetadata(event.pubkey);
 
   return (
     <Card padding="2" variant="outline">

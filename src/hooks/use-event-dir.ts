@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Subscription } from "../services/subscriptions";
+import { NostrSubscription } from "../classes/nostr-subscription";
 import { NostrEvent } from "../types/nostr-event";
 
 export function useEventDir(
-  subscription: Subscription,
+  subscription: NostrSubscription,
   filter?: (event: NostrEvent) => boolean
 ) {
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});

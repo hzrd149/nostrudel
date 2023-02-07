@@ -1,11 +1,14 @@
 import { Subject, Subscription as RxSubscription } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
-import { Relay } from "./relays";
-import relayPool from "./relays/relay-pool";
+import { Relay } from "../services/relays";
+import relayPool from "../services/relays/relay-pool";
+import { IncomingEvent } from "../services/relays/relay";
+
+let lastId = 0;
 
 const REQUEST_DEFAULT_TIMEOUT = 1000 * 20;
-export class Request {
+export class NostrRequest {
   static IDLE = "idle";
   static RUNNING = "running";
   static COMPLETE = "complete";
@@ -14,11 +17,12 @@ export class Request {
   timeout: number;
   relays: Set<Relay>;
   relayCleanup = new Map<Relay, RxSubscription[]>();
-  state = Request.IDLE;
+  state = NostrRequest.IDLE;
   onEvent = new Subject<NostrEvent>();
+  seenEvents = new Set<string>();
 
   constructor(relayUrls: string[], timeout?: number) {
-    this.id = String(Math.floor(Math.random() * 1000000));
+    this.id = `request-${lastId++}`;
     this.relays = new Set(relayUrls.map((url) => relayPool.requestRelay(url)));
 
     for (const relay of this.relays) {
@@ -34,8 +38,9 @@ export class Request {
 
       cleanup.push(
         relay.onEvent.subscribe((event) => {
-          if (event.subId === this.id) {
+          if (this.state === NostrRequest.RUNNING && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
             this.onEvent.next(event.body);
+            this.seenEvents.add(event.body.id);
           }
         })
       );
@@ -54,15 +59,15 @@ export class Request {
     for (const fn of cleanup) fn.unsubscribe();
 
     if (this.relays.size === 0) {
-      this.state = Request.COMPLETE;
+      this.state = NostrRequest.COMPLETE;
       this.onEvent.complete();
     }
   }
 
   start(query: NostrQuery) {
-    if (this.state !== Request.IDLE) return this;
+    if (this.state !== NostrRequest.IDLE) return this;
 
-    this.state = Request.RUNNING;
+    this.state = NostrRequest.RUNNING;
     for (const relay of this.relays) {
       relay.send(["REQ", this.id, query]);
     }
@@ -74,9 +79,9 @@ export class Request {
     return this;
   }
   cancel() {
-    if (this.state !== Request.COMPLETE) return this;
+    if (this.state !== NostrRequest.COMPLETE) return this;
 
-    this.state = Request.COMPLETE;
+    this.state = NostrRequest.COMPLETE;
     for (const relay of this.relays) {
       relay.send(["CLOSE", this.id]);
     }

@@ -13,10 +13,10 @@ import moment from "moment/moment";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
 import { useEventDir } from "../../hooks/use-event-dir";
-import { Subscription } from "../../services/subscriptions";
+import { NostrSubscription } from "../../classes/nostr-subscription";
 import { isPost, isReply } from "../../helpers/nostr-event";
 
-const PostsTimeline = ({ sub }: { sub: Subscription }) => {
+const PostsTimeline = ({ sub }: { sub: NostrSubscription }) => {
   const { events } = useEventDir(sub, isPost);
 
   const timeline = Object.values(events).sort(
@@ -38,7 +38,7 @@ const PostsTimeline = ({ sub }: { sub: Subscription }) => {
   );
 };
 
-const RepliesTimeline = ({ sub }: { sub: Subscription }) => {
+const RepliesTimeline = ({ sub }: { sub: NostrSubscription }) => {
   const { events } = useEventDir(sub, isReply);
 
   const timeline = Object.values(events).sort(

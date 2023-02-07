@@ -9,7 +9,7 @@ import { useSubscription } from "../../hooks/use-subscription";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
 import settings from "../../services/settings";
-import userContacts from "../../services/user-contacts";
+import userContactsService from "../../services/user-contacts";
 
 function useExtendedContacts(pubkey: string) {
   const relays = useSubject(settings.relays);
@@ -20,7 +20,7 @@ function useExtendedContacts(pubkey: string) {
     if (contacts) {
       const following = contacts.contacts.map((c) => c.pubkey);
       const subscriptions = contacts.contacts.map((contact) =>
-        userContacts.requestUserContacts(contact.pubkey, relays)
+        userContactsService.requestContacts(contact.pubkey, relays)
       );
 
       const rxSub = from(subscriptions)
@@ -28,9 +28,7 @@ function useExtendedContacts(pubkey: string) {
         .subscribe((contacts) => {
           if (contacts) {
             setExtendedContacts((value) => {
-              const more = contacts.contacts
-                .map((c) => c.pubkey)
-                .filter((key) => !following.includes(key));
+              const more = contacts.contacts.map((c) => c.pubkey).filter((key) => !following.includes(key));
               return Array.from(new Set([...value, ...more]));
             });
           }
@@ -63,9 +61,7 @@ export const DiscoverTab = () => {
   );
 
   const { events } = useEventDir(sub);
-  const timeline = Object.values(events).sort(
-    (a, b) => b.created_at - a.created_at
-  );
+  const timeline = Object.values(events).sort((a, b) => b.created_at - a.created_at);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">

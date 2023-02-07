@@ -1,16 +1,10 @@
 import { useMemo } from "react";
-import userMetadata from "../services/user-metadata";
-import useSubject from "./use-subject";
+import { useObservable } from "react-use";
+import userMetadataService from "../services/user-metadata";
 
-export function useUserMetadata(pubkey: string, stayOpen = false) {
-  const observable = useMemo(
-    () => userMetadata.requestUserMetadata(pubkey, stayOpen),
-    [pubkey]
-  );
-  const metadata = useSubject(observable) ?? undefined;
+export function useUserMetadata(pubkey: string, relays?: string[], alwaysRequest = false) {
+  const observable = useMemo(() => userMetadataService.requestMetadata(pubkey, relays, alwaysRequest), [pubkey]);
+  const metadata = useObservable(observable) ?? undefined;
 
-  return {
-    loading: !metadata,
-    metadata,
-  };
+  return metadata;
 }

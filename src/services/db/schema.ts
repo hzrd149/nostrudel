@@ -9,13 +9,19 @@ export interface CustomSchema extends DBSchema {
   "user-contacts": {
     key: string;
     value: {
+      pubkey: string;
       relays: Record<string, { read: boolean; write: boolean }>;
       contacts: {
         pubkey: string;
         relay?: string;
       }[];
-      updated: Date;
+      created_at: number;
     };
+  };
+  "text-events": {
+    key: string;
+    value: NostrEvent;
+    indexes: { created_at: number; pubkey: string; kind: number };
   };
   "events-seen": {
     key: string;

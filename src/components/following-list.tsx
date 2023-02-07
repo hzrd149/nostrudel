@@ -9,9 +9,9 @@ import identity from "../services/identity";
 import { UserAvatar } from "./user-avatar";
 
 const FollowingListItem = ({ pubkey }: { pubkey: string }) => {
-  const { metadata, loading } = useUserMetadata(pubkey);
+  const metadata = useUserMetadata(pubkey);
 
-  if (loading || !metadata) return <SkeletonText />;
+  if (!metadata) return <SkeletonText />;
 
   return (
     <Button

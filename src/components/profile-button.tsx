@@ -12,7 +12,7 @@ export type ProfileButtonProps = {
 
 export const ProfileButton = ({ to }: ProfileButtonProps) => {
   const pubkey = useSubject(identity.pubkey);
-  const { loading, metadata } = useUserMetadata(pubkey);
+  const metadata = useUserMetadata(pubkey);
 
   return (
     <LinkBox

@@ -1,5 +1,4 @@
 import { Subject } from "rxjs";
-import settings from "../settings";
 import { Relay } from "./relay";
 
 export class RelayPool {
