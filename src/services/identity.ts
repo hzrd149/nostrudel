@@ -14,6 +14,7 @@ class IdentityService {
   loading = new BehaviorSubject(true);
   setup = new BehaviorSubject(false);
   pubkey = new BehaviorSubject("");
+  readonly = new BehaviorSubject(false);
   // TODO: remove this when there is a service to manage user relays
   relays = new BehaviorSubject<PresetRelays>({});
   private useExtension: boolean = false;
@@ -25,11 +26,13 @@ class IdentityService {
       if (savedIdentity) {
         this.setup.next(true);
         this.pubkey.next(savedIdentity.pubkey);
+        this.readonly.next(false);
         this.secKey = savedIdentity.secKey;
         this.useExtension = savedIdentity.useExtension;
       } else {
         this.setup.next(false);
         this.pubkey.next("");
+        this.readonly.next(false);
         this.secKey = undefined;
         this.useExtension = false;
       }
@@ -38,6 +41,7 @@ class IdentityService {
 
   async loginWithExtension() {
     if (window.nostr) {
+      this.loading.next(true);
       const pubkey = await window.nostr.getPublicKey();
       settings.identity.next({
         pubkey,
@@ -60,7 +64,14 @@ class IdentityService {
     // });
   }
 
-  async logout() {
+  loginWithPubkey(pubkey: string) {
+    this.readonly.next(true);
+    this.pubkey.next(pubkey);
+    this.setup.next(true);
+    this.loading.next(false);
+  }
+
+  logout() {
     settings.identity.next(null);
   }
 }

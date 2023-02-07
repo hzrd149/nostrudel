@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Button, Container, Flex, Heading, IconButton, LinkOverlay, VStack } from "@chakra-ui/react";
+import { Avatar, Button, Container, Flex, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FeedIcon, LogoutIcon, ProfileIcon, SettingsIcon } from "./icons";
 import { ErrorBoundary } from "./error-boundary";
@@ -10,10 +10,12 @@ import identity from "../services/identity";
 import { FollowingList } from "./following-list";
 import { ReloadPrompt } from "./reload-prompt";
 import { PostModalProvider } from "../providers/post-modal-provider";
+import { useReadonlyMode } from "../hooks/use-readonly-mode";
 
 export const Page = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const readonly = useReadonlyMode();
 
   if (isMobile) {
     return (
@@ -72,6 +74,11 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
           <Button onClick={() => identity.logout()} leftIcon={<LogoutIcon />}>
             Logout
           </Button>
+          {readonly && (
+            <Text color="yellow.500" textAlign="center">
+              Readonly Mode
+            </Text>
+          )}
           <ConnectedRelays />
         </VStack>
         <Flex flexGrow={1} direction="column" overflow="hidden">

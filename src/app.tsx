@@ -19,6 +19,8 @@ import UserFollowersTab from "./views/user/followers";
 import UserRelaysTab from "./views/user/relays";
 import UserFollowingTab from "./views/user/following";
 import NoteView from "./views/note";
+import { LoginStartView } from "./views/login/start";
+import { LoginNpubView } from "./views/login/npub";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -38,7 +40,14 @@ const RootPage = () => (
 );
 
 const router = createBrowserRouter([
-  { path: "login", element: <LoginView /> },
+  {
+    path: "login",
+    element: <LoginView />,
+    children: [
+      { path: "", element: <LoginStartView /> },
+      { path: "npub", element: <LoginNpubView /> },
+    ],
+  },
   {
     path: "/",
     element: <RootPage />,

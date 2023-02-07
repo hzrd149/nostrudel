@@ -11,8 +11,10 @@ import settings from "../../services/settings";
 import { AddIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
+import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 
 export const FollowingTab = () => {
+  const readonly = useReadonlyMode();
   const pubkey = useSubject(identity.pubkey);
   const relays = useSubject(settings.relays);
   const { openModal } = useContext(PostModalContext);
@@ -35,7 +37,7 @@ export const FollowingTab = () => {
 
   return (
     <Flex direction="column" gap="2">
-      <Button variant="outline" leftIcon={<AddIcon />} onClick={() => openModal()}>
+      <Button variant="outline" leftIcon={<AddIcon />} onClick={() => openModal()} isDisabled={readonly}>
         New Post
       </Button>
       <FormControl display="flex" alignItems="center">

@@ -29,7 +29,7 @@
 - [ ] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
 - [x] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
 - [ ] [NIP-06](https://github.com/nostr-protocol/nips/blob/master/06.md): Basic key derivation from mnemonic seed phrase
-- [ ] [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md): `window.nostr` capability for web browsers
+- [x] [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md): `window.nostr` capability for web browsers
 - [ ] [NIP-08](https://github.com/nostr-protocol/nips/blob/master/08.md): Handling Mentions
 - [ ] [NIP-09](https://github.com/nostr-protocol/nips/blob/master/09.md): Event Deletion
 - [ ] [NIP-11](https://github.com/nostr-protocol/nips/blob/master/11.md): Relay Information Document
@@ -51,7 +51,6 @@
 
 ## TODO
 
-- add relay selection to global feed and allow user to specify custom relay
 - add `client` tag to published events
 - add relay selection to global feed
 - add button for creating lightning invoice via WebLN
@@ -65,6 +64,7 @@
   - sort replies by date
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 - Add client side relay groups
+- Add mentions in posts (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
 
 ## Setup
 

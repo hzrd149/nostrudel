@@ -19,12 +19,14 @@ import { ReplyIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
+import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 
 export type NoteProps = {
   event: NostrEvent;
 };
 export const Note = React.memo(({ event }: NoteProps) => {
   const isMobile = useIsMobile();
+  const readonly = useReadonlyMode();
   const { openModal } = useContext(PostModalContext);
 
   const pubkey = useSubject(identity.pubkey);
@@ -53,7 +55,14 @@ export const Note = React.memo(({ event }: NoteProps) => {
         <NoteContents event={event} trusted={following.includes(event.pubkey)} />
       </CardBody>
       <CardFooter padding="2" display="flex" gap="2">
-        <IconButton icon={<ReplyIcon />} title="Reply" aria-label="Reply" onClick={reply} size="xs" />
+        <IconButton
+          icon={<ReplyIcon />}
+          title="Reply"
+          aria-label="Reply"
+          onClick={reply}
+          size="xs"
+          isDisabled={readonly}
+        />
         <Box flexGrow={1} />
         <UserTipButton pubkey={event.pubkey} size="xs" />
         <NoteRelays event={event} size="xs" />
