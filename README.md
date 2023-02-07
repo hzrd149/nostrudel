@@ -1,12 +1,21 @@
-# TODO
+# TODO Features
 
-- Adding loading state to `useUserMetadata` so views can show loading state
-- Add a debounce to user metadata services so it dose not spam the relay when updating subscription
-- user metadata service: remove author from subscription once metadata is returned
-- create a stats page showing state of local db and info about app
-- create user timeline service that caching events and supports loading older events on request
-
-## Ideas
+## MVP
 
 - come up with a clever name
+- cache user timelines for performance
+- add "Load more" button for user timelines
+- build event/thread view
+- build relays tab under user
+- connect to browser extension for signing
+- add simple post form
+- add stats page for debugging and cool stats
+
+## Stage 1
+
 - build support for DMs
+- linkify posts
+- detect LN invoices
+- detect LNURL
+- add user tip button
+- create mobile layout

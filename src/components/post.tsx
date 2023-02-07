@@ -5,7 +5,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Code,
   Flex,
   Heading,
   HStack,
@@ -35,7 +34,7 @@ export const Post = React.memo(({ event }: PostProps) => {
     : event.pubkey;
 
   return (
-    <Card padding="4" variant="outline">
+    <Card padding="2" variant="outline">
       <CardHeader padding="0">
         <HStack spacing="4">
           <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
@@ -50,7 +49,7 @@ export const Post = React.memo(({ event }: PostProps) => {
           </Flex>
         </HStack>
       </CardHeader>
-      <CardBody padding="0" pt={0}>
+      <CardBody pt="2" pb="0" pr="0" pl="0">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box maxHeight="20rem" overflow="hidden" width="100%">
             <ReactMarkdown>
@@ -65,7 +64,6 @@ export const Post = React.memo(({ event }: PostProps) => {
               <PostModal event={event} isOpen={isOpen} onClose={onClose} />
             </>
           )}
-          <Code>{event.id}</Code>
         </VStack>
       </CardBody>
     </Card>

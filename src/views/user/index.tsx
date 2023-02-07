@@ -8,15 +8,16 @@ import {
   TabPanels,
   Tabs,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
 import { getUserFullName } from "../../helpers/user-metadata";
+import { useIsMobile } from "../../hooks/use-is-mobile";
 
 export const UserView = () => {
+  const isMobile = useIsMobile();
   const { pubkey } = useParams();
   if (!pubkey) {
     // TODO: better 404
@@ -27,24 +28,34 @@ export const UserView = () => {
   const label = metadata ? getUserFullName(metadata) || pubkey : pubkey;
 
   return (
-    <VStack alignItems="stretch" spacing={4}>
-      {" "}
-      <Flex gap="4">
-        <UserAvatar pubkey={pubkey} size="xl" />
-        <Flex direction="column" gap="2">
-          <Heading>{label}</Heading>
+    <Flex
+      direction="column"
+      alignItems="stretch"
+      gap="2"
+      overflow="hidden"
+      height="100%"
+    >
+      <Flex gap="4" padding="2">
+        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
+        <Flex direction="column" gap={isMobile ? 0 : 2}>
+          <Heading size={isMobile ? "md" : "lg"}>{label}</Heading>
           {loadingMetadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
         </Flex>
       </Flex>
-      <Tabs>
+      <Tabs
+        display="flex"
+        flexDirection="column"
+        flexGrow="1"
+        overflow="hidden"
+      >
         <TabList>
           <Tab>Posts</Tab>
           <Tab>Other</Tab>
           <Tab>Relays</Tab>
         </TabList>
 
-        <TabPanels>
-          <TabPanel>
+        <TabPanels overflow="auto" height="100%">
+          <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel>
@@ -55,6 +66,6 @@ export const UserView = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </VStack>
+    </Flex>
   );
 };

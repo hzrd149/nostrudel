@@ -25,7 +25,15 @@ const MIGRATIONS: MigrationFunction[] = [
 
     // setup data
     const settings = db.createObjectStore("settings");
-    settings.put(["wss://nostr.rdfriedl.com"], "relays");
+    settings.put(
+      [
+        "wss://nostr.rdfriedl.com",
+        "wss://relay.damus.io",
+        "wss://relay.nostr.info",
+        "wss://nostr.zebedee.cloud",
+      ],
+      "relays"
+    );
   },
 ];
 

@@ -43,7 +43,7 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
   if (timeline.length > 20) timeline.length = 20;
 
   return (
-    <Flex direction="column" gap="2">
+    <Flex direction="column" gap="2" pr="2" pl="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}

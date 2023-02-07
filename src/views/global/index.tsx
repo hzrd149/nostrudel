@@ -41,7 +41,7 @@ export const GlobalView = () => {
   if (timeline.length > 20) timeline.length = 20;
 
   return (
-    <Flex direction="column" gap="2">
+    <Flex direction="column" gap="2" overflow="auto" height="100%" padding="2">
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
