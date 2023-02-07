@@ -4,6 +4,9 @@ const MIGRATIONS = [
     db.createObjectStore("users", {
       keyPath: "pubkey",
     });
+    db.createObjectStore("contacts", {
+      keyPath: "pubkey",
+    });
     db.createObjectStore("settings");
 
     // setup data

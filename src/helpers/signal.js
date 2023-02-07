@@ -1,21 +1,25 @@
 export class Signal {
-  listeners = new Set();
+  listeners = [];
   connections = new Set();
 
   emit(event) {
-    for (const fn of this.listeners) {
-      fn(event);
+    for (const [fn, ctx] of this.listeners) {
+      if (ctx) {
+        fn.apply(ctx, [event]);
+      } else fn(event);
     }
 
     for (const signal of this.connections) {
       signal.emit(event);
     }
   }
-  addListener(fn) {
-    this.listeners.add(fn);
+  addListener(fn, ctx) {
+    this.listeners.push([fn, ctx]);
   }
-  removeListener(fn) {
-    this.listeners.delete(fn);
+  removeListener(fn, ctx) {
+    this.listeners = this.listeners.filter(
+      (listener) => listener.fn !== fn && listener.ctx !== ctx
+    );
   }
   addConnection(signal) {
     this.connections.add(signal);

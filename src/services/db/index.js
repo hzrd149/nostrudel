@@ -6,8 +6,4 @@ const db = await openDB("storage", version, {
   upgrade,
 });
 
-export async function getUsername(id) {
-  db.get("users", id);
-}
-
 export default db;
