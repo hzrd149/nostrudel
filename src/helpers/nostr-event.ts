@@ -34,13 +34,14 @@ export function getReferences(event: NostrEvent) {
 
   // legacy behavior
   // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-  if (!rootId && !replyId && eTags.length >= 1) {
+  const legacyTags = eTags.filter((t) => !t[3]);
+  if (!rootId && !replyId && legacyTags.length >= 1) {
     // console.info(`Using legacy threading behavior for ${event.id}`, event);
 
     // first tag is the root
-    rootId = eTags[0][1];
+    rootId = legacyTags[0][1];
     // last tag is reply
-    replyId = eTags[eTags.length - 1][1] ?? rootId;
+    replyId = legacyTags[legacyTags.length - 1][1] ?? rootId;
   }
 
   return {

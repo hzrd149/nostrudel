@@ -73,3 +73,9 @@ export const AddIcon = createIcon({
   d: "M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z",
   defaultProps,
 });
+
+export const ArrowDownS = createIcon({
+  displayName: "arrow-down-s",
+  d: "M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z",
+  defaultProps,
+});

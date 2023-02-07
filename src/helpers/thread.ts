@@ -1,18 +1,18 @@
 import { NostrEvent } from "../types/nostr-event";
 import { EventReferences, getReferences } from "./nostr-event";
 
-export type LinkedEvent = {
+export type ThreadItem = {
   event: NostrEvent;
-  root?: LinkedEvent;
-  reply?: LinkedEvent;
+  root?: ThreadItem;
+  reply?: ThreadItem;
   refs: EventReferences;
-  children: LinkedEvent[];
+  children: ThreadItem[];
 };
 
 export function linkEvents(events: NostrEvent[]) {
   const idToChildren: Record<string, NostrEvent[]> = {};
 
-  const replies = new Map<string, LinkedEvent>();
+  const replies = new Map<string, ThreadItem>();
   for (const event of events) {
     const refs = getReferences(event);
 
@@ -20,7 +20,7 @@ export function linkEvents(events: NostrEvent[]) {
       idToChildren[refs.replyId] = idToChildren[refs.replyId] || [];
       idToChildren[refs.replyId].push(event);
     }
-    if (refs.rootId) {
+    if (refs.rootId && refs.rootId !== refs.replyId) {
       idToChildren[refs.rootId] = idToChildren[refs.rootId] || [];
       idToChildren[refs.rootId].push(event);
     }
@@ -37,7 +37,7 @@ export function linkEvents(events: NostrEvent[]) {
 
     reply.reply = reply.refs.replyId ? replies.get(reply.refs.replyId) : undefined;
 
-    reply.children = idToChildren[id]?.map((e) => replies.get(e.id) as LinkedEvent) ?? [];
+    reply.children = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
   }
 
   return replies;

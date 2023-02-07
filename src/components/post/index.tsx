@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import moment from "moment";
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
@@ -11,8 +12,9 @@ import {
   Flex,
   Heading,
   HStack,
-  Text,
+  IconButton,
   VStack,
+  Link,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -27,12 +29,12 @@ import { isReply } from "../../helpers/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import identity from "../../services/identity";
 import { useUserContacts } from "../../hooks/use-user-contacts";
+import { ArrowDownS } from "../icons";
 
 export type PostProps = {
   event: NostrEvent;
 };
 export const Post = React.memo(({ event }: PostProps) => {
-  const navigate = useNavigate();
   const metadata = useUserMetadata(event.pubkey);
 
   const pubkey = useSubject(identity.pubkey);
@@ -48,37 +50,39 @@ export const Post = React.memo(({ event }: PostProps) => {
 
             <Box>
               <Heading size="sm" display="inline">
-                <Link to={`/u/${normalizeToBech32(event.pubkey, Bech32Prefix.Pubkey)}`}>
+                <Link as={RouterLink} to={`/u/${normalizeToBech32(event.pubkey, Bech32Prefix.Pubkey)}`}>
                   {getUserDisplayName(metadata, event.pubkey)}
                 </Link>
               </Heading>
-              <Text display="inline" ml="2">
+              <Link as={RouterLink} to={`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} ml="2">
                 {moment(event.created_at * 1000).fromNow()}
-              </Text>
+              </Link>
               {isReply(event) && <PostCC event={event} />}
             </Box>
           </Flex>
           <PostMenu event={event} />
         </HStack>
       </CardHeader>
-      <CardBody padding="0" mb="2">
+      <CardBody padding="0">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box overflow="hidden" width="100%">
             <PostContents event={event} trusted={following.includes(event.pubkey)} />
           </Box>
         </VStack>
       </CardBody>
-      <CardFooter padding="0">
-        <Flex gap="2">
-          <Button
-            size="sm"
-            variant="link"
-            onClick={() => navigate(`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)}
-          >
-            Replies
-          </Button>
-        </Flex>
-      </CardFooter>
+      {/* <CardFooter padding="0" gap="2"> */}
+      {/* <Button
+          size="sm"
+          variant="link"
+          onClick={() => navigate(`/e/${normalizeToBech32(event.id, Bech32Prefix.Note)}`)}
+        >
+          Replies
+        </Button> */}
+      {/* <ButtonGroup size="sm" isAttached variant="outline" ml="auto">
+          <Button>Like</Button>
+          <IconButton aria-label="Show Likes" icon={<ArrowDownS />} />
+        </ButtonGroup> */}
+      {/* </CardFooter> */}
     </Card>
   );
 });

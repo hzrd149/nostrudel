@@ -33,12 +33,12 @@ export function useThreadLoader(eventId: string, opts?: Options) {
   const loading = useSubject(loader.loading);
   const rootId = useSubject(loader.rootId);
   const focusId = useSubject(loader.focusId);
-  const linked = useMemo(() => linkEvents(Object.values(events)), [events]);
+  const thread = useMemo(() => linkEvents(Object.values(events)), [events]);
 
   return {
     loader,
     events,
-    linked,
+    thread,
     rootId,
     focusId,
     loading,
