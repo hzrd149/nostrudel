@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -19,30 +18,31 @@ import moment from "moment";
 import { PostModal } from "./post-modal";
 import { NostrEvent } from "../types/nostr-event";
 import { useUserMetadata } from "../hooks/use-user-metadata";
-import useSubject from "../hooks/use-subject";
-import settings from "../services/settings";
+import { UserAvatarLink } from "./user-avatar-link";
+import { getUserFullName } from "../helpers/user-metadata";
 
 export type PostProps = {
   event: NostrEvent;
 };
 export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const userMetadata = useUserMetadata(event.pubkey);
+  const metadata = useUserMetadata(event.pubkey);
 
   const isLong = event.content.length > 800;
+  const username = metadata
+    ? getUserFullName(metadata) || event.pubkey
+    : event.pubkey;
 
   return (
     <Card>
       <CardHeader>
         <HStack spacing="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-            <Avatar src={userMetadata?.picture} />
+            <UserAvatarLink pubkey={event.pubkey} />
 
             <Box>
               <Heading size="sm">
-                <Link to={`/user/${event.pubkey}`}>
-                  {userMetadata?.name ?? event.pubkey}
-                </Link>
+                <Link to={`/user/${event.pubkey}`}>{username}</Link>
               </Heading>
               <Text>{moment(event.created_at * 1000).fromNow()}</Text>
             </Box>

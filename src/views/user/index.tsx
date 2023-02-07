@@ -1,6 +1,4 @@
-import React from "react";
 import {
-  Avatar,
   Box,
   Heading,
   HStack,
@@ -10,13 +8,14 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import ReactMarkdown from "react-markdown";
+import { UserAvatar } from "../../components/user-avatar";
+import { getUserFullName } from "../../helpers/user-metadata";
 
 export const UserView = () => {
   const { pubkey } = useParams();
@@ -26,15 +25,16 @@ export const UserView = () => {
   }
 
   const metadata = useUserMetadata(pubkey);
+  const label = metadata ? getUserFullName(metadata) || pubkey : pubkey;
 
   return (
     <VStack alignItems="stretch" spacing={4}>
       {" "}
       <HStack spacing={4}>
-        <Avatar src={metadata?.picture} />
+        <UserAvatar pubkey={pubkey} />
         <Box>
-          <Heading>{metadata?.name ?? pubkey}</Heading>
-          <Text>{metadata?.display_name}</Text>
+          <Heading>{label}</Heading>
+          {/* <Text>{metadata?.name}</Text> */}
         </Box>
       </HStack>
       {metadata?.about ? (

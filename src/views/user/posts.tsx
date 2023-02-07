@@ -29,6 +29,9 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
     return () => s.unsubscribe();
   }, [sub]);
 
+  // clear events when pubkey changes
+  useEffect(() => setEvents({}), [pubkey]);
+
   const timeline = Object.values(events).sort(
     (a, b) => b.created_at - a.created_at
   );
