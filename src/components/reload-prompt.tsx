@@ -10,7 +10,6 @@ export const ReloadPrompt = () => {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    immediate: false,
     onRegistered(r) {
       console.log("SW Registered: " + r);
       toast({ variant: "success", title: "Installed" });
