@@ -6,30 +6,28 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import * as settings from "../services/settings";
+import React, { useState } from "react";
+import { useRelays } from "../providers/relay-provider";
 
 export const SettingsView = () => {
-  const [relayUrls, setRelayUrls] = useState("");
+  const { relays, overwriteRelays } = useRelays();
+  const [relayUrls, setRelayUrls] = useState(relays.join("\n"));
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const relays = relayUrls
+    const newRelays = relayUrls
       .split("\n")
       .filter(Boolean)
       .map((url) => url.trim());
-    if (relays.length > 0) {
-      settings.setRelays(relays);
+
+    if (newRelays.length > 0) {
+      await overwriteRelays(newRelays);
     }
   };
-  const resetForm = async () => {
-    const urls = await settings.getRelays();
-    setRelayUrls(urls.join("\n"));
-  };
 
-  useEffect(() => {
-    resetForm();
-  }, []);
+  const resetForm = async () => {
+    setRelayUrls(relays.join("\n"));
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -41,7 +39,7 @@ export const SettingsView = () => {
           required
           size="md"
           rows={10}
-          resize="horizontal"
+          resize="vertical"
         />
         <FormHelperText>One relay per line</FormHelperText>
       </FormControl>

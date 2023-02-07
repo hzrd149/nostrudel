@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Heading,
   Tab,
@@ -8,7 +8,6 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { ErrorBoundary } from "../../components/error-boundary";
 import { UserPostsTab } from "./posts";
 
 export const UserView = () => {
@@ -16,15 +15,15 @@ export const UserView = () => {
 
   if (!params.pubkey) {
     // TODO: better 404
-    return "no pubkey";
+    throw new Error("No pubkey");
   }
 
   return (
-    <ErrorBoundary>
-      <Heading>user {params.pubkey}</Heading>
+    <>
+      <Heading>{params.pubkey}</Heading>
       <Tabs>
         <TabList>
-          <Tab>Notes</Tab>
+          <Tab>Posts</Tab>
           <Tab>Other</Tab>
           <Tab>Relays</Tab>
         </TabList>
@@ -41,6 +40,6 @@ export const UserView = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </ErrorBoundary>
+    </>
   );
 };
