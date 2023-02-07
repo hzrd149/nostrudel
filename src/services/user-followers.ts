@@ -28,7 +28,7 @@ function requestFollowers(pubkey: string, relays: string[] = [], alwaysRequest =
 
   if (relays.length) subjects.addRelays(pubkey, relays);
 
-  db.getAllKeysFromIndex("user-contacts", "contacts", pubkey).then((cached) => {
+  db.getAllKeysFromIndex("userContacts", "contacts", pubkey).then((cached) => {
     mergeNext(subject, cached);
   });
 

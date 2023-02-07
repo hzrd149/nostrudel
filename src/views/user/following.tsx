@@ -19,7 +19,7 @@ const UserFollowingTab = () => {
         <>
           <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)", "2xl": "repeat(3, 1fr)" }} gap="2">
             {pagination.pageItems.map((pubkey, i) => (
-              <UserCard key={pubkey + i} pubkey={pubkey} />
+              <UserCard key={pubkey + i} pubkey={pubkey} relay={contacts.contactRelay[pubkey]} />
             ))}
           </Grid>
           <PaginationControls {...pagination} buttonSize="sm" />

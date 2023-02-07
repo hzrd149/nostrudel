@@ -24,7 +24,7 @@ import { UserTipButton } from "../../components/user-tip-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity";
 import { truncatedId } from "../../helpers/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
-import { ClipboardIcon, KeyIcon } from "../../components/icons";
+import { KeyIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
 
 const tabs = [
@@ -54,7 +54,7 @@ const UserView = () => {
         <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
         <Flex direction="column" gap={isMobile ? 0 : 2} grow="1" overflow="hidden">
           <Flex gap="2" justifyContent="space-between" width="100%">
-            <Flex gap="2" alignItems="center">
+            <Flex gap="2" alignItems="center" wrap="wrap">
               <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
               <UserDnsIdentityIcon pubkey={pubkey} />
             </Flex>
@@ -101,7 +101,7 @@ const UserView = () => {
         index={activeTab}
         onChange={(v) => navigate(tabs[v].path)}
       >
-        <TabList overflow={isMobile ? "auto" : undefined}>
+        <TabList overflowY="auto">
           {tabs.map(({ label }) => (
             <Tab key={label}>{label}</Tab>
           ))}

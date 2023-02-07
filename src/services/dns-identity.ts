@@ -47,14 +47,14 @@ async function addToCache(domain: string, json: IdentityJson) {
   for (const name of Object.keys(json.names)) {
     const identity = getIdentityFromJson(name, domain, json);
     if (identity) {
-      wait.push(db.put("dns-identifiers", { ...identity, updated: now }, `${name}@${domain}`));
+      wait.push(db.put("dnsIdentifiers", { ...identity, updated: now }, `${name}@${domain}`));
     }
   }
   await Promise.all(wait);
 }
 
 async function getIdentity(address: string) {
-  const cached = await db.get("dns-identifiers", address);
+  const cached = await db.get("dnsIdentifiers", address);
   if (cached) return cached;
 
   // TODO: if it fails, maybe cache a failure message
@@ -63,13 +63,13 @@ async function getIdentity(address: string) {
 
 async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
-    "dns-identifiers",
+    "dnsIdentifiers",
     "updated",
     IDBKeyRange.upperBound(moment().subtract(1, "hour").unix())
   );
 
   for (const pubkey of keys) {
-    db.delete("dns-identifiers", pubkey);
+    db.delete("dnsIdentifiers", pubkey);
   }
 }
 

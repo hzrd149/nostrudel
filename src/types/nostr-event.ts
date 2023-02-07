@@ -39,8 +39,8 @@ export type Kind0ParsedContent = {
 };
 
 export function isETag(tag: Tag): tag is ETag {
-  return tag[0] === "e";
+  return tag[0] === "e" && tag[1] !== undefined;
 }
 export function isPTag(tag: Tag): tag is PTag {
-  return tag[0] === "p";
+  return tag[0] === "p" && tag[1] !== undefined;
 }

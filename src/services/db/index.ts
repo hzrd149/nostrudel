@@ -1,4 +1,4 @@
-import { openDB } from "idb";
+import { openDB, deleteDB } from "idb";
 
 import { IDBPDatabase, IDBPTransaction, StoreNames } from "idb";
 import { CustomSchema } from "./schema";
@@ -12,29 +12,32 @@ type MigrationFunction = (
 const MIGRATIONS: MigrationFunction[] = [
   // 0 -> 1
   function (db, transaction, event) {
-    const metadata = db.createObjectStore("user-metadata", {
+    const metadata = db.createObjectStore("userMetadata", {
       keyPath: "pubkey",
     });
 
-    const contacts = db.createObjectStore("user-contacts", {
+    const contacts = db.createObjectStore("userContacts", {
       keyPath: "pubkey",
     });
     contacts.createIndex("created_at", "created_at");
     contacts.createIndex("contacts", "contacts", { multiEntry: true });
 
-    const dnsIdentifiers = db.createObjectStore("dns-identifiers");
+    const dnsIdentifiers = db.createObjectStore("dnsIdentifiers");
     dnsIdentifiers.createIndex("pubkey", "pubkey", { unique: false });
     dnsIdentifiers.createIndex("name", "name", { unique: false });
     dnsIdentifiers.createIndex("domain", "domain", { unique: false });
     dnsIdentifiers.createIndex("updated", "updated", { unique: false });
+
+    const pubkeyRelayWeights = db.createObjectStore("pubkeyRelayWeights", { keyPath: "pubkey" });
 
     // setup data
     const settings = db.createObjectStore("settings");
   },
 ];
 
+const dbName = "storage";
 const version = 1;
-const db = await openDB<CustomSchema>("storage", version, {
+const db = await openDB<CustomSchema>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     // TODO: why is newVersion sometimes null?
     // @ts-ignore
@@ -47,10 +50,16 @@ const db = await openDB<CustomSchema>("storage", version, {
   },
 });
 
-export async function clearData() {
-  await db.clear("user-metadata");
-  await db.clear("user-contacts");
-  await db.clear("dns-identifiers");
+export async function clearCacheData() {
+  await db.clear("userMetadata");
+  await db.clear("userContacts");
+  await db.clear("dnsIdentifiers");
+  await db.clear("pubkeyRelayWeights");
+  window.location.reload();
+}
+
+export async function deleteDatabase() {
+  await deleteDB(dbName);
   window.location.reload();
 }
 

@@ -169,3 +169,9 @@ export const CheckIcon = createIcon({
   d: "M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z",
   defaultProps,
 });
+
+export const NotificationIcon = createIcon({
+  displayName: "NotificationIcon",
+  d: "M5 18h14v-6.969C19 7.148 15.866 4 12 4s-7 3.148-7 7.031V18zm7-16c4.97 0 9 4.043 9 9.031V20H3v-8.969C3 6.043 7.03 2 12 2zM9.5 21h5a2.5 2.5 0 1 1-5 0z",
+  defaultProps,
+});

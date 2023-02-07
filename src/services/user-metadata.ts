@@ -21,7 +21,7 @@ function requestMetadata(pubkey: string, relays: string[], alwaysRequest = false
   }
 
   if (!subject.value) {
-    db.get("user-metadata", pubkey).then((cached) => {
+    db.get("userMetadata", pubkey).then((cached) => {
       if (cached) {
         const parsed = parseMetadata(cached);
         if (parsed) subject.next(parsed);
@@ -70,7 +70,7 @@ subscription.onEvent.subscribe((event) => {
     const parsed = parseMetadata(event);
     if (parsed) {
       subject.next(parsed);
-      db.put("user-metadata", event);
+      db.put("userMetadata", event);
       forceRequestedKeys.delete(event.pubkey);
     }
   }

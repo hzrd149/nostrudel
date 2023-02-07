@@ -20,15 +20,17 @@ import {
   AccordionButton,
   Box,
   AccordionIcon,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useState } from "react";
 import { GlobalIcon, TrashIcon } from "../../components/icons";
 import { RelayStatus } from "./relay-status";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
-import { clearData } from "../../services/db";
+import { clearCacheData, deleteDatabase } from "../../services/db";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { useNavigate } from "react-router-dom";
+import { useAsyncFn } from "react-use";
 
 export const SettingsView = () => {
   const navigate = useNavigate();
@@ -54,8 +56,15 @@ export const SettingsView = () => {
   const [clearing, setClearing] = useState(false);
   const handleClearData = async () => {
     setClearing(true);
-    await clearData();
+    await clearCacheData();
     setClearing(false);
+  };
+
+  const [deleting, setDeleting] = useState(false);
+  const handleDeleteDatabase = async () => {
+    setDeleting(true);
+    await deleteDatabase();
+    setDeleting(false);
   };
 
   return (
@@ -190,9 +199,14 @@ export const SettingsView = () => {
             </AccordionButton>
           </h2>
           <AccordionPanel>
-            <Button colorScheme="red" onClick={handleClearData} isLoading={clearing} isDisabled={clearing}>
-              Remove All Data
-            </Button>
+            <ButtonGroup>
+              <Button onClick={handleClearData} isLoading={clearing} isDisabled={clearing}>
+                Clear cache data
+              </Button>
+              <Button colorScheme="red" onClick={handleDeleteDatabase} isLoading={deleting} isDisabled={deleting}>
+                Delete database
+              </Button>
+            </ButtonGroup>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

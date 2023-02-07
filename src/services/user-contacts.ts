@@ -1,4 +1,4 @@
-import { NostrEvent } from "../types/nostr-event";
+import { isPTag, NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { NostrSubscription } from "../classes/nostr-subscription";
@@ -6,6 +6,7 @@ import { safeJson } from "../helpers/parse";
 import db from "./db";
 import settings from "./settings";
 import userFollowersService from "./user-followers";
+import pubkeyRelayWeightsService from "./pubkey-relay-weights";
 
 const subscription = new NostrSubscription([], undefined, "user-contacts");
 const subjects = new PubkeySubjectCache<UserContacts>();
@@ -15,24 +16,25 @@ export type UserContacts = {
   pubkey: string;
   relays: Record<string, { read: boolean; write: boolean }>;
   contacts: string[];
-  // contacts: {
-  //   pubkey: string;
-  //   relay?: string;
-  // }[];
+  contactRelay: Record<string, string | undefined>;
   created_at: number;
 };
 
 function parseContacts(event: NostrEvent): UserContacts {
-  // const keys = event.tags
-  //   .filter((tag) => tag[0] === "p" && tag[1])
-  //   .map((tag) => ({ pubkey: tag[1] as string, relay: tag[2] }));
-  const keys = event.tags.filter((tag) => tag[0] === "p" && tag[1]).map((tag) => tag[1]) as string[];
   const relays = safeJson(event.content, {}) as UserContacts["relays"];
+  const pubkeys = event.tags.filter(isPTag).map((tag) => tag[1]);
+  const contactRelay = event.tags.filter(isPTag).reduce((dir, tag) => {
+    if (tag[2]) {
+      dir[tag[1]] = tag[2];
+    }
+    return dir;
+  }, {} as Record<string, string>);
 
   return {
     pubkey: event.pubkey,
     relays,
-    contacts: keys,
+    contacts: pubkeys,
+    contactRelay,
     created_at: event.created_at,
   };
 }
@@ -45,7 +47,7 @@ function requestContacts(pubkey: string, relays: string[] = [], alwaysRequest = 
   if (alwaysRequest) forceRequestedKeys.add(pubkey);
 
   if (!subject.value) {
-    db.get("user-contacts", pubkey).then((cached) => {
+    db.get("userContacts", pubkey).then((cached) => {
       if (cached) subject.next(cached);
     });
   }
@@ -81,21 +83,26 @@ function flushRequests() {
 function receiveEvent(event: NostrEvent) {
   if (event.kind !== 3) return;
 
+  const parsed = parseContacts(event);
+
   if (subjects.hasSubject(event.pubkey)) {
     const subject = subjects.getSubject(event.pubkey);
     const latest = subject.getValue();
     // make sure the event is newer than whats in the subject
     if (!latest || event.created_at > latest.created_at) {
-      const parsed = parseContacts(event);
       subject.next(parsed);
       // send it to the db
-      db.put("user-contacts", parsed);
+      db.put("userContacts", parsed);
+      // add it to the pubkey relay weights
+      pubkeyRelayWeightsService.handleContactList(parsed);
     }
   } else {
-    db.get("user-contacts", event.pubkey).then((cached) => {
+    db.get("userContacts", event.pubkey).then((cached) => {
       // make sure the event is newer than whats in the db
       if (!cached || event.created_at > cached.created_at) {
-        db.put("user-contacts", parseContacts(event));
+        db.put("userContacts", parsed);
+        // add it to the pubkey relay weights
+        pubkeyRelayWeightsService.handleContactList(parsed);
       }
     });
   }
