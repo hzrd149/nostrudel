@@ -32,7 +32,7 @@ const NoteView = () => {
     pageContent = (
       <>
         {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} />
+          <Note key={parent.event.id + "-rely"} event={parent.event} maxHeight={200} />
         ))}
         <ThreadPost key={post.event.id} post={post} initShowReplies />
       </>

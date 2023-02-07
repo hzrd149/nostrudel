@@ -23,8 +23,9 @@ import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 
 export type NoteProps = {
   event: NostrEvent;
+  maxHeight?: number;
 };
-export const Note = React.memo(({ event }: NoteProps) => {
+export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const isMobile = useIsMobile();
   const readonly = useReadonlyMode();
   const { openModal } = useContext(PostModalContext);
@@ -52,7 +53,7 @@ export const Note = React.memo(({ event }: NoteProps) => {
         </Flex>
       </CardHeader>
       <CardBody px="2" py="0">
-        <NoteContents event={event} trusted={following.includes(event.pubkey)} />
+        <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
       </CardBody>
       <CardFooter padding="2" display="flex" gap="2">
         <IconButton

@@ -52,7 +52,6 @@
 ## TODO
 
 - add `client` tag to published events
-- add relay selection to global feed
 - add button for creating lightning invoice via WebLN
 - setup deploy to s3
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/

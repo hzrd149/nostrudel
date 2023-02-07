@@ -47,7 +47,7 @@ export const FollowingTab = () => {
         <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} />
       </FormControl>
       {timeline.map((event) => (
-        <Note key={event.id} event={event} />
+        <Note key={event.id} event={event} maxHeight={300} />
       ))}
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>

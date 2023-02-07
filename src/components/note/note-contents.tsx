@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   AspectRatio,
   Box,
@@ -17,6 +17,7 @@ import { normalizeToHex } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import settings from "../../services/settings";
+import styled from "@emotion/styled";
 // import { ExternalLinkIcon } from "../icons";
 
 const BlurredImage = (props: ImageProps) => {
@@ -166,7 +167,7 @@ const embeds: EmbedType[] = [
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(svg|gif|png|jpg|jpeg|webp|avif))[^\s]*/im,
     render: (match, event, trusted) => {
       const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
-      return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
+      return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" minHeight="20rem" />;
     },
     name: "Image",
     isMedia: true,
@@ -264,19 +265,51 @@ function embedContent(content: string, event?: NostrEvent, trusted: boolean = fa
   return [content];
 }
 
+const GradientOverlay = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0%) 0%, var(--chakra-colors-chakra-body-bg) 100%);
+  cursor: pointer;
+`;
+
 export type NoteContentsProps = {
   event: NostrEvent;
   trusted?: boolean;
+  maxHeight?: number;
 };
 
-export const NoteContents = React.memo(({ event, trusted }: NoteContentsProps) => {
+export const NoteContents = React.memo(({ event, trusted, maxHeight }: NoteContentsProps) => {
   const parts = embedContent(event.content, event, trusted ?? false);
+  const [height, setHeight] = useState(maxHeight);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const testHeight = useCallback(() => {
+    if (ref.current && maxHeight) {
+      const rect = ref.current.getClientRects()[0];
+      setHeight(rect.height < maxHeight ? undefined : maxHeight);
+    }
+  }, [maxHeight, setHeight]);
+
+  useEffect(() => {
+    testHeight();
+  }, [testHeight]);
 
   return (
-    <Box whiteSpace="pre-wrap">
+    <Box
+      ref={ref}
+      whiteSpace="pre-wrap"
+      maxHeight={height}
+      position="relative"
+      overflow={maxHeight ? "hidden" : "initial"}
+      onLoad={() => testHeight()}
+    >
       {parts.map((part, i) => (
         <span key={"part-" + i}>{part}</span>
       ))}
+      {height && <GradientOverlay onClick={() => setHeight(undefined)} />}
     </Box>
   );
 });
