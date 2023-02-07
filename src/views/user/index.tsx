@@ -22,7 +22,7 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserRelaysTab } from "./relays";
 import { UserFollowingTab } from "./following";
-import { UserRepliesTab } from "./replies";
+// import { UserRepliesTab } from "./replies";
 import { normalizeToHex } from "../../helpers/nip-19";
 import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
@@ -89,7 +89,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
       >
         <TabList>
           <Tab>Posts</Tab>
-          <Tab>Replies</Tab>
+          {/* <Tab>Replies</Tab> */}
           <Tab>Following</Tab>
           <Tab>Relays</Tab>
         </TabList>
@@ -98,9 +98,9 @@ export const UserView = ({ pubkey }: UserViewProps) => {
           <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
           </TabPanel>
-          <TabPanel pr={0} pl={0}>
+          {/* <TabPanel pr={0} pl={0}>
             <UserRepliesTab pubkey={pubkey} />
-          </TabPanel>
+          </TabPanel> */}
           <TabPanel>
             <UserFollowingTab pubkey={pubkey} />
           </TabPanel>

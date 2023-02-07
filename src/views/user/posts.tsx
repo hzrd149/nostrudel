@@ -15,10 +15,7 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
     `${pubkey} posts`
   );
 
-  const { events, reset } = useEventDir(
-    sub,
-    (event) => !event.tags.find((t) => t[0] === "e")
-  );
+  const { events, reset } = useEventDir(sub);
 
   // clear events when pubkey changes
   useEffect(() => reset(), [pubkey]);

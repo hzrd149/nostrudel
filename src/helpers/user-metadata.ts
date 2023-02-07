@@ -3,7 +3,7 @@ import { normalizeToBech32 } from "./nip-19";
 import { truncatedId } from "./nostr-event";
 
 export function getUserDisplayName(
-  metadata: Kind0ParsedContent,
+  metadata: Kind0ParsedContent | undefined,
   pubkey: string
 ) {
   if (metadata?.display_name && metadata?.name) {

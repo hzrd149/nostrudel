@@ -12,11 +12,8 @@ import {
   Heading,
   HStack,
   Text,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useCopyToClipboard } from "react-use";
-import { PostModal } from "../post-modal";
 import { NostrEvent } from "../../types/nostr-event";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatarLink } from "../user-avatar-link";
@@ -25,17 +22,14 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
 import { PostContents } from "../post-contents";
 import { PostMenu } from "./post-menu";
+import { PostCC } from "./post-cc";
 
 export type PostProps = {
   event: NostrEvent;
 };
 export const Post = React.memo(({ event }: PostProps) => {
-  const [_clipboardState, copyToClipboard] = useCopyToClipboard();
   const navigate = useNavigate();
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const { metadata } = useUserMetadata(event.pubkey);
-
-  const username = metadata && getUserDisplayName(metadata, event.pubkey);
 
   return (
     <Card padding="2" variant="outline">
@@ -45,17 +39,20 @@ export const Post = React.memo(({ event }: PostProps) => {
             <UserAvatarLink pubkey={event.pubkey} size="sm" />
 
             <Box>
-              <Heading size="sm">
+              <Heading size="sm" display="inline">
                 <Link
                   to={`/u/${normalizeToBech32(
                     event.pubkey,
                     Bech32Prefix.Pubkey
                   )}`}
                 >
-                  {username}
+                  {getUserDisplayName(metadata, event.pubkey)}
                 </Link>
               </Heading>
-              <Text>{moment(event.created_at * 1000).fromNow()}</Text>
+              <Text display="inline" ml="2">
+                {moment(event.created_at * 1000).fromNow()}
+              </Text>
+              <PostCC event={event} />
             </Box>
           </Flex>
           <PostMenu event={event} />
@@ -79,11 +76,7 @@ export const Post = React.memo(({ event }: PostProps) => {
           >
             Replies
           </Button>
-          <Button size="sm" variant="link" onClick={onOpen}>
-            Expand
-          </Button>
         </Flex>
-        <PostModal event={event} isOpen={isOpen} onClose={onClose} />
       </CardFooter>
     </Card>
   );
