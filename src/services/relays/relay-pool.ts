@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
+import settings from "../settings";
 import { Relay } from "./relay";
-import settingsService from "../settings";
 
 export class RelayPool {
   relays = new Map<string, Relay>();
@@ -72,8 +72,9 @@ if (import.meta.env.DEV) {
   window.relayPool = relayPool;
 }
 
+// TODO: move this somewhere where it makes sense
 setTimeout(async () => {
-  const urls = await settingsService.getRelays();
+  const urls = settings.relays.getValue();
 
   for (const url of urls) {
     relayPool.requestRelay(url);

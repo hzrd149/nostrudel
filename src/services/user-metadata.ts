@@ -1,7 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { Kind0ParsedContent } from "../types/nostr-event";
 import db from "./db";
-import settingsService from "./settings";
+import settings from "./settings";
 import { Subscription } from "./subscriptions";
 
 class UserMetadata {
@@ -89,7 +89,7 @@ class UserMetadata {
   }
 }
 
-const userMetadata = new UserMetadata(await settingsService.getRelays());
+const userMetadata = new UserMetadata(settings.relays.getValue());
 
 if (import.meta.env.DEV) {
   // @ts-ignore

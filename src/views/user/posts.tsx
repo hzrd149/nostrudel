@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { SkeletonText } from "@chakra-ui/react";
-import settingsService from "../../services/settings";
 import { useSubscription } from "../../hooks/use-subscription";
 import { Post } from "../../components/post";
 import { NostrEvent } from "../../types/nostr-event";
-
-const relayUrls = await settingsService.getRelays();
+import settings from "../../services/settings";
+import useSubject from "../../hooks/use-subject";
 
 export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
+  const relays = useSubject(settings.relays);
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   const sub = useSubscription(
-    relayUrls,
+    relays,
     { authors: [pubkey], kinds: [1] },
     `${pubkey} posts`
   );

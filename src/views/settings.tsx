@@ -3,15 +3,19 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  Input,
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-import React, { SyntheticEvent, useState } from "react";
-import { useRelays } from "../providers/relay-provider";
+import { SyntheticEvent, useState } from "react";
+import useSubject from "../hooks/use-subject";
+import settings from "../services/settings";
 
 export const SettingsView = () => {
-  const { relays, overwriteRelays } = useRelays();
+  const relays = useSubject(settings.relays);
+  // const corsProxy = useSubject(settings.corsProxy);
   const [relayUrls, setRelayUrls] = useState(relays.join("\n"));
+  // const [newCorsProxy, setNewCorsProxy] = useState(corsProxy);
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,12 +25,18 @@ export const SettingsView = () => {
       .map((url) => url.trim());
 
     if (newRelays.length > 0) {
-      await overwriteRelays(newRelays);
+      settings.relays.next(newRelays);
     }
+
+    // try {
+    //   const corsUrl = new URL("https://cors.rdfriedl.com").toString();
+    //   settings.corsProxy.next(corsUrl);
+    // } catch (e) {}
   };
 
   const resetForm = async () => {
     setRelayUrls(relays.join("\n"));
+    // setNewCorsProxy(corsProxy);
   };
 
   return (
@@ -43,6 +53,15 @@ export const SettingsView = () => {
         />
         <FormHelperText>One relay per line</FormHelperText>
       </FormControl>
+      {/* <FormControl>
+        <FormLabel>CORS Proxy</FormLabel>
+        <Input
+          value={newCorsProxy}
+          onChange={(e) => setNewCorsProxy(e.target.value)}
+          required
+        />
+        <FormHelperText>One relay per line</FormHelperText>
+      </FormControl> */}
       <Stack direction="row" spacing={4}>
         <Button onClick={resetForm}>Reset</Button>
         <Button type="submit">Save</Button>

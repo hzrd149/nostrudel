@@ -1,20 +1,36 @@
+import { BehaviorSubject } from "rxjs";
 import db from "./db";
 
-export async function getRelays(): Promise<string[]> {
-  return await db.get("settings", "relays");
-}
-export async function setRelays(relays: string[] = []) {
-  await db.put("settings", relays, "relays");
+function log(message: string) {
+  console.log(`Settings: ${message}`);
 }
 
-const settingsService = {
-  getRelays,
-  setRelays,
+const settings = {
+  relays: new BehaviorSubject<string[]>([]),
+  corsProxy: new BehaviorSubject<string>(""),
 };
 
-if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.settingsService = settingsService;
-}
+async function loadSettings() {
+  let loading = true;
+  const relays = await db.get("settings", "relays");
+  if (relays) settings.relays.next(relays);
+  settings.relays.subscribe((newUrls) => {
+    if (loading) return;
+    log("saving relay urls");
+    db.put("settings", newUrls, "relays");
+  });
 
-export default settingsService;
+  const corsProxy = await db.get("settings", "cors-proxy");
+  if (corsProxy) settings.corsProxy.next(corsProxy);
+  settings.corsProxy.subscribe((newUrl) => {
+    if (loading) return;
+    log("saving cors-proxy url");
+    db.put("settings", newUrl, "cors-proxy");
+  });
+
+  loading = false;
+  log("loaded");
+}
+await loadSettings();
+
+export default settings;

@@ -19,12 +19,15 @@ import moment from "moment";
 import { PostModal } from "./post-modal";
 import { NostrEvent } from "../types/nostr-event";
 import { useUserMetadata } from "../hooks/use-user-metadata";
+import useSubject from "../hooks/use-subject";
+import settings from "../services/settings";
 
 export type PostProps = {
   event: NostrEvent;
 };
 export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const corsProxy = useSubject(settings.corsProxy);
   const userMetadata = useUserMetadata(event.pubkey);
 
   const isLong = event.content.length > 800;
@@ -35,8 +38,8 @@ export const Post = React.memo(({ event }: PostProps) => {
         <HStack spacing="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
             <Avatar
-              name={userMetadata?.name}
-              src="https://bit.ly/sage-adebayo"
+              name={userMetadata?.display_name ?? userMetadata?.name}
+              src={userMetadata?.picture}
             />
 
             <Box>

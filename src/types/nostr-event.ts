@@ -13,5 +13,8 @@ export type IncomingNostrEvent =
   | ["NOTICE", string];
 
 export type Kind0ParsedContent = {
-  name: string;
+  name?: string;
+  display_name?: string;
+  about?: string;
+  picture?: string;
 };

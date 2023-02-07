@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { SkeletonText } from "@chakra-ui/react";
 import { useSubscription } from "../../hooks/use-subscription";
-import { useRelays } from "../../providers/relay-provider";
 import { Post } from "../../components/post";
 import moment from "moment/moment";
 import { NostrEvent } from "../../types/nostr-event";
+import settings from "../../services/settings";
+import useSubject from "../../hooks/use-subject";
 
 export const GlobalView = () => {
-  const { relays } = useRelays();
+  const relays = useSubject(settings.relays);
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   const sub = useSubscription(
