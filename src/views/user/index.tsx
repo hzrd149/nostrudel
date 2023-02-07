@@ -91,9 +91,11 @@ const UserView = () => {
               onClick={() => navigate("/settings")}
             />
           )}
-          <Button colorScheme="brand" size="sm">
-            Follow
-          </Button>
+          {!isSelf && (
+            <Button colorScheme="brand" size="sm">
+              Follow
+            </Button>
+          )}
         </Flex>
       </Flex>
     </Flex>

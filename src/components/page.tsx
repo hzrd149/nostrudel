@@ -19,14 +19,16 @@ const MobileProfileHeader = () => {
   const pubkey = useSubject(identity.pubkey);
 
   return (
-    <Flex justifyContent="space-between" px="2" pt="2">
+    <Flex justifyContent="space-between" padding="2">
       <UserAvatarLink pubkey={pubkey} size="sm" />
       <IconButton
+        as={Link}
         variant="ghost"
         icon={<NotificationIcon />}
         aria-label="Notifications"
         title="Notifications"
         size="sm"
+        to="/notifications"
       />
     </Flex>
   );
@@ -70,6 +72,9 @@ const DesktopSideNav = () => {
       <ProfileButton />
       <Button onClick={() => navigate("/")} leftIcon={<FeedIcon />}>
         Home
+      </Button>
+      <Button onClick={() => navigate("/notifications")} leftIcon={<NotificationIcon />}>
+        Notifications
       </Button>
       <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
         Settings

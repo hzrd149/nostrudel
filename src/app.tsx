@@ -21,6 +21,7 @@ import UserFollowingTab from "./views/user/following";
 import NoteView from "./views/note";
 import { LoginStartView } from "./views/login/start";
 import { LoginNpubView } from "./views/login/npub";
+import NotificationsView from "./views/notifications";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsView />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationsView />,
       },
       {
         path: "profile",

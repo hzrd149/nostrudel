@@ -210,7 +210,7 @@ export const SettingsView = () => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Flex gap="2">
+      <Flex gap="2" padding="4">
         <Button onClick={() => identity.logout()}>Logout</Button>
       </Flex>
     </Flex>
