@@ -24,21 +24,26 @@ const BlurredImage = (props: ImageProps) => {
   return <Image onClick={onToggle} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />;
 };
 
-const embeds: {
+type EmbedType = {
   regexp: RegExp;
   render: (match: RegExpMatchArray, event?: NostrEvent, trusted?: boolean) => JSX.Element | string;
+  name?: string;
   isMedia: boolean;
-}[] = [
+};
+
+const embeds: EmbedType[] = [
   // Lightning Invoice
   {
     regexp: /(lightning:)?(LNBC[A-Za-z0-9]+)/im,
     render: (match) => <InlineInvoiceCard paymentRequest={match[2]} />,
+    name: "Lightning Invoice",
     isMedia: false,
   },
   // Twitter tweet
   {
     regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]+/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
+    name: "Tweet",
     isMedia: true,
   },
   // Youtube Video
@@ -57,6 +62,7 @@ const embeds: {
         ></iframe>
       </AspectRatio>
     ),
+    name: "Youtube Video",
     isMedia: true,
   },
   // Youtube Music
@@ -73,28 +79,30 @@ const embeds: {
         ></iframe>
       </AspectRatio>
     ),
+    name: "Youtube Music",
     isMedia: true,
   },
   // Tidal
   {
-    regexp: /https?:\/\/tidal\.com(\/browse)?\/track\/(\d+)/im,
+    regexp: /https?:\/\/tidal\.com(\/browse)?\/(track|album)\/(\d+)/im,
     render: (match) => (
       <iframe
-        src={`https://embed.tidal.com/tracks/${match[2]}?disableAnalytics=true`}
+        src={`https://embed.tidal.com/${match[2]}s/${match[3]}?disableAnalytics=true`}
         width="100%"
-        height="96"
+        height={match[2] === "album" ? 400 : 96}
       ></iframe>
     ),
+    name: "Tidal",
     isMedia: true,
   },
   // Spotify
   {
-    regexp: /https?:\/\/open\.spotify\.com\/(track|episode)\/(\w+)[^\s]+/im,
+    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album)\/(\w+)[^\s]+/im,
     render: (match) => (
       <iframe
         style={{ borderRadius: "12px" }}
         width="100%"
-        height="152"
+        height={match[1] === "album" ? 400 : 152}
         title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
         frameBorder="0"
         allowFullScreen
@@ -103,6 +111,7 @@ const embeds: {
         src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
       ></iframe>
     ),
+    name: "Spotify",
     isMedia: true,
   },
   // apple music
@@ -112,12 +121,13 @@ const embeds: {
       <iframe
         allow="encrypted-media *; fullscreen *; clipboard-write"
         frameBorder="0"
-        height="175"
+        height={match[0].includes("/album") ? 450 : 175}
         style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
         // sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src={match[0].replace("music.apple.com", "embed.music.apple.com")}
       ></iframe>
     ),
+    name: "Apple Music",
     isMedia: true,
   },
   // Image
@@ -127,6 +137,7 @@ const embeds: {
       const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
       return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
     },
+    name: "Image",
     isMedia: true,
   },
   // Video
@@ -137,6 +148,7 @@ const embeds: {
         <video src={match[0]} controls />
       </AspectRatio>
     ),
+    name: "Video",
     isMedia: true,
   },
   // Link
@@ -191,14 +203,14 @@ const embeds: {
   },
 ];
 
-const MediaEmbed = ({ children }: { children: JSX.Element | string }) => {
+const MediaEmbed = ({ children, type }: { children: JSX.Element | string; type: EmbedType }) => {
   const [show, setShow] = useState(settings.autoShowMedia.value);
 
   return show ? (
     <>{children}</>
   ) : (
     <ButtonGroup size="sm" isAttached variant="outline">
-      <Button onClick={() => setShow(true)}>Show Embed</Button>
+      <Button onClick={() => setShow(true)}>Show {type.name ?? "Embed"}</Button>
       {/* TODO: add external link for embed */}
       {/* <IconButton as="a" aria-label="Add to friends" icon={<ExternalLinkIcon />} href={}/> */}
     </ButtonGroup>
@@ -213,7 +225,7 @@ function embedContent(content: string, event?: NostrEvent, trusted: boolean = fa
       const before = content.slice(0, match.index);
       const after = content.slice(match.index + match[0].length, content.length);
       const embedRender = embedType.render(match, event, trusted);
-      const embed = embedType.isMedia ? <MediaEmbed>{embedRender}</MediaEmbed> : embedRender;
+      const embed = embedType.isMedia ? <MediaEmbed type={embedType}>{embedRender}</MediaEmbed> : embedRender;
 
       return [...embedContent(before, event, trusted), embed, ...embedContent(after, event, trusted)];
     }
