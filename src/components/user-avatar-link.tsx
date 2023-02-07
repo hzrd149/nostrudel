@@ -1,5 +1,6 @@
 import { Tooltip } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { normalizeToBech32 } from "../helpers/nip-19";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { UserAvatar, UserAvatarProps } from "./user-avatar";
 
@@ -12,7 +13,7 @@ export const UserAvatarLink = ({ pubkey, ...props }: UserAvatarProps) => {
   } else if (metadata?.name) {
     label = metadata.name;
   } else {
-    label = pubkey;
+    label = normalizeToBech32(pubkey) ?? pubkey;
   }
 
   return (

@@ -3,7 +3,7 @@ export type NostrEvent = {
   pubkey: string;
   created_at: number;
   kind: number;
-  tags: [string] | [string, string] | [string, string, string];
+  tags: ([string] | [string, string] | [string, string, string])[];
   content: string;
   sig: string;
 };

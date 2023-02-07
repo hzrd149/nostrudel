@@ -11,10 +11,10 @@ import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
-import homeIcon from "./icons/home.svg";
-import globalIcon from "./icons/global.svg";
-import settingsIcon from "./icons/settings.svg";
-import profileIcon from "./icons/profile.svg";
+import homeIcon from "./icons/home-line.svg";
+import globalIcon from "./icons/global-line.svg";
+import settingsIcon from "./icons/settings-2-line.svg";
+import profileIcon from "./icons/user-line.svg";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { ProfileButton } from "./profile-button";
 

@@ -6,7 +6,7 @@ import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
 import { useEventDir } from "../../hooks/use-event-dir";
 
-export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
+export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
   const relays = useSubject(settings.relays);
 
   const sub = useSubscription(
@@ -17,7 +17,7 @@ export const UserPostsTab = ({ pubkey }: { pubkey: string }) => {
 
   const { events, reset } = useEventDir(
     sub,
-    (event) => !event.tags.find((t) => t[0] === "e")
+    (event) => !!event.tags.find((t) => t[0] === "e")
   );
 
   // clear events when pubkey changes

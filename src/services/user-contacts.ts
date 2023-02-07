@@ -53,8 +53,8 @@ export class UserContactsService {
               )
               .subscribe(async (event) => {
                 const keys = event.tags
-                  .filter((tag) => tag[0] === "p")
-                  .map((tag) => ({ pubkey: tag[1], relay: tag[2] }));
+                  .filter((tag) => tag[0] === "p" && tag[1])
+                  .map((tag) => ({ pubkey: tag[1] as string, relay: tag[2] }));
 
                 const relays = safeParse(
                   event.content,

@@ -4,6 +4,7 @@ import useSubject from "../hooks/use-subject";
 import identity from "../services/identity";
 import { UserAvatar } from "./user-avatar";
 import { useUserMetadata } from "../hooks/use-user-metadata";
+import { normalizeToBech32 } from "../helpers/nip-19";
 
 export type ProfileButtonProps = {
   to: string;
@@ -28,7 +29,7 @@ export const ProfileButton = ({ to }: ProfileButtonProps) => {
       <UserAvatar pubkey={pubkey} />
       <Box>
         <Text fontWeight="bold">{metadata?.name}</Text>
-        <Text>{pubkey}</Text>
+        <Text>{normalizeToBech32(pubkey)}</Text>
       </Box>
     </LinkBox>
   );

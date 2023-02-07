@@ -13,6 +13,7 @@
     "@chakra-ui/react": "^2.4.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "bech32-buffer": "^0.2.1",
     "framer-motion": "^7.10.3",
     "idb": "^7.1.1",
     "identicon.js": "^2.3.3",
