@@ -9,8 +9,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import ReactMarkdown from "react-markdown";
 import { NostrEvent } from "../types/nostr-event";
+import { PostContents } from "./post-contents";
 
 export type PostModalProps = {
   event: NostrEvent;
@@ -25,9 +25,7 @@ export const PostModal = ({ event, onClose, isOpen }: PostModalProps) => (
       <ModalHeader>{event.pubkey}</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <ReactMarkdown>
-          {event.content.replace(/(?<! )\n/g, "  \n")}
-        </ReactMarkdown>
+        <PostContents content={event.content} />
       </ModalBody>
       <ModalFooter>
         <Button colorScheme="blue" onClick={onClose}>

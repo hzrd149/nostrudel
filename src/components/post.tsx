@@ -13,7 +13,6 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { PostModal } from "./post-modal";
@@ -24,6 +23,7 @@ import { getUserFullName } from "../helpers/user-metadata";
 
 import codeIcon from "./icons/code-line.svg";
 import styled from "@emotion/styled";
+import { PostContents } from "./post-contents";
 
 const SimpleIcon = styled.img`
   width: 1.2em;
@@ -71,9 +71,7 @@ export const Post = React.memo(({ event }: PostProps) => {
       <CardBody pt="2" pb="0" pr="0" pl="0">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box maxHeight="20rem" overflow="hidden" width="100%">
-            <ReactMarkdown>
-              {event.content.replace(/(?<! )\n/g, "  \n")}
-            </ReactMarkdown>
+            <PostContents content={event.content}/>
           </Box>
           {isLong && (
             <>
