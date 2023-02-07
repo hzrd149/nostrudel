@@ -37,12 +37,11 @@ export const Post = ({ event }) => {
               <Text>{moment(event.created_at * 1000).fromNow()}</Text>
             </Box>
           </Flex>
-          <EventSeenOn id={event.id} />
         </Flex>
       </CardHeader>
       <CardBody pt={0}>
         <VStack alignItems="flex-start" justifyContent="stretch">
-          <Box maxHeight="10rem" overflow="hidden" width="100%">
+          <Box maxHeight="20rem" overflow="hidden" width="100%">
             <ReactMarkdown>
               {event.content.replace(/(?<! )\n/g, "  \n")}
             </ReactMarkdown>

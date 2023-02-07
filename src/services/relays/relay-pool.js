@@ -1,5 +1,6 @@
 import { Subject } from "rxjs";
 import { Relay } from "./relay";
+import settingsService from "../settings";
 
 export class RelayPool {
   relays = new Map();
@@ -18,9 +19,9 @@ export class RelayPool {
 
   requestRelay(url, connect = true) {
     if (!this.relays.has(url)) {
-      const newRelay = new Relay(url)
+      const newRelay = new Relay(url);
       this.relays.set(url, newRelay);
-      this.onRelayCreated.next(newRelay)
+      this.onRelayCreated.next(newRelay);
     }
 
     const relay = this.relays.get(url);
@@ -69,5 +70,13 @@ const relayPool = new RelayPool();
 if (import.meta.env.DEV) {
   window.relayPool = relayPool;
 }
+
+setTimeout(async () => {
+  const urls = await settingsService.getRelays();
+
+  for (const url of urls) {
+    relayPool.requestRelay(url);
+  }
+}, 1000 * 10);
 
 export default relayPool;

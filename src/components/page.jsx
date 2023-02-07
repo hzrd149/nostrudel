@@ -19,6 +19,9 @@ export const Page = ({ children }) => {
         <Box flexGrow={1} overflow="auto">
           <ErrorBoundary>{children}</ErrorBoundary>
         </Box>
+        <VStack style={{ width: "20rem" }} alignItems="stretch" flexShrink={0}>
+          <Button onClick={() => navigate("/")}>Manage Follows</Button>
+        </VStack>
       </HStack>
     </Container>
   );

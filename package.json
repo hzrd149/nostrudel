@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "vite serve",
-    "build": "vite build"
+    "build": "vite build",
+    "format": "prettier --ignore-path .gitignore -w ."
   },
   "devDependencies": {
     "prettier": "^2.8.1",
