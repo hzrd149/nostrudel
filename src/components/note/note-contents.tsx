@@ -83,6 +83,7 @@ const embeds: EmbedType[] = [
     isMedia: true,
   },
   // Tidal
+  // note132m5xc3zhj7fap67vzwx5x3s8xqgz49k669htcn8kppr4m654tuq960tuu
   {
     regexp: /https?:\/\/tidal\.com(\/browse)?\/(track|album)\/(\d+)/im,
     render: (match) => (
@@ -96,6 +97,7 @@ const embeds: EmbedType[] = [
     isMedia: true,
   },
   // Spotify
+  // note12xt2pjpwp6gec95p4cw0qzecy764f8wzgcl3z2ufkrkne4t5d2zse3ze78
   {
     regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album)\/(\w+)[^\s]+/im,
     render: (match) => (
@@ -115,13 +117,15 @@ const embeds: EmbedType[] = [
     isMedia: true,
   },
   // apple music
+  // note1tvqk2mu829yr6asf7w5dgpp8t0mlp2ax5t26ctfdx8m0ptkssamqsleeux
+  // note1ygx9tec3af92704d92jwrj3zs7cws2jl29yvrlxzqlcdlykhwssqpupa7t
   {
     regexp: /https?:\/\/music\.apple\.com\/[^\s]+/im,
     render: (match) => (
       <iframe
         allow="encrypted-media *; fullscreen *; clipboard-write"
         frameBorder="0"
-        height={match[0].includes("/album") ? 450 : 175}
+        height={match[0].includes("?i=") ? 175 : 450}
         style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
         // sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src={match[0].replace("music.apple.com", "embed.music.apple.com")}
