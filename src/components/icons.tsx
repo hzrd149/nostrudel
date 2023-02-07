@@ -80,6 +80,12 @@ export const ArrowDownSIcon = createIcon({
   defaultProps,
 });
 
+export const ArrowUpSIcon = createIcon({
+  displayName: "arrow-up-s",
+  d: "M12 10.828l-4.95 4.95-1.414-1.414L12 8l6.364 6.364-1.414 1.414z",
+  defaultProps,
+});
+
 export const ArrowLeftSIcon = createIcon({
   displayName: "arrow-left-s",
   d: "M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z",

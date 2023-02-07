@@ -13,7 +13,7 @@ export const UserLink = ({ pubkey, ...props }: UserLinkProps) => {
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   return (
-    <Link as={RouterLink} to={`/u/${npub}`} {...props}>
+    <Link as={RouterLink} to={`/u/${npub}`} whiteSpace="nowrap" {...props}>
       @{getUserDisplayName(metadata, pubkey)}
     </Link>
   );

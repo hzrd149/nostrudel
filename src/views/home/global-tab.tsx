@@ -1,6 +1,5 @@
 import { Button, Flex, FormControl, FormLabel, Select, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
 import moment from "moment";
-import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Note } from "../../components/note";
 import { unique } from "../../helpers/array";
@@ -25,7 +24,7 @@ export const GlobalTab = () => {
   const { events, loading, loadMore, loader } = useTimelineLoader(
     `global`,
     selectedRelay ? [selectedRelay] : availableRelays,
-    { kinds: [1], since: moment().subtract(5, "minutes").unix() },
+    { kinds: [1], since: moment().unix() },
     { pageSize: moment.duration(5, "minutes").asSeconds() }
   );
 
