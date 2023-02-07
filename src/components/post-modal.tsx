@@ -10,7 +10,7 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../types/nostr-event";
-import { PostContents } from "./post-contents";
+import { PostContents } from "./post/post-contents";
 
 export type PostModalProps = {
   event: NostrEvent;

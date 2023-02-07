@@ -13,8 +13,8 @@ import remarkUnwrapImages from "remark-unwrap-images";
 import rehypeExternalLinks from "rehype-external-links";
 // @ts-ignore
 import linkifyRegex from "remark-linkify-regex";
-import { InlineInvoiceCard } from "./inline-invoice-card";
-import { TweetEmbed } from "./tweet-embed";
+import { InlineInvoiceCard } from "../inline-invoice-card";
+import { TweetEmbed } from "../tweet-embed";
 
 const lightningInvoiceRegExp = /(lightning:)?LNBC[A-Za-z0-9]+/i;
 

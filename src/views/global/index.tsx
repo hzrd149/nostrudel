@@ -75,10 +75,10 @@ export const GlobalView = () => {
       flexDirection="column"
       flexGrow="1"
       overflow="hidden"
-      isManual
+      isLazy
     >
       <TabList>
-        <Tab>Posts</Tab>
+        <Tab>Notes</Tab>
         <Tab>Replies</Tab>
       </TabList>
       <TabPanels overflow="auto" height="100%">

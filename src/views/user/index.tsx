@@ -85,10 +85,10 @@ export const UserView = ({ pubkey }: UserViewProps) => {
         flexDirection="column"
         flexGrow="1"
         overflow="hidden"
-        isManual
+        isLazy
       >
         <TabList>
-          <Tab>Posts</Tab>
+          <Tab>Notes</Tab>
           {/* <Tab>Replies</Tab> */}
           <Tab>Following</Tab>
           <Tab>Relays</Tab>

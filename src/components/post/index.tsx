@@ -20,7 +20,7 @@ import { UserAvatarLink } from "../user-avatar-link";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
-import { PostContents } from "../post-contents";
+import { PostContents } from "./post-contents";
 import { PostMenu } from "./post-menu";
 import { PostCC } from "./post-cc";
 
@@ -35,7 +35,7 @@ export const Post = React.memo(({ event }: PostProps) => {
     <Card padding="2" variant="outline">
       <CardHeader padding="0" mb="2">
         <HStack spacing="4">
-          <Flex flex="1" gap="2" alignItems="center" flexWrap="wrap">
+          <Flex flex="1" gap="2">
             <UserAvatarLink pubkey={event.pubkey} size="sm" />
 
             <Box>

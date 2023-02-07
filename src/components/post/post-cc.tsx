@@ -23,7 +23,7 @@ export const PostCC = ({ event }: { event: NostrEvent }) => {
   if (!hasCC) return null;
 
   return (
-    <Text fontSize="sm">
+    <Text fontSize="sm" color="gray.500">
       <span>Replying to: </span>
       {event.tags
         .filter((t) => t[0] === "p")
