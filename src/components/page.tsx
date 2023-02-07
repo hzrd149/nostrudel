@@ -4,13 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
-import homeIcon from "./icons/home-line.svg";
-import globalIcon from "./icons/global-line.svg";
-import settingsIcon from "./icons/settings-2-line.svg";
-import profileIcon from "./icons/user-line.svg";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { ProfileButton } from "./profile-button";
 import identity from "../services/identity";
+import {
+  GlobalIcon,
+  HomeIcon,
+  LogoutIcon,
+  ProfileIcon,
+  SettingsIcon,
+} from "./icons";
 
 const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -22,28 +25,28 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
       </Flex>
       <Flex flexShrink={0} gap="2" padding="2">
         <IconButton
-          icon={<img src={homeIcon} />}
+          icon={<HomeIcon />}
           aria-label="Home"
           onClick={() => navigate("/")}
           flexGrow="1"
           size="lg"
         />
         <IconButton
-          icon={<img src={globalIcon} />}
+          icon={<GlobalIcon />}
           aria-label="Global Feed"
           onClick={() => navigate("/global")}
           flexGrow="1"
           size="lg"
         />
         <IconButton
-          icon={<img src={profileIcon} />}
+          icon={<ProfileIcon />}
           aria-label="Profile"
           onClick={() => navigate(`/profile`)}
           flexGrow="1"
           size="lg"
         />
         <IconButton
-          icon={<img src={settingsIcon} />}
+          icon={<SettingsIcon />}
           aria-label="Settings"
           onClick={() => navigate("/settings")}
           flexGrow="1"
@@ -66,10 +69,21 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
         <ProfileButton to="/profile" />
-        <Button onClick={() => navigate("/")}>Home</Button>
-        <Button onClick={() => navigate("/global")}>Global Feed</Button>
-        <Button onClick={() => navigate("/settings")}>Settings</Button>
-        <Button onClick={() => identity.logout()}>Logout</Button>
+        <Button onClick={() => navigate("/")} leftIcon={<HomeIcon />}>
+          Home
+        </Button>
+        <Button onClick={() => navigate("/global")} leftIcon={<GlobalIcon />}>
+          Global Feed
+        </Button>
+        <Button
+          onClick={() => navigate("/settings")}
+          leftIcon={<SettingsIcon />}
+        >
+          Settings
+        </Button>
+        <Button onClick={() => identity.logout()} leftIcon={<LogoutIcon />}>
+          Logout
+        </Button>
         <ConnectedRelays />
       </VStack>
       <Flex flexGrow={1} direction="column" overflow="hidden">

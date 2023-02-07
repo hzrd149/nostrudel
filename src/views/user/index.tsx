@@ -1,4 +1,8 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Flex,
   Heading,
   SkeletonText,
@@ -8,6 +12,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Box,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
@@ -19,17 +24,40 @@ import { UserRelaysTab } from "./relays";
 import { UserFollowingTab } from "./following";
 import { UserRepliesTab } from "./replies";
 import { normalizeToBech32, normalizeToHex } from "../../helpers/nip-19";
+import { Page } from "../../components/page";
+import { UserProfileMenu } from "./user-profile-menu";
 
-export const UserView = () => {
-  const isMobile = useIsMobile();
+export const UserPage = () => {
   const params = useParams();
+  let id = normalizeToHex(params.pubkey ?? "");
 
-  if (!params.pubkey) {
-    // TODO: better 404
-    throw new Error("No pubkey");
+  if (!id) {
+    return (
+      <Page>
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>Invalid pubkey</AlertTitle>
+          <AlertDescription>
+            "{params.pubkey}" dose not look like a valid pubkey
+          </AlertDescription>
+        </Alert>
+      </Page>
+    );
   }
 
-  const pubkey = normalizeToHex(params.pubkey) ?? "";
+  return (
+    <Page>
+      <UserView pubkey={id} />
+    </Page>
+  );
+};
+
+export type UserViewProps = {
+  pubkey: string;
+};
+
+export const UserView = ({ pubkey }: UserViewProps) => {
+  const isMobile = useIsMobile();
 
   const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey, true);
   const bech32Key = normalizeToBech32(pubkey);
@@ -49,6 +77,9 @@ export const UserView = () => {
           <Heading size={isMobile ? "md" : "lg"}>{label}</Heading>
           {loadingMetadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}
         </Flex>
+        <Box ml="auto">
+          <UserProfileMenu pubkey={pubkey} />
+        </Box>
       </Flex>
       <Tabs
         display="flex"

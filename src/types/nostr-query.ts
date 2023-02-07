@@ -13,8 +13,8 @@ export type NostrQuery = {
   ids?: string[];
   authors?: string[];
   kinds?: number[];
-  // "#e": <a list of event ids that are referenced in an "e" tag>,
-  // "#p": <a list of pubkeys that are referenced in a "p" tag>,
+  "#e"?: string[];
+  "#p"?: string[];
   since?: number;
   until?: number;
   limit?: number;

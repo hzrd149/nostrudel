@@ -1,12 +1,13 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HomeView } from "./views/home";
-import { UserView } from "./views/user";
+import { UserPage } from "./views/user";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { GlobalView } from "./views/global";
 import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
+import { EventPage } from "./views/event";
 import useSubject from "./hooks/use-subject";
 import identity from "./services/identity";
 
@@ -29,9 +30,15 @@ export const App = () => {
           path="/user/:pubkey"
           element={
             <RequireSetup>
-              <Page>
-                <UserView />
-              </Page>
+              <UserPage />
+            </RequireSetup>
+          }
+        />
+        <Route
+          path="/e/:id"
+          element={
+            <RequireSetup>
+              <EventPage />
             </RequireSetup>
           }
         />

@@ -7,3 +7,7 @@ export function isReply(event: NostrEvent) {
 export function isPost(event: NostrEvent) {
   return !isReply(event);
 }
+
+export function truncatedId(id: string) {
+  return id.substring(0, 6) + "..." + id.substring(id.length - 6);
+}
