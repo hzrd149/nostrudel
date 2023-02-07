@@ -26,7 +26,7 @@
 
 ## Supported NIPs
 
-- [-] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
+- [ ] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
 - [ ] [NIP-03](https://github.com/nostr-protocol/nips/blob/master/03.md): OpenTimestamps Attestations for Events
 - [ ] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
 - [ ] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
@@ -53,12 +53,11 @@
 
 ## TODO
 
-- add sub routes to profile view
-- add sub routes to home view
 - add relay selection to global feed and allow user to specify custom relay
 - add `client` tag to published events
 - add relay selection to global feed
 - add button for creating lightning invoice via WebLN
+- setup deploy to s3
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
   - make app handle image files
 
