@@ -22,7 +22,7 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
   // Youtube Video
   {
     regexp:
-      /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/im,
+      /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/im,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
