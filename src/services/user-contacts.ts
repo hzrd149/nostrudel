@@ -68,7 +68,7 @@ function flushRequests() {
 
 function pruneMemoryCache() {
   const keys = userSubjects.prune();
-  for (const [key] of keys) {
+  for (const key of keys) {
     pendingRequests.removePubkey(key);
   }
 }
@@ -96,7 +96,7 @@ setInterval(() => {
   pruneMemoryCache();
 }, 1000);
 
-const userContactsService = { requestContacts, flushRequests };
+const userContactsService = { requestContacts, flushRequests, pendingRequests };
 
 if (import.meta.env.DEV) {
   // @ts-ignore

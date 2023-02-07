@@ -8,19 +8,20 @@ import { Kind0ParsedContent, NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { unique } from "../helpers/array";
 
+type Metadata = Kind0ParsedContent & { created_at: number };
+
 const subscription = new NostrSubscription([], undefined, "user-metadata");
-const userMetadataSubjects = new PubkeySubjectCache<NostrEvent>();
+const userMetadataSubjects = new PubkeySubjectCache<Metadata>();
 const pendingRequests = new PubkeyRequestList();
 
-function requestMetadataEvent(
-  pubkey: string,
-  relays: string[],
-  alwaysRequest = false
-): BehaviorSubject<NostrEvent | null> {
+function requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
   let subject = userMetadataSubjects.getSubject(pubkey);
 
   db.get("user-metadata", pubkey).then((cached) => {
-    if (cached) subject.next(cached);
+    if (cached) {
+      const parsed = parseMetadata(cached);
+      if (parsed) subject.next(parsed);
+    }
 
     if (alwaysRequest || !cached) {
       pendingRequests.addPubkey(pubkey, relays);
@@ -30,16 +31,10 @@ function requestMetadataEvent(
   return subject;
 }
 
-function isEvent(e: NostrEvent | null): e is NostrEvent {
-  return !!e;
-}
-function parseMetadata(event: NostrEvent): Kind0ParsedContent | undefined {
+function parseMetadata(event: NostrEvent): Metadata | undefined {
   try {
-    return JSON.parse(event.content);
+    return { ...JSON.parse(event.content), created_at: event.created_at };
   } catch (e) {}
-}
-function requestMetadata(pubkey: string, relays: string[] = [], alwaysRequest = false) {
-  return requestMetadataEvent(pubkey, relays, alwaysRequest).pipe(filter(isEvent), map(parseMetadata));
 }
 
 function flushRequests() {
@@ -59,7 +54,7 @@ function flushRequests() {
 
 function pruneMemoryCache() {
   const keys = userMetadataSubjects.prune();
-  for (const [key] of keys) {
+  for (const key of keys) {
     pendingRequests.removePubkey(key);
   }
 }
@@ -86,7 +81,7 @@ setInterval(() => {
   pruneMemoryCache();
 }, 1000);
 
-const userMetadataService = { requestMetadata, requestMetadataEvent, flushRequests };
+const userMetadataService = { requestMetadata, flushRequests, pendingRequests };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
