@@ -8,11 +8,14 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
 import settings from "../../services/settings";
-import { InlineNewPost } from "../../components/inline-new-post";
+import { AddIcon } from "@chakra-ui/icons";
+import { useContext } from "react";
+import { PostModalContext } from "../../providers/post-modal-provider";
 
 export const FollowingTab = () => {
   const pubkey = useSubject(identity.pubkey);
   const relays = useSubject(settings.relays);
+  const { openModal } = useContext(PostModalContext);
   const contacts = useUserContacts(pubkey);
   const [search, setSearch] = useSearchParams();
   const showReplies = search.has("replies");
@@ -32,7 +35,9 @@ export const FollowingTab = () => {
 
   return (
     <Flex direction="column" gap="2">
-      <InlineNewPost />
+      <Button variant="outline" leftIcon={<AddIcon />} onClick={() => openModal()}>
+        New Post
+      </Button>
       <FormControl display="flex" alignItems="center">
         <FormLabel htmlFor="show-replies" mb="0">
           Show Replies

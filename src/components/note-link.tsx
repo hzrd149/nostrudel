@@ -11,7 +11,7 @@ export const NoteLink = ({ noteId, ...props }: NoteLinkProps) => {
   const note1 = normalizeToBech32(noteId, Bech32Prefix.Note) ?? noteId;
 
   return (
-    <Link as={RouterLink} to={`/n/${note1}`} {...props}>
+    <Link as={RouterLink} to={`/n/${note1}`} color="blue.500" {...props}>
       {truncatedId(note1)}
     </Link>
   );

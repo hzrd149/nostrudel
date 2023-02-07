@@ -1,10 +1,12 @@
-import { isETag, isPTag, NostrEvent } from "../types/nostr-event";
+import moment from "moment";
+import { getEventRelays } from "../services/event-relays";
+import { DraftNostrEvent, isETag, isPTag, NostrEvent } from "../types/nostr-event";
 
-export function isReply(event: NostrEvent) {
+export function isReply(event: NostrEvent | DraftNostrEvent) {
   return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
 }
 
-export function isNote(event: NostrEvent) {
+export function isNote(event: NostrEvent | DraftNostrEvent) {
   return !isReply(event);
 }
 
@@ -13,7 +15,7 @@ export function truncatedId(id: string) {
 }
 
 export type EventReferences = ReturnType<typeof getReferences>;
-export function getReferences(event: NostrEvent) {
+export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
   const pTags = event.tags.filter(isPTag);
 
@@ -49,5 +51,35 @@ export function getReferences(event: NostrEvent) {
     events,
     rootId,
     replyId,
+  };
+}
+
+export function buildReply(event: NostrEvent): DraftNostrEvent {
+  const refs = getReferences(event);
+  const relay = getEventRelays(event.id).getValue()[0];
+
+  const tags: NostrEvent["tags"] = [];
+
+  const rootId = refs.rootId ?? event.id;
+  const replyId = event.id;
+
+  tags.push(["e", rootId, relay, "root"]);
+  if (replyId !== rootId) {
+    tags.push(["e", replyId, relay, "reply"]);
+  }
+  // add all ptags
+  // TODO: omit my own pubkey
+  const ptags = event.tags.filter(isPTag);
+  tags.push(...ptags);
+  if (!ptags.find((t) => t[1] === event.pubkey)) {
+    tags.push(["p", event.pubkey]);
+  }
+
+  return {
+    kind: 1,
+    // TODO: be smarter about picking relay
+    tags,
+    content: "",
+    created_at: moment().unix(),
   };
 }

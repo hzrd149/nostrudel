@@ -1,5 +1,8 @@
 import { BehaviorSubject } from "rxjs";
+import { unique } from "../helpers/array";
 import settings from "./settings";
+
+export type PresetRelays = Record<string, { read: boolean; write: boolean }>;
 
 export type SavedIdentity = {
   pubkey: string;
@@ -11,6 +14,8 @@ class IdentityService {
   loading = new BehaviorSubject(true);
   setup = new BehaviorSubject(false);
   pubkey = new BehaviorSubject("");
+  // TODO: remove this when there is a service to manage user relays
+  relays = new BehaviorSubject<PresetRelays>({});
   private useExtension: boolean = false;
   private secKey: string | undefined = undefined;
 
@@ -38,6 +43,12 @@ class IdentityService {
         pubkey,
         useExtension: true,
       });
+
+      // disabled because I dont want to load the preset relays yet (ably dose not support changing them)
+      // const relays = await window.nostr.getRelays();
+      // if (Array.isArray(relays)) {
+      //   this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
+      // } else this.relays.next(relays);
     }
   }
 
@@ -60,5 +71,10 @@ if (import.meta.env.DEV) {
   // @ts-ignore
   window.identity = identity;
 }
+
+// TODO: create a service to manage user relays (download latest and handle conflicts)
+identity.relays.subscribe((presetRelays) => {
+  settings.relays.next(unique([...settings.relays.value, ...Object.keys(presetRelays)]));
+});
 
 export default identity;

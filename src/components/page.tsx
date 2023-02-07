@@ -9,6 +9,7 @@ import { useIsMobile } from "../hooks/use-is-mobile";
 import identity from "../services/identity";
 import { FollowingList } from "./following-list";
 import { ReloadPrompt } from "./reload-prompt";
+import { PostModalProvider } from "../providers/post-modal-provider";
 
 export const Page = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -19,7 +20,9 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
       <Flex direction="column" height="100%">
         <ReloadPrompt />
         <Flex flexGrow={1} direction="column" overflow="hidden">
-          {children}
+          <ErrorBoundary>
+            <PostModalProvider>{children}</PostModalProvider>
+          </ErrorBoundary>
         </Flex>
         <Flex flexShrink={0} gap="2" padding="2">
           <IconButton icon={<FeedIcon />} aria-label="Home" onClick={() => navigate("/")} flexGrow="1" size="lg" />
@@ -72,7 +75,9 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
           <ConnectedRelays />
         </VStack>
         <Flex flexGrow={1} direction="column" overflow="hidden">
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <ErrorBoundary>
+            <PostModalProvider>{children}</PostModalProvider>
+          </ErrorBoundary>
         </Flex>
         <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
           <Heading size="md">Following</Heading>

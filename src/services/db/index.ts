@@ -22,28 +22,8 @@ const MIGRATIONS: MigrationFunction[] = [
     contacts.createIndex("created_at", "created_at");
     contacts.createIndex("contacts", "contacts", { multiEntry: true });
 
-    const events = db.createObjectStore("text-events", {
-      keyPath: "id",
-      autoIncrement: false,
-    });
-    events.createIndex("pubkey", "pubkey");
-    events.createIndex("created_at", "created_at");
-    events.createIndex("kind", "kind");
-
-    db.createObjectStore("identicon");
-
     // setup data
     const settings = db.createObjectStore("settings");
-    settings.put(
-      [
-        "wss://relay.damus.io",
-        "wss://nostr-pub.wellorder.net",
-        "wss://nostr.zebedee.cloud",
-        "wss://satstacker.cloud",
-        "wss://brb.io",
-      ],
-      "relays"
-    );
   },
 ];
 
@@ -64,8 +44,8 @@ const db = await openDB<CustomSchema>("storage", version, {
 export async function clearData() {
   await db.clear("user-metadata");
   await db.clear("user-contacts");
-  await db.clear("text-events");
-  await db.clear("identicon");
+  await db.clear("settings");
+  window.location.reload();
 }
 
 if (import.meta.env.DEV) {

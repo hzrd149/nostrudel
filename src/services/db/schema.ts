@@ -20,15 +20,6 @@ export interface CustomSchema extends DBSchema {
     };
     indexes: { created_at: number; contacts: string };
   };
-  "text-events": {
-    key: string;
-    value: NostrEvent;
-    indexes: { created_at: number; pubkey: string; kind: number };
-  };
-  identicon: {
-    key: string;
-    value: string;
-  };
   settings: {
     key: string;
     value: any;

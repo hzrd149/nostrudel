@@ -21,7 +21,11 @@ import settings from "../../services/settings";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  return <Image onClick={onToggle} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />;
+  return (
+    <Box overflow="hidden">
+      <Image onClick={onToggle} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />
+    </Box>
+  );
 };
 
 type EmbedType = {

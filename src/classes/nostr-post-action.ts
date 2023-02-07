@@ -2,7 +2,7 @@ import { Subject, Subscription } from "rxjs";
 import { relayPool } from "../services/relays";
 import { NostrEvent } from "../types/nostr-event";
 
-type PostResult = { url: string; message?: string; status: boolean };
+export type PostResult = { url: string; message?: string; status: boolean };
 
 export function nostrPostAction(relays: string[], event: NostrEvent, timeout: number = 5000) {
   const subject = new Subject<PostResult>();

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
-import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Link } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
@@ -15,20 +15,26 @@ import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
+import { ReplyIcon } from "../icons";
+import { PostModalContext } from "../../providers/post-modal-provider";
+import { buildReply } from "../../helpers/nostr-event";
 
 export type NoteProps = {
   event: NostrEvent;
 };
 export const Note = React.memo(({ event }: NoteProps) => {
   const isMobile = useIsMobile();
+  const { openModal } = useContext(PostModalContext);
 
   const pubkey = useSubject(identity.pubkey);
   const contacts = useUserContacts(pubkey);
   const following = contacts?.contacts || [];
 
+  const reply = () => openModal(buildReply(event));
+
   return (
-    <Card padding="2" variant="outline">
-      <CardHeader padding="0" mb="2">
+    <Card variant="outline">
+      <CardHeader padding="2" mb="2">
         <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
           <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
 
@@ -40,12 +46,12 @@ export const Note = React.memo(({ event }: NoteProps) => {
           </Link>
         </Flex>
       </CardHeader>
-      <CardBody padding="0">
-        <Box overflow="hidden" width="100%">
-          <NoteContents event={event} trusted={following.includes(event.pubkey)} />
-        </Box>
+      <CardBody px="2" py="0">
+        <NoteContents event={event} trusted={following.includes(event.pubkey)} />
       </CardBody>
-      <CardFooter padding="0" display="flex" gap="2" justifyContent="flex-end">
+      <CardFooter padding="2" display="flex" gap="2">
+        <IconButton icon={<ReplyIcon />} title="Reply" aria-label="Reply" onClick={reply} size="xs" />
+        <Box flexGrow={1} />
         <UserTipButton pubkey={event.pubkey} size="xs" />
         <NoteRelays event={event} size="xs" />
         <NoteMenu event={event} />
