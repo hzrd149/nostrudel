@@ -1,5 +1,15 @@
-import React from "react";
-import { AspectRatio, Box, Image, ImageProps, Link, PinInputField, useDisclosure } from "@chakra-ui/react";
+import React, { useState } from "react";
+import {
+  AspectRatio,
+  Box,
+  Button,
+  ButtonGroup,
+  IconButton,
+  Image,
+  ImageProps,
+  Link,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
@@ -7,6 +17,7 @@ import { normalizeToHex } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import settings from "../../services/settings";
+// import { ExternalLinkIcon } from "../icons";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -16,16 +27,19 @@ const BlurredImage = (props: ImageProps) => {
 const embeds: {
   regexp: RegExp;
   render: (match: RegExpMatchArray, event?: NostrEvent, trusted?: boolean) => JSX.Element | string;
+  isMedia: boolean;
 }[] = [
   // Lightning Invoice
   {
     regexp: /(lightning:)?(LNBC[A-Za-z0-9]+)/im,
     render: (match) => <InlineInvoiceCard paymentRequest={match[2]} />,
+    isMedia: false,
   },
   // Twitter tweet
   {
     regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]+/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
+    isMedia: true,
   },
   // Youtube Video
   {
@@ -43,6 +57,7 @@ const embeds: {
         ></iframe>
       </AspectRatio>
     ),
+    isMedia: true,
   },
   // Youtube Music
   {
@@ -58,6 +73,7 @@ const embeds: {
         ></iframe>
       </AspectRatio>
     ),
+    isMedia: true,
   },
   // Tidal
   {
@@ -69,6 +85,7 @@ const embeds: {
         height="96"
       ></iframe>
     ),
+    isMedia: true,
   },
   // Spotify
   {
@@ -86,6 +103,7 @@ const embeds: {
         src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
       ></iframe>
     ),
+    isMedia: true,
   },
   // apple music
   {
@@ -100,6 +118,7 @@ const embeds: {
         src={match[0].replace("music.apple.com", "embed.music.apple.com")}
       ></iframe>
     ),
+    isMedia: true,
   },
   // Image
   {
@@ -108,6 +127,7 @@ const embeds: {
       const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
       return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
     },
+    isMedia: true,
   },
   // Video
   {
@@ -117,6 +137,7 @@ const embeds: {
         <video src={match[0]} controls />
       </AspectRatio>
     ),
+    isMedia: true,
   },
   // Link
   {
@@ -126,6 +147,7 @@ const embeds: {
         {match[0]}
       </Link>
     ),
+    isMedia: false,
   },
   // npub1 and note1 links
   {
@@ -139,6 +161,7 @@ const embeds: {
           return match[0];
       }
     },
+    isMedia: false,
   },
   // Nostr Mention Links
   {
@@ -158,26 +181,41 @@ const embeds: {
 
       return match[0];
     },
+    isMedia: false,
   },
   // bold text
   {
     regexp: /\*\*([^\n]+)\*\*/im,
     render: (match) => <span style={{ fontWeight: "bold" }}>{match[1]}</span>,
+    isMedia: false,
   },
 ];
 
+const MediaEmbed = ({ children }: { children: JSX.Element | string }) => {
+  const [show, setShow] = useState(settings.autoShowMedia.value);
+
+  return show ? (
+    <>{children}</>
+  ) : (
+    <ButtonGroup size="sm" isAttached variant="outline">
+      <Button onClick={() => setShow(true)}>Show Embed</Button>
+      {/* TODO: add external link for embed */}
+      {/* <IconButton as="a" aria-label="Add to friends" icon={<ExternalLinkIcon />} href={}/> */}
+    </ButtonGroup>
+  );
+};
+
 function embedContent(content: string, event?: NostrEvent, trusted: boolean = false): (string | JSX.Element)[] {
-  for (const { regexp, render } of embeds) {
-    const match = content.match(regexp);
+  for (const embedType of embeds) {
+    const match = content.match(embedType.regexp);
 
     if (match && match.index !== undefined) {
       const before = content.slice(0, match.index);
       const after = content.slice(match.index + match[0].length, content.length);
-      return [
-        ...embedContent(before, event, trusted),
-        render(match, event, trusted),
-        ...embedContent(after, event, trusted),
-      ];
+      const embedRender = embedType.render(match, event, trusted);
+      const embed = embedType.isMedia ? <MediaEmbed>{embedRender}</MediaEmbed> : embedRender;
+
+      return [...embedContent(before, event, trusted), embed, ...embedContent(after, event, trusted)];
     }
   }
   return [content];

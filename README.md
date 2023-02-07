@@ -62,6 +62,8 @@
   - make app handle image files
 - block notes based on content
 - implement NIP-56 and blocking
+- allow user to select relay or following list when fetching replies (default to my relays + following?)
+- filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 
 ## Setup
 

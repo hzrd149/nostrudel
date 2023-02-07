@@ -34,6 +34,7 @@ export const SettingsView = () => {
   const navigate = useNavigate();
   const relays = useSubject(settings.relays);
   const blurImages = useSubject(settings.blurImages);
+  const autoShowMedia = useSubject(settings.autoShowMedia);
   const [relayInputValue, setRelayInputValue] = useState("");
 
   const { colorMode, setColorMode } = useColorMode();
@@ -153,6 +154,16 @@ export const SettingsView = () => {
                   id="blur-images"
                   isChecked={blurImages}
                   onChange={(v) => settings.blurImages.next(v.target.checked)}
+                />
+              </FormControl>
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="auto-show-embeds" mb="0">
+                  Automatically show media
+                </FormLabel>
+                <Switch
+                  id="auto-show-embeds"
+                  isChecked={autoShowMedia}
+                  onChange={(v) => settings.autoShowMedia.next(v.target.checked)}
                 />
               </FormControl>
               <FormControl display="flex" alignItems="center">

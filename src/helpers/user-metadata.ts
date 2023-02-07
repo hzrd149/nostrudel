@@ -4,7 +4,7 @@ import { truncatedId } from "./nostr-event";
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
   if (metadata?.display_name && metadata?.name) {
-    return `${metadata.display_name} (${metadata.name})`;
+    return metadata.display_name;
   } else if (metadata?.name) {
     return metadata.name;
   }

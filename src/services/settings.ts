@@ -6,6 +6,7 @@ const settings = {
   relays: new BehaviorSubject<string[]>([]),
   identity: new BehaviorSubject<SavedIdentity | null>(null),
   blurImages: new BehaviorSubject(true),
+  autoShowMedia: new BehaviorSubject(true),
 };
 
 async function loadSettings() {
