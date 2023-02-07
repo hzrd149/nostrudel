@@ -31,7 +31,7 @@ export const UserRepliesTab = ({ pubkey }: { pubkey: string }) => {
     return <SkeletonText />;
   }
 
-  if (timeline.length > 20) timeline.length = 20;
+  if (timeline.length > 30) timeline.length = 30;
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">

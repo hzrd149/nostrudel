@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Button,
@@ -70,8 +70,8 @@ export const Post = React.memo(({ event }: PostProps) => {
       </CardHeader>
       <CardBody pt="2" pb="0" pr="0" pl="0">
         <VStack alignItems="flex-start" justifyContent="stretch">
-          <Box maxHeight="20rem" overflow="hidden" width="100%">
-            <PostContents content={event.content}/>
+          <Box overflow="hidden" width="100%">
+            <PostContents content={event.content} maxChars={300} />
           </Box>
           {isLong && (
             <>

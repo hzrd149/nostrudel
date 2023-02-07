@@ -23,9 +23,9 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Flex direction="column" height="100%">
-      <Box flexGrow={1} overflow="auto">
+      <Flex flexGrow={1} direction="column" overflow="hidden">
         {children}
-      </Box>
+      </Flex>
       <Flex flexShrink={0} gap="2" padding="2">
         <IconButton
           icon={<img src={homeIcon} />}
@@ -77,9 +77,9 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
         <Button onClick={() => navigate("/settings")}>Settings</Button>
         <ConnectedRelays />
       </VStack>
-      <Box flexGrow={1} overflow="hidden">
+      <Flex flexGrow={1} direction="column" overflow="hidden">
         <ErrorBoundary>{children}</ErrorBoundary>
-      </Box>
+      </Flex>
       <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
         <Button onClick={() => navigate("/")}>Manage Follows</Button>
       </VStack>
