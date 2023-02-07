@@ -9,6 +9,7 @@ import identity from "../../services/identity";
 import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
+import settings from "../../services/settings";
 
 function useExtendedContacts(pubkey: string) {
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
@@ -39,10 +40,12 @@ function useExtendedContacts(pubkey: string) {
 
 export const DiscoverTab = () => {
   const pubkey = useSubject(identity.pubkey);
+  const relays = useSubject(settings.relays);
 
   const contactsOfContacts = useExtendedContacts(pubkey);
   const { events, loading, loadMore } = useTimelineLoader(
     `discover`,
+    relays,
     { authors: contactsOfContacts, kinds: [1], since: moment().subtract(1, "hour").unix() },
     { pageSize: moment.duration(1, "hour").asSeconds(), enabled: contactsOfContacts.length > 0 }
   );

@@ -39,7 +39,12 @@ export class TimelineLoader {
     if (!query.since) throw new Error('Timeline requires "since" to be set in query');
 
     this.query = query;
-    this.subscription.update(query);
+    this.subscription.setQuery(query);
+  }
+
+  setRelays(relays: string[]) {
+    this.relays = relays;
+    this.subscription.setRelays(relays);
   }
 
   private handleEvent(event: NostrEvent) {
@@ -78,9 +83,10 @@ export class TimelineLoader {
     this.page.next(this.page.value + 1);
   }
 
-  reset() {
+  forgetEvents() {
     this.events.next([]);
     this.seenEvents.clear();
+    this.subscription.forgetEvents();
   }
   open() {
     this.subscription.open();

@@ -29,13 +29,7 @@ export class NostrSubscription {
 
     this.relays = relayUrls.map((url) => relayPool.requestRelay(url));
   }
-  handleOpen(relay: Relay) {
-    if (this.query) {
-      // when the relay connects send the req event
-      relay.send(["REQ", this.id, this.query]);
-    }
-  }
-  handleEvent(event: IncomingEvent) {
+  private handleEvent(event: IncomingEvent) {
     if (this.state === NostrSubscription.OPEN && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
       this.onEvent.next(event.body);
       this.seenEvents.add(event.body.id);
@@ -47,12 +41,13 @@ export class NostrSubscription {
     }
   }
 
-  cleanup: SubscriptionLike[] = [];
+  private cleanup = new Map<Relay, SubscriptionLike>();
   /** listen for event and open events from relays */
   private subscribeToRelays() {
     for (const relay of this.relays) {
-      this.cleanup.push(relay.onEvent.subscribe(this.handleEvent.bind(this)));
-      this.cleanup.push(relay.onOpen.subscribe(this.handleOpen.bind(this)));
+      if (!this.cleanup.has(relay)) {
+        this.cleanup.set(relay, relay.onEvent.subscribe(this.handleEvent.bind(this)));
+      }
     }
 
     for (const url of this.relayUrls) {
@@ -60,8 +55,9 @@ export class NostrSubscription {
     }
   }
   /** listen for event and open events from relays */
-  private unsubscribeToRelays() {
+  private unsubscribeFromRelays() {
     this.cleanup.forEach((sub) => sub.unsubscribe());
+    this.cleanup.clear();
 
     for (const url of this.relayUrls) {
       relayPool.removeClaim(url, this);
@@ -83,7 +79,7 @@ export class NostrSubscription {
 
     return this;
   }
-  update(query: NostrQuery) {
+  setQuery(query: NostrQuery) {
     this.query = query;
     if (this.state === NostrSubscription.OPEN) {
       this.send(["REQ", this.id, this.query]);
@@ -91,13 +87,35 @@ export class NostrSubscription {
     return this;
   }
   setRelays(relays: string[]) {
-    this.unsubscribeToRelays();
+    this.unsubscribeFromRelays();
+    const newRelays = relays.map((url) => relayPool.requestRelay(url));
 
-    // get new relays
+    for (const relay of this.relays) {
+      if (!newRelays.includes(relay)) {
+        // if the subscription is open and the relay is connected
+        if (this.state === NostrSubscription.OPEN && relay.connected) {
+          // close the connection to this relay
+          relay.send(["CLOSE", this.id]);
+        }
+      }
+    }
+    for (const relay of newRelays) {
+      if (!this.relays.includes(relay)) {
+        // if the subscription is open and it has a query
+        if (this.state === NostrSubscription.OPEN && this.query) {
+          // open a connection to this relay
+          relay.send(["REQ", this.id, this.query]);
+        }
+      }
+    }
+
+    // set new relays
     this.relayUrls = relays;
-    this.relays = relays.map((url) => relayPool.requestRelay(url));
+    this.relays = newRelays;
 
-    this.subscribeToRelays();
+    if (this.state === NostrSubscription.OPEN) {
+      this.subscribeToRelays();
+    }
   }
   close() {
     if (this.state !== NostrSubscription.OPEN) return this;
@@ -109,12 +127,16 @@ export class NostrSubscription {
     // forget all seen events
     this.seenEvents.clear();
     // unsubscribe from relay messages
-    this.unsubscribeToRelays();
+    this.unsubscribeFromRelays();
 
     if (import.meta.env.DEV) {
       console.info(`Subscription: "${this.name || this.id}" closed`);
     }
 
     return this;
+  }
+  forgetEvents() {
+    // forget all seen events
+    this.seenEvents.clear();
   }
 }

@@ -3,13 +3,17 @@ import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
+import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import settings from "../../services/settings";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
+  const relays = useSubject(settings.relays);
 
   const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey} notes`,
+    relays,
     { authors: [pubkey], kinds: [1], since: moment().subtract(1, "day").unix() },
     { pageSize: moment.duration(1, "day").asSeconds() }
   );

@@ -7,9 +7,11 @@ import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
+import settings from "../../services/settings";
 
 export const FollowingTab = () => {
   const pubkey = useSubject(identity.pubkey);
+  const relays = useSubject(settings.relays);
   const contacts = useUserContacts(pubkey);
   const [search, setSearch] = useSearchParams();
   const showReplies = search.has("replies");
@@ -20,6 +22,7 @@ export const FollowingTab = () => {
   const following = contacts?.contacts || [];
   const { events, loading, loadMore } = useTimelineLoader(
     `following-posts`,
+    relays,
     { authors: following, kinds: [1], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
   );

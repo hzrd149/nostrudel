@@ -17,7 +17,7 @@ export function useSubscription(query: NostrQuery, opts?: Options) {
 
   useDeepCompareEffect(() => {
     if (sub.current) {
-      sub.current.update(query);
+      sub.current.setQuery(query);
       if (opts?.enabled ?? true) sub.current.open();
       else sub.current.close();
     }

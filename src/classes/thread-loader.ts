@@ -68,7 +68,7 @@ export class ThreadLoader {
 
   private updateSubscription() {
     if (this.rootId.value) {
-      this.subscription.update({ "#e": [this.rootId.value], kinds: [1] });
+      this.subscription.setQuery({ "#e": [this.rootId.value], kinds: [1] });
       if (this.subscription.state !== NostrSubscription.OPEN) {
         this.subscription.open();
       }

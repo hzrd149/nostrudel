@@ -1,24 +1,26 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useUnmount } from "react-use";
+import { useDeepCompareEffect, useUnmount } from "react-use";
 import { NostrQueryWithStart, TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
-import settings from "../services/settings";
 import useSubject from "./use-subject";
 
 type Options = TimelineLoaderOptions & {
   enabled?: boolean;
 };
 
-export function useTimelineLoader(key: string, query: NostrQueryWithStart, opts?: Options) {
-  const relays = useSubject(settings.relays);
+export function useTimelineLoader(key: string, relays: string[], query: NostrQueryWithStart, opts?: Options) {
   if (opts && !opts.name) opts.name = key;
 
   const ref = useRef<TimelineLoader | null>(null);
   const loader = (ref.current = ref.current || new TimelineLoader(relays, query, opts));
 
   useEffect(() => {
-    loader.reset();
+    loader.forgetEvents();
     loader.setQuery(query);
   }, [key]);
+
+  useDeepCompareEffect(() => {
+    loader.setRelays(relays);
+  }, [relays]);
 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {

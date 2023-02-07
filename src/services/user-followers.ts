@@ -55,7 +55,7 @@ function flushRequests() {
   const query: NostrQuery = { kinds: [3], "#p": Array.from(pubkeys) };
 
   subscription.setRelays(Array.from(relays));
-  subscription.update(query);
+  subscription.setQuery(query);
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();
   }

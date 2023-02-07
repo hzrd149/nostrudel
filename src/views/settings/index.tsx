@@ -28,15 +28,11 @@ import { RelayStatus } from "./relay-status";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
 import { clearData } from "../../services/db";
+import { RelayUrlInput } from "../../components/relay-url-input";
 
 export const SettingsView = () => {
   const relays = useSubject(settings.relays);
   const [relayInputValue, setRelayInputValue] = useState("");
-
-  const { value: relaysJson, loading: loadingRelaysJson } = useAsync(async () =>
-    fetch("/relays.json").then((res) => res.json() as Promise<{ relays: string[] }>)
-  );
-  const relaySuggestions = relaysJson?.relays.filter((url) => !relays.includes(url)) ?? [];
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -46,8 +42,10 @@ export const SettingsView = () => {
   const handleAddRelay = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    settings.relays.next([...relays, relayInputValue]);
-    setRelayInputValue("");
+    if (!relays.includes(relayInputValue)) {
+      settings.relays.next([...relays, relayInputValue]);
+      setRelayInputValue("");
+    }
   };
 
   const [clearing, setClearing] = useState(false);
@@ -104,22 +102,12 @@ export const SettingsView = () => {
               <FormControl>
                 <FormLabel htmlFor="relay-url-input">Add Relay</FormLabel>
                 <Flex gap="2">
-                  <Input
+                  <RelayUrlInput
                     id="relay-url-input"
                     value={relayInputValue}
                     onChange={(e) => setRelayInputValue(e.target.value)}
-                    required
-                    list="relay-suggestions"
-                    type="url"
-                    isDisabled={loadingRelaysJson}
+                    isRequired
                   />
-                  <datalist id="relay-suggestions">
-                    {relaySuggestions.map((url) => (
-                      <option key={url} value={url}>
-                        {url}
-                      </option>
-                    ))}
-                  </datalist>
                   <Button type="submit">Add</Button>
                 </Flex>
               </FormControl>
