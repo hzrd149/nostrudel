@@ -12,11 +12,13 @@ export const ReloadPrompt = () => {
   } = useRegisterSW({
     onRegistered(r) {
       console.log("SW Registered: " + r);
-      toast({ variant: "success", title: "Installed" });
 
       if (r) {
         setInterval(() => r.update(), intervalMS);
       }
+    },
+    onOfflineReady() {
+      toast({ status: "success", title: "App Installed", duration: 2000, isClosable: true });
     },
     onRegisterError(error) {
       console.log("SW registration error", error);
