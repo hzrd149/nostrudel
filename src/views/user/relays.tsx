@@ -26,7 +26,7 @@ const UserRelaysTab = () => {
   return (
     <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)" }} gap="2">
       {Object.entries(contacts.relays).map(([url, opts]) => (
-        <Box key={url} display="flex" gap="2" alignItems="center">
+        <Box key={url} display="flex" gap="2" alignItems="center" pr="2" pl="2">
           <Text flex={1}>{url}</Text>
           <IconButton
             icon={<GlobalIcon />}
@@ -40,7 +40,6 @@ const UserRelaysTab = () => {
             isDisabled={relays.includes(url)}
             size="sm"
             aria-label="Add Relay"
-            mr="4"
           />
         </Box>
       ))}
