@@ -46,7 +46,7 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
   },
   // Video
   {
-    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4))/im,
+    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm))/im,
     render: (match) => (
       <AspectRatio ratio={16 / 9} maxWidth="30rem">
         <video key={match[0]} src={match[0]} controls />
