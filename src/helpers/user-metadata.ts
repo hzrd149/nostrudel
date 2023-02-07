@@ -1,9 +1,15 @@
 import { Kind0ParsedContent } from "../types/nostr-event";
+import { normalizeToBech32 } from "./nip-19";
+import { truncatedId } from "./nostr-event";
 
-export function getUserFullName(metadata: Kind0ParsedContent) {
+export function getUserDisplayName(
+  metadata: Kind0ParsedContent,
+  pubkey: string
+) {
   if (metadata?.display_name && metadata?.name) {
     return `${metadata.display_name} (${metadata.name})`;
   } else if (metadata?.name) {
     return metadata.name;
   }
+  return truncatedId(normalizeToBech32(pubkey) ?? pubkey);
 }

@@ -12,10 +12,8 @@ import remarkImages from "remark-images";
 import remarkUnwrapImages from "remark-unwrap-images";
 import rehypeExternalLinks from "rehype-external-links";
 // @ts-ignore
-// import rehypeTruncate from "rehype-truncate";
-// @ts-ignore
 import linkifyRegex from "remark-linkify-regex";
-import { InvoiceButton } from "./invoice-button";
+import { InlineInvoiceCard } from "./inline-invoice-card";
 import { TweetEmbed } from "./tweet-embed";
 
 const lightningInvoiceRegExp = /(lightning:)?LNBC[A-Za-z0-9]+/i;
@@ -41,7 +39,9 @@ const HandleLinkTypes = (props: LinkProps) => {
 
   if (href) {
     if (lightningInvoiceRegExp.test(href)) {
-      return <InvoiceButton paymentRequest={href.replace(/lightning:/i, "")} />;
+      return (
+        <InlineInvoiceCard paymentRequest={href.replace(/lightning:/i, "")} />
+      );
     }
     if (youtubeVideoLink.test(href)) {
       const parts = youtubeVideoLink.exec(href);
@@ -74,29 +74,23 @@ const components = {
 
 export type PostContentsProps = {
   content: string;
-  maxChars?: number;
 };
 
-export const PostContents = React.memo(
-  ({ content, maxChars }: PostContentsProps) => {
-    const fixedLines = content.replace(/(?<! )\n/g, "  \n");
+export const PostContents = React.memo(({ content }: PostContentsProps) => {
+  const fixedLines = content.replace(/(?<! )\n/g, "  \n");
 
-    return (
-      <ReactMarkdown
-        remarkPlugins={[
-          remarkImages,
-          remarkUnwrapImages,
-          remarkGfm,
-          linkifyRegex(lightningInvoiceRegExp),
-        ]}
-        rehypePlugins={[
-          [rehypeExternalLinks, { target: "_blank" }],
-          // [rehypeTruncate, { maxChars, disable: !maxChars }],
-        ]}
-        components={components}
-      >
-        {fixedLines}
-      </ReactMarkdown>
-    );
-  }
-);
+  return (
+    <ReactMarkdown
+      remarkPlugins={[
+        remarkImages,
+        remarkUnwrapImages,
+        remarkGfm,
+        linkifyRegex(lightningInvoiceRegExp),
+      ]}
+      rehypePlugins={[[rehypeExternalLinks, { target: "_blank" }]]}
+      components={components}
+    >
+      {fixedLines}
+    </ReactMarkdown>
+  );
+});

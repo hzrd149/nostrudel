@@ -20,7 +20,7 @@ import { PostModal } from "../post-modal";
 import { NostrEvent } from "../../types/nostr-event";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatarLink } from "../user-avatar-link";
-import { getUserFullName } from "../../helpers/user-metadata";
+import { getUserDisplayName } from "../../helpers/user-metadata";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
 import { PostContents } from "../post-contents";
@@ -35,9 +35,7 @@ export const Post = React.memo(({ event }: PostProps) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { metadata } = useUserMetadata(event.pubkey);
 
-  const username = metadata
-    ? getUserFullName(metadata) || event.pubkey
-    : event.pubkey;
+  const username = metadata && getUserDisplayName(metadata, event.pubkey);
 
   return (
     <Card padding="2" variant="outline">
@@ -49,7 +47,7 @@ export const Post = React.memo(({ event }: PostProps) => {
             <Box>
               <Heading size="sm">
                 <Link
-                  to={`/user/${normalizeToBech32(
+                  to={`/u/${normalizeToBech32(
                     event.pubkey,
                     Bech32Prefix.Pubkey
                   )}`}
@@ -66,7 +64,7 @@ export const Post = React.memo(({ event }: PostProps) => {
       <CardBody padding="0" mb="2">
         <VStack alignItems="flex-start" justifyContent="stretch">
           <Box overflow="hidden" width="100%">
-            <PostContents content={event.content} maxChars={300} />
+            <PostContents content={event.content} />
           </Box>
         </VStack>
       </CardBody>

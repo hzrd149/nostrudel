@@ -27,7 +27,7 @@ export const App = () => {
       <Routes>
         <Route path="/login" element={<LoginView />} />
         <Route
-          path="/user/:pubkey"
+          path="/u/:pubkey"
           element={
             <RequireSetup>
               <UserPage />

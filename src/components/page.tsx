@@ -1,12 +1,13 @@
 import React from "react";
-import { Button, Container, Flex, IconButton, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Flex,
+  Heading,
+  IconButton,
+  VStack,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { ErrorBoundary } from "./error-boundary";
-import { ConnectedRelays } from "./connected-relays";
-
-import { useIsMobile } from "../hooks/use-is-mobile";
-import { ProfileButton } from "./profile-button";
-import identity from "../services/identity";
 import {
   GlobalIcon,
   HomeIcon,
@@ -14,6 +15,13 @@ import {
   ProfileIcon,
   SettingsIcon,
 } from "./icons";
+import { ErrorBoundary } from "./error-boundary";
+import { ConnectedRelays } from "./connected-relays";
+
+import { useIsMobile } from "../hooks/use-is-mobile";
+import { ProfileButton } from "./profile-button";
+import identity from "../services/identity";
+import { FollowingList } from "./following-list";
 
 const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -90,7 +98,8 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
         <ErrorBoundary>{children}</ErrorBoundary>
       </Flex>
       <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
-        <Button onClick={() => navigate("/")}>Manage Follows</Button>
+        <Heading size="md">Following</Heading>
+        <FollowingList />
       </VStack>
     </Container>
   );

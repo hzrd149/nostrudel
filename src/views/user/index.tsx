@@ -18,12 +18,12 @@ import { useParams } from "react-router-dom";
 import { UserPostsTab } from "./posts";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
-import { getUserFullName } from "../../helpers/user-metadata";
+import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserRelaysTab } from "./relays";
 import { UserFollowingTab } from "./following";
 import { UserRepliesTab } from "./replies";
-import { normalizeToBech32, normalizeToHex } from "../../helpers/nip-19";
+import { normalizeToHex } from "../../helpers/nip-19";
 import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
 
@@ -60,8 +60,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
   const isMobile = useIsMobile();
 
   const { metadata, loading: loadingMetadata } = useUserMetadata(pubkey, true);
-  const bech32Key = normalizeToBech32(pubkey);
-  const label = metadata ? getUserFullName(metadata) || bech32Key : bech32Key;
+  const label = metadata && getUserDisplayName(metadata, pubkey);
 
   return (
     <Flex
