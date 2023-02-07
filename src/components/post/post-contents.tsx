@@ -105,6 +105,11 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
       }
     },
   },
+  // bold text
+  {
+    regexp: /\*\*([^\n]+)\*\*/im,
+    render: (match) => <span style={{ fontWeight: "bold" }}>{match[1]}</span>,
+  },
 ];
 
 function embedContent(content: string, trusted: boolean): (string | JSX.Element)[] {

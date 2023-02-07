@@ -1,4 +1,5 @@
-import { Button, Flex, Spinner } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { Post } from "../../components/post";
 import { isPost } from "../../helpers/nostr-event";
@@ -10,6 +11,11 @@ import identity from "../../services/identity";
 export const FollowingPostsTab = () => {
   const pubkey = useSubject(identity.pubkey);
   const contacts = useUserContacts(pubkey);
+  const [search, setSearch] = useSearchParams();
+  const showReplies = search.has("replies");
+  const onToggle = () => {
+    showReplies ? setSearch({}) : setSearch({ replies: "show" });
+  };
 
   const following = contacts?.contacts || [];
   const { events, loading, loadMore } = useTimelineLoader(
@@ -18,10 +24,16 @@ export const FollowingPostsTab = () => {
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
   );
 
-  const timeline = events.filter(isPost);
+  const timeline = showReplies ? events : events.filter(isPost);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor="show-replies" mb="0">
+          Show Replies
+        </FormLabel>
+        <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} />
+      </FormControl>
       {timeline.map((event) => (
         <Post key={event.id} event={event} />
       ))}
