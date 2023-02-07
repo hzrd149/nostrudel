@@ -27,18 +27,16 @@ import { TrashIcon } from "../../components/icons";
 import { RelayStatus } from "./relay-status";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
+import { clearData } from "../../services/db";
 
 export const SettingsView = () => {
   const relays = useSubject(settings.relays);
   const [relayInputValue, setRelayInputValue] = useState("");
 
   const { value: relaysJson, loading: loadingRelaysJson } = useAsync(async () =>
-    fetch("/relays.json").then(
-      (res) => res.json() as Promise<{ relays: string[] }>
-    )
+    fetch("/relays.json").then((res) => res.json() as Promise<{ relays: string[] }>)
   );
-  const relaySuggestions =
-    relaysJson?.relays.filter((url) => !relays.includes(url)) ?? [];
+  const relaySuggestions = relaysJson?.relays.filter((url) => !relays.includes(url)) ?? [];
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -50,6 +48,13 @@ export const SettingsView = () => {
 
     settings.relays.next([...relays, relayInputValue]);
     setRelayInputValue("");
+  };
+
+  const [clearing, setClearing] = useState(false);
+  const handleClearData = async () => {
+    setClearing(true);
+    await clearData();
+    setClearing(false);
   };
 
   return (
@@ -139,11 +144,25 @@ export const SettingsView = () => {
               <Switch
                 id="use-dark-theme"
                 isChecked={colorMode === "dark"}
-                onChange={(v) =>
-                  setColorMode(v.target.checked ? "dark" : "light")
-                }
+                onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
               />
             </FormControl>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Database
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel>
+            <Button colorScheme="red" onClick={handleClearData} isLoading={clearing} isDisabled={clearing}>
+              Remove All Data
+            </Button>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

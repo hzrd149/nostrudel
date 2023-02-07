@@ -1,17 +1,10 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Flex,
-} from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex } from "@chakra-ui/react";
 import useSubject from "../hooks/use-subject";
 import settings from "../services/settings";
 import { Page } from "../components/page";
 import { useParams } from "react-router-dom";
 import { normalizeToHex } from "../helpers/nip-19";
 import { Post } from "../components/post";
-import eventsService from "../services/events";
 import { useMemo } from "react";
 
 export const EventPage = () => {
@@ -24,9 +17,7 @@ export const EventPage = () => {
         <Alert status="error">
           <AlertIcon />
           <AlertTitle>Invalid event id</AlertTitle>
-          <AlertDescription>
-            "{params.id}" dose not look like a valid event id
-          </AlertDescription>
+          <AlertDescription>"{params.id}" dose not look like a valid event id</AlertDescription>
         </Alert>
       </Page>
     );
@@ -39,12 +30,12 @@ export const EventPage = () => {
   );
 };
 
-function useEvent(id: string, relays: string[]) {
-  const sub = useMemo(() => eventsService.requestEvent(id, relays), [id]);
-  const event = useSubject(sub);
+// function useEvent(id: string, relays: string[]) {
+//   const sub = useMemo(() => eventsService.requestEvent(id, relays), [id]);
+//   const event = useSubject(sub);
 
-  return event;
-}
+//   return event;
+// }
 
 export type EventViewProps = {
   /** id of event in hex format */
@@ -52,9 +43,9 @@ export type EventViewProps = {
 };
 
 export const EventView = ({ eventId }: EventViewProps) => {
-  const relays = useSubject(settings.relays);
+  // const relays = useSubject(settings.relays);
 
-  const event = useEvent(eventId, relays);
+  // const event = useEvent(eventId, relays);
 
   // const replySub = useSubscription(relays, { "#e": [eventId], kinds: [1] });
   // const { events } = useEventDir(replySub);
@@ -63,12 +54,13 @@ export const EventView = ({ eventId }: EventViewProps) => {
   //   (a, b) => b.created_at - a.created_at
   // );
 
-  return (
-    <Flex direction="column" gap="2" flexGrow="1" overflow="auto">
-      {event && <Post event={event} />}
-      {/* {timeline.map((event) => (
-        <Post key={event.id} event={event} />
-      ))} */}
-    </Flex>
-  );
+  // return (
+  //   <Flex direction="column" gap="2" flexGrow="1" overflow="auto">
+  //     {event && <Post event={event} />}
+  //     {timeline.map((event) => (
+  //       <Post key={event.id} event={event} />
+  //     ))}
+  //   </Flex>
+  // );
+  return <h1>coming soon</h1>;
 };

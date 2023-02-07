@@ -12,23 +12,20 @@ import settings from "../../services/settings";
 import userContactsService from "../../services/user-contacts";
 
 function useExtendedContacts(pubkey: string) {
-  const relays = useSubject(settings.relays);
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
-  const { contacts } = useUserContacts(pubkey);
+  const contacts = useUserContacts(pubkey);
 
   useEffect(() => {
     if (contacts) {
-      const following = contacts.contacts.map((c) => c.pubkey);
-      const subscriptions = contacts.contacts.map((contact) =>
-        userContactsService.requestContacts(contact.pubkey, relays)
-      );
+      const following = contacts.contacts;
+      const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact));
 
-      const rxSub = from(subscriptions)
+      const rxSub = from(subject)
         .pipe(mergeAll())
         .subscribe((contacts) => {
           if (contacts) {
             setExtendedContacts((value) => {
-              const more = contacts.contacts.map((c) => c.pubkey).filter((key) => !following.includes(key));
+              const more = contacts.contacts.filter((key) => !following.includes(key));
               return Array.from(new Set([...value, ...more]));
             });
           }

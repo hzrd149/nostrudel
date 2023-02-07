@@ -12,12 +12,12 @@ import settings from "../../services/settings";
 export const FollowingTab = () => {
   const relays = useSubject(settings.relays);
   const pubkey = useSubject(identity.pubkey);
-  const { contacts } = useUserContacts(pubkey);
+  const contacts = useUserContacts(pubkey);
 
   const [since, setSince] = useState(moment().subtract(1, "hour"));
   const [after, setAfter] = useState(moment());
 
-  const following = contacts?.contacts.map((contact) => contact.pubkey) || [];
+  const following = contacts?.contacts || [];
   const sub = useSubscription(
     relays,
     {
@@ -29,9 +29,7 @@ export const FollowingTab = () => {
   );
 
   const { events } = useEventDir(sub);
-  const timeline = Object.values(events).sort(
-    (a, b) => b.created_at - a.created_at
-  );
+  const timeline = Object.values(events).sort((a, b) => b.created_at - a.created_at);
 
   return (
     <Flex direction="column" overflow="auto" gap="2">

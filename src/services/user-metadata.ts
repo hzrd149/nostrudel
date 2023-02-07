@@ -1,32 +1,33 @@
-import { BehaviorSubject, filter, map } from "rxjs";
 import db from "./db";
 import settings from "./settings";
 import { NostrSubscription } from "../classes/nostr-subscription";
-import { PubkeyRequestList } from "../classes/pubkey-request-list";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { Kind0ParsedContent, NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
-import { unique } from "../helpers/array";
 
 type Metadata = Kind0ParsedContent & { created_at: number };
 
 const subscription = new NostrSubscription([], undefined, "user-metadata");
-const userMetadataSubjects = new PubkeySubjectCache<Metadata>();
-const pendingRequests = new PubkeyRequestList();
+const subjects = new PubkeySubjectCache<Metadata>();
+const forceRequestedKeys = new Set<string>();
 
 function requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
-  let subject = userMetadataSubjects.getSubject(pubkey);
+  let subject = subjects.getSubject(pubkey);
 
-  db.get("user-metadata", pubkey).then((cached) => {
-    if (cached) {
-      const parsed = parseMetadata(cached);
-      if (parsed) subject.next(parsed);
-    }
+  if (relays.length) subjects.addRelays(pubkey, relays);
 
-    if (alwaysRequest || !cached) {
-      pendingRequests.addPubkey(pubkey, relays);
-    }
-  });
+  if (alwaysRequest) {
+    forceRequestedKeys.add(pubkey);
+  }
+
+  if (!subject.value) {
+    db.get("user-metadata", pubkey).then((cached) => {
+      if (cached) {
+        const parsed = parseMetadata(cached);
+        if (parsed) subject.next(parsed);
+      }
+    });
+  }
 
   return subject;
 }
@@ -38,54 +39,51 @@ function parseMetadata(event: NostrEvent): Metadata | undefined {
 }
 
 function flushRequests() {
-  if (!pendingRequests.needsFlush) return;
-  const { pubkeys, relays } = pendingRequests.flush();
-  if (pubkeys.length === 0) return;
+  const pubkeys = new Set<string>();
+  const relays = new Set<string>();
+
+  const pending = subjects.getAllPubkeysMissingData(Array.from(forceRequestedKeys));
+  for (const key of pending.pubkeys) pubkeys.add(key);
+  for (const url of pending.relays) relays.add(url);
+
+  if (pubkeys.size === 0) return;
 
   const systemRelays = settings.relays.getValue();
-  const query: NostrQuery = { authors: pubkeys, kinds: [0] };
+  for (const url of systemRelays) relays.add(url);
 
-  subscription.setRelays(relays.length > 0 ? unique([...systemRelays, ...relays]) : systemRelays);
+  const query: NostrQuery = { authors: Array.from(pubkeys), kinds: [0] };
+
+  subscription.setRelays(Array.from(relays));
   subscription.update(query);
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();
   }
 }
 
-function pruneMemoryCache() {
-  const keys = userMetadataSubjects.prune();
-  for (const key of keys) {
-    pendingRequests.removePubkey(key);
-  }
-}
-
 subscription.onEvent.subscribe((event) => {
-  if (userMetadataSubjects.hasSubject(event.pubkey)) {
-    const subject = userMetadataSubjects.getSubject(event.pubkey);
-    const latest = subject.getValue();
-    if (!latest || event.created_at > latest.created_at) {
-      subject.next(event);
+  const subject = subjects.getSubject(event.pubkey);
+  const latest = subject.getValue();
+  if (!latest || event.created_at > latest.created_at) {
+    const parsed = parseMetadata(event);
+    if (parsed) {
+      subject.next(parsed);
       db.put("user-metadata", event);
+      forceRequestedKeys.delete(event.pubkey);
     }
-  }
-
-  // remove the pending request for this pubkey
-  if (pendingRequests.hasPubkey(event.pubkey)) {
-    pendingRequests.removePubkey(event.pubkey);
   }
 });
 
 // flush requests every second
 setInterval(() => {
+  subjects.prune();
   flushRequests();
-  pruneMemoryCache();
-}, 1000);
+}, 1000 * 2);
 
-const userMetadataService = { requestMetadata, flushRequests, pendingRequests };
+const userMetadataService = { requestMetadata, flushRequests, subjects };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.userMetadata = userMetadataService;
+  window.userMetadataService = userMetadataService;
 }
 
 export default userMetadataService;

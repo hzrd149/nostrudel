@@ -11,12 +11,14 @@ export interface CustomSchema extends DBSchema {
     value: {
       pubkey: string;
       relays: Record<string, { read: boolean; write: boolean }>;
-      contacts: {
-        pubkey: string;
-        relay?: string;
-      }[];
+      contacts: string[];
+      // contacts: {
+      //   pubkey: string;
+      //   relay?: string;
+      // }[];
       created_at: number;
     };
+    indexes: { created_at: number; contacts: string };
   };
   "text-events": {
     key: string;
@@ -31,6 +33,10 @@ export interface CustomSchema extends DBSchema {
       lastSeen: Date;
     };
     indexes: { lastSeen: Date };
+  };
+  identicon: {
+    key: string;
+    value: string;
   };
   settings: {
     key: string;

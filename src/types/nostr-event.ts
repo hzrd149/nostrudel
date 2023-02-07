@@ -1,7 +1,4 @@
-export type ETag =
-  | ["e", string]
-  | ["e", string, string]
-  | ["e", string, string, string];
+export type ETag = ["e", string] | ["e", string, string] | ["e", string, string, string];
 export type PTag = ["p", string] | ["p", string, string];
 export type Tag =
   | [string]
@@ -21,10 +18,7 @@ export type NostrEvent = {
   sig: string;
 };
 
-export type IncomingNostrEvent =
-  | ["EVENT", string, NostrEvent]
-  | ["NOTICE", string]
-  | ["EOSE", string];
+export type IncomingNostrEvent = ["EVENT", string, NostrEvent] | ["NOTICE", string] | ["EOSE", string];
 
 export type Kind0ParsedContent = {
   name?: string;
@@ -37,5 +31,5 @@ export function isETag(tag: Tag): tag is ETag {
   return tag[0] === "e";
 }
 export function isPTag(tag: Tag): tag is PTag {
-  return tag[0] === "e";
+  return tag[0] === "p";
 }

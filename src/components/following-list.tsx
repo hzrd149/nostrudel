@@ -29,15 +29,15 @@ const FollowingListItem = ({ pubkey }: { pubkey: string }) => {
 
 export const FollowingList = () => {
   const pubkey = useSubject(identity.pubkey);
-  const { contacts, loading } = useUserContacts(pubkey);
+  const contacts = useUserContacts(pubkey);
 
-  if (loading || !contacts) return <SkeletonText />;
+  if (!contacts) return <SkeletonText />;
 
   return (
     <Box overflow="auto" pr="2" pb="4" pt="2">
       <Flex direction="column" gap="2">
         {contacts.contacts.map((contact) => (
-          <FollowingListItem key={contact.pubkey} pubkey={contact.pubkey} />
+          <FollowingListItem key={contact} pubkey={contact} />
         ))}
       </Flex>
     </Box>

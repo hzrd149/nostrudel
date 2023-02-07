@@ -1,27 +1,24 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
-import Identicon from "identicon.js";
 import { useUserMetadata } from "../hooks/use-user-metadata";
-
-const cache: Record<string, Identicon> = {};
-function getIdenticon(pubkey: string) {
-  if (pubkey.length < 15) return "";
-  if (!cache[pubkey]) {
-    cache[pubkey] = new Identicon(pubkey, { format: "svg" });
-  }
-  return cache[pubkey];
-}
+import { useAsync } from "react-use";
+import { getIdenticon } from "../services/identicon";
+import { safeUrl } from "../helpers/parse";
 
 export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
 };
 export const UserAvatar = React.memo(({ pubkey, ...props }: UserAvatarProps) => {
   const metadata = useUserMetadata(pubkey);
+  const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
 
-  const url = useMemo(() => {
-    return metadata?.picture ?? `data:image/svg+xml;base64,${getIdenticon(pubkey).toString()}`;
-  }, [metadata]);
-
-  return <Avatar src={url} {...props} />;
+  return (
+    <Avatar
+      src={metadata?.picture && safeUrl(metadata?.picture)}
+      icon={identicon ? <img src={`data:image/svg+xml;base64,${identicon}`} width="100%" /> : undefined}
+      overflow="hidden"
+      {...props}
+    />
+  );
 });
 UserAvatar.displayName = "UserAvatar";

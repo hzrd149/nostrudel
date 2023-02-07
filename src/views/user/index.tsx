@@ -25,6 +25,8 @@ import { UserFollowingTab } from "./following";
 import { normalizeToHex } from "../../helpers/nip-19";
 import { Page } from "../../components/page";
 import { UserProfileMenu } from "./user-profile-menu";
+import { UserFollowersTab } from "./followers";
+import { useUserFollowers } from "../../hooks/use-user-followers";
 
 export const UserPage = () => {
   const params = useParams();
@@ -57,7 +59,8 @@ export const UserView = ({ pubkey }: UserViewProps) => {
   const isMobile = useIsMobile();
 
   const metadata = useUserMetadata(pubkey, [], true);
-  const label = metadata && getUserDisplayName(metadata, pubkey);
+  const label = getUserDisplayName(metadata, pubkey);
+  const followers = useUserFollowers(pubkey);
 
   return (
     <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" height="100%">
@@ -74,6 +77,7 @@ export const UserView = ({ pubkey }: UserViewProps) => {
       <Tabs display="flex" flexDirection="column" flexGrow="1" overflow="hidden" isLazy>
         <TabList>
           <Tab>Notes</Tab>
+          <Tab>Followers ({followers?.length})</Tab>
           <Tab>Following</Tab>
           <Tab>Relays</Tab>
         </TabList>
@@ -81,6 +85,9 @@ export const UserView = ({ pubkey }: UserViewProps) => {
         <TabPanels overflow="auto" height="100%">
           <TabPanel pr={0} pl={0}>
             <UserPostsTab pubkey={pubkey} />
+          </TabPanel>
+          <TabPanel>
+            <UserFollowersTab pubkey={pubkey} />
           </TabPanel>
           <TabPanel>
             <UserFollowingTab pubkey={pubkey} />

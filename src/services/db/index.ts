@@ -22,7 +22,8 @@ const MIGRATIONS: MigrationFunction[] = [
     const contacts = db.createObjectStore("user-contacts", {
       keyPath: "pubkey",
     });
-    // contacts.createIndex("created_at", "created_at");
+    contacts.createIndex("created_at", "created_at");
+    contacts.createIndex("contacts", "contacts", { multiEntry: true });
 
     const events = db.createObjectStore("text-events", {
       keyPath: "id",
@@ -31,6 +32,8 @@ const MIGRATIONS: MigrationFunction[] = [
     events.createIndex("pubkey", "pubkey");
     events.createIndex("created_at", "created_at");
     events.createIndex("kind", "kind");
+
+    db.createObjectStore("identicon");
 
     // setup data
     const settings = db.createObjectStore("settings");
@@ -60,5 +63,17 @@ const db = await openDB<CustomSchema>("storage", version, {
     }
   },
 });
+
+export async function clearData() {
+  await db.clear("user-metadata");
+  await db.clear("user-contacts");
+  await db.clear("text-events");
+  await db.clear("events-seen");
+}
+
+if (import.meta.env.DEV) {
+  // @ts-ignore
+  window.db = db;
+}
 
 export default db;

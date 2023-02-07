@@ -1,16 +1,13 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Button, SkeletonText } from "@chakra-ui/react";
 import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
-import userContactsService from "../../services/user-contacts";
+import { useUserContacts } from "../../hooks/use-user-contacts";
 
 export const UserRelaysTab = ({ pubkey }: { pubkey: string }) => {
+  const contacts = useUserContacts(pubkey);
+
   const relays = useSubject(settings.relays);
-
-  const sub = useMemo(() => userContactsService.requestContacts(pubkey, relays), [pubkey]);
-
-  const contacts = useSubject(sub);
-
   const addRelay = useCallback(
     (url: string) => {
       settings.relays.next([...relays, url]);
