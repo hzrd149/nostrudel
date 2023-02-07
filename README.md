@@ -1,4 +1,4 @@
-# Personal Nostr Client
+# noStrudel
 
 ## Current Features
 
