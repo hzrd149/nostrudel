@@ -1,20 +1,16 @@
 import {
   Button,
+  Divider,
+  Flex,
   FormControl,
   FormHelperText,
   FormLabel,
+  Heading,
   Input,
   Stack,
-  Table,
-  TableCaption,
-  TableContainer,
-  Tbody,
-  Td,
+  Switch,
   Textarea,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
+  useColorMode,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useState } from "react";
 import useSubject from "../hooks/use-subject";
@@ -23,6 +19,8 @@ import settings from "../services/settings";
 export const SettingsView = () => {
   const relays = useSubject(settings.relays);
   const [relayUrls, setRelayUrls] = useState(relays.join("\n"));
+
+  const { colorMode, setColorMode } = useColorMode();
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,34 +39,19 @@ export const SettingsView = () => {
   };
 
   return (
-    <>
-      <TableContainer>
-        <Table variant="simple">
-          <TableCaption>Imperial to metric conversion factors</TableCaption>
-          <Thead>
-            <Tr>
-              <Th>Url</Th>
-              <Th>Read</Th>
-              <Th>Write</Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              <Td>inches</Td>
-              <Td>millimetres (mm)</Td>
-              <Td isNumeric>25.4</Td>
-            </Tr>
-          </Tbody>
-          <Tfoot>
-            <Tr>
-              <Th>To convert</Th>
-              <Th>into</Th>
-              <Th isNumeric>multiply by</Th>
-            </Tr>
-          </Tfoot>
-        </Table>
-      </TableContainer>
+    <Flex direction="column" gap="4" pt="2" pb="2" overflow="auto">
+      <Heading>Settings</Heading>
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor="use-dark-theme" mb="0">
+          Use dark theme
+        </FormLabel>
+        <Switch
+          id="use-dark-theme"
+          isChecked={colorMode === "dark"}
+          onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+        />
+      </FormControl>
+      <Divider />
       <form onSubmit={handleSubmit}>
         <FormControl>
           <FormLabel>Relays</FormLabel>
@@ -82,11 +65,6 @@ export const SettingsView = () => {
           />
           <FormHelperText>One relay per line</FormHelperText>
         </FormControl>
-        <FormControl>
-          <FormLabel>Email address</FormLabel>
-          <Input type="text" />
-          <FormHelperText>We'll never share your email.</FormHelperText>
-        </FormControl>
         <Stack direction="row" spacing={4}>
           <Button onClick={resetForm}>Reset</Button>
           <Button type="submit" colorScheme="teal">
@@ -94,6 +72,6 @@ export const SettingsView = () => {
           </Button>
         </Stack>
       </form>
-    </>
+    </Flex>
   );
 };
