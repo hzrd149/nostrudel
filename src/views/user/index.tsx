@@ -15,6 +15,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
 import { getUserFullName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
+import { UserRelaysTab } from "./relays";
 
 export const UserView = () => {
   const isMobile = useIsMobile();
@@ -61,8 +62,8 @@ export const UserView = () => {
           <TabPanel>
             <p>two!</p>
           </TabPanel>
-          <TabPanel>
-            <p>three!</p>
+          <TabPanel pr={0} pl={0}>
+            <UserRelaysTab pubkey={pubkey} />
           </TabPanel>
         </TabPanels>
       </Tabs>
