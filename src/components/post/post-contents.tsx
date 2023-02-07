@@ -40,10 +40,10 @@ const embeds: { regexp: RegExp; render: (match: RegExpMatchArray, trusted: boole
   },
   // Tidal
   {
-    regexp: /https?:\/\/tidal\.com\/track\/(\d+)/im,
+    regexp: /https?:\/\/tidal\.com(\/browse)?\/track\/(\d+)/im,
     render: (match) => (
       <iframe
-        src={`https://embed.tidal.com/tracks/${match[1]}?disableAnalytics=true`}
+        src={`https://embed.tidal.com/tracks/${match[2]}?disableAnalytics=true`}
         width="100%"
         height="96"
       ></iframe>
