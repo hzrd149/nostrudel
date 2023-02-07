@@ -27,7 +27,7 @@ export const PostForm = ({ onSubmit, onCancel, loading }: PostFormProps) => {
         <Button size="sm" onClick={onCancel} isDisabled={loading}>
           Cancel
         </Button>
-        <Button size="sm" type="submit" isLoading={loading}>
+        <Button colorScheme="brand" size="sm" type="submit" isLoading={loading}>
           Post
         </Button>
       </Flex>

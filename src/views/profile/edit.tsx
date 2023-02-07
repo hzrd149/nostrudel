@@ -50,7 +50,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
         </FormControl>
         <Flex alignSelf="flex-end" gap="2">
           <Button onClick={() => reset()}>Reset</Button>
-          <Button colorScheme="teal" disabled>
+          <Button colorScheme="brand" disabled>
             Save
           </Button>
         </Flex>

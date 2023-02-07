@@ -159,7 +159,7 @@ const embeds: EmbedType[] = [
   {
     regexp: /(https?:\/\/[^\s]+)/im,
     render: (match) => (
-      <Link color="blue.500" href={match[0]} target="_blank">
+      <Link color="blue.500" href={match[0]} target="_blank" isExternal>
         {match[0]}
       </Link>
     ),

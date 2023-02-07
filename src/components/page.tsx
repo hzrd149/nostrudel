@@ -1,12 +1,11 @@
 import React from "react";
-import { Button, Container, Flex, Heading, IconButton, VStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Avatar, Button, Container, Flex, Heading, IconButton, LinkOverlay, VStack } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
 import { HomeIcon, LogoutIcon, ProfileIcon, SettingsIcon } from "./icons";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
 import { useIsMobile } from "../hooks/use-is-mobile";
-import { ProfileButton } from "./profile-button";
 import identity from "../services/identity";
 import { FollowingList } from "./following-list";
 import { ReloadPrompt } from "./reload-prompt";
@@ -57,7 +56,11 @@ const DesktopLayout = ({ children }: { children: React.ReactNode }) => {
         <ReloadPrompt />
         <Flex gap="4" grow={1} overflow="hidden">
           <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
-            <ProfileButton to="/profile" />
+            <Flex gap="2" alignItems="center" position="relative">
+              <LinkOverlay as={Link} to="/" />
+              <Avatar src="/apple-touch-icon.png" size="sm" />
+              <Heading size="md">noStrudel</Heading>
+            </Flex>
             <Button onClick={() => navigate("/")} leftIcon={<HomeIcon />}>
               Home
             </Button>

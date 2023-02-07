@@ -135,7 +135,7 @@ export const FeedFilters = ({ isOpen, onClose, values }: FeedFiltersProps) => {
           <Button mr={3} onClick={onClose}>
             Cancel
           </Button>
-          <Button colorScheme="blue" variant="solid">
+          <Button colorScheme="brand" variant="solid">
             Save
           </Button>
         </ModalFooter>
