@@ -1,10 +1,26 @@
 import { useState } from "react";
-import { Text } from "@chakra-ui/react";
+import {
+  Text,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Spacer,
+} from "@chakra-ui/react";
 import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
 import { useInterval } from "react-use";
+import { RelayStatus } from "../views/settings/relay-status";
+import { useIsMobile } from "../hooks/use-is-mobile";
+import { RelayIcon } from "./icons";
 
 export const ConnectedRelays = () => {
+  const isMobile = useIsMobile();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [relays, setRelays] = useState<Relay[]>(relayPool.getRelays());
 
   useInterval(() => {
@@ -12,11 +28,34 @@ export const ConnectedRelays = () => {
   }, 1000);
 
   const connected = relays.filter((relay) => relay.okay);
-  const disconnected = relays.filter((relay) => !relay.okay);
 
   return (
-    <Text textAlign="center" variant="link">
-      {connected.length}/{relays.length} of relays connected
-    </Text>
+    <>
+      <Button variant="link" onClick={onOpen} leftIcon={<RelayIcon />}>
+        {isMobile ? (
+          <span>
+            {connected.length}/{relays.length}
+          </span>
+        ) : (
+          <span>
+            {connected.length}/{relays.length} of relays connected
+          </span>
+        )}
+      </Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader pb="0">Connected Relays</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {relays.map((relay) => (
+              <Text>
+                <RelayStatus url={relay.url} /> {relay.url}
+              </Text>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };

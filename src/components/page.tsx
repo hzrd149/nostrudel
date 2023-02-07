@@ -21,15 +21,18 @@ const MobileProfileHeader = () => {
   return (
     <Flex justifyContent="space-between" padding="2">
       <UserAvatarLink pubkey={pubkey} size="sm" />
-      <IconButton
-        as={Link}
-        variant="ghost"
-        icon={<NotificationIcon />}
-        aria-label="Notifications"
-        title="Notifications"
-        size="sm"
-        to="/notifications"
-      />
+      <Flex gap="2">
+        <ConnectedRelays />
+        <IconButton
+          as={Link}
+          variant="ghost"
+          icon={<NotificationIcon />}
+          aria-label="Notifications"
+          title="Notifications"
+          size="sm"
+          to="/notifications"
+        />
+      </Flex>
     </Flex>
   );
 };
