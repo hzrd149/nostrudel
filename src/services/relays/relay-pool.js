@@ -1,8 +1,10 @@
+import { Subject } from "rxjs";
 import { Relay } from "./relay";
 
 export class RelayPool {
   relays = new Map();
   relayClaims = new Map();
+  onRelayCreated = new Subject();
 
   getRelays() {
     return Array.from(this.relays.values());
@@ -16,7 +18,9 @@ export class RelayPool {
 
   requestRelay(url, connect = true) {
     if (!this.relays.has(url)) {
-      this.relays.set(url, new Relay(url));
+      const newRelay = new Relay(url)
+      this.relays.set(url, newRelay);
+      this.onRelayCreated.next(newRelay)
     }
 
     const relay = this.relays.get(url);

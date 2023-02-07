@@ -18,7 +18,9 @@ export const PostModal = ({ event, onClose, isOpen }) => (
       <ModalHeader>{event.pubkey}</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <ReactMarkdown>{event.content}</ReactMarkdown>
+        <ReactMarkdown>
+          {event.content.replace(/(?<! )\n/g, "  \n")}
+        </ReactMarkdown>
       </ModalBody>
       <ModalFooter>
         <Button colorScheme="blue" onClick={onClose}>

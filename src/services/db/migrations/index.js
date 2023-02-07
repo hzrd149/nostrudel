@@ -6,6 +6,9 @@ const MIGRATIONS = [
     });
     userMetadata.createIndex("id", "id", { unique: true });
 
+    const eventsSeen = db.createObjectStore("events-seen", { keyPath: "id" });
+    eventsSeen.createIndex("lastSeen", "lastSeen");
+
     db.createObjectStore("contacts", {
       keyPath: "pubkey",
     });

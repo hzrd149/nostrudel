@@ -50,7 +50,7 @@ export const ConnectedRelays = () => {
       <Modal isOpen={isOpen} onClose={onClose} size="4xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Relay Status</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <TableContainer>
@@ -63,7 +63,7 @@ export const ConnectedRelays = () => {
                 </Thead>
                 <Tbody>
                   {relays.map((relay) => (
-                    <Tr keyy={relay.url}>
+                    <Tr key={relay.url}>
                       <Td>{relay.url}</Td>
                       <Td>
                         <Badge colorScheme={relay.okay ? "green" : "red"}>

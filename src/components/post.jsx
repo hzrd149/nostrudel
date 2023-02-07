@@ -1,10 +1,14 @@
 import React from "react";
 import {
+  Avatar,
   Box,
   Button,
   Card,
   CardBody,
+  CardHeader,
+  Flex,
   Heading,
+  Text,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
@@ -12,6 +16,7 @@ import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { PostModal } from "./post-modal";
+import { EventSeenOn } from "./event-seen-on";
 
 export const Post = ({ event }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -20,14 +25,27 @@ export const Post = ({ event }) => {
 
   return (
     <Card>
-      <CardBody>
+      <CardHeader>
+        <Flex spacing="4">
+          <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
+            <Avatar name="Segun Adebayo" src="https://bit.ly/sage-adebayo" />
+
+            <Box>
+              <Heading size="sm">
+                <Link to={`/user/${event.pubkey}`}>{event.pubkey}</Link>
+              </Heading>
+              <Text>{moment(event.created_at * 1000).fromNow()}</Text>
+            </Box>
+          </Flex>
+          <EventSeenOn id={event.id} />
+        </Flex>
+      </CardHeader>
+      <CardBody pt={0}>
         <VStack alignItems="flex-start" justifyContent="stretch">
-          <Heading size="sm">
-            <Link to={`/user/${event.pubkey}`}>{event.pubkey}</Link>{" "}
-            <span>{moment(event.created_at * 1000).fromNow()}</span>
-          </Heading>
           <Box maxHeight="10rem" overflow="hidden" width="100%">
-            <ReactMarkdown>{event.content}</ReactMarkdown>
+            <ReactMarkdown>
+              {event.content.replace(/(?<! )\n/g, "  \n")}
+            </ReactMarkdown>
           </Box>
           {isLong && (
             <>
