@@ -137,16 +137,28 @@ export const SettingsView = () => {
             </AccordionButton>
           </h2>
           <AccordionPanel>
-            <FormControl display="flex" alignItems="center">
-              <FormLabel htmlFor="use-dark-theme" mb="0">
-                Use dark theme
-              </FormLabel>
-              <Switch
-                id="use-dark-theme"
-                isChecked={colorMode === "dark"}
-                onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
-              />
-            </FormControl>
+            <Flex direction="column" gap="2">
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="use-dark-theme" mb="0">
+                  Use dark theme
+                </FormLabel>
+                <Switch
+                  id="use-dark-theme"
+                  isChecked={colorMode === "dark"}
+                  onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+                />
+              </FormControl>
+              <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="show-ads" mb="0">
+                  Show Ads
+                </FormLabel>
+                <Switch
+                  id="show-ads"
+                  isChecked={false}
+                  onChange={(v) => alert("Sorry, that feature will never be finished.")}
+                />
+              </FormControl>
+            </Flex>
           </AccordionPanel>
         </AccordionItem>
 
