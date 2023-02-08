@@ -63,6 +63,10 @@
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 - Add client side relay groups
 - Add mentions in posts (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
+- Add note embeds
+- Add "repost" button that mentions the note
+- Add preview tab to note modal
+- Save note drafts and let users manage them
 
 ## Setup
 

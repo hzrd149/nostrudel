@@ -175,7 +175,7 @@ const embeds: EmbedType[] = [
   // Video
   {
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm|mov))[^\s]*/im,
-    render: (match) => <video src={match[0]} controls style={{ maxWidth: "30rem" }} />,
+    render: (match) => <video src={match[0]} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />,
     name: "Video",
     isMedia: true,
   },
