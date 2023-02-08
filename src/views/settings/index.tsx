@@ -21,6 +21,7 @@ import {
   Box,
   AccordionIcon,
   ButtonGroup,
+  FormHelperText,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useState } from "react";
 import { GlobalIcon, TrashIcon } from "../../components/icons";
@@ -37,6 +38,7 @@ export const SettingsView = () => {
   const relays = useSubject(settings.relays);
   const blurImages = useSubject(settings.blurImages);
   const autoShowMedia = useSubject(settings.autoShowMedia);
+  const proxyUserMedia = useSubject(settings.proxyUserMedia);
   const [relayInputValue, setRelayInputValue] = useState("");
 
   const { colorMode, setColorMode } = useColorMode();
@@ -144,46 +146,96 @@ export const SettingsView = () => {
             </AccordionButton>
           </h2>
           <AccordionPanel>
-            <Flex direction="column" gap="2">
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="use-dark-theme" mb="0">
-                  Use dark theme
-                </FormLabel>
-                <Switch
-                  id="use-dark-theme"
-                  isChecked={colorMode === "dark"}
-                  onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
-                />
+            <Flex direction="column" gap="4">
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="use-dark-theme" mb="0">
+                    Use dark theme
+                  </FormLabel>
+                  <Switch
+                    id="use-dark-theme"
+                    isChecked={colorMode === "dark"}
+                    onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+                  />
+                </Flex>
+                <FormHelperText>
+                  <span>Enabled: hacker mode</span>
+                </FormHelperText>
               </FormControl>
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="blur-images" mb="0">
-                  Blur images from strangers
-                </FormLabel>
-                <Switch
-                  id="blur-images"
-                  isChecked={blurImages}
-                  onChange={(v) => settings.blurImages.next(v.target.checked)}
-                />
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="blur-images" mb="0">
+                    Blur images from strangers
+                  </FormLabel>
+                  <Switch
+                    id="blur-images"
+                    isChecked={blurImages}
+                    onChange={(v) => settings.blurImages.next(v.target.checked)}
+                  />
+                </Flex>
+                <FormHelperText>
+                  <span>Enabled: blur images for people you aren't following</span>
+                </FormHelperText>
               </FormControl>
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="auto-show-embeds" mb="0">
-                  Automatically show media
-                </FormLabel>
-                <Switch
-                  id="auto-show-embeds"
-                  isChecked={autoShowMedia}
-                  onChange={(v) => settings.autoShowMedia.next(v.target.checked)}
-                />
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="show-ads" mb="0">
+                    Show Ads
+                  </FormLabel>
+                  <Switch
+                    id="show-ads"
+                    isChecked={false}
+                    onChange={(v) => alert("Sorry, that feature will never be finished.")}
+                  />
+                </Flex>
+                <FormHelperText>
+                  <span>Enabled: shows ads so I can steal your data</span>
+                </FormHelperText>
               </FormControl>
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="show-ads" mb="0">
-                  Show Ads
-                </FormLabel>
-                <Switch
-                  id="show-ads"
-                  isChecked={false}
-                  onChange={(v) => alert("Sorry, that feature will never be finished.")}
-                />
+            </Flex>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Performance
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel>
+            <Flex direction="column" gap="4">
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="proxy-user-media" mb="0">
+                    Proxy user media
+                  </FormLabel>
+                  <Switch
+                    id="proxy-user-media"
+                    isChecked={proxyUserMedia}
+                    onChange={(v) => settings.proxyUserMedia.next(v.target.checked)}
+                  />
+                </Flex>
+                <FormHelperText>
+                  <span>Enabled: media.nostr.band is used to get smaller of profile images (saves ~50Mb of data)</span>
+                  <br />
+                  <span>Side Effect: some user pictures may not load or may be outdated</span>
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="auto-show-embeds" mb="0">
+                    Automatically show media
+                  </FormLabel>
+                  <Switch
+                    id="auto-show-embeds"
+                    isChecked={autoShowMedia}
+                    onChange={(v) => settings.autoShowMedia.next(v.target.checked)}
+                  />
+                </Flex>
+                <FormHelperText>Disabled: images and videos will show expandable buttons.</FormHelperText>
               </FormControl>
             </Flex>
           </AccordionPanel>

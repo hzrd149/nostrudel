@@ -7,6 +7,7 @@ const settings = {
   identity: new BehaviorSubject<SavedIdentity | null>(null),
   blurImages: new BehaviorSubject(true),
   autoShowMedia: new BehaviorSubject(true),
+  proxyUserMedia: new BehaviorSubject(false),
 };
 
 async function loadSettings() {
