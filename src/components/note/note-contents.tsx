@@ -189,14 +189,17 @@ const embeds: EmbedType[] = [
     ),
     isMedia: false,
   },
-  // npub1 and note1 links
+  // npub1 and note1 ids
   {
     regexp: /@?((npub1|note1)[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/m,
     render: (match) => {
       switch (match[2]) {
         case "npub1":
-          const id = normalizeToHex(match[1]);
-          return id ? <UserLink color="blue.500" pubkey={id} showAt /> : match[0];
+          const key = normalizeToHex(match[1]);
+          return key ? <UserLink color="blue.500" pubkey={key} showAt /> : match[0];
+        case "note1":
+          const noteId = normalizeToHex(match[1]);
+          return noteId ? <NoteLink noteId={noteId} /> : match[0];
         default:
           return match[0];
       }
