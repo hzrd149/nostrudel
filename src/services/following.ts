@@ -15,6 +15,9 @@ const savingDraft = new BehaviorSubject(false);
 
 let sub;
 identity.pubkey.subscribe((pubkey) => {
+  // clear the following list until a new one can be fetched
+  following.next([]);
+
   sub = userContactsService.requestContacts(pubkey, settings.relays.value, true).subscribe((userContacts) => {
     if (!userContacts) return;
 
