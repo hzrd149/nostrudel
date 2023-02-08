@@ -167,7 +167,7 @@ const embeds: EmbedType[] = [
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(svg|gif|png|jpg|jpeg|webp|avif))[^\s]*/im,
     render: (match, event, trusted) => {
       const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
-      return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" minHeight="20rem" />;
+      return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
     },
     name: "Image",
     isMedia: true,
@@ -175,11 +175,7 @@ const embeds: EmbedType[] = [
   // Video
   {
     regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm|mov))[^\s]*/im,
-    render: (match) => (
-      <AspectRatio ratio={16 / 9} maxWidth="30rem">
-        <video src={match[0]} controls />
-      </AspectRatio>
-    ),
+    render: (match) => <video src={match[0]} controls style={{ maxWidth: "30rem" }} />,
     name: "Video",
     isMedia: true,
   },

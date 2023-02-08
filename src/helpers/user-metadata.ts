@@ -10,3 +10,10 @@ export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pub
   }
   return truncatedId(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? pubkey);
 }
+
+export function fixWebsiteUrl(website: string) {
+  if (website.match(/^http?s:\/\//)) {
+    return website;
+  }
+  return "https://" + website;
+}

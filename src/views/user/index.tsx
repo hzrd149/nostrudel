@@ -16,7 +16,7 @@ import {
 import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
-import { getUserDisplayName } from "../../helpers/user-metadata";
+import { fixWebsiteUrl, getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserProfileMenu } from "./components/user-profile-menu";
 import { LinkIcon } from "@chakra-ui/icons";
@@ -27,6 +27,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { KeyIcon, SettingsIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import identity from "../../services/identity";
+import { UserFollowButton } from "../../components/user-follow-button";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -72,7 +73,7 @@ const UserView = () => {
         {metadata?.website && (
           <Text>
             <LinkIcon />{" "}
-            <Link href={metadata.website} target="_blank" color="blue.500">
+            <Link href={fixWebsiteUrl(metadata.website)} target="_blank" color="blue.500">
               {metadata.website}
             </Link>
           </Text>
@@ -91,11 +92,7 @@ const UserView = () => {
               onClick={() => navigate("/settings")}
             />
           )}
-          {!isSelf && (
-            <Button colorScheme="brand" size="sm">
-              Follow
-            </Button>
-          )}
+          {!isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}
         </Flex>
       </Flex>
     </Flex>

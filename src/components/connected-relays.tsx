@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  Spacer,
 } from "@chakra-ui/react";
 import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
@@ -49,7 +48,7 @@ export const ConnectedRelays = () => {
           <ModalCloseButton />
           <ModalBody>
             {relays.map((relay) => (
-              <Text>
+              <Text key={relay.url}>
                 <RelayStatus url={relay.url} /> {relay.url}
               </Text>
             ))}

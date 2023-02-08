@@ -17,10 +17,21 @@ import { UserAvatarLink } from "./user-avatar-link";
 
 const MobileProfileHeader = () => {
   const pubkey = useSubject(identity.pubkey);
+  const readonly = useReadonlyMode();
 
   return (
-    <Flex justifyContent="space-between" padding="2">
+    <Flex justifyContent="space-between" padding="2" alignItems="center">
       <UserAvatarLink pubkey={pubkey} size="sm" />
+      {readonly && (
+        <Button
+          colorScheme="red"
+          textAlign="center"
+          variant="link"
+          onClick={() => confirm("Exit readonly mode?") && identity.logout()}
+        >
+          Readonly Mode
+        </Button>
+      )}
       <Flex gap="2">
         <ConnectedRelays />
         <IconButton
@@ -86,7 +97,7 @@ const DesktopSideNav = () => {
         Logout
       </Button>
       {readonly && (
-        <Text color="yellow.500" textAlign="center">
+        <Text color="red.200" textAlign="center">
           Readonly Mode
         </Text>
       )}

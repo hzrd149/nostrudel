@@ -12,7 +12,7 @@
 - [x] NIP-05 support
 - [x] Broadcast events
 - [x] User tipping
-- [ ] Manage followers ( Contact List )
+- [x] Manage followers ( Contact List )
 - [ ] Profile management
 - [ ] Relay management
 - [ ] Image upload
@@ -24,7 +24,7 @@
 
 ## Supported NIPs
 
-- [ ] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
+- [x] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
 - [ ] [NIP-03](https://github.com/nostr-protocol/nips/blob/master/03.md): OpenTimestamps Attestations for Events
 - [ ] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
 - [x] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
@@ -53,7 +53,6 @@
 
 - add `client` tag to published events
 - add button for creating lightning invoice via WebLN
-- setup deploy to s3
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
   - make app handle image files
 - block notes based on content
