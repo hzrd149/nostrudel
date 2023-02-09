@@ -20,6 +20,7 @@ import { relayPool } from "../../services/relays";
 import settings from "../../services/settings";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayIcon, SearchIcon } from "../icons";
+import { RelayFavicon } from "../relay-favicon";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
@@ -71,7 +72,10 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
         <PopoverArrow />
         <PopoverBody>
           {relays.map((url) => (
-            <Text key={url}>{url}</Text>
+            <Flex alignItems="center" key={url}>
+              <RelayFavicon relay={url} size="2xs" mr="2" />
+              <Text>{url}</Text>
+            </Flex>
           ))}
         </PopoverBody>
         <PopoverFooter>

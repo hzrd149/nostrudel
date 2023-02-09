@@ -38,6 +38,8 @@ export function linkEvents(events: NostrEvent[]) {
     reply.reply = reply.refs.replyId ? replies.get(reply.refs.replyId) : undefined;
 
     reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
+
+    reply.replies.sort((a, b) => a.event.created_at - b.event.created_at);
   }
 
   return replies;

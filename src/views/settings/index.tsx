@@ -3,7 +3,6 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Input,
   Switch,
   useColorMode,
   Table,
@@ -22,9 +21,10 @@ import {
   AccordionIcon,
   ButtonGroup,
   FormHelperText,
+  Text,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useState } from "react";
-import { GlobalIcon, TrashIcon } from "../../components/icons";
+import { GlobalIcon, RelayIcon, TrashIcon } from "../../components/icons";
 import { RelayStatus } from "./relay-status";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
@@ -32,6 +32,7 @@ import { clearCacheData, deleteDatabase } from "../../services/db";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { useNavigate } from "react-router-dom";
 import identity from "../../services/identity";
+import { RelayFavicon } from "../../components/relay-favicon";
 
 export const SettingsView = () => {
   const navigate = useNavigate();
@@ -94,7 +95,12 @@ export const SettingsView = () => {
                 <Tbody>
                   {relays.map((url) => (
                     <Tr key={url}>
-                      <Td>{url}</Td>
+                      <Td>
+                        <Flex alignItems="center">
+                          <RelayFavicon size="xs" relay={url} mr="2" />
+                          <Text>{url}</Text>
+                        </Flex>
+                      </Td>
                       <Td>
                         <RelayStatus url={url} />
                       </Td>

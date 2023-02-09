@@ -20,6 +20,7 @@ import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { useReadonlyMode } from "../../hooks/use-readonly-mode";
+import { convertTimestampToDate } from "../../helpers/date";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -48,7 +49,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
           {!isMobile && <Flex grow={1} />}
           <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
-            {moment(event.created_at * 1000).fromNow()}
+            {moment(convertTimestampToDate(event.created_at)).fromNow()}
           </Link>
         </Flex>
       </CardHeader>

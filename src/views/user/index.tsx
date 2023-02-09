@@ -10,8 +10,6 @@ import {
   Text,
   Link,
   IconButton,
-  ButtonGroup,
-  Button,
 } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -28,6 +26,7 @@ import { KeyIcon, SettingsIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import identity from "../../services/identity";
 import { UserFollowButton } from "../../components/user-follow-button";
+import { useAppTitle } from "../../hooks/use-app-title";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -50,6 +49,8 @@ const UserView = () => {
   const metadata = useUserMetadata(pubkey, [], true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
   const isSelf = pubkey === identity.pubkey.value;
+
+  useAppTitle(getUserDisplayName(metadata, npub ?? pubkey));
 
   const header = (
     <Flex direction="column" gap="2" px="2" pt="2">

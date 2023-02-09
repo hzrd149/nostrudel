@@ -10,8 +10,10 @@ import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
 import settings from "../../services/settings";
+import { useAppTitle } from "../../hooks/use-app-title";
 
 function useExtendedContacts(pubkey: string) {
+  useAppTitle("discover");
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
   const contacts = useUserContacts(pubkey);
 

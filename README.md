@@ -68,7 +68,6 @@
 - Add preview tab to note modal
 - Save note drafts and let users manage them
 - Add support for relay favicons
-- Setup react-helmet to update window title
 
 ## Setup
 
