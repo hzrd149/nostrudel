@@ -4,7 +4,7 @@ import { nostrPostAction } from "../classes/nostr-post-action";
 import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
 import identity from "./identity";
-import { RelayConfig, RelayMode } from "./relays/relay";
+import { RelayConfig, RelayMode } from "../classes/relay";
 import userRelaysService from "./user-relays";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;

@@ -52,23 +52,20 @@
 
 ## TODO
 
-- add `client` tag to published events
+- Rebuild relays view to show relay info and settings NIP-11
 - add button for creating lightning invoice via WebLN
-- make app a valid web share target https://developer.chrome.com/articles/web-share-target/
-  - make app handle image files
-- block notes based on content
-- implement NIP-56 and blocking
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
-  - sort replies by date
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
-- Add client side relay groups
-- Add mentions in posts (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
 - Add note embeds
 - Add "repost" button that mentions the note
 - Add preview tab to note modal
+- Add mentions in posts (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
+- add `client` tag to published events
 - Save note drafts and let users manage them
-- Add support for relay favicons
+- make app a valid web share target https://developer.chrome.com/articles/web-share-target/
+- implement NIP-56 and blocking
+- block notes based on content
 
 ## Setup
 

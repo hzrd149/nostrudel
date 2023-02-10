@@ -10,20 +10,20 @@ import {
   ModalCloseButton,
   Button,
 } from "@chakra-ui/react";
-import { Relay } from "../services/relays";
-import relayPool from "../services/relays/relay-pool";
+import relayPoolService from "../services/relay-pool";
 import { useInterval } from "react-use";
 import { RelayStatus } from "./relay-status";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { RelayIcon } from "./icons";
+import { Relay } from "../classes/relay";
 
 export const ConnectedRelays = () => {
   const isMobile = useIsMobile();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [relays, setRelays] = useState<Relay[]>(relayPool.getRelays());
+  const [relays, setRelays] = useState<Relay[]>(relayPoolService.getRelays());
 
   useInterval(() => {
-    setRelays(relayPool.getRelays());
+    setRelays(relayPoolService.getRelays());
   }, 1000);
 
   const connected = relays.filter((relay) => relay.okay);

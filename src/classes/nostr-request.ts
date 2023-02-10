@@ -1,8 +1,8 @@
 import { Subject, Subscription as RxSubscription } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
-import { Relay } from "../services/relays";
-import relayPool from "../services/relays/relay-pool";
+import relayPoolService from "../services/relay-pool";
+import { Relay } from "./relay";
 
 let lastId = 0;
 
@@ -22,7 +22,7 @@ export class NostrRequest {
 
   constructor(relayUrls: string[], timeout?: number) {
     this.id = `request-${lastId++}`;
-    this.relays = new Set(relayUrls.map((url) => relayPool.requestRelay(url)));
+    this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {
       const cleanup: RxSubscription[] = [];

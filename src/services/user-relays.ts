@@ -3,7 +3,7 @@ import { NostrSubscription } from "../classes/nostr-subscription";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { isRTag, NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
-import { RelayConfig } from "./relays/relay";
+import { RelayConfig } from "../classes/relay";
 import { parseRTag } from "../helpers/nostr-event";
 import clientRelaysService from "./client-relays";
 

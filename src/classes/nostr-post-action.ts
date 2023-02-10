@@ -1,5 +1,5 @@
 import { Subject, Subscription } from "rxjs";
-import { relayPool } from "../services/relays";
+import relayPoolService from "../services/relay-pool";
 import { NostrEvent } from "../types/nostr-event";
 
 export type PostResult = { url: string; message?: string; status: boolean };
@@ -9,7 +9,7 @@ export function nostrPostAction(relays: string[], event: NostrEvent, timeout: nu
   let remaining = new Set<Subscription>();
 
   for (const url of relays) {
-    const relay = relayPool.requestRelay(url);
+    const relay = relayPoolService.requestRelay(url);
 
     const sub = relay.onCommandResult.subscribe((result) => {
       if (result.eventId === event.id) {

@@ -16,11 +16,11 @@ import { nostrPostAction } from "../../classes/nostr-post-action";
 import { NostrRequest } from "../../classes/nostr-request";
 import useSubject from "../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
-import { relayPool } from "../../services/relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayIcon, SearchIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
+import relayPoolService from "../../services/relay-pool";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
@@ -56,7 +56,7 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
     action.subscribe({
       next: (result) => {
         if (result.status) {
-          handleEventFromRelay(relayPool.requestRelay(result.url, false), event);
+          handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
         }
       },
       complete: () => {

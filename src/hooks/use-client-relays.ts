@@ -1,6 +1,6 @@
 import { unique } from "../helpers/array";
 import clientRelaysService from "../services/client-relays";
-import { RelayMode } from "../services/relays/relay";
+import { RelayMode } from "../classes/relay";
 import useSubject from "./use-subject";
 
 export function useClientRelays(mode: RelayMode = RelayMode.READ) {

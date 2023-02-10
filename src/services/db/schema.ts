@@ -1,6 +1,6 @@
 import { DBSchema } from "idb";
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayConfig } from "../relays/relay";
+import { RelayInformationDocument } from "../relay-info";
 
 export interface CustomSchema extends DBSchema {
   userMetadata: {
@@ -21,7 +21,7 @@ export interface CustomSchema extends DBSchema {
   };
   userRelays: {
     key: string;
-    value: { pubkey: string; relays: {url: string, mode: number}[]; created_at: number };
+    value: { pubkey: string; relays: { url: string; mode: number }[]; created_at: number };
     indexes: { created_at: number };
   };
   dnsIdentifiers: {
@@ -29,6 +29,7 @@ export interface CustomSchema extends DBSchema {
     value: { name: string; domain: string; pubkey: string; relays: string[]; updated: number };
     indexes: { name: string; domain: string; pubkey: string; updated: number };
   };
+  relayInfo: { key: string; value: RelayInformationDocument };
   pubkeyRelayWeights: {
     key: string;
     value: { pubkey: string; relays: Record<string, number>; updated: number };

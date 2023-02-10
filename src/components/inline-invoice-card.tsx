@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, ButtonGroup, Heading, IconButton, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
 import { requestProvider } from "webln";
 import { getReadableAmount, parsePaymentRequest } from "../helpers/bolt11";
 import { useAsync } from "react-use";

@@ -1,7 +1,7 @@
 import { Subject } from "rxjs";
-import { Relay } from "./relay";
+import { Relay } from "../classes/relay";
 
-export class RelayPool {
+export class RelayPoolService {
   relays = new Map<string, Relay>();
   relayClaims = new Map<string, Set<any>>();
   onRelayCreated = new Subject<Relay>();
@@ -64,11 +64,11 @@ export class RelayPool {
   }
 }
 
-const relayPool = new RelayPool();
+const relayPoolService = new RelayPoolService();
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.relayPool = relayPool;
+  window.relayPoolService = relayPoolService;
 }
 
-export default relayPool;
+export default relayPoolService;

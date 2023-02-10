@@ -1,7 +1,7 @@
 import moment from "moment";
 import { getEventRelays } from "../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag } from "../types/nostr-event";
-import { RelayConfig, RelayMode } from "../services/relays/relay";
+import { RelayConfig, RelayMode } from "../classes/relay";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");

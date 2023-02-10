@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
-import { RawIncomingNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { NostrOutgoingMessage } from "../../types/nostr-query";
+import { RawIncomingNostrEvent, NostrEvent } from "../types/nostr-event";
+import { NostrOutgoingMessage } from "../types/nostr-query";
 
 export type IncomingEvent = {
   type: "EVENT";

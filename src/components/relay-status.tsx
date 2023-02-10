@@ -1,6 +1,7 @@
 import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
-import { Relay, relayPool } from "../services/relays";
+import { Relay } from "../classes/relay";
+import relayPoolService from "../services/relay-pool";
 
 const getStatusText = (relay: Relay) => {
   if (relay.connecting) return "Connecting...";
@@ -20,7 +21,7 @@ const getStatusColor = (relay: Relay) => {
 export const RelayStatus = ({ url }: { url: string }) => {
   const update = useForceUpdate();
 
-  const relay = relayPool.requestRelay(url, false);
+  const relay = relayPoolService.requestRelay(url, false);
 
   useInterval(() => update(), 500);
 

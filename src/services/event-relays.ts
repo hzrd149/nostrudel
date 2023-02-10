@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
+import { Relay } from "../classes/relay";
 import { NostrEvent } from "../types/nostr-event";
-import { Relay, relayPool } from "./relays";
+import relayPoolService from "./relay-pool";
 
 const eventRelays = new Map<string, BehaviorSubject<string[]>>();
 
@@ -21,7 +22,7 @@ export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
   }
 }
 
-relayPool.onRelayCreated.subscribe((relay) => {
+relayPoolService.onRelayCreated.subscribe((relay) => {
   relay.onEvent.subscribe(({ body: event }) => {
     handleEventFromRelay(relay, event);
   });

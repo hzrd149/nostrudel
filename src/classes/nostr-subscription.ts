@@ -1,9 +1,8 @@
 import { Subject, SubscriptionLike } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
-import { Relay } from "../services/relays";
-import { IncomingEvent } from "../services/relays/relay";
-import relayPool from "../services/relays/relay-pool";
+import { IncomingEvent, Relay } from "./relay";
+import relayPoolService from "../services/relay-pool";
 
 let lastId = 0;
 
@@ -27,7 +26,7 @@ export class NostrSubscription {
     this.name = name;
     this.relayUrls = relayUrls;
 
-    this.relays = relayUrls.map((url) => relayPool.requestRelay(url));
+    this.relays = relayUrls.map((url) => relayPoolService.requestRelay(url));
   }
   private handleEvent(event: IncomingEvent) {
     if (this.state === NostrSubscription.OPEN && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
@@ -51,7 +50,7 @@ export class NostrSubscription {
     }
 
     for (const url of this.relayUrls) {
-      relayPool.addClaim(url, this);
+      relayPoolService.addClaim(url, this);
     }
   }
   /** listen for event and open events from relays */
@@ -60,7 +59,7 @@ export class NostrSubscription {
     this.cleanup.clear();
 
     for (const url of this.relayUrls) {
-      relayPool.removeClaim(url, this);
+      relayPoolService.removeClaim(url, this);
     }
   }
 
@@ -88,7 +87,7 @@ export class NostrSubscription {
   }
   setRelays(relays: string[]) {
     this.unsubscribeFromRelays();
-    const newRelays = relays.map((url) => relayPool.requestRelay(url));
+    const newRelays = relays.map((url) => relayPoolService.requestRelay(url));
 
     for (const relay of this.relays) {
       if (!newRelays.includes(relay)) {
