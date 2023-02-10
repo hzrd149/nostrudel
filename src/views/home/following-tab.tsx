@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Spinner, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { Note } from "../../components/note";
@@ -7,16 +7,16 @@ import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import identity from "../../services/identity";
-import settings from "../../services/settings";
 import { AddIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { useReadonlyMode } from "../../hooks/use-readonly-mode";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 export const FollowingTab = () => {
   const readonly = useReadonlyMode();
   const pubkey = useSubject(identity.pubkey);
-  const relays = useSubject(settings.relays);
+  const relays = useReadRelayUrls();
   const { openModal } = useContext(PostModalContext);
   const contacts = useUserContacts(pubkey);
   const [search, setSearch] = useSearchParams();

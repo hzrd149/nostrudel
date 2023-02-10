@@ -9,8 +9,8 @@ import identity from "../../services/identity";
 import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
-import settings from "../../services/settings";
 import { useAppTitle } from "../../hooks/use-app-title";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 function useExtendedContacts(pubkey: string) {
   useAppTitle("discover");
@@ -42,7 +42,7 @@ function useExtendedContacts(pubkey: string) {
 
 export const DiscoverTab = () => {
   const pubkey = useSubject(identity.pubkey);
-  const relays = useSubject(settings.relays);
+  const relays = useReadRelayUrls();
 
   const contactsOfContacts = useExtendedContacts(pubkey);
   const { events, loading, loadMore } = useTimelineLoader(

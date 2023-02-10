@@ -1,5 +1,5 @@
 import moment from "moment";
-import { Flex, Grid, SkeletonText, Text } from "@chakra-ui/react";
+import { Flex, Grid, SkeletonText } from "@chakra-ui/react";
 
 import { UserCard } from "./components/user-card";
 import { useUserContacts } from "../../hooks/use-user-contacts";

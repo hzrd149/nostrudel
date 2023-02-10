@@ -2,14 +2,13 @@ import { Button, Card, CardBody, Flex, Spinner, Text } from "@chakra-ui/react";
 import moment from "moment";
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import { NoteContents } from "../../components/note/note-contents";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { convertTimestampToDate } from "../../helpers/date";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import identity from "../../services/identity";
-import settings from "../../services/settings";
 import { NostrEvent } from "../../types/nostr-event";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => {
@@ -39,11 +38,11 @@ const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
 });
 
 const NotificationsView = () => {
-  const relays = useSubject(settings.relays);
+  const readRelays = useReadRelayUrls();
   const pubkey = useSubject(identity.pubkey);
   const { events, loading, loadMore } = useTimelineLoader(
     "notifications",
-    relays,
+    readRelays,
     {
       "#p": [pubkey],
       kinds: [1],

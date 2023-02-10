@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, Button, Container, Flex, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, SettingsIcon } from "./icons";
+import { FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, RelayIcon, SettingsIcon } from "./icons";
 import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
@@ -89,6 +89,9 @@ const DesktopSideNav = () => {
       </Button>
       <Button onClick={() => navigate("/notifications")} leftIcon={<NotificationIcon />}>
         Notifications
+      </Button>
+      <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
+        Relays
       </Button>
       <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
         Settings

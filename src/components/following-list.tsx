@@ -4,7 +4,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip-19";
 import { getUserDisplayName } from "../helpers/user-metadata";
 import useSubject from "../hooks/use-subject";
 import { useUserMetadata } from "../hooks/use-user-metadata";
-import followingService from "../services/following";
+import clientFollowingService from "../services/client-following";
 import identity from "../services/identity";
 import { UserAvatar } from "./user-avatar";
 
@@ -29,7 +29,7 @@ const FollowingListItem = ({ pubkey }: { pubkey: string }) => {
 
 export const FollowingList = () => {
   const pubkey = useSubject(identity.pubkey);
-  const following = useSubject(followingService.following);
+  const following = useSubject(clientFollowingService.following);
 
   if (!following) return <SkeletonText />;
 

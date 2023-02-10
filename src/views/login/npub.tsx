@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHex } from "../../helpers/nip-19";
 import identity from "../../services/identity";
-import settings from "../../services/settings";
+import clientRelaysService from "../../services/client-relays";
 
 export const LoginNpubView = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
-  const [relay, setRelay] = useState("");
+  const [relayUrl, setRelayUrl] = useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
@@ -21,10 +21,8 @@ export const LoginNpubView = () => {
     }
 
     identity.loginWithPubkey(pubkey);
-    // TODO: the settings service should not be in charge of the relays
-    if (!settings.relays.value.includes(relay)) {
-      settings.relays.next([...settings.relays.value, relay]);
-    }
+
+    clientRelaysService.bootstrapRelays.add(relayUrl);
   };
 
   return (
@@ -47,8 +45,8 @@ export const LoginNpubView = () => {
         <RelayUrlInput
           placeholder="wss://nostr.example.com"
           isRequired
-          value={relay}
-          onChange={(e) => setRelay(e.target.value)}
+          value={relayUrl}
+          onChange={(e) => setRelayUrl(e.target.value)}
         />
         <FormHelperText>The first relay to connect to.</FormHelperText>
       </FormControl>

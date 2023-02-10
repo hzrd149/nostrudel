@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import { unique } from "../helpers/array";
 import settings from "./settings";
 
 export type PresetRelays = Record<string, { read: boolean; write: boolean }>;
@@ -15,7 +14,7 @@ class IdentityService {
   setup = new BehaviorSubject(false);
   pubkey = new BehaviorSubject("");
   readonly = new BehaviorSubject(false);
-  // TODO: remove this when there is a service to manage user relays
+  // directory of relays provided by nip07 extension
   relays = new BehaviorSubject<PresetRelays>({});
   private useExtension: boolean = false;
   private secKey: string | undefined = undefined;
@@ -48,21 +47,22 @@ class IdentityService {
         useExtension: true,
       });
 
-      // disabled because I dont want to load the preset relays yet (ably dose not support changing them)
-      // const relays = await window.nostr.getRelays();
-      // if (Array.isArray(relays)) {
-      //   this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
-      // } else this.relays.next(relays);
+      const relays = await window.nostr.getRelays();
+      if (Array.isArray(relays)) {
+        this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
+      } else {
+        this.relays.next(relays);
+      }
     }
   }
 
-  loginWithSecKey(secKey: string) {
-    // const pubkey =
-    // settings.identity.next({
-    //   pubkey,
-    //   useExtension: true,
-    // });
-  }
+  // loginWithSecKey(secKey: string) {
+  // const pubkey =
+  // settings.identity.next({
+  //   pubkey,
+  //   useExtension: true,
+  // });
+  // }
 
   loginWithPubkey(pubkey: string) {
     this.readonly.next(true);
@@ -82,10 +82,5 @@ if (import.meta.env.DEV) {
   // @ts-ignore
   window.identity = identity;
 }
-
-// TODO: create a service to manage user relays (download latest and handle conflicts)
-identity.relays.subscribe((presetRelays) => {
-  settings.relays.next(unique([...settings.relays.value, ...Object.keys(presetRelays)]));
-});
 
 export default identity;

@@ -1,9 +1,9 @@
 import db from "./db";
-import settings from "./settings";
 import { NostrSubscription } from "../classes/nostr-subscription";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { Kind0ParsedContent, NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
+import clientRelaysService from "./client-relays";
 
 type Metadata = Kind0ParsedContent & { created_at: number };
 
@@ -11,10 +11,10 @@ const subscription = new NostrSubscription([], undefined, "user-metadata");
 const subjects = new PubkeySubjectCache<Metadata>();
 const forceRequestedKeys = new Set<string>();
 
-function requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
+function requestMetadata(pubkey: string, additionalRelays: string[], alwaysRequest = false) {
   let subject = subjects.getSubject(pubkey);
 
-  if (relays.length) subjects.addRelays(pubkey, relays);
+  if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
 
   if (alwaysRequest) {
     forceRequestedKeys.add(pubkey);
@@ -42,20 +42,20 @@ function flushRequests() {
   if (!subjects.dirty) return;
 
   const pubkeys = new Set<string>();
-  const relays = new Set<string>();
+  const relayUrls = new Set<string>();
 
   const pending = subjects.getAllPubkeysMissingData(Array.from(forceRequestedKeys));
   for (const key of pending.pubkeys) pubkeys.add(key);
-  for (const url of pending.relays) relays.add(url);
+  for (const url of pending.relays) relayUrls.add(url);
 
   if (pubkeys.size === 0) return;
 
-  const systemRelays = settings.relays.getValue();
-  for (const url of systemRelays) relays.add(url);
+  const clientRelays = clientRelaysService.getReadUrls();
+  for (const url of clientRelays) relayUrls.add(url);
 
   const query: NostrQuery = { authors: Array.from(pubkeys), kinds: [0] };
 
-  subscription.setRelays(Array.from(relays));
+  subscription.setRelays(Array.from(relayUrls));
   subscription.setQuery(query);
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();

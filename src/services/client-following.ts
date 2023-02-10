@@ -2,14 +2,13 @@ import moment from "moment";
 import { BehaviorSubject, lastValueFrom } from "rxjs";
 import { nostrPostAction } from "../classes/nostr-post-action";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
+import clientRelaysService from "./client-relays";
 import identity from "./identity";
-import settings from "./settings";
-import userContactsService, { UserContacts } from "./user-contacts";
+import userContactsService from "./user-contacts";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
 const following = new BehaviorSubject<PTag[]>([]);
-// const relays = new BehaviorSubject<RelayDirectory>({});
 const pendingDraft = new BehaviorSubject<DraftNostrEvent | null>(null);
 const savingDraft = new BehaviorSubject(false);
 
@@ -18,7 +17,7 @@ identity.pubkey.subscribe((pubkey) => {
   // clear the following list until a new one can be fetched
   following.next([]);
 
-  sub = userContactsService.requestContacts(pubkey, settings.relays.value, true).subscribe((userContacts) => {
+  sub = userContactsService.requestContacts(pubkey, [], true).subscribe((userContacts) => {
     if (!userContacts) return;
 
     following.next(
@@ -50,7 +49,7 @@ function getDraftEvent(): DraftNostrEvent {
   };
 }
 
-async function savePendingDraft() {
+async function savePending() {
   const draft = pendingDraft.value;
   if (!draft) return;
 
@@ -58,7 +57,7 @@ async function savePendingDraft() {
     savingDraft.next(true);
     const event = await window.nostr.signEvent(draft);
 
-    const results = nostrPostAction(settings.relays.value, event);
+    const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
     await lastValueFrom(results);
 
     savingDraft.next(false);
@@ -92,18 +91,18 @@ function removeContact(pubkey: string) {
   }
 }
 
-const followingService = {
+const clientFollowingService = {
   following: following,
   isFollowing,
   savingDraft,
-  savePendingDraft,
+  savePending,
   addContact,
   removeContact,
 };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.followingService = followingService;
+  window.clientFollowingService = clientFollowingService;
 }
 
-export default followingService;
+export default clientFollowingService;

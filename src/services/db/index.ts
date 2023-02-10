@@ -12,9 +12,15 @@ type MigrationFunction = (
 const MIGRATIONS: MigrationFunction[] = [
   // 0 -> 1
   function (db, transaction, event) {
-    const metadata = db.createObjectStore("userMetadata", {
+    const userMetadata = db.createObjectStore("userMetadata", {
       keyPath: "pubkey",
     });
+    userMetadata.createIndex("created_at", "created_at");
+
+    const userRelays = db.createObjectStore("userRelays", {
+      keyPath: "pubkey",
+    });
+    userRelays.createIndex("created_at", "created_at");
 
     const contacts = db.createObjectStore("userContacts", {
       keyPath: "pubkey",

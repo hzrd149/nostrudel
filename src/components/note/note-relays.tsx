@@ -17,22 +17,24 @@ import { NostrRequest } from "../../classes/nostr-request";
 import useSubject from "../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
 import { relayPool } from "../../services/relays";
-import settings from "../../services/settings";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayIcon, SearchIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
+import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
 };
 
 export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
-  const relays = useSubject(getEventRelays(event.id));
+  const eventRelays = useSubject(getEventRelays(event.id));
+  const readRelays = useReadRelayUrls();
+  const writeRelays = useWriteRelayUrls();
 
   const [querying, setQuerying] = useState(false);
   const queryRelays = useCallback(() => {
     setQuerying(true);
-    const request = new NostrRequest(settings.relays.value);
+    const request = new NostrRequest(readRelays);
     request.start({ ids: [event.id] });
     request.onEvent.subscribe({
       complete() {
@@ -43,7 +45,7 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
 
   const [broadcasting, setBroadcasting] = useState(false);
   const broadcast = useCallback(() => {
-    const missingRelays = settings.relays.value.filter((url) => !relays.includes(url));
+    const missingRelays = writeRelays.filter((url) => !eventRelays.includes(url));
     if (missingRelays.length === 0) {
       return;
     }
@@ -64,14 +66,14 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
   }, []);
 
   return (
-    <Popover>
+    <Popover isLazy>
       <PopoverTrigger>
         <IconButton title="Note Relays" icon={<RelayIcon />} size={props.size ?? "sm"} aria-label="Note Relays" />
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
         <PopoverBody>
-          {relays.map((url) => (
+          {eventRelays.map((url) => (
             <Flex alignItems="center" key={url}>
               <RelayFavicon relay={url} size="2xs" mr="2" />
               <Text>{url}</Text>

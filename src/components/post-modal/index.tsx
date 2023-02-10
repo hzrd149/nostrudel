@@ -14,8 +14,8 @@ import React, { useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
 import { getReferences } from "../../helpers/nostr-event";
+import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import settings from "../../services/settings";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import { PostResults } from "./post-results";
@@ -39,6 +39,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const isMobile = useIsMobile();
   const pad = isMobile ? "2" : "4";
 
+  const writeRelays = useWriteRelayUrls();
   const [waiting, setWaiting] = useState(false);
   const [signedEvent, setSignedEvent] = useState<NostrEvent | null>(null);
   const [results, resultsActions] = useList<PostResult>();
@@ -56,7 +57,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       setWaiting(false);
       setSignedEvent(event);
 
-      const postResults = nostrPostAction(settings.relays.value, event);
+      const postResults = nostrPostAction(writeRelays, event);
 
       postResults.subscribe({
         next(result) {

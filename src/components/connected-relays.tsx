@@ -13,7 +13,7 @@ import {
 import { Relay } from "../services/relays";
 import relayPool from "../services/relays/relay-pool";
 import { useInterval } from "react-use";
-import { RelayStatus } from "../views/settings/relay-status";
+import { RelayStatus } from "./relay-status";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import { RelayIcon } from "./icons";
 

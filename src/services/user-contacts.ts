@@ -7,6 +7,7 @@ import db from "./db";
 import settings from "./settings";
 import userFollowersService from "./user-followers";
 import pubkeyRelayWeightsService from "./pubkey-relay-weights";
+import clientRelaysService from "./client-relays";
 
 const subscription = new NostrSubscription([], undefined, "user-contacts");
 const subjects = new PubkeySubjectCache<UserContacts>();
@@ -39,10 +40,10 @@ function parseContacts(event: NostrEvent): UserContacts {
   };
 }
 
-function requestContacts(pubkey: string, relays: string[] = [], alwaysRequest = false) {
+function requestContacts(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
   let subject = subjects.getSubject(pubkey);
 
-  if (relays.length) subjects.addRelays(pubkey, relays);
+  if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
 
   if (alwaysRequest) forceRequestedKeys.add(pubkey);
 
@@ -59,20 +60,20 @@ function flushRequests() {
   if (!subjects.dirty) return;
 
   const pubkeys = new Set<string>();
-  const relays = new Set<string>();
+  const relayUrls = new Set<string>();
 
   const pending = subjects.getAllPubkeysMissingData(Array.from(forceRequestedKeys));
   for (const key of pending.pubkeys) pubkeys.add(key);
-  for (const url of pending.relays) relays.add(url);
+  for (const url of pending.relays) relayUrls.add(url);
 
   if (pubkeys.size === 0) return;
 
-  const systemRelays = settings.relays.getValue();
-  for (const url of systemRelays) relays.add(url);
+  const clientRelays = clientRelaysService.getReadUrls();
+  for (const url of clientRelays) relayUrls.add(url);
 
   const query: NostrQuery = { authors: Array.from(pubkeys), kinds: [3] };
 
-  subscription.setRelays(Array.from(relays));
+  subscription.setRelays(Array.from(relayUrls));
   subscription.setQuery(query);
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();

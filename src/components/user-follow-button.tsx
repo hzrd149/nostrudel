@@ -1,26 +1,26 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
 import { useReadonlyMode } from "../hooks/use-readonly-mode";
 import useSubject from "../hooks/use-subject";
-import followingService from "../services/following";
+import clientFollowingService from "../services/client-following";
 
 export const UserFollowButton = ({
   pubkey,
   ...props
 }: { pubkey: string } & Omit<ButtonProps, "onClick" | "isLoading" | "isDisabled">) => {
   const readonly = useReadonlyMode();
-  const following = useSubject(followingService.following);
-  const savingDraft = useSubject(followingService.savingDraft);
+  const following = useSubject(clientFollowingService.following);
+  const savingDraft = useSubject(clientFollowingService.savingDraft);
 
   const isFollowing = following.some((t) => t[1] === pubkey);
 
   const toggleFollow = async () => {
     if (isFollowing) {
-      followingService.removeContact(pubkey);
+      clientFollowingService.removeContact(pubkey);
     } else {
-      followingService.addContact(pubkey);
+      clientFollowingService.addContact(pubkey);
     }
 
-    await followingService.savePendingDraft();
+    await clientFollowingService.savePending();
   };
 
   return (

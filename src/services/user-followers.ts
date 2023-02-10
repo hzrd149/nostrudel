@@ -3,10 +3,10 @@ import { NostrQuery } from "../types/nostr-query";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { NostrSubscription } from "../classes/nostr-subscription";
 import db from "./db";
-import settings from "./settings";
 import { BehaviorSubject } from "rxjs";
 import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
+import clientRelaysService from "./client-relays";
 
 const subscription = new NostrSubscription([], undefined, "user-followers");
 const subjects = new PubkeySubjectCache<string[]>();
@@ -23,10 +23,10 @@ function mergeNext(subject: BehaviorSubject<string[] | null>, next: string[]) {
   subject.next(arr);
 }
 
-function requestFollowers(pubkey: string, relays: string[] = [], alwaysRequest = false) {
+function requestFollowers(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
   let subject = subjects.getSubject(pubkey);
 
-  if (relays.length) subjects.addRelays(pubkey, relays);
+  if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
 
   db.getAllKeysFromIndex("userContacts", "contacts", pubkey).then((cached) => {
     mergeNext(subject, cached);
@@ -41,20 +41,20 @@ function flushRequests() {
   if (!subjects.dirty) return;
 
   const pubkeys = new Set<string>();
-  const relays = new Set<string>();
+  const relayUrls = new Set<string>();
 
   const pending = subjects.getAllPubkeysMissingData(Array.from(forceRequestedKeys));
   for (const key of pending.pubkeys) pubkeys.add(key);
-  for (const url of pending.relays) relays.add(url);
+  for (const url of pending.relays) relayUrls.add(url);
 
   if (pubkeys.size === 0) return;
 
-  const systemRelays = settings.relays.getValue();
-  for (const url of systemRelays) relays.add(url);
+  const clientRelays = clientRelaysService.getReadUrls();
+  for (const url of clientRelays) relayUrls.add(url);
 
   const query: NostrQuery = { kinds: [3], "#p": Array.from(pubkeys) };
 
-  subscription.setRelays(Array.from(relays));
+  subscription.setRelays(Array.from(relayUrls));
   subscription.setQuery(query);
   if (subscription.state !== NostrSubscription.OPEN) {
     subscription.open();

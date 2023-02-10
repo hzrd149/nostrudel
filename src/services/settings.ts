@@ -3,7 +3,6 @@ import db from "./db";
 import { SavedIdentity } from "./identity";
 
 const settings = {
-  relays: new BehaviorSubject<string[]>([]),
   identity: new BehaviorSubject<SavedIdentity | null>(null),
   blurImages: new BehaviorSubject(true),
   autoShowMedia: new BehaviorSubject(true),

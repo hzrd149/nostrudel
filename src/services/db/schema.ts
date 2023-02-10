@@ -1,10 +1,12 @@
 import { DBSchema } from "idb";
 import { NostrEvent } from "../../types/nostr-event";
+import { RelayConfig } from "../relays/relay";
 
 export interface CustomSchema extends DBSchema {
   userMetadata: {
     key: string;
     value: NostrEvent;
+    indexes: { created_at: number };
   };
   userContacts: {
     key: string;
@@ -16,6 +18,11 @@ export interface CustomSchema extends DBSchema {
       created_at: number;
     };
     indexes: { created_at: number; contacts: string };
+  };
+  userRelays: {
+    key: string;
+    value: { pubkey: string; relays: {url: string, mode: number}[]; created_at: number };
+    indexes: { created_at: number };
   };
   dnsIdentifiers: {
     key: string;

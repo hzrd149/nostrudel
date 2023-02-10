@@ -1,17 +1,17 @@
 import { useRef } from "react";
 import { useDeepCompareEffect, useUnmount } from "react-use";
 import { NostrSubscription } from "../classes/nostr-subscription";
-import settings from "../services/settings";
 import { NostrQuery } from "../types/nostr-query";
-import useSubject from "./use-subject";
+import { useReadRelayUrls } from "./use-client-relays";
 
 type Options = {
   name?: string;
   enabled?: boolean;
 };
 
+/** @deprecated */
 export function useSubscription(query: NostrQuery, opts?: Options) {
-  const relays = useSubject(settings.relays);
+  const relays = useReadRelayUrls();
   const sub = useRef<NostrSubscription | null>(null);
   sub.current = sub.current || new NostrSubscription(relays, undefined, opts?.name);
 

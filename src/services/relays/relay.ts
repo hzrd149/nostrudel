@@ -23,12 +23,13 @@ export type IncomingCommandResult = {
   message?: string;
 };
 
-export enum Permission {
+export enum RelayMode {
   NONE = 0,
   READ = 1,
   WRITE = 2,
   ALL = 1 | 2,
 }
+export type RelayConfig = { url: string; mode: RelayMode };
 
 export class Relay {
   url: string;
@@ -39,13 +40,13 @@ export class Relay {
   onEndOfStoredEvents = new Subject<IncomingEOSE>();
   onCommandResult = new Subject<IncomingCommandResult>();
   ws?: WebSocket;
-  permission: Permission = Permission.ALL;
+  mode: RelayMode = RelayMode.ALL;
 
   private queue: NostrOutgoingMessage[] = [];
 
-  constructor(url: string, permission: Permission = Permission.ALL) {
+  constructor(url: string, mode: RelayMode = RelayMode.ALL) {
     this.url = url;
-    this.permission = permission;
+    this.mode = mode;
   }
 
   open() {
@@ -71,7 +72,7 @@ export class Relay {
     this.ws.onmessage = this.handleMessage.bind(this);
   }
   send(json: NostrOutgoingMessage) {
-    if (this.permission & Permission.WRITE) {
+    if (this.mode & RelayMode.WRITE) {
       if (this.connected) {
         this.ws?.send(JSON.stringify(json));
       } else this.queue.push(json);
@@ -116,7 +117,7 @@ export class Relay {
     // skip empty events
     if (!event.data) return;
 
-    if (!(this.permission & Permission.READ)) return;
+    if (!(this.mode & RelayMode.READ)) return;
 
     try {
       const data: RawIncomingNostrEvent = JSON.parse(event.data);

@@ -3,13 +3,12 @@ import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import { isReply } from "../../helpers/nostr-event";
-import useSubject from "../../hooks/use-subject";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import settings from "../../services/settings";
 
 const UserRepliesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const relays = useSubject(settings.relays);
+  const relays = useReadRelayUrls();
 
   const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey} replies`,

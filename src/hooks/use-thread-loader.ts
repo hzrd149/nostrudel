@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useUnmount } from "react-use";
 import { ThreadLoader } from "../classes/thread-loader";
 import { linkEvents } from "../helpers/thread";
-import settings from "../services/settings";
+import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
 
 type Options = {
@@ -10,7 +10,7 @@ type Options = {
 };
 
 export function useThreadLoader(eventId: string, opts?: Options) {
-  const relays = useSubject(settings.relays);
+  const relays = useReadRelayUrls();
 
   const ref = useRef<ThreadLoader | null>(null);
   const loader = (ref.current = ref.current || new ThreadLoader(relays, eventId));

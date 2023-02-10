@@ -5,13 +5,12 @@ import { Note } from "../../components/note";
 import { unique } from "../../helpers/array";
 import { isNote } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
-import useSubject from "../../hooks/use-subject";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import settings from "../../services/settings";
 
 export const GlobalTab = () => {
   useAppTitle("global");
-  const defaultRelays = useSubject(settings.relays);
+  const defaultRelays = useReadRelayUrls();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedRelay = searchParams.get("relay") ?? "";
   const setSelectedRelay = (url: string) => {

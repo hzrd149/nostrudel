@@ -22,6 +22,7 @@ import NoteView from "./views/note";
 import { LoginStartView } from "./views/login/start";
 import { LoginNpubView } from "./views/login/npub";
 import NotificationsView from "./views/notifications";
+import { RelaysView } from "./views/relays";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsView />,
+      },
+      {
+        path: "relays",
+        element: <RelaysView />,
       },
       {
         path: "notifications",

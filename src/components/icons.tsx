@@ -173,3 +173,9 @@ export const NotificationIcon = createIcon({
   d: "M5 18h14v-6.969C19 7.148 15.866 4 12 4s-7 3.148-7 7.031V18zm7-16c4.97 0 9 4.043 9 9.031V20H3v-8.969C3 6.043 7.03 2 12 2zM9.5 21h5a2.5 2.5 0 1 1-5 0z",
   defaultProps,
 });
+
+export const UndoIcon = createIcon({
+  displayName: "UndoIcon",
+  d: "M5.828 7l2.536 2.536L6.95 10.95 2 6l4.95-4.95 1.414 1.414L5.828 5H13a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H5.828z",
+  defaultProps,
+});

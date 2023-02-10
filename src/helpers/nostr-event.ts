@@ -1,6 +1,7 @@
 import moment from "moment";
 import { getEventRelays } from "../services/event-relays";
-import { DraftNostrEvent, isETag, isPTag, NostrEvent } from "../types/nostr-event";
+import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag } from "../types/nostr-event";
+import { RelayConfig, RelayMode } from "../services/relays/relay";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
@@ -82,4 +83,15 @@ export function buildReply(event: NostrEvent): DraftNostrEvent {
     content: "",
     created_at: moment().unix(),
   };
+}
+
+export function parseRTag(tag: RTag): RelayConfig {
+  switch (tag[2]) {
+    case "write":
+      return { url: tag[1], mode: RelayMode.WRITE };
+    case "read":
+      return { url: tag[1], mode: RelayMode.READ };
+    default:
+      return { url: tag[1], mode: RelayMode.ALL };
+  }
 }
