@@ -42,17 +42,18 @@ class IdentityService {
     if (window.nostr) {
       this.loading.next(true);
       const pubkey = await window.nostr.getPublicKey();
-      settings.identity.next({
-        pubkey,
-        useExtension: true,
-      });
-
       const relays = await window.nostr.getRelays();
+
       if (Array.isArray(relays)) {
         this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
       } else {
         this.relays.next(relays);
       }
+
+      settings.identity.next({
+        pubkey,
+        useExtension: true,
+      });
     }
   }
 
