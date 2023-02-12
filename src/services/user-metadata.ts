@@ -1,88 +1,45 @@
 import db from "./db";
-import { NostrSubscription } from "../classes/nostr-subscription";
-import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
-import { Kind0ParsedContent, NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
-import clientRelaysService from "./client-relays";
+import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
+import { NostrEvent } from "../types/nostr-event";
+import { BehaviorSubject } from "rxjs";
+import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
+import { SuperMap } from "../classes/super-map";
 
-type Metadata = Kind0ParsedContent & { created_at: number };
-
-const subscription = new NostrSubscription([], undefined, "user-metadata");
-const subjects = new PubkeySubjectCache<Metadata>();
-const forceRequestedKeys = new Set<string>();
-
-function requestMetadata(pubkey: string, additionalRelays: string[], alwaysRequest = false) {
-  let subject = subjects.getSubject(pubkey);
-
-  if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
-
-  if (alwaysRequest) {
-    forceRequestedKeys.add(pubkey);
+class UserMetadataService extends CachedPubkeyEventRequester {
+  constructor() {
+    super(0, "user-metadata");
   }
 
-  if (!subject.value) {
-    db.get("userMetadata", pubkey).then((cached) => {
-      if (cached) {
-        const parsed = parseMetadata(cached);
-        if (parsed) subject.next(parsed);
-      }
-    });
+  readCache(pubkey: string) {
+    return db.get("userMetadata", pubkey);
+  }
+  writeCache(pubkey: string, event: NostrEvent) {
+    return db.put("userMetadata", event);
   }
 
-  return subject;
-}
+  // TODO: rxjs behavior subject dose not feel like the right thing to use here
+  private parsedSubjects = new SuperMap<string, BehaviorSubject<Kind0ParsedContent | undefined>>(
+    () => new BehaviorSubject<Kind0ParsedContent | undefined>(undefined)
+  );
+  private parsedConnected = new WeakSet<any>();
+  requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
+    const sub = this.parsedSubjects.get(pubkey);
 
-function parseMetadata(event: NostrEvent): Metadata | undefined {
-  try {
-    return { ...JSON.parse(event.content), created_at: event.created_at };
-  } catch (e) {}
-}
-
-function flushRequests() {
-  if (!subjects.dirty) return;
-
-  const pubkeys = new Set<string>();
-  const relayUrls = new Set<string>();
-
-  const pending = subjects.getAllPubkeysMissingData(Array.from(forceRequestedKeys));
-  for (const key of pending.pubkeys) pubkeys.add(key);
-  for (const url of pending.relays) relayUrls.add(url);
-
-  if (pubkeys.size === 0) return;
-
-  const clientRelays = clientRelaysService.getReadUrls();
-  for (const url of clientRelays) relayUrls.add(url);
-
-  const query: NostrQuery = { authors: Array.from(pubkeys), kinds: [0] };
-
-  subscription.setRelays(Array.from(relayUrls));
-  subscription.setQuery(query);
-  if (subscription.state !== NostrSubscription.OPEN) {
-    subscription.open();
-  }
-  subjects.dirty = false;
-}
-
-subscription.onEvent.subscribe((event) => {
-  const subject = subjects.getSubject(event.pubkey);
-  const latest = subject.getValue();
-  if (!latest || event.created_at > latest.created_at) {
-    const parsed = parseMetadata(event);
-    if (parsed) {
-      subject.next(parsed);
-      db.put("userMetadata", event);
-      forceRequestedKeys.delete(event.pubkey);
+    const requestSub = this.requestEvent(pubkey, relays, alwaysRequest);
+    if (!this.parsedConnected.has(requestSub)) {
+      requestSub.subscribe((event) => event && sub.next(parseKind0Event(event)));
+      this.parsedConnected.add(requestSub);
     }
+
+    return sub;
   }
-});
+}
 
-// flush requests every second
+const userMetadataService = new UserMetadataService();
+
 setInterval(() => {
-  subjects.prune();
-  flushRequests();
+  userMetadataService.update();
 }, 1000 * 2);
-
-const userMetadataService = { requestMetadata, flushRequests, subjects };
 
 if (import.meta.env.DEV) {
   // @ts-ignore

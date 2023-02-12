@@ -3,7 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
-import { NostrSubscription } from "./nostr-subscription";
+import { NostrMultiSubscription } from "./nostr-multi-subscription";
 
 export type NostrQueryWithStart = NostrQuery & { since: number };
 
@@ -20,7 +20,7 @@ export class TimelineLoader {
   loading = new BehaviorSubject(false);
   page = new BehaviorSubject(0);
   private seenEvents = new Set<string>();
-  private subscription: NostrSubscription;
+  private subscription: NostrMultiSubscription;
   private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds() };
 
   constructor(relays: string[], query: NostrQueryWithStart, opts?: TimelineLoaderOptions) {
@@ -30,7 +30,7 @@ export class TimelineLoader {
     this.query = query;
     Object.assign(this.opts, opts);
 
-    this.subscription = new NostrSubscription(relays, query, opts?.name);
+    this.subscription = new NostrMultiSubscription(relays, query, opts?.name);
 
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
   }

@@ -46,7 +46,7 @@ const embeds: EmbedType[] = [
   },
   // Twitter tweet
   {
-    regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]+/im,
+    regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]*/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
     name: "Tweet",
     isMedia: true,
@@ -95,7 +95,7 @@ const embeds: EmbedType[] = [
   },
   // Youtube Music
   {
-    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)[^\s]+/,
+    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)[^\s]*/,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
@@ -127,7 +127,7 @@ const embeds: EmbedType[] = [
   // Spotify
   // note12xt2pjpwp6gec95p4cw0qzecy764f8wzgcl3z2ufkrkne4t5d2zse3ze78
   {
-    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album)\/(\w+)[^\s]+/im,
+    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album)\/(\w+)[^\s]*/im,
     render: (match) => (
       <iframe
         style={{ borderRadius: "12px" }}
@@ -148,7 +148,7 @@ const embeds: EmbedType[] = [
   // note1tvqk2mu829yr6asf7w5dgpp8t0mlp2ax5t26ctfdx8m0ptkssamqsleeux
   // note1ygx9tec3af92704d92jwrj3zs7cws2jl29yvrlxzqlcdlykhwssqpupa7t
   {
-    regexp: /https?:\/\/music\.apple\.com\/[^\s]+/im,
+    regexp: /https?:\/\/music\.apple\.com\/[^\s]*/im,
     render: (match) => (
       <iframe
         allow="encrypted-media *; fullscreen *; clipboard-write"
@@ -181,7 +181,7 @@ const embeds: EmbedType[] = [
   },
   // Link
   {
-    regexp: /(https?:\/\/[^\s]+)/im,
+    regexp: /(https?:\/\/[^\s]*)/im,
     render: (match) => (
       <Link color="blue.500" href={match[0]} target="_blank" isExternal>
         {match[0]}

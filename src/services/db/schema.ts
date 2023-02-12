@@ -10,18 +10,12 @@ export interface CustomSchema extends DBSchema {
   };
   userContacts: {
     key: string;
-    value: {
-      pubkey: string;
-      relays: Record<string, { read: boolean; write: boolean }>;
-      contacts: string[];
-      contactRelay: Record<string, string | undefined>;
-      created_at: number;
-    };
-    indexes: { created_at: number; contacts: string };
+    value: NostrEvent;
+    indexes: { created_at: number };
   };
   userRelays: {
     key: string;
-    value: { pubkey: string; relays: { url: string; mode: number }[]; created_at: number };
+    value: NostrEvent;
     indexes: { created_at: number };
   };
   dnsIdentifiers: {

@@ -1,14 +1,14 @@
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
-import { NostrSubscription } from "../classes/nostr-subscription";
+import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import db from "./db";
 import { BehaviorSubject } from "rxjs";
 import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
 import clientRelaysService from "./client-relays";
 
-const subscription = new NostrSubscription([], undefined, "user-followers");
+const subscription = new NostrMultiSubscription([], undefined, "user-followers");
 const subjects = new PubkeySubjectCache<string[]>();
 const forceRequestedKeys = new Set<string>();
 
@@ -28,9 +28,9 @@ function requestFollowers(pubkey: string, additionalRelays: string[] = [], alway
 
   if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
 
-  db.getAllKeysFromIndex("userContacts", "contacts", pubkey).then((cached) => {
-    mergeNext(subject, cached);
-  });
+  // db.getAllKeysFromIndex("userContacts", "contacts", pubkey).then((cached) => {
+  //   mergeNext(subject, cached);
+  // });
 
   if (alwaysRequest) forceRequestedKeys.add(pubkey);
 
@@ -56,7 +56,7 @@ function flushRequests() {
 
   subscription.setRelays(Array.from(relayUrls));
   subscription.setQuery(query);
-  if (subscription.state !== NostrSubscription.OPEN) {
+  if (subscription.state !== NostrMultiSubscription.OPEN) {
     subscription.open();
   }
   subjects.dirty = false;
@@ -81,7 +81,7 @@ function receiveEvent(event: NostrEvent) {
 
 subscription.onEvent.subscribe((event) => {
   // pass the event ot the contacts service
-  userContactsService.receiveEvent(event);
+  userContactsService.handleEvent(event);
   receiveEvent(event);
 });
 

@@ -28,7 +28,7 @@ export class NostrRequest {
       const cleanup: RxSubscription[] = [];
 
       cleanup.push(
-        relay.onEndOfStoredEvents.subscribe((event) => {
+        relay.onEOSE.subscribe((event) => {
           if (event.subId === this.id) {
             this.handleEndOfEvents(relay);
           }

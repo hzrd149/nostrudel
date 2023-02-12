@@ -2,7 +2,7 @@ import { BehaviorSubject } from "rxjs";
 import { getReferences } from "../helpers/nostr-event";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequest } from "./nostr-request";
-import { NostrSubscription } from "./nostr-subscription";
+import { NostrMultiSubscription } from "./nostr-multi-subscription";
 
 export class ThreadLoader {
   loading = new BehaviorSubject(false);
@@ -11,12 +11,12 @@ export class ThreadLoader {
   events = new BehaviorSubject<Record<string, NostrEvent>>({});
 
   private relays: string[];
-  private subscription: NostrSubscription;
+  private subscription: NostrMultiSubscription;
 
   constructor(relays: string[], eventId: string) {
     this.relays = relays;
 
-    this.subscription = new NostrSubscription(relays);
+    this.subscription = new NostrMultiSubscription(relays);
 
     this.subscription.onEvent.subscribe((event) => {
       this.events.next({ ...this.events.value, [event.id]: event });
@@ -69,7 +69,7 @@ export class ThreadLoader {
   private updateSubscription() {
     if (this.rootId.value) {
       this.subscription.setQuery({ "#e": [this.rootId.value], kinds: [1] });
-      if (this.subscription.state !== NostrSubscription.OPEN) {
+      if (this.subscription.state !== NostrMultiSubscription.OPEN) {
         this.subscription.open();
       }
     }

@@ -74,7 +74,7 @@ class ClientRelayService {
       await lastValueFrom(results);
 
       // pass new event to the user relay service
-      userRelaysService.receiveEvent(event);
+      userRelaysService.handleEvent(event);
     }
   }
 

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { NostrSubscription } from "../classes/nostr-subscription";
+import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import { NostrEvent } from "../types/nostr-event";
 
-export function useEventDir(subscription: NostrSubscription, filter?: (event: NostrEvent) => boolean) {
+export function useEventDir(subscription: NostrMultiSubscription, filter?: (event: NostrEvent) => boolean) {
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
   useEffect(() => {

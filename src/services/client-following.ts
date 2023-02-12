@@ -1,5 +1,5 @@
 import moment from "moment";
-import { BehaviorSubject, lastValueFrom } from "rxjs";
+import { BehaviorSubject, lastValueFrom, Subscription } from "rxjs";
 import { nostrPostAction } from "../classes/nostr-post-action";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
@@ -12,25 +12,42 @@ const following = new BehaviorSubject<PTag[]>([]);
 const pendingDraft = new BehaviorSubject<DraftNostrEvent | null>(null);
 const savingDraft = new BehaviorSubject(false);
 
-let sub;
-identity.pubkey.subscribe((pubkey) => {
+let sub: Subscription | undefined;
+function updateSub() {
+  if (sub) {
+    sub.unsubscribe();
+    sub = undefined;
+  }
+
+  if (identity.pubkey.value) {
+    sub = userContactsService
+      .requestContacts(identity.pubkey.value, clientRelaysService.getReadUrls(), true)
+      .subscribe((userContacts) => {
+        if (!userContacts) return;
+
+        following.next(
+          userContacts.contacts.map((key) => {
+            const relay = userContacts.contactRelay[key];
+            if (relay) return ["p", key, relay];
+            else return ["p", key];
+          })
+        );
+
+        // reset the pending list since we just got a new contacts list
+        pendingDraft.next(null);
+      });
+  }
+}
+
+identity.pubkey.subscribe(() => {
   // clear the following list until a new one can be fetched
   following.next([]);
 
-  sub = userContactsService.requestContacts(pubkey, [], true).subscribe((userContacts) => {
-    if (!userContacts) return;
+  updateSub();
+});
 
-    following.next(
-      userContacts.contacts.map((key) => {
-        const relay = userContacts.contactRelay[key];
-        if (relay) return ["p", key, relay];
-        else return ["p", key];
-      })
-    );
-
-    // reset the pending list since we just got a new contacts list
-    pendingDraft.next(null);
-  });
+clientRelaysService.readRelays.subscribe(() => {
+  updateSub();
 });
 
 function isFollowing(pubkey: string) {
@@ -63,7 +80,7 @@ async function savePending() {
     savingDraft.next(false);
 
     // pass new event to contact list service
-    userContactsService.receiveEvent(event);
+    userContactsService.handleEvent(event);
   }
 }
 

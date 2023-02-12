@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useDeepCompareEffect, useUnmount } from "react-use";
-import { NostrSubscription } from "../classes/nostr-subscription";
+import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import { NostrQuery } from "../types/nostr-query";
 import { useReadRelayUrls } from "./use-client-relays";
 
@@ -12,8 +12,8 @@ type Options = {
 /** @deprecated */
 export function useSubscription(query: NostrQuery, opts?: Options) {
   const relays = useReadRelayUrls();
-  const sub = useRef<NostrSubscription | null>(null);
-  sub.current = sub.current || new NostrSubscription(relays, undefined, opts?.name);
+  const sub = useRef<NostrMultiSubscription | null>(null);
+  sub.current = sub.current || new NostrMultiSubscription(relays, undefined, opts?.name);
 
   useDeepCompareEffect(() => {
     if (sub.current) {
@@ -29,5 +29,5 @@ export function useSubscription(query: NostrQuery, opts?: Options) {
     }
   });
 
-  return sub.current as NostrSubscription;
+  return sub.current as NostrMultiSubscription;
 }

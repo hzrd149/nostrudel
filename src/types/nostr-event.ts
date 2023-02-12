@@ -28,18 +28,6 @@ export type RawIncomingEOSE = ["EOSE", string];
 export type RawIncomingCommandResult = ["OK", string, boolean, string];
 export type RawIncomingNostrEvent = RawIncomingEvent | RawIncomingNotice | RawIncomingEOSE | RawIncomingCommandResult;
 
-export type Kind0ParsedContent = {
-  name?: string;
-  display_name?: string;
-  about?: string;
-  picture?: string;
-  banner?: string;
-  website?: string;
-  lud16?: string;
-  lud06?: string;
-  nip05?: string;
-};
-
 export function isETag(tag: Tag): tag is ETag {
   return tag[0] === "e" && tag[1] !== undefined;
 }

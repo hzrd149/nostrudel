@@ -13,6 +13,7 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 function useExtendedContacts(pubkey: string) {
+  const readRelays = useReadRelayUrls();
   useAppTitle("discover");
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
   const contacts = useUserContacts(pubkey);
@@ -20,7 +21,7 @@ function useExtendedContacts(pubkey: string) {
   useEffect(() => {
     if (contacts) {
       const following = contacts.contacts;
-      const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact));
+      const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact, readRelays));
 
       const rxSub = from(subject)
         .pipe(mergeAll())

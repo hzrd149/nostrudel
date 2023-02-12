@@ -37,7 +37,7 @@ export class Relay {
   onClose = new Subject<Relay>();
   onEvent = new Subject<IncomingEvent>();
   onNotice = new Subject<IncomingNotice>();
-  onEndOfStoredEvents = new Subject<IncomingEOSE>();
+  onEOSE = new Subject<IncomingEOSE>();
   onCommandResult = new Subject<IncomingCommandResult>();
   ws?: WebSocket;
   mode: RelayMode = RelayMode.ALL;
@@ -131,7 +131,7 @@ export class Relay {
           this.onNotice.next({ type, message: data[1] });
           break;
         case "EOSE":
-          this.onEndOfStoredEvents.next({ type, subId: data[1] });
+          this.onEOSE.next({ type, subId: data[1] });
           break;
         case "OK":
           this.onCommandResult.next({ type, eventId: data[1], status: data[2], message: data[3] });
