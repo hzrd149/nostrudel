@@ -15,9 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { normalizeToHex } from "../../helpers/nip-19";
 import accountService from "../../services/account";
-import clientRelaysService from "../../services/client-relays";
 import { useDebounce } from "react-use";
 import dnsIdentityService from "../../services/dns-identity";
 import { CheckIcon } from "../../components/icons";

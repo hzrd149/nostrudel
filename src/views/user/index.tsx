@@ -24,7 +24,6 @@ import { truncatedId } from "../../helpers/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { KeyIcon, SettingsIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
-import accountService from "../../services/account";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useCurrentAccount } from "../../hooks/use-current-account";

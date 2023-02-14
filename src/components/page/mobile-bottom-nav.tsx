@@ -1,7 +1,6 @@
-import { SettingsIcon } from "@chakra-ui/icons";
 import { Flex, IconButton } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { FeedIcon, ProfileIcon } from "../icons";
+import { FeedIcon, ProfileIcon, SettingsIcon } from "../icons";
 
 export default function MobileBottomNav() {
   const navigate = useNavigate();

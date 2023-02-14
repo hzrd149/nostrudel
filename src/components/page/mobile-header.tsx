@@ -1,8 +1,7 @@
-import { Button, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+import { Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import accountService from "../../services/account";
 import { ConnectedRelays } from "../connected-relays";
 import { NotificationIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
@@ -37,7 +36,7 @@ export default function MobileHeader() {
           />
         </Flex>
       </Flex>
-      {isOpen && <MobileSideDrawer isOpen={isOpen} onClose={onClose} />}
+      <MobileSideDrawer isOpen={isOpen} onClose={onClose} />
     </>
   );
 }
