@@ -1,10 +1,10 @@
 import { Avatar, Box, Flex, Heading } from "@chakra-ui/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useSubject from "../../hooks/use-subject";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 
 export const LoginView = () => {
-  const setup = useSubject(identityService.setup);
+  const setup = useSubject(accountService.setup);
   const location = useLocation();
 
   if (setup) return <Navigate to={location.state?.from ?? "/"} replace />;

@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import settings from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
 
 export const SettingsView = () => {
@@ -171,7 +171,7 @@ export const SettingsView = () => {
         </AccordionItem>
       </Accordion>
       <Flex gap="2" padding="4">
-        <Button onClick={() => identityService.logout()}>Logout</Button>
+        <Button onClick={() => accountService.logout()}>Logout</Button>
       </Flex>
     </Flex>
   );

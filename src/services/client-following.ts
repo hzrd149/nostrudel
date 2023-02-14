@@ -3,7 +3,7 @@ import { nostrPostAction } from "../classes/nostr-post-action";
 import { PersistentSubject, Subject } from "../classes/subject";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
-import identityService from "./identity";
+import accountService from "./account";
 import userContactsService, { UserContacts } from "./user-contacts";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
@@ -34,14 +34,14 @@ function updateSub() {
     sub = undefined;
   }
 
-  if (identityService.pubkey.value) {
-    sub = userContactsService.requestContacts(identityService.pubkey.value, clientRelaysService.getReadUrls(), true);
+  if (accountService.pubkey.value) {
+    sub = userContactsService.requestContacts(accountService.pubkey.value, clientRelaysService.getReadUrls(), true);
 
     sub.subscribe(handleNewContacts);
   }
 }
 
-identityService.pubkey.subscribe(() => {
+accountService.pubkey.subscribe(() => {
   // clear the following list until a new one can be fetched
   following.next([]);
 

@@ -9,7 +9,7 @@ export type SavedIdentity = {
   useExtension: boolean;
 };
 
-class IdentityService {
+class AccountService {
   loading = new PersistentSubject(false);
   setup = new PersistentSubject(false);
   pubkey = new Subject<string>();
@@ -81,11 +81,11 @@ class IdentityService {
   }
 }
 
-const identityService = new IdentityService();
+const accountService = new AccountService();
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.identity = identityService;
+  window.identity = accountService;
 }
 
-export default identityService;
+export default accountService;

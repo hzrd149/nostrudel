@@ -8,7 +8,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
 import { NoteContents } from "./note-contents";
 import { NoteMenu } from "./note-menu";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
@@ -31,7 +31,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const readonly = useReadonlyMode();
   const { openModal } = useContext(PostModalContext);
 
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const contacts = useUserContacts(pubkey);
   const following = contacts?.contacts || [];
 

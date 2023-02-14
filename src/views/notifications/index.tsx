@@ -8,7 +8,7 @@ import { convertTimestampToDate } from "../../helpers/date";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import { NostrEvent } from "../../types/nostr-event";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => {
@@ -39,7 +39,7 @@ const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
 
 const NotificationsView = () => {
   const readRelays = useReadRelayUrls();
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const { events, loading, loadMore } = useTimelineLoader(
     "notifications",
     readRelays,

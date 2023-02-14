@@ -24,7 +24,7 @@ import { truncatedId } from "../../helpers/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { KeyIcon, SettingsIcon } from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { useAppTitle } from "../../hooks/use-app-title";
 
@@ -48,7 +48,7 @@ const UserView = () => {
 
   const metadata = useUserMetadata(pubkey, [], true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
-  const isSelf = pubkey === identityService.pubkey.value;
+  const isSelf = pubkey === accountService.pubkey.value;
 
   useAppTitle(getUserDisplayName(metadata, npub ?? pubkey));
 

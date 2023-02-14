@@ -1,11 +1,11 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Spinner } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useSubject from "../../hooks/use-subject";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 
 export const LoginStartView = () => {
   const navigate = useNavigate();
-  const loading = useSubject(identityService.loading);
+  const loading = useSubject(accountService.loading);
   if (loading) return <Spinner />;
 
   return (
@@ -17,9 +17,10 @@ export const LoginStartView = () => {
           <AlertDescription>There are bugs and things will break.</AlertDescription>
         </Box>
       </Alert>
-      <Button onClick={() => identityService.loginWithExtension()} colorScheme="brand">
+      <Button onClick={() => accountService.loginWithExtension()} colorScheme="brand">
         Use browser extension
       </Button>
+      <Button onClick={() => navigate("./nip05")}>Login with Nip-05 Id</Button>
       <Button variant="link" onClick={() => navigate("./npub")}>
         Login with npub
       </Button>

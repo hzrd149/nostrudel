@@ -1,6 +1,6 @@
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
-import { SavedIdentity } from "./identity";
+import { SavedIdentity } from "./account";
 
 const settings = {
   identity: new PersistentSubject<SavedIdentity | null>(null),

@@ -6,7 +6,7 @@ import { ErrorBoundary } from "./error-boundary";
 import { ConnectedRelays } from "./connected-relays";
 
 import { useIsMobile } from "../hooks/use-is-mobile";
-import identityService from "../services/identity";
+import accountService from "../services/account";
 import { FollowingList } from "./following-list";
 import { ReloadPrompt } from "./reload-prompt";
 import { PostModalProvider } from "../providers/post-modal-provider";
@@ -16,7 +16,7 @@ import { UserAvatarLink } from "./user-avatar-link";
 import useSubject from "../hooks/use-subject";
 
 const MobileProfileHeader = () => {
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const readonly = useReadonlyMode();
 
   return (
@@ -27,7 +27,7 @@ const MobileProfileHeader = () => {
           colorScheme="red"
           textAlign="center"
           variant="link"
-          onClick={() => confirm("Exit readonly mode?") && identityService.logout()}
+          onClick={() => confirm("Exit readonly mode?") && accountService.logout()}
         >
           Readonly Mode
         </Button>
@@ -96,7 +96,7 @@ const DesktopSideNav = () => {
       <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
         Settings
       </Button>
-      <Button onClick={() => identityService.logout()} leftIcon={<LogoutIcon />}>
+      <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />}>
         Logout
       </Button>
       {readonly && (

@@ -5,7 +5,7 @@ import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import { AddIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
@@ -15,7 +15,7 @@ import useSubject from "../../hooks/use-subject";
 
 export const FollowingTab = () => {
   const readonly = useReadonlyMode();
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const relays = useReadRelayUrls();
   const { openModal } = useContext(PostModalContext);
   const contacts = useUserContacts(pubkey);

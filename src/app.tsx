@@ -6,7 +6,7 @@ import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
-import identityService from "./services/identity";
+import accountService from "./services/account";
 import { FollowingTab } from "./views/home/following-tab";
 import { DiscoverTab } from "./views/home/discover-tab";
 import { GlobalTab } from "./views/home/global-tab";
@@ -23,10 +23,11 @@ import { LoginNpubView } from "./views/login/npub";
 import NotificationsView from "./views/notifications";
 import { RelaysView } from "./views/relays";
 import useSubject from "./hooks/use-subject";
+import { LoginNip05View } from "./views/login/nip05";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
-  const setup = useSubject(identityService.setup);
+  const setup = useSubject(accountService.setup);
 
   if (!setup) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <LoginStartView /> },
       { path: "npub", element: <LoginNpubView /> },
+      { path: "nip05", element: <LoginNip05View /> },
     ],
   },
   {

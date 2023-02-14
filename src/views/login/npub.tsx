@@ -3,7 +3,7 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useT
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHex } from "../../helpers/nip-19";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
 
 export const LoginNpubView = () => {
@@ -20,16 +20,13 @@ export const LoginNpubView = () => {
       return toast({ status: "error", title: "Invalid npub" });
     }
 
-    identityService.loginWithPubkey(pubkey);
+    accountService.loginWithPubkey(pubkey);
 
     clientRelaysService.bootstrapRelays.add(relayUrl);
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit}>
-      <Button variant="link" onClick={() => navigate("../")}>
-        Back
-      </Button>
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="400">
       <FormControl>
         <FormLabel>Enter user npub</FormLabel>
         <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
@@ -50,9 +47,14 @@ export const LoginNpubView = () => {
         />
         <FormHelperText>The first relay to connect to.</FormHelperText>
       </FormControl>
-      <Button colorScheme="brand" ml="auto" type="submit">
-        Login
-      </Button>
+      <Flex justifyContent="space-between" gap="2">
+        <Button variant="link" onClick={() => navigate("../")}>
+          Back
+        </Button>
+        <Button colorScheme="brand" ml="auto" type="submit">
+          Login
+        </Button>
+      </Flex>
     </Flex>
   );
 };

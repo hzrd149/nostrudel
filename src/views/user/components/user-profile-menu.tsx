@@ -3,7 +3,7 @@ import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-ic
 
 import { IMAGE_ICONS, SpyIcon } from "../../../components/icons";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
-import identityService from "../../../services/identity";
+import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 
@@ -13,8 +13,8 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
 
   const loginAsUser = () => {
     if (confirm(`Do you want to logout and login as ${getUserDisplayName(metadata, pubkey)}?`)) {
-      identityService.logout();
-      identityService.loginWithPubkey(pubkey);
+      accountService.logout();
+      accountService.loginWithPubkey(pubkey);
     }
   };
 

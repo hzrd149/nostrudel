@@ -1,6 +1,6 @@
-import identityService from "../services/identity";
+import accountService from "../services/account";
 import useSubject from "./use-subject";
 
 export function useReadonlyMode() {
-  return useSubject(identityService.readonly);
+  return useSubject(accountService.readonly);
 }

@@ -1,7 +1,7 @@
 import moment from "moment";
 import db from "./db";
 
-function parseAddress(address: string) {
+function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.split("@");
   return { name: parts[0], domain: parts[1] };
 }
@@ -18,10 +18,11 @@ export type DnsIdentity = {
 };
 
 function getIdentityFromJson(name: string, domain: string, json: IdentityJson): DnsIdentity | undefined {
-  const relays: string[] = json.relays?.[name] ?? [];
   const pubkey = json.names[name];
+  if (!pubkey) return;
 
-  if (pubkey) return { name, domain, pubkey, relays };
+  const relays: string[] = json.relays?.[pubkey] ?? [];
+  return { name, domain, pubkey, relays };
 }
 
 async function fetchAllIdentities(domain: string) {
@@ -32,6 +33,7 @@ async function fetchAllIdentities(domain: string) {
 
 async function fetchIdentity(address: string) {
   const { name, domain } = parseAddress(address);
+  if (!name || !domain) return undefined;
   const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`).then(
     (res) => res.json() as Promise<IdentityJson>
   );
@@ -53,9 +55,9 @@ async function addToCache(domain: string, json: IdentityJson) {
   await Promise.all(wait);
 }
 
-async function getIdentity(address: string) {
+async function getIdentity(address: string, alwaysFetch = false) {
   const cached = await db.get("dnsIdentifiers", address);
-  if (cached) return cached;
+  if (cached && !alwaysFetch) return cached;
 
   // TODO: if it fails, maybe cache a failure message
   return fetchIdentity(address);
@@ -74,9 +76,9 @@ async function pruneCache() {
 }
 
 const pending: Record<string, ReturnType<typeof getIdentity> | undefined> = {};
-function dedupedGetIdentity(address: string) {
+function dedupedGetIdentity(address: string, alwaysFetch = false) {
   if (pending[address]) return pending[address];
-  return (pending[address] = getIdentity(address));
+  return (pending[address] = getIdentity(address, alwaysFetch));
 }
 
 export const dnsIdentityService = {

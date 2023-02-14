@@ -2,7 +2,7 @@ import moment from "moment";
 import { nostrPostAction } from "../classes/nostr-post-action";
 import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
-import identityService from "./identity";
+import accountService from "./account";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import userRelaysService, { UserRelays } from "./user-relays";
 import { PersistentSubject, Subject } from "../classes/subject";
@@ -23,7 +23,7 @@ class ClientRelayService {
 
   constructor() {
     let lastSubject: Subject<UserRelays> | undefined;
-    identityService.pubkey.subscribe((pubkey) => {
+    accountService.pubkey.subscribe((pubkey) => {
       // clear the relay list until a new one can be fetched
       // this.relays.next([]);
 
@@ -38,7 +38,7 @@ class ClientRelayService {
     });
 
     // add preset relays fromm nip07 extension to bootstrap list
-    identityService.relays.subscribe((presetRelays) => {
+    accountService.relays.subscribe((presetRelays) => {
       for (const [url, opts] of Object.entries(presetRelays)) {
         if (opts.read) {
           clientRelaysService.bootstrapRelays.add(url);

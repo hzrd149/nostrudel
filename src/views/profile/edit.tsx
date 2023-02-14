@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 
 type FormData = {
   displayName?: string;
@@ -60,7 +60,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const metadata = useUserMetadata(pubkey);
 
   const defaultValues = useMemo<FormData>(

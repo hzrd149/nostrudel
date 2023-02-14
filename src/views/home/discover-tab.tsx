@@ -3,7 +3,7 @@ import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Note } from "../../components/note";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import identityService from "../../services/identity";
+import accountService from "../../services/account";
 import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
@@ -41,7 +41,7 @@ function useExtendedContacts(pubkey: string) {
 
 export const DiscoverTab = () => {
   useAppTitle("discover");
-  const pubkey = useSubject(identityService.pubkey) ?? "";
+  const pubkey = useSubject(accountService.pubkey) ?? "";
   const relays = useReadRelayUrls();
 
   const contactsOfContacts = useExtendedContacts(pubkey);
