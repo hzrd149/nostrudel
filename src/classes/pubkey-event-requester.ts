@@ -1,8 +1,8 @@
 import moment from "moment";
-import { BehaviorSubject } from "rxjs";
 import { NostrSubscription } from "./nostr-subscription";
 import { SuperMap } from "./super-map";
 import { NostrEvent } from "../types/nostr-event";
+import Subject from "./subject";
 
 type pubkey = string;
 type relay = string;
@@ -11,9 +11,7 @@ class PubkeyEventRequestSubscription {
   private subscription: NostrSubscription;
   private kind: number;
 
-  private subjects = new SuperMap<pubkey, BehaviorSubject<NostrEvent | undefined>>(
-    () => new BehaviorSubject<NostrEvent | undefined>(undefined)
-  );
+  private subjects = new SuperMap<pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private requestNext = new Set<pubkey>();
 
@@ -95,9 +93,7 @@ class PubkeyEventRequestSubscription {
 export class PubkeyEventRequester {
   private kind: number;
   private name?: string;
-  private subjects = new SuperMap<pubkey, BehaviorSubject<NostrEvent | undefined>>(
-    () => new BehaviorSubject<NostrEvent | undefined>(undefined)
-  );
+  private subjects = new SuperMap<pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private subscriptions = new SuperMap<relay, PubkeyEventRequestSubscription>(
     (relay) => new PubkeyEventRequestSubscription(relay, this.kind, this.name)

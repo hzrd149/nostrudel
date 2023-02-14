@@ -16,18 +16,15 @@ import {
 } from "@chakra-ui/react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { TrashIcon, UndoIcon } from "../../components/icons";
-import useSubject from "../../hooks/use-subject";
 import { RelayFavicon } from "../../components/relay-favicon";
 import clientRelaysService from "../../services/client-relays";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { useList } from "react-use";
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { useRelayInfo } from "../../hooks/use-client-relays copy";
+import useSubject from "../../hooks/use-subject";
 
 export const RelaysView = () => {
   const relays = useSubject(clientRelaysService.relays);
-
-  const info = useRelayInfo("wss://nostr.wine");
 
   const [pendingAdd, addActions] = useList<RelayConfig>([]);
   const [pendingRemove, removeActions] = useList<RelayConfig>([]);

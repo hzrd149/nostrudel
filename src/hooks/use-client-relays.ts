@@ -4,7 +4,7 @@ import { RelayMode } from "../classes/relay";
 import useSubject from "./use-subject";
 
 export function useClientRelays(mode: RelayMode = RelayMode.READ) {
-  const relays = useSubject(clientRelaysService.relays);
+  const relays = useSubject(clientRelaysService.relays) ?? [];
 
   return relays.filter((r) => r.mode & mode);
 }

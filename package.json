@@ -26,7 +26,6 @@
     "react-router-dom": "^6.5.0",
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",
-    "rxjs": "^7.8.0",
     "webln": "^0.3.2"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { PersistentSubject, Subject } from "../classes/subject";
 import settings from "./settings";
 
 export type PresetRelays = Record<string, { read: boolean; write: boolean }>;
@@ -10,12 +10,12 @@ export type SavedIdentity = {
 };
 
 class IdentityService {
-  loading = new BehaviorSubject(true);
-  setup = new BehaviorSubject(false);
-  pubkey = new BehaviorSubject("");
-  readonly = new BehaviorSubject(false);
+  loading = new PersistentSubject(false);
+  setup = new PersistentSubject(false);
+  pubkey = new Subject<string>();
+  readonly = new PersistentSubject(false);
   // directory of relays provided by nip07 extension
-  relays = new BehaviorSubject<PresetRelays>({});
+  relays = new Subject<PresetRelays>({});
   private useExtension: boolean = false;
   private secKey: string | undefined = undefined;
 
@@ -40,20 +40,24 @@ class IdentityService {
 
   async loginWithExtension() {
     if (window.nostr) {
-      this.loading.next(true);
-      const pubkey = await window.nostr.getPublicKey();
-      const relays = await window.nostr.getRelays();
+      try {
+        this.loading.next(true);
+        const pubkey = await window.nostr.getPublicKey();
+        const relays = await window.nostr.getRelays();
 
-      if (Array.isArray(relays)) {
-        this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
-      } else {
-        this.relays.next(relays);
+        if (Array.isArray(relays)) {
+          this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
+        } else {
+          this.relays.next(relays);
+        }
+
+        settings.identity.next({
+          pubkey,
+          useExtension: true,
+        });
+      } catch (e) {
+        this.loading.next(false);
       }
-
-      settings.identity.next({
-        pubkey,
-        useExtension: true,
-      });
     }
   }
 
@@ -77,11 +81,11 @@ class IdentityService {
   }
 }
 
-const identity = new IdentityService();
+const identityService = new IdentityService();
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.identity = identity;
+  window.identity = identityService;
 }
 
-export default identity;
+export default identityService;

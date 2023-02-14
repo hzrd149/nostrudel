@@ -1,8 +1,8 @@
-import { Subject, SubscriptionLike } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
 import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
 import relayPoolService from "../services/relay-pool";
+import { Subject } from "./subject";
 
 let lastId = 10000;
 
@@ -26,20 +26,26 @@ export class NostrSubscription {
 
     this.relay = relayPoolService.requestRelay(relayUrl);
 
-    this.relay.onEvent.subscribe(this.handleEvent.bind(this));
-    this.relay.onEOSE.subscribe(this.handleEOSE.bind(this));
+    this.onEvent.connectWithHandler(this.relay.onEvent, (event, next) => {
+      if (this.state === NostrSubscription.OPEN) next(event.body);
+    });
+    this.onEOSE.connectWithHandler(this.relay.onEOSE, (eose, next) => {
+      if (this.state === NostrSubscription.OPEN) next(eose);
+    });
+    // this.relay.onEvent.subscribe(this.handleEvent.bind(this));
+    // this.relay.onEOSE.subscribe(this.handleEOSE.bind(this));
   }
 
-  private handleEvent(event: IncomingEvent) {
-    if (this.state === NostrSubscription.OPEN && event.subId === this.id) {
-      this.onEvent.next(event.body);
-    }
-  }
-  private handleEOSE(eose: IncomingEOSE) {
-    if (this.state === NostrSubscription.OPEN && eose.subId === this.id) {
-      this.onEOSE.next(eose);
-    }
-  }
+  // private handleEvent(event: IncomingEvent) {
+  //   if (this.state === NostrSubscription.OPEN && event.subId === this.id) {
+  //     this.onEvent.next(event.body);
+  //   }
+  // }
+  // private handleEOSE(eose: IncomingEOSE) {
+  //   if (this.state === NostrSubscription.OPEN && eose.subId === this.id) {
+  //     this.onEOSE.next(eose);
+  //   }
+  // }
 
   send(message: NostrOutgoingMessage) {
     this.relay.send(message);

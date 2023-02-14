@@ -27,6 +27,11 @@ const MIGRATIONS: MigrationFunction[] = [
     });
     contacts.createIndex("created_at", "created_at");
 
+    const userFollows = db.createObjectStore("userFollows", {
+      keyPath: "pubkey",
+    });
+    userFollows.createIndex("follows", "follows", { multiEntry: true, unique: false });
+
     const dnsIdentifiers = db.createObjectStore("dnsIdentifiers");
     dnsIdentifiers.createIndex("pubkey", "pubkey", { unique: false });
     dnsIdentifiers.createIndex("name", "name", { unique: false });

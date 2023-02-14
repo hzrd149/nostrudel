@@ -15,11 +15,12 @@ export type Kind0ParsedContent = {
   nip05?: string;
 };
 
-export function parseKind0Event(event: NostrEvent): Kind0ParsedContent | undefined {
+export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
   if (event.kind !== 0) throw new Error("expected a kind 0 event");
   try {
     return JSON.parse(event.content) as Kind0ParsedContent;
   } catch (e) {}
+  return {};
 }
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {

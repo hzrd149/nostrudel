@@ -3,7 +3,7 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useT
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHex } from "../../helpers/nip-19";
-import identity from "../../services/identity";
+import identityService from "../../services/identity";
 import clientRelaysService from "../../services/client-relays";
 
 export const LoginNpubView = () => {
@@ -20,7 +20,7 @@ export const LoginNpubView = () => {
       return toast({ status: "error", title: "Invalid npub" });
     }
 
-    identity.loginWithPubkey(pubkey);
+    identityService.loginWithPubkey(pubkey);
 
     clientRelaysService.bootstrapRelays.add(relayUrl);
   };

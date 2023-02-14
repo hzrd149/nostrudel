@@ -6,8 +6,7 @@ import { Page } from "./components/page";
 import { SettingsView } from "./views/settings";
 import { LoginView } from "./views/login";
 import { ProfileView } from "./views/profile";
-import useSubject from "./hooks/use-subject";
-import identity from "./services/identity";
+import identityService from "./services/identity";
 import { FollowingTab } from "./views/home/following-tab";
 import { DiscoverTab } from "./views/home/discover-tab";
 import { GlobalTab } from "./views/home/global-tab";
@@ -23,10 +22,11 @@ import { LoginStartView } from "./views/login/start";
 import { LoginNpubView } from "./views/login/npub";
 import NotificationsView from "./views/notifications";
 import { RelaysView } from "./views/relays";
+import useSubject from "./hooks/use-subject";
 
 const RequireSetup = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
-  const setup = useSubject(identity.setup);
+  const setup = useSubject(identityService.setup);
 
   if (!setup) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 

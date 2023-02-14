@@ -1,48 +1,47 @@
 import { useEffect, useState } from "react";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
-import { mergeAll, from } from "rxjs";
 import { Note } from "../../components/note";
-import useSubject from "../../hooks/use-subject";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import identity from "../../services/identity";
+import identityService from "../../services/identity";
 import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useSubject from "../../hooks/use-subject";
 
 function useExtendedContacts(pubkey: string) {
   const readRelays = useReadRelayUrls();
-  useAppTitle("discover");
   const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
   const contacts = useUserContacts(pubkey);
 
-  useEffect(() => {
-    if (contacts) {
-      const following = contacts.contacts;
-      const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact, readRelays));
+  // useEffect(() => {
+  //   if (contacts) {
+  //     const following = contacts.contacts;
+  //     const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact, readRelays));
 
-      const rxSub = from(subject)
-        .pipe(mergeAll())
-        .subscribe((contacts) => {
-          if (contacts) {
-            setExtendedContacts((value) => {
-              const more = contacts.contacts.filter((key) => !following.includes(key));
-              return Array.from(new Set([...value, ...more]));
-            });
-          }
-        });
+  //     const rxSub = from(subject)
+  //       .pipe(mergeAll())
+  //       .subscribe((contacts) => {
+  //         if (contacts) {
+  //           setExtendedContacts((value) => {
+  //             const more = contacts.contacts.filter((key) => !following.includes(key));
+  //             return Array.from(new Set([...value, ...more]));
+  //           });
+  //         }
+  //       });
 
-      return () => rxSub.unsubscribe();
-    }
-  }, [contacts, setExtendedContacts]);
+  //     return () => rxSub.unsubscribe();
+  //   }
+  // }, [contacts, setExtendedContacts]);
 
   return extendedContacts;
 }
 
 export const DiscoverTab = () => {
-  const pubkey = useSubject(identity.pubkey);
+  useAppTitle("discover");
+  const pubkey = useSubject(identityService.pubkey) ?? "";
   const relays = useReadRelayUrls();
 
   const contactsOfContacts = useExtendedContacts(pubkey);

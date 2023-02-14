@@ -57,7 +57,7 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
 
 export function buildReply(event: NostrEvent): DraftNostrEvent {
   const refs = getReferences(event);
-  const relay = getEventRelays(event.id).getValue()[0];
+  const relay = getEventRelays(event.id).value?.[0] ?? "";
 
   const tags: NostrEvent["tags"] = [];
 

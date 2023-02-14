@@ -29,10 +29,10 @@ export function useThreadLoader(eventId: string, opts?: Options) {
     loader.close();
   });
 
-  const events = useSubject(loader.events);
+  const events = useSubject(loader.events) ?? {};
   const loading = useSubject(loader.loading);
-  const rootId = useSubject(loader.rootId);
-  const focusId = useSubject(loader.focusId);
+  const rootId = useSubject(loader.rootId) ?? "";
+  const focusId = useSubject(loader.focusId) ?? "";
   const thread = useMemo(() => linkEvents(Object.values(events)), [events]);
 
   return {

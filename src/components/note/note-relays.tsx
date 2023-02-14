@@ -14,13 +14,13 @@ import {
 } from "@chakra-ui/react";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import { NostrRequest } from "../../classes/nostr-request";
-import useSubject from "../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayIcon, SearchIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
+import useSubject from "../../hooks/use-subject";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
@@ -36,10 +36,8 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
     setQuerying(true);
     const request = new NostrRequest(readRelays);
     request.start({ ids: [event.id] });
-    request.onEvent.subscribe({
-      complete() {
-        setQuerying(false);
-      },
+    request.onComplete.then(() => {
+      setQuerying(false);
     });
   }, []);
 
@@ -51,18 +49,15 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
     }
 
     setBroadcasting(true);
-    const action = nostrPostAction(missingRelays, event, 5000);
+    const { results, onComplete } = nostrPostAction(missingRelays, event, 5000);
 
-    action.subscribe({
-      next: (result) => {
-        if (result.status) {
-          handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
-        }
-      },
-      complete: () => {
-        setBroadcasting(false);
-      },
+    results.subscribe((result) => {
+      if (result.status) {
+        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+      }
     });
+
+    onComplete.then(() => setBroadcasting(false));
   }, []);
 
   return (

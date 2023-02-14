@@ -1,9 +1,9 @@
 import moment from "moment";
-import { BehaviorSubject } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
+import Subject, { PersistentSubject } from "./subject";
 
 export type NostrQueryWithStart = NostrQuery & { since: number };
 
@@ -16,9 +16,9 @@ export type TimelineLoaderOptions = Partial<Options>;
 export class TimelineLoader {
   relays: string[];
   query: NostrQueryWithStart;
-  events = new BehaviorSubject<NostrEvent[]>([]);
-  loading = new BehaviorSubject(false);
-  page = new BehaviorSubject(0);
+  events = new PersistentSubject<NostrEvent[]>([]);
+  loading = new PersistentSubject(false);
+  page = new PersistentSubject(0);
   private seenEvents = new Set<string>();
   private subscription: NostrMultiSubscription;
   private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds() };
@@ -69,18 +69,16 @@ export class TimelineLoader {
   loadMore() {
     if (this.loading.value) return;
 
-    const query = { ...this.query, ...this.getPageDates(this.page.value) };
+    const query = { ...this.query, ...this.getPageDates(this.page.value ?? 0) };
     const request = new NostrRequest(this.relays);
-    request.onEvent.subscribe({
-      next: this.handleEvent.bind(this),
-      complete: () => {
-        this.loading.next(false);
-      },
+    request.onEvent.subscribe(this.handleEvent, this);
+    request.onComplete.then(() => {
+      this.loading.next(false);
     });
     request.start(query);
 
     this.loading.next(true);
-    this.page.next(this.page.value + 1);
+    this.page.next(this.page.value ?? 0 + 1);
   }
 
   forgetEvents() {

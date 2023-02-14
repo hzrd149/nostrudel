@@ -1,45 +1,47 @@
 import moment from "moment";
-import { BehaviorSubject, lastValueFrom, Subscription } from "rxjs";
 import { nostrPostAction } from "../classes/nostr-post-action";
+import { PersistentSubject, Subject } from "../classes/subject";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
-import identity from "./identity";
-import userContactsService from "./user-contacts";
+import identityService from "./identity";
+import userContactsService, { UserContacts } from "./user-contacts";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
-const following = new BehaviorSubject<PTag[]>([]);
-const pendingDraft = new BehaviorSubject<DraftNostrEvent | null>(null);
-const savingDraft = new BehaviorSubject(false);
+const following = new PersistentSubject<PTag[]>([]);
+const pendingDraft = new PersistentSubject<DraftNostrEvent | null>(null);
+const savingDraft = new PersistentSubject(false);
 
-let sub: Subscription | undefined;
+function handleNewContacts(contacts: UserContacts | undefined) {
+  if (!contacts) return;
+
+  following.next(
+    contacts.contacts.map((key) => {
+      const relay = contacts.contactRelay[key];
+      if (relay) return ["p", key, relay];
+      else return ["p", key];
+    })
+  );
+
+  // reset the pending list since we just got a new contacts list
+  pendingDraft.next(null);
+}
+
+let sub: Subject<UserContacts> | undefined;
 function updateSub() {
   if (sub) {
-    sub.unsubscribe();
+    sub.unsubscribe(handleNewContacts);
     sub = undefined;
   }
 
-  if (identity.pubkey.value) {
-    sub = userContactsService
-      .requestContacts(identity.pubkey.value, clientRelaysService.getReadUrls(), true)
-      .subscribe((userContacts) => {
-        if (!userContacts) return;
+  if (identityService.pubkey.value) {
+    sub = userContactsService.requestContacts(identityService.pubkey.value, clientRelaysService.getReadUrls(), true);
 
-        following.next(
-          userContacts.contacts.map((key) => {
-            const relay = userContacts.contactRelay[key];
-            if (relay) return ["p", key, relay];
-            else return ["p", key];
-          })
-        );
-
-        // reset the pending list since we just got a new contacts list
-        pendingDraft.next(null);
-      });
+    sub.subscribe(handleNewContacts);
   }
 }
 
-identity.pubkey.subscribe(() => {
+identityService.pubkey.subscribe(() => {
   // clear the following list until a new one can be fetched
   following.next([]);
 
@@ -51,7 +53,7 @@ clientRelaysService.readRelays.subscribe(() => {
 });
 
 function isFollowing(pubkey: string) {
-  return following.value.some((t) => t[1] === pubkey);
+  return !!following.value?.some((t) => t[1] === pubkey);
 }
 
 function getDraftEvent(): DraftNostrEvent {
@@ -75,7 +77,7 @@ async function savePending() {
     const event = await window.nostr.signEvent(draft);
 
     const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
-    await lastValueFrom(results);
+    await results.onComplete;
 
     savingDraft.next(false);
 
@@ -86,9 +88,10 @@ async function savePending() {
 
 function addContact(pubkey: string, relay?: string) {
   const newTag: PTag = relay ? ["p", pubkey, relay] : ["p", pubkey];
+  const pTags = following.value;
   if (isFollowing(pubkey)) {
     following.next(
-      following.value.map((t) => {
+      pTags.map((t) => {
         if (t[1] === pubkey) {
           return newTag;
         }
@@ -96,20 +99,21 @@ function addContact(pubkey: string, relay?: string) {
       })
     );
   } else {
-    following.next([...following.value, newTag]);
+    following.next([...pTags, newTag]);
   }
 
   pendingDraft.next(getDraftEvent());
 }
 function removeContact(pubkey: string) {
   if (isFollowing(pubkey)) {
-    following.next(following.value.filter((t) => t[1] !== pubkey));
+    const pTags = following.value;
+    following.next(pTags.filter((t) => t[1] !== pubkey));
     pendingDraft.next(getDraftEvent());
   }
 }
 
 const clientFollowingService = {
-  following: following,
+  following,
   isFollowing,
   savingDraft,
   savePending,

@@ -57,12 +57,10 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       setWaiting(false);
       setSignedEvent(event);
 
-      const postResults = nostrPostAction(writeRelays, event);
+      const { results } = nostrPostAction(writeRelays, event);
 
-      postResults.subscribe({
-        next(result) {
-          resultsActions.push(result);
-        },
+      results.subscribe((result) => {
+        resultsActions.push(result);
       });
     }
   };

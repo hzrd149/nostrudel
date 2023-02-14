@@ -18,6 +18,11 @@ export interface CustomSchema extends DBSchema {
     value: NostrEvent;
     indexes: { created_at: number };
   };
+  userFollows: {
+    key: string;
+    value: { pubkey: string; follows: string[] };
+    indexes: { follows: string };
+  };
   dnsIdentifiers: {
     key: string;
     value: { name: string; domain: string; pubkey: string; relays: string[]; updated: number };

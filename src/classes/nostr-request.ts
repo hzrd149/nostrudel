@@ -1,8 +1,9 @@
-import { Subject, Subscription as RxSubscription } from "rxjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
-import { Relay } from "./relay";
+import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
+import Subject from "./subject";
+import Deferred from "./deferred";
 
 let lastId = 0;
 
@@ -15,9 +16,10 @@ export class NostrRequest {
   id: string;
   timeout: number;
   relays: Set<Relay>;
-  relayCleanup = new Map<Relay, RxSubscription[]>();
+  relayCleanup = new Map<Relay, Function>();
   state = NostrRequest.IDLE;
   onEvent = new Subject<NostrEvent>();
+  onComplete = new Deferred<void>();
   seenEvents = new Set<string>();
 
   constructor(relayUrls: string[], timeout?: number) {
@@ -25,26 +27,25 @@ export class NostrRequest {
     this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {
-      const cleanup: RxSubscription[] = [];
+      const handleEOSE = (event: IncomingEOSE) => {
+        if (event.subId === this.id) {
+          this.handleEndOfEvents(relay);
+        }
+      };
+      relay.onEOSE.subscribe(handleEOSE);
 
-      cleanup.push(
-        relay.onEOSE.subscribe((event) => {
-          if (event.subId === this.id) {
-            this.handleEndOfEvents(relay);
-          }
-        })
-      );
+      const handleEvent = (event: IncomingEvent) => {
+        if (this.state === NostrRequest.RUNNING && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
+          this.onEvent.next(event.body);
+          this.seenEvents.add(event.body.id);
+        }
+      };
+      relay.onEvent.subscribe(handleEvent);
 
-      cleanup.push(
-        relay.onEvent.subscribe((event) => {
-          if (this.state === NostrRequest.RUNNING && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
-            this.onEvent.next(event.body);
-            this.seenEvents.add(event.body.id);
-          }
-        })
-      );
-
-      this.relayCleanup.set(relay, cleanup);
+      this.relayCleanup.set(relay, () => {
+        relay.onEOSE.unsubscribe(handleEOSE);
+        relay.onEvent.unsubscribe(handleEvent);
+      });
     }
 
     this.timeout = timeout ?? REQUEST_DEFAULT_TIMEOUT;
@@ -54,12 +55,12 @@ export class NostrRequest {
     this.relays.delete(relay);
     relay.send(["CLOSE", this.id]);
 
-    const cleanup = this.relayCleanup.get(relay) ?? [];
-    for (const fn of cleanup) fn.unsubscribe();
+    const cleanup = this.relayCleanup.get(relay);
+    if (cleanup) cleanup();
 
     if (this.relays.size === 0) {
       this.state = NostrRequest.COMPLETE;
-      this.onEvent.complete();
+      this.onComplete.resolve();
     }
   }
 
@@ -87,12 +88,12 @@ export class NostrRequest {
     for (const relay of this.relays) {
       relay.send(["CLOSE", this.id]);
     }
-    for (const [relay, fns] of this.relayCleanup) {
-      for (const fn of fns) fn.unsubscribe();
+    for (const [relay, cleanup] of this.relayCleanup) {
+      if (cleanup) cleanup();
     }
     this.relayCleanup = new Map();
     this.relays = new Set();
-    this.onEvent.complete();
+    this.onComplete.resolve();
 
     console.log(`NostrRequest: ${this.id} complete`);
 

@@ -12,7 +12,7 @@ export function useUserContacts(pubkey: string, additionalRelays: string[] = [],
     () => userContactsService.requestContacts(pubkey, relays, alwaysRequest),
     [pubkey, relays, alwaysRequest]
   );
-  const contacts = useSubject(observable) ?? undefined;
+  const contacts = useSubject(observable);
 
   return contacts;
 }

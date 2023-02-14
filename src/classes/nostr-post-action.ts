@@ -1,17 +1,20 @@
-import { Subject, Subscription } from "rxjs";
 import relayPoolService from "../services/relay-pool";
 import { NostrEvent } from "../types/nostr-event";
+import Deferred from "./deferred";
+import { IncomingCommandResult, Relay } from "./relay";
+import { ListenerFn, Subject } from "./subject";
 
 export type PostResult = { url: string; message?: string; status: boolean };
 
 export function nostrPostAction(relays: string[], event: NostrEvent, timeout: number = 5000) {
   const subject = new Subject<PostResult>();
-  let remaining = new Set<Subscription>();
+  const onComplete = new Deferred<void>();
+  const remaining = new Map<Relay, ListenerFn<IncomingCommandResult>>();
 
   for (const url of relays) {
     const relay = relayPoolService.requestRelay(url);
 
-    const sub = relay.onCommandResult.subscribe((result) => {
+    const handler = (result: IncomingCommandResult) => {
       if (result.eventId === event.id) {
         subject.next({
           url,
@@ -19,12 +22,13 @@ export function nostrPostAction(relays: string[], event: NostrEvent, timeout: nu
           message: result.message,
         });
 
-        sub.unsubscribe();
-        remaining.delete(sub);
-        if (remaining.size === 0) subject.complete();
+        relay.onCommandResult.unsubscribe(handler);
+        remaining.delete(relay);
+        if (remaining.size === 0) onComplete.resolve();
       }
-    });
-    remaining.add(sub);
+    };
+    relay.onCommandResult.subscribe(handler);
+    remaining.set(relay, handler);
 
     // send event
     relay.send(["EVENT", event]);
@@ -32,12 +36,15 @@ export function nostrPostAction(relays: string[], event: NostrEvent, timeout: nu
 
   setTimeout(() => {
     if (remaining.size > 0) {
-      for (const sub of remaining) {
-        sub.unsubscribe();
+      for (const [relay, handler] of remaining) {
+        relay.onCommandResult.unsubscribe(handler);
       }
-      subject.complete();
+      onComplete.resolve();
     }
   }, timeout);
 
-  return subject;
+  return {
+    results: subject,
+    onComplete,
+  };
 }

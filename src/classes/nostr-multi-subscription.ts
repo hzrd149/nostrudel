@@ -1,4 +1,4 @@
-import { Subject, SubscriptionLike } from "rxjs";
+import { Subject } from "./subject";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
 import { IncomingEvent, Relay } from "./relay";
@@ -40,13 +40,10 @@ export class NostrMultiSubscription {
     }
   }
 
-  private cleanup = new Map<Relay, SubscriptionLike>();
   /** listen for event and open events from relays */
   private subscribeToRelays() {
     for (const relay of this.relays) {
-      if (!this.cleanup.has(relay)) {
-        this.cleanup.set(relay, relay.onEvent.subscribe(this.handleEvent.bind(this)));
-      }
+      relay.onEvent.subscribe(this.handleEvent, this);
     }
 
     for (const url of this.relayUrls) {
@@ -55,8 +52,9 @@ export class NostrMultiSubscription {
   }
   /** listen for event and open events from relays */
   private unsubscribeFromRelays() {
-    this.cleanup.forEach((sub) => sub.unsubscribe());
-    this.cleanup.clear();
+    for (const relay of this.relays) {
+      relay.onEvent.unsubscribe(this.handleEvent, this);
+    }
 
     for (const url of this.relayUrls) {
       relayPoolService.removeClaim(url, this);

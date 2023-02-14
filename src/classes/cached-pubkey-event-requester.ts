@@ -2,6 +2,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { PubkeyEventRequester } from "./pubkey-event-requester";
 
 export class CachedPubkeyEventRequester extends PubkeyEventRequester {
+  private readCacheDedupe = new Map<string, Promise<NostrEvent | undefined>>();
   async readCache(pubkey: string): Promise<NostrEvent | undefined> {
     return undefined;
   }
@@ -16,7 +17,13 @@ export class CachedPubkeyEventRequester extends PubkeyEventRequester {
     const sub = this.getSubject(pubkey);
 
     if (!sub.value || alwaysRequest) {
-      this.readCache(pubkey).then((cached) => {
+      // only call this.readCache once per pubkey
+      const promise = this.readCacheDedupe.get(pubkey) || this.readCache(pubkey);
+      this.readCacheDedupe.set(pubkey, promise);
+
+      promise.then((cached) => {
+        this.readCacheDedupe.delete(pubkey);
+
         if (cached && (!sub.value || cached.created_at > sub.value.created_at)) {
           sub.next(cached);
         }

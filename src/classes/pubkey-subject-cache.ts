@@ -1,7 +1,7 @@
-import { BehaviorSubject } from "rxjs";
+import Subject from "./subject";
 
 export class PubkeySubjectCache<T> {
-  subjects = new Map<string, BehaviorSubject<T | null>>();
+  subjects = new Map<string, Subject<T | null>>();
   relays = new Map<string, Set<string>>();
   dirty = false;
 
@@ -11,7 +11,7 @@ export class PubkeySubjectCache<T> {
   getSubject(pubkey: string) {
     let subject = this.subjects.get(pubkey);
     if (!subject) {
-      subject = new BehaviorSubject<T | null>(null);
+      subject = new Subject<T | null>(null);
       this.subjects.set(pubkey, subject);
       this.dirty = true;
     }
@@ -43,7 +43,7 @@ export class PubkeySubjectCache<T> {
   prune() {
     const prunedKeys: string[] = [];
     for (const [key, subject] of this.subjects) {
-      if (!subject.observed) {
+      if (!subject.hasListeners) {
         this.subjects.delete(key);
         this.relays.delete(key);
         prunedKeys.push(key);

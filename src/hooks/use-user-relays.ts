@@ -12,7 +12,7 @@ export function useUserRelays(pubkey: string, additionalRelays: string[] = [], a
     () => userRelaysService.requestRelays(pubkey, relays, alwaysRequest),
     [pubkey, relays, alwaysRequest]
   );
-  const contacts = useSubject(observable) ?? undefined;
+  const contacts = useSubject(observable);
 
   return contacts;
 }

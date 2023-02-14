@@ -1,5 +1,5 @@
-import { Subject } from "rxjs";
 import { Relay } from "../classes/relay";
+import Subject from "../classes/subject";
 
 export class RelayPoolService {
   relays = new Map<string, Relay>();

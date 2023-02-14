@@ -15,10 +15,10 @@ import {
   FormHelperText,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
-import identity from "../../services/identity";
+import identityService from "../../services/identity";
+import useSubject from "../../hooks/use-subject";
 
 export const SettingsView = () => {
   const blurImages = useSubject(settings.blurImages);
@@ -171,7 +171,7 @@ export const SettingsView = () => {
         </AccordionItem>
       </Accordion>
       <Flex gap="2" padding="4">
-        <Button onClick={() => identity.logout()}>Logout</Button>
+        <Button onClick={() => identityService.logout()}>Logout</Button>
       </Flex>
     </Flex>
   );

@@ -1,6 +1,6 @@
-import identity from "../services/identity";
+import identityService from "../services/identity";
 import useSubject from "./use-subject";
 
 export function useReadonlyMode() {
-  return useSubject(identity.readonly);
+  return useSubject(identityService.readonly);
 }

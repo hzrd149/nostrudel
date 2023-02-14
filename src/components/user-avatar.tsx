@@ -4,8 +4,8 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
 import { getIdenticon } from "../services/identicon";
 import { safeUrl } from "../helpers/parse";
-import useSubject from "../hooks/use-subject";
 import settings from "../services/settings";
+import useSubject from "../hooks/use-subject";
 
 export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);

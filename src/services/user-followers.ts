@@ -3,10 +3,10 @@ import { NostrQuery } from "../types/nostr-query";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import db from "./db";
-import { BehaviorSubject } from "rxjs";
 import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
 import clientRelaysService from "./client-relays";
+import { Subject } from "../classes/subject";
 
 const subscription = new NostrMultiSubscription([], undefined, "user-followers");
 const subjects = new PubkeySubjectCache<string[]>();
@@ -14,7 +14,7 @@ const forceRequestedKeys = new Set<string>();
 
 export type UserFollowers = Set<string>;
 
-function mergeNext(subject: BehaviorSubject<string[] | null>, next: string[]) {
+function mergeNext(subject: Subject<string[] | null>, next: string[]) {
   let arr = subject.value ? Array.from(subject.value) : [];
   for (const key of next) {
     if (!arr.includes(key)) arr.push(key);
@@ -28,9 +28,9 @@ function requestFollowers(pubkey: string, additionalRelays: string[] = [], alway
 
   if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
 
-  // db.getAllKeysFromIndex("userContacts", "contacts", pubkey).then((cached) => {
-  //   mergeNext(subject, cached);
-  // });
+  db.getAllKeysFromIndex("userFollows", "follows", pubkey).then((cached) => {
+    mergeNext(subject, cached);
+  });
 
   if (alwaysRequest) forceRequestedKeys.add(pubkey);
 
@@ -77,6 +77,8 @@ function receiveEvent(event: NostrEvent) {
       forceRequestedKeys.delete(pubkey);
     }
   }
+
+  db.put("userFollows", { pubkey: event.pubkey, follows: refs.pubkeys });
 }
 
 subscription.onEvent.subscribe((event) => {

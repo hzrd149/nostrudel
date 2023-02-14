@@ -1,14 +1,14 @@
-import { BehaviorSubject } from "rxjs";
 import { getReferences } from "../helpers/nostr-event";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
+import Subject, { PersistentSubject } from "./subject";
 
 export class ThreadLoader {
-  loading = new BehaviorSubject(false);
-  focusId = new BehaviorSubject("");
-  rootId = new BehaviorSubject("");
-  events = new BehaviorSubject<Record<string, NostrEvent>>({});
+  loading = new PersistentSubject(false);
+  focusId = new PersistentSubject<string>("");
+  rootId = new PersistentSubject<string>("");
+  events = new PersistentSubject<Record<string, NostrEvent>>({});
 
   private relays: string[];
   private subscription: NostrMultiSubscription;
@@ -92,7 +92,7 @@ export class ThreadLoader {
   }
 
   open() {
-    if (!this.loading.value && this.events.value[this.focusId.value]) {
+    if (!this.loading.value && this.focusId.value && this.events.value[this.focusId.value]) {
       this.loadEvent();
     }
     this.updateSubscription();

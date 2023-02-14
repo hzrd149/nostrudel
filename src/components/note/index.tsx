@@ -8,8 +8,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
 import { NoteContents } from "./note-contents";
 import { NoteMenu } from "./note-menu";
-import useSubject from "../../hooks/use-subject";
-import identity from "../../services/identity";
+import identityService from "../../services/identity";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
@@ -21,6 +20,7 @@ import { buildReply } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 import { convertTimestampToDate } from "../../helpers/date";
+import useSubject from "../../hooks/use-subject";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -31,7 +31,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const readonly = useReadonlyMode();
   const { openModal } = useContext(PostModalContext);
 
-  const pubkey = useSubject(identity.pubkey);
+  const pubkey = useSubject(identityService.pubkey) ?? "";
   const contacts = useUserContacts(pubkey);
   const following = contacts?.contacts || [];
 

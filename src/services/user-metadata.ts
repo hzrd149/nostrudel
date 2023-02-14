@@ -1,9 +1,9 @@
 import db from "./db";
 import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { NostrEvent } from "../types/nostr-event";
-import { BehaviorSubject } from "rxjs";
 import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
 import { SuperMap } from "../classes/super-map";
+import Subject from "../classes/subject";
 
 class UserMetadataService extends CachedPubkeyEventRequester {
   constructor() {
@@ -17,19 +17,13 @@ class UserMetadataService extends CachedPubkeyEventRequester {
     return db.put("userMetadata", event);
   }
 
-  // TODO: rxjs behavior subject dose not feel like the right thing to use here
-  private parsedSubjects = new SuperMap<string, BehaviorSubject<Kind0ParsedContent | undefined>>(
-    () => new BehaviorSubject<Kind0ParsedContent | undefined>(undefined)
-  );
-  private parsedConnected = new WeakSet<any>();
+  private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>(() => new Subject<Kind0ParsedContent>());
   requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.parsedSubjects.get(pubkey);
 
     const requestSub = this.requestEvent(pubkey, relays, alwaysRequest);
-    if (!this.parsedConnected.has(requestSub)) {
-      requestSub.subscribe((event) => event && sub.next(parseKind0Event(event)));
-      this.parsedConnected.add(requestSub);
-    }
+
+    sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
 
     return sub;
   }

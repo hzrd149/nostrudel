@@ -1,12 +1,12 @@
-import { BehaviorSubject } from "rxjs";
+import { PersistentSubject } from "../classes/subject";
 import db from "./db";
 import { SavedIdentity } from "./identity";
 
 const settings = {
-  identity: new BehaviorSubject<SavedIdentity | null>(null),
-  blurImages: new BehaviorSubject(true),
-  autoShowMedia: new BehaviorSubject(true),
-  proxyUserMedia: new BehaviorSubject(false),
+  identity: new PersistentSubject<SavedIdentity | null>(null),
+  blurImages: new PersistentSubject(true),
+  autoShowMedia: new PersistentSubject(true),
+  proxyUserMedia: new PersistentSubject(false),
 };
 
 async function loadSettings() {
@@ -18,7 +18,6 @@ async function loadSettings() {
     if (value !== undefined) subject.next(value);
 
     // save
-    // @ts-ignore
     subject.subscribe((newValue) => {
       if (loading) return;
       db.put("settings", newValue, key);

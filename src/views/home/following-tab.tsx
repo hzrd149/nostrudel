@@ -3,19 +3,19 @@ import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import identity from "../../services/identity";
+import identityService from "../../services/identity";
 import { AddIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useSubject from "../../hooks/use-subject";
 
 export const FollowingTab = () => {
   const readonly = useReadonlyMode();
-  const pubkey = useSubject(identity.pubkey);
+  const pubkey = useSubject(identityService.pubkey) ?? "";
   const relays = useReadRelayUrls();
   const { openModal } = useContext(PostModalContext);
   const contacts = useUserContacts(pubkey);

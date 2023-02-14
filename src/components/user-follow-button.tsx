@@ -8,7 +8,7 @@ export const UserFollowButton = ({
   ...props
 }: { pubkey: string } & Omit<ButtonProps, "onClick" | "isLoading" | "isDisabled">) => {
   const readonly = useReadonlyMode();
-  const following = useSubject(clientFollowingService.following);
+  const following = useSubject(clientFollowingService.following) ?? [];
   const savingDraft = useSubject(clientFollowingService.savingDraft);
 
   const isFollowing = following.some((t) => t[1] === pubkey);
