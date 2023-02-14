@@ -24,22 +24,25 @@ import NotificationsView from "./views/notifications";
 import { RelaysView } from "./views/relays";
 import useSubject from "./hooks/use-subject";
 import { LoginNip05View } from "./views/login/nip05";
+import { Spinner } from "@chakra-ui/react";
 
-const RequireSetup = ({ children }: { children: JSX.Element }) => {
+const RequireAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
-  const setup = useSubject(accountService.setup);
+  const loading = useSubject(accountService.loading);
+  const account = useSubject(accountService.current);
 
-  if (!setup) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  if (loading) return <Spinner />;
+  if (!account) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
   return children;
 };
 
 const RootPage = () => (
-  <RequireSetup>
+  <RequireAccount>
     <Page>
       <Outlet />
     </Page>
-  </RequireSetup>
+  </RequireAccount>
 );
 
 const router = createBrowserRouter([

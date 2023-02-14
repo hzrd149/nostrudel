@@ -23,27 +23,26 @@ class ClientRelayService {
 
   constructor() {
     let lastSubject: Subject<UserRelays> | undefined;
-    accountService.pubkey.subscribe((pubkey) => {
-      // clear the relay list until a new one can be fetched
-      // this.relays.next([]);
+    accountService.current.subscribe((account) => {
+      this.relays.next([]);
+
+      if (!account) return;
+
+      if (account.relays) {
+        this.bootstrapRelays.clear();
+        for (const relay of account.relays) {
+          this.bootstrapRelays.add(relay);
+        }
+      }
 
       if (lastSubject) {
         lastSubject.unsubscribe(this.handleRelayChanged, this);
         lastSubject = undefined;
       }
 
-      lastSubject = userRelaysService.requestRelays(pubkey, Array.from(this.bootstrapRelays), true);
+      lastSubject = userRelaysService.requestRelays(account.pubkey, Array.from(this.bootstrapRelays), true);
 
       lastSubject.subscribe(this.handleRelayChanged, this);
-    });
-
-    // add preset relays fromm nip07 extension to bootstrap list
-    accountService.relays.subscribe((presetRelays) => {
-      for (const [url, opts] of Object.entries(presetRelays)) {
-        if (opts.read) {
-          clientRelaysService.bootstrapRelays.add(url);
-        }
-      }
     });
 
     this.relays.subscribe((relays) => this.writeRelays.next(relays.filter((r) => r.mode & RelayMode.WRITE)));

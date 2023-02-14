@@ -1,6 +1,7 @@
 import { Avatar, Button, Flex, FormControl, FormLabel, Input, SkeletonText, Textarea } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
@@ -60,8 +61,8 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const pubkey = useSubject(accountService.pubkey) ?? "";
-  const metadata = useUserMetadata(pubkey);
+  const account = useCurrentAccount();
+  const metadata = useUserMetadata(account.pubkey);
 
   const defaultValues = useMemo<FormData>(
     () => ({

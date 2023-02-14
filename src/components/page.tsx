@@ -13,16 +13,15 @@ import { PostModalProvider } from "../providers/post-modal-provider";
 import { useReadonlyMode } from "../hooks/use-readonly-mode";
 import { ProfileButton } from "./profile-button";
 import { UserAvatarLink } from "./user-avatar-link";
-import useSubject from "../hooks/use-subject";
+import { useCurrentAccount } from "../hooks/use-current-account";
 
 const MobileProfileHeader = () => {
-  const pubkey = useSubject(accountService.pubkey) ?? "";
-  const readonly = useReadonlyMode();
+  const account = useCurrentAccount();
 
   return (
     <Flex justifyContent="space-between" padding="2" alignItems="center">
-      <UserAvatarLink pubkey={pubkey} size="sm" />
-      {readonly && (
+      <UserAvatarLink pubkey={account.pubkey} size="sm" />
+      {account.readonly && (
         <Button
           colorScheme="red"
           textAlign="center"

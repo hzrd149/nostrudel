@@ -20,7 +20,10 @@ export const LoginNpubView = () => {
       return toast({ status: "error", title: "Invalid npub" });
     }
 
-    accountService.loginWithPubkey(pubkey);
+    if (!accountService.hasAccount(pubkey)) {
+      accountService.addAccount(pubkey, [relayUrl], true);
+    }
+    accountService.switchAccount(pubkey);
 
     clientRelaysService.bootstrapRelays.add(relayUrl);
   };

@@ -4,10 +4,10 @@ import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 
 export const LoginView = () => {
-  const setup = useSubject(accountService.setup);
+  const current = useSubject(accountService.current);
   const location = useLocation();
 
-  if (setup) return <Navigate to={location.state?.from ?? "/"} replace />;
+  if (current) return <Navigate to={location.state?.from ?? "/"} replace />;
 
   return (
     <Flex direction="column" alignItems="center" justifyContent="center" gap="4" height="80%" px="4">

@@ -8,7 +8,6 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 
 import { NoteContents } from "./note-contents";
 import { NoteMenu } from "./note-menu";
-import accountService from "../../services/account";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
@@ -18,9 +17,8 @@ import { ReplyIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
-import { useReadonlyMode } from "../../hooks/use-readonly-mode";
 import { convertTimestampToDate } from "../../helpers/date";
-import useSubject from "../../hooks/use-subject";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -28,11 +26,10 @@ export type NoteProps = {
 };
 export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const isMobile = useIsMobile();
-  const readonly = useReadonlyMode();
+  const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
 
-  const pubkey = useSubject(accountService.pubkey) ?? "";
-  const contacts = useUserContacts(pubkey);
+  const contacts = useUserContacts(account.pubkey);
   const following = contacts?.contacts || [];
 
   const reply = () => openModal(buildReply(event));
@@ -63,7 +60,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           aria-label="Reply"
           onClick={reply}
           size="xs"
-          isDisabled={readonly}
+          isDisabled={account.readonly}
         />
         <Box flexGrow={1} />
         <UserTipButton pubkey={event.pubkey} size="xs" />

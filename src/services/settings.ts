@@ -1,12 +1,12 @@
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
-import { SavedIdentity } from "./account";
+import { Account } from "./account";
 
 const settings = {
-  identity: new PersistentSubject<SavedIdentity | null>(null),
   blurImages: new PersistentSubject(true),
   autoShowMedia: new PersistentSubject(true),
   proxyUserMedia: new PersistentSubject(false),
+  accounts: new PersistentSubject<Account[]>([]),
 };
 
 async function loadSettings() {
@@ -15,6 +15,7 @@ async function loadSettings() {
   // load
   for (const [key, subject] of Object.entries(settings)) {
     const value = await db.get("settings", key);
+    // @ts-ignore
     if (value !== undefined) subject.next(value);
 
     // save

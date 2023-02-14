@@ -29,19 +29,20 @@ function handleNewContacts(contacts: UserContacts | undefined) {
 
 let sub: Subject<UserContacts> | undefined;
 function updateSub() {
+  const pubkey = accountService.current.value?.pubkey;
   if (sub) {
     sub.unsubscribe(handleNewContacts);
     sub = undefined;
   }
 
-  if (accountService.pubkey.value) {
-    sub = userContactsService.requestContacts(accountService.pubkey.value, clientRelaysService.getReadUrls(), true);
+  if (pubkey) {
+    sub = userContactsService.requestContacts(pubkey, clientRelaysService.getReadUrls(), true);
 
     sub.subscribe(handleNewContacts);
   }
 }
 
-accountService.pubkey.subscribe(() => {
+accountService.current.subscribe(() => {
   // clear the following list until a new one can be fetched
   following.next([]);
 

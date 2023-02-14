@@ -6,9 +6,8 @@ import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { convertTimestampToDate } from "../../helpers/date";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import accountService from "../../services/account";
 import { NostrEvent } from "../../types/nostr-event";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => {
@@ -39,12 +38,12 @@ const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
 
 const NotificationsView = () => {
   const readRelays = useReadRelayUrls();
-  const pubkey = useSubject(accountService.pubkey) ?? "";
+  const account = useCurrentAccount();
   const { events, loading, loadMore } = useTimelineLoader(
     "notifications",
     readRelays,
     {
-      "#p": [pubkey],
+      "#p": [account.pubkey],
       kinds: [1],
       since: moment().subtract(1, "day").unix(),
     },
@@ -53,7 +52,7 @@ const NotificationsView = () => {
 
   const timeline = events
     // ignore events made my the user
-    .filter((e) => e.pubkey !== pubkey);
+    .filter((e) => e.pubkey !== account.pubkey);
 
   return (
     <Flex direction="column" overflowX="hidden" overflowY="auto" gap="2">

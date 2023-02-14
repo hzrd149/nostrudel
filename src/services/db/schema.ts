@@ -1,5 +1,6 @@
 import { DBSchema } from "idb";
 import { NostrEvent } from "../../types/nostr-event";
+import { Account } from "../account";
 import { RelayInformationDocument } from "../relay-info";
 
 export interface CustomSchema extends DBSchema {
@@ -37,5 +38,9 @@ export interface CustomSchema extends DBSchema {
   settings: {
     key: string;
     value: any;
+  };
+  accounts: {
+    key: string;
+    value: Account;
   };
 }

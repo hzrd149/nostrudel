@@ -1,6 +1,6 @@
 import relayPoolService from "../services/relay-pool";
 import { NostrEvent } from "../types/nostr-event";
-import Deferred from "./deferred";
+import createDefer from "./deferred";
 import { IncomingCommandResult, Relay } from "./relay";
 import { ListenerFn, Subject } from "./subject";
 
@@ -8,7 +8,7 @@ export type PostResult = { url: string; message?: string; status: boolean };
 
 export function nostrPostAction(relays: string[], event: NostrEvent, timeout: number = 5000) {
   const subject = new Subject<PostResult>();
-  const onComplete = new Deferred<void>();
+  const onComplete = createDefer<void>();
   const remaining = new Map<Relay, ListenerFn<IncomingCommandResult>>();
 
   for (const url of relays) {

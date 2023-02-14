@@ -64,16 +64,21 @@ export const LoginNip05View = () => {
       return toast({ status: "error", title: "No relay selected" });
     }
 
-    accountService.loginWithPubkey(pubkey);
+    // add the account if it dose not exist
+    if (!accountService.hasAccount(pubkey)) {
+      const bootstrapRelays = new Set<string>();
 
-    if (relayUrl) {
-      clientRelaysService.bootstrapRelays.add(relayUrl);
-    }
-    if (relays) {
-      for (const url of relays) {
-        clientRelaysService.bootstrapRelays.add(url);
+      if (relayUrl) bootstrapRelays.add(relayUrl);
+      if (relays) {
+        for (const url of relays) {
+          bootstrapRelays.add(url);
+        }
       }
+
+      accountService.addAccount(pubkey, Array.from(bootstrapRelays), true);
     }
+
+    accountService.switchAccount(pubkey);
   };
 
   const renderInputIcon = () => {

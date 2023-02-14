@@ -1,83 +1,59 @@
-import { PersistentSubject, Subject } from "../classes/subject";
-import settings from "./settings";
+import { PersistentSubject } from "../classes/subject";
+import db from "./db";
 
-export type PresetRelays = Record<string, { read: boolean; write: boolean }>;
-
-export type SavedIdentity = {
+export type Account = {
   pubkey: string;
-  secKey?: string;
-  useExtension: boolean;
+  readonly: boolean;
+  relays?: string[];
 };
 
 class AccountService {
-  loading = new PersistentSubject(false);
-  setup = new PersistentSubject(false);
-  pubkey = new Subject<string>();
-  readonly = new PersistentSubject(false);
-  // directory of relays provided by nip07 extension
-  relays = new Subject<PresetRelays>({});
-  private useExtension: boolean = false;
-  private secKey: string | undefined = undefined;
+  loading = new PersistentSubject(true);
+  accounts = new PersistentSubject<Account[]>([]);
+  current = new PersistentSubject<Account | null>(null);
 
   constructor() {
-    settings.identity.subscribe((savedIdentity) => {
-      this.loading.next(false);
-      if (savedIdentity) {
-        this.setup.next(true);
-        this.pubkey.next(savedIdentity.pubkey);
-        this.readonly.next(false);
-        this.secKey = savedIdentity.secKey;
-        this.useExtension = savedIdentity.useExtension;
-      } else {
-        this.setup.next(false);
-        this.pubkey.next("");
-        this.readonly.next(false);
-        this.secKey = undefined;
-        this.useExtension = false;
+    db.getAll("accounts").then((accounts) => {
+      this.accounts.next(accounts);
+
+      const lastAccount = localStorage.getItem("lastAccount");
+      if (lastAccount && this.hasAccount(lastAccount)) {
+        this.switchAccount(lastAccount);
       }
+
+      this.loading.next(false);
     });
   }
 
-  async loginWithExtension() {
-    if (window.nostr) {
-      try {
-        this.loading.next(true);
-        const pubkey = await window.nostr.getPublicKey();
-        const relays = await window.nostr.getRelays();
+  hasAccount(pubkey: string) {
+    return this.accounts.value.some((acc) => acc.pubkey === pubkey);
+  }
+  addAccount(pubkey: string, relays?: string[], readonly = false) {
+    const account: Account = { pubkey, relays, readonly };
+    this.accounts.next(this.accounts.value.concat(account));
 
-        if (Array.isArray(relays)) {
-          this.relays.next(relays.reduce<PresetRelays>((d, r) => ({ ...d, [r]: { read: true, write: true } }), {}));
-        } else {
-          this.relays.next(relays);
-        }
+    db.put("accounts", account);
+  }
+  removeAccount(pubkey: string) {
+    this.accounts.next(this.accounts.value.filter((acc) => acc.pubkey !== pubkey));
 
-        settings.identity.next({
-          pubkey,
-          useExtension: true,
-        });
-      } catch (e) {
-        this.loading.next(false);
-      }
-    }
+    db.delete("accounts", pubkey);
   }
 
-  // loginWithSecKey(secKey: string) {
-  // const pubkey =
-  // settings.identity.next({
-  //   pubkey,
-  //   useExtension: true,
-  // });
-  // }
-
-  loginWithPubkey(pubkey: string) {
-    this.readonly.next(true);
-    this.pubkey.next(pubkey);
-    this.setup.next(true);
-    this.loading.next(false);
+  switchAccount(pubkey: string) {
+    const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
+    if (account) {
+      this.current.next(account);
+      localStorage.setItem("lastAccount", pubkey);
+    }
+  }
+  switchToTemporary(account: Account) {
+    this.current.next(account);
   }
 
   logout() {
-    settings.identity.next(null);
+    this.current.next(null);
+    localStorage.removeItem("lastAccount");
   }
 }
 

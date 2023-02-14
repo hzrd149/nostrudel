@@ -27,6 +27,7 @@ import { CopyIconButton } from "../../components/copy-icon-button";
 import accountService from "../../services/account";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { useAppTitle } from "../../hooks/use-app-title";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -39,6 +40,7 @@ const tabs = [
 const UserView = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const account = useCurrentAccount();
   const { pubkey } = useLoaderData() as { pubkey: string };
 
   const matches = useMatches();
@@ -48,7 +50,7 @@ const UserView = () => {
 
   const metadata = useUserMetadata(pubkey, [], true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
-  const isSelf = pubkey === accountService.pubkey.value;
+  const isSelf = pubkey === account.pubkey;
 
   useAppTitle(getUserDisplayName(metadata, npub ?? pubkey));
 

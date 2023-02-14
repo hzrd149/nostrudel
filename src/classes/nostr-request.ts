@@ -3,7 +3,7 @@ import { NostrQuery } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
 import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
 import Subject from "./subject";
-import Deferred from "./deferred";
+import createDefer from "./deferred";
 
 let lastId = 0;
 
@@ -19,7 +19,7 @@ export class NostrRequest {
   relayCleanup = new Map<Relay, Function>();
   state = NostrRequest.IDLE;
   onEvent = new Subject<NostrEvent>();
-  onComplete = new Deferred<void>();
+  onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
   constructor(relayUrls: string[], timeout?: number) {

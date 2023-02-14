@@ -1,14 +1,13 @@
 import { Box, LinkBox, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import accountService from "../services/account";
 import { UserAvatar } from "./user-avatar";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { normalizeToBech32 } from "../helpers/nip-19";
 import { truncatedId } from "../helpers/nostr-event";
-import useSubject from "../hooks/use-subject";
+import { useCurrentAccount } from "../hooks/use-current-account";
 
 export const ProfileButton = () => {
-  const pubkey = useSubject(accountService.pubkey) ?? "";
+  const { pubkey } = useCurrentAccount();
   const metadata = useUserMetadata(pubkey);
 
   return (

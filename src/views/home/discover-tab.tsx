@@ -3,13 +3,11 @@ import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Note } from "../../components/note";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import accountService from "../../services/account";
-import userContactsService from "../../services/user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 
 function useExtendedContacts(pubkey: string) {
   const readRelays = useReadRelayUrls();
@@ -41,10 +39,10 @@ function useExtendedContacts(pubkey: string) {
 
 export const DiscoverTab = () => {
   useAppTitle("discover");
-  const pubkey = useSubject(accountService.pubkey) ?? "";
+  const account = useCurrentAccount();
   const relays = useReadRelayUrls();
 
-  const contactsOfContacts = useExtendedContacts(pubkey);
+  const contactsOfContacts = useExtendedContacts(account.pubkey);
   const { events, loading, loadMore } = useTimelineLoader(
     `discover`,
     relays,
