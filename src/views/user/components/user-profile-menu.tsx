@@ -12,9 +12,10 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
   const metadata = useUserMetadata(pubkey);
 
   const loginAsUser = () => {
-    if (confirm(`Do you want to logout and login as ${getUserDisplayName(metadata, pubkey)}?`)) {
-      accountService.switchToTemporary({ pubkey, readonly: true });
+    if (!accountService.hasAccount(pubkey)) {
+      accountService.addAccount(pubkey, [], true);
     }
+    accountService.switchAccount(pubkey);
   };
 
   return (
