@@ -24,25 +24,38 @@ import NotificationsView from "./views/notifications";
 import { RelaysView } from "./views/relays";
 import useSubject from "./hooks/use-subject";
 import { LoginNip05View } from "./views/login/nip05";
-import { Spinner } from "@chakra-ui/react";
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
+import { deleteDatabase } from "./services/db";
 
-const RequireAccount = ({ children }: { children: JSX.Element }) => {
+const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
   const loading = useSubject(accountService.loading);
   const account = useSubject(accountService.current);
 
-  if (loading) return <Spinner />;
+  if (loading) {
+    return (
+      <Flex alignItems="center" height="100%" gap="4" direction="column">
+        <Flex gap="4" grow="1" alignItems="center">
+          <Spinner />
+          <Text>Loading Accounts</Text>
+        </Flex>
+        <Button variant="link" margin="4" onClick={() => deleteDatabase()}>
+          Stuck loading? clear cache
+        </Button>
+      </Flex>
+    );
+  }
   if (!account) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
 
   return children;
 };
 
 const RootPage = () => (
-  <RequireAccount>
+  <RequireCurrentAccount>
     <Page>
       <Outlet />
     </Page>
-  </RequireAccount>
+  </RequireCurrentAccount>
 );
 
 const router = createBrowserRouter([
