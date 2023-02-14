@@ -2,7 +2,7 @@ import moment from "moment";
 import db from "./db";
 
 function parseAddress(address: string): { name?: string; domain?: string } {
-  const parts = address.split("@");
+  const parts = address.toLowerCase().split("@");
   return { name: parts[0], domain: parts[1] };
 }
 
