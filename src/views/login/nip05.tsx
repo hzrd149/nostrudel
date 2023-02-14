@@ -91,7 +91,7 @@ export const LoginNip05View = () => {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="400">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350">
       <FormControl>
         <FormLabel>Enter user NIP-05 id</FormLabel>
         <InputGroup>

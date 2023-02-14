@@ -10,8 +10,17 @@ export const LoginView = () => {
   if (current) return <Navigate to={location.state?.from ?? "/"} replace />;
 
   return (
-    <Flex direction="column" alignItems="center" justifyContent="center" gap="4" height="80%" px="4">
-      <Avatar src="/apple-touch-icon.png" size="lg" />
+    <Flex
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      gap="4"
+      height="100%"
+      padding="4"
+      overflowX="hidden"
+      overflowY="auto"
+    >
+      <Avatar src="/apple-touch-icon.png" size="lg" flexShrink={0} />
       <Heading>noStrudel</Heading>
       <Outlet />
     </Flex>

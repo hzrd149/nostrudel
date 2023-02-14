@@ -19,6 +19,7 @@ import settings from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
 import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
+import { LogoutIcon } from "../../components/icons";
 
 export const SettingsView = () => {
   const blurImages = useSubject(settings.blurImages);
@@ -171,7 +172,9 @@ export const SettingsView = () => {
         </AccordionItem>
       </Accordion>
       <Flex gap="2" padding="4">
-        <Button onClick={() => accountService.logout()}>Logout</Button>
+        <Button leftIcon={<LogoutIcon />} onClick={() => accountService.logout()}>
+          Logout
+        </Button>
       </Flex>
     </Flex>
   );

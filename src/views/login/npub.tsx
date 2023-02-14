@@ -29,7 +29,7 @@ export const LoginNpubView = () => {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="400">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350">
       <FormControl>
         <FormLabel>Enter user npub</FormLabel>
         <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
