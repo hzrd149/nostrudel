@@ -29,15 +29,7 @@ function AccountItem({ pubkey }: { pubkey: string }) {
   };
 
   return (
-    <Box
-      display="flex"
-      gap="4"
-      alignItems="center"
-      overflow="hidden"
-      padding="2"
-      cursor="pointer"
-      onClick={handleClick}
-    >
+    <Box display="flex" gap="4" alignItems="center" cursor="pointer" onClick={handleClick}>
       <UserAvatar pubkey={pubkey} size="sm" />
       <Text flex={1} mr="4" overflow="hidden">
         {getUserDisplayName(metadata, pubkey)}
@@ -63,11 +55,11 @@ export function AccountSwitcherList() {
   const otherAccounts = accounts.filter((acc) => acc.pubkey !== current?.pubkey);
 
   return (
-    <Flex gap="2" direction="column">
+    <Flex gap="2" direction="column" padding="2">
       {otherAccounts.map((account) => (
         <AccountItem key={account.pubkey} pubkey={account.pubkey} />
       ))}
-      <Button size="sm" mx="2" mb="2" leftIcon={<AddIcon />}>
+      <Button size="sm" leftIcon={<AddIcon />}>
         Add Account
       </Button>
     </Flex>
