@@ -1,11 +1,11 @@
-import { Box, Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
-import { AddIcon } from "../../../components/icons";
 import { UserAvatar } from "../../../components/user-avatar";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
 
 export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) => {
   const metadata = useUserMetadata(pubkey);
@@ -17,10 +17,12 @@ export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) 
         <Box>
           <Link as={ReactRouterLink} to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
             <Heading size="sm">{getUserDisplayName(metadata, pubkey)}</Heading>
+            <Text>
+              <UserDnsIdentityIcon pubkey={pubkey} />
+            </Text>
           </Link>
           {relay && <Text>{relay}</Text>}
         </Box>
-        <IconButton size="sm" icon={<AddIcon />} aria-label="Follow user" title="Follow" ml="auto" />
       </Flex>
     </Box>
   );
