@@ -127,20 +127,23 @@ const embeds: EmbedType[] = [
   // Spotify
   // note12xt2pjpwp6gec95p4cw0qzecy764f8wzgcl3z2ufkrkne4t5d2zse3ze78
   {
-    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album)\/(\w+)[^\s]*/im,
-    render: (match) => (
-      <iframe
-        style={{ borderRadius: "12px" }}
-        width="100%"
-        height={match[1] === "album" ? 400 : 152}
-        title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
-        frameBorder="0"
-        allowFullScreen
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
-      ></iframe>
-    ),
+    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album|playlist)\/(\w+)[^\s]*/im,
+    render: (match) => {
+      const isList = match[1] === "album" || match[1] === "playlist";
+      return (
+        <iframe
+          style={{ borderRadius: "12px" }}
+          width="100%"
+          height={isList ? 400 : 152}
+          title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
+        ></iframe>
+      );
+    },
     name: "Spotify",
     isMedia: true,
   },
