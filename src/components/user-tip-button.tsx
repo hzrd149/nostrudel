@@ -10,10 +10,17 @@ export const UserTipButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ic
   const toast = useToast();
   if (!metadata) return null;
 
-  let lnurl = metadata.lud06;
-  if (metadata.lud16 && !lnurl) {
-    const parts = metadata.lud16.split("@");
-    lnurl = encodeText("lnurl", `https://${parts[1]}/.well-known/lnurlp/${parts[0]}`);
+  // use lud06 and lud16 fields interchangeably
+  let lnurl = metadata.lud06 || metadata.lud16;
+  if (lnurl && lnurl.includes("@")) {
+    //if its a lightning address convert it to a lnurl
+    const parts = lnurl.split("@");
+    if (parts[0] && parts[1]) {
+      lnurl = encodeText("lnurl", `https://${parts[1]}/.well-known/lnurlp/${parts[0]}`);
+    } else {
+      // failed to parse it. something is wrong...
+      lnurl = undefined;
+    }
   }
 
   if (!lnurl) return null;
@@ -32,7 +39,13 @@ export const UserTipButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ic
           status: "success",
           duration: 1000,
         });
-      } catch (e) {}
+      } catch (e: any) {
+        toast({
+          status: "error",
+          description: e?.message,
+          isClosable: true,
+        });
+      }
     } else {
       window.open(`lnurl:${lnurl}`);
     }

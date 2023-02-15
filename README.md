@@ -52,10 +52,10 @@
 
 ## TODO
 
+- Create a "event posting" service that can show modals (for qr code scanning), warnings (signed by wrong pubkey), and results (what relays responded) when posting events.
+- Create notifications service that keeps track of read notifications. (show unread count in sidenav)
 - Rebuild relays view to show relay info and settings NIP-11
-- add button for creating lightning invoice via WebLN
-- allow user to select relay or following list when fetching replies (default to my relays + following?)
-  - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
+- use `nostr-tools` to allow user to generate and use nsec keys for login.
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 - Add note embeds
 - Add "repost" button that mentions the note
@@ -66,6 +66,8 @@
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
 - implement NIP-56 and blocking
 - block notes based on content
+- allow user to select relay or following list when fetching replies (default to my relays + following?)
+  - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
 
 ## Setup
 
