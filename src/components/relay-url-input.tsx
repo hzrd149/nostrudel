@@ -6,9 +6,9 @@ export type RelayUrlInputProps = Omit<InputProps, "type">;
 
 export const RelayUrlInput = ({ ...props }: RelayUrlInputProps) => {
   const { value: relaysJson, loading: loadingRelaysJson } = useAsync(async () =>
-    fetch("/relays.json").then((res) => res.json() as Promise<{ relays: string[] }>)
+    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
   );
-  const relaySuggestions = relaysJson?.relays ? unique(relaysJson?.relays) : [];
+  const relaySuggestions = unique(relaysJson ?? []);
 
   return (
     <>

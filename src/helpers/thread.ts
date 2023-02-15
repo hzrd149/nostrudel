@@ -39,7 +39,7 @@ export function linkEvents(events: NostrEvent[]) {
 
     reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
 
-    reply.replies.sort((a, b) => a.event.created_at - b.event.created_at);
+    reply.replies.sort((a, b) => b.event.created_at - a.event.created_at);
   }
 
   return replies;
