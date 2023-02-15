@@ -2,7 +2,7 @@ import moment from "moment";
 import db from "./db";
 
 function parseAddress(address: string): { name?: string; domain?: string } {
-  const parts = address.toLowerCase().split("@");
+  const parts = address.trim().toLowerCase().split("@");
   return { name: parts[0], domain: parts[1] };
 }
 
@@ -33,10 +33,25 @@ async function fetchAllIdentities(domain: string) {
 
 async function fetchIdentity(address: string) {
   const { name, domain } = parseAddress(address);
-  if (!name || !domain) return undefined;
-  const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`).then(
-    (res) => res.json() as Promise<IdentityJson>
-  );
+  if (!name || !domain) throw new Error("invalid address");
+  const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
+    .then((res) => res.json() as Promise<IdentityJson>)
+    .then((json) => {
+      // convert all keys in names, and relays to lower case
+      if (json.names) {
+        for (const [name, pubkey] of Object.entries(json.names)) {
+          delete json.names[name];
+          json.names[name.toLowerCase()] = pubkey;
+        }
+      }
+      if (json.relays) {
+        for (const [name, pubkey] of Object.entries(json.relays)) {
+          delete json.relays[name];
+          json.relays[name.toLowerCase()] = pubkey;
+        }
+      }
+      return json;
+    });
 
   await addToCache(domain, json);
 
