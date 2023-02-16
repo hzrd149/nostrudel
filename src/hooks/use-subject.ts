@@ -7,6 +7,7 @@ function useSubject<Value extends unknown>(subject: Subject<Value>) {
   const [value, setValue] = useState(subject.value);
   useEffect(() => {
     const handler = (value: Value) => setValue(value);
+    setValue(subject.value);
     subject.subscribe(handler);
 
     return () => {
