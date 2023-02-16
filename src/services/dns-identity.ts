@@ -82,7 +82,7 @@ async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
     "dnsIdentifiers",
     "updated",
-    IDBKeyRange.upperBound(moment().subtract(1, "hour").unix())
+    IDBKeyRange.upperBound(moment().subtract(1, "day").unix())
   );
 
   for (const pubkey of keys) {

@@ -16,11 +16,13 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
 
   const loginAsUser = () => {
     const readRelays = userRelays?.relays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
-    accountService.addAccount({
-      pubkey,
-      relays: readRelays,
-      readonly: true,
-    });
+    if (!accountService.hasAccount(pubkey)) {
+      accountService.addAccount({
+        pubkey,
+        relays: readRelays,
+        readonly: true,
+      });
+    }
     accountService.switchAccount(pubkey);
   };
 

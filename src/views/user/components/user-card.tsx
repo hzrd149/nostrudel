@@ -17,10 +17,8 @@ export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) 
         <Box>
           <Link as={ReactRouterLink} to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
             <Heading size="sm">{getUserDisplayName(metadata, pubkey)}</Heading>
-            <Text>
-              <UserDnsIdentityIcon pubkey={pubkey} />
-            </Text>
           </Link>
+          <UserDnsIdentityIcon pubkey={pubkey} />
           {relay && <Text>{relay}</Text>}
         </Box>
       </Flex>

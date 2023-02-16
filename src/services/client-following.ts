@@ -5,6 +5,7 @@ import { DraftNostrEvent, PTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
 import accountService from "./account";
 import userContactsService, { UserContacts } from "./user-contacts";
+import signingService from "./signing";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -73,18 +74,16 @@ async function savePending() {
   const draft = pendingDraft.value;
   if (!draft) return;
 
-  if (window.nostr) {
-    savingDraft.next(true);
-    const event = await window.nostr.signEvent(draft);
+  savingDraft.next(true);
+  const event = await signingService.requestSignature(draft);
 
-    const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
-    await results.onComplete;
+  const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
+  await results.onComplete;
 
-    savingDraft.next(false);
+  savingDraft.next(false);
 
-    // pass new event to contact list service
-    userContactsService.handleEvent(event);
-  }
+  // pass new event to contact list service
+  userContactsService.handleEvent(event);
 }
 
 function addContact(pubkey: string, relay?: string) {

@@ -26,7 +26,7 @@ export const LoginStartView = () => {
             relays = Object.keys(extRelays).filter((url) => extRelays[url].read);
           }
 
-          accountService.addAccount({ pubkey, relays });
+          accountService.addAccount({ pubkey, relays, useExtension: true });
         }
 
         accountService.switchAccount(pubkey);

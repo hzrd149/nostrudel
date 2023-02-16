@@ -16,6 +16,7 @@ import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
 import { getReferences } from "../../helpers/nostr-event";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
+import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import { PostResults } from "./post-results";
@@ -39,6 +40,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const isMobile = useIsMobile();
   const pad = isMobile ? "2" : "4";
 
+  const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
   const [waiting, setWaiting] = useState(false);
   const [signedEvent, setSignedEvent] = useState<NostrEvent | null>(null);
@@ -50,19 +52,17 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   };
 
   const handleSubmit = async () => {
-    if (window.nostr) {
-      setWaiting(true);
-      const updatedDraft: DraftNostrEvent = { ...draft, created_at: moment().unix() };
-      const event = await window.nostr.signEvent(updatedDraft);
-      setWaiting(false);
-      setSignedEvent(event);
+    setWaiting(true);
+    const updatedDraft: DraftNostrEvent = { ...draft, created_at: moment().unix() };
+    const event = await requestSignature(updatedDraft);
+    setWaiting(false);
+    if (!event) return;
+    setSignedEvent(event);
 
-      const { results } = nostrPostAction(writeRelays, event);
-
-      results.subscribe((result) => {
-        resultsActions.push(result);
-      });
-    }
+    const { results } = nostrPostAction(writeRelays, event);
+    results.subscribe((result) => {
+      resultsActions.push(result);
+    });
   };
 
   const refs = getReferences(draft);

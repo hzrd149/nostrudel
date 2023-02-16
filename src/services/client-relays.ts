@@ -6,6 +6,7 @@ import accountService from "./account";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import userRelaysService, { UserRelays } from "./user-relays";
 import { PersistentSubject, Subject } from "../classes/subject";
+import signingService from "./signing";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -77,15 +78,13 @@ class ClientRelayService {
     const oldRelayUrls = this.relays.value.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
     const writeUrls = unique([...oldRelayUrls, ...newRelayUrls]);
 
-    if (window.nostr) {
-      const event = await window.nostr.signEvent(draft);
+    const event = await signingService.requestSignature(draft);
 
-      const results = nostrPostAction(writeUrls, event);
-      await results.onComplete;
+    const results = nostrPostAction(writeUrls, event);
+    await results.onComplete;
 
-      // pass new event to the user relay service
-      userRelaysService.handleEvent(event);
-    }
+    // pass new event to the user relay service
+    userRelaysService.handleEvent(event);
   }
 
   getWriteUrls() {
