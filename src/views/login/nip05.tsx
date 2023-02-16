@@ -73,7 +73,7 @@ export const LoginNip05View = () => {
         }
       }
 
-      accountService.addAccount(pubkey, Array.from(bootstrapRelays), true);
+      accountService.addAccount({ pubkey, relays: Array.from(bootstrapRelays), readonly: true });
     }
 
     accountService.switchAccount(pubkey);

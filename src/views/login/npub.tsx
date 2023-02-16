@@ -21,7 +21,7 @@ export const LoginNpubView = () => {
     }
 
     if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount(pubkey, [relayUrl], true);
+      accountService.addAccount({ pubkey, relays: [relayUrl], readonly: true });
     }
     accountService.switchAccount(pubkey);
 

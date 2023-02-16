@@ -6,15 +6,21 @@ import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
+import { useUserRelays } from "../../../hooks/use-user-relays";
+import { RelayMode } from "../../../classes/relay";
 
 export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<MenuIconButtonProps, "children">) => {
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
   const metadata = useUserMetadata(pubkey);
+  const userRelays = useUserRelays(pubkey);
 
   const loginAsUser = () => {
-    if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount(pubkey, [], true);
-    }
+    const readRelays = userRelays?.relays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
+    accountService.addAccount({
+      pubkey,
+      relays: readRelays,
+      readonly: true,
+    });
     accountService.switchAccount(pubkey);
   };
 

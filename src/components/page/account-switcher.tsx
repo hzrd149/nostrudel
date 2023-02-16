@@ -59,7 +59,7 @@ export function AccountSwitcherList() {
       {otherAccounts.map((account) => (
         <AccountItem key={account.pubkey} pubkey={account.pubkey} />
       ))}
-      <Button size="sm" leftIcon={<AddIcon />}>
+      <Button size="sm" leftIcon={<AddIcon />} onClick={() => accountService.logout()}>
         Add Account
       </Button>
     </Flex>

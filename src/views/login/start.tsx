@@ -26,7 +26,7 @@ export const LoginStartView = () => {
             relays = Object.keys(extRelays).filter((url) => extRelays[url].read);
           }
 
-          accountService.addAccount(pubkey, relays, false);
+          accountService.addAccount({ pubkey, relays });
         }
 
         accountService.switchAccount(pubkey);
@@ -50,7 +50,8 @@ export const LoginStartView = () => {
         Use browser extension
       </Button>
       <Button onClick={() => navigate("./nip05")}>Login with Nip-05 Id</Button>
-      <Button onClick={() => navigate("./npub")}>Login with npub</Button>
+      <Button onClick={() => navigate("./npub")}>Login with pubkey key (npub)</Button>
+      <Button onClick={() => navigate("./nsec")}>Login with secret key (nsec)</Button>
       {accounts.length > 0 && (
         <>
           <Heading size="md" mt="4">

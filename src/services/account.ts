@@ -3,8 +3,10 @@ import db from "./db";
 
 export type Account = {
   pubkey: string;
-  readonly: boolean;
+  readonly?: boolean;
   relays?: string[];
+  secKey?: string;
+  useExtension?: boolean;
 };
 
 class AccountService {
@@ -28,9 +30,14 @@ class AccountService {
   hasAccount(pubkey: string) {
     return this.accounts.value.some((acc) => acc.pubkey === pubkey);
   }
-  addAccount(pubkey: string, relays?: string[], readonly = false) {
-    const account: Account = { pubkey, relays, readonly };
-    this.accounts.next(this.accounts.value.concat(account));
+  addAccount(account: Account) {
+    if (this.hasAccount(account.pubkey)) {
+      // replace account
+      this.accounts.next(this.accounts.value.map((acc) => (acc.pubkey === account.pubkey ? account : acc)));
+    } else {
+      // add account
+      this.accounts.next(this.accounts.value.concat(account));
+    }
 
     db.put("accounts", account);
   }
