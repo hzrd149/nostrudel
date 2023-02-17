@@ -22,6 +22,7 @@ import { Bech32Prefix, normalizeToBech32, normalizeToHex } from "../../helpers/n
 import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
+import signingService from "../../services/signing";
 
 export const LoginNsecView = () => {
   const navigate = useNavigate();
@@ -66,13 +67,14 @@ export const LoginNsecView = () => {
     [setInputValue, setHexKey, setNpub, setError]
   );
 
-  const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLDivElement> = async (e) => {
     e.preventDefault();
 
     if (!hexKey) return;
     const pubkey = getPublicKey(hexKey);
 
-    accountService.addAccount({ pubkey, relays: [relayUrl], secKey: hexKey });
+    const encrypted = await signingService.encryptSecKey(hexKey);
+    accountService.addAccount({ pubkey, relays: [relayUrl], ...encrypted });
     clientRelaysService.bootstrapRelays.add(relayUrl);
     accountService.switchAccount(pubkey);
   };

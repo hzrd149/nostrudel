@@ -5,7 +5,8 @@ export type Account = {
   pubkey: string;
   readonly?: boolean;
   relays?: string[];
-  secKey?: string;
+  secKey?: ArrayBuffer;
+  iv?: Uint8Array;
   useExtension?: boolean;
 };
 

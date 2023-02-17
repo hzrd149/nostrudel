@@ -75,7 +75,9 @@ async function savePending() {
   if (!draft) return;
 
   savingDraft.next(true);
-  const event = await signingService.requestSignature(draft);
+  const current = accountService.current.value;
+  if (!current) throw new Error("no account");
+  const event = await signingService.requestSignature(draft, current);
 
   const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
   await results.onComplete;

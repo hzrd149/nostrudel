@@ -1,5 +1,7 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useCallback, useContext, useMemo } from "react";
+import useSubject from "../hooks/use-subject";
+import accountService from "../services/account";
 import signingService from "../services/signing";
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 
@@ -19,11 +21,13 @@ export function useSigningContext() {
 
 export const SigningProvider = ({ children }: { children: React.ReactNode }) => {
   const toast = useToast();
+  const current = useSubject(accountService.current);
 
   const requestSignature = useCallback(
     async (draft: DraftNostrEvent) => {
       try {
-        return await signingService.requestSignature(draft);
+        if (!current) throw new Error("no account");
+        return await signingService.requestSignature(draft, current);
       } catch (e) {
         if (e instanceof Error) {
           toast({

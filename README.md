@@ -13,8 +13,8 @@
 - [x] Broadcast events
 - [x] User tipping
 - [x] Manage followers ( Contact List )
+- [x] Relay management
 - [ ] Profile management
-- [ ] Relay management
 - [ ] Image upload
 - [ ] Reactions
 - [ ] Dynamically connect to relays (start with one relay then connect to others as required)
@@ -48,6 +48,7 @@
 - [ ] [NIP-42](https://github.com/nostr-protocol/nips/blob/master/42.md): Authentication of clients to relays
 - [ ] [NIP-50](https://github.com/nostr-protocol/nips/blob/master/50.md): Keywords filter
 - [ ] [NIP-56](https://github.com/nostr-protocol/nips/blob/master/56.md): Reporting
+- [ ] [NIP-57](https://github.com/nostr-protocol/nips/blob/master/57.md): Lightning Zaps
 - [x] [NIP-65](https://github.com/nostr-protocol/nips/blob/master/65.md): Relay List Metadata
 
 ## TODO
@@ -55,7 +56,6 @@
 - Create a "event posting" service that can show modals (for qr code scanning), warnings (signed by wrong pubkey), and results (what relays responded) when posting events.
 - Create notifications service that keeps track of read notifications. (show unread count in sidenav)
 - Rebuild relays view to show relay info and settings NIP-11
-- use `nostr-tools` to allow user to generate and use nsec keys for login.
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 - Add note embeds
 - Add "repost" button that mentions the note

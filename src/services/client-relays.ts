@@ -78,7 +78,9 @@ class ClientRelayService {
     const oldRelayUrls = this.relays.value.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
     const writeUrls = unique([...oldRelayUrls, ...newRelayUrls]);
 
-    const event = await signingService.requestSignature(draft);
+    const current = accountService.current.value;
+    if (!current) throw new Error("no account");
+    const event = await signingService.requestSignature(draft, current);
 
     const results = nostrPostAction(writeUrls, event);
     await results.onComplete;
