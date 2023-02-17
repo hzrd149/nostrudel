@@ -1,9 +1,27 @@
 # noStrudel
 
+> NOTE: This client is still in development and is very buggy
+
+## noStrudel is my personal nostr client.
+
+My goals for this project is to learn as much as I can about nostr (by implementing everything myself) and to have a client that works exactly how I like.
+
+There are many features missing from this client and I wont get around to implementing everything (probably no DM support). but if you like the client you are welcome to use it.
+
+Live Instance: [nostrudel.ninja](https://nostrudel.ninja)
+
+You can find better clients with more features in the [awesome-nostr](https://github.com/aljazceru/awesome-nostr) repo.
+
+## Please dont trust my app with your nsec
+
+While logging in with a secret key is supported. please dont. Ultimatly this is a web client, so there is always a change of XXS attacks that could steal your secret key.
+
+I would recomend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x)
+
 ## Current Features
 
 - [x] Home feed
-- [x] Discovery Feed
+- [ ] Discovery Feed
 - [x] Dark theme
 - [x] Preview twitter / youtube links
 - [x] Lighting invoices
@@ -74,3 +92,7 @@
 ```bash
 yarn install && yarn start
 ```
+
+## Contributing
+
+For now this is only a personal project, and while im more than happy to fix any issues that are found. id like to spend as much time as posible inside of vscode and not responding to PRs or issues. So if you do want to open a PR please keep it small and dont rewrite the whole project :D
