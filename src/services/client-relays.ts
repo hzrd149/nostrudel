@@ -12,13 +12,7 @@ export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
 class ClientRelayService {
   bootstrapRelays = new Set<string>();
-  relays = new PersistentSubject<RelayConfig[]>([
-    //default relay list
-    { url: "wss://relay.damus.io", mode: RelayMode.READ },
-    { url: "wss://relay.snort.social", mode: RelayMode.READ },
-    { url: "wss://nos.lol", mode: RelayMode.READ },
-    { url: "wss://brb.io", mode: RelayMode.READ },
-  ]);
+  relays = new PersistentSubject<RelayConfig[]>([]);
   writeRelays = new PersistentSubject<RelayConfig[]>([]);
   readRelays = new PersistentSubject<RelayConfig[]>([]);
 

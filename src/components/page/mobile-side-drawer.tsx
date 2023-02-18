@@ -17,6 +17,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import { LogoutIcon, ProfileIcon, RelayIcon, SettingsIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
+import { UserLink } from "../user-link";
 import AccountSwitcher from "./account-switcher";
 
 export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "children">) {
@@ -32,13 +33,13 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
         <DrawerHeader>
           <Flex gap="2">
             <UserAvatar pubkey={account.pubkey} size="sm" />
-            <Text>{getUserDisplayName(metadata, account.pubkey)}</Text>
+            <UserLink pubkey={account.pubkey} />
           </Flex>
         </DrawerHeader>
         <DrawerBody padding={0} overflowY="auto" overflowX="hidden">
           <AccountSwitcher />
           <Flex direction="column" gap="2" padding="2">
-            <Button onClick={() => navigate(`/u/${account.pubkey}`)} leftIcon={<ProfileIcon />}>
+            <Button onClick={() => navigate(`/profile`)} leftIcon={<ProfileIcon />}>
               Profile
             </Button>
             <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
