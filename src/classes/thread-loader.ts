@@ -33,7 +33,7 @@ export class ThreadLoader {
 
       this.checkAndUpdateRoot();
 
-      request.cancel();
+      request.complete();
       this.loading.next(false);
     });
     request.start({ ids: [this.focusId.value] });
@@ -60,7 +60,7 @@ export class ThreadLoader {
       request.onEvent.subscribe((event) => {
         this.events.next({ ...this.events.value, [event.id]: event });
 
-        request.cancel();
+        request.complete();
       });
       request.start({ ids: [this.rootId.value] });
     }

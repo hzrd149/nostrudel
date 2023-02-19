@@ -14,10 +14,11 @@ import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
 import { normalizeToHex } from "../../helpers/nip-19";
-import { NostrEvent } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import settings from "../../services/settings";
 import styled from "@emotion/styled";
+import QuoteNote from "./quote-note";
 // import { ExternalLinkIcon } from "../icons";
 
 const BlurredImage = (props: ImageProps) => {
@@ -31,7 +32,7 @@ const BlurredImage = (props: ImageProps) => {
 
 type EmbedType = {
   regexp: RegExp;
-  render: (match: RegExpMatchArray, event?: NostrEvent, trusted?: boolean) => JSX.Element | string;
+  render: (match: RegExpMatchArray, event?: NostrEvent | DraftNostrEvent, trusted?: boolean) => JSX.Element | string;
   name?: string;
   isMedia: boolean;
 };
@@ -202,7 +203,7 @@ const embeds: EmbedType[] = [
           return key ? <UserLink color="blue.500" pubkey={key} showAt /> : match[0];
         case "note1":
           const noteId = normalizeToHex(match[1]);
-          return noteId ? <NoteLink noteId={noteId} /> : match[0];
+          return noteId ? <QuoteNote noteId={noteId} /> : match[0];
         default:
           return match[0];
       }
@@ -251,7 +252,11 @@ const MediaEmbed = ({ children, type }: { children: JSX.Element | string; type: 
   );
 };
 
-function embedContent(content: string, event?: NostrEvent, trusted: boolean = false): (string | JSX.Element)[] {
+function embedContent(
+  content: string,
+  event?: NostrEvent | DraftNostrEvent,
+  trusted: boolean = false
+): (string | JSX.Element)[] {
   for (const embedType of embeds) {
     const match = content.match(embedType.regexp);
 
@@ -278,7 +283,7 @@ const GradientOverlay = styled.div`
 `;
 
 export type NoteContentsProps = {
-  event: NostrEvent;
+  event: NostrEvent | DraftNostrEvent;
   trusted?: boolean;
   maxHeight?: number;
 };

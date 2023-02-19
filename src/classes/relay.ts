@@ -6,14 +6,17 @@ export type IncomingEvent = {
   type: "EVENT";
   subId: string;
   body: NostrEvent;
+  relay: Relay;
 };
 export type IncomingNotice = {
   type: "NOTICE";
   message: string;
+  relay: Relay;
 };
 export type IncomingEOSE = {
   type: "EOSE";
   subId: string;
+  relay: Relay;
 };
 // NIP-20
 export type IncomingCommandResult = {
@@ -21,6 +24,7 @@ export type IncomingCommandResult = {
   eventId: string;
   status: boolean;
   message?: string;
+  relay: Relay;
 };
 
 export enum RelayMode {
@@ -125,16 +129,16 @@ export class Relay {
 
       switch (type) {
         case "EVENT":
-          this.onEvent.next({ type, subId: data[1], body: data[2] });
+          this.onEvent.next({ relay: this, type, subId: data[1], body: data[2] });
           break;
         case "NOTICE":
-          this.onNotice.next({ type, message: data[1] });
+          this.onNotice.next({ relay: this, type, message: data[1] });
           break;
         case "EOSE":
-          this.onEOSE.next({ type, subId: data[1] });
+          this.onEOSE.next({ relay: this, type, subId: data[1] });
           break;
         case "OK":
-          this.onCommandResult.next({ type, eventId: data[1], status: data[2], message: data[3] });
+          this.onCommandResult.next({ relay: this, type, eventId: data[1], status: data[2], message: data[3] });
           break;
       }
     } catch (e) {

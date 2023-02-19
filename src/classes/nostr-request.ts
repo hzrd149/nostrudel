@@ -7,7 +7,7 @@ import createDefer from "./deferred";
 
 let lastId = 0;
 
-const REQUEST_DEFAULT_TIMEOUT = 1000 * 20;
+const REQUEST_DEFAULT_TIMEOUT = 1000 * 5;
 export class NostrRequest {
   static IDLE = "idle";
   static RUNNING = "running";
@@ -16,7 +16,6 @@ export class NostrRequest {
   id: string;
   timeout: number;
   relays: Set<Relay>;
-  relayCleanup = new Map<Relay, Function>();
   state = NostrRequest.IDLE;
   onEvent = new Subject<NostrEvent>();
   onComplete = createDefer<void>();
@@ -27,75 +26,63 @@ export class NostrRequest {
     this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {
-      const handleEOSE = (event: IncomingEOSE) => {
-        if (event.subId === this.id) {
-          this.handleEndOfEvents(relay);
-        }
-      };
-      relay.onEOSE.subscribe(handleEOSE);
-
-      const handleEvent = (event: IncomingEvent) => {
-        if (this.state === NostrRequest.RUNNING && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
-          this.onEvent.next(event.body);
-          this.seenEvents.add(event.body.id);
-        }
-      };
-      relay.onEvent.subscribe(handleEvent);
-
-      this.relayCleanup.set(relay, () => {
-        relay.onEOSE.unsubscribe(handleEOSE);
-        relay.onEvent.unsubscribe(handleEvent);
-      });
+      relay.onEOSE.subscribe(this.handleEOSE, this);
+      relay.onEvent.subscribe(this.handleEvent, this);
     }
 
     this.timeout = timeout ?? REQUEST_DEFAULT_TIMEOUT;
   }
 
-  handleEndOfEvents(relay: Relay) {
-    this.relays.delete(relay);
-    relay.send(["CLOSE", this.id]);
+  handleEOSE(eose: IncomingEOSE) {
+    if (eose.subId === this.id) {
+      const relay = eose.relay;
+      this.relays.delete(relay);
+      relay.send(["CLOSE", this.id]);
 
-    const cleanup = this.relayCleanup.get(relay);
-    if (cleanup) cleanup();
+      relay.onEOSE.unsubscribe(this.handleEOSE, this);
+      relay.onEvent.unsubscribe(this.handleEvent, this);
 
-    if (this.relays.size === 0) {
-      this.state = NostrRequest.COMPLETE;
-      this.onComplete.resolve();
+      if (this.relays.size === 0) {
+        this.state = NostrRequest.COMPLETE;
+        this.onComplete.resolve();
+      }
+    }
+  }
+  handleEvent(incomingEvent: IncomingEvent) {
+    if (
+      this.state === NostrRequest.RUNNING &&
+      incomingEvent.subId === this.id &&
+      !this.seenEvents.has(incomingEvent.body.id)
+    ) {
+      this.onEvent.next(incomingEvent.body);
+      this.seenEvents.add(incomingEvent.body.id);
     }
   }
 
   start(query: NostrQuery) {
-    if (this.state !== NostrRequest.IDLE) return this;
+    if (this.state !== NostrRequest.IDLE) {
+      throw new Error("cant restart a nostr request");
+    }
 
     this.state = NostrRequest.RUNNING;
     for (const relay of this.relays) {
       relay.send(["REQ", this.id, query]);
     }
 
-    setTimeout(() => {
-      console.log(`NostrRequest: ${this.id} timed out`);
-      this.cancel();
-    }, this.timeout);
-
-    console.log(`NostrRequest: ${this.id} started`);
+    setTimeout(() => this.complete(), this.timeout);
 
     return this;
   }
-  cancel() {
-    if (this.state !== NostrRequest.COMPLETE) return this;
+  complete() {
+    if (this.state === NostrRequest.COMPLETE) return this;
 
     this.state = NostrRequest.COMPLETE;
     for (const relay of this.relays) {
       relay.send(["CLOSE", this.id]);
+      relay.onEOSE.unsubscribe(this.handleEOSE, this);
+      relay.onEvent.unsubscribe(this.handleEvent, this);
     }
-    for (const [relay, cleanup] of this.relayCleanup) {
-      if (cleanup) cleanup();
-    }
-    this.relayCleanup = new Map();
-    this.relays = new Set();
     this.onComplete.resolve();
-
-    console.log(`NostrRequest: ${this.id} complete`);
 
     return this;
   }

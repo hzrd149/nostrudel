@@ -22,6 +22,8 @@ const FollowingSideNav = () => {
 export const Page = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
 
+  console.log(isMobile);
+
   return (
     <Container
       size="lg"

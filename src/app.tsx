@@ -13,7 +13,6 @@ import { GlobalTab } from "./views/home/global-tab";
 import { normalizeToHex } from "./helpers/nip-19";
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
-import UserRepliesTab from "./views/user/replies";
 import UserFollowersTab from "./views/user/followers";
 import UserRelaysTab from "./views/user/relays";
 import UserFollowingTab from "./views/user/following";
@@ -86,7 +85,6 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <UserNotesTab /> },
           { path: "notes", element: <UserNotesTab /> },
-          { path: "replies", element: <UserRepliesTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },

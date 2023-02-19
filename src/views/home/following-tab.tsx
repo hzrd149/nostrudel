@@ -24,7 +24,7 @@ export const FollowingTab = () => {
 
   const following = contacts?.contacts || [];
   const { events, loading, loadMore } = useTimelineLoader(
-    `following-posts`,
+    `${account.pubkey}-following-posts`,
     relays,
     { authors: following, kinds: [1], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }

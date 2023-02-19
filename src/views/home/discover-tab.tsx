@@ -73,7 +73,7 @@ export const DiscoverTab = () => {
   }, [discover]);
 
   const { events, loading, loadMore } = useTimelineLoader(
-    `discover`,
+    `${account.pubkey}-discover`,
     relays,
     { authors: throttledPubkeys, kinds: [1], since: moment().subtract(1, "hour").unix() },
     { pageSize: moment.duration(1, "hour").asSeconds(), enabled: throttledPubkeys.length > 0 }

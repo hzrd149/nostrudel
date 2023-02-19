@@ -19,7 +19,8 @@ export class TimelineLoader {
   events = new PersistentSubject<NostrEvent[]>([]);
   loading = new PersistentSubject(false);
   page = new PersistentSubject(0);
-  private seenEvents = new Set<string>();
+
+  private eventDir = new Map<string, NostrEvent>();
   private subscription: NostrMultiSubscription;
   private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds() };
 
@@ -48,9 +49,9 @@ export class TimelineLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    if (!this.seenEvents.has(event.id)) {
-      this.events.next(this.events.value.concat(event).sort((a, b) => b.created_at - a.created_at));
-      this.seenEvents.add(event.id);
+    if (!this.eventDir.has(event.id)) {
+      this.eventDir.set(event.id, event);
+      this.events.next(Array.from(this.eventDir.values()).sort((a, b) => b.created_at - a.created_at));
       if (this.loading.value) this.loading.next(false);
     }
   }
@@ -69,7 +70,7 @@ export class TimelineLoader {
   loadMore() {
     if (this.loading.value) return;
 
-    const query = { ...this.query, ...this.getPageDates(this.page.value ?? 0) };
+    const query = { ...this.query, ...this.getPageDates(this.page.value) };
     const request = new NostrRequest(this.relays);
     request.onEvent.subscribe(this.handleEvent, this);
     request.onComplete.then(() => {
@@ -78,12 +79,12 @@ export class TimelineLoader {
     request.start(query);
 
     this.loading.next(true);
-    this.page.next(this.page.value ?? 0 + 1);
+    this.page.next(this.page.value + 1);
   }
 
   forgetEvents() {
     this.events.next([]);
-    this.seenEvents.clear();
+    this.eventDir.clear();
     this.subscription.forgetEvents();
   }
   open() {

@@ -8,6 +8,7 @@ import {
   Button,
   Textarea,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -19,6 +20,7 @@ import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
+import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
 
 function emptyDraft(): DraftNostrEvent {
@@ -37,14 +39,12 @@ type PostModalProps = {
 };
 
 export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => {
-  const isMobile = useIsMobile();
-  const pad = isMobile ? "2" : "4";
-
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
   const [waiting, setWaiting] = useState(false);
   const [signedEvent, setSignedEvent] = useState<NostrEvent | null>(null);
   const [results, resultsActions] = useList<PostResult>();
+  const { isOpen: showPreview, onToggle: togglePreview } = useDisclosure();
   const [draft, setDraft] = useState<DraftNostrEvent>(() => Object.assign(emptyDraft(), initialDraft));
 
   const handleContentChange: React.ChangeEventHandler<HTMLTextAreaElement> = (event) => {
@@ -71,32 +71,27 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
 
   const renderContent = () => {
     if (signedEvent) {
-      return (
-        <ModalBody padding="4">
-          <PostResults event={signedEvent} results={results} onClose={onClose} />
-        </ModalBody>
-      );
+      return <PostResults event={signedEvent} results={results} onClose={onClose} />;
     }
     return (
       <>
-        <ModalBody pr={pad} pl={pad}>
-          {refs.replyId && (
-            <Text mb="2">
-              Replying to: <NoteLink noteId={refs.replyId} />
-            </Text>
-          )}
+        {refs.replyId && (
+          <Text mb="2">
+            Replying to: <NoteLink noteId={refs.replyId} />
+          </Text>
+        )}
+        {showPreview ? (
+          <NoteContents event={draft} trusted />
+        ) : (
           <Textarea autoFocus mb="2" value={draft.content} onChange={handleContentChange} rows={5} />
-        </ModalBody>
-        <ModalFooter pr={pad} pl={pad} pb={pad} pt="0">
-          <Flex gap="2" alignItems="center">
-            <Button onClick={onClose} isDisabled={waiting} ml="auto">
-              Cancel
-            </Button>
-            <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>
-              Post
-            </Button>
-          </Flex>
-        </ModalFooter>
+        )}
+        <Flex gap="2" alignItems="center" justifyContent="flex-end">
+          {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
+          <Button onClick={onClose}>Cancel</Button>
+          <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>
+            Post
+          </Button>
+        </Flex>
       </>
     );
   };
@@ -104,7 +99,9 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
-      <ModalContent>{renderContent()}</ModalContent>
+      <ModalContent>
+        <ModalBody padding="4">{renderContent()}</ModalBody>
+      </ModalContent>
     </Modal>
   );
 };
