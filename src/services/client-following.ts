@@ -85,7 +85,7 @@ async function savePending() {
   savingDraft.next(false);
 
   // pass new event to contact list service
-  userContactsService.handleEvent(event);
+  userContactsService.receiveEvent(event);
 }
 
 function addContact(pubkey: string, relay?: string) {

@@ -1,40 +1,62 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Note } from "../../components/note";
-import { useUserContacts } from "../../hooks/use-user-contacts";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isNote } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import userContactsService, { UserContacts } from "../../services/user-contacts";
+import { PersistentSubject } from "../../classes/subject";
+import useSubject from "../../hooks/use-subject";
+import { useThrottle } from "react-use";
 
-function useExtendedContacts(pubkey: string) {
-  const readRelays = useReadRelayUrls();
-  const [extendedContacts, setExtendedContacts] = useState<string[]>([]);
-  const contacts = useUserContacts(pubkey);
+class DiscoverContacts {
+  pubkey: string;
+  relays: string[];
+  pubkeys = new PersistentSubject<string[]>([]);
 
-  // useEffect(() => {
-  //   if (contacts) {
-  //     const following = contacts.contacts;
-  //     const subject = contacts.contacts.map((contact) => userContactsService.requestContacts(contact, readRelays));
+  constructor(pubkey: string, relays: string[]) {
+    this.pubkey = pubkey;
+    this.relays = relays;
 
-  //     const rxSub = from(subject)
-  //       .pipe(mergeAll())
-  //       .subscribe((contacts) => {
-  //         if (contacts) {
-  //           setExtendedContacts((value) => {
-  //             const more = contacts.contacts.filter((key) => !following.includes(key));
-  //             return Array.from(new Set([...value, ...more]));
-  //           });
-  //         }
-  //       });
+    userContactsService.requestContacts(pubkey, relays).subscribe(this.handleContacts, this);
+  }
 
-  //     return () => rxSub.unsubscribe();
-  //   }
-  // }, [contacts, setExtendedContacts]);
+  private personalContacts: UserContacts | undefined;
+  handleContacts(contacts: UserContacts) {
+    if (contacts.pubkey === this.pubkey) {
+      this.personalContacts = contacts;
 
-  return extendedContacts;
+      // unsubscribe from old contacts
+      if (this.pubkeys.value.length > 0) {
+        for (const key of this.pubkeys.value) {
+          userContactsService.getSubject(key).unsubscribe(this.handleContacts, this);
+        }
+        this.pubkeys.next([]);
+      }
+
+      // request new contacts
+      for (const key of contacts.contacts) {
+        userContactsService.requestContacts(key, this.relays).subscribe(this.handleContacts, this);
+      }
+    } else {
+      // add the pubkeys to contacts
+      const keysToAdd = contacts.contacts.filter(
+        (key) =>
+          (!this.personalContacts || !this.personalContacts.contacts.includes(key)) && !this.pubkeys.value.includes(key)
+      );
+      this.pubkeys.next([...this.pubkeys.value, ...keysToAdd]);
+    }
+  }
+
+  cleanup() {
+    userContactsService.getSubject(this.pubkey).unsubscribe(this.handleContacts, this);
+    for (const key of this.pubkeys.value) {
+      userContactsService.getSubject(key).unsubscribe(this.handleContacts, this);
+    }
+  }
 }
 
 export const DiscoverTab = () => {
@@ -42,12 +64,19 @@ export const DiscoverTab = () => {
   const account = useCurrentAccount();
   const relays = useReadRelayUrls();
 
-  const contactsOfContacts = useExtendedContacts(account.pubkey);
+  const discover = useMemo(() => new DiscoverContacts(account.pubkey, relays), [account.pubkey, relays.join("|")]);
+  const pubkeys = useSubject(discover.pubkeys);
+  const throttledPubkeys = useThrottle(pubkeys, 1000);
+
+  useEffect(() => {
+    console.log(discover);
+  }, [discover]);
+
   const { events, loading, loadMore } = useTimelineLoader(
     `discover`,
     relays,
-    { authors: contactsOfContacts, kinds: [1], since: moment().subtract(1, "hour").unix() },
-    { pageSize: moment.duration(1, "hour").asSeconds(), enabled: contactsOfContacts.length > 0 }
+    { authors: throttledPubkeys, kinds: [1], since: moment().subtract(1, "hour").unix() },
+    { pageSize: moment.duration(1, "hour").asSeconds(), enabled: throttledPubkeys.length > 0 }
   );
 
   const timeline = events.filter(isNote);

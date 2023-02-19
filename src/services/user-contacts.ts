@@ -32,9 +32,13 @@ function parseContacts(event: NostrEvent): UserContacts {
   };
 }
 
-class UserContactsService extends CachedPubkeyEventRequester {
+class UserContactsService {
+  requester: CachedPubkeyEventRequester;
+
   constructor() {
-    super(3, "user-contacts");
+    this.requester = new CachedPubkeyEventRequester(3, "user-contacts");
+    this.requester.readCache = this.readCache;
+    this.requester.writeCache = this.writeCache;
   }
 
   readCache(pubkey: string) {
@@ -44,15 +48,26 @@ class UserContactsService extends CachedPubkeyEventRequester {
     return db.put("userContacts", event);
   }
 
-  private parsedSubjects = new SuperMap<string, Subject<UserContacts>>(() => new Subject<UserContacts>());
+  private subjects = new SuperMap<string, Subject<UserContacts>>(() => new Subject<UserContacts>());
+  getSubject(pubkey: string) {
+    return this.subjects.get(pubkey);
+  }
   requestContacts(pubkey: string, relays: string[], alwaysRequest = false) {
-    const sub = this.parsedSubjects.get(pubkey);
+    const sub = this.subjects.get(pubkey);
 
-    const requestSub = this.requestEvent(pubkey, relays, alwaysRequest);
+    const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
 
     sub.connectWithHandler(requestSub, (event, next) => next(parseContacts(event)));
 
     return sub;
+  }
+
+  receiveEvent(event: NostrEvent) {
+    this.requester.handleEvent(event);
+  }
+
+  update() {
+    this.requester.update();
   }
 }
 
