@@ -222,7 +222,7 @@ const embeds: EmbedType[] = [
           return <UserLink color="blue.500" pubkey={tag[1]} showAt />;
         }
         if (tag[0] === "e" && tag[1]) {
-          return <NoteLink color="blue.500" noteId={tag[1]} />;
+          return <QuoteNote noteId={tag[1]} relay={tag[2]} />;
         }
       }
 
