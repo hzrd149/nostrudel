@@ -6,7 +6,7 @@ import accountService from "../services/account";
 import { Kind } from "nostr-tools";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
+  return event.tags.filter(isETag).some((tag) => tag[3] !== "mention");
 }
 
 export function isNote(event: NostrEvent | DraftNostrEvent) {
@@ -96,7 +96,7 @@ export function buildShare(event: NostrEvent): DraftNostrEvent {
   tags.push(["p", event.pubkey]);
 
   return {
-    kind: Kind.Reaction,
+    kind: Kind.Text,
     // TODO: be smarter about picking relay
     tags,
     content: "#[0]",
