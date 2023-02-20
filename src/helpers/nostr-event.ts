@@ -6,7 +6,7 @@ import accountService from "../services/account";
 import { Kind } from "nostr-tools";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  return event.tags.filter(isETag).some((tag) => tag[3] !== "mention");
+  return !!getReferences(event).replyId;
 }
 
 export function isNote(event: NostrEvent | DraftNostrEvent) {
@@ -22,8 +22,9 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
   const pTags = event.tags.filter(isPTag);
 
-  const events = eTags.map((t) => t[1]);
-  const pubkeys = pTags.map((t) => t[1]);
+  const eventTags = eTags.map((t) => t[1]);
+  const pubkeyTags = pTags.map((t) => t[1]);
+  const contentTagRefs = Array.from(event.content.matchAll(/#\[(\d+)\]/gi)).map((m) => parseInt(m[1]));
 
   let replyId = eTags.find((t) => t[3] === "reply")?.[1];
   let rootId = eTags.find((t) => t[3] === "root")?.[1];
@@ -39,7 +40,13 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
 
   // legacy behavior
   // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-  const legacyTags = eTags.filter((t) => !t[3]);
+  const legacyTags = eTags.filter((t, i) => {
+    // ignore it if there is a third piece of data
+    if (t[3]) return false;
+    const tagIndex = event.tags.indexOf(t);
+    if (contentTagRefs.includes(tagIndex)) return false;
+    return true;
+  });
   if (!rootId && !replyId && legacyTags.length >= 1) {
     // console.info(`Using legacy threading behavior for ${event.id}`, event);
 
@@ -50,10 +57,11 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   }
 
   return {
-    pubkeys,
-    events,
+    pubkeyTags,
+    eventTags,
     rootId,
     replyId,
+    contentTagRefs,
   };
 }
 
