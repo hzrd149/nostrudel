@@ -44,6 +44,8 @@ const ZapNote = ({ zapEvent }: { zapEvent: NostrEvent }) => {
     );
   } catch (e) {
     if (e instanceof Error) {
+      console.log(e);
+
       return <ErrorFallback error={e} resetErrorBoundary={() => {}} />;
     }
     return null;
