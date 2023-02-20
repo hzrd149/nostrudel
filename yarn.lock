@@ -3483,10 +3483,10 @@ node-releases@^2.0.6:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.8.tgz#0f349cdc8fcfa39a92ac0be9bc48b7706292b9ae"
   integrity sha512-dFSmB8fFHEH/s81Xi+Y/15DQY6VHW81nXRj86EMSL3lmuTmK1e+aT4wrFCkTbm+gSwkw4KpX+rT/pMM2c1mF+A==
 
-nostr-tools@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.4.1.tgz#9a8ba4ae7b23e78fa495b1b98b9b26992f41f791"
-  integrity sha512-pFAbVNtRMfW5ducUmk0f20IZv4a6pXYchBQKuA6D3x6sg83KoWipuiAie/gfOgrkoCsBLV14DmpWsVmo3N7WXQ==
+nostr-tools@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.5.0.tgz#b8b8d4d9e122c4acbdfe8b580e82f539f0866b42"
+  integrity sha512-9zZdS3OF1hC8Tzpx2ycFLFx0AYSXBkLZ5EaXcPWIdZlQgSkpDrHl/TUYk2E8K7OocK+3VNbo4+7K2N38qdCjsg==
   dependencies:
     "@noble/hashes" "1.0.0"
     "@noble/secp256k1" "^1.7.1"

@@ -21,7 +21,7 @@ import { RelayUrlInput } from "../../components/relay-url-input";
 import { Bech32Prefix, normalizeToBech32, normalizeToHex } from "../../helpers/nip-19";
 import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
-import { generatePrivateKey, getPublicKey } from "nostr-tools";
+import { generatePrivateKey, getPublicKey } from "nostr-tools/keys";
 import signingService from "../../services/signing";
 
 export const LoginNsecView = () => {

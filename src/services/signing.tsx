@@ -1,6 +1,7 @@
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
-import { signEvent, getEventHash, getPublicKey } from "nostr-tools";
+import { getPublicKey } from "nostr-tools/keys";
+import { signEvent, getEventHash } from "nostr-tools/event";
 import db from "./db";
 
 class SigningService {

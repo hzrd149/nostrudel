@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
 import { requestProvider } from "webln";
-import { getReadableAmount, parsePaymentRequest } from "../helpers/bolt11";
+import { readableAmountInSats, parsePaymentRequest } from "../helpers/bolt11";
 import { useAsync } from "react-use";
 import { ClipboardIcon } from "./icons";
 import moment from "moment";
@@ -62,7 +62,7 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
       <ButtonGroup>
         <IconButton icon={<ClipboardIcon />} title="Copy to clipboard" aria-label="copy invoice" variant="outline" />
         <Button as="a" variant="outline" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
-          ⚡ Pay {invoice.amount ? getReadableAmount(invoice.amount) : ""}
+          ⚡ Pay {invoice.amount ? readableAmountInSats(invoice.amount) : ""}
         </Button>
       </ButtonGroup>
     </Box>

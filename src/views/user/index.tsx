@@ -30,6 +30,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 
 const tabs = [
   { label: "Notes", path: "notes" },
+  { label: "Zaps", path: "zaps" },
   { label: "Followers", path: "followers" },
   { label: "Following", path: "following" },
   { label: "Relays", path: "relays" },

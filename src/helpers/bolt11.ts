@@ -32,7 +32,7 @@ export function parsePaymentRequest(paymentRequest: string): ParsedInvoice {
   };
 }
 
-export function getReadableAmount(amount: number) {
+export function readableAmountInSats(amount: number) {
   const amountInSats = amount / 1000;
   if (amountInSats > 1000000) {
     return `${amountInSats / 1000000}M sats`;

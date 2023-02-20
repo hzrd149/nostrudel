@@ -26,6 +26,7 @@ import { LoginNip05View } from "./views/login/nip05";
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import { deleteDatabase } from "./services/db";
 import { LoginNsecView } from "./views/login/nsec";
+import UserZapsTab from "./views/user/zaps";
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <UserNotesTab /> },
           { path: "notes", element: <UserNotesTab /> },
+          { path: "zaps", element: <UserZapsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },

@@ -47,7 +47,7 @@ const embeds: EmbedType[] = [
   },
   // Twitter tweet
   {
-    regexp: /^https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]*/im,
+    regexp: /https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]*/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
     name: "Tweet",
     isMedia: true,
