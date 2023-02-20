@@ -13,9 +13,9 @@ import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
-import { ReplyIcon } from "../icons";
+import { ReplyIcon, ShareIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
-import { buildReply } from "../../helpers/nostr-event";
+import { buildReply, buildShare } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -33,6 +33,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const following = contacts?.contacts || [];
 
   const reply = () => openModal(buildReply(event));
+  const share = () => openModal(buildShare(event));
 
   return (
     <Card variant="outline">
@@ -54,6 +55,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
         <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
       </CardBody>
       <CardFooter padding="2" display="flex" gap="2">
+        <UserTipButton pubkey={event.pubkey} eventId={event.id} size="xs" />
         <IconButton
           icon={<ReplyIcon />}
           title="Reply"
@@ -62,8 +64,15 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           size="xs"
           isDisabled={account.readonly}
         />
+        <IconButton
+          icon={<ShareIcon />}
+          onClick={share}
+          aria-label="Share Note"
+          title="Share Note"
+          size="xs"
+          isDisabled={account.readonly}
+        />
         <Box flexGrow={1} />
-        <UserTipButton pubkey={event.pubkey} size="xs" />
         <NoteRelays event={event} size="xs" />
         <NoteMenu event={event} />
       </CardFooter>

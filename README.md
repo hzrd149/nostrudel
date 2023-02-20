@@ -32,7 +32,7 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [x] User tipping
 - [x] Manage followers ( Contact List )
 - [x] Relay management
-- [ ] Profile management
+- [x] Profile management
 - [ ] Image upload
 - [ ] Reactions
 - [ ] Dynamically connect to relays (start with one relay then connect to others as required)
@@ -71,14 +71,13 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 
 ## TODO
 
+- Show reactions and zaps on notes
 - Create a "event posting" service that can show modals (for qr code scanning), warnings (signed by wrong pubkey), and results (what relays responded) when posting events.
 - Create notifications service that keeps track of read notifications. (show unread count in sidenav)
 - Rebuild relays view to show relay info and settings NIP-11
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
-- Add note embeds
-- Add "repost" button that mentions the note
 - Add preview tab to note modal
-- Add mentions in posts (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
+- Add mentions in notes (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
 - add `client` tag to published events
 - Save note drafts and let users manage them
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/

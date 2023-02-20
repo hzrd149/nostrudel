@@ -6,6 +6,7 @@ import useSubject from "../hooks/use-subject";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import clientFollowingService from "../services/client-following";
 import { UserAvatar } from "./user-avatar";
+import { UserDnsIdentityIcon } from "./user-dns-identity";
 
 const FollowingListItem = ({ pubkey }: { pubkey: string }) => {
   const metadata = useUserMetadata(pubkey);
@@ -20,6 +21,7 @@ const FollowingListItem = ({ pubkey }: { pubkey: string }) => {
       variant="outline"
       to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}
       justifyContent="flex-start"
+      rightIcon={<UserDnsIdentityIcon pubkey={pubkey} onlyIcon />}
     >
       {getUserDisplayName(metadata, pubkey)}
     </Button>

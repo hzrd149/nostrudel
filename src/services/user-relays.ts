@@ -32,7 +32,6 @@ class UserRelaysService extends CachedPubkeyEventRequester {
     return db.put("userRelays", event);
   }
 
-  // TODO: rxjs behavior subject dose not feel like the right thing to use here
   private parsedSubjects = new SuperMap<string, Subject<UserRelays>>(() => new Subject<UserRelays>());
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.parsedSubjects.get(pubkey);

@@ -54,6 +54,10 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const handleSubmit = async () => {
     setWaiting(true);
     const updatedDraft: DraftNostrEvent = { ...draft, created_at: moment().unix() };
+    // add client tag, TODO: find a better place for this
+    if (!updatedDraft.tags.some((t) => t[0] === "client")) {
+      updatedDraft.tags.push(["client", "noStrudel"]);
+    }
     const event = await requestSignature(updatedDraft);
     setWaiting(false);
     if (!event) return;

@@ -2,6 +2,8 @@ import moment from "moment";
 import { getEventRelays } from "../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag } from "../types/nostr-event";
 import { RelayConfig, RelayMode } from "../classes/relay";
+import accountService from "../services/account";
+import { Kind } from "nostr-tools";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return !!event.tags.find((tag) => isETag(tag) && tag[3] !== "mention");
@@ -55,7 +57,7 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export function buildReply(event: NostrEvent): DraftNostrEvent {
+export function buildReply(event: NostrEvent, account = accountService.current.value): DraftNostrEvent {
   const refs = getReferences(event);
   const relay = getEventRelays(event.id).value?.[0] ?? "";
 
@@ -70,17 +72,34 @@ export function buildReply(event: NostrEvent): DraftNostrEvent {
   }
   // add all ptags
   // TODO: omit my own pubkey
-  const ptags = event.tags.filter(isPTag);
+  const ptags = event.tags.filter(isPTag).filter((t) => !account || t[1] !== account.pubkey);
   tags.push(...ptags);
-  if (!ptags.find((t) => t[1] === event.pubkey)) {
+  // add the original authors pubkey if its not already there
+  if (!ptags.some((t) => t[1] === event.pubkey)) {
     tags.push(["p", event.pubkey]);
   }
 
   return {
-    kind: 1,
+    kind: Kind.Text,
     // TODO: be smarter about picking relay
     tags,
     content: "",
+    created_at: moment().unix(),
+  };
+}
+
+export function buildShare(event: NostrEvent): DraftNostrEvent {
+  const relay = getEventRelays(event.id).value?.[0] ?? "";
+
+  const tags: NostrEvent["tags"] = [];
+  tags.push(["e", event.id, relay, "mention"]);
+  tags.push(["p", event.pubkey]);
+
+  return {
+    kind: Kind.Reaction,
+    // TODO: be smarter about picking relay
+    tags,
+    content: "#[0]",
     created_at: moment().unix(),
   };
 }
