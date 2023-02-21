@@ -22,6 +22,7 @@ import { RelayConfig, RelayMode } from "../../classes/relay";
 import { useList } from "react-use";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import useSubject from "../../hooks/use-subject";
+import { RelayStatus } from "../../components/relay-status";
 
 export const RelaysView = () => {
   const relays = useSubject(clientRelaysService.relays);
@@ -71,6 +72,7 @@ export const RelaysView = () => {
           <Thead>
             <Tr>
               <Th>Url</Th>
+              <Th>Status</Th>
               <Th></Th>
             </Tr>
           </Thead>
@@ -82,6 +84,9 @@ export const RelaysView = () => {
                     <RelayFavicon size="xs" relay={relay.url} mr="2" />
                     <Text>{relay.url}</Text>
                   </Flex>
+                </Td>
+                <Td>
+                  <RelayStatus url={relay.url} />
                 </Td>
                 <Td isNumeric>
                   {pendingAdd.includes(relay) && (

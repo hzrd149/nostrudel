@@ -47,7 +47,8 @@ const embeds: EmbedType[] = [
   },
   // Twitter tweet
   {
-    regexp: /https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)[^\s]*/im,
+    regexp:
+      /https?:\/\/twitter\.com\/(?:\#!\/)?(\w+)\/status(es)?\/(\d+)(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/im,
     render: (match) => <TweetEmbed href={match[0]} conversation={false} />,
     name: "Tweet",
     isMedia: true,
@@ -96,7 +97,7 @@ const embeds: EmbedType[] = [
   },
   // Youtube Music
   {
-    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)[^\s]*/,
+    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
@@ -128,7 +129,8 @@ const embeds: EmbedType[] = [
   // Spotify
   // note12xt2pjpwp6gec95p4cw0qzecy764f8wzgcl3z2ufkrkne4t5d2zse3ze78
   {
-    regexp: /https?:\/\/open\.spotify\.com\/(track|episode|album|playlist)\/(\w+)[^\s]*/im,
+    regexp:
+      /https?:\/\/open\.spotify\.com\/(track|episode|album|playlist)\/(\w+)(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/im,
     render: (match) => {
       const isList = match[1] === "album" || match[1] === "playlist";
       return (
@@ -152,7 +154,7 @@ const embeds: EmbedType[] = [
   // note1tvqk2mu829yr6asf7w5dgpp8t0mlp2ax5t26ctfdx8m0ptkssamqsleeux
   // note1ygx9tec3af92704d92jwrj3zs7cws2jl29yvrlxzqlcdlykhwssqpupa7t
   {
-    regexp: /https?:\/\/music\.apple\.com\/[^\s]*/im,
+    regexp: /https?:\/\/music\.apple\.com(?:\/[\+~%\/\.\w\-_]*)?(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/,
     render: (match) => (
       <iframe
         allow="encrypted-media *; fullscreen *; clipboard-write"
@@ -167,8 +169,10 @@ const embeds: EmbedType[] = [
     isMedia: true,
   },
   // Image
+  // note1n06jceulg3gukw836ghd94p0ppwaz6u3mksnnz960d8vlcp2fnqsgx3fu9
   {
-    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(svg|gif|png|jpg|jpeg|webp|avif))[^\s]*/im,
+    regexp:
+      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:svg|gif|png|jpg|jpeg|webp|avif))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/,
     render: (match, event, trusted) => {
       const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
       return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
@@ -178,14 +182,18 @@ const embeds: EmbedType[] = [
   },
   // Video
   {
-    regexp: /(https?:\/\/)([\da-z\.-]+\.[a-z\.]{2,6})([\/\w\.-]+\.(mp4|mkv|webm|mov))[^\s]*/im,
+    regexp:
+      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:mp4|mkv|webm|mov))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/,
     render: (match) => <video src={match[0]} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />,
     name: "Video",
     isMedia: true,
   },
   // Link
+  // based on http://urlregex.com/
+  // note1c34vht0lu2qzrgr4az3u8jn5xl3fycr2gfpahkepthg7hzlqg26sr59amt
   {
-    regexp: /(https?:\/\/[^\s]*)/im,
+    regexp:
+      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?/,
     render: (match) => (
       <Link color="blue.500" href={match[0]} target="_blank" isExternal>
         {match[0]}

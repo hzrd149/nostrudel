@@ -35,7 +35,12 @@ class ClientRelayService {
         lastSubject = undefined;
       }
 
-      lastSubject = userRelaysService.requestRelays(account.pubkey, Array.from(this.bootstrapRelays), true);
+      // load the relays from cache or bootstrap relays
+      lastSubject = userRelaysService.requestRelays(account.pubkey, Array.from(this.bootstrapRelays));
+      setTimeout(() => {
+        // double check for new relay notes
+        userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), true);
+      }, 1000);
 
       lastSubject.subscribe(this.handleRelayChanged, this);
     });
