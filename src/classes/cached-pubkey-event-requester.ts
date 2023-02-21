@@ -9,7 +9,10 @@ export class CachedPubkeyEventRequester extends PubkeyEventRequester {
   async writeCache(pubkey: string, event: NostrEvent): Promise<any> {}
 
   handleEvent(event: NostrEvent) {
-    this.writeCache(event.pubkey, event);
+    const sub = this.getSubject(event.pubkey);
+    if (!sub.value || event.created_at > sub.value.created_at) {
+      this.writeCache(event.pubkey, event);
+    }
     super.handleEvent(event);
   }
 

@@ -64,6 +64,9 @@ const db = await openDB<CustomSchema>(dbName, version, {
 export async function clearCacheData() {
   await db.clear("userMetadata");
   await db.clear("userContacts");
+  await db.clear("userFollows");
+  await db.clear("userRelays");
+  await db.clear("relayInfo");
   await db.clear("dnsIdentifiers");
   await db.clear("pubkeyRelayWeights");
   window.location.reload();
