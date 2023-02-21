@@ -19,6 +19,7 @@ import { buildReply, buildShare } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import NoteReactions from "./note-reactions";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -72,6 +73,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           size="xs"
           isDisabled={account.readonly}
         />
+        <NoteReactions noteId={event.id} />
         <Box flexGrow={1} />
         <NoteRelays event={event} size="xs" />
         <NoteMenu event={event} />

@@ -27,6 +27,7 @@ import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import { deleteDatabase } from "./services/db";
 import { LoginNsecView } from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
+import PopularTab from "./views/home/popular";
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -125,6 +126,7 @@ const router = createBrowserRouter([
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
           { path: "discover", element: <DiscoverTab /> },
+          // { path: "popular", element: <PopularTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },

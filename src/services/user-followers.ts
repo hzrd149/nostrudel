@@ -7,6 +7,7 @@ import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
 import clientRelaysService from "./client-relays";
 import { Subject } from "../classes/subject";
+import { Kind } from "nostr-tools";
 
 const subscription = new NostrMultiSubscription([], undefined, "user-followers");
 const subjects = new PubkeySubjectCache<string[]>();
@@ -63,7 +64,7 @@ function flushRequests() {
 }
 
 function receiveEvent(event: NostrEvent) {
-  if (event.kind !== 3) return;
+  if (event.kind !== Kind.Contacts) return;
   const follower = event.pubkey;
 
   const refs = getReferences(event);

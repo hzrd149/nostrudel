@@ -68,10 +68,6 @@ export const DiscoverTab = () => {
   const pubkeys = useSubject(discover.pubkeys);
   const throttledPubkeys = useThrottle(pubkeys, 1000);
 
-  useEffect(() => {
-    console.log(discover);
-  }, [discover]);
-
   const { events, loading, loadMore } = useTimelineLoader(
     `${account.pubkey}-discover`,
     relays,

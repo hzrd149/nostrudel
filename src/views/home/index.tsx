@@ -4,6 +4,7 @@ import { Outlet, useMatches, useNavigate } from "react-router-dom";
 const tabs = [
   { label: "Following", path: "/following" },
   { label: "Discover", path: "/discover" },
+  // { label: "Popular", path: "/popular" },
   { label: "Global", path: "/global" },
 ];
 

@@ -22,8 +22,8 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
   const pTags = event.tags.filter(isPTag);
 
-  const eventTags = eTags.map((t) => t[1]);
-  const pubkeyTags = pTags.map((t) => t[1]);
+  const events = eTags.map((t) => t[1]);
+  const pubkeys = pTags.map((t) => t[1]);
   const contentTagRefs = Array.from(event.content.matchAll(/#\[(\d+)\]/gi)).map((m) => parseInt(m[1]));
 
   let replyId = eTags.find((t) => t[3] === "reply")?.[1];
@@ -57,8 +57,8 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   }
 
   return {
-    pubkeyTags,
-    eventTags,
+    pubkeys,
+    events,
     rootId,
     replyId,
     contentTagRefs,

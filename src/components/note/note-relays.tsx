@@ -13,7 +13,6 @@ import {
   PopoverFooter,
 } from "@chakra-ui/react";
 import { nostrPostAction } from "../../classes/nostr-post-action";
-import { NostrRequest } from "../../classes/nostr-request";
 import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayIcon, SearchIcon } from "../icons";
@@ -28,18 +27,7 @@ export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
 
 export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
   const eventRelays = useSubject(getEventRelays(event.id));
-  const readRelays = useReadRelayUrls();
   const writeRelays = useWriteRelayUrls();
-
-  const [querying, setQuerying] = useState(false);
-  const queryRelays = useCallback(() => {
-    setQuerying(true);
-    const request = new NostrRequest(readRelays);
-    request.start({ ids: [event.id] });
-    request.onComplete.then(() => {
-      setQuerying(false);
-    });
-  }, []);
 
   const [broadcasting, setBroadcasting] = useState(false);
   const broadcast = useCallback(() => {
@@ -77,9 +65,6 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
         </PopoverBody>
         <PopoverFooter>
           <Flex gap="2">
-            <Button size="xs" onClick={queryRelays} isLoading={querying} leftIcon={<SearchIcon />}>
-              Search
-            </Button>
             <Button size="xs" onClick={broadcast} isLoading={broadcasting} leftIcon={<RelayIcon />}>
               Broadcast
             </Button>
