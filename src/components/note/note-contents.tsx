@@ -64,7 +64,7 @@ const embeds: EmbedType[] = [
           // height="315"
           width="100%"
           height="100%"
-          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${match[1]}`}
+          src={`https://www.youtube.com/embed/videoseries?list=${match[1]}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -76,14 +76,15 @@ const embeds: EmbedType[] = [
     isMedia: true,
   },
   // Youtube Video
+  // note1ya94hd44g3m2x4gagcydkg28qcp924dd238vq5k4chly84mqt2wqnwgu6d
   // note1apu56y4h2ms5uwpzz209vychr309kllhq6wz46te84u9rus5x7kqj5f5n9
   {
     regexp:
-      /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/|shorts\/)?)([\w\-]+)(\S+)?/im,
+      /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/|shorts\/)?)([\w\-]+)(\S+)?/,
     render: (match) => (
       <AspectRatio ratio={16 / 10} maxWidth="30rem">
         <iframe
-          src={`https://www.youtube-nocookie.com/embed/${match[2]}`}
+          src={`https://www.youtube.com/embed/${match[2]}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
