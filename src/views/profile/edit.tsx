@@ -158,10 +158,11 @@ export const ProfileEditView = () => {
     try {
       const metadata: Kind0ParsedContent = {
         name: data.username,
-        display_name: data.displayName,
         picture: data.picture,
-        website: data.website,
       };
+      if (data.displayName) metadata.display_name = data.displayName;
+      if (data.about) metadata.about = data.about;
+      if (data.website) metadata.website = data.website;
 
       if (data.lightningAddress) {
         if (isLNURL(data.lightningAddress)) {
