@@ -1,7 +1,20 @@
 import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
-import { Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  IconButton,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
@@ -9,17 +22,17 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { NoteContents } from "./note-contents";
 import { NoteMenu } from "./note-menu";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { UserTipButton } from "../user-tip-button";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
-import { ReplyIcon, ShareIcon } from "../icons";
+import { LightningIcon, LikeIcon, ReplyIcon, ShareIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply, buildShare } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import NoteReactions from "./note-reactions";
+import NoteLikeButton from "./note-like-button";
+import NoteZapButton from "./note-zap-button";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -56,7 +69,6 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
         <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
       </CardBody>
       <CardFooter padding="2" display="flex" gap="2">
-        <UserTipButton pubkey={event.pubkey} eventId={event.id} size="xs" />
         <IconButton
           icon={<ReplyIcon />}
           title="Reply"
@@ -73,7 +85,10 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           size="xs"
           isDisabled={account.readonly}
         />
-        <NoteReactions noteId={event.id} />
+        <ButtonGroup size="xs" isAttached>
+          <NoteZapButton note={event} size="xs" />
+          <NoteLikeButton note={event} size="xs" />
+        </ButtonGroup>
         <Box flexGrow={1} />
         <NoteRelays event={event} size="xs" />
         <NoteMenu event={event} />

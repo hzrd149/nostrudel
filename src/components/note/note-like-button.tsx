@@ -1,0 +1,80 @@
+import {
+  Button,
+  ButtonProps,
+  Flex,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+} from "@chakra-ui/react";
+import moment from "moment";
+import { Kind } from "nostr-tools";
+import { useState } from "react";
+import { nostrPostAction } from "../../classes/nostr-post-action";
+import { random } from "../../helpers/array";
+import { useSigningContext } from "../../providers/signing-provider";
+import clientRelaysService from "../../services/client-relays";
+import { getEventRelays } from "../../services/event-relays";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { DislikeIcon, LikeIcon } from "../icons";
+
+export default function NoteLikeButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
+  const { requestSignature } = useSigningContext();
+
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async (reaction = "+") => {
+    const eventRelays = getEventRelays(note.id).value;
+    const event: DraftNostrEvent = {
+      kind: Kind.Reaction,
+      content: reaction,
+      tags: [
+        ["e", note.id, random(eventRelays)],
+        ["p", note.pubkey], // TODO: pick a relay for the user
+      ],
+      created_at: moment().unix(),
+    };
+    const signed = await requestSignature(event);
+    if (signed) {
+      const writeRelays = clientRelaysService.getWriteUrls();
+      nostrPostAction(writeRelays, signed);
+    }
+    setLoading(false);
+  };
+  const customReaction = () => {
+    const input = window.prompt("Enter Reaction");
+    if (!input || [...input].length !== 1) return;
+    handleClick(input);
+  };
+
+  return (
+    <Popover placement="bottom" trigger="hover" openDelay={500}>
+      <PopoverTrigger>
+        <Button
+          leftIcon={<LikeIcon />}
+          aria-label="Like Note"
+          title="Like Note"
+          onClick={() => handleClick("+")}
+          isLoading={loading}
+          {...props}
+        >
+          0
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <PopoverArrow />
+        <PopoverBody>
+          <Flex gap="2">
+            <IconButton icon={<LikeIcon />} onClick={() => handleClick("+")} aria-label="like" />
+            <IconButton icon={<DislikeIcon />} onClick={() => handleClick("-")} aria-label="dislike" />
+            <IconButton icon={<span>🤙</span>} onClick={() => handleClick("🤙")} aria-label="different like" />
+            <IconButton icon={<span>❤️</span>} onClick={() => handleClick("❤️")} aria-label="different like" />
+            <Button onClick={customReaction}>Custom</Button>
+          </Flex>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+}

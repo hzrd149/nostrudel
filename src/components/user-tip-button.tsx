@@ -4,11 +4,7 @@ import { LightningIcon } from "./icons";
 import { useState } from "react";
 import { encodeText } from "../helpers/bech32";
 
-export const UserTipButton = ({
-  pubkey,
-  eventId,
-  ...props
-}: { pubkey: string; eventId?: string } & Omit<IconButtonProps, "aria-label">) => {
+export const UserTipButton = ({ pubkey, ...props }: { pubkey: string } & Omit<IconButtonProps, "aria-label">) => {
   const metadata = useUserMetadata(pubkey);
   const [loading, setLoading] = useState(false);
   const toast = useToast();

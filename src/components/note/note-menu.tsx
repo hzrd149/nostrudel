@@ -1,5 +1,4 @@
 import {
-  Avatar,
   MenuItem,
   useDisclosure,
   Modal,
@@ -15,52 +14,33 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, IMAGE_ICONS } from "../icons";
+import { ClipboardIcon, CodeIcon, LikeIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
+import NoteReactionsModal from "./note-reactions-modal";
 
 export const NoteMenu = ({ event }: { event: NostrEvent }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const infoModal = useDisclosure();
+  const reactionsModal = useDisclosure();
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
   const noteId = normalizeToBech32(event.id, Bech32Prefix.Note);
 
   return (
     <>
       <MenuIconButton>
-        <MenuItem
-          as="a"
-          icon={<Avatar src={IMAGE_ICONS.nostrGuruIcon} size="xs" />}
-          href={`https://www.nostr.guru/e/${event.id}`}
-          target="_blank"
-        >
-          Open in Nostr.guru
-        </MenuItem>
-        <MenuItem
-          as="a"
-          icon={<Avatar src={IMAGE_ICONS.brbIcon} size="xs" />}
-          href={`https://brb.io/n/${noteId}`}
-          target="_blank"
-        >
-          Open in BRB
-        </MenuItem>
-        <MenuItem
-          as="a"
-          icon={<Avatar src={IMAGE_ICONS.snortSocialIcon} size="xs" />}
-          href={`https://snort.social/e/${noteId}`}
-          target="_blank"
-        >
-          Open in snort.social
+        <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
+          Reactions
         </MenuItem>
         {noteId && (
           <MenuItem onClick={() => copyToClipboard(noteId)} icon={<ClipboardIcon />}>
             Copy Note ID
           </MenuItem>
         )}
-        <MenuItem onClick={onOpen} icon={<CodeIcon />}>
+        <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>
       </MenuIconButton>
-      {isOpen && (
-        <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+      {infoModal.isOpen && (
+        <Modal isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Raw Event</ModalHeader>
@@ -73,6 +53,9 @@ export const NoteMenu = ({ event }: { event: NostrEvent }) => {
             </ModalBody>
           </ModalContent>
         </Modal>
+      )}
+      {reactionsModal.isOpen && (
+        <NoteReactionsModal noteId={event.id} isOpen={reactionsModal.isOpen} onClose={reactionsModal.onClose} />
       )}
     </>
   );

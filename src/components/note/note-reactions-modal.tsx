@@ -3,21 +3,18 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   Button,
   ModalProps,
   Text,
-  useDisclosure,
   Flex,
   ButtonGroup,
-  IconButton,
 } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { NostrRequest } from "../../classes/nostr-request";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import moment from "moment";
@@ -98,21 +95,13 @@ function sortEvents(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;
 }
 
-export const NoteReactionsModal = ({ isOpen, onClose, noteId }: { noteId: string } & Omit<ModalProps, "children">) => {
+export default function NoteReactionsModal({
+  isOpen,
+  onClose,
+  noteId,
+}: { noteId: string } & Omit<ModalProps, "children">) {
   const { reactions, zaps } = useEventReactions(noteId);
   const [selected, setSelected] = useState("reactions");
-
-  const [sending, setSending] = useState(false);
-  const sendReaction = async (content: string) => {
-    setSending(true);
-    const event: DraftNostrEvent = {
-      kind: Kind.Reaction,
-      content,
-      created_at: moment().unix(),
-      tags: [["e", noteId]],
-    };
-    setSending(false);
-  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -134,51 +123,7 @@ export const NoteReactionsModal = ({ isOpen, onClose, noteId }: { noteId: string
             {selected === "zaps" && zaps.sort(sortEvents).map((event) => <ZapEvent key={event.id} event={event} />)}
           </Flex>
         </ModalBody>
-
-        <ModalFooter display="flex" gap="2">
-          <IconButton
-            icon={<LikeIcon />}
-            aria-label="Like Note"
-            title="Like Note"
-            size="sm"
-            variant="outline"
-            isDisabled
-          />
-          <IconButton
-            icon={<DislikeIcon />}
-            aria-label="Dislike Note"
-            title="Dislike Note"
-            size="sm"
-            variant="outline"
-            isDisabled
-          />
-          <Button size="sm" variant="outline" isDisabled>
-            🤙
-          </Button>
-          <Button size="sm" variant="outline" mr="auto" isDisabled>
-            Custom
-          </Button>
-          <Button colorScheme="blue" onClick={onClose} size="sm">
-            Close
-          </Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );
-};
-
-const NoteReactions = ({ noteId }: { noteId: string }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  return (
-    <>
-      <ButtonGroup size="xs" isAttached>
-        <IconButton icon={<LikeIcon />} aria-label="Like Note" title="Like Note" />
-        <Button onClick={onOpen}>Reactions</Button>
-      </ButtonGroup>
-      {isOpen && <NoteReactionsModal noteId={noteId} isOpen={isOpen} onClose={onClose} />}
-    </>
-  );
-};
-
-export default NoteReactions;
+}
