@@ -60,14 +60,15 @@ async function fetchIdentity(address: string) {
 
 async function addToCache(domain: string, json: IdentityJson) {
   const now = moment().unix();
-  const wait = [];
+  const transaction = db.transaction("dnsIdentifiers", "readwrite");
+
   for (const name of Object.keys(json.names)) {
     const identity = getIdentityFromJson(name, domain, json);
-    if (identity) {
-      wait.push(db.put("dnsIdentifiers", { ...identity, updated: now }, `${name}@${domain}`));
+    if (identity && transaction.store.put) {
+      await transaction.store.put({ ...identity, updated: now }, `${name}@${domain}`);
     }
   }
-  await Promise.all(wait);
+  await transaction.done;
 }
 
 async function getIdentity(address: string, alwaysFetch = false) {
