@@ -81,10 +81,25 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - add `client` tag to published events
 - Save note drafts and let users manage them
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
+  - handle `nostr:` links
+  - handle image share
 - implement NIP-56 and blocking
 - block notes based on content
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
+
+User / Note Tip or Zap modal requirements.
+
+- Custom user amounts
+- add comment (added to either zap request or invoice description)
+- default to zapping if lnurlp endpoint supports it
+- optional eventId to make zaps target event
+- show QR Code button
+- handle LNURL / lightning address.
+- pay with webln button
+- pay with app (open lightning: url) button
+- copy invoice button
+- return a deffered promise or shared loading state so component can show loading
 
 ## Setup
 

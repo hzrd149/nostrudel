@@ -36,7 +36,7 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
   const zapAmount = useRef(0);
 
   const hasZapped = parsedZaps.some((zapRequest) => zapRequest.request.pubkey === account.pubkey);
-  const tipAddress = metadata?.lud06 ?? metadata?.lud16;
+  const tipAddress = metadata?.lud06 || metadata?.lud16;
 
   const handleClick = () => {
     if (!tipAddress) return;
