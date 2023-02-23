@@ -1,10 +1,14 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
+import { readableAmountInSats } from "../../helpers/bolt11";
+import { totalZaps } from "../../helpers/nip57";
+import useEventZaps from "../../hooks/use-event-zaps";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 
 export default function NoteZapButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
   const metadata = useUserMetadata(note.pubkey);
+  const zaps = useEventZaps(note.id, [], true) ?? [];
 
   return (
     <Button
@@ -14,7 +18,7 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
       {...props}
       isDisabled
     >
-      0
+      {readableAmountInSats(totalZaps(zaps), false)}
     </Button>
   );
 }

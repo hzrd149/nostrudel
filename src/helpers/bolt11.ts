@@ -26,17 +26,18 @@ export function parsePaymentRequest(paymentRequest: string): ParsedInvoice {
   return {
     paymentRequest: decoded.paymentRequest,
     description: decoded.sections.find(isDescription)?.value ?? "",
-    amount: decoded.sections.find(isAmount)?.value,
+    amount: parseInt(decoded.sections.find(isAmount)?.value ?? "0"),
     timestamp: convertTimestampToDate(timestamp),
     expiry: convertTimestampToDate(timestamp + decoded.expiry),
   };
 }
 
-export function readableAmountInSats(amount: number) {
-  const amountInSats = amount / 1000;
+export function readableAmountInSats(amount: number, includeSats = true) {
+  const amountInSats = Math.round(amount / 1000);
+  const end = includeSats ? " sats" : "";
   if (amountInSats > 1000000) {
-    return `${amountInSats / 1000000}M sats`;
+    return `${amountInSats / 1000000}M` + end;
   } else if (amountInSats > 1000) {
-    return `${amountInSats / 1000}K sats`;
-  } else return `${amountInSats} sats`;
+    return `${amountInSats / 1000}K` + end;
+  } else return amountInSats + end;
 }

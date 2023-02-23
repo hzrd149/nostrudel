@@ -43,6 +43,20 @@ export function isProfileZap(event: NostrEvent) {
   return !isNoteZap(event) && event.tags.some(isPTag);
 }
 
+export function totalZaps(events: NostrEvent[]) {
+  let total = 0;
+  for (const event of events) {
+    const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
+    try {
+      if (bolt11) {
+        const parsed = parsePaymentRequest(bolt11);
+        if (parsed.amount) total += parsed.amount;
+      }
+    } catch (e) {}
+  }
+  return total;
+}
+
 export function parseZapNote(event: NostrEvent) {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");

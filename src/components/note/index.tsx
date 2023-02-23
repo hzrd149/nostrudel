@@ -13,7 +13,6 @@ import {
   Heading,
   IconButton,
   Link,
-  Text,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
@@ -25,7 +24,7 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
-import { LightningIcon, LikeIcon, ReplyIcon, ShareIcon } from "../icons";
+import { ReplyIcon, ShareIcon } from "../icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { buildReply, buildShare } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";

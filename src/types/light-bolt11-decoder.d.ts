@@ -11,7 +11,7 @@ declare module "light-bolt11-decoder" {
   export type AmountSection = {
     name: "amount";
     letters: string;
-    value: number;
+    value: string;
   };
   export type SeparatorSection = {
     name: "separator";

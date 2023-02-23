@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -11,9 +11,6 @@ import {
   Flex,
   ButtonGroup,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
-import { NostrRequest } from "../../classes/nostr-request";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
@@ -22,30 +19,8 @@ import { convertTimestampToDate } from "../../helpers/date";
 import { DislikeIcon, LikeIcon } from "../icons";
 import { parseZapNote } from "../../helpers/nip57";
 import { readableAmountInSats } from "../../helpers/bolt11";
-
-function useEventReactions(noteId?: string) {
-  const relays = useReadRelayUrls();
-  const [events, setEvents] = useState<Record<string, NostrEvent>>({});
-
-  useEffect(() => {
-    if (noteId && relays.length > 0) {
-      setEvents({});
-      const handler = (e: NostrEvent) => setEvents((dir) => ({ ...dir, [e.id]: e }));
-      const request = new NostrRequest(relays);
-      request.onEvent.subscribe(handler);
-      request.start({ kinds: [Kind.Reaction, Kind.Zap], "#e": [noteId] });
-      return () => {
-        request.complete();
-        request.onEvent.unsubscribe(handler);
-      };
-    }
-  }, [noteId, relays.join("|"), setEvents]);
-
-  return {
-    reactions: Array.from(Object.values(events)).filter((e) => e.kind === Kind.Reaction),
-    zaps: Array.from(Object.values(events)).filter((e) => e.kind === Kind.Zap),
-  };
-}
+import useEventReactions from "../../hooks/use-event-reactions";
+import useEventZaps from "../../hooks/use-event-zaps";
 
 function getReactionIcon(content: string) {
   switch (content) {
@@ -100,7 +75,8 @@ export default function NoteReactionsModal({
   onClose,
   noteId,
 }: { noteId: string } & Omit<ModalProps, "children">) {
-  const { reactions, zaps } = useEventReactions(noteId);
+  const zaps = useEventZaps(noteId, [], true) ?? [];
+  const reactions = useEventReactions(noteId, [], true) ?? [];
   const [selected, setSelected] = useState("reactions");
 
   return (
