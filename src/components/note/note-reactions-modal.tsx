@@ -47,23 +47,27 @@ const ReactionEvent = React.memo(({ event }: { event: NostrEvent }) => (
 ));
 
 const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
-  const { payment, request } = parseZapNote(event);
+  try {
+    const { payment, request } = parseZapNote(event);
 
-  if (!payment.amount) return null;
+    if (!payment.amount) return null;
 
-  return (
-    <Flex gap="2">
-      <Text>{readableAmountInSats(payment.amount)}</Text>
-      <Flex overflow="hidden" gap="2">
-        <UserAvatarLink pubkey={request.pubkey} size="xs" />
-        <UserLink pubkey={request.pubkey} />
+    return (
+      <Flex gap="2">
+        <Text>{readableAmountInSats(payment.amount)}</Text>
+        <Flex overflow="hidden" gap="2">
+          <UserAvatarLink pubkey={request.pubkey} size="xs" />
+          <UserLink pubkey={request.pubkey} />
+        </Flex>
+        <Text>{request.content}</Text>
+        <Text ml="auto" flexShrink={0}>
+          {moment(convertTimestampToDate(event.created_at)).fromNow()}
+        </Text>
       </Flex>
-      <Text>{request.content}</Text>
-      <Text ml="auto" flexShrink={0}>
-        {moment(convertTimestampToDate(event.created_at)).fromNow()}
-      </Text>
-    </Flex>
-  );
+    );
+  } catch (e) {
+    return <Text>Invalid Zap</Text>;
+  }
 });
 
 function sortEvents(a: NostrEvent, b: NostrEvent) {
