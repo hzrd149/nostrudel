@@ -7,7 +7,7 @@ import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { readableAmountInSats } from "../../helpers/bolt11";
 import { convertTimestampToDate } from "../../helpers/date";
-import { isProfileZap, parseZapNote } from "../../helpers/nip57";
+import { isProfileZap, parseZapNote } from "../../helpers/nip-57";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";

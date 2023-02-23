@@ -17,7 +17,7 @@ import { UserLink } from "../user-link";
 import moment from "moment";
 import { convertTimestampToDate } from "../../helpers/date";
 import { DislikeIcon, LikeIcon } from "../icons";
-import { parseZapNote } from "../../helpers/nip57";
+import { parseZapNote } from "../../helpers/nip-57";
 import { readableAmountInSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";

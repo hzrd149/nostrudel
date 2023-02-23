@@ -73,6 +73,7 @@ export function parseZapNote(event: NostrEvent) {
   const eventId = zapRequest.tags.find(isETag)?.[1];
 
   return {
+    zap: event,
     request: zapRequest,
     payment,
     eventId,

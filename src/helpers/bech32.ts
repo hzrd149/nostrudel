@@ -6,7 +6,7 @@ export function encodeText(prefix: string, text: string) {
 }
 
 export function decodeText(encoded: string) {
-  const decoded = bech32.decode(encoded);
+  const decoded = bech32.decode(encoded, 256);
   const text = new TextDecoder().decode(new Uint8Array(bech32.fromWords(decoded.words)));
   return {
     text,
