@@ -34,28 +34,31 @@ async function fetchAllIdentities(domain: string) {
 async function fetchIdentity(address: string) {
   const { name, domain } = parseAddress(address);
   if (!name || !domain) throw new Error("invalid address");
-  const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
-    .then((res) => res.json() as Promise<IdentityJson>)
-    .then((json) => {
-      // convert all keys in names, and relays to lower case
-      if (json.names) {
-        for (const [name, pubkey] of Object.entries(json.names)) {
-          delete json.names[name];
-          json.names[name.toLowerCase()] = pubkey;
-        }
-      }
-      if (json.relays) {
-        for (const [name, pubkey] of Object.entries(json.relays)) {
-          delete json.relays[name];
-          json.relays[name.toLowerCase()] = pubkey;
-        }
-      }
-      return json;
-    });
 
-  await addToCache(domain, json);
+  try {
+    const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
+      .then((res) => res.json() as Promise<IdentityJson>)
+      .then((json) => {
+        // convert all keys in names, and relays to lower case
+        if (json.names) {
+          for (const [name, pubkey] of Object.entries(json.names)) {
+            delete json.names[name];
+            json.names[name.toLowerCase()] = pubkey;
+          }
+        }
+        if (json.relays) {
+          for (const [name, pubkey] of Object.entries(json.relays)) {
+            delete json.relays[name];
+            json.relays[name.toLowerCase()] = pubkey;
+          }
+        }
+        return json;
+      });
 
-  return getIdentityFromJson(name, domain, json);
+    await addToCache(domain, json);
+
+    return getIdentityFromJson(name, domain, json);
+  } catch (e) {}
 }
 
 async function addToCache(domain: string, json: IdentityJson) {
@@ -75,7 +78,6 @@ async function getIdentity(address: string, alwaysFetch = false) {
   const cached = await db.get("dnsIdentifiers", address);
   if (cached && !alwaysFetch) return cached;
 
-  // TODO: if it fails, maybe cache a failure message
   return fetchIdentity(address);
 }
 
@@ -94,7 +96,10 @@ async function pruneCache() {
 const pending: Record<string, ReturnType<typeof getIdentity> | undefined> = {};
 function dedupedGetIdentity(address: string, alwaysFetch = false) {
   if (pending[address]) return pending[address];
-  return (pending[address] = getIdentity(address, alwaysFetch));
+  return (pending[address] = getIdentity(address, alwaysFetch).then((v) => {
+    delete pending[address];
+    return v;
+  }));
 }
 
 export const dnsIdentityService = {

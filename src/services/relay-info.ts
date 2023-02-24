@@ -41,7 +41,10 @@ const pending: Record<string, ReturnType<typeof getInfo> | undefined> = {};
 function dedupedGetIdentity(relay: string) {
   const request = pending[relay];
   if (request) return request;
-  return (pending[relay] = getInfo(relay));
+  return (pending[relay] = getInfo(relay).then((v) => {
+    delete pending[relay];
+    return v;
+  }));
 }
 
 export const relayInfoService = {

@@ -1,4 +1,14 @@
-import { Avatar, Button, Flex, FormControl, FormLabel, Input, Textarea, useToast } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 import moment from "moment";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +19,7 @@ import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-rela
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
+import dnsIdentityService from "../../services/dns-identity";
 import signingService from "../../services/signing";
 import userMetadataService from "../../services/user-metadata";
 import { DraftNostrEvent } from "../../types/nostr-event";
@@ -26,6 +37,7 @@ type FormData = {
   picture?: string;
   about?: string;
   website?: string;
+  nip05?: string;
   lightningAddress?: string;
 };
 
@@ -35,12 +47,13 @@ type MetadataFormProps = {
 };
 
 const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
+  const account = useCurrentAccount();
   const isMobile = useIsMobile();
   const {
     register,
     reset,
     handleSubmit,
-    getValues,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     mode: "onBlur",
@@ -56,61 +69,89 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction="column" gap="2" pt="4">
           <Flex gap="2">
-            <FormControl>
+            <FormControl isInvalid={!!errors.displayName}>
               <FormLabel>Display Name</FormLabel>
-              <Input autoComplete="off" isDisabled={isSubmitting} {...register("displayName", { maxLength: 50 })} />
+              <Input
+                autoComplete="off"
+                isDisabled={isSubmitting}
+                {...register("displayName", {
+                  minLength: 2,
+                  maxLength: 64,
+                })}
+              />
+              <FormErrorMessage>{errors.displayName?.message}</FormErrorMessage>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={!!errors.username} isRequired>
               <FormLabel>Username</FormLabel>
               <Input
                 autoComplete="off"
-                isRequired
                 isDisabled={isSubmitting}
-                isInvalid={!!errors.username}
                 {...register("username", {
                   minLength: 2,
-                  maxLength: 256,
+                  maxLength: 64,
                   required: true,
                   pattern: /^[a-zA-Z0-9_-]{4,16}$/,
                 })}
               />
-              {errors.username?.message}
+              <FormErrorMessage>{errors.username?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
           <Flex gap="2" alignItems="center">
-            <FormControl>
+            <FormControl isInvalid={!!errors.picture}>
               <FormLabel>Picture</FormLabel>
-              <Input autoComplete="off" isDisabled={isSubmitting} {...register("picture", { maxLength: 150 })} />
+              <Input
+                autoComplete="off"
+                isDisabled={isSubmitting}
+                placeholder="https://domain.com/path/picture.png"
+                {...register("picture", { maxLength: 150 })}
+              />
             </FormControl>
-            <Avatar src={getValues("picture")} size="md" ignoreFallback />
+            <Avatar src={watch("picture")} size="lg" ignoreFallback />
           </Flex>
-          <FormControl>
+          <FormControl isInvalid={!!errors.nip05}>
+            <FormLabel>NIP-05 ID</FormLabel>
+            <Input
+              type="email"
+              placeholder="user@domain.com"
+              isDisabled={isSubmitting}
+              {...register("nip05", {
+                minLength: 5,
+                validate: async (address) => {
+                  if (!address) return true;
+                  if (!address.includes("@")) return "invalid address";
+                  const id = await dnsIdentityService.getIdentity(address);
+                  if (!id) return "cant find NIP-05 ID";
+                  if (id.pubkey !== account.pubkey) return "Pubkey dose not match";
+                  return true;
+                },
+              })}
+            />
+            <FormErrorMessage>{errors.nip05?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={!!errors.website}>
             <FormLabel>Website</FormLabel>
             <Input
               type="url"
               autoComplete="off"
               placeholder="https://example.com"
               isDisabled={isSubmitting}
-              isInvalid={!!errors.website}
               {...register("website", { maxLength: 300 })}
             />
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.about}>
             <FormLabel>About</FormLabel>
             <Textarea
               placeholder="A short description"
               resize="vertical"
               rows={6}
               isDisabled={isSubmitting}
-              isInvalid={!!errors.about}
               {...register("about")}
             />
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.lightningAddress}>
             <FormLabel>Lightning Address (or LNURL)</FormLabel>
             <Input
               autoComplete="off"
-              isInvalid={!!errors.lightningAddress}
               isDisabled={isSubmitting}
               {...register("lightningAddress", {
                 validate: (v) => {
@@ -121,7 +162,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
                 },
               })}
             />
-            {/* <FormHelperText>Don't forget the https://</FormHelperText> */}
+            <FormErrorMessage>{errors.lightningAddress?.message}</FormErrorMessage>
           </FormControl>
           <Flex alignSelf="flex-end" gap="2">
             <Button onClick={() => reset()}>Reset</Button>
@@ -149,6 +190,7 @@ export const ProfileEditView = () => {
       picture: metadata?.picture,
       about: metadata?.about,
       website: metadata?.website,
+      nip05: metadata?.nip05,
       lightningAddress: metadata?.lud16 || metadata?.lud06,
     }),
     [metadata]
@@ -163,6 +205,7 @@ export const ProfileEditView = () => {
       if (data.displayName) metadata.display_name = data.displayName;
       if (data.about) metadata.about = data.about;
       if (data.website) metadata.website = data.website;
+      if (data.nip05) metadata.nip05 = data.nip05;
 
       if (data.lightningAddress) {
         if (isLNURL(data.lightningAddress)) {
