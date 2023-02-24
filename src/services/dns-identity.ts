@@ -35,30 +35,28 @@ async function fetchIdentity(address: string) {
   const { name, domain } = parseAddress(address);
   if (!name || !domain) throw new Error("invalid address");
 
-  try {
-    const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
-      .then((res) => res.json() as Promise<IdentityJson>)
-      .then((json) => {
-        // convert all keys in names, and relays to lower case
-        if (json.names) {
-          for (const [name, pubkey] of Object.entries(json.names)) {
-            delete json.names[name];
-            json.names[name.toLowerCase()] = pubkey;
-          }
+  const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
+    .then((res) => res.json() as Promise<IdentityJson>)
+    .then((json) => {
+      // convert all keys in names, and relays to lower case
+      if (json.names) {
+        for (const [name, pubkey] of Object.entries(json.names)) {
+          delete json.names[name];
+          json.names[name.toLowerCase()] = pubkey;
         }
-        if (json.relays) {
-          for (const [name, pubkey] of Object.entries(json.relays)) {
-            delete json.relays[name];
-            json.relays[name.toLowerCase()] = pubkey;
-          }
+      }
+      if (json.relays) {
+        for (const [name, pubkey] of Object.entries(json.relays)) {
+          delete json.relays[name];
+          json.relays[name.toLowerCase()] = pubkey;
         }
-        return json;
-      });
+      }
+      return json;
+    });
 
-    await addToCache(domain, json);
+  await addToCache(domain, json);
 
-    return getIdentityFromJson(name, domain, json);
-  } catch (e) {}
+  return getIdentityFromJson(name, domain, json);
 }
 
 async function addToCache(domain: string, json: IdentityJson) {

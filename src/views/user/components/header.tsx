@@ -35,8 +35,8 @@ export default function Header({ pubkey }: { pubkey: string }) {
               <UserDnsIdentityIcon pubkey={pubkey} />
             </Flex>
             <Flex gap="2">
-              <UserTipButton pubkey={pubkey} size="xs" />
-              <UserProfileMenu pubkey={pubkey} />
+              <UserTipButton pubkey={pubkey} size="sm" variant="link" />
+              <UserProfileMenu pubkey={pubkey} aria-label="More Options" size="sm" variant="link" />
             </Flex>
           </Flex>
           {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}

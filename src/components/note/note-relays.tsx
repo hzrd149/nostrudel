@@ -51,7 +51,7 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
   return (
     <Popover isLazy>
       <PopoverTrigger>
-        <IconButton title="Note Relays" icon={<RelayIcon />} size={props.size ?? "sm"} aria-label="Note Relays" />
+        <IconButton title="Note Relays" icon={<RelayIcon />} aria-label="Note Relays" {...props} />
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />

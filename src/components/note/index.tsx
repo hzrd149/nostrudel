@@ -69,28 +69,30 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
       </CardBody>
       <CardFooter padding="2" display="flex" gap="2">
         <IconButton
+          variant="link"
           icon={<ReplyIcon />}
           title="Reply"
           aria-label="Reply"
           onClick={reply}
-          size="xs"
+          size="sm"
           isDisabled={account.readonly}
         />
         <IconButton
+          variant="link"
           icon={<ShareIcon />}
           onClick={share}
           aria-label="Share Note"
           title="Share Note"
-          size="xs"
+          size="sm"
           isDisabled={account.readonly}
         />
-        <ButtonGroup size="xs" isAttached>
-          <NoteZapButton note={event} size="xs" />
-          <NoteLikeButton note={event} size="xs" />
+        <ButtonGroup size="sm" variant="link">
+          <NoteZapButton note={event} size="sm" />
+          <NoteLikeButton note={event} size="sm" />
         </ButtonGroup>
         <Box flexGrow={1} />
-        <NoteRelays event={event} size="xs" />
-        <NoteMenu event={event} />
+        <NoteRelays event={event} size="sm" variant="link" />
+        <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
       </CardFooter>
     </Card>
   );

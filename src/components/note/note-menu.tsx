@@ -12,13 +12,13 @@ import { useCopyToClipboard } from "react-use";
 
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
 import { NostrEvent } from "../../types/nostr-event";
-import { MenuIconButton } from "../menu-icon-button";
+import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
 import { ClipboardIcon, CodeIcon, LikeIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
 import NoteReactionsModal from "./note-reactions-modal";
 
-export const NoteMenu = ({ event }: { event: NostrEvent }) => {
+export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const infoModal = useDisclosure();
   const reactionsModal = useDisclosure();
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
@@ -26,7 +26,7 @@ export const NoteMenu = ({ event }: { event: NostrEvent }) => {
 
   return (
     <>
-      <MenuIconButton>
+      <MenuIconButton {...props}>
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Reactions
         </MenuItem>

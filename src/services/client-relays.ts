@@ -85,7 +85,7 @@ class ClientRelayService {
     await results.onComplete;
 
     // pass new event to the user relay service
-    userRelaysService.handleEvent(event);
+    userRelaysService.receiveEvent(event);
   }
 
   getWriteUrls() {

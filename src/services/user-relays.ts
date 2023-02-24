@@ -20,9 +20,12 @@ function parseRelaysEvent(event: NostrEvent): UserRelays {
   };
 }
 
-class UserRelaysService extends CachedPubkeyEventRequester {
+class UserRelaysService {
+  requester: CachedPubkeyEventRequester;
   constructor() {
-    super(10002, "user-relays");
+    this.requester = new CachedPubkeyEventRequester(10002, "user-relays");
+    this.requester.readCache = this.readCache;
+    this.requester.writeCache = this.writeCache;
   }
 
   readCache(pubkey: string) {
@@ -32,15 +35,20 @@ class UserRelaysService extends CachedPubkeyEventRequester {
     return db.put("userRelays", event);
   }
 
-  private parsedSubjects = new SuperMap<string, Subject<UserRelays>>(() => new Subject<UserRelays>());
+  private subjects = new SuperMap<string, Subject<UserRelays>>(() => new Subject<UserRelays>());
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
-    const sub = this.parsedSubjects.get(pubkey);
-
-    const requestSub = this.requestEvent(pubkey, relays, alwaysRequest);
-
+    const sub = this.subjects.get(pubkey);
+    const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
-
     return sub;
+  }
+
+  receiveEvent(event: NostrEvent) {
+    this.requester.handleEvent(event);
+  }
+
+  update() {
+    this.requester.update();
   }
 }
 

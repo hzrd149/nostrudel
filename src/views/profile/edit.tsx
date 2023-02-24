@@ -118,10 +118,14 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
                 minLength: 5,
                 validate: async (address) => {
                   if (!address) return true;
-                  if (!address.includes("@")) return "invalid address";
-                  const id = await dnsIdentityService.getIdentity(address);
-                  if (!id) return "cant find NIP-05 ID";
-                  if (id.pubkey !== account.pubkey) return "Pubkey dose not match";
+                  if (!address.includes("@")) return "Invalid address";
+                  try {
+                    const id = await dnsIdentityService.getIdentity(address);
+                    if (!id) return "Cant find NIP-05 ID";
+                    if (id.pubkey !== account.pubkey) return "Pubkey dose not match";
+                  } catch (e) {
+                    return "Failed to fetch ID";
+                  }
                   return true;
                 },
               })}
@@ -224,7 +228,7 @@ export const ProfileEditView = () => {
 
       const event = await signingService.requestSignature(draft, account);
       const results = nostrPostAction(writeRelays, event);
-      userMetadataService.handleEvent(event);
+      userMetadataService.receiveEvent(event);
 
       await results.onComplete;
     } catch (e) {
