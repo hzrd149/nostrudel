@@ -6,12 +6,12 @@ export default function QrCodeSvg({
   content,
   lightColor = "white",
   darkColor = "black",
-  border,
+  border = 2,
 }: {
   content: string;
   lightColor?: string;
   darkColor?: string;
-  border: number;
+  border?: number;
 }) {
   const qrCode = useMemo(() => QrCode.encodeText(content, Ecc.LOW), [content]);
 

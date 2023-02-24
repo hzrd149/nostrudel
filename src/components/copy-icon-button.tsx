@@ -15,7 +15,6 @@ export const CopyIconButton = ({ text, ...props }: { text?: string } & Omit<Icon
           setTimeout(() => setCopied(false), 2000);
         }
       }}
-      size="xs"
       {...props}
     />
   );
