@@ -7,10 +7,18 @@ import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 
 export type SigningContextType = {
   requestSignature: (draft: DraftNostrEvent) => Promise<NostrEvent | undefined>;
+  requestDecrypt: (data: string, pubkey: string) => Promise<string | undefined>;
+  requestEncrypt: (data: string, pubkey: string) => Promise<string | undefined>;
 };
 
 export const SigningContext = React.createContext<SigningContextType>({
   requestSignature: () => {
+    throw new Error("not setup yet");
+  },
+  requestDecrypt: () => {
+    throw new Error("not setup yet");
+  },
+  requestEncrypt: () => {
     throw new Error("not setup yet");
   },
 });
@@ -26,7 +34,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
   const requestSignature = useCallback(
     async (draft: DraftNostrEvent) => {
       try {
-        if (!current) throw new Error("no account");
+        if (!current) throw new Error("No account");
         return await signingService.requestSignature(draft, current);
       } catch (e) {
         if (e instanceof Error) {
@@ -37,9 +45,45 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         }
       }
     },
-    [toast]
+    [toast, current]
   );
-  const context = useMemo(() => ({ requestSignature }), [requestSignature]);
+  const requestDecrypt = useCallback(
+    async (data: string, pubkey: string) => {
+      try {
+        if (!current) throw new Error("No account");
+        return await signingService.requestDecrypt(data, pubkey, current);
+      } catch (e) {
+        if (e instanceof Error) {
+          toast({
+            status: "error",
+            description: e.message,
+          });
+        }
+      }
+    },
+    [toast, current]
+  );
+  const requestEncrypt = useCallback(
+    async (data: string, pubkey: string) => {
+      try {
+        if (!current) throw new Error("No account");
+        return await signingService.requestEncrypt(data, pubkey, current);
+      } catch (e) {
+        if (e instanceof Error) {
+          toast({
+            status: "error",
+            description: e.message,
+          });
+        }
+      }
+    },
+    [toast, current]
+  );
+
+  const context = useMemo(
+    () => ({ requestSignature, requestDecrypt, requestEncrypt }),
+    [requestSignature, requestDecrypt, requestEncrypt]
+  );
 
   return <SigningContext.Provider value={context}>{children}</SigningContext.Provider>;
 };

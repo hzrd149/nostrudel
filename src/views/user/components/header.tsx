@@ -1,7 +1,7 @@
 import { Flex, Heading, SkeletonText, Text, Link, IconButton } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
+import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
 import { QrIconButton } from "../../../components/qr-icon-button";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
@@ -67,6 +67,15 @@ export default function Header({ pubkey }: { pubkey: string }) {
               title="Settings"
               size="sm"
               onClick={() => navigate("/settings")}
+            />
+          )}
+          {!isSelf && (
+            <IconButton
+              as={RouterLink}
+              size="sm"
+              icon={<ChatIcon />}
+              aria-label="Message"
+              to={`/dm/${npub ?? pubkey}`}
             />
           )}
           {!isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}

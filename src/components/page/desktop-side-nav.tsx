@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 import { ConnectedRelays } from "../connected-relays";
-import { FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, RelayIcon } from "../icons";
+import { ChatIcon, FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, RelayIcon } from "../icons";
 import { ProfileButton } from "../profile-button";
 import AccountSwitcher from "./account-switcher";
 
@@ -26,6 +26,9 @@ export default function DesktopSideNav() {
       </Button>
       <Button onClick={() => navigate("/notifications")} leftIcon={<NotificationIcon />}>
         Notifications
+      </Button>
+      <Button onClick={() => navigate("/dm")} leftIcon={<ChatIcon />}>
+        Messages
       </Button>
       <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
         Profile

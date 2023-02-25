@@ -6,7 +6,7 @@
 
 My goals for this project is to learn as much as I can about nostr (by implementing everything myself) and to have a client that works exactly how I like.
 
-There are many features missing from this client and I wont get around to implementing everything (probably no DM support). but if you like the client you are welcome to use it.
+There are many features missing from this client and I wont get around to implementing everything. but if you like the client you are welcome to use it.
 
 Live Instance: [nostrudel.ninja](https://nostrudel.ninja)
 
@@ -44,7 +44,7 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 
 - [x] [NIP-02](https://github.com/nostr-protocol/nips/blob/master/02.md): Contact List and Petnames
 - [ ] [NIP-03](https://github.com/nostr-protocol/nips/blob/master/03.md): OpenTimestamps Attestations for Events
-- [ ] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
+- [x] [NIP-04](https://github.com/nostr-protocol/nips/blob/master/04.md): Encrypted Direct Message
 - [x] [NIP-05](https://github.com/nostr-protocol/nips/blob/master/05.md): Mapping Nostr keys to DNS-based internet identifiers
 - [ ] [NIP-06](https://github.com/nostr-protocol/nips/blob/master/06.md): Basic key derivation from mnemonic seed phrase
 - [x] [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md): `window.nostr` capability for web browsers
@@ -54,11 +54,11 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [ ] [NIP-12](https://github.com/nostr-protocol/nips/blob/master/12.md): Generic Tag Queries
 - [ ] [NIP-13](https://github.com/nostr-protocol/nips/blob/master/13.md): Proof of Work
 - [ ] [NIP-14](https://github.com/nostr-protocol/nips/blob/master/14.md): Subject tag in text events.
-- [ ] [NIP-15](https://github.com/nostr-protocol/nips/blob/master/15.md): End of Stored Events Notice
+- [x] [NIP-15](https://github.com/nostr-protocol/nips/blob/master/15.md): End of Stored Events Notice
 - [x] [NIP-19](https://github.com/nostr-protocol/nips/blob/master/19.md): bech32-encoded entities
 - [ ] [NIP-20](https://github.com/nostr-protocol/nips/blob/master/20.md): Command Results
 - [ ] [NIP-21](https://github.com/nostr-protocol/nips/blob/master/21.md): `nostr:` URL scheme
-- [ ] [NIP-25](https://github.com/nostr-protocol/nips/blob/master/25.md): Reactions
+- [x] [NIP-25](https://github.com/nostr-protocol/nips/blob/master/25.md): Reactions
 - [ ] [NIP-26](https://github.com/nostr-protocol/nips/blob/master/26.md): Delegated Event Signing
 - [ ] [NIP-33](https://github.com/nostr-protocol/nips/blob/master/33.md): Parameterized Replaceable Events
 - [ ] [NIP-36](https://github.com/nostr-protocol/nips/blob/master/36.md): Sensitive Content
@@ -66,17 +66,14 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [ ] [NIP-42](https://github.com/nostr-protocol/nips/blob/master/42.md): Authentication of clients to relays
 - [ ] [NIP-50](https://github.com/nostr-protocol/nips/blob/master/50.md): Keywords filter
 - [ ] [NIP-56](https://github.com/nostr-protocol/nips/blob/master/56.md): Reporting
-- [ ] [NIP-57](https://github.com/nostr-protocol/nips/blob/master/57.md): Lightning Zaps
+- [x] [NIP-57](https://github.com/nostr-protocol/nips/blob/master/57.md): Lightning Zaps
 - [x] [NIP-65](https://github.com/nostr-protocol/nips/blob/master/65.md): Relay List Metadata
 
 ## TODO
 
-- Show reactions and zaps on notes
-- Create a "event posting" service that can show modals (for qr code scanning), warnings (signed by wrong pubkey), and results (what relays responded) when posting events.
 - Create notifications service that keeps track of read notifications. (show unread count in sidenav)
 - Rebuild relays view to show relay info and settings NIP-11
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
-- Add preview tab to note modal
 - Add mentions in notes (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
 - add `client` tag to published events
 - Save note drafts and let users manage them
@@ -87,19 +84,6 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - block notes based on content
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
-
-User / Note Tip or Zap modal requirements.
-
-- Custom user amounts
-- add comment (added to either zap request or invoice description)
-- default to zapping if lnurlp endpoint supports it
-- optional eventId to make zaps target event
-- show QR Code button
-- handle LNURL / lightning address.
-- pay with webln button
-- pay with app (open lightning: url) button
-- copy invoice button
-- return a deffered promise or shared loading state so component can show loading
 
 ## Setup
 

@@ -3,6 +3,7 @@ import { Account } from "./account";
 import { getPublicKey } from "nostr-tools/keys";
 import { signEvent, getEventHash } from "nostr-tools/event";
 import db from "./db";
+import { decrypt, encrypt } from "nostr-tools/nip04";
 
 class SigningService {
   private async getSalt() {
@@ -18,7 +19,7 @@ class SigningService {
 
   private async getKeyMaterial() {
     const password = window.prompt("Enter local encryption password");
-    if (!password) throw new Error("password required");
+    if (!password) throw new Error("Password required");
     const enc = new TextEncoder();
     return window.crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]);
   }
@@ -53,7 +54,7 @@ class SigningService {
   }
 
   async decryptSecKey(account: Account) {
-    if (!account.secKey) throw new Error("account dose not have a secret key");
+    if (!account.secKey) throw new Error("Account dose not have a secret key");
     const key = await this.getEncryptionKey();
     const decode = new TextDecoder();
 
@@ -61,18 +62,18 @@ class SigningService {
       const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: account.iv }, key, account.secKey);
       return decode.decode(decrypted);
     } catch (e) {
-      throw new Error("failed to decrypt secret key");
+      throw new Error("Failed to decrypt secret key");
     }
   }
 
   async requestSignature(draft: DraftNostrEvent, account: Account) {
-    if (account?.readonly) throw new Error("cant sign in readonly mode");
+    if (account?.readonly) throw new Error("Cant sign in readonly mode");
     if (account?.useExtension) {
       if (window.nostr) {
         const signed = await window.nostr.signEvent(draft);
-        if (signed.pubkey !== account.pubkey) throw new Error("signed with the wrong pubkey!");
+        if (signed.pubkey !== account.pubkey) throw new Error("Signed with the wrong pubkey!");
         return signed;
-      } else throw new Error("missing nostr extension");
+      } else throw new Error("Missing nostr extension");
     } else if (account?.secKey) {
       const secKey = await this.decryptSecKey(account);
       const tmpDraft = { ...draft, pubkey: getPublicKey(secKey) };
@@ -84,7 +85,35 @@ class SigningService {
       };
 
       return event;
-    } else throw new Error("no signing method");
+    } else throw new Error("No signing method");
+  }
+
+  async requestDecrypt(data: string, pubkey: string, account: Account) {
+    if (account?.readonly) throw new Error("Cant decrypt in readonly mode");
+    if (account?.useExtension) {
+      if (window.nostr) {
+        if (window.nostr.nip04) {
+          return await window.nostr.nip04.decrypt(pubkey, data);
+        } else throw new Error("Extension dose not support decryption");
+      } else throw new Error("Missing nostr extension");
+    } else if (account?.secKey) {
+      const secKey = await this.decryptSecKey(account);
+      return await decrypt(secKey, pubkey, data);
+    } else throw new Error("No decryption method");
+  }
+
+  async requestEncrypt(text: string, pubkey: string, account: Account) {
+    if (account?.readonly) throw new Error("Cant encrypt in readonly mode");
+    if (account?.useExtension) {
+      if (window.nostr) {
+        if (window.nostr.nip04) {
+          return await window.nostr.nip04.encrypt(pubkey, text);
+        } else throw new Error("Extension dose not support encryption");
+      } else throw new Error("Missing nostr extension");
+    } else if (account?.secKey) {
+      const secKey = await this.decryptSecKey(account);
+      return await encrypt(secKey, pubkey, text);
+    } else throw new Error("No encryption method");
   }
 }
 

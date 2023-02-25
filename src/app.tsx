@@ -28,6 +28,8 @@ import { deleteDatabase } from "./services/db";
 import { LoginNsecView } from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
 import PopularTab from "./views/home/popular";
+import DirectMessagesView from "./views/dm";
+import DirectMessageChatView from "./views/dm/chat";
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -114,6 +116,14 @@ const router = createBrowserRouter([
       {
         path: "notifications",
         element: <NotificationsView />,
+      },
+      {
+        path: "dm",
+        element: <DirectMessagesView />,
+      },
+      {
+        path: "dm/:key",
+        element: <DirectMessageChatView />,
       },
       {
         path: "profile",
