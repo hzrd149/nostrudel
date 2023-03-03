@@ -59,21 +59,36 @@ async function fetchIdentity(address: string) {
   return getIdentityFromJson(name, domain, json);
 }
 
+const inMemoryCache = new Map<string, DnsIdentity>();
+
 async function addToCache(domain: string, json: IdentityJson) {
   const now = moment().unix();
   const transaction = db.transaction("dnsIdentifiers", "readwrite");
 
   for (const name of Object.keys(json.names)) {
     const identity = getIdentityFromJson(name, domain, json);
-    if (identity && transaction.store.put) {
-      await transaction.store.put({ ...identity, updated: now }, `${name}@${domain}`);
+    if (identity) {
+      const id = `${name}@${domain}`;
+
+      // add to memory cache
+      inMemoryCache.set(id, identity);
+
+      // ad to db cache
+      if (transaction.store.put) {
+        await transaction.store.put({ ...identity, updated: now }, id);
+      }
     }
   }
   await transaction.done;
 }
 
 async function getIdentity(address: string, alwaysFetch = false) {
-  const cached = await db.get("dnsIdentifiers", address);
+  if (!inMemoryCache.has(address)) {
+    const fromDb = await db.get("dnsIdentifiers", address);
+    if (fromDb) inMemoryCache.set(address, fromDb);
+  }
+
+  const cached = inMemoryCache.get(address);
   if (cached && !alwaysFetch) return cached;
 
   return fetchIdentity(address);
