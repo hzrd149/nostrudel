@@ -1,9 +1,7 @@
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
-import { getPublicKey } from "nostr-tools/keys";
-import { signEvent, getEventHash } from "nostr-tools/event";
 import db from "./db";
-import { decrypt, encrypt } from "nostr-tools/nip04";
+import { nip04, signEvent, getEventHash, getPublicKey } from "nostr-tools";
 
 class SigningService {
   private async getSalt() {
@@ -98,7 +96,7 @@ class SigningService {
       } else throw new Error("Missing nostr extension");
     } else if (account?.secKey) {
       const secKey = await this.decryptSecKey(account);
-      return await decrypt(secKey, pubkey, data);
+      return await nip04.decrypt(secKey, pubkey, data);
     } else throw new Error("No decryption method");
   }
 
@@ -112,7 +110,7 @@ class SigningService {
       } else throw new Error("Missing nostr extension");
     } else if (account?.secKey) {
       const secKey = await this.decryptSecKey(account);
-      return await encrypt(secKey, pubkey, text);
+      return await nip04.encrypt(secKey, pubkey, text);
     } else throw new Error("No encryption method");
   }
 }

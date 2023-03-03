@@ -5,9 +5,9 @@ import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import QuoteNote from "../../components/note/quote-note";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import { readableAmountInSats } from "../../helpers/bolt11";
+import { readablizeSats } from "../../helpers/bolt11";
 import { convertTimestampToDate } from "../../helpers/date";
-import { isProfileZap, parseZapNote } from "../../helpers/nip-57";
+import { isProfileZap, parseZapNote } from "../../helpers/zaps";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
@@ -30,7 +30,7 @@ const ZapNote = ({ zapEvent }: { zapEvent: NostrEvent }) => {
         <Flex gap="2" alignItems="center" wrap="wrap">
           <UserAvatarLink pubkey={request.pubkey} size="xs" />
           <UserLink pubkey={request.pubkey} />
-          {payment.amount && <Text>{readableAmountInSats(payment.amount)}</Text>}
+          {payment.amount && <Text>{readablizeSats(payment.amount / 1000)}</Text>}
           {request.content && (
             <Button variant="link" onClick={onToggle}>
               Show message

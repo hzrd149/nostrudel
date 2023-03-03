@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 

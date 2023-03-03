@@ -1,11 +1,9 @@
-import { utf8Decoder } from "nostr-tools/utils";
-
 import { bech32 } from "@scure/base";
 import { isETag, isPTag, NostrEvent } from "../types/nostr-event";
 import { parsePaymentRequest } from "./bolt11";
 
 import { Kind0ParsedContent } from "./user-metadata";
-import { validateZapRequest } from "nostr-tools/nip57";
+import { nip57, utils } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -15,7 +13,7 @@ export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null
     if (lud06) {
       let { words } = bech32.decode(lud06, 1000);
       let data = bech32.fromWords(words);
-      lnurl = utf8Decoder.decode(data);
+      lnurl = utils.utf8Decoder.decode(data);
     } else if (lud16) {
       let [name, domain] = lud16.split("@");
       lnurl = `https://${domain}/.well-known/lnurlp/${name}`;
@@ -64,7 +62,7 @@ export function parseZapNote(event: NostrEvent) {
   const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
   if (!bolt11) throw new Error("missing bolt11 invoice");
 
-  const error = validateZapRequest(zapRequestStr);
+  const error = nip57.validateZapRequest(zapRequestStr);
   if (error) throw new Error(error);
 
   const zapRequest = JSON.parse(zapRequestStr) as NostrEvent;

@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
 import { convertTimestampToDate } from "../../helpers/date";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";

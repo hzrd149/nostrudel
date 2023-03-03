@@ -6,7 +6,7 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useThrottle } from "react-use";
 import { Kind } from "nostr-tools";
-import { parseZapNote } from "../../helpers/nip-57";
+import { parseZapNote } from "../../helpers/zaps";
 import { NoteLink } from "../../components/note-link";
 
 export default function PopularTab() {

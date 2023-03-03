@@ -17,8 +17,8 @@ import { UserLink } from "../user-link";
 import moment from "moment";
 import { convertTimestampToDate } from "../../helpers/date";
 import { DislikeIcon, LikeIcon } from "../icons";
-import { parseZapNote } from "../../helpers/nip-57";
-import { readableAmountInSats } from "../../helpers/bolt11";
+import { parseZapNote } from "../../helpers/zaps";
+import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
 
@@ -54,7 +54,7 @@ const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
 
     return (
       <Flex gap="2">
-        <Text>{readableAmountInSats(payment.amount)}</Text>
+        <Text>{readablizeSats(payment.amount / 1000)}</Text>
         <Flex overflow="hidden" gap="2">
           <UserAvatarLink pubkey={request.pubkey} size="xs" />
           <UserLink pubkey={request.pubkey} />

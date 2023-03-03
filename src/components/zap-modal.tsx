@@ -22,11 +22,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { UserAvatar } from "./user-avatar";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { UserLink } from "./user-link";
-import { parsePaymentRequest, readableAmountInSats } from "../helpers/bolt11";
+import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { ExternalLinkIcon, LightningIcon, QrCodeIcon } from "./icons";
 import lnurlMetadataService from "../services/lnurl-metadata";
 import { useAsync } from "react-use";
-import { makeZapRequest } from "nostr-tools/nip57";
+import { nip57 } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
 import { useSigningContext } from "../providers/signing-provider";
@@ -87,7 +87,7 @@ export default function ZapModal({
           const otherRelays = event ? getEventRelays(event.id).value : [];
           const readRelays = clientRelaysService.getReadUrls();
 
-          const zapRequest = makeZapRequest({
+          const zapRequest = nip57.makeZapRequest({
             profile: pubkey,
             event: event?.id ?? null,
             relays: [...otherRelays, ...readRelays],
@@ -225,7 +225,7 @@ export default function ZapModal({
                   />
                 )}
                 <Button leftIcon={<LightningIcon />} type="submit" isLoading={isSubmitting} variant="solid" size="md">
-                  {actionName} {getUserDisplayName(metadata, pubkey)} {readableAmountInSats(watch("amount") * 1000)}
+                  {actionName} {getUserDisplayName(metadata, pubkey)} {readablizeSats(watch("amount"))} sats
                 </Button>
               </Flex>
             </form>

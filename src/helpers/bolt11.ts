@@ -32,12 +32,10 @@ export function parsePaymentRequest(paymentRequest: string): ParsedInvoice {
   };
 }
 
-export function readableAmountInSats(amount: number, includeSats = true) {
-  const amountInSats = Math.round(amount / 1000);
-  const end = includeSats ? " sats" : "";
-  if (amountInSats > 1000000) {
-    return `${amountInSats / 1000000}M` + end;
-  } else if (amountInSats > 1000) {
-    return `${amountInSats / 1000}K` + end;
-  } else return amountInSats + end;
+// based on https://stackoverflow.com/a/10469752
+export function readablizeSats(sats: number) {
+  if (sats === 0) return "0";
+  var s = ["", "K", "M"];
+  var e = Math.floor(Math.log(sats) / Math.log(1000));
+  return Math.round((sats / Math.pow(1000, e)) * 100) / 100 + s[e];
 }

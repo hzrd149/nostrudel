@@ -4,7 +4,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { UserAvatar } from "../../../components/user-avatar";
-import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
 
 export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) => {

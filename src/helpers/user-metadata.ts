@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { Bech32Prefix, normalizeToBech32 } from "./nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "./nip19";
 import { truncatedId } from "./nostr-event";
 import { safeJson } from "./parse";
 

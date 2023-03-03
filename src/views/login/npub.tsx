@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { normalizeToHex } from "../../helpers/nip-19";
+import { normalizeToHex } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
 

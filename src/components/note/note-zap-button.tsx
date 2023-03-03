@@ -1,7 +1,7 @@
 import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { readableAmountInSats } from "../../helpers/bolt11";
-import { parseZapNote, totalZaps } from "../../helpers/nip-57";
+import { readablizeSats } from "../../helpers/bolt11";
+import { parseZapNote, totalZaps } from "../../helpers/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -42,7 +42,7 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
         onClick={onOpen}
         isDisabled={!tipAddress}
       >
-        {readableAmountInSats(totalZaps(zaps), false)}
+        {readablizeSats(totalZaps(zaps) / 1000)}
       </Button>
       {isOpen && <ZapModal isOpen={isOpen} onClose={onClose} event={note} onPaid={invoicePaid} pubkey={note.pubkey} />}
     </>

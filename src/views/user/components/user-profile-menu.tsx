@@ -2,7 +2,7 @@ import { Avatar, MenuItem } from "@chakra-ui/react";
 import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 
 import { IMAGE_ICONS, SpyIcon } from "../../../components/icons";
-import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";

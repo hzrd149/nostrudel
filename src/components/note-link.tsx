@@ -1,6 +1,6 @@
 import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
 import { truncatedId } from "../helpers/nostr-event";
 
 export type NoteLinkProps = LinkProps & {

@@ -13,7 +13,7 @@ import {
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
-import { normalizeToHex } from "../../helpers/nip-19";
+import { normalizeToHex } from "../../helpers/nip19";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../note-link";
 import settings from "../../services/settings";

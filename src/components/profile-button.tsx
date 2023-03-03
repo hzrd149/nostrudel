@@ -2,7 +2,7 @@ import { Box, LinkBox, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { UserAvatar } from "./user-avatar";
 import { useUserMetadata } from "../hooks/use-user-metadata";
-import { normalizeToBech32 } from "../helpers/nip-19";
+import { normalizeToBech32 } from "../helpers/nip19";
 import { truncatedId } from "../helpers/nostr-event";
 import { useCurrentAccount } from "../hooks/use-current-account";
 

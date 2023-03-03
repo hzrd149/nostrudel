@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
 import { UserAvatar, UserAvatarProps } from "./user-avatar";
 
 export const UserAvatarLink = React.memo(({ pubkey, ...props }: UserAvatarProps) => (

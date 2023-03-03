@@ -8,7 +8,7 @@ import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { convertTimestampToDate } from "../../helpers/date";
-import { normalizeToHex } from "../../helpers/nip-19";
+import { normalizeToHex } from "../../helpers/nip19";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import useSubject from "../../hooks/use-subject";

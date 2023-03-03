@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 
 import { NoteContents } from "./note-contents";
 import { NoteMenu } from "./note-menu";

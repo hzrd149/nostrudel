@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import Header from "./components/header";
 

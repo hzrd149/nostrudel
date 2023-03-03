@@ -2,7 +2,7 @@ import moment, { MomentInput } from "moment";
 import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import { NostrEvent } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
-import { insertEventIntoDescendingList } from "nostr-tools/utils";
+import { utils } from "nostr-tools";
 import { SuperMap } from "../classes/super-map";
 import { PersistentSubject } from "../classes/subject";
 import accountService from "./account";
@@ -77,7 +77,7 @@ class DirectMessagesService {
 
     const conversation = from === pubkey ? to : from;
     const subject = this.messages.get(conversation);
-    subject.next(insertEventIntoDescendingList(subject.value, event));
+    subject.next(utils.insertEventIntoDescendingList(subject.value, event));
 
     if (!this.conversations.value.includes(conversation)) {
       this.conversations.next([...this.conversations.value, conversation]);

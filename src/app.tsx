@@ -10,7 +10,7 @@ import accountService from "./services/account";
 import { FollowingTab } from "./views/home/following-tab";
 import { DiscoverTab } from "./views/home/discover-tab";
 import { GlobalTab } from "./views/home/global-tab";
-import { normalizeToHex } from "./helpers/nip-19";
+import { normalizeToHex } from "./helpers/nip19";
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
 import UserFollowersTab from "./views/user/followers";

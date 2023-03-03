@@ -9,7 +9,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { UserAvatarLink } from "./user-avatar-link";
 import { UserLink } from "./user-link";
 import { UserDnsIdentityIcon } from "./user-dns-identity";
-import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip-19";
+import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
 import { convertTimestampToDate } from "../helpers/date";
 
 const EmbeddedNote = ({ note }: { note: NostrEvent }) => {
