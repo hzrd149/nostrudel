@@ -78,6 +78,7 @@ export default function ZapModal({
 
   const onSubmitZap: SubmitHandler<FormValues> = async (values) => {
     try {
+      if (!tipAddress) throw new Error("No lightning address");
       if (lnurlMetadata) {
         const amountInMilisat = values.amount * 1000;
 
@@ -123,7 +124,7 @@ export default function ZapModal({
             setInvoice(payRequest);
           } else throw new Error("Failed to get invoice");
         }
-      } else throw new Error("No lightning address");
+      } else throw new Error("Failed to get LNURL metadata");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }
@@ -157,8 +158,16 @@ export default function ZapModal({
     );
   };
 
+  const handleClose = () => {
+    // if there was an invoice and we a closing the modal. presume it was paid
+    if (invoice && onPaid) {
+      onPaid();
+    }
+    onClose();
+  };
+
   return (
-    <Modal onClose={onClose} {...props}>
+    <Modal onClose={handleClose} {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalBody padding="4">

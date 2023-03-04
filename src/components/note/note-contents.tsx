@@ -1,25 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  AspectRatio,
-  Box,
-  Button,
-  ButtonGroup,
-  IconButton,
-  Image,
-  ImageProps,
-  Link,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { AspectRatio, Box, Button, ButtonGroup, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
 import { normalizeToHex } from "../../helpers/nip19";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { NoteLink } from "../note-link";
 import settings from "../../services/settings";
 import styled from "@emotion/styled";
 import QuoteNote from "./quote-note";
-// import { ExternalLinkIcon } from "../icons";
+import { useExpand } from "./expanded";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -299,33 +288,37 @@ export type NoteContentsProps = {
 
 export const NoteContents = React.memo(({ event, trusted, maxHeight }: NoteContentsProps) => {
   const parts = embedContent(event.content, event, trusted ?? false);
-  const [height, setHeight] = useState(maxHeight);
+  const expand = useExpand();
+  const [innerHeight, setInnerHeight] = useState(0);
   const ref = useRef<HTMLDivElement | null>(null);
 
   const testHeight = useCallback(() => {
     if (ref.current && maxHeight) {
       const rect = ref.current.getClientRects()[0];
-      setHeight(rect.height < maxHeight ? undefined : maxHeight);
+      setInnerHeight(rect.height);
     }
-  }, [maxHeight, setHeight]);
+  }, [maxHeight]);
 
   useEffect(() => {
     testHeight();
   }, [testHeight]);
 
+  const showOverlay = !!maxHeight && !expand?.expanded && innerHeight > maxHeight;
+
   return (
     <Box
-      ref={ref}
       whiteSpace="pre-wrap"
-      maxHeight={height}
+      maxHeight={!expand?.expanded ? maxHeight : undefined}
       position="relative"
-      overflow={maxHeight ? "hidden" : "initial"}
+      overflow={maxHeight && !expand?.expanded ? "hidden" : "initial"}
       onLoad={() => testHeight()}
     >
-      {parts.map((part, i) => (
-        <span key={"part-" + i}>{part}</span>
-      ))}
-      {height && <GradientOverlay onClick={() => setHeight(undefined)} />}
+      <div ref={ref}>
+        {parts.map((part, i) => (
+          <span key={"part-" + i}>{part}</span>
+        ))}
+      </div>
+      {showOverlay && <GradientOverlay onClick={expand?.onExpand} />}
     </Box>
   );
 });

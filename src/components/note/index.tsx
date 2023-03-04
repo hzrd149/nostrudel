@@ -32,6 +32,7 @@ import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteLikeButton from "./note-like-button";
 import NoteZapButton from "./note-zap-button";
+import { ExpandProvider } from "./expanded";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -49,51 +50,53 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
   const share = () => openModal(buildShare(event));
 
   return (
-    <Card variant="outline">
-      <CardHeader padding="2">
-        <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
-          <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
+    <ExpandProvider>
+      <Card variant="outline">
+        <CardHeader padding="2">
+          <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
+            <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
 
-          <Heading size="sm" display="inline">
-            <UserLink pubkey={event.pubkey} />
-          </Heading>
-          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-          {!isMobile && <Flex grow={1} />}
-          <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
-            {moment(convertTimestampToDate(event.created_at)).fromNow()}
-          </Link>
-        </Flex>
-      </CardHeader>
-      <CardBody px="2" py="0">
-        <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
-      </CardBody>
-      <CardFooter padding="2" display="flex" gap="2">
-        <IconButton
-          variant="link"
-          icon={<ReplyIcon />}
-          title="Reply"
-          aria-label="Reply"
-          onClick={reply}
-          size="sm"
-          isDisabled={account.readonly}
-        />
-        <IconButton
-          variant="link"
-          icon={<ShareIcon />}
-          onClick={share}
-          aria-label="Share Note"
-          title="Share Note"
-          size="sm"
-          isDisabled={account.readonly}
-        />
-        <ButtonGroup size="sm" variant="link">
-          <NoteZapButton note={event} size="sm" />
-          <NoteLikeButton note={event} size="sm" />
-        </ButtonGroup>
-        <Box flexGrow={1} />
-        <NoteRelays event={event} size="sm" variant="link" />
-        <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
-      </CardFooter>
-    </Card>
+            <Heading size="sm" display="inline">
+              <UserLink pubkey={event.pubkey} />
+            </Heading>
+            <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+            {!isMobile && <Flex grow={1} />}
+            <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
+              {moment(convertTimestampToDate(event.created_at)).fromNow()}
+            </Link>
+          </Flex>
+        </CardHeader>
+        <CardBody px="2" py="0">
+          <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
+        </CardBody>
+        <CardFooter padding="2" display="flex" gap="2">
+          <IconButton
+            variant="link"
+            icon={<ReplyIcon />}
+            title="Reply"
+            aria-label="Reply"
+            onClick={reply}
+            size="sm"
+            isDisabled={account.readonly}
+          />
+          <IconButton
+            variant="link"
+            icon={<ShareIcon />}
+            onClick={share}
+            aria-label="Share Note"
+            title="Share Note"
+            size="sm"
+            isDisabled={account.readonly}
+          />
+          <ButtonGroup size="sm" variant="link">
+            <NoteZapButton note={event} size="sm" />
+            <NoteLikeButton note={event} size="sm" />
+          </ButtonGroup>
+          <Box flexGrow={1} />
+          <NoteRelays event={event} size="sm" variant="link" />
+          <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
+        </CardFooter>
+      </Card>
+    </ExpandProvider>
   );
 });
