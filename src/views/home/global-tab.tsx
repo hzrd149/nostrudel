@@ -8,7 +8,7 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
-export const GlobalTab = () => {
+export default function GlobalTab() {
   useAppTitle("global");
   const defaultRelays = useReadRelayUrls();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,4 +62,4 @@ export const GlobalTab = () => {
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
-};
+}

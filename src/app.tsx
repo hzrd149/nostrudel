@@ -1,35 +1,35 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
-import { HomeView } from "./views/home";
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
-import { SettingsView } from "./views/settings";
-import { LoginView } from "./views/login";
-import { ProfileView } from "./views/profile";
-import accountService from "./services/account";
-import { FollowingTab } from "./views/home/following-tab";
-import { DiscoverTab } from "./views/home/discover-tab";
-import { GlobalTab } from "./views/home/global-tab";
 import { normalizeToHex } from "./helpers/nip19";
-import UserView from "./views/user";
-import UserNotesTab from "./views/user/notes";
-import UserFollowersTab from "./views/user/followers";
-import UserRelaysTab from "./views/user/relays";
-import UserFollowingTab from "./views/user/following";
-import NoteView from "./views/note";
-import { LoginStartView } from "./views/login/start";
-import { LoginNpubView } from "./views/login/npub";
-import NotificationsView from "./views/notifications";
-import { RelaysView } from "./views/relays";
-import useSubject from "./hooks/use-subject";
-import { LoginNip05View } from "./views/login/nip05";
-import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import { deleteDatabase } from "./services/db";
-import { LoginNsecView } from "./views/login/nsec";
-import UserZapsTab from "./views/user/zaps";
-import PopularTab from "./views/home/popular";
-import DirectMessagesView from "./views/dm";
-import DirectMessageChatView from "./views/dm/chat";
+import accountService from "./services/account";
+import useSubject from "./hooks/use-subject";
+
+const HomeView = React.lazy(() => import("./views/home"));
+const SettingsView = React.lazy(() => import("./views/settings"));
+const LoginView = React.lazy(() => import("./views/login"));
+const ProfileView = React.lazy(() => import("./views/profile"));
+const FollowingTab = React.lazy(() => import("./views/home/following-tab"));
+const DiscoverTab = React.lazy(() => import("./views/home/discover-tab"));
+const GlobalTab = React.lazy(() => import("./views/home/global-tab"));
+const UserView = React.lazy(() => import("./views/user"));
+const UserNotesTab = React.lazy(() => import("./views/user/notes"));
+const UserFollowersTab = React.lazy(() => import("./views/user/followers"));
+const UserRelaysTab = React.lazy(() => import("./views/user/relays"));
+const UserFollowingTab = React.lazy(() => import("./views/user/following"));
+const NoteView = React.lazy(() => import("./views/note"));
+const LoginStartView = React.lazy(() => import("./views/login/start"));
+const LoginNpubView = React.lazy(() => import("./views/login/npub"));
+const NotificationsView = React.lazy(() => import("./views/notifications"));
+const RelaysView = React.lazy(() => import("./views/relays"));
+const LoginNip05View = React.lazy(() => import("./views/login/nip05"));
+const LoginNsecView = React.lazy(() => import("./views/login/nsec"));
+const UserZapsTab = React.lazy(() => import("./views/user/zaps"));
+const DirectMessagesView = React.lazy(() => import("./views/dm"));
+const DirectMessageChatView = React.lazy(() => import("./views/dm/chat"));
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -146,6 +146,8 @@ const router = createBrowserRouter([
 
 export const App = () => (
   <ErrorBoundary>
-    <RouterProvider router={router} />
+    <Suspense fallback={<Spinner />}>
+      <RouterProvider router={router} />
+    </Suspense>
   </ErrorBoundary>
 );

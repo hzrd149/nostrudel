@@ -21,7 +21,7 @@ import dnsIdentityService from "../../services/dns-identity";
 import { CheckIcon } from "../../components/icons";
 import { CloseIcon } from "@chakra-ui/icons";
 
-export const LoginNip05View = () => {
+export default function LoginNip05View() {
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -137,4 +137,4 @@ export const LoginNip05View = () => {
       </Flex>
     </Flex>
   );
-};
+}

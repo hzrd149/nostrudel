@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 
-export const LoginView = () => {
+export default function LoginView() {
   const current = useSubject(accountService.current);
   const location = useLocation();
 
@@ -25,4 +25,4 @@ export const LoginView = () => {
       <Outlet />
     </Flex>
   );
-};
+}

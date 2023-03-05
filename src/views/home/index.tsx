@@ -8,7 +8,7 @@ const tabs = [
   { label: "Global", path: "/global" },
 ];
 
-export const HomeView = () => {
+export default function HomeView() {
   const navigate = useNavigate();
   const matches = useMatches();
 
@@ -38,4 +38,4 @@ export const HomeView = () => {
       </TabPanels>
     </Tabs>
   );
-};
+}

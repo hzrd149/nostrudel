@@ -27,7 +27,7 @@ import { RelayStatus } from "../../components/relay-status";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { validateRelayUrl } from "../../helpers/url";
 
-export const RelaysView = () => {
+export default function RelaysView() {
   const relays = useSubject(clientRelaysService.relays);
   const toast = useToast();
 
@@ -154,4 +154,4 @@ export const RelaysView = () => {
       </Flex>
     </Flex>
   );
-};
+}

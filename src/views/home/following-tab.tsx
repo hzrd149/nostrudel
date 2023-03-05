@@ -11,7 +11,7 @@ import { PostModalContext } from "../../providers/post-modal-provider";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 
-export const FollowingTab = () => {
+export default function FollowingTab() {
   const account = useCurrentAccount();
   const relays = useReadRelayUrls();
   const { openModal } = useContext(PostModalContext);
@@ -49,4 +49,4 @@ export const FollowingTab = () => {
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
-};
+}

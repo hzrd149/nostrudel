@@ -24,7 +24,7 @@ import clientRelaysService from "../../services/client-relays";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
 import signingService from "../../services/signing";
 
-export const LoginNsecView = () => {
+export default function LoginNsecView() {
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -150,4 +150,4 @@ export const LoginNsecView = () => {
       </Flex>
     </Flex>
   );
-};
+}

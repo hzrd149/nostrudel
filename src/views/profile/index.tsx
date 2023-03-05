@@ -1,5 +1,5 @@
 import { ProfileEditView } from "./edit";
 
-export const ProfileView = () => {
+export default function ProfileView() {
   return <ProfileEditView />;
-};
+}

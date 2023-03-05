@@ -21,7 +21,7 @@ import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
 import { LogoutIcon } from "../../components/icons";
 
-export const SettingsView = () => {
+export default function SettingsView() {
   const blurImages = useSubject(settings.blurImages);
   const autoShowMedia = useSubject(settings.autoShowMedia);
   const proxyUserMedia = useSubject(settings.proxyUserMedia);
@@ -178,4 +178,4 @@ export const SettingsView = () => {
       </Flex>
     </Flex>
   );
-};
+}

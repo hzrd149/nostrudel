@@ -12,7 +12,7 @@ export const PostModalContext = React.createContext<PostModalContextType>({
 });
 
 export const PostModalProvider = ({ children }: { children: React.ReactNode }) => {
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [draft, setDraft] = useState<Partial<DraftNostrEvent> | undefined>(undefined);
   const openModal = useCallback(
     (draft?: Partial<DraftNostrEvent>) => {

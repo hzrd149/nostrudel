@@ -5,7 +5,7 @@ import AccountCard from "./components/account-card";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 
-export const LoginStartView = () => {
+export default function LoginStartView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const accounts = useSubject(accountService.accounts);
@@ -66,4 +66,4 @@ export const LoginStartView = () => {
       )}
     </Flex>
   );
-};
+}

@@ -6,7 +6,7 @@ import { normalizeToHex } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
 
-export const LoginNpubView = () => {
+export default function LoginNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
@@ -60,4 +60,4 @@ export const LoginNpubView = () => {
       </Flex>
     </Flex>
   );
-};
+}

@@ -59,7 +59,7 @@ class DiscoverContacts {
   }
 }
 
-export const DiscoverTab = () => {
+export default function DiscoverTab() {
   useAppTitle("discover");
   const account = useCurrentAccount();
   const relays = useReadRelayUrls();
@@ -85,4 +85,4 @@ export const DiscoverTab = () => {
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
-};
+}
