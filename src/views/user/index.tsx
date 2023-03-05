@@ -1,4 +1,4 @@
-import { Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Flex, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { Outlet, useLoaderData, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
@@ -6,6 +6,7 @@ import { useIsMobile } from "../../hooks/use-is-mobile";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import Header from "./components/header";
+import { Suspense } from "react";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -52,7 +53,9 @@ const UserView = () => {
         <TabPanels overflow={isMobile ? undefined : "auto"} height="100%">
           {tabs.map(({ label }) => (
             <TabPanel key={label} pr={0} pl={0}>
-              <Outlet context={{ pubkey }} />
+              <Suspense fallback={<Spinner />}>
+                <Outlet context={{ pubkey }} />
+              </Suspense>
             </TabPanel>
           ))}
         </TabPanels>

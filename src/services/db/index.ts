@@ -38,8 +38,6 @@ const MIGRATIONS: MigrationFunction[] = [
     dnsIdentifiers.createIndex("domain", "domain", { unique: false });
     dnsIdentifiers.createIndex("updated", "updated", { unique: false });
 
-    db.createObjectStore("pubkeyRelayWeights", { keyPath: "pubkey" });
-
     db.createObjectStore("settings");
     db.createObjectStore("relayInfo");
     db.createObjectStore("relayScoreboardStats", { keyPath: "relay" });
@@ -69,7 +67,7 @@ export async function clearCacheData() {
   await db.clear("userRelays");
   await db.clear("relayInfo");
   await db.clear("dnsIdentifiers");
-  await db.clear("pubkeyRelayWeights");
+  await db.clear("relayScoreboardStats");
   window.location.reload();
 }
 

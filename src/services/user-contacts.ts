@@ -4,17 +4,31 @@ import db from "./db";
 import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
+import { RelayConfig, RelayMode } from "../classes/relay";
 
 export type UserContacts = {
   pubkey: string;
-  relays: Record<string, { read: boolean; write: boolean }>;
+  relays: RelayConfig[];
   contacts: string[];
   contactRelay: Record<string, string | undefined>;
   created_at: number;
 };
 
+type RelayJson = Record<string, { read: boolean; write: boolean }>;
+function relayJsonToRelayConfig(relayJson: RelayJson) {
+  try {
+    return Array.from(Object.entries(relayJson)).map(([url, opts]) => ({
+      url,
+      mode: (opts.write ? RelayMode.WRITE : 0) | (opts.read ? RelayMode.READ : 0),
+    }));
+  } catch (e) {}
+  return [];
+}
+
 function parseContacts(event: NostrEvent): UserContacts {
-  const relays = safeJson(event.content, {}) as UserContacts["relays"];
+  const relayJson = safeJson(event.content, {}) as RelayJson;
+  const relays = relayJsonToRelayConfig(relayJson);
+
   const pubkeys = event.tags.filter(isPTag).map((tag) => tag[1]);
   const contactRelay = event.tags.filter(isPTag).reduce((dir, tag) => {
     if (tag[2]) {

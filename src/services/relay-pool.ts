@@ -66,6 +66,11 @@ export class RelayPoolService {
 
 const relayPoolService = new RelayPoolService();
 
+setInterval(() => {
+  relayPoolService.reconnectRelays();
+  relayPoolService.pruneRelays();
+}, 1000 * 15);
+
 if (import.meta.env.DEV) {
   // @ts-ignore
   window.relayPoolService = relayPoolService;

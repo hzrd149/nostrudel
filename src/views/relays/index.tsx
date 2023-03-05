@@ -25,7 +25,7 @@ import { RelayUrlInput } from "../../components/relay-url-input";
 import useSubject from "../../hooks/use-subject";
 import { RelayStatus } from "../../components/relay-status";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { validateRelayUrl } from "../../helpers/url";
+import { normalizeRelayUrl } from "../../helpers/url";
 
 export default function RelaysView() {
   const relays = useSubject(clientRelaysService.relays);
@@ -54,7 +54,7 @@ export default function RelaysView() {
   const handleAddRelay = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const url = validateRelayUrl(relayInputValue);
+      const url = normalizeRelayUrl(relayInputValue);
       if (!relays.some((r) => r.url === url) && !pendingAdd.some((r) => r.url === url)) {
         addActions.push({ url, mode: RelayMode.ALL });
       }

@@ -57,7 +57,9 @@ const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
 const RootPage = () => (
   <RequireCurrentAccount>
     <Page>
-      <Outlet />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
     </Page>
   </RequireCurrentAccount>
 );

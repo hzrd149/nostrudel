@@ -47,8 +47,7 @@ class RelayScoreboardService {
 
   getAverageResponseTime(relay: string) {
     const times = this.relayResponseTimes.get(relay);
-    // TODO: not sure if this is a good fix for keeping unconnected relays from the top of the list
-    if (times.length === 0) return 200;
+    if (times.length === 0) return Infinity;
     const total = times.reduce((total, [time]) => total + time, 0);
     return total / times.length;
   }

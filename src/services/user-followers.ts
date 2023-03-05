@@ -83,7 +83,7 @@ function receiveEvent(event: NostrEvent) {
 }
 
 subscription.onEvent.subscribe((event) => {
-  // pass the event ot the contacts service
+  // pass the event to the contacts service
   userContactsService.receiveEvent(event);
   receiveEvent(event);
 });

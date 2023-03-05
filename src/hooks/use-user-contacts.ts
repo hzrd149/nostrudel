@@ -5,12 +5,11 @@ import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
 
 export function useUserContacts(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
-  const clientRelays = useReadRelayUrls();
-  const relays = useMemo(() => unique(clientRelays.concat(additionalRelays)), [additionalRelays.join(",")]);
+  const readRelays = useReadRelayUrls(additionalRelays);
 
   const observable = useMemo(
-    () => userContactsService.requestContacts(pubkey, relays, alwaysRequest),
-    [pubkey, relays, alwaysRequest]
+    () => userContactsService.requestContacts(pubkey, readRelays, alwaysRequest),
+    [pubkey, readRelays, alwaysRequest]
   );
   const contacts = useSubject(observable);
 
