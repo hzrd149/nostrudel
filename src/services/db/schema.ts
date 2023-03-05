@@ -35,6 +35,10 @@ export interface CustomSchema extends DBSchema {
     value: { pubkey: string; relays: Record<string, number>; updated: number };
     indexes: { pubkey: string };
   };
+  relayScoreboardStats: {
+    key: string;
+    value: { relay: string; responseTimes: [number, Date][]; disconnects: Date[] };
+  };
   settings: {
     key: string;
     value: any;

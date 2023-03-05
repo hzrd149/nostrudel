@@ -1,3 +1,4 @@
+import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
 import { Subject } from "./subject";
@@ -46,7 +47,9 @@ export class Relay {
   ws?: WebSocket;
   mode: RelayMode = RelayMode.ALL;
 
+  private intentionalClose = false;
   private queue: NostrOutgoingMessage[] = [];
+  private subscriptionStartTime = new Map<string, Date>();
 
   constructor(url: string, mode: RelayMode = RelayMode.ALL) {
     this.url = url;
@@ -55,6 +58,7 @@ export class Relay {
 
   open() {
     if (this.okay) return;
+    this.intentionalClose = false;
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
@@ -69,6 +73,8 @@ export class Relay {
     this.ws.onclose = () => {
       this.onClose.next(this);
 
+      if (!this.intentionalClose) relayScoreboardService.submitDisconnect(this.url);
+
       if (import.meta.env.DEV) {
         console.info(`Relay: ${this.url} disconnected`);
       }
@@ -79,11 +85,29 @@ export class Relay {
     if (this.mode & RelayMode.WRITE) {
       if (this.connected) {
         this.ws?.send(JSON.stringify(json));
+
+        // record start time
+        if (json[0] === "REQ") {
+          this.subStartMeasure(json[1]);
+        }
       } else this.queue.push(json);
     }
   }
   close() {
     this.ws?.close();
+    this.intentionalClose = true;
+    this.subscriptionStartTime.clear();
+  }
+
+  private subStartMeasure(sub: string) {
+    this.subscriptionStartTime.set(sub, new Date());
+  }
+  private subEndMeasure(sub: string) {
+    const date = this.subscriptionStartTime.get(sub);
+    if (date) {
+      relayScoreboardService.submitResponseTime(this.url, new Date().valueOf() - date.valueOf());
+      this.subscriptionStartTime.delete(sub);
+    }
   }
 
   private sendQueued() {
@@ -130,12 +154,14 @@ export class Relay {
       switch (type) {
         case "EVENT":
           this.onEvent.next({ relay: this, type, subId: data[1], body: data[2] });
+          this.subEndMeasure(data[1]);
           break;
         case "NOTICE":
           this.onNotice.next({ relay: this, type, message: data[1] });
           break;
         case "EOSE":
           this.onEOSE.next({ relay: this, type, subId: data[1] });
+          this.subEndMeasure(data[1]);
           break;
         case "OK":
           this.onCommandResult.next({ relay: this, type, eventId: data[1], status: data[2], message: data[3] });

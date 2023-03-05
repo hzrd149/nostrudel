@@ -42,6 +42,7 @@ const MIGRATIONS: MigrationFunction[] = [
 
     db.createObjectStore("settings");
     db.createObjectStore("relayInfo");
+    db.createObjectStore("relayScoreboardStats", { keyPath: "relay" });
     db.createObjectStore("accounts", { keyPath: "pubkey" });
   },
 ];

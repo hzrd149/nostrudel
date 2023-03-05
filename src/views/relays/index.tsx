@@ -13,6 +13,7 @@ import {
   IconButton,
   Text,
   Badge,
+  useToast,
 } from "@chakra-ui/react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { TrashIcon, UndoIcon } from "../../components/icons";
@@ -23,9 +24,12 @@ import { useList } from "react-use";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import useSubject from "../../hooks/use-subject";
 import { RelayStatus } from "../../components/relay-status";
+import relayScoreboardService from "../../services/relay-scoreboard";
+import { validateRelayUrl } from "../../helpers/url";
 
 export const RelaysView = () => {
   const relays = useSubject(clientRelaysService.relays);
+  const toast = useToast();
 
   const [pendingAdd, addActions] = useList<RelayConfig>([]);
   const [pendingRemove, removeActions] = useList<RelayConfig>([]);
@@ -49,11 +53,16 @@ export const RelaysView = () => {
   };
   const handleAddRelay = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setRelayInputValue("");
-
-    const url = relayInputValue;
-    if (!relays.some((r) => r.url === url) && !pendingAdd.some((r) => r.url === url)) {
-      addActions.push({ url, mode: RelayMode.ALL });
+    try {
+      const url = validateRelayUrl(relayInputValue);
+      if (!relays.some((r) => r.url === url) && !pendingAdd.some((r) => r.url === url)) {
+        addActions.push({ url, mode: RelayMode.ALL });
+      }
+      setRelayInputValue("");
+    } catch (e) {
+      if (e instanceof Error) {
+        toast({ status: "error", description: e.message });
+      }
     }
   };
   const savePending = async () => {
@@ -72,6 +81,8 @@ export const RelaysView = () => {
           <Thead>
             <Tr>
               <Th>Url</Th>
+              <Th>Avg Response</Th>
+              <Th>Disconnects</Th>
               <Th>Status</Th>
               <Th></Th>
             </Tr>
@@ -85,6 +96,8 @@ export const RelaysView = () => {
                     <Text>{relay.url}</Text>
                   </Flex>
                 </Td>
+                <Td>{relayScoreboardService.getAverageResponseTime(relay.url).toFixed(2)}ms</Td>
+                <Td>{relayScoreboardService.getDisconnects(relay.url)}</Td>
                 <Td>
                   <RelayStatus url={relay.url} />
                 </Td>
