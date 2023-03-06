@@ -32,7 +32,12 @@ export interface CustomSchema extends DBSchema {
   relayInfo: { key: string; value: RelayInformationDocument };
   relayScoreboardStats: {
     key: string;
-    value: { relay: string; responseTimes: [number, Date][]; disconnects: Date[] };
+    value: {
+      relay: string;
+      responseTimes?: [number, Date][];
+      ejectTimes?: [number, Date][];
+      connectionTimes?: [number, Date][];
+    };
   };
   settings: {
     key: string;

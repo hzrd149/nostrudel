@@ -64,8 +64,9 @@ export const ConnectedRelays = () => {
                   <Tr>
                     <Th>Relay</Th>
                     <Th isNumeric>Claims</Th>
+                    <Th isNumeric>Avg Connect</Th>
                     <Th isNumeric>Avg Response</Th>
-                    <Th isNumeric>Disconnects</Th>
+                    <Th isNumeric>Avg Eject</Th>
                     <Th isNumeric>Status</Th>
                   </Tr>
                 </Thead>
@@ -79,8 +80,9 @@ export const ConnectedRelays = () => {
                         </Flex>
                       </Td>
                       <Td isNumeric>{relayPoolService.getRelayClaims(url).size}</Td>
-                      <Td isNumeric>{relayScoreboardService.getAverageResponseTime(url).toFixed(2)}ms</Td>
-                      <Td isNumeric>{relayScoreboardService.getDisconnects(url)}</Td>
+                      <Td isNumeric>{relayScoreboardService.getAverageConnectionTime(url).toFixed(0)}</Td>
+                      <Td isNumeric>{relayScoreboardService.getAverageResponseTime(url).toFixed(0)}</Td>
+                      <Td isNumeric>{relayScoreboardService.getAverageEjectTime(url).toFixed(0)}</Td>
                       <Td isNumeric>
                         <RelayStatus url={url} />
                       </Td>

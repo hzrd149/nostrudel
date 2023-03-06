@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { RelayConfig, RelayMode } from "../classes/relay";
+import { RelayConfig } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";
-import relayScoreboardService from "../services/relay-scoreboard";
 import { useUserContacts } from "./use-user-contacts";
 import { useUserRelays } from "./use-user-relays";
 
@@ -18,9 +17,6 @@ export default function useMergedUserRelays(pubkey: string) {
     }
 
     // normalize relay urls and remove bad ones
-    const normalized = normalizeRelayConfigs(relays);
-
-    const rankedUrls = relayScoreboardService.getRankedRelays(normalized.map((r) => r.url));
-    return rankedUrls.map((u) => normalized.find((r) => r.url === u) as RelayConfig);
+    return normalizeRelayConfigs(relays);
   }, [userRelays, contacts]);
 }

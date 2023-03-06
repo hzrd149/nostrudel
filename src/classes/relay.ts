@@ -47,9 +47,11 @@ export class Relay {
   ws?: WebSocket;
   mode: RelayMode = RelayMode.ALL;
 
+  private connectionTimer?: () => void;
+  private ejectTimer?: () => void;
   private intentionalClose = false;
+  private subscriptionResTimer = new Map<string, () => void>();
   private queue: NostrOutgoingMessage[] = [];
-  private subscriptionStartTime = new Map<string, Date>();
 
   constructor(url: string, mode: RelayMode = RelayMode.ALL) {
     this.url = url;
@@ -61,8 +63,15 @@ export class Relay {
     this.intentionalClose = false;
     this.ws = new WebSocket(this.url);
 
+    this.connectionTimer = relayScoreboardService.relayConnectionTime.get(this.url).createTimer();
     this.ws.onopen = () => {
       this.onOpen.next(this);
+
+      this.ejectTimer = relayScoreboardService.relayEjectTime.get(this.url).createTimer();
+      if (this.connectionTimer) {
+        this.connectionTimer();
+        this.connectionTimer = undefined;
+      }
 
       this.sendQueued();
 
@@ -73,7 +82,10 @@ export class Relay {
     this.ws.onclose = () => {
       this.onClose.next(this);
 
-      if (!this.intentionalClose) relayScoreboardService.submitDisconnect(this.url);
+      if (!this.intentionalClose && this.ejectTimer) {
+        this.ejectTimer();
+        this.ejectTimer = undefined;
+      }
 
       if (import.meta.env.DEV) {
         console.info(`Relay: ${this.url} disconnected`);
@@ -88,7 +100,7 @@ export class Relay {
 
         // record start time
         if (json[0] === "REQ") {
-          this.subStartMeasure(json[1]);
+          this.startSubResTimer(json[1]);
         }
       } else this.queue.push(json);
     }
@@ -96,17 +108,17 @@ export class Relay {
   close() {
     this.ws?.close();
     this.intentionalClose = true;
-    this.subscriptionStartTime.clear();
+    this.subscriptionResTimer.clear();
   }
 
-  private subStartMeasure(sub: string) {
-    this.subscriptionStartTime.set(sub, new Date());
+  private startSubResTimer(sub: string) {
+    this.subscriptionResTimer.set(sub, relayScoreboardService.relayResponseTimes.get(this.url).createTimer());
   }
-  private subEndMeasure(sub: string) {
-    const date = this.subscriptionStartTime.get(sub);
-    if (date) {
-      relayScoreboardService.submitResponseTime(this.url, new Date().valueOf() - date.valueOf());
-      this.subscriptionStartTime.delete(sub);
+  private endSubResTimer(sub: string) {
+    const endTimer = this.subscriptionResTimer.get(sub);
+    if (endTimer) {
+      endTimer();
+      this.subscriptionResTimer.delete(sub);
     }
   }
 
@@ -154,14 +166,14 @@ export class Relay {
       switch (type) {
         case "EVENT":
           this.onEvent.next({ relay: this, type, subId: data[1], body: data[2] });
-          this.subEndMeasure(data[1]);
+          this.endSubResTimer(data[1]);
           break;
         case "NOTICE":
           this.onNotice.next({ relay: this, type, message: data[1] });
           break;
         case "EOSE":
           this.onEOSE.next({ relay: this, type, subId: data[1] });
-          this.subEndMeasure(data[1]);
+          this.endSubResTimer(data[1]);
           break;
         case "OK":
           this.onCommandResult.next({ relay: this, type, eventId: data[1], status: data[2], message: data[3] });

@@ -81,8 +81,9 @@ export default function RelaysView() {
           <Thead>
             <Tr>
               <Th>Url</Th>
-              <Th>Avg Response</Th>
-              <Th>Disconnects</Th>
+              <Th isNumeric>Avg Connect</Th>
+              <Th isNumeric>Avg Response</Th>
+              <Th isNumeric>Avg Eject</Th>
               <Th>Status</Th>
               <Th></Th>
             </Tr>
@@ -96,8 +97,9 @@ export default function RelaysView() {
                     <Text>{relay.url}</Text>
                   </Flex>
                 </Td>
-                <Td>{relayScoreboardService.getAverageResponseTime(relay.url).toFixed(2)}ms</Td>
-                <Td>{relayScoreboardService.getDisconnects(relay.url)}</Td>
+                <Td isNumeric>{relayScoreboardService.getAverageConnectionTime(relay.url).toFixed(0)}</Td>
+                <Td isNumeric>{relayScoreboardService.getAverageResponseTime(relay.url).toFixed(0)}</Td>
+                <Td isNumeric>{relayScoreboardService.getAverageEjectTime(relay.url).toFixed(0)}</Td>
                 <Td>
                   <RelayStatus url={relay.url} />
                 </Td>
