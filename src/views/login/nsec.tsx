@@ -90,6 +90,10 @@ export default function LoginNsecView() {
             <Link isExternal href="https://getalby.com/" target="_blank">
               Alby
             </Link>
+            {", "}
+            <Link isExternal href="https://github.com/susumuota/nostr-keyx" target="_blank">
+              nostr-keyx
+            </Link>
             {" or "}
             <Link
               isExternal

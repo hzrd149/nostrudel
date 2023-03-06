@@ -46,9 +46,11 @@ export default function LoginStartView() {
           <AlertDescription>There are bugs and things will break.</AlertDescription>
         </Box>
       </Alert>
-      <Button onClick={loginWithExtension} colorScheme="brand">
-        Use browser extension
-      </Button>
+      {window.nostr && (
+        <Button onClick={loginWithExtension} colorScheme="brand">
+          Use browser extension (NIP-07)
+        </Button>
+      )}
       <Button onClick={() => navigate("./nip05")}>Login with Nip-05 Id</Button>
       <Button onClick={() => navigate("./npub")}>Login with pubkey key (npub)</Button>
       <Button onClick={() => navigate("./nsec")}>Login with secret key (nsec)</Button>
