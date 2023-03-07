@@ -26,6 +26,7 @@ import { RelayIcon } from "./icons";
 import { Relay } from "../classes/relay";
 import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
+import { RelayScoreBreakdown } from "./relay-score-breakdown";
 
 export const ConnectedRelays = () => {
   const isMobile = useIsMobile();
@@ -63,11 +64,9 @@ export const ConnectedRelays = () => {
                 <Thead>
                   <Tr>
                     <Th>Relay</Th>
-                    <Th isNumeric>Claims</Th>
-                    <Th isNumeric>Avg Connect</Th>
-                    <Th isNumeric>Avg Response</Th>
-                    <Th isNumeric>Avg Eject</Th>
-                    <Th isNumeric>Status</Th>
+                    <Th>Claims</Th>
+                    <Th>Score</Th>
+                    <Th>Status</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -79,11 +78,11 @@ export const ConnectedRelays = () => {
                           <Text>{url}</Text>
                         </Flex>
                       </Td>
-                      <Td isNumeric>{relayPoolService.getRelayClaims(url).size}</Td>
-                      <Td isNumeric>{relayScoreboardService.getAverageConnectionTime(url).toFixed(0)}</Td>
-                      <Td isNumeric>{relayScoreboardService.getAverageResponseTime(url).toFixed(0)}</Td>
-                      <Td isNumeric>{relayScoreboardService.getAverageEjectTime(url).toFixed(0)}</Td>
-                      <Td isNumeric>
+                      <Td>{relayPoolService.getRelayClaims(url).size}</Td>
+                      <Td>
+                        <RelayScoreBreakdown relay={url} />
+                      </Td>
+                      <Td>
                         <RelayStatus url={url} />
                       </Td>
                     </Tr>

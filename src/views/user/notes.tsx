@@ -22,17 +22,15 @@ import { RelayMode } from "../../classes/relay";
 import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
-import useMergedUserRelays from "../../hooks/use-merged-user-relays";
+import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
+import useRankedRelayConfigs from "../../hooks/use-ranked-relay-configs";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const userRelays = useMergedUserRelays(pubkey);
-  const relays = userRelays
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url)
-    .filter(Boolean)
-    .slice(0, 4) as string[];
+  const userRelays = useFallbackUserRelays(pubkey).filter((r) => r.mode & RelayMode.WRITE);
+  const ranked = useRankedRelayConfigs(userRelays);
+  const relays = ranked.map((r) => r.url).slice(0, 4) as string[];
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
 

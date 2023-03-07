@@ -24,8 +24,8 @@ import { useList } from "react-use";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import useSubject from "../../hooks/use-subject";
 import { RelayStatus } from "../../components/relay-status";
-import relayScoreboardService from "../../services/relay-scoreboard";
 import { normalizeRelayUrl } from "../../helpers/url";
+import { RelayScoreBreakdown } from "../../components/relay-score-breakdown";
 
 export default function RelaysView() {
   const relays = useSubject(clientRelaysService.relays);
@@ -81,9 +81,7 @@ export default function RelaysView() {
           <Thead>
             <Tr>
               <Th>Url</Th>
-              <Th isNumeric>Avg Connect</Th>
-              <Th isNumeric>Avg Response</Th>
-              <Th isNumeric>Avg Eject</Th>
+              <Th>Score</Th>
               <Th>Status</Th>
               <Th></Th>
             </Tr>
@@ -97,9 +95,9 @@ export default function RelaysView() {
                     <Text>{relay.url}</Text>
                   </Flex>
                 </Td>
-                <Td isNumeric>{relayScoreboardService.getAverageConnectionTime(relay.url).toFixed(0)}</Td>
-                <Td isNumeric>{relayScoreboardService.getAverageResponseTime(relay.url).toFixed(0)}</Td>
-                <Td isNumeric>{relayScoreboardService.getAverageEjectTime(relay.url).toFixed(0)}</Td>
+                <Td>
+                  <RelayScoreBreakdown relay={relay.url}/>
+                </Td>
                 <Td>
                   <RelayStatus url={relay.url} />
                 </Td>

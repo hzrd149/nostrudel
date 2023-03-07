@@ -37,6 +37,7 @@ export interface CustomSchema extends DBSchema {
       responseTimes?: [number, Date][];
       ejectTimes?: [number, Date][];
       connectionTimes?: [number, Date][];
+      timeouts?: Date[];
     };
   };
   settings: {

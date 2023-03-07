@@ -67,9 +67,17 @@ export class RelayPoolService {
 const relayPoolService = new RelayPoolService();
 
 setInterval(() => {
-  relayPoolService.reconnectRelays();
-  relayPoolService.pruneRelays();
+  if (document.visibilityState === "visible") {
+    relayPoolService.reconnectRelays();
+    // relayPoolService.pruneRelays();
+  }
 }, 1000 * 15);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    relayPoolService.reconnectRelays();
+  }
+});
 
 if (import.meta.env.DEV) {
   // @ts-ignore

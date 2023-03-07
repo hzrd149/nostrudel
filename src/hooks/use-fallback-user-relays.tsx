@@ -4,9 +4,9 @@ import { normalizeRelayConfigs } from "../helpers/relay";
 import { useUserContacts } from "./use-user-contacts";
 import { useUserRelays } from "./use-user-relays";
 
-export default function useMergedUserRelays(pubkey: string) {
-  const contacts = useUserContacts(pubkey);
-  const userRelays = useUserRelays(pubkey);
+export default function useFallbackUserRelays(pubkey: string, alwaysFetch = false) {
+  const contacts = useUserContacts(pubkey, [], alwaysFetch);
+  const userRelays = useUserRelays(pubkey, [], alwaysFetch);
 
   return useMemo(() => {
     let relays: RelayConfig[] = userRelays?.relays ?? [];

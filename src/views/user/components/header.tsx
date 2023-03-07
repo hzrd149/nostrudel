@@ -15,13 +15,13 @@ import { truncatedId } from "../../../helpers/nostr-event";
 import { fixWebsiteUrl, getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
-import useMergedUserRelays from "../../../hooks/use-merged-user-relays";
+import useFallbackUserRelays from "../../../hooks/use-fallback-user-relays";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import relayScoreboardService from "../../../services/relay-scoreboard";
 import { UserProfileMenu } from "./user-profile-menu";
 
 function useUserShareLink(pubkey: string) {
-  const userRelays = useMergedUserRelays(pubkey);
+  const userRelays = useFallbackUserRelays(pubkey);
 
   return useMemo(() => {
     const writeUrls = userRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);

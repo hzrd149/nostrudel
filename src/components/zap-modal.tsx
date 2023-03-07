@@ -155,7 +155,9 @@ export default function ZapModal({
         document.removeEventListener("visibilitychange", listener);
       }
     };
-    document.addEventListener("visibilitychange", listener);
+    setTimeout(() => {
+      document.addEventListener("visibilitychange", listener);
+    }, 1000 * 2);
   };
 
   const handleClose = () => {

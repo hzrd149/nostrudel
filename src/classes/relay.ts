@@ -36,6 +36,8 @@ export enum RelayMode {
 }
 export type RelayConfig = { url: string; mode: RelayMode };
 
+const CONNECTION_TIMEOUT = 1000 * 30;
+
 export class Relay {
   url: string;
   onOpen = new Subject<Relay>();
@@ -64,7 +66,25 @@ export class Relay {
     this.ws = new WebSocket(this.url);
 
     this.connectionTimer = relayScoreboardService.relayConnectionTime.get(this.url).createTimer();
+    const connectionTimeout: number = window.setTimeout(() => {
+      // end the connection timer after CONNECTION_TIMEOUT
+      if (this.connectionTimer) {
+        this.connectionTimer();
+        this.connectionTimer = undefined;
+      }
+      // relayScoreboardService.relayTimeouts.get(this.url).addIncident();
+    }, CONNECTION_TIMEOUT);
+
+    // for local dev, cancel timeout if module reloads
+    if (import.meta.hot) {
+      import.meta.hot.prune(() => {
+        window.clearTimeout(connectionTimeout);
+        this.ws?.close();
+      });
+    }
+
     this.ws.onopen = () => {
+      window.clearTimeout(connectionTimeout);
       this.onOpen.next(this);
 
       this.ejectTimer = relayScoreboardService.relayEjectTime.get(this.url).createTimer();
