@@ -82,6 +82,11 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - implement NIP-56 and blocking
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
+- Improve link previews https://github.com/pengx17/logseq-plugin-link-preview/blob/master/src/use-link-preview-metadata.tsx
+- Support `magnet:` links
+  - in-browser video player? https://webtorrent.io/
+  - Button to open magnet link in system default app
+  - Add support for uploading files (seed files in background?, how to pick trackers?)
 
 ## Setup
 
