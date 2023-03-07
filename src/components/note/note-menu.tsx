@@ -9,14 +9,27 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
+import { nip19 } from "nostr-tools";
 
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, LikeIcon } from "../icons";
+import { ClipboardIcon, CodeIcon, LikeIcon, ShareIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
 import NoteReactionsModal from "./note-reactions-modal";
+import { getEventRelays } from "../../services/event-relays";
+import relayScoreboardService from "../../services/relay-scoreboard";
+
+function getShareLink(eventId: string) {
+  const relays = getEventRelays(eventId).value;
+  const ranked = relayScoreboardService.getRankedRelays(relays);
+  const onlyTwo = ranked.slice(0, 2);
+
+  if (onlyTwo.length > 0) {
+    return nip19.neventEncode({ id: eventId, relays: onlyTwo });
+  } else return nip19.noteEncode(eventId);
+}
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const infoModal = useDisclosure();
@@ -29,6 +42,9 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
       <MenuIconButton {...props}>
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Reactions
+        </MenuItem>
+        <MenuItem onClick={() => copyToClipboard("nostr:" + getShareLink(event.id))} icon={<ShareIcon />}>
+          Copy Share Link
         </MenuItem>
         {noteId && (
           <MenuItem onClick={() => copyToClipboard(noteId)} icon={<ClipboardIcon />}>

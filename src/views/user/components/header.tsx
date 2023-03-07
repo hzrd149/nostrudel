@@ -1,5 +1,8 @@
 import { Flex, Heading, SkeletonText, Text, Link, IconButton } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
+import { useMemo } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { RelayMode } from "../../../classes/relay";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
 import { QrIconButton } from "../../../components/qr-icon-button";
@@ -12,8 +15,22 @@ import { truncatedId } from "../../../helpers/nostr-event";
 import { fixWebsiteUrl, getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
+import useMergedUserRelays from "../../../hooks/use-merged-user-relays";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import relayScoreboardService from "../../../services/relay-scoreboard";
 import { UserProfileMenu } from "./user-profile-menu";
+
+function useUserShareLink(pubkey: string) {
+  const userRelays = useMergedUserRelays(pubkey);
+
+  return useMemo(() => {
+    const writeUrls = userRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
+    const ranked = relayScoreboardService.getRankedRelays(writeUrls);
+    const onlyTwo = ranked.slice(0, 2);
+
+    return onlyTwo.length > 0 ? nip19.nprofileEncode({ pubkey, relays: onlyTwo }) : nip19.npubEncode(pubkey);
+  }, [userRelays]);
+}
 
 export default function Header({ pubkey }: { pubkey: string }) {
   const isMobile = useIsMobile();
@@ -23,6 +40,8 @@ export default function Header({ pubkey }: { pubkey: string }) {
 
   const account = useCurrentAccount();
   const isSelf = pubkey === account.pubkey;
+
+  const shareLink = useUserShareLink(pubkey);
 
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
@@ -56,7 +75,7 @@ export default function Header({ pubkey }: { pubkey: string }) {
             <KeyIcon />
             <Text>{truncatedId(npub, 10)}</Text>
             <CopyIconButton text={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
-            <QrIconButton content={"nostr:" + npub} title="Show QrCode" aria-label="Show QrCode" size="xs" />
+            <QrIconButton content={"nostr:" + shareLink} title="Show QrCode" aria-label="Show QrCode" size="xs" />
           </Flex>
         )}
         <Flex gap="2" ml="auto">

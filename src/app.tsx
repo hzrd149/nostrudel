@@ -30,6 +30,7 @@ const LoginNsecView = React.lazy(() => import("./views/login/nsec"));
 const UserZapsTab = React.lazy(() => import("./views/user/zaps"));
 const DirectMessagesView = React.lazy(() => import("./views/dm"));
 const DirectMessageChatView = React.lazy(() => import("./views/dm/chat"));
+const NostrLinkView = React.lazy(() => import("./views/link"));
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -107,30 +108,13 @@ const router = createBrowserRouter([
         },
         element: <NoteView />,
       },
-      {
-        path: "settings",
-        element: <SettingsView />,
-      },
-      {
-        path: "relays",
-        element: <RelaysView />,
-      },
-      {
-        path: "notifications",
-        element: <NotificationsView />,
-      },
-      {
-        path: "dm",
-        element: <DirectMessagesView />,
-      },
-      {
-        path: "dm/:key",
-        element: <DirectMessageChatView />,
-      },
-      {
-        path: "profile",
-        element: <ProfileView />,
-      },
+      { path: "settings", element: <SettingsView /> },
+      { path: "relays", element: <RelaysView /> },
+      { path: "notifications", element: <NotificationsView /> },
+      { path: "dm", element: <DirectMessagesView /> },
+      { path: "dm/:key", element: <DirectMessageChatView /> },
+      { path: "profile", element: <ProfileView /> },
+      { path: "nostr-link", element: <NostrLinkView /> },
       {
         path: "",
         element: <HomeView />,

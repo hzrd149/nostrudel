@@ -3,6 +3,14 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Providers } from "./providers";
 
+// register nostr: protocol handler
+try {
+  navigator.registerProtocolHandler("web+nostr", new URL("/nostr-link?q=%s", location.origin).toString());
+} catch (e) {
+  console.log("Failed to register handler");
+  console.log(e);
+}
+
 const element = document.getElementById("root");
 if (!element) throw new Error("missing mount point");
 const root = createRoot(element);

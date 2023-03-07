@@ -148,14 +148,14 @@ export default function ZapModal({
   const payWithApp = async () => {
     window.open("lightning:" + invoice);
 
-    window.addEventListener(
-      "focus",
-      () => {
+    const listener = () => {
+      if (document.visibilityState === "visible") {
         if (onPaid) onPaid();
         onClose();
-      },
-      { once: true }
-    );
+        document.removeEventListener("visibilitychange", listener);
+      }
+    };
+    document.addEventListener("visibilitychange", listener);
   };
 
   const handleClose = () => {

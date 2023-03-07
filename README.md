@@ -57,7 +57,7 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [x] [NIP-15](https://github.com/nostr-protocol/nips/blob/master/15.md): End of Stored Events Notice
 - [x] [NIP-19](https://github.com/nostr-protocol/nips/blob/master/19.md): bech32-encoded entities
 - [ ] [NIP-20](https://github.com/nostr-protocol/nips/blob/master/20.md): Command Results
-- [ ] [NIP-21](https://github.com/nostr-protocol/nips/blob/master/21.md): `nostr:` URL scheme
+- [x] [NIP-21](https://github.com/nostr-protocol/nips/blob/master/21.md): `nostr:` URL scheme
 - [x] [NIP-25](https://github.com/nostr-protocol/nips/blob/master/25.md): Reactions
 - [ ] [NIP-26](https://github.com/nostr-protocol/nips/blob/master/26.md): Delegated Event Signing
 - [ ] [NIP-33](https://github.com/nostr-protocol/nips/blob/master/33.md): Parameterized Replaceable Events
@@ -78,10 +78,8 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - add `client` tag to published events
 - Save note drafts and let users manage them
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
-  - handle `nostr:` links
   - handle image share
 - implement NIP-56 and blocking
-- block notes based on content
 - allow user to select relay or following list when fetching replies (default to my relays + following?)
   - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
 
