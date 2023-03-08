@@ -1,22 +1,17 @@
 import { useMemo } from "react";
-import { RelayConfig } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";
-import { useUserContacts } from "./use-user-contacts";
-import { useUserRelays } from "./use-user-relays";
+import userRelaysFallbackService from "../services/user-relays-fallback";
+import { useReadRelayUrls } from "./use-client-relays";
+import useSubject from "./use-subject";
 
-export default function useFallbackUserRelays(pubkey: string, alwaysFetch = false) {
-  const contacts = useUserContacts(pubkey, [], alwaysFetch);
-  const userRelays = useUserRelays(pubkey, [], alwaysFetch);
+export default function useFallbackUserRelays(pubkey: string, additionalRelays: string[] = [], alwaysFetch = false) {
+  const readRelays = useReadRelayUrls(additionalRelays);
 
-  return useMemo(() => {
-    let relays: RelayConfig[] = userRelays?.relays ?? [];
+  const observable = useMemo(
+    () => userRelaysFallbackService.requestRelays(pubkey, readRelays, alwaysFetch),
+    [pubkey, readRelays.join("|"), alwaysFetch]
+  );
+  const userRelays = useSubject(observable);
 
-    // use the relays stored in contacts if there are no relay config
-    if (relays.length === 0 && contacts) {
-      relays = contacts.relays;
-    }
-
-    // normalize relay urls and remove bad ones
-    return normalizeRelayConfigs(relays);
-  }, [userRelays, contacts]);
+  return userRelays ? normalizeRelayConfigs(userRelays.relays) : [];
 }

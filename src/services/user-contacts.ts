@@ -5,6 +5,7 @@ import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-reque
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { RelayConfig, RelayMode } from "../classes/relay";
+import { normalizeRelayConfigs } from "../helpers/relay";
 
 export type UserContacts = {
   pubkey: string;
@@ -15,7 +16,7 @@ export type UserContacts = {
 };
 
 type RelayJson = Record<string, { read: boolean; write: boolean }>;
-function relayJsonToRelayConfig(relayJson: RelayJson) {
+function relayJsonToRelayConfig(relayJson: RelayJson): RelayConfig[] {
   try {
     return Array.from(Object.entries(relayJson)).map(([url, opts]) => ({
       url,
@@ -27,7 +28,7 @@ function relayJsonToRelayConfig(relayJson: RelayJson) {
 
 function parseContacts(event: NostrEvent): UserContacts {
   const relayJson = safeJson(event.content, {}) as RelayJson;
-  const relays = relayJsonToRelayConfig(relayJson);
+  const relays = normalizeRelayConfigs(relayJsonToRelayConfig(relayJson));
 
   const pubkeys = event.tags.filter(isPTag).map((tag) => tag[1]);
   const contactRelay = event.tags.filter(isPTag).reduce((dir, tag) => {

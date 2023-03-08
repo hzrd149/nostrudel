@@ -5,6 +5,7 @@ import { parseRTag } from "../helpers/nostr-event";
 import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
+import { normalizeRelayConfigs } from "../helpers/relay";
 
 export type UserRelays = {
   pubkey: string;
@@ -15,7 +16,7 @@ export type UserRelays = {
 function parseRelaysEvent(event: NostrEvent): UserRelays {
   return {
     pubkey: event.pubkey,
-    relays: event.tags.filter(isRTag).map(parseRTag),
+    relays: normalizeRelayConfigs(event.tags.filter(isRTag).map(parseRTag)),
     created_at: event.created_at,
   };
 }
@@ -36,6 +37,9 @@ class UserRelaysService {
   }
 
   private subjects = new SuperMap<string, Subject<UserRelays>>(() => new Subject<UserRelays>());
+  getSubject(pubkey: string) {
+    return this.subjects.get(pubkey);
+  }
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.subjects.get(pubkey);
     const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);

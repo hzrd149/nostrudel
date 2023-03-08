@@ -21,6 +21,9 @@ class UserMetadataService {
   }
 
   private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>(() => new Subject<Kind0ParsedContent>());
+  getSubject(pubkey: string) {
+    return this.parsedSubjects.get(pubkey);
+  }
   requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.parsedSubjects.get(pubkey);
     const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);

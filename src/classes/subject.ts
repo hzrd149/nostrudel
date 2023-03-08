@@ -87,6 +87,11 @@ export class Subject<Value> implements Connectable<Value> {
     }
     return this;
   }
+  disconnectAll() {
+    for (const [connectable, listener] of this.upstream) {
+      this.disconnect(connectable);
+    }
+  }
 }
 
 export class PersistentSubject<Value> extends Subject<Value> implements ConnectableApi<Value> {
