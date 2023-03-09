@@ -10,17 +10,20 @@ import {
   Text,
   Flex,
   ButtonGroup,
+  Box,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import moment from "moment";
 import { convertTimestampToDate } from "../../helpers/date";
-import { DislikeIcon, LikeIcon } from "../icons";
+import { DislikeIcon, LightningIcon, LikeIcon } from "../icons";
 import { parseZapNote } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
+import { NoteContents } from "./note-contents";
+import { useIsMobile } from "../../hooks/use-is-mobile";
 
 function getReactionIcon(content: string) {
   switch (content) {
@@ -47,23 +50,28 @@ const ReactionEvent = React.memo(({ event }: { event: NostrEvent }) => (
 ));
 
 const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
+  const isMobile = useIsMobile();
   try {
     const { payment, request } = parseZapNote(event);
 
     if (!payment.amount) return null;
 
     return (
-      <Flex gap="2">
-        <Text>{readablizeSats(payment.amount / 1000)}</Text>
-        <Flex overflow="hidden" gap="2">
-          <UserAvatarLink pubkey={request.pubkey} size="xs" />
-          <UserLink pubkey={request.pubkey} />
+      <Box borderWidth="1px" borderRadius="lg" py="2" px={isMobile ? "2" : "4"}>
+        <Flex gap="2" justifyContent="space-between">
+          <Box>
+            <UserAvatarLink pubkey={request.pubkey} size="xs" mr="2" />
+            <UserLink pubkey={request.pubkey} />
+          </Box>
+          <Text fontWeight="bold">
+            {readablizeSats(payment.amount / 1000)} <LightningIcon color="yellow.500" />
+          </Text>
+          {/* <Text width="35%" textAlign="right">
+            {moment(convertTimestampToDate(event.created_at)).fromNow()}
+          </Text> */}
         </Flex>
         <Text>{request.content}</Text>
-        <Text ml="auto" flexShrink={0}>
-          {moment(convertTimestampToDate(event.created_at)).fromNow()}
-        </Text>
-      </Flex>
+      </Box>
     );
   } catch (e) {
     return <Text>Invalid Zap</Text>;
@@ -82,13 +90,14 @@ export default function NoteReactionsModal({
   const zaps = useEventZaps(noteId, [], true) ?? [];
   const reactions = useEventReactions(noteId, [], true) ?? [];
   const [selected, setSelected] = useState("reactions");
+  const isMobile = useIsMobile();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody p={isMobile ? "2" : "4"}>
           <Flex direction="column" gap="2">
             <ButtonGroup>
               <Button size="sm" variant="outline" onClick={() => setSelected("reactions")}>
