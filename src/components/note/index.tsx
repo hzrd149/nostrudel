@@ -67,7 +67,11 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
           </Flex>
         </CardHeader>
         <CardBody px="2" py="0">
-          <NoteContents event={event} trusted={following.includes(event.pubkey)} maxHeight={maxHeight} />
+          <NoteContents
+            event={event}
+            trusted={event.pubkey === account.pubkey || following.includes(event.pubkey)}
+            maxHeight={maxHeight}
+          />
         </CardBody>
         <CardFooter padding="2" display="flex" gap="2">
           <IconButton
