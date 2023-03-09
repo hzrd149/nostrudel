@@ -24,12 +24,9 @@ export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
 }
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
-  if (metadata?.display_name && metadata?.name) {
-    return metadata.display_name;
-  } else if (metadata?.name) {
-    return metadata.name;
-  }
-  return truncatedId(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? pubkey);
+  return (
+    metadata?.display_name || metadata?.name || truncatedId(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? pubkey)
+  );
 }
 
 export function fixWebsiteUrl(website: string) {
