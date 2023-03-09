@@ -18,7 +18,7 @@ class UserRelaysFallbackService {
         }
       });
       subject.connectWithHandler(userContactsService.getSubject(pubkey), (contacts, next, value) => {
-        if (!value || contacts.created_at > value.created_at) {
+        if (contacts.relays.length > 0 && (!value || contacts.created_at > value.created_at)) {
           next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });
         }
       });
