@@ -90,7 +90,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
                   minLength: 2,
                   maxLength: 64,
                   required: true,
-                  pattern: /^[a-zA-Z0-9_-]{4,16}$/,
+                  pattern: /^[a-zA-Z0-9_-]{4,64}$/,
                 })}
               />
               <FormErrorMessage>{errors.username?.message}</FormErrorMessage>
