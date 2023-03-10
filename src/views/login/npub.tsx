@@ -10,7 +10,7 @@ export default function LoginNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
-  const [relayUrl, setRelayUrl] = useState("");
+  const [relayUrl, setRelayUrl] = useState("wss://relay.damus.io");
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();

@@ -26,6 +26,10 @@ export default function LoginStartView() {
             relays = Object.keys(extRelays).filter((url) => extRelays[url].read);
           }
 
+          if (relays.length === 0) {
+            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
+          }
+
           accountService.addAccount({ pubkey, relays, useExtension: true });
         }
 
