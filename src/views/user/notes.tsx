@@ -22,15 +22,21 @@ import { RelayMode } from "../../classes/relay";
 import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import { isNote } from "../../helpers/nostr-event";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
-import useRankedRelayConfigs from "../../hooks/use-ranked-relay-configs";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import relayScoreboardService from "../../services/relay-scoreboard";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const userRelays = useFallbackUserRelays(pubkey).filter((r) => r.mode & RelayMode.WRITE);
-  const ranked = useRankedRelayConfigs(userRelays);
-  const relays = ranked.map((r) => r.url).slice(0, 4) as string[];
+  // get user relays
+  const userRelays = useFallbackUserRelays(pubkey)
+    .filter((r) => r.mode & RelayMode.WRITE)
+    .map((r) => r.url);
+  // merge the users relays with client relays
+  const mergedRelays = useReadRelayUrls(userRelays);
+  // find the top 4
+  const relays = relayScoreboardService.getRankedRelays(mergedRelays).slice(0, 4);
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
 

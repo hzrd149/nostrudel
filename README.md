@@ -61,6 +61,7 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [x] [NIP-25](https://github.com/nostr-protocol/nips/blob/master/25.md): Reactions
 - [ ] [NIP-26](https://github.com/nostr-protocol/nips/blob/master/26.md): Delegated Event Signing
 - [ ] [NIP-33](https://github.com/nostr-protocol/nips/blob/master/33.md): Parameterized Replaceable Events
+- [ ] [NIP-39](https://github.com/nostr-protocol/nips/blob/master/39.md): External Identities in Profiles
 - [ ] [NIP-36](https://github.com/nostr-protocol/nips/blob/master/36.md): Sensitive Content
 - [ ] [NIP-40](https://github.com/nostr-protocol/nips/blob/master/40.md): Expiration Timestamp
 - [ ] [NIP-42](https://github.com/nostr-protocol/nips/blob/master/42.md): Authentication of clients to relays
