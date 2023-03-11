@@ -14,6 +14,7 @@ const tabs = [
   { label: "Followers", path: "followers" },
   { label: "Following", path: "following" },
   { label: "Relays", path: "relays" },
+  { label: "Reports", path: "reports" },
 ];
 
 const UserView = () => {

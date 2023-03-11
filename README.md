@@ -77,7 +77,6 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - Rebuild relays view to show relay info and settings NIP-11
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
 - Add mentions in notes (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
-- add `client` tag to published events
 - Save note drafts and let users manage them
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
   - handle image share

@@ -1,6 +1,6 @@
 import moment from "moment";
 import { getEventRelays } from "../services/event-relays";
-import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag } from "../types/nostr-event";
+import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../types/nostr-event";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import accountService from "../services/account";
 import { Kind } from "nostr-tools";
@@ -17,6 +17,22 @@ export function truncatedId(id: string, keep = 6) {
   return id.substring(0, keep) + "..." + id.substring(id.length - keep);
 }
 
+export function getContentTagRefs(content: string) {
+  return Array.from(content.matchAll(/#\[(\d+)\]/gi)).map((m) => parseInt(m[1]));
+}
+
+export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
+  const contentTagRefs = getContentTagRefs(content);
+
+  const newTags: Tag[] = [];
+  for (let i = 0; i < tags.length; i++) {
+    if (contentTagRefs.includes(i) === referenced) {
+      newTags.push(tags[i]);
+    }
+  }
+  return newTags;
+}
+
 export type EventReferences = ReturnType<typeof getReferences>;
 export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
@@ -24,7 +40,7 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
 
   const events = eTags.map((t) => t[1]);
   const pubkeys = pTags.map((t) => t[1]);
-  const contentTagRefs = Array.from(event.content.matchAll(/#\[(\d+)\]/gi)).map((m) => parseInt(m[1]));
+  const contentTagRefs = getContentTagRefs(event.content);
 
   let replyId = eTags.find((t) => t[3] === "reply")?.[1];
   let rootId = eTags.find((t) => t[3] === "root")?.[1];

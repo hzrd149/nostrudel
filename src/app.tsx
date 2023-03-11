@@ -31,6 +31,7 @@ const UserZapsTab = React.lazy(() => import("./views/user/zaps"));
 const DirectMessagesView = React.lazy(() => import("./views/dm"));
 const DirectMessageChatView = React.lazy(() => import("./views/dm/chat"));
 const NostrLinkView = React.lazy(() => import("./views/link"));
+const UserReportsTab = React.lazy(() => import("./views/user/reports"));
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },
+          { path: "reports", element: <UserReportsTab /> },
         ],
       },
       {
