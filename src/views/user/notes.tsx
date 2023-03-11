@@ -36,7 +36,7 @@ const UserNotesTab = () => {
   // merge the users relays with client relays
   const readRelays = useReadRelayUrls();
   // find the top 4
-  const relays = relayScoreboardService.getRankedRelays(userRelays.length === 0 ? readRelays : userRelays).slice(0, 4);
+  const relays = userRelays.length === 0 ? readRelays : relayScoreboardService.getRankedRelays(userRelays).slice(0, 4);
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
 
