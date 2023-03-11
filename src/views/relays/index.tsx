@@ -76,7 +76,7 @@ export default function RelaysView() {
 
   return (
     <Flex direction="column" pt="2" pb="2" overflow="auto">
-      <TableContainer mb="4">
+      <TableContainer mb="4" overflowY="initial">
         <Table variant="simple" size="sm">
           <Thead>
             <Tr>
@@ -96,7 +96,7 @@ export default function RelaysView() {
                   </Flex>
                 </Td>
                 <Td>
-                  <RelayScoreBreakdown relay={relay.url}/>
+                  <RelayScoreBreakdown relay={relay.url} />
                 </Td>
                 <Td>
                   <RelayStatus url={relay.url} />
@@ -145,9 +145,6 @@ export default function RelaysView() {
       </form>
 
       <Flex justifyContent="flex-end" gap="2">
-        <Button type="submit" onClick={savePending} isDisabled={saving || !hasPending}>
-          Reset
-        </Button>
         <Button type="submit" isLoading={saving} onClick={savePending} isDisabled={!hasPending}>
           Save Changes
         </Button>

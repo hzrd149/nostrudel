@@ -23,18 +23,6 @@ export default function MobileHeader() {
             Readonly Mode
           </Text>
         )}
-        <Flex gap="2">
-          <ConnectedRelays />
-          <IconButton
-            as={Link}
-            variant="ghost"
-            icon={<NotificationIcon />}
-            aria-label="Notifications"
-            title="Notifications"
-            size="sm"
-            to="/notifications"
-          />
-        </Flex>
       </Flex>
       <MobileSideDrawer isOpen={isOpen} onClose={onClose} />
     </>

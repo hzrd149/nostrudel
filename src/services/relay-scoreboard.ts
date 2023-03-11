@@ -73,9 +73,9 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   addTime(time: number, date: Date = new Date()) {
     this.measures.unshift([time, date]);
   }
-  getCount(since?: Date){
+  getCount(since?: Date) {
     const points = since ? this.measures.filter((m) => m[1] > since) : this.measures;
-    return points.length
+    return points.length;
   }
   getAverage(since?: Date, undef: number = Infinity) {
     const points = since ? this.measures.filter((m) => m[1] > since) : this.measures;
@@ -141,8 +141,8 @@ class RelayScoreboardService {
   //   return this.relayTimeouts.get(relay).getCount(since);
   // }
 
-  hasConnected(relay: string, since?: Date){
-    return this.relayConnectionTime.get(relay).getCount(since)>0;
+  hasConnected(relay: string, since?: Date) {
+    return this.relayConnectionTime.get(relay).getCount(since) > 0;
   }
   getResponseTimeScore(relay: string, since?: Date) {
     const responseTime = this.getAverageResponseTime(relay, since);

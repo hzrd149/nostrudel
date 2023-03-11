@@ -15,7 +15,8 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
-import { LogoutIcon, ProfileIcon, RelayIcon, SettingsIcon } from "../icons";
+import { ConnectedRelays } from "../connected-relays";
+import { HomeIcon, LogoutIcon, ProfileIcon, RelayIcon, SearchIcon, SettingsIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import { UserLink } from "../user-link";
 import AccountSwitcher from "./account-switcher";
@@ -39,6 +40,12 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
         <DrawerBody padding={0} overflowY="auto" overflowX="hidden">
           <AccountSwitcher />
           <Flex direction="column" gap="2" padding="2">
+            <Button onClick={() => navigate(`/`)} leftIcon={<HomeIcon />}>
+              Home
+            </Button>
+            <Button onClick={() => navigate(`/search`)} leftIcon={<SearchIcon />} disabled>
+              Search
+            </Button>
             <Button onClick={() => navigate(`/profile`)} leftIcon={<ProfileIcon />}>
               Profile
             </Button>
@@ -51,6 +58,7 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
             <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />}>
               Logout
             </Button>
+            <ConnectedRelays />
           </Flex>
         </DrawerBody>
       </DrawerContent>

@@ -24,7 +24,7 @@ export default function GlobalTab() {
   const { isOpen: showReplies, onToggle } = useDisclosure();
   const { events, loading, loadMore, loader } = useTimelineLoader(
     `global`,
-    selectedRelay ? [selectedRelay] : availableRelays,
+    selectedRelay ? [selectedRelay] : [],
     { kinds: [1] },
     { pageSize: moment.duration(5, "minutes").asSeconds() }
   );
@@ -35,7 +35,7 @@ export default function GlobalTab() {
     <Flex direction="column" gap="2">
       <Flex gap="2">
         <Select
-          placeholder="All Relays"
+          placeholder="Select Relay"
           maxWidth="250"
           value={selectedRelay}
           onChange={(e) => {
