@@ -15,7 +15,7 @@ const NoteView = () => {
   const isRoot = rootId === focusId;
   const rootPost = thread.get(rootId);
   if (isRoot && rootPost) {
-    pageContent = <ThreadPost post={rootPost} initShowReplies />;
+    pageContent = <ThreadPost post={rootPost} initShowReplies focusId={focusId} />;
   }
 
   const post = thread.get(focusId);
@@ -34,11 +34,11 @@ const NoteView = () => {
         {parentPosts.map((parent) => (
           <Note key={parent.event.id + "-rely"} event={parent.event} maxHeight={200} />
         ))}
-        <ThreadPost key={post.event.id} post={post} initShowReplies />
+        <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
     );
   } else if (events[focusId]) {
-    pageContent = <Note event={events[focusId]} />;
+    pageContent = <Note event={events[focusId]} variant="filled" />;
   }
 
   return (

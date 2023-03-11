@@ -67,7 +67,9 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - [ ] [NIP-42](https://github.com/nostr-protocol/nips/blob/master/42.md): Authentication of clients to relays
 - [ ] [NIP-50](https://github.com/nostr-protocol/nips/blob/master/50.md): Keywords filter
 - [ ] [NIP-56](https://github.com/nostr-protocol/nips/blob/master/56.md): Reporting
+- [ ] [NIP-51](https://github.com/nostr-protocol/nips/blob/master/51.md): Lists (Mute, Pin, People List, and Bookmark list)
 - [x] [NIP-57](https://github.com/nostr-protocol/nips/blob/master/57.md): Lightning Zaps
+- [ ] [NIP-57](https://github.com/nostr-protocol/nips/blob/master/57.md): Badges
 - [x] [NIP-65](https://github.com/nostr-protocol/nips/blob/master/65.md): Relay List Metadata
 
 ## TODO

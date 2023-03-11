@@ -8,9 +8,10 @@ import { useIsMobile } from "../../hooks/use-is-mobile";
 export type ThreadItemProps = {
   post: ThreadItemData;
   initShowReplies?: boolean;
+  focusId?: string;
 };
 
-export const ThreadPost = ({ post, initShowReplies }: ThreadItemProps) => {
+export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) => {
   const isMobile = useIsMobile();
   const [showReplies, setShowReplies] = useState(initShowReplies ?? post.replies.length === 1);
   const toggle = () => setShowReplies((v) => !v);
@@ -19,7 +20,7 @@ export const ThreadPost = ({ post, initShowReplies }: ThreadItemProps) => {
 
   return (
     <Flex direction="column" gap="2">
-      <Note event={post.event} />
+      <Note event={post.event} variant={focusId === post.event.id ? "filled" : "outline"} />
       {post.replies.length > 0 && (
         <>
           <Button variant="link" size="sm" alignSelf="flex-start" onClick={toggle}>
@@ -29,7 +30,7 @@ export const ThreadPost = ({ post, initShowReplies }: ThreadItemProps) => {
           {showReplies && (
             <Flex direction="column" gap="2" pl={isMobile ? 2 : 4} borderLeftColor="gray.500" borderLeftWidth="1px">
               {post.replies.map((child) => (
-                <ThreadPost key={child.event.id} post={child} />
+                <ThreadPost key={child.event.id} post={child} focusId={focusId} />
               ))}
             </Flex>
           )}

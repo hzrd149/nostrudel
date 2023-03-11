@@ -21,7 +21,7 @@ import { useOutletContext } from "react-router-dom";
 import { RelayMode } from "../../classes/relay";
 import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
-import { isNote } from "../../helpers/nostr-event";
+import { isNote, truncatedId } from "../../helpers/nostr-event";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -41,10 +41,10 @@ const UserNotesTab = () => {
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
 
   const { events, loading, loadMore } = useTimelineLoader(
-    `${pubkey}-notes`,
+    `${truncatedId(pubkey)}-notes`,
     relays,
     { authors: [pubkey], kinds: [1] },
-    { pageSize: moment.duration(1, "day").asSeconds() }
+    { pageSize: moment.duration(1, "day").asSeconds(), startLimit: 20 }
   );
   const timeline = showReplies ? events : events.filter(isNote);
 

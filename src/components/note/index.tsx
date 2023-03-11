@@ -9,6 +9,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  CardProps,
   Flex,
   Heading,
   IconButton,
@@ -37,8 +38,9 @@ import { ExpandProvider } from "./expanded";
 export type NoteProps = {
   event: NostrEvent;
   maxHeight?: number;
+  variant?: CardProps["variant"];
 };
-export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
+export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
   const isMobile = useIsMobile();
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
@@ -51,7 +53,7 @@ export const Note = React.memo(({ event, maxHeight }: NoteProps) => {
 
   return (
     <ExpandProvider>
-      <Card variant="outline">
+      <Card variant={variant}>
         <CardHeader padding="2">
           <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
             <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
