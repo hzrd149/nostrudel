@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useUnmount } from "react-use";
-import { NostrQueryWithStart, TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
+import { TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
+import { NostrQuery } from "../types/nostr-query";
 import useSubject from "./use-subject";
 
 type Options = TimelineLoaderOptions & {
   enabled?: boolean;
 };
 
-export function useTimelineLoader(key: string, relays: string[], query: NostrQueryWithStart, opts?: Options) {
+export function useTimelineLoader(key: string, relays: string[], query: NostrQuery, opts?: Options) {
   if (opts && !opts.name) opts.name = key;
 
   const ref = useRef<TimelineLoader | null>(null);

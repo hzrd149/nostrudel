@@ -72,6 +72,7 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 
 ## TODO
 
+- Update TimelineLoader to connect to each relay individually so it better track the latest events
 - Create notifications service that keeps track of read notifications. (show unread count in sidenav)
 - Rebuild relays view to show relay info and settings NIP-11
 - filter list of followers by users the user has blocked/reported (stops bots/spammers from showing up at followers)
@@ -81,8 +82,6 @@ I would recomend you use a browser extension like [Alby](https://getalby.com/) o
 - make app a valid web share target https://developer.chrome.com/articles/web-share-target/
   - handle image share
 - implement NIP-56 and blocking
-- allow user to select relay or following list when fetching replies (default to my relays + following?)
-  - massive thread note1dapvuu8fl09yjtg2gyr2h6nypaffl2sq0aj5raz86463qk5kpyzqlxvtc3
 - Improve link previews https://github.com/pengx17/logseq-plugin-link-preview/blob/master/src/use-link-preview-metadata.tsx
 - Support `magnet:` links
   - in-browser video player? https://webtorrent.io/

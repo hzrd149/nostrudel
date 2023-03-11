@@ -45,7 +45,6 @@ const NotificationsView = () => {
     {
       "#p": [account.pubkey],
       kinds: [1],
-      since: moment().subtract(1, "day").unix(),
     },
     { pageSize: moment.duration(1, "day").asSeconds() }
   );

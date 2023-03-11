@@ -34,16 +34,16 @@ const UserNotesTab = () => {
     .filter((r) => r.mode & RelayMode.WRITE)
     .map((r) => r.url);
   // merge the users relays with client relays
-  const mergedRelays = useReadRelayUrls(userRelays);
+  const readRelays = useReadRelayUrls();
   // find the top 4
-  const relays = relayScoreboardService.getRankedRelays(mergedRelays).slice(0, 4);
+  const relays = relayScoreboardService.getRankedRelays(userRelays.length === 0 ? readRelays : userRelays).slice(0, 4);
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
 
   const { events, loading, loadMore } = useTimelineLoader(
     `${pubkey}-notes`,
     relays,
-    { authors: [pubkey], kinds: [1], since: moment().subtract(1, "day").unix() },
+    { authors: [pubkey], kinds: [1] },
     { pageSize: moment.duration(1, "day").asSeconds() }
   );
   const timeline = showReplies ? events : events.filter(isNote);

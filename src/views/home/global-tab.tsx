@@ -25,7 +25,7 @@ export default function GlobalTab() {
   const { events, loading, loadMore, loader } = useTimelineLoader(
     `global`,
     selectedRelay ? [selectedRelay] : availableRelays,
-    { kinds: [1], since: moment().unix() },
+    { kinds: [1] },
     { pageSize: moment.duration(5, "minutes").asSeconds() }
   );
 

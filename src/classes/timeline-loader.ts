@@ -3,44 +3,40 @@ import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
-import Subject, { PersistentSubject } from "./subject";
-
-export type NostrQueryWithStart = NostrQuery & { since: number };
+import { PersistentSubject } from "./subject";
+import { utils } from "nostr-tools";
 
 type Options = {
   name?: string;
   pageSize: number;
+  startLimit: number;
 };
 export type TimelineLoaderOptions = Partial<Options>;
 
 export class TimelineLoader {
   relays: string[];
-  query: NostrQueryWithStart;
+  query: NostrQuery;
   events = new PersistentSubject<NostrEvent[]>([]);
   loading = new PersistentSubject(false);
   page = new PersistentSubject(0);
 
-  private eventDir = new Map<string, NostrEvent>();
+  private seenEvents = new Set<string>();
   private subscription: NostrMultiSubscription;
-  private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds() };
+  private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds(), startLimit: 10 };
 
-  constructor(relays: string[], query: NostrQueryWithStart, opts?: TimelineLoaderOptions) {
-    if (!query.since) throw new Error('Timeline requires "since" to be set in query');
-
+  constructor(relays: string[], query: NostrQuery, opts?: TimelineLoaderOptions) {
     this.relays = relays;
-    this.query = query;
     Object.assign(this.opts, opts);
+    this.query = { ...query, limit: this.opts.startLimit };
 
     this.subscription = new NostrMultiSubscription(relays, query, opts?.name);
 
-    this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
+    this.subscription.onEvent.subscribe(this.handleEvent, this);
   }
 
-  setQuery(query: NostrQueryWithStart) {
-    if (!query.since) throw new Error('Timeline requires "since" to be set in query');
-
-    this.query = query;
-    this.subscription.setQuery(query);
+  setQuery(query: NostrQuery) {
+    this.query = { ...query, limit: this.opts.startLimit };
+    this.subscription.setQuery(this.query);
   }
 
   setRelays(relays: string[]) {
@@ -49,15 +45,15 @@ export class TimelineLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    if (!this.eventDir.has(event.id)) {
-      this.eventDir.set(event.id, event);
-      this.events.next(Array.from(this.eventDir.values()).sort((a, b) => b.created_at - a.created_at));
+    if (!this.seenEvents.has(event.id)) {
+      this.seenEvents.add(event.id);
+      this.events.next(utils.insertEventIntoDescendingList(Array.from(this.events.value), event));
       if (this.loading.value) this.loading.next(false);
     }
   }
 
   private getPageDates(page: number) {
-    const start = this.query.since;
+    const start = this.events.value[0]?.created_at ?? moment().unix();
     const until = start - page * this.opts.pageSize;
     const since = until - this.opts.pageSize;
 
@@ -84,7 +80,7 @@ export class TimelineLoader {
 
   forgetEvents() {
     this.events.next([]);
-    this.eventDir.clear();
+    this.seenEvents.clear();
     this.subscription.forgetEvents();
   }
   open() {
