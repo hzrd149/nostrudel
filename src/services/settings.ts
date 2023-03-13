@@ -6,7 +6,7 @@ const settings = {
   blurImages: new PersistentSubject(true),
   autoShowMedia: new PersistentSubject(true),
   proxyUserMedia: new PersistentSubject(false),
-  prefetchReactions: new PersistentSubject(false),
+  showReactions: new PersistentSubject(true),
   accounts: new PersistentSubject<Account[]>([]),
 };
 

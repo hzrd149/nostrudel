@@ -25,6 +25,7 @@ export default function SettingsView() {
   const blurImages = useSubject(settings.blurImages);
   const autoShowMedia = useSubject(settings.autoShowMedia);
   const proxyUserMedia = useSubject(settings.proxyUserMedia);
+  const showReactions = useSubject(settings.showReactions);
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -145,6 +146,19 @@ export default function SettingsView() {
                   />
                 </Flex>
                 <FormHelperText>Disabled: images and videos will show expandable buttons.</FormHelperText>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="show-reactions" mb="0">
+                    Show Reactions
+                  </FormLabel>
+                  <Switch
+                    id="show-reactions"
+                    isChecked={showReactions}
+                    onChange={(v) => settings.showReactions.next(v.target.checked)}
+                  />
+                </Flex>
+                <FormHelperText>Enabled: show reactions on notes.</FormHelperText>
               </FormControl>
             </Flex>
           </AccordionPanel>

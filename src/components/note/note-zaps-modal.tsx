@@ -89,7 +89,7 @@ export default function NoteReactionsModal({
 }: { noteId: string } & Omit<ModalProps, "children">) {
   const zaps = useEventZaps(noteId, [], true) ?? [];
   const reactions = useEventReactions(noteId, [], true) ?? [];
-  const [selected, setSelected] = useState("reactions");
+  const [selected, setSelected] = useState("zaps");
   const isMobile = useIsMobile();
 
   return (
@@ -100,11 +100,15 @@ export default function NoteReactionsModal({
         <ModalBody p={isMobile ? "2" : "4"}>
           <Flex direction="column" gap="2">
             <ButtonGroup>
-              <Button size="sm" variant="outline" onClick={() => setSelected("reactions")}>
-                Reactions ({reactions.length})
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSelected("zaps")}>
+              <Button size="sm" variant={selected === "zaps" ? "solid" : "outline"} onClick={() => setSelected("zaps")}>
                 Zaps ({zaps.length})
+              </Button>
+              <Button
+                size="sm"
+                variant={selected === "reactions" ? "solid" : "outline"}
+                onClick={() => setSelected("reactions")}
+              >
+                Reactions ({reactions.length})
               </Button>
             </ButtonGroup>
             {selected === "reactions" &&

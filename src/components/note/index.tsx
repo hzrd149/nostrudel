@@ -34,6 +34,8 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteLikeButton from "./note-like-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
+import useSubject from "../../hooks/use-subject";
+import settings from "../../services/settings";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -44,6 +46,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
   const isMobile = useIsMobile();
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
+  const showReactions = useSubject(settings.showReactions);
 
   const contacts = useUserContacts(account.pubkey);
   const following = contacts?.contacts || [];
@@ -96,7 +99,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
           />
           <ButtonGroup size="sm" variant="link">
             <NoteZapButton note={event} size="sm" />
-            <NoteLikeButton note={event} size="sm" />
+            {showReactions && <NoteLikeButton note={event} size="sm" />}
           </ButtonGroup>
           <Box flexGrow={1} />
           <NoteRelays event={event} size="sm" variant="link" />

@@ -17,7 +17,7 @@ import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
 import { ClipboardIcon, CodeIcon, LikeIcon, ShareIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
-import NoteReactionsModal from "./note-reactions-modal";
+import NoteReactionsModal from "./note-zaps-modal";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 
@@ -41,7 +41,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
     <>
       <MenuIconButton {...props}>
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
-          Reactions
+          Zaps/Reactions
         </MenuItem>
         <MenuItem onClick={() => copyToClipboard("nostr:" + getShareLink(event.id))} icon={<ShareIcon />}>
           Copy Share Link
