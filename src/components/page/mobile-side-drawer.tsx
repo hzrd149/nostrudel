@@ -43,7 +43,7 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
             <Button onClick={() => navigate(`/`)} leftIcon={<HomeIcon />}>
               Home
             </Button>
-            <Button onClick={() => navigate(`/search`)} leftIcon={<SearchIcon />} disabled>
+            <Button onClick={() => navigate(`/search`)} leftIcon={<SearchIcon />}>
               Search
             </Button>
             <Button onClick={() => navigate(`/profile`)} leftIcon={<ProfileIcon />}>
