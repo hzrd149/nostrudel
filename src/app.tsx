@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
@@ -32,6 +32,8 @@ import DirectMessagesView from "./views/dm";
 import DirectMessageChatView from "./views/dm/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
+// code split search view because QrScanner library is 400kB
+const SearchView = React.lazy(() => import("./views/search"));
 
 const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
   let location = useLocation();
@@ -113,6 +115,7 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsView /> },
       { path: "relays", element: <RelaysView /> },
       { path: "notifications", element: <NotificationsView /> },
+      { path: "search", element: <SearchView /> },
       { path: "dm", element: <DirectMessagesView /> },
       { path: "dm/:key", element: <DirectMessageChatView /> },
       { path: "profile", element: <ProfileView /> },

@@ -15,7 +15,6 @@ export default function MobileBottomNav() {
         onClick={() => navigate(`/search`)}
         flexGrow="1"
         size="md"
-        disabled
       />
       <IconButton icon={<ChatIcon />} aria-label="Messages" onClick={() => navigate(`/dm`)} flexGrow="1" size="md" />
       <IconButton

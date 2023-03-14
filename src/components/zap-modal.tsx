@@ -39,13 +39,23 @@ type FormValues = {
   comment: string;
 };
 
+export type ZapModalProps = Omit<ModalProps, "children"> & {
+  event?: NostrEvent;
+  pubkey: string;
+  onPaid?: () => void;
+  initialComment?: string;
+  initialAmount?: number;
+};
+
 export default function ZapModal({
   event,
   pubkey,
   onClose,
   onPaid,
+  initialComment,
+  initialAmount,
   ...props
-}: { event?: NostrEvent; pubkey: string; onPaid?: () => void } & Omit<ModalProps, "children">) {
+}: ZapModalProps) {
   const metadata = useUserMetadata(pubkey);
   const { requestSignature } = useSigningContext();
   const toast = useToast();
@@ -62,8 +72,8 @@ export default function ZapModal({
   } = useForm<FormValues>({
     mode: "onBlur",
     defaultValues: {
-      amount: 10,
-      comment: "",
+      amount: initialAmount ?? 10,
+      comment: initialComment ?? "",
     },
   });
 

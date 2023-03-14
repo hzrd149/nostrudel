@@ -52,7 +52,7 @@ export default function NostrLinkView() {
   const cleanLink = rawLink.replace(/(web\+)?nostr:/, "");
   const decoded = nip19.decode(cleanLink);
 
-  if ((decoded.type = "npub")) return <NpubLinkHandler pubkey={decoded.data as string} />;
+  if (decoded.type === "npub") return <NpubLinkHandler pubkey={decoded.data as string} />;
   if (decoded.type === "nprofile") {
     const data = decoded.data as ProfilePointer;
     return <NpubLinkHandler pubkey={data.pubkey} relays={data.relays} />;

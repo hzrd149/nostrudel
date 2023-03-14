@@ -24,6 +24,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^3.1.4",
     "react-hook-form": "^7.43.1",
+    "react-qr-barcode-scanner": "^1.0.6",
     "react-router-dom": "^6.5.0",
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",

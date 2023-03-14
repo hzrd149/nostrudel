@@ -1,4 +1,4 @@
-import { Flex, Heading, SkeletonText, Text, Link, IconButton } from "@chakra-ui/react";
+import { Flex, Heading, SkeletonText, Text, Link, IconButton, Image } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useMemo } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
