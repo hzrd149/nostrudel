@@ -33,7 +33,7 @@ function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">)
             data={event.content}
             pubkey={isOwnMessage ? getMessageRecipient(event) ?? "" : event.pubkey}
           >
-            {(text) => <Text>{text}</Text>}
+            {(text) => <Text whiteSpace="pre-wrap">{text}</Text>}
           </DecryptPlaceholder>
         </CardBody>
       </Card>
