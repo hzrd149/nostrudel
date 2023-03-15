@@ -1,4 +1,15 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Flex, Heading, Spinner } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Spinner,
+  useToast,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AccountCard from "./components/account-card";
@@ -7,6 +18,7 @@ import accountService from "../../services/account";
 
 export default function LoginStartView() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const accounts = useSubject(accountService.accounts);
 
@@ -19,7 +31,7 @@ export default function LoginStartView() {
 
         if (!accountService.hasAccount(pubkey)) {
           let relays: string[] = [];
-          const extRelays = await window.nostr.getRelays();
+          const extRelays = (await window.nostr.getRelays?.()) ?? [];
           if (Array.isArray(extRelays)) {
             relays = extRelays;
           } else {
@@ -36,6 +48,11 @@ export default function LoginStartView() {
         accountService.switchAccount(pubkey);
       } catch (e) {}
       setLoading(false);
+    } else {
+      toast({
+        status: "warning",
+        title: "Cant find extension",
+      });
     }
   };
 
@@ -50,11 +67,9 @@ export default function LoginStartView() {
           <AlertDescription>There are bugs and things will break.</AlertDescription>
         </Box>
       </Alert>
-      {window.nostr && (
-        <Button onClick={loginWithExtension} colorScheme="brand">
-          Use browser extension (NIP-07)
-        </Button>
-      )}
+      <Button onClick={loginWithExtension} colorScheme="brand">
+        Use browser extension (NIP-07)
+      </Button>
       <Button onClick={() => navigate("./nip05")}>Login with Nip-05 Id</Button>
       <Button onClick={() => navigate("./npub")}>Login with pubkey key (npub)</Button>
       <Button onClick={() => navigate("./nsec")}>Login with secret key (nsec)</Button>
