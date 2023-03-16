@@ -52,7 +52,6 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const { isOpen: showPreview, onToggle: togglePreview } = useDisclosure();
   const [draft, setDraft] = useState<DraftNostrEvent>(() => Object.assign(emptyDraft(), initialDraft));
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  const imageCaptureRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const uploadImage = async (imageFile: File) => {
@@ -142,16 +141,6 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
                 if (img) uploadImage(img);
               }}
             />
-            <VisuallyHiddenInput
-              type="file"
-              accept="image/*"
-              ref={imageCaptureRef}
-              capture="environment"
-              onChange={(e) => {
-                const img = e.target.files?.[0];
-                if (img) uploadImage(img);
-              }}
-            />
             <IconButton
               icon={<ImageIcon />}
               aria-label="Upload Image"
@@ -159,15 +148,6 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
               onClick={() => imageUploadRef.current?.click()}
               isLoading={uploading}
             />
-            {isMobile && (
-              <IconButton
-                icon={<CameraIcon />}
-                aria-label="Capture Image"
-                title="Capture Image"
-                onClick={() => imageUploadRef.current?.click()}
-                isLoading={uploading}
-              />
-            )}
           </Flex>
           {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
           <Button onClick={onClose}>Cancel</Button>
