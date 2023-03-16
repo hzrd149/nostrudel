@@ -16,12 +16,14 @@ import moment from "moment";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
+import { normalizeToHex } from "../../helpers/nip19";
 import { getReferences } from "../../helpers/nostr-event";
+import { mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { CameraIcon, ImageIcon } from "../icons";
+import { ImageIcon } from "../icons";
 import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
@@ -33,6 +35,32 @@ function emptyDraft(): DraftNostrEvent {
     tags: [],
     created_at: moment().unix(),
   };
+}
+
+function finalizeNote(draft: DraftNostrEvent) {
+  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags), created_at: moment().unix() };
+
+  // replace all occurrences of @npub and @note
+  while (true) {
+    const match = mentionNpubOrNote.exec(updatedDraft.content);
+    if (!match || match.index === undefined) break;
+
+    const hex = normalizeToHex(match[1]);
+    if (!hex) continue;
+    // TODO: find the best relay for this user or note
+    const index = updatedDraft.tags.push([match[2] === "npub1" ? "p" : "e", hex, "", "mention"]) - 1;
+
+    // replace the npub1 or note1 with a mention tag #[0]
+    const c = updatedDraft.content;
+    updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
+  }
+
+  // add client tag, TODO: find a better place for this
+  if (!updatedDraft.tags.some((t) => t[0] === "client")) {
+    updatedDraft.tags.push(["client", "noStrudel"]);
+  }
+
+  return updatedDraft;
 }
 
 type PostModalProps = {
@@ -84,11 +112,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
 
   const handleSubmit = async () => {
     setWaiting(true);
-    const updatedDraft: DraftNostrEvent = { ...draft, created_at: moment().unix() };
-    // add client tag, TODO: find a better place for this
-    if (!updatedDraft.tags.some((t) => t[0] === "client")) {
-      updatedDraft.tags.push(["client", "noStrudel"]);
-    }
+    const updatedDraft = finalizeNote(draft);
     const event = await requestSignature(updatedDraft);
     setWaiting(false);
     if (!event) return;
@@ -116,7 +140,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
           </Text>
         )}
         {showPreview ? (
-          <NoteContents event={draft} trusted />
+          <NoteContents event={finalizeNote(draft)} trusted />
         ) : (
           <Textarea
             autoFocus

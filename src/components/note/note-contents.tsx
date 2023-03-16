@@ -191,23 +191,6 @@ const embeds: EmbedType[] = [
     ),
     isMedia: false,
   },
-  // npub1 and note1 ids
-  {
-    regexp: /@?((npub1|note1)[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/m,
-    render: (match) => {
-      switch (match[2]) {
-        case "npub1":
-          const key = normalizeToHex(match[1]);
-          return key ? <UserLink color="blue.500" pubkey={key} showAt /> : match[0];
-        case "note1":
-          const noteId = normalizeToHex(match[1]);
-          return noteId ? <QuoteNote noteId={noteId} /> : match[0];
-        default:
-          return match[0];
-      }
-    },
-    isMedia: false,
-  },
   // Nostr Mention Links
   {
     regexp: /#\[(\d+)\]/,
