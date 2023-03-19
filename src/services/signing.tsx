@@ -3,6 +3,8 @@ import { Account } from "./account";
 import db from "./db";
 import { nip04, signEvent, getEventHash, getPublicKey } from "nostr-tools";
 
+const decryptedKeys = new Map<string, string>();
+
 class SigningService {
   private async getSalt() {
     let salt = await db.get("settings", "salt");
@@ -16,7 +18,9 @@ class SigningService {
   }
 
   private async getKeyMaterial() {
-    const password = window.prompt("Enter local encryption password");
+    const password = window.prompt(
+      "Enter local encryption password. This password is used to keep your secret key save."
+    );
     if (!password) throw new Error("Password required");
     const enc = new TextEncoder();
     return window.crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]);
@@ -53,12 +57,18 @@ class SigningService {
 
   async decryptSecKey(account: Account) {
     if (!account.secKey) throw new Error("Account dose not have a secret key");
+
+    const cache = decryptedKeys.get(account.pubkey);
+    if (cache) return cache;
+
     const key = await this.getEncryptionKey();
     const decode = new TextDecoder();
 
     try {
       const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: account.iv }, key, account.secKey);
-      return decode.decode(decrypted);
+      const secKey = decode.decode(decrypted);
+      decryptedKeys.set(account.pubkey, secKey);
+      return secKey;
     } catch (e) {
       throw new Error("Failed to decrypt secret key");
     }

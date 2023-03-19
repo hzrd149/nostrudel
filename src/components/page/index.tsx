@@ -27,7 +27,7 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
       size="lg"
       display="flex"
       flexDirection="column"
-      height="100vh"
+      height="100%"
       overflow="hidden"
       position="relative"
       padding="0"

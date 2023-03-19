@@ -44,7 +44,7 @@ const UserNotesTab = () => {
     `${truncatedId(pubkey)}-notes`,
     relays,
     { authors: [pubkey], kinds: [1] },
-    { pageSize: moment.duration(1, "day").asSeconds(), startLimit: 20 }
+    { pageSize: moment.duration(2, "day").asSeconds(), startLimit: 20 }
   );
   const timeline = showReplies ? events : events.filter(isNote);
 
