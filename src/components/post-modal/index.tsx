@@ -55,11 +55,6 @@ function finalizeNote(draft: DraftNostrEvent) {
     updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
   }
 
-  // add client tag, TODO: find a better place for this
-  if (!updatedDraft.tags.some((t) => t[0] === "client")) {
-    updatedDraft.tags.push(["client", "noStrudel"]);
-  }
-
   return updatedDraft;
 }
 
