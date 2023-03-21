@@ -45,7 +45,7 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
         <MenuItem
           as="a"
           icon={<Avatar src={IMAGE_ICONS.nostrGuruIcon} size="xs" />}
-          href={`https://www.nostr.guru/p/${npub}`}
+          href={`https://www.nostr.guru/p/${pubkey}`}
           target="_blank"
         >
           Open in Nostr.guru
