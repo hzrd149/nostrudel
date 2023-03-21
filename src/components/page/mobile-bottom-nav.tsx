@@ -1,10 +1,14 @@
-import { ChatIcon } from "@chakra-ui/icons";
 import { Flex, IconButton } from "@chakra-ui/react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { FeedIcon, HomeIcon, NotificationIcon, SearchIcon, SettingsIcon } from "../icons";
+import { useCurrentAccount } from "../../hooks/use-current-account";
+import { PostModalContext } from "../../providers/post-modal-provider";
+import { ChatIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
 
 export default function MobileBottomNav() {
+  const { openModal } = useContext(PostModalContext);
   const navigate = useNavigate();
+  const account = useCurrentAccount();
 
   return (
     <Flex flexShrink={0} gap="2" padding="2">
@@ -15,6 +19,16 @@ export default function MobileBottomNav() {
         onClick={() => navigate(`/search`)}
         flexGrow="1"
         size="md"
+      />
+      <IconButton
+        icon={<PlusCircleIcon fontSize="1.8em" />}
+        aria-label="New Note"
+        onClick={() => {
+          openModal();
+        }}
+        variant="solid"
+        colorScheme="brand"
+        isDisabled={account.readonly}
       />
       <IconButton icon={<ChatIcon />} aria-label="Messages" onClick={() => navigate(`/dm`)} flexGrow="1" size="md" />
       <IconButton

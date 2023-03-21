@@ -23,27 +23,27 @@ export const Page = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
 
   return (
-    <Container
-      size="lg"
-      display="flex"
-      flexDirection="column"
-      height="100%"
-      overflow="hidden"
-      position="relative"
-      padding="0"
-    >
-      <ReloadPrompt />
-      {isMobile && <MobileHeader />}
-      <Flex gap="4" grow={1} overflow="hidden">
-        {!isMobile && <DesktopSideNav />}
-        <Flex flexGrow={1} direction="column" overflow="hidden">
-          <ErrorBoundary>
-            <PostModalProvider>{children}</PostModalProvider>
-          </ErrorBoundary>
+    <PostModalProvider>
+      <Container
+        size="lg"
+        display="flex"
+        flexDirection="column"
+        height="100%"
+        overflow="hidden"
+        position="relative"
+        padding="0"
+      >
+        <ReloadPrompt />
+        {isMobile && <MobileHeader />}
+        <Flex gap="4" grow={1} overflow="hidden">
+          {!isMobile && <DesktopSideNav />}
+          <Flex flexGrow={1} direction="column" overflow="hidden">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </Flex>
+          {!isMobile && <FollowingSideNav />}
         </Flex>
-        {!isMobile && <FollowingSideNav />}
-      </Flex>
-      {isMobile && <MobileBottomNav />}
-    </Container>
+        {isMobile && <MobileBottomNav />}
+      </Container>
+    </PostModalProvider>
   );
 };

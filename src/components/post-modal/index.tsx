@@ -179,7 +179,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalBody padding={isMobile ? "2" : "4"}>{renderContent()}</ModalBody>
