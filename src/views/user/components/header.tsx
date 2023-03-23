@@ -5,7 +5,7 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { RelayMode } from "../../../classes/relay";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
-import { QrIconButton } from "../../../components/qr-icon-button";
+import { QrIconButton } from "./share-qr-button";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
 import { UserFollowButton } from "../../../components/user-follow-button";
@@ -75,7 +75,7 @@ export default function Header({ pubkey }: { pubkey: string }) {
             <KeyIcon />
             <Text>{truncatedId(npub, 10)}</Text>
             <CopyIconButton text={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
-            <QrIconButton content={"nostr:" + shareLink} title="Show QrCode" aria-label="Show QrCode" size="xs" />
+            <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
           </Flex>
         )}
         <Flex gap="2" ml="auto">

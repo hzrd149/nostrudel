@@ -7,6 +7,7 @@ const settings = {
   autoShowMedia: new PersistentSubject(true),
   proxyUserMedia: new PersistentSubject(false),
   showReactions: new PersistentSubject(true),
+  showSignatureVerification: new PersistentSubject(false),
   accounts: new PersistentSubject<Account[]>([]),
 };
 

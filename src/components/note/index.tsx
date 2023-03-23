@@ -3,7 +3,6 @@ import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
 import {
   Box,
-  Button,
   ButtonGroup,
   Card,
   CardBody,
@@ -36,6 +35,7 @@ import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
+import EventVerificationIcon from "../event-verification-icon";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -47,6 +47,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
   const showReactions = useSubject(settings.showReactions);
+  const showSignatureVerification = useSubject(settings.showSignatureVerification);
 
   const contacts = useUserContacts(account.pubkey);
   const following = contacts?.contacts || [];
@@ -65,7 +66,8 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
               <UserLink pubkey={event.pubkey} />
             </Heading>
             <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-            {!isMobile && <Flex grow={1} />}
+            <Flex grow={1} />
+            {showSignatureVerification && <EventVerificationIcon event={event} />}
             <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
               {moment(convertTimestampToDate(event.created_at)).fromNow()}
             </Link>

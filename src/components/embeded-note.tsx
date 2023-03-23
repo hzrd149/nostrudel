@@ -11,10 +11,13 @@ import { UserLink } from "./user-link";
 import { UserDnsIdentityIcon } from "./user-dns-identity";
 import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
 import { convertTimestampToDate } from "../helpers/date";
+import useSubject from "../hooks/use-subject";
+import settings from "../services/settings";
+import EventVerificationIcon from "./event-verification-icon";
 
 const EmbeddedNote = ({ note }: { note: NostrEvent }) => {
-  const isMobile = useIsMobile();
   const account = useCurrentAccount();
+  const showSignatureVerification = useSubject(settings.showSignatureVerification);
 
   const contacts = useUserContacts(account.pubkey);
   const following = contacts?.contacts || [];
@@ -29,7 +32,8 @@ const EmbeddedNote = ({ note }: { note: NostrEvent }) => {
             <UserLink pubkey={note.pubkey} />
           </Heading>
           <UserDnsIdentityIcon pubkey={note.pubkey} onlyIcon />
-          {!isMobile && <Flex grow={1} />}
+          <Flex grow={1} />
+          {showSignatureVerification && <EventVerificationIcon event={note} />}
           <Link as={RouterLink} to={`/n/${normalizeToBech32(note.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
             {moment(convertTimestampToDate(note.created_at)).fromNow()}
           </Link>

@@ -26,6 +26,7 @@ export default function SettingsView() {
   const autoShowMedia = useSubject(settings.autoShowMedia);
   const proxyUserMedia = useSubject(settings.proxyUserMedia);
   const showReactions = useSubject(settings.showReactions);
+  const showSignatureVerification = useSubject(settings.showSignatureVerification);
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -129,9 +130,9 @@ export default function SettingsView() {
                   />
                 </Flex>
                 <FormHelperText>
-                  <span>Enabled: media.nostr.band is used to get smaller of profile images (saves ~50Mb of data)</span>
+                  <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
                   <br />
-                  <span>Side Effect: some user pictures may not load or may be outdated</span>
+                  <span>Side Effect: Some user pictures may not load or may be outdated</span>
                 </FormHelperText>
               </FormControl>
               <FormControl>
@@ -145,12 +146,12 @@ export default function SettingsView() {
                     onChange={(v) => settings.autoShowMedia.next(v.target.checked)}
                   />
                 </Flex>
-                <FormHelperText>Disabled: images and videos will show expandable buttons.</FormHelperText>
+                <FormHelperText>Disabled: Images and videos will show expandable buttons</FormHelperText>
               </FormControl>
               <FormControl>
                 <Flex alignItems="center">
                   <FormLabel htmlFor="show-reactions" mb="0">
-                    Show Reactions
+                    Show reactions
                   </FormLabel>
                   <Switch
                     id="show-reactions"
@@ -158,7 +159,20 @@ export default function SettingsView() {
                     onChange={(v) => settings.showReactions.next(v.target.checked)}
                   />
                 </Flex>
-                <FormHelperText>Enabled: show reactions on notes.</FormHelperText>
+                <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
+              </FormControl>
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="show-sig-verify" mb="0">
+                    Show signature verification
+                  </FormLabel>
+                  <Switch
+                    id="show-sig-verify"
+                    isChecked={showSignatureVerification}
+                    onChange={(v) => settings.showSignatureVerification.next(v.target.checked)}
+                  />
+                </Flex>
+                <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
               </FormControl>
             </Flex>
           </AccordionPanel>
