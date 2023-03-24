@@ -14,13 +14,14 @@ import {
   ButtonGroup,
   FormHelperText,
   Select,
+  Link,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import settings, { LightningPayMode } from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
 import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
-import { LightningIcon, LogoutIcon } from "../../components/icons";
+import { GithubIcon, LightningIcon, LogoutIcon } from "../../components/icons";
 
 export default function SettingsView() {
   const blurImages = useSubject(settings.blurImages);
@@ -237,10 +238,13 @@ export default function SettingsView() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Flex gap="2" padding="4">
+      <Flex gap="2" padding="4" alignItems="center" justifyContent="space-between">
         <Button leftIcon={<LogoutIcon />} onClick={() => accountService.logout()}>
           Logout
         </Button>
+        <Link isExternal href="https://github.com/hzrd149/nostrudel">
+          <GithubIcon /> Github
+        </Link>
       </Flex>
     </Flex>
   );
