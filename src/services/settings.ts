@@ -2,6 +2,12 @@ import { PersistentSubject } from "../classes/subject";
 import db from "./db";
 import { Account } from "./account";
 
+export enum LightningPayMode {
+  Prompt = "prompt",
+  Webln = "webln",
+  External = "external",
+}
+
 const settings = {
   blurImages: new PersistentSubject(true),
   autoShowMedia: new PersistentSubject(true),
@@ -9,6 +15,7 @@ const settings = {
   showReactions: new PersistentSubject(true),
   showSignatureVerification: new PersistentSubject(false),
   accounts: new PersistentSubject<Account[]>([]),
+  lightningPayMode: new PersistentSubject<LightningPayMode>(LightningPayMode.Prompt),
 };
 
 async function loadSettings() {
