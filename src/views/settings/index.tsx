@@ -13,13 +13,15 @@ import {
   AccordionIcon,
   ButtonGroup,
   FormHelperText,
+  Select,
+  Link,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import settings from "../../services/settings";
+import settings, { LightningPayMode } from "../../services/settings";
 import { clearCacheData, deleteDatabase } from "../../services/db";
 import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
-import { LogoutIcon } from "../../components/icons";
+import { GithubIcon, LightningIcon, LogoutIcon } from "../../components/icons";
 
 export default function SettingsView() {
   const blurImages = useSubject(settings.blurImages);
@@ -27,6 +29,7 @@ export default function SettingsView() {
   const proxyUserMedia = useSubject(settings.proxyUserMedia);
   const showReactions = useSubject(settings.showReactions);
   const showSignatureVerification = useSubject(settings.showSignatureVerification);
+  const lightningPayMode = useSubject(settings.lightningPayMode);
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -182,6 +185,42 @@ export default function SettingsView() {
           <h2>
             <AccordionButton>
               <Box as="span" flex="1" textAlign="left">
+                Lightning <LightningIcon color="yellow.400" />
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel>
+            <Flex direction="column" gap="4">
+              <FormControl>
+                <FormLabel htmlFor="lightning-payment-mode" mb="0">
+                  Payment mode
+                </FormLabel>
+                <Select
+                  id="lightning-payment-mode"
+                  value={lightningPayMode}
+                  onChange={(e) => settings.lightningPayMode.next(e.target.value as LightningPayMode)}
+                >
+                  <option value="prompt">Prompt</option>
+                  <option value="webln">WebLN</option>
+                  <option value="external">External</option>
+                </Select>
+                <FormHelperText>
+                  <span>Prompt: Ask every time</span>
+                  <br />
+                  <span>WebLN: Use browser extension</span>
+                  <br />
+                  <span>External: Open an external app using "lightning:" link</span>
+                </FormHelperText>
+              </FormControl>
+            </Flex>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
                 Database
               </Box>
               <AccordionIcon />
@@ -199,10 +238,13 @@ export default function SettingsView() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Flex gap="2" padding="4">
+      <Flex gap="2" padding="4" alignItems="center" justifyContent="space-between">
         <Button leftIcon={<LogoutIcon />} onClick={() => accountService.logout()}>
           Logout
         </Button>
+        <Link isExternal href="https://github.com/hzrd149/nostrudel">
+          <GithubIcon /> Github
+        </Link>
       </Flex>
     </Flex>
   );

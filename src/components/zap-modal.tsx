@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonGroup,
+  DefaultIcon,
   Flex,
   IconButton,
   Input,
@@ -33,6 +34,7 @@ import { useSigningContext } from "../providers/signing-provider";
 import QrCodeSvg from "./qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
 import { useIsMobile } from "../hooks/use-is-mobile";
+import settings from "../services/settings";
 
 type FormValues = {
   amount: number;
@@ -59,7 +61,7 @@ export default function ZapModal({
   const metadata = useUserMetadata(pubkey);
   const { requestSignature } = useSigningContext();
   const toast = useToast();
-  const [invoice, setInvoice] = useState<string>();
+  const [promptInvoice, setPromptInvoice] = useState<string>();
   const { isOpen: showQr, onToggle: toggleQr } = useDisclosure();
   const isMobile = useIsMobile();
 
@@ -118,7 +120,7 @@ export default function ZapModal({
               const parsed = parsePaymentRequest(payRequest);
               if (parsed.amount !== amountInMilisat) throw new Error("incorrect amount");
 
-              setInvoice(payRequest);
+              payInvoice(payRequest);
             } else throw new Error("Failed to get invoice");
           }
         } else {
@@ -131,7 +133,7 @@ export default function ZapModal({
             const parsed = parsePaymentRequest(payRequest);
             if (parsed.amount !== amountInMilisat) throw new Error("incorrect amount");
 
-            setInvoice(payRequest);
+            payInvoice(payRequest);
           } else throw new Error("Failed to get invoice");
         }
       } else throw new Error("Failed to get LNURL metadata");
@@ -140,7 +142,7 @@ export default function ZapModal({
     }
   };
 
-  const payWithWebLn = async () => {
+  const payWithWebLn = async (invoice: string) => {
     if (window.webln && invoice) {
       if (!window.webln.enabled) await window.webln.enable();
       await window.webln.sendPayment(invoice);
@@ -155,7 +157,7 @@ export default function ZapModal({
       onClose();
     }
   };
-  const payWithApp = async () => {
+  const payWithApp = async (invoice: string) => {
     window.open("lightning:" + invoice);
 
     const listener = () => {
@@ -170,9 +172,24 @@ export default function ZapModal({
     }, 1000 * 2);
   };
 
+  const payInvoice = (invoice: string) => {
+    switch (settings.lightningPayMode.value) {
+      case "webln":
+        payWithWebLn(invoice);
+        break;
+      case "external":
+        payWithApp(invoice);
+        break;
+      default:
+      case "prompt":
+        setPromptInvoice(invoice);
+        break;
+    }
+  };
+
   const handleClose = () => {
-    // if there was an invoice and we a closing the modal. presume it was paid
-    if (invoice && onPaid) {
+    // if there was an invoice and we are closing the modal. presume it was paid
+    if (promptInvoice && onPaid) {
       onPaid();
     }
     onClose();
@@ -183,11 +200,11 @@ export default function ZapModal({
       <ModalOverlay />
       <ModalContent>
         <ModalBody padding="4">
-          {invoice ? (
+          {promptInvoice ? (
             <Flex gap="4" direction="column">
-              {showQr && <QrCodeSvg content={invoice} />}
+              {showQr && <QrCodeSvg content={promptInvoice} />}
               <Flex gap="2">
-                <Input value={invoice} readOnly />
+                <Input value={promptInvoice} readOnly />
                 <IconButton
                   icon={<QrCodeIcon />}
                   aria-label="Show QrCode"
@@ -195,15 +212,21 @@ export default function ZapModal({
                   variant="solid"
                   size="md"
                 />
-                <CopyIconButton text={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
+                <CopyIconButton text={promptInvoice} aria-label="Copy Invoice" variant="solid" size="md" />
               </Flex>
               <Flex gap="2">
                 {window.webln && (
-                  <Button onClick={payWithWebLn} flex={1} variant="solid" size="md">
+                  <Button onClick={() => payWithWebLn(promptInvoice)} flex={1} variant="solid" size="md">
                     Pay with WebLN
                   </Button>
                 )}
-                <Button leftIcon={<ExternalLinkIcon />} onClick={payWithApp} flex={1} variant="solid" size="md">
+                <Button
+                  leftIcon={<ExternalLinkIcon />}
+                  onClick={() => payWithApp(promptInvoice)}
+                  flex={1}
+                  variant="solid"
+                  size="md"
+                >
                   Open App
                 </Button>
               </Flex>
