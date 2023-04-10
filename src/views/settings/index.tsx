@@ -15,6 +15,7 @@ import {
   FormHelperText,
   Select,
   Link,
+  Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import settings, { LightningPayMode } from "../../services/settings";
@@ -22,6 +23,7 @@ import { clearCacheData, deleteDatabase } from "../../services/db";
 import accountService from "../../services/account";
 import useSubject from "../../hooks/use-subject";
 import { GithubIcon, LightningIcon, LogoutIcon } from "../../components/icons";
+import ZapModal from "../../components/zap-modal";
 
 export default function SettingsView() {
   const blurImages = useSubject(settings.blurImages);
@@ -30,6 +32,9 @@ export default function SettingsView() {
   const showReactions = useSubject(settings.showReactions);
   const showSignatureVerification = useSubject(settings.showSignatureVerification);
   const lightningPayMode = useSubject(settings.lightningPayMode);
+  const zapAmounts = useSubject(settings.zapAmounts);
+
+  const [zapInput, setZapInput] = useState(zapAmounts.join(","));
 
   const { colorMode, setColorMode } = useColorMode();
 
@@ -211,6 +216,30 @@ export default function SettingsView() {
                   <span>WebLN: Use browser extension</span>
                   <br />
                   <span>External: Open an external app using "lightning:" link</span>
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="zap-amounts" mb="0">
+                  Zap Amounts
+                </FormLabel>
+                <Input
+                  id="zap-amounts"
+                  value={zapInput}
+                  onChange={(e) => setZapInput(e.target.value)}
+                  onBlur={() => {
+                    const amounts = zapInput
+                      .split(",")
+                      .map((v) => parseInt(v))
+                      .filter(Boolean)
+                      .sort((a, b) => a - b);
+
+                    settings.zapAmounts.next(amounts);
+                    setZapInput(amounts.join(","));
+                  }}
+                />
+                <FormHelperText>
+                  <span>Comma separated list of custom zap amounts</span>
                 </FormHelperText>
               </FormControl>
             </Flex>
