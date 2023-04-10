@@ -76,7 +76,7 @@ const UserNotesTab = () => {
         </Popover>
       </FormControl>
       {timeline.map((event) => (
-        <Note key={event.id} event={event} maxHeight={300} />
+        <Note key={event.id} event={event} maxHeight={1200} />
       ))}
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
