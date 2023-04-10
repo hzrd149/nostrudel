@@ -1,12 +1,10 @@
 import { createIcon, IconProps } from "@chakra-ui/icons";
 
 import nostrGuruIcon from "./icons/nostr-guru.jpg";
-import brbIcon from "./icons/brb.png";
 import snortSocialIcon from "./icons/snort-social.png";
 
 export const IMAGE_ICONS = {
   nostrGuruIcon,
-  brbIcon,
   snortSocialIcon,
 };
 
