@@ -3,12 +3,13 @@ import { AspectRatio, Box, Button, ButtonGroup, Image, ImageProps, Link, useDisc
 import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
-import { normalizeToHex } from "../../helpers/nip19";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import settings from "../../services/settings";
 import styled from "@emotion/styled";
 import QuoteNote from "./quote-note";
 import { useExpand } from "./expanded";
+import { nip19 } from "nostr-tools";
+import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -189,6 +190,38 @@ const embeds: EmbedType[] = [
         {match[0]}
       </Link>
     ),
+    isMedia: false,
+  },
+  // nostr: links
+  // nostr:nevent1qqsthg2qlxp9l7egtwa92t8lusm7pjknmjwa75ctrrpcjyulr9754fqpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq36amnwvaz7tmwdaehgu3dwp6kytnhv4kxcmmjv3jhytnwv46q2qg5q9
+  // nostr:nevent1qqsq3wc73lqxd70lg43m5rul57d4mhcanttjat56e30yx5zla48qzlspz9mhxue69uhkummnw3e82efwvdhk6qgdwaehxw309ahx7uewd3hkcq5hsum
+  {
+    regexp: /(nostr:)?((npub|note|nprofile|nevent)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58,})/i,
+    render: (match, event) => {
+      try {
+        const decoded = nip19.decode(match[2]);
+        console.log(decoded);
+
+        switch (decoded.type) {
+          case "npub":
+            return <UserLink color="blue.500" pubkey={decoded.data as string} showAt />;
+          case "nprofile": {
+            const pointer = decoded.data as ProfilePointer;
+            return <UserLink color="blue.500" pubkey={pointer.pubkey} showAt />;
+          }
+          case "note":
+            return <QuoteNote noteId={decoded.data as string} />;
+          case "nevent": {
+            const pointer = decoded.data as EventPointer;
+            return <QuoteNote noteId={pointer.id} relay={pointer.relays?.[0]} />;
+          }
+          default:
+            return match[0];
+        }
+      } catch (e) {
+        return match[0];
+      }
+    },
     isMedia: false,
   },
   // Nostr Mention Links

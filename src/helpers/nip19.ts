@@ -9,12 +9,13 @@ export enum Bech32Prefix {
   Pubkey = "npub",
   SecKey = "nsec",
   Note = "note",
+  Profile = "nprofile",
 }
 
 export function isBech32Key(bech32String: string) {
   try {
     const { prefix } = bech32.decode(bech32String.toLowerCase());
-    if (!["npub", "nsec", "note"].includes(prefix)) return false;
+    if (!prefix) return false;
     if (!isHex(bech32ToHex(bech32String))) return false;
   } catch (error) {
     return false;
