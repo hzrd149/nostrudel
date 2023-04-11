@@ -1,7 +1,5 @@
 import {
   Button,
-  ButtonGroup,
-  DefaultIcon,
   Flex,
   IconButton,
   Input,
@@ -35,6 +33,7 @@ import QrCodeSvg from "./qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import settings from "../services/settings";
+import useSubject from "../hooks/use-subject";
 
 type FormValues = {
   amount: number;
@@ -64,6 +63,7 @@ export default function ZapModal({
   const [promptInvoice, setPromptInvoice] = useState<string>();
   const { isOpen: showQr, onToggle: toggleQr } = useDisclosure();
   const isMobile = useIsMobile();
+  const zapAmounts = useSubject(settings.zapAmounts);
 
   const {
     register,
@@ -239,17 +239,18 @@ export default function ZapModal({
                   <Text>{actionName}</Text>
                   <UserLink pubkey={pubkey} />
                 </Flex>
-                <Flex gap="2" alignItems="center">
-                  <ButtonGroup>
-                    <Button onClick={() => setValue("amount", 10)}>10</Button>
-                    <Button onClick={() => setValue("amount", 100)}>100</Button>
-                    <Button onClick={() => setValue("amount", 500)}>500</Button>
-                    <Button onClick={() => setValue("amount", 1000)}>1K</Button>
-                  </ButtonGroup>
+                <Flex gap="2" alignItems="center" flexWrap="wrap">
+                  {zapAmounts.map((amount, i) => (
+                    <Button key={amount + i} onClick={() => setValue("amount", amount)} size="sm" variant="outline">
+                      {amount}
+                    </Button>
+                  ))}
+                </Flex>
+                <Flex gap="2">
                   <InputGroup maxWidth={32}>
                     {!isMobile && (
                       <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-                        <LightningIcon fontSize="1rem" />
+                        <LightningIcon fontSize="1rem" color="yellow.400" />
                       </InputLeftElement>
                     )}
                     <Input
@@ -260,14 +261,14 @@ export default function ZapModal({
                       {...register("amount", { valueAsNumber: true, min: 1, required: true })}
                     />
                   </InputGroup>
+                  {(canZap || lnurlMetadata?.commentAllowed) && (
+                    <Input
+                      placeholder="Comment"
+                      {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
+                      autoComplete="off"
+                    />
+                  )}
                 </Flex>
-                {(canZap || lnurlMetadata?.commentAllowed) && (
-                  <Input
-                    placeholder="Comment"
-                    {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
-                    autoComplete="off"
-                  />
-                )}
                 <Button leftIcon={<LightningIcon />} type="submit" isLoading={isSubmitting} variant="solid" size="md">
                   {actionName} {getUserDisplayName(metadata, pubkey)} {readablizeSats(watch("amount"))} sats
                 </Button>

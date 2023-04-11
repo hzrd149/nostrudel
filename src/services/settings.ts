@@ -16,6 +16,7 @@ const settings = {
   showSignatureVerification: new PersistentSubject(false),
   accounts: new PersistentSubject<Account[]>([]),
   lightningPayMode: new PersistentSubject<LightningPayMode>(LightningPayMode.Prompt),
+  zapAmounts: new PersistentSubject<number[]>([50, 200, 500, 1000]),
 };
 
 async function loadSettings() {

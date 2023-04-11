@@ -17,7 +17,9 @@ const UserRelaysTab = () => {
     <Flex direction="column" gap="2">
       {ranked.map((relayConfig) => (
         <Box key={relayConfig.url} display="flex" gap="2" alignItems="center" pr="2" pl="2">
-          <Text flex={1}>{relayConfig.url}</Text>
+          <Text flex={1} isTruncated>
+            {relayConfig.url}
+          </Text>
           <RelayScoreBreakdown relay={relayConfig.url} />
           {relayConfig.mode & RelayMode.WRITE ? <Badge colorScheme="green">Write</Badge> : null}
           {relayConfig.mode & RelayMode.READ ? <Badge>Read</Badge> : null}

@@ -47,8 +47,12 @@ function finalizeNote(draft: DraftNostrEvent) {
 
     const hex = normalizeToHex(match[1]);
     if (!hex) continue;
+    const mentionType = match[2] === "npub1" ? "p" : "e";
     // TODO: find the best relay for this user or note
-    const index = updatedDraft.tags.push([match[2] === "npub1" ? "p" : "e", hex, "", "mention"]) - 1;
+    const existingMention = updatedDraft.tags.find((t) => t[0] === mentionType && t[1] === hex);
+    const index = existingMention
+      ? updatedDraft.tags.indexOf(existingMention)
+      : updatedDraft.tags.push([mentionType, hex, "", "mention"]) - 1;
 
     // replace the npub1 or note1 with a mention tag #[0]
     const c = updatedDraft.content;

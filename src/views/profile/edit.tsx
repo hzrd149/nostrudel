@@ -6,6 +6,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Link,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
@@ -13,6 +14,7 @@ import moment from "moment";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { nostrPostAction } from "../../classes/nostr-post-action";
+import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
@@ -169,6 +171,9 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
             <FormErrorMessage>{errors.lightningAddress?.message}</FormErrorMessage>
           </FormControl>
           <Flex alignSelf="flex-end" gap="2">
+            <Button as={Link} isExternal href="https://metadata.nostr.com/" rightIcon={<ExternalLinkIcon />}>
+              Download Backup
+            </Button>
             <Button onClick={() => reset()}>Reset</Button>
             <Button colorScheme="brand" isLoading={isSubmitting} type="submit">
               Update

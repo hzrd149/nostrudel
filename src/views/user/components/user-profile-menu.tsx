@@ -1,5 +1,8 @@
 import {
   Avatar,
+  Code,
+  Flex,
+  Heading,
   MenuItem,
   Modal,
   ModalBody,
@@ -17,6 +20,7 @@ import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useUserRelays } from "../../../hooks/use-user-relays";
 import { RelayMode } from "../../../classes/relay";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 
 export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<MenuIconButtonProps, "children">) => {
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
@@ -42,6 +46,9 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {getUserDisplayName(metadata, pubkey)}
         </MenuItem>
+        <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
+          View Raw
+        </MenuItem>
         <MenuItem
           as="a"
           icon={<Avatar src={IMAGE_ICONS.nostrGuruIcon} size="xs" />}
@@ -52,22 +59,11 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
         </MenuItem>
         <MenuItem
           as="a"
-          icon={<Avatar src={IMAGE_ICONS.brbIcon} size="xs" />}
-          href={`https://brb.io/u/${npub}`}
-          target="_blank"
-        >
-          Open in BRB
-        </MenuItem>
-        <MenuItem
-          as="a"
           icon={<Avatar src={IMAGE_ICONS.snortSocialIcon} size="xs" />}
           href={`https://snort.social/p/${npub}`}
           target="_blank"
         >
           Open in snort.social
-        </MenuItem>
-        <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
-          View Raw
         </MenuItem>
       </MenuIconButton>
       {infoModal.isOpen && (
@@ -76,7 +72,38 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
           <ModalContent>
             <ModalCloseButton />
             <ModalBody overflow="auto" fontSize="sm" padding="2">
-              <pre>{JSON.stringify(metadata, null, 2)}</pre>
+              <Flex gap="2" direction="column">
+                <Heading size="sm" mt="2">
+                  Hex pubkey
+                </Heading>
+                <Flex gap="2">
+                  <Code fontSize="md" wordBreak="break-all">
+                    {pubkey}
+                  </Code>
+                  <CopyIconButton text={pubkey} size="xs" aria-label="copy hex" />
+                </Flex>
+
+                {npub && (
+                  <>
+                    <Heading size="sm" mt="2">
+                      Encoded pubkey (NIP-19)
+                    </Heading>
+                    <Flex gap="2">
+                      <Code fontSize="md" wordBreak="break-all">
+                        {npub}
+                      </Code>
+                      <CopyIconButton text={npub} size="xs" aria-label="copy npub" />
+                    </Flex>
+                  </>
+                )}
+
+                <Heading size="sm" mt="2">
+                  Metadata (kind 0)
+                </Heading>
+                <Code whiteSpace="pre" overflowX="auto">
+                  {JSON.stringify(metadata, null, 2)}
+                </Code>
+              </Flex>
             </ModalBody>
           </ModalContent>
         </Modal>
