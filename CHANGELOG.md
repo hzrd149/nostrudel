@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.4.0
+
+### Minor Changes
+
+- e75ac1b: Add support for kind 6 reposts
+- b9b8179: Add copy button to user QrCode modal
+
 ## 0.3.0
 
 ### Minor Changes
