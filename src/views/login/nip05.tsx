@@ -121,7 +121,7 @@ export default function LoginNip05View() {
               placeholder="wss://nostr.example.com"
               isRequired
               value={relayUrl}
-              onChange={(e) => setRelayUrl(e.target.value)}
+              onChange={(url) => setRelayUrl(url)}
             />
             <FormHelperText>The first relay to connect to.</FormHelperText>
           </FormControl>
