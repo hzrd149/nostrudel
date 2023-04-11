@@ -1,29 +1,19 @@
-import {
-  Button,
-  ButtonProps,
-  Flex,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-} from "@chakra-ui/react";
+import { Button, ButtonProps } from "@chakra-ui/react";
 import moment from "moment";
 import { Kind } from "nostr-tools";
 import { useState } from "react";
-import { nostrPostAction } from "../../classes/nostr-post-action";
-import { random } from "../../helpers/array";
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import useEventReactions from "../../hooks/use-event-reactions";
-import { useSigningContext } from "../../providers/signing-provider";
-import clientRelaysService from "../../services/client-relays";
-import eventReactionsService from "../../services/event-reactions";
-import { getEventRelays } from "../../services/event-relays";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { DislikeIcon, LikeIcon } from "../icons";
+import { nostrPostAction } from "../../../classes/nostr-post-action";
+import { random } from "../../../helpers/array";
+import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useEventReactions from "../../../hooks/use-event-reactions";
+import { useSigningContext } from "../../../providers/signing-provider";
+import clientRelaysService from "../../../services/client-relays";
+import eventReactionsService from "../../../services/event-reactions";
+import { getEventRelays } from "../../../services/event-relays";
+import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
+import { DislikeIcon, LikeIcon } from "../../icons";
 
-export default function NoteLikeButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function ReactionButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
   const account = useCurrentAccount();
 

@@ -6,11 +6,11 @@ import accountService from "../services/account";
 import { Kind } from "nostr-tools";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  return !!getReferences(event).replyId;
+  return event.kind === 1 && !!getReferences(event).replyId;
 }
 
-export function isNote(event: NostrEvent | DraftNostrEvent) {
-  return !isReply(event);
+export function isRepost(event: NostrEvent | DraftNostrEvent) {
+  return event.kind === 6;
 }
 
 export function truncatedId(id: string, keep = 6) {
@@ -112,7 +112,22 @@ export function buildReply(event: NostrEvent, account = accountService.current.v
   };
 }
 
-export function buildShare(event: NostrEvent): DraftNostrEvent {
+export function buildRepost(event: NostrEvent): DraftNostrEvent {
+  const relay = getEventRelays(event.id).value?.[0] ?? "";
+
+  const tags: NostrEvent["tags"] = [];
+  tags.push(["e", event.id, relay]);
+  tags.push(["p", event.pubkey]);
+
+  return {
+    kind: 6, //Kind.Repost
+    tags,
+    content: "",
+    created_at: moment().unix(),
+  };
+}
+
+export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
   const relay = getEventRelays(event.id).value?.[0] ?? "";
 
   const tags: NostrEvent["tags"] = [];

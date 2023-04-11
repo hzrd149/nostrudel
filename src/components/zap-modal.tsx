@@ -74,7 +74,7 @@ export default function ZapModal({
   } = useForm<FormValues>({
     mode: "onBlur",
     defaultValues: {
-      amount: initialAmount ?? 10,
+      amount: initialAmount ?? zapAmounts[0],
       comment: initialComment ?? "",
     },
   });

@@ -5,7 +5,7 @@ import { Providers } from "./providers";
 
 // register nostr: protocol handler
 try {
-  navigator.registerProtocolHandler("web+nostr", new URL("/nostr-link?q=%s", location.origin).toString());
+  navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
 } catch (e) {
   console.log("Failed to register handler");
   console.log(e);

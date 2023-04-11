@@ -90,7 +90,11 @@ export default function SearchView() {
   // set the search when the form is submitted
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setSearchParams({ q: search }, { replace: true });
+    if (search.startsWith("nostr:")) {
+      navigate({ pathname: "/l/" + search }, { replace: true });
+    } else {
+      setSearchParams({ q: search }, { replace: true });
+    }
   };
 
   // fetch search data from nostr.band
@@ -105,7 +109,7 @@ export default function SearchView() {
   const handleQrCodeData = (text: string) => {
     // if its a nostr: link pass it on the the link handler
     if (text.startsWith("nostr:")) {
-      navigate({ pathname: "/nostr-link", search: `q=${text}` }, { replace: true });
+      navigate({ pathname: "/l", search: `q=${text}` }, { replace: true });
     } else {
       setSearchParams({ q: text }, { replace: true });
     }

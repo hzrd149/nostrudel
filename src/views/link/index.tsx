@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, AlertTitle, Spinner } from "@chakra-ui/react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -26,7 +26,7 @@ export function NoteLinkHandler({ eventId, relays }: { eventId: string; relays?:
       </Alert>
     );
 
-  if (event.kind !== Kind.Text)
+  if (event.kind !== Kind.Text && event.kind !== 6)
     return (
       <Alert status="error">
         <AlertIcon />
@@ -38,10 +38,9 @@ export function NoteLinkHandler({ eventId, relays }: { eventId: string; relays?:
 }
 
 export default function NostrLinkView() {
-  const [searchParams] = useSearchParams();
-  const rawLink = searchParams.get("q");
+  const { link } = useParams() as { link?: string };
 
-  if (!rawLink)
+  if (!link)
     return (
       <Alert status="warning">
         <AlertIcon />
@@ -49,7 +48,7 @@ export default function NostrLinkView() {
       </Alert>
     );
 
-  const cleanLink = rawLink.replace(/(web\+)?nostr:/, "");
+  const cleanLink = link.replace(/(web\+)?nostr:/, "");
   const decoded = nip19.decode(cleanLink);
 
   if (decoded.type === "npub") return <NpubLinkHandler pubkey={decoded.data as string} />;

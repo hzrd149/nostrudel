@@ -134,7 +134,7 @@ export default function RelaysView() {
             <RelayUrlInput
               id="relay-url-input"
               value={relayInputValue}
-              onChange={(e) => setRelayInputValue(e.target.value)}
+              onChange={(url) => setRelayInputValue(url)}
               isRequired
             />
             <Button type="submit" isDisabled={saving}>

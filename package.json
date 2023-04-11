@@ -21,7 +21,7 @@
     "light-bolt11-decoder": "^2.1.0",
     "moment": "^2.29.4",
     "noble-secp256k1": "^1.2.14",
-    "nostr-tools": "^1.7.4",
+    "nostr-tools": "^1.8.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^3.1.4",

@@ -4207,7 +4207,7 @@ normalize-package-data@^2.5.0:
     semver "2 || 3 || 4 || 5"
     validate-npm-package-license "^3.0.1"
 
-nostr-tools@^1.7.4:
+nostr-tools@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.8.3.tgz#10ddb8ed5d9ca3bf6c1e8fdd1961bb6584b8e1f2"
   integrity sha512-0giVDk0ElhqlGY032ma/8Q8NsIyFL53fCCkndFCpuLabZ2E134Kth0sbnIIIFXLqm7VnYIlgLVtCna8+dUiZUg==
