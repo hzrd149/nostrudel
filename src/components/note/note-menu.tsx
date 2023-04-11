@@ -15,11 +15,12 @@ import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, LikeIcon, ShareIcon } from "../icons";
+import { ClipboardIcon, CodeIcon, LikeIcon, RepostIcon } from "../icons";
 import { getReferences } from "../../helpers/nostr-event";
 import NoteReactionsModal from "./note-zaps-modal";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
+import NoteDebugModal from "../debug-modals/note-debug-modal";
 
 function getShareLink(eventId: string) {
   const relays = getEventRelays(eventId).value;
@@ -43,7 +44,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + getShareLink(event.id))} icon={<ShareIcon />}>
+        <MenuItem onClick={() => copyToClipboard("nostr:" + getShareLink(event.id))} icon={<RepostIcon />}>
           Copy Share Link
         </MenuItem>
         {noteId && (
@@ -56,19 +57,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         </MenuItem>
       </MenuIconButton>
       {infoModal.isOpen && (
-        <Modal isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Raw Event</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody overflow="auto" fontSize="sm" padding="2">
-              Raw JSON:
-              <pre>{JSON.stringify(event, null, 2)}</pre>
-              Parsed Refs:
-              <pre>{JSON.stringify(getReferences(event), null, 2)}</pre>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        <NoteDebugModal event={event} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
       )}
       {reactionsModal.isOpen && (
         <NoteReactionsModal noteId={event.id} isOpen={reactionsModal.isOpen} onClose={reactionsModal.onClose} />

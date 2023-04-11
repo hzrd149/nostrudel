@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
 import {
@@ -11,7 +11,6 @@ import {
   CardProps,
   Flex,
   Heading,
-  IconButton,
   Link,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
@@ -24,18 +23,18 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
-import { ReplyIcon, ShareIcon } from "../icons";
-import { PostModalContext } from "../../providers/post-modal-provider";
-import { buildReply, buildShare } from "../../helpers/nostr-event";
 import { UserDnsIdentityIcon } from "../user-dns-identity";
 import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import NoteLikeButton from "./note-like-button";
+import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
 import settings from "../../services/settings";
 import EventVerificationIcon from "../event-verification-icon";
+import { ReplyButton } from "./buttons/reply-button";
+import { RepostButton } from "./buttons/repost-button";
+import { QuoteRepostButton } from "./buttons/quote-repost-button";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -45,15 +44,11 @@ export type NoteProps = {
 export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
   const isMobile = useIsMobile();
   const account = useCurrentAccount();
-  const { openModal } = useContext(PostModalContext);
   const showReactions = useSubject(settings.showReactions);
   const showSignatureVerification = useSubject(settings.showSignatureVerification);
 
   const contacts = useUserContacts(account.pubkey);
   const following = contacts?.contacts || [];
-
-  const reply = () => openModal(buildReply(event));
-  const share = () => openModal(buildShare(event));
 
   return (
     <ExpandProvider>
@@ -81,27 +76,12 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
           />
         </CardBody>
         <CardFooter padding="2" display="flex" gap="2">
-          <IconButton
-            variant="link"
-            icon={<ReplyIcon />}
-            title="Reply"
-            aria-label="Reply"
-            onClick={reply}
-            size="sm"
-            isDisabled={account.readonly}
-          />
-          <IconButton
-            variant="link"
-            icon={<ShareIcon />}
-            onClick={share}
-            aria-label="Share Note"
-            title="Share Note"
-            size="sm"
-            isDisabled={account.readonly}
-          />
           <ButtonGroup size="sm" variant="link">
+            <ReplyButton event={event} />
+            <RepostButton event={event} />
+            <QuoteRepostButton event={event} />
             <NoteZapButton note={event} size="sm" />
-            {showReactions && <NoteLikeButton note={event} size="sm" />}
+            {showReactions && <ReactionButton note={event} size="sm" />}
           </ButtonGroup>
           <Box flexGrow={1} />
           <NoteRelays event={event} size="sm" variant="link" />

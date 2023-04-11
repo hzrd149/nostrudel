@@ -3,7 +3,7 @@ import moment from "moment";
 import { useSearchParams } from "react-router-dom";
 import { Note } from "../../components/note";
 import { unique } from "../../helpers/array";
-import { isNote } from "../../helpers/nostr-event";
+import { isReply } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -29,7 +29,7 @@ export default function GlobalTab() {
     { pageSize: moment.duration(5, "minutes").asSeconds() }
   );
 
-  const timeline = showReplies ? events : events.filter(isNote);
+  const timeline = showReplies ? events : events.filter((e) => !isReply(e));
 
   return (
     <Flex direction="column" gap="2">

@@ -2,7 +2,7 @@ import { Button, Flex, FormControl, FormLabel, Spinner, Switch } from "@chakra-u
 import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { Note } from "../../components/note";
-import { isNote } from "../../helpers/nostr-event";
+import { isReply } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { AddIcon } from "@chakra-ui/icons";
@@ -10,6 +10,7 @@ import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import RepostNote from "../../components/repost-note";
 
 export default function FollowingTab() {
   const account = useCurrentAccount();
@@ -26,11 +27,11 @@ export default function FollowingTab() {
   const { events, loading, loadMore } = useTimelineLoader(
     `${account.pubkey}-following-posts`,
     relays,
-    { authors: following, kinds: [1], since: moment().subtract(2, "hour").unix() },
+    { authors: following, kinds: [1, 6], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
   );
 
-  const timeline = showReplies ? events : events.filter(isNote);
+  const timeline = showReplies ? events : events.filter((e) => !isReply(e));
 
   return (
     <Flex direction="column" gap="2">
@@ -43,9 +44,13 @@ export default function FollowingTab() {
         </FormLabel>
         <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} />
       </FormControl>
-      {timeline.map((event) => (
-        <Note key={event.id} event={event} maxHeight={600} />
-      ))}
+      {timeline.map((event) =>
+        event.kind === 6 ? (
+          <RepostNote key={event.id} event={event} maxHeight={600} />
+        ) : (
+          <Note key={event.id} event={event} maxHeight={600} />
+        )
+      )}
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
