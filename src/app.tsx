@@ -119,7 +119,7 @@ const router = createBrowserRouter([
       { path: "dm", element: <DirectMessagesView /> },
       { path: "dm/:key", element: <DirectMessageChatView /> },
       { path: "profile", element: <ProfileView /> },
-      { path: "nostr-link", element: <NostrLinkView /> },
+      { path: "l/:link", element: <NostrLinkView /> },
       {
         path: "",
         element: <HomeView />,

@@ -12,6 +12,8 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  Input,
+  Flex,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { RelayMode } from "../../../classes/relay";
@@ -21,6 +23,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import useFallbackUserRelays from "../../../hooks/use-fallback-user-relays";
 import relayScoreboardService from "../../../services/relay-scoreboard";
 import { nip19 } from "nostr-tools";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 
 function useUserShareLink(pubkey: string) {
   const userRelays = useFallbackUserRelays(pubkey);
@@ -50,16 +53,24 @@ export const QrIconButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ico
           <ModalBody p="2">
             <Tabs>
               <TabList>
-                <Tab>npub</Tab>
                 <Tab>nprofile</Tab>
+                <Tab>npub</Tab>
               </TabList>
 
               <TabPanels>
-                <TabPanel>
-                  <QrCodeSvg content={"nostr:" + npub} border={2} />
-                </TabPanel>
-                <TabPanel>
+                <TabPanel p="0" pt="2">
                   <QrCodeSvg content={"nostr:" + nprofile} border={2} />
+                  <Flex gap="2" mt="2">
+                    <Input readOnly value={"nostr:" + nprofile} />
+                    <CopyIconButton text={"nostr:" + nprofile} aria-label="copy nprofile" />
+                  </Flex>
+                </TabPanel>
+                <TabPanel p="0" pt="2">
+                  <QrCodeSvg content={"nostr:" + npub} border={2} />
+                  <Flex gap="2" mt="2">
+                    <Input readOnly value={"nostr:" + npub} />
+                    <CopyIconButton text={"nostr:" + npub} aria-label="copy npub" />
+                  </Flex>
                 </TabPanel>
               </TabPanels>
             </Tabs>
