@@ -6,10 +6,12 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import { useOutletContext } from "react-router-dom";
 import { usePaginatedList } from "../../hooks/use-paginated-list";
 import { PaginationControls } from "../../components/pagination-controls";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 
 const UserFollowingTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const contacts = useUserContacts(pubkey, [], true);
+  const contextRelays = useAdditionalRelayContext();
+  const contacts = useUserContacts(pubkey, contextRelays, true);
 
   const pagination = usePaginatedList(contacts?.contacts ?? [], { pageSize: 3 * 10 });
 

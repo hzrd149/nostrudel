@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
-import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
+import { Button, Flex, Spinner, Text, useColorMode } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { normalizeToHex } from "./helpers/nip19";
@@ -32,6 +32,7 @@ import DirectMessagesView from "./views/dm";
 import DirectMessageChatView from "./views/dm/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
+import appSettings from "./services/app-settings";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -135,10 +136,19 @@ const router = createBrowserRouter([
   },
 ]);
 
-export const App = () => (
-  <ErrorBoundary>
-    <Suspense fallback={<Spinner />}>
-      <RouterProvider router={router} />
-    </Suspense>
-  </ErrorBoundary>
-);
+export const App = () => {
+  const { setColorMode } = useColorMode();
+  const { colorMode } = useSubject(appSettings);
+
+  useEffect(() => {
+    setColorMode(colorMode);
+  }, [colorMode]);
+
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+};

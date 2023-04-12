@@ -11,16 +11,18 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import settings, { LightningPayMode } from "../../services/settings";
+import { useEffect, useState } from "react";
+import appSettings, { replaceSettings } from "../../services/app-settings";
 import useSubject from "../../hooks/use-subject";
 import { LightningIcon } from "../../components/icons";
+import { LightningPayMode } from "../../services/user-app-settings";
+import useAppSettings from "../../hooks/use-app-settings";
 
 export default function LightningSettings() {
-  const lightningPayMode = useSubject(settings.lightningPayMode);
-  const zapAmounts = useSubject(settings.zapAmounts);
+  const { lightningPayMode, zapAmounts, updateSettings } = useAppSettings();
 
   const [zapInput, setZapInput] = useState(zapAmounts.join(","));
+  useEffect(() => setZapInput(zapAmounts.join(",")), [zapAmounts.join(",")]);
 
   return (
     <AccordionItem>
@@ -41,7 +43,7 @@ export default function LightningSettings() {
             <Select
               id="lightning-payment-mode"
               value={lightningPayMode}
-              onChange={(e) => settings.lightningPayMode.next(e.target.value as LightningPayMode)}
+              onChange={(e) => updateSettings({ lightningPayMode: e.target.value as LightningPayMode })}
             >
               <option value="prompt">Prompt</option>
               <option value="webln">WebLN</option>
@@ -71,7 +73,7 @@ export default function LightningSettings() {
                   .filter(Boolean)
                   .sort((a, b) => a - b);
 
-                settings.zapAmounts.next(amounts);
+                updateSettings({ zapAmounts: amounts });
                 setZapInput(amounts.join(","));
               }}
             />

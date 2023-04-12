@@ -14,9 +14,9 @@ import RepostNote from "../../components/repost-note";
 
 export default function FollowingTab() {
   const account = useCurrentAccount();
-  const relays = useReadRelayUrls();
+  const readRelays = useReadRelayUrls();
   const { openModal } = useContext(PostModalContext);
-  const contacts = useUserContacts(account.pubkey);
+  const contacts = useUserContacts(account.pubkey, readRelays);
   const [search, setSearch] = useSearchParams();
   const showReplies = search.has("replies");
   const onToggle = () => {
@@ -26,7 +26,7 @@ export default function FollowingTab() {
   const following = contacts?.contacts || [];
   const { events, loading, loadMore } = useTimelineLoader(
     `${account.pubkey}-following-posts`,
-    relays,
+    readRelays,
     { authors: following, kinds: [1, 6], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
   );

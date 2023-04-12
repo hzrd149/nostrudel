@@ -30,11 +30,12 @@ import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
-import settings from "../../services/settings";
+import appSettings from "../../services/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { ReplyButton } from "./buttons/reply-button";
 import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -44,10 +45,10 @@ export type NoteProps = {
 export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
   const isMobile = useIsMobile();
   const account = useCurrentAccount();
-  const showReactions = useSubject(settings.showReactions);
-  const showSignatureVerification = useSubject(settings.showSignatureVerification);
+  const { showReactions, showSignatureVerification } = useSubject(appSettings);
 
-  const contacts = useUserContacts(account.pubkey);
+  const readRelays = useReadRelayUrls();
+  const contacts = useUserContacts(account.pubkey, readRelays);
   const following = contacts?.contacts || [];
 
   return (

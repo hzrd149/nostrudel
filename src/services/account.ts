@@ -1,5 +1,6 @@
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
+import { AppSettings } from "./user-app-settings";
 
 export type Account = {
   pubkey: string;
@@ -8,6 +9,7 @@ export type Account = {
   secKey?: ArrayBuffer;
   iv?: Uint8Array;
   useExtension?: boolean;
+  localSettings?: AppSettings;
 };
 
 class AccountService {
@@ -35,6 +37,11 @@ class AccountService {
     if (this.hasAccount(account.pubkey)) {
       // replace account
       this.accounts.next(this.accounts.value.map((acc) => (acc.pubkey === account.pubkey ? account : acc)));
+
+      // if this is the current account. update it
+      if (this.current.value?.pubkey === account.pubkey) {
+        this.current.next(account);
+      }
     } else {
       // add account
       this.accounts.next(this.accounts.value.concat(account));
@@ -46,6 +53,16 @@ class AccountService {
     this.accounts.next(this.accounts.value.filter((acc) => acc.pubkey !== pubkey));
 
     db.delete("accounts", pubkey);
+  }
+
+  updateAccountLocalSettings(pubkey: string, settings: AppSettings) {
+    const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
+    if (account) {
+      const updated = { ...account, localSettings: settings };
+
+      // update account
+      this.addAccount(updated);
+    }
   }
 
   switchAccount(pubkey: string) {

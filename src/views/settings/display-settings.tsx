@@ -3,21 +3,48 @@ import {
   FormControl,
   FormLabel,
   Switch,
-  useColorMode,
   AccordionItem,
   AccordionPanel,
   AccordionButton,
   Box,
   AccordionIcon,
   FormHelperText,
+  Input,
+  InputProps,
 } from "@chakra-ui/react";
-import settings from "../../services/settings";
-import useSubject from "../../hooks/use-subject";
+import { useEffect, useRef, useState } from "react";
+import useAppSettings from "../../hooks/use-app-settings";
+
+function ColorPicker({ value, onPickColor, ...props }: { onPickColor?: (color: string) => void } & InputProps) {
+  const [tmpColor, setTmpColor] = useState(value);
+  const ref = useRef<HTMLInputElement>();
+
+  useEffect(() => setTmpColor(value), [value]);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.onchange = () => {
+        if (onPickColor && ref.current?.value) {
+          onPickColor(ref.current.value);
+        }
+      };
+    }
+  });
+
+  return (
+    <Input
+      {...props}
+      ref={ref}
+      value={tmpColor}
+      onChange={(e) => {
+        setTmpColor(e.target.value);
+        if (props.onChange) props.onChange(e);
+      }}
+    />
+  );
+}
 
 export default function DisplaySettings() {
-  const blurImages = useSubject(settings.blurImages);
-
-  const { colorMode, setColorMode } = useColorMode();
+  const { blurImages, colorMode, primaryColor, updateSettings } = useAppSettings();
 
   return (
     <AccordionItem>
@@ -39,11 +66,29 @@ export default function DisplaySettings() {
               <Switch
                 id="use-dark-theme"
                 isChecked={colorMode === "dark"}
-                onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+                onChange={(v) => updateSettings({ colorMode: v.target.checked ? "dark" : "light" })}
               />
             </Flex>
             <FormHelperText>
-              <span>Enabled: hacker mode</span>
+              <span>Enables hacker mode</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="primary-color" mb="0">
+                Primary Color
+              </FormLabel>
+              <ColorPicker
+                id="primary-color"
+                type="color"
+                value={primaryColor}
+                onPickColor={(color) => updateSettings({ primaryColor: color })}
+                maxW="120"
+                size="sm"
+              />
+            </Flex>
+            <FormHelperText>
+              <span>The primary color of the theme</span>
             </FormHelperText>
           </FormControl>
           <FormControl>
@@ -54,7 +99,7 @@ export default function DisplaySettings() {
               <Switch
                 id="blur-images"
                 isChecked={blurImages}
-                onChange={(v) => settings.blurImages.next(v.target.checked)}
+                onChange={(v) => updateSettings({ blurImages: v.target.checked })}
               />
             </Flex>
             <FormHelperText>

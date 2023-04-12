@@ -18,33 +18,23 @@ import {
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
-import { RelayMode } from "../../classes/relay";
 import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import RepostNote from "../../components/repost-note";
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import relayScoreboardService from "../../services/relay-scoreboard";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  // get user relays
-  const userRelays = useFallbackUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url);
-  // merge the users relays with client relays
-  const readRelays = useReadRelayUrls();
-  // find the top 4
-  const relays = userRelays.length === 0 ? readRelays : relayScoreboardService.getRankedRelays(userRelays).slice(0, 4);
+  const contextRelays = useAdditionalRelayContext();
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
   const { isOpen: hideReposts, onToggle: toggleReposts } = useDisclosure();
 
   const { events, loading, loadMore } = useTimelineLoader(
     `${truncatedId(pubkey)}-notes`,
-    relays,
+    contextRelays,
     { authors: [pubkey], kinds: [1, 6] },
     { pageSize: moment.duration(2, "day").asSeconds(), startLimit: 20 }
   );
@@ -77,7 +67,7 @@ const UserNotesTab = () => {
             <PopoverCloseButton />
             <PopoverBody>
               <UnorderedList>
-                {relays.map((url) => (
+                {contextRelays.map((url) => (
                   <ListItem key={url}>{url}</ListItem>
                 ))}
               </UnorderedList>

@@ -10,14 +10,12 @@ import {
   AccordionIcon,
   FormHelperText,
 } from "@chakra-ui/react";
-import settings from "../../services/settings";
+import appSettings, { replaceSettings } from "../../services/app-settings";
 import useSubject from "../../hooks/use-subject";
+import useAppSettings from "../../hooks/use-app-settings";
 
 export default function PerformanceSettings() {
-  const autoShowMedia = useSubject(settings.autoShowMedia);
-  const proxyUserMedia = useSubject(settings.proxyUserMedia);
-  const showReactions = useSubject(settings.showReactions);
-  const showSignatureVerification = useSubject(settings.showSignatureVerification);
+  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification, updateSettings } = useAppSettings();
 
   return (
     <AccordionItem>
@@ -39,7 +37,7 @@ export default function PerformanceSettings() {
               <Switch
                 id="proxy-user-media"
                 isChecked={proxyUserMedia}
-                onChange={(v) => settings.proxyUserMedia.next(v.target.checked)}
+                onChange={(v) => updateSettings({ proxyUserMedia: v.target.checked })}
               />
             </Flex>
             <FormHelperText>
@@ -56,7 +54,7 @@ export default function PerformanceSettings() {
               <Switch
                 id="auto-show-embeds"
                 isChecked={autoShowMedia}
-                onChange={(v) => settings.autoShowMedia.next(v.target.checked)}
+                onChange={(v) => updateSettings({ autoShowMedia: v.target.checked })}
               />
             </Flex>
             <FormHelperText>Disabled: Images and videos will show expandable buttons</FormHelperText>
@@ -69,7 +67,7 @@ export default function PerformanceSettings() {
               <Switch
                 id="show-reactions"
                 isChecked={showReactions}
-                onChange={(v) => settings.showReactions.next(v.target.checked)}
+                onChange={(v) => updateSettings({ showReactions: v.target.checked })}
               />
             </Flex>
             <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
@@ -82,7 +80,7 @@ export default function PerformanceSettings() {
               <Switch
                 id="show-sig-verify"
                 isChecked={showSignatureVerification}
-                onChange={(v) => settings.showSignatureVerification.next(v.target.checked)}
+                onChange={(v) => updateSettings({ showSignatureVerification: v.target.checked })}
               />
             </Flex>
             <FormHelperText>Enabled: show signature verification on notes</FormHelperText>

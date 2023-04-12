@@ -3,6 +3,7 @@ import { NostrSubscription } from "./nostr-subscription";
 import { SuperMap } from "./super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
+import { NostrQuery } from "../types/nostr-query";
 
 type pubkey = string;
 type relay = string;
@@ -10,6 +11,7 @@ type relay = string;
 class PubkeyEventRequestSubscription {
   private subscription: NostrSubscription;
   private kind: number;
+  private dTag?: string;
 
   private subjects = new SuperMap<pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
@@ -17,8 +19,9 @@ class PubkeyEventRequestSubscription {
 
   private requestedPubkeys = new Map<pubkey, Date>();
 
-  constructor(relay: string, kind: number, name?: string) {
+  constructor(relay: string, kind: number, name?: string, dTag?: string) {
     this.kind = kind;
+    this.dTag = dTag;
     this.subscription = new NostrSubscription(relay, undefined, name);
 
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
@@ -26,7 +29,10 @@ class PubkeyEventRequestSubscription {
   }
 
   private handleEvent(event: NostrEvent) {
+    // reject the event if its the wrong kind
     if (event.kind !== this.kind) return;
+    // reject the event if has the wrong d tag or is missing one
+    if (this.dTag && !event.tags.some((t) => t[0] === "d" && t[1] === this.dTag)) return;
 
     // remove the pubkey from the waiting list
     this.requestedPubkeys.delete(event.pubkey);
@@ -79,7 +85,9 @@ class PubkeyEventRequestSubscription {
     // update the subscription
     if (needsUpdate) {
       if (this.requestedPubkeys.size > 0) {
-        this.subscription.setQuery({ authors: Array.from(this.requestedPubkeys.keys()), kinds: [this.kind] });
+        const query: NostrQuery = { authors: Array.from(this.requestedPubkeys.keys()), kinds: [this.kind] };
+        if (this.dTag) query["#d"] = [this.dTag];
+        this.subscription.setQuery(query);
         if (this.subscription.state !== NostrSubscription.OPEN) {
           this.subscription.open();
         }
@@ -93,15 +101,17 @@ class PubkeyEventRequestSubscription {
 export class PubkeyEventRequester {
   private kind: number;
   private name?: string;
+  private dTag?: string;
   private subjects = new SuperMap<pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private subscriptions = new SuperMap<relay, PubkeyEventRequestSubscription>(
-    (relay) => new PubkeyEventRequestSubscription(relay, this.kind, this.name)
+    (relay) => new PubkeyEventRequestSubscription(relay, this.kind, this.name, this.dTag)
   );
 
-  constructor(kind: number, name?: string) {
+  constructor(kind: number, name?: string, dTag?: string) {
     this.kind = kind;
     this.name = name;
+    this.dTag = dTag;
   }
 
   getSubject(pubkey: string) {

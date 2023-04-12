@@ -5,11 +5,15 @@ import { useUserFollowers } from "../../hooks/use-user-followers";
 import { useOutletContext } from "react-router-dom";
 import { usePaginatedList } from "../../hooks/use-paginated-list";
 import { PaginationControls } from "../../components/pagination-controls";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 const UserFollowersTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const { isOpen, onToggle } = useDisclosure();
-  const followers = useUserFollowers(pubkey, [], isOpen);
+  const contextRelays = useAdditionalRelayContext();
+  const relays = useReadRelayUrls(contextRelays);
+  const followers = useUserFollowers(pubkey, relays, isOpen);
 
   const pagination = usePaginatedList(followers ?? [], { pageSize: 3 * 10 });
 

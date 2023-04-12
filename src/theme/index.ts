@@ -1,37 +1,24 @@
 import { extendTheme } from "@chakra-ui/react";
 import { containerTheme } from "./container";
 
-const theme = extendTheme({
-  colors: {
-    // https://hihayk.github.io/scale/#5/4/60/50/0/0/20/-25/8DB600/141/182/0/white
-    // brand: {
-    //   50: "#334009",
-    //   100: "#44550A",
-    //   200: "#556C09",
-    //   300: "#678307",
-    //   400: "#7A9C04",
-    //   500: "#8DB600",
-    //   600: "#9DC320",
-    //   700: "#ADCF40",
-    //   800: "#BCDA60",
-    //   900: "#CBE480",
-    // },
-    brand: {
-      50: "#8DB600",
-      100: "#8DB600",
-      200: "#8DB600",
-      300: "#8DB600",
-      400: "#8DB600",
-      500: "#8DB600",
-      600: "#8DB600",
-      700: "#8DB600",
-      800: "#8DB600",
-      900: "#8DB600",
+export default function createTheme(primaryColor: string = "#8DB600") {
+  return extendTheme({
+    colors: {
+      brand: {
+        50: primaryColor,
+        100: primaryColor,
+        200: primaryColor,
+        300: primaryColor,
+        400: primaryColor,
+        500: primaryColor,
+        600: primaryColor,
+        700: primaryColor,
+        800: primaryColor,
+        900: primaryColor,
+      },
     },
-  },
-  components: {
-    Container: containerTheme,
-  },
-});
-
-export default theme;
+    components: {
+      Container: containerTheme,
+    },
+  });
+}

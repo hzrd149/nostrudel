@@ -12,6 +12,7 @@ export type NostrQuery = {
   kinds?: number[];
   "#e"?: string[];
   "#p"?: string[];
+  "#d"?: string[];
   since?: number;
   until?: number;
   limit?: number;

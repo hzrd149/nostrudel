@@ -24,10 +24,10 @@ function mergeNext(subject: Subject<string[] | null>, next: string[]) {
   subject.next(arr);
 }
 
-function requestFollowers(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
+function requestFollowers(pubkey: string, relays: string[], alwaysRequest = false) {
   let subject = subjects.getSubject(pubkey);
 
-  if (additionalRelays.length) subjects.addRelays(pubkey, additionalRelays);
+  if (relays.length) subjects.addRelays(pubkey, relays);
 
   db.getAllKeysFromIndex("userFollows", "follows", pubkey).then((cached) => {
     mergeNext(subject, cached);
@@ -49,9 +49,6 @@ function flushRequests() {
   for (const url of pending.relays) relayUrls.add(url);
 
   if (pubkeys.size === 0) return;
-
-  const clientRelays = clientRelaysService.getReadUrls();
-  for (const url of clientRelays) relayUrls.add(url);
 
   const query: NostrQuery = { kinds: [3], "#p": Array.from(pubkeys) };
 

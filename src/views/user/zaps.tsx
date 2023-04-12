@@ -2,7 +2,6 @@ import { Box, Button, Flex, Select, Spinner, Text, useDisclosure } from "@chakra
 import moment from "moment";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { RelayMode } from "../../classes/relay";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
 import { NoteLink } from "../../components/note-link";
@@ -12,10 +11,10 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { convertTimestampToDate } from "../../helpers/date";
 import { truncatedId } from "../../helpers/nostr-event";
 import { isProfileZap, isNoteZap, parseZapNote, totalZaps } from "../../helpers/zaps";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const { isOpen, onToggle } = useDisclosure();
@@ -66,11 +65,8 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
 const UserZapsTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const [filter, setFilter] = useState("both");
-  // get user relays
-  const userRelays = useFallbackUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url);
-  const relays = useReadRelayUrls(userRelays);
+  const contextRelays = useAdditionalRelayContext();
+  const relays = useReadRelayUrls(contextRelays);
 
   const { events, loading, loadMore } = useTimelineLoader(
     `${truncatedId(pubkey)}-zaps`,

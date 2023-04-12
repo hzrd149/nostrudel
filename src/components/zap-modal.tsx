@@ -32,7 +32,7 @@ import { useSigningContext } from "../providers/signing-provider";
 import QrCodeSvg from "./qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
 import { useIsMobile } from "../hooks/use-is-mobile";
-import settings from "../services/settings";
+import appSettings from "../services/app-settings";
 import useSubject from "../hooks/use-subject";
 
 type FormValues = {
@@ -63,7 +63,7 @@ export default function ZapModal({
   const [promptInvoice, setPromptInvoice] = useState<string>();
   const { isOpen: showQr, onToggle: toggleQr } = useDisclosure();
   const isMobile = useIsMobile();
-  const zapAmounts = useSubject(settings.zapAmounts);
+  const { zapAmounts } = useSubject(appSettings);
 
   const {
     register,
@@ -173,7 +173,7 @@ export default function ZapModal({
   };
 
   const payInvoice = (invoice: string) => {
-    switch (settings.lightningPayMode.value) {
+    switch (appSettings.value.lightningPayMode) {
       case "webln":
         payWithWebLn(invoice);
         break;
