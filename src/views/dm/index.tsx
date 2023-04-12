@@ -8,13 +8,14 @@ import {
   Card,
   CardBody,
   Flex,
+  Link,
   LinkBox,
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
 import { convertTimestampToDate } from "../../helpers/date";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
@@ -22,6 +23,8 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import directMessagesService from "../../services/direct-messages";
+import { ExternalLinkIcon } from "../../components/icons";
+import { useIsMobile } from "../../hooks/use-is-mobile";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
@@ -40,12 +43,13 @@ function ContactCard({ pubkey }: { pubkey: string }) {
           )}
         </Flex>
       </CardBody>
-      <LinkOverlay as={Link} to={`/dm/${npub ?? pubkey}`} />
+      <LinkOverlay as={RouterLink} to={`/dm/${npub ?? pubkey}`} />
     </LinkBox>
   );
 }
 
 function DirectMessagesView() {
+  const isMobile = useIsMobile();
   const [from, setFrom] = useState(moment().subtract(2, "days"));
   const conversations = useSubject(directMessagesService.conversations);
 
@@ -93,6 +97,20 @@ function DirectMessagesView() {
 
   return (
     <Flex direction="column" gap="2" overflowX="hidden" overflowY="auto" height="100%" pt="2" pb="8">
+      <Alert status="info" flexShrink={0}>
+        <AlertIcon />
+        <Flex direction={isMobile ? "column" : "row"}>
+          <AlertTitle>Give NostrChat a try</AlertTitle>
+          <AlertDescription>
+            <Text>
+              Its a much better chat app than what I can build inside of noStrudel.{" "}
+              <Link href="https://www.nostrchat.io/" isExternal>
+                nostrchat.io <ExternalLinkIcon />
+              </Link>
+            </Text>
+          </AlertDescription>
+        </Flex>
+      </Alert>
       {sortedConversations.map((pubkey) => (
         <ContactCard key={pubkey} pubkey={pubkey} />
       ))}
