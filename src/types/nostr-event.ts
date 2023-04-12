@@ -1,7 +1,8 @@
 export type ETag = ["e", string] | ["e", string, string] | ["e", string, string, string];
 export type PTag = ["p", string] | ["p", string, string];
 export type RTag = ["r", string] | ["r", string, string];
-export type Tag = string[] | ETag | PTag | RTag;
+export type DTag = ["d"] | ["d", string];
+export type Tag = string[] | ETag | PTag | RTag | DTag;
 
 export type NostrEvent = {
   id: string;
@@ -29,4 +30,7 @@ export function isPTag(tag: Tag): tag is PTag {
 }
 export function isRTag(tag: Tag): tag is RTag {
   return tag[0] === "r" && tag[1] !== undefined;
+}
+export function isDTag(tag: Tag): tag is DTag {
+  return tag[0] === "d";
 }

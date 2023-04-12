@@ -3,7 +3,6 @@ import {
   FormControl,
   FormLabel,
   Switch,
-  useColorMode,
   AccordionItem,
   AccordionPanel,
   AccordionButton,
@@ -11,13 +10,11 @@ import {
   AccordionIcon,
   FormHelperText,
 } from "@chakra-ui/react";
-import settings from "../../services/settings";
 import useSubject from "../../hooks/use-subject";
+import appSettings, { updateSettings } from "../../services/app-settings";
 
 export default function DisplaySettings() {
-  const blurImages = useSubject(settings.blurImages);
-
-  const { colorMode, setColorMode } = useColorMode();
+  const { blurImages, colorMode } = useSubject(appSettings);
 
   return (
     <AccordionItem>
@@ -39,7 +36,7 @@ export default function DisplaySettings() {
               <Switch
                 id="use-dark-theme"
                 isChecked={colorMode === "dark"}
-                onChange={(v) => setColorMode(v.target.checked ? "dark" : "light")}
+                onChange={(v) => updateSettings({ colorMode: v.target.checked ? "dark" : "light" })}
               />
             </Flex>
             <FormHelperText>
@@ -54,7 +51,7 @@ export default function DisplaySettings() {
               <Switch
                 id="blur-images"
                 isChecked={blurImages}
-                onChange={(v) => settings.blurImages.next(v.target.checked)}
+                onChange={(v) => updateSettings({ blurImages: v.target.checked })}
               />
             </Flex>
             <FormHelperText>

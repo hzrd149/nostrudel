@@ -1,61 +1,56 @@
 import { openDB, deleteDB } from "idb";
 
-import { IDBPDatabase, IDBPTransaction, StoreNames } from "idb";
-import { CustomSchema } from "./schema";
-
-type MigrationFunction = (
-  database: IDBPDatabase<CustomSchema>,
-  transaction: IDBPTransaction<CustomSchema, StoreNames<CustomSchema>[], "versionchange">,
-  event: IDBVersionChangeEvent
-) => void;
-
-const MIGRATIONS: MigrationFunction[] = [
-  // 0 -> 1
-  function (db, transaction, event) {
-    const userMetadata = db.createObjectStore("userMetadata", {
-      keyPath: "pubkey",
-    });
-    userMetadata.createIndex("created_at", "created_at");
-
-    const userRelays = db.createObjectStore("userRelays", {
-      keyPath: "pubkey",
-    });
-    userRelays.createIndex("created_at", "created_at");
-
-    const contacts = db.createObjectStore("userContacts", {
-      keyPath: "pubkey",
-    });
-    contacts.createIndex("created_at", "created_at");
-
-    const userFollows = db.createObjectStore("userFollows", {
-      keyPath: "pubkey",
-    });
-    userFollows.createIndex("follows", "follows", { multiEntry: true, unique: false });
-
-    const dnsIdentifiers = db.createObjectStore("dnsIdentifiers");
-    dnsIdentifiers.createIndex("pubkey", "pubkey", { unique: false });
-    dnsIdentifiers.createIndex("name", "name", { unique: false });
-    dnsIdentifiers.createIndex("domain", "domain", { unique: false });
-    dnsIdentifiers.createIndex("updated", "updated", { unique: false });
-
-    db.createObjectStore("settings");
-    db.createObjectStore("relayInfo");
-    db.createObjectStore("relayScoreboardStats", { keyPath: "relay" });
-    db.createObjectStore("accounts", { keyPath: "pubkey" });
-  },
-];
+import { IDBPDatabase } from "idb";
+import { SchemaV1, SchemaV2 } from "./schema";
 
 const dbName = "storage";
-const version = 1;
-const db = await openDB<CustomSchema>(dbName, version, {
+const version = 2;
+const db = await openDB<SchemaV2>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
-    // TODO: why is newVersion sometimes null?
-    // @ts-ignore
-    for (let i = oldVersion; i <= newVersion; i++) {
-      if (MIGRATIONS[i]) {
-        console.log(`Running database migration ${i}`);
-        MIGRATIONS[i](db, transaction, event);
-      }
+    if (oldVersion < 1) {
+      const v0 = db as unknown as IDBPDatabase<SchemaV1>;
+
+      const userMetadata = v0.createObjectStore("userMetadata", {
+        keyPath: "pubkey",
+      });
+      userMetadata.createIndex("created_at", "created_at");
+
+      const userRelays = v0.createObjectStore("userRelays", {
+        keyPath: "pubkey",
+      });
+      userRelays.createIndex("created_at", "created_at");
+
+      const contacts = v0.createObjectStore("userContacts", {
+        keyPath: "pubkey",
+      });
+      contacts.createIndex("created_at", "created_at");
+
+      const userFollows = v0.createObjectStore("userFollows", {
+        keyPath: "pubkey",
+      });
+      userFollows.createIndex("follows", "follows", { multiEntry: true, unique: false });
+
+      const dnsIdentifiers = v0.createObjectStore("dnsIdentifiers");
+      dnsIdentifiers.createIndex("pubkey", "pubkey", { unique: false });
+      dnsIdentifiers.createIndex("name", "name", { unique: false });
+      dnsIdentifiers.createIndex("domain", "domain", { unique: false });
+      dnsIdentifiers.createIndex("updated", "updated", { unique: false });
+
+      v0.createObjectStore("settings");
+      v0.createObjectStore("relayInfo");
+      v0.createObjectStore("relayScoreboardStats", { keyPath: "relay" });
+      v0.createObjectStore("accounts", { keyPath: "pubkey" });
+    }
+
+    if (oldVersion < 2) {
+      const v1 = db as unknown as IDBPDatabase<SchemaV1>;
+      const v2 = db as unknown as IDBPDatabase<SchemaV2>;
+
+      v1.deleteObjectStore("settings");
+      const settings = v2.createObjectStore("settings", {
+        keyPath: "pubkey",
+      });
+      settings.createIndex("created_at", "created_at");
     }
   },
 });

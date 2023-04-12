@@ -3,7 +3,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { Account } from "../account";
 import { RelayInformationDocument } from "../relay-info";
 
-export interface CustomSchema extends DBSchema {
+export interface SchemaV1 extends DBSchema {
   userMetadata: {
     key: string;
     value: NostrEvent;
@@ -47,5 +47,13 @@ export interface CustomSchema extends DBSchema {
   accounts: {
     key: string;
     value: Account;
+  };
+}
+
+export interface SchemaV2 extends SchemaV1 {
+  settings: {
+    key: string;
+    value: NostrEvent;
+    indexes: { created_at: number };
   };
 }

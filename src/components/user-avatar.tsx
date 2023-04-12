@@ -4,7 +4,7 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
 import { getIdenticon } from "../services/identicon";
 import { safeUrl } from "../helpers/parse";
-import settings from "../services/settings";
+import appSettings from "../services/app-settings";
 import useSubject from "../hooks/use-subject";
 
 export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
@@ -17,7 +17,7 @@ export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
 };
 export const UserAvatar = React.memo(({ pubkey, ...props }: UserAvatarProps) => {
-  const proxyUserMedia = useSubject(settings.proxyUserMedia);
+  const { proxyUserMedia } = useSubject(appSettings);
   const metadata = useUserMetadata(pubkey);
   const picture = useMemo(() => {
     if (metadata?.picture) {

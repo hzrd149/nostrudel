@@ -59,7 +59,7 @@ export class Subject<Value> implements Connectable<Value> {
 
   connect(connectable: Connectable<Value>) {
     if (!this.upstream.has(connectable)) {
-      const handler = this.next;
+      const handler = this.next.bind(this);
       this.upstream.set(connectable, handler);
       connectable.subscribe(handler, this);
 

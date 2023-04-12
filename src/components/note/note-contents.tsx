@@ -4,7 +4,7 @@ import { InlineInvoiceCard } from "../inline-invoice-card";
 import { TweetEmbed } from "../tweet-embed";
 import { UserLink } from "../user-link";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import settings from "../../services/settings";
+import appSettings from "../../services/app-settings";
 import styled from "@emotion/styled";
 import QuoteNote from "./quote-note";
 import { useExpand } from "./expanded";
@@ -165,7 +165,7 @@ const embeds: EmbedType[] = [
     regexp:
       /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:svg|gif|png|jpg|jpeg|webp|avif))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
     render: (match, event, trusted) => {
-      const ImageComponent = trusted || !settings.blurImages.value ? Image : BlurredImage;
+      const ImageComponent = trusted || !appSettings.value.blurImages ? Image : BlurredImage;
       return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
     },
     name: "Image",
@@ -253,7 +253,7 @@ const embeds: EmbedType[] = [
 ];
 
 const MediaEmbed = ({ children, type }: { children: JSX.Element | string; type: EmbedType }) => {
-  const [show, setShow] = useState(settings.autoShowMedia.value);
+  const [show, setShow] = useState(appSettings.value.autoShowMedia);
 
   return show ? (
     <>{children}</>

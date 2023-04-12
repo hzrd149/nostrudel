@@ -12,13 +12,13 @@ import { UserDnsIdentityIcon } from "./user-dns-identity";
 import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
 import { convertTimestampToDate } from "../helpers/date";
 import useSubject from "../hooks/use-subject";
-import settings from "../services/settings";
+import appSettings from "../services/app-settings";
 import EventVerificationIcon from "./event-verification-icon";
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 
 const EmbeddedNote = ({ note }: { note: NostrEvent }) => {
   const account = useCurrentAccount();
-  const showSignatureVerification = useSubject(settings.showSignatureVerification);
+  const { showSignatureVerification } = useSubject(appSettings);
 
   const readRelays = useReadRelayUrls();
   const contacts = useUserContacts(account.pubkey, readRelays);
