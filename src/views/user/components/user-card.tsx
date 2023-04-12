@@ -8,7 +8,7 @@ import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
 
 export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) => {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserMetadata(pubkey, relay ? [relay] : []);
 
   return (
     <Box borderWidth="1px" borderRadius="lg" pl="3" pr="3" pt="2" pb="2" overflow="hidden">

@@ -1,5 +1,4 @@
 import Subject from "../classes/subject";
-import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";
 import userRelaysService, { UserRelays } from "./user-relays";
 
