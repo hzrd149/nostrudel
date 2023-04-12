@@ -143,6 +143,15 @@ export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
   };
 }
 
+export function buildDeleteEvent(eventIds: string[], reason = ""): DraftNostrEvent {
+  return {
+    kind: Kind.EventDeletion,
+    tags: eventIds.map((id) => ["e", id]),
+    content: reason,
+    created_at: moment().unix(),
+  };
+}
+
 export function parseRTag(tag: RTag): RelayConfig {
   switch (tag[2]) {
     case "write":
