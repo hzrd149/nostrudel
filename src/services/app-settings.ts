@@ -6,27 +6,27 @@ import signingService from "./signing";
 import { nostrPostAction } from "../classes/nostr-post-action";
 
 export let appSettings = new PersistentSubject(defaultSettings);
-export async function updateSettings(settings: Partial<AppSettings>) {
-  try {
-    const account = accountService.current.value;
-    if (!account) return;
-    const json: AppSettings = { ...appSettings.value, ...settings };
+export async function replaceSettings(newSettings: AppSettings) {
+  const account = accountService.current.value;
+  if (!account) return;
 
-    if (account.readonly) {
-      accountService.updateAccountLocalSettings(account.pubkey, json);
-      appSettings.next(json);
-    } else {
-      const draft = userAppSettings.buildAppSettingsEvent({ ...appSettings.value, ...settings });
-      const event = await signingService.requestSignature(draft, account);
-      userAppSettings.receiveEvent(event);
-      await nostrPostAction(clientRelaysService.getWriteUrls(), event).onComplete;
-    }
-  } catch (e) {}
+  if (account.readonly) {
+    accountService.updateAccountLocalSettings(account.pubkey, newSettings);
+    appSettings.next(newSettings);
+  } else {
+    const draft = userAppSettings.buildAppSettingsEvent(newSettings);
+    const event = await signingService.requestSignature(draft, account);
+    userAppSettings.receiveEvent(event);
+    await nostrPostAction(clientRelaysService.getWriteUrls(), event).onComplete;
+  }
 }
 
 export async function loadSettings() {
   const account = accountService.current.value;
-  if (!account) return;
+  if (!account) {
+    appSettings.next(defaultSettings);
+    return;
+  }
 
   appSettings.disconnectAll();
 

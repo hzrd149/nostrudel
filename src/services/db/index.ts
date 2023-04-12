@@ -46,7 +46,11 @@ const db = await openDB<SchemaV2>(dbName, version, {
       const v1 = db as unknown as IDBPDatabase<SchemaV1>;
       const v2 = db as unknown as IDBPDatabase<SchemaV2>;
 
-      v1.deleteObjectStore("settings");
+      // rename the old settings object store to misc
+      const oldSettings = transaction.objectStore("settings");
+      oldSettings.name = "misc";
+
+      // create new settings object store
       const settings = v2.createObjectStore("settings", {
         keyPath: "pubkey",
       });

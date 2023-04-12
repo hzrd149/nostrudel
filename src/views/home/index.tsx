@@ -23,6 +23,7 @@ export default function HomeView() {
       isLazy
       index={activeTab}
       onChange={(v) => navigate(tabs[v].path)}
+      colorScheme="brand"
     >
       <TabList>
         {tabs.map(({ label }) => (

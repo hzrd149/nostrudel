@@ -7,12 +7,12 @@ const decryptedKeys = new Map<string, string>();
 
 class SigningService {
   private async getSalt() {
-    let salt = await db.get("settings", "salt");
+    let salt = await db.get("misc", "salt");
     if (salt) {
       return salt as Uint8Array;
     } else {
       const newSalt = window.crypto.getRandomValues(new Uint8Array(16));
-      await db.put("settings", newSalt, "salt");
+      await db.put("misc", newSalt, "salt");
       return newSalt;
     }
   }

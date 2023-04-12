@@ -24,6 +24,7 @@ export type AppSettings = {
   showSignatureVerification: boolean;
   lightningPayMode: LightningPayMode;
   zapAmounts: number[];
+  primaryColor: string;
 };
 
 export const defaultSettings: AppSettings = {
@@ -35,6 +36,7 @@ export const defaultSettings: AppSettings = {
   showSignatureVerification: false,
   lightningPayMode: LightningPayMode.Prompt,
   zapAmounts: [50, 200, 500, 1000],
+  primaryColor: "#8DB600",
 };
 
 function parseAppSettings(event: NostrEvent): AppSettings {

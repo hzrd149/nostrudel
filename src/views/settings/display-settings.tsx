@@ -9,12 +9,42 @@ import {
   Box,
   AccordionIcon,
   FormHelperText,
+  Input,
+  InputProps,
 } from "@chakra-ui/react";
-import useSubject from "../../hooks/use-subject";
-import appSettings, { updateSettings } from "../../services/app-settings";
+import { useEffect, useRef, useState } from "react";
+import useAppSettings from "../../hooks/use-app-settings";
+
+function ColorPicker({ value, onPickColor, ...props }: { onPickColor?: (color: string) => void } & InputProps) {
+  const [tmpColor, setTmpColor] = useState(value);
+  const ref = useRef<HTMLInputElement>();
+
+  useEffect(() => setTmpColor(value), [value]);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.onchange = () => {
+        if (onPickColor && ref.current?.value) {
+          onPickColor(ref.current.value);
+        }
+      };
+    }
+  });
+
+  return (
+    <Input
+      {...props}
+      ref={ref}
+      value={tmpColor}
+      onChange={(e) => {
+        setTmpColor(e.target.value);
+        if (props.onChange) props.onChange(e);
+      }}
+    />
+  );
+}
 
 export default function DisplaySettings() {
-  const { blurImages, colorMode } = useSubject(appSettings);
+  const { blurImages, colorMode, primaryColor, updateSettings } = useAppSettings();
 
   return (
     <AccordionItem>
@@ -40,7 +70,25 @@ export default function DisplaySettings() {
               />
             </Flex>
             <FormHelperText>
-              <span>Enabled: hacker mode</span>
+              <span>Enables hacker mode</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="primary-color" mb="0">
+                Primary Color
+              </FormLabel>
+              <ColorPicker
+                id="primary-color"
+                type="color"
+                value={primaryColor}
+                onPickColor={(color) => updateSettings({ primaryColor: color })}
+                maxW="120"
+                size="sm"
+              />
+            </Flex>
+            <FormHelperText>
+              <span>The primary color of the theme</span>
             </FormHelperText>
           </FormControl>
           <FormControl>

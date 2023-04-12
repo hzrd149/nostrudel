@@ -1,9 +1,7 @@
 import {
   Badge,
-  Box,
   Button,
   Flex,
-  Highlight,
   IconButton,
   Input,
   InputGroup,
@@ -17,13 +15,13 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAsync } from "react-use";
 import { unique } from "../helpers/array";
 import { RelayIcon, SearchIcon } from "./icons";
+import { safeRelayUrl } from "../helpers/url";
 
 function RelayPickerModal({
   onSelect,
@@ -60,9 +58,8 @@ function RelayPickerModal({
           </InputGroup>
           <Flex gap="2" direction="column">
             {filteredRelays.map((url) => (
-              <Flex gap="2" alignItems="center">
+              <Flex key={url} gap="2" alignItems="center">
                 <Button
-                  key={url}
                   value={url}
                   onClick={() => {
                     onSelect(url);

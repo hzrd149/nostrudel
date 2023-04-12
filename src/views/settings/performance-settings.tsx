@@ -10,11 +10,12 @@ import {
   AccordionIcon,
   FormHelperText,
 } from "@chakra-ui/react";
-import appSettings, { updateSettings } from "../../services/app-settings";
+import appSettings, { replaceSettings } from "../../services/app-settings";
 import useSubject from "../../hooks/use-subject";
+import useAppSettings from "../../hooks/use-app-settings";
 
 export default function PerformanceSettings() {
-  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification } = useSubject(appSettings);
+  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification, updateSettings } = useAppSettings();
 
   return (
     <AccordionItem>

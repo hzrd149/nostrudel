@@ -12,13 +12,14 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import appSettings, { updateSettings } from "../../services/app-settings";
+import appSettings, { replaceSettings } from "../../services/app-settings";
 import useSubject from "../../hooks/use-subject";
 import { LightningIcon } from "../../components/icons";
 import { LightningPayMode } from "../../services/user-app-settings";
+import useAppSettings from "../../hooks/use-app-settings";
 
 export default function LightningSettings() {
-  const { lightningPayMode, zapAmounts } = useSubject(appSettings);
+  const { lightningPayMode, zapAmounts, updateSettings } = useAppSettings();
 
   const [zapInput, setZapInput] = useState(zapAmounts.join(","));
   useEffect(() => setZapInput(zapAmounts.join(",")), [zapAmounts.join(",")]);

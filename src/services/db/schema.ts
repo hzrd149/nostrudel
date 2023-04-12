@@ -56,4 +56,8 @@ export interface SchemaV2 extends SchemaV1 {
     value: NostrEvent;
     indexes: { created_at: number };
   };
+  misc: {
+    key: string;
+    value: any;
+  };
 }
