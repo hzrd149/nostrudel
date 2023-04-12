@@ -9,6 +9,7 @@ import { NoteMenu } from "./note/note-menu";
 import { UserAvatar } from "./user-avatar";
 import { UserDnsIdentityIcon } from "./user-dns-identity";
 import { UserLink } from "./user-link";
+import { getUserDisplayName } from "../helpers/user-metadata";
 
 export default function RepostNote({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
   const {
@@ -33,7 +34,7 @@ export default function RepostNote({ event, maxHeight }: { event: NostrEvent; ma
         <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
         <span>Shared note</span>
         <Box flex={1} />
-        {import.meta.env.DEV && <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />}
+        <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
       </Flex>
       {loading ? (
         <SkeletonText />
