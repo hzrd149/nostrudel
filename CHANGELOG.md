@@ -1,5 +1,13 @@
 # nostrudel
 
+## 0.5.0
+
+### Minor Changes
+
+- 66c6b4d: Add option to change primary color for theme
+- a209b9d: Improve database migration
+- a209b9d: Store app settings in NIP-78 Arbitrary app data event with local fallback
+
 ## 0.4.0
 
 ### Minor Changes
