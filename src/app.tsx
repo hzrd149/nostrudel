@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
 import { Button, Flex, Spinner, Text, useColorMode } from "@chakra-ui/react";
-import { ErrorBoundary } from "./components/error-boundary";
+import { ErrorBoundary, ErrorFallback } from "./components/error-boundary";
 import { Page } from "./components/page";
 import { normalizeToHex } from "./helpers/nip19";
 import { deleteDatabase } from "./services/db";
@@ -87,12 +87,6 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/u/:pubkey",
-        loader: ({ params }) => {
-          if (!params.pubkey) throw new Error("Missing pubkey");
-          const hexKey = normalizeToHex(params.pubkey);
-          if (!hexKey) throw new Error(params.pubkey + " is not a valid pubkey");
-          return { pubkey: hexKey };
-        },
         element: <UserView />,
         children: [
           { path: "", element: <UserNotesTab /> },
@@ -106,12 +100,6 @@ const router = createBrowserRouter([
       },
       {
         path: "/n/:id",
-        loader: ({ params }) => {
-          if (!params.id) throw new Error("Missing pubkey");
-          const hex = normalizeToHex(params.id);
-          if (!hex) throw new Error(params.id + " is not a valid event id");
-          return { id: hex };
-        },
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
