@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardProps, Flex, IconButton, Spacer, Text, Textarea } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, CardProps, Flex, IconButton, Spacer, Text, Textarea } from "@chakra-ui/react";
 import moment from "moment";
 import { Kind } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
@@ -17,6 +17,20 @@ import clientRelaysService from "../../services/client-relays";
 import directMessagesService, { getMessageRecipient } from "../../services/direct-messages";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
+import { EmbedableContent } from "../../helpers/embeds";
+import { embedImages, embedLinks, embedNostrLinks, embedVideos } from "../../components/embed-types";
+
+function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
+  let content: EmbedableContent = [text];
+
+  content = embedImages(content, true);
+  content = embedVideos(content);
+  content = embedLinks(content);
+
+  content = embedNostrLinks(content, event);
+
+  return <Box whiteSpace="pre-wrap">{content}</Box>;
+}
 
 function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
   const account = useCurrentAccount();
@@ -33,7 +47,7 @@ function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">)
             data={event.content}
             pubkey={isOwnMessage ? getMessageRecipient(event) ?? "" : event.pubkey}
           >
-            {(text) => <Text whiteSpace="pre-wrap">{text}</Text>}
+            {(text) => <MessageContent event={event} text={text} />}
           </DecryptPlaceholder>
         </CardBody>
       </Card>
