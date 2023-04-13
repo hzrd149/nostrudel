@@ -1,5 +1,14 @@
 # nostrudel
 
+## 0.6.0
+
+### Minor Changes
+
+- b75b1b3: Show image and video embeds in DMs (big refactor to support hashtags)
+- 096bc06: Desktop: Remove following list on right side
+- 5cfdd90: Add simple event deletion modal
+- 096bc06: Mobile: Move user icon to bottom bar
+
 ## 0.5.1
 
 ### Patch Changes
