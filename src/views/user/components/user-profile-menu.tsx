@@ -21,6 +21,7 @@ import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useUserRelays } from "../../../hooks/use-user-relays";
 import { RelayMode } from "../../../classes/relay";
 import { CopyIconButton } from "../../../components/copy-icon-button";
+import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
 
 export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<MenuIconButtonProps, "children">) => {
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
@@ -67,46 +68,7 @@ export const UserProfileMenu = ({ pubkey, ...props }: { pubkey: string } & Omit<
         </MenuItem>
       </MenuIconButton>
       {infoModal.isOpen && (
-        <Modal isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody overflow="auto" fontSize="sm" padding="2">
-              <Flex gap="2" direction="column">
-                <Heading size="sm" mt="2">
-                  Hex pubkey
-                </Heading>
-                <Flex gap="2">
-                  <Code fontSize="md" wordBreak="break-all">
-                    {pubkey}
-                  </Code>
-                  <CopyIconButton text={pubkey} size="xs" aria-label="copy hex" />
-                </Flex>
-
-                {npub && (
-                  <>
-                    <Heading size="sm" mt="2">
-                      Encoded pubkey (NIP-19)
-                    </Heading>
-                    <Flex gap="2">
-                      <Code fontSize="md" wordBreak="break-all">
-                        {npub}
-                      </Code>
-                      <CopyIconButton text={npub} size="xs" aria-label="copy npub" />
-                    </Flex>
-                  </>
-                )}
-
-                <Heading size="sm" mt="2">
-                  Metadata (kind 0)
-                </Heading>
-                <Code whiteSpace="pre" overflowX="auto">
-                  {JSON.stringify(metadata, null, 2)}
-                </Code>
-              </Flex>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        <UserDebugModal pubkey={pubkey} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
       )}
     </>
   );

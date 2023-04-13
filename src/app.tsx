@@ -15,6 +15,7 @@ import ProfileView from "./views/profile";
 import FollowingTab from "./views/home/following-tab";
 import DiscoverTab from "./views/home/discover-tab";
 import GlobalTab from "./views/home/global-tab";
+import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
 import UserFollowersTab from "./views/user/followers";
@@ -121,6 +122,7 @@ const router = createBrowserRouter([
       { path: "dm/:key", element: <DirectMessageChatView /> },
       { path: "profile", element: <ProfileView /> },
       { path: "l/:link", element: <NostrLinkView /> },
+      { path: "t/:hashtag", element: <HashTagView /> },
       {
         path: "",
         element: <HomeView />,

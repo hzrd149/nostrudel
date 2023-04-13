@@ -9,7 +9,7 @@ import { NoteMenu } from "./note/note-menu";
 import { UserAvatar } from "./user-avatar";
 import { UserDnsIdentityIcon } from "./user-dns-identity";
 import { UserLink } from "./user-link";
-import { getUserDisplayName } from "../helpers/user-metadata";
+import { unique } from "../helpers/array";
 
 export default function RepostNote({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
   const {
@@ -19,7 +19,9 @@ export default function RepostNote({ event, maxHeight }: { event: NostrEvent; ma
   } = useAsync(async () => {
     const [_, eventId, relay] = event.tags.find(isETag) ?? [];
     if (eventId) {
-      return singleEventService.requestEvent(eventId, relay ? [relay] : clientRelaysService.getReadUrls());
+      const readRelays = clientRelaysService.getReadUrls();
+      if (relay) readRelays.push(relay);
+      return singleEventService.requestEvent(eventId, unique(readRelays));
     }
     return null;
   }, [event]);
