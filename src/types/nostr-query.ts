@@ -13,6 +13,7 @@ export type NostrQuery = {
   "#e"?: string[];
   "#p"?: string[];
   "#d"?: string[];
+  "#t"?: string[];
   since?: number;
   until?: number;
   limit?: number;
