@@ -46,4 +46,9 @@ setInterval(() => {
   userMetadataService.update();
 }, 1000 * 2);
 
+if (import.meta.env.DEV) {
+  // @ts-ignore
+  window.userMetadataService = userMetadataService;
+}
+
 export default userMetadataService;
