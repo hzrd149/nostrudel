@@ -18,7 +18,8 @@ export function embedImages(content: EmbedableContent, trusted = false) {
       /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:svg|gif|png|jpg|jpeg|webp|avif))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
     render: (match) => {
       const ImageComponent = trusted || !appSettings.value.blurImages ? Image : BlurredImage;
-      return <ImageComponent src={match[0]} width="100%" maxWidth="30rem" />;
+      const src = appSettings.value.imageProxy ? `${appSettings.value.imageProxy}${match[0]}` : match[0];
+      return <ImageComponent src={src} width="100%" maxWidth="30rem" />;
     },
     name: "Image",
   });

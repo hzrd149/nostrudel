@@ -9,13 +9,20 @@ import {
   Box,
   AccordionIcon,
   FormHelperText,
+  Input,
+  Link,
 } from "@chakra-ui/react";
 import appSettings, { replaceSettings } from "../../services/app-settings";
 import useSubject from "../../hooks/use-subject";
 import useAppSettings from "../../hooks/use-app-settings";
+import { useEffect, useState } from "react";
 
 export default function PerformanceSettings() {
-  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification, updateSettings } = useAppSettings();
+  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification, updateSettings, imageProxy } =
+    useAppSettings();
+
+  const [proxyInput, setProxyInput] = useState(imageProxy);
+  useEffect(() => setProxyInput(imageProxy), [imageProxy]);
 
   return (
     <AccordionItem>
@@ -44,6 +51,34 @@ export default function PerformanceSettings() {
               <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
               <br />
               <span>Side Effect: Some user pictures may not load or may be outdated</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="image-proxy" mb="0">
+              Image proxy service
+            </FormLabel>
+            <Input
+              id="image-proxy"
+              type="url"
+              value={proxyInput}
+              onChange={(e) => setProxyInput(e.target.value)}
+              onBlur={() => {
+                try {
+                  const url = proxyInput ? new URL(proxyInput).toString() : "";
+                  if (url !== imageProxy) {
+                    updateSettings({ imageProxy: url });
+                    setProxyInput(url);
+                  }
+                } catch (e) {}
+              }}
+            />
+            <FormHelperText>
+              <span>
+                A URL to an instance of{" "}
+                <Link href="https://github.com/willnorris/imageproxy" isExternal target="_blank">
+                  willnorris/imageproxy
+                </Link>
+              </span>
             </FormHelperText>
           </FormControl>
           <FormControl>
