@@ -29,9 +29,9 @@ export function embedImages(content: EmbedableContent, trusted = false) {
 
       return (
         <LightGallery plugins={[lgThumbnail, lgZoom]} licenseKey="1234-5678-9101-1121">
-          <a href={src} target="_blank">
+          <Link href={src} target="_blank" display="inline-block">
             <ImageComponent src={thumbnail} cursor="pointer" maxW="30rem" />
-          </a>
+          </Link>
         </LightGallery>
       );
     },
