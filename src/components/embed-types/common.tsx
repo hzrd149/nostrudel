@@ -2,11 +2,15 @@ import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import appSettings from "../../services/app-settings";
 
+import LightGallery from "lightgallery/react";
+import lgThumbnail from "lightgallery/plugins/thumbnail";
+import lgZoom from "lightgallery/plugins/zoom";
+
 const BlurredImage = (props: ImageProps) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onOpen } = useDisclosure();
   return (
     <Box overflow="hidden">
-      <Image onClick={onToggle} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />
+      <Image onClick={onOpen} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />
     </Box>
   );
 };
@@ -18,8 +22,18 @@ export function embedImages(content: EmbedableContent, trusted = false) {
       /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:svg|gif|png|jpg|jpeg|webp|avif))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
     render: (match) => {
       const ImageComponent = trusted || !appSettings.value.blurImages ? Image : BlurredImage;
-      const src = appSettings.value.imageProxy ? `${appSettings.value.imageProxy}${match[0]}` : match[0];
-      return <ImageComponent src={src} width="100%" maxWidth="30rem" />;
+      const thumbnail = appSettings.value.imageProxy
+        ? new URL(`/256,fit/${match[0]}`, appSettings.value.imageProxy).toString()
+        : match[0];
+      const src = match[0];
+
+      return (
+        <LightGallery plugins={[lgThumbnail, lgZoom]} licenseKey="1234-5678-9101-1121">
+          <a href={src} target="_blank">
+            <ImageComponent src={thumbnail} cursor="pointer" maxW="30rem" />
+          </a>
+        </LightGallery>
+      );
     },
     name: "Image",
   });
