@@ -1,5 +1,16 @@
 # nostrudel
 
+## 0.7.0
+
+### Minor Changes
+
+- 80eda91: Add support for nprofile and nevent types in paths
+- 3ae7fe6: Show "Follow Back" on follow button if user is following you
+- 444ba5f: Add external link for mostr notes
+- 10dc835: Add option to load image thumbnails with imageproxy service
+- ac1c9cb: Add simple hashtag view
+- 10dc835: Add image lightbox and zoom
+
 ## 0.6.0
 
 ### Minor Changes
