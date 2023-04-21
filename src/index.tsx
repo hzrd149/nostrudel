@@ -3,6 +3,10 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Providers } from "./providers";
 
+import "lightgallery/css/lightgallery.css";
+import "lightgallery/css/lg-zoom.css";
+import "lightgallery/css/lg-thumbnail.css";
+
 // register nostr: protocol handler
 try {
   navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());

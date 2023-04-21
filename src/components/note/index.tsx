@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
 import {
@@ -11,6 +11,7 @@ import {
   CardProps,
   Flex,
   Heading,
+  IconButton,
   Link,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
@@ -36,6 +37,7 @@ import { ReplyButton } from "./buttons/reply-button";
 import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { ExternalLinkIcon } from "../icons";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -50,6 +52,9 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
   const readRelays = useReadRelayUrls();
   const contacts = useUserContacts(account.pubkey, readRelays);
   const following = contacts?.contacts || [];
+
+  // find mostr external link
+  const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr"), [event]);
 
   return (
     <ExpandProvider>
@@ -85,6 +90,17 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
             {showReactions && <ReactionButton note={event} size="sm" />}
           </ButtonGroup>
           <Box flexGrow={1} />
+          {externalLink && (
+            <IconButton
+              as={Link}
+              icon={<ExternalLinkIcon />}
+              aria-label="Open External"
+              href={externalLink[1]}
+              size="sm"
+              variant="link"
+              target="_blank"
+            />
+          )}
           <NoteRelays event={event} size="sm" variant="link" />
           <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
         </CardFooter>

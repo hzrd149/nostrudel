@@ -41,7 +41,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted: boolean = f
   // nostr
   content = embedNostrLinks(content, event);
   content = embedNostrMentions(content, event);
-  // content = embedNostrHashtags(content, event);
+  content = embedNostrHashtags(content, event);
 
   return content;
 }

@@ -19,6 +19,7 @@
     "idb": "^7.1.1",
     "identicon.js": "^2.3.3",
     "light-bolt11-decoder": "^2.1.0",
+    "lightgallery": "^2.7.1",
     "moment": "^2.29.4",
     "noble-secp256k1": "^1.2.14",
     "nostr-tools": "^1.8.3",

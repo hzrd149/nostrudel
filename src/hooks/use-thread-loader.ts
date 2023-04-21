@@ -9,8 +9,8 @@ type Options = {
   enabled?: boolean;
 };
 
-export function useThreadLoader(eventId: string, opts?: Options) {
-  const relays = useReadRelayUrls();
+export function useThreadLoader(eventId: string, additionalRelays: string[] = [], opts?: Options) {
+  const relays = useReadRelayUrls(additionalRelays);
 
   const ref = useRef<ThreadLoader | null>(null);
   const loader = (ref.current = ref.current || new ThreadLoader(relays, eventId));

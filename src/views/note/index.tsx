@@ -1,13 +1,33 @@
 import { Flex, Spinner } from "@chakra-ui/react";
-import { useLoaderData } from "react-router-dom";
+import { nip19 } from "nostr-tools";
+import { useParams } from "react-router-dom";
 import { Note } from "../../components/note";
+import { isHex } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./thread-post";
 
-const NoteView = () => {
-  const { id } = useLoaderData() as { id: string };
+function useNotePointer() {
+  const { id } = useParams() as { id: string };
+  if (isHex(id)) return { id, relays: [] };
+  const pointer = nip19.decode(id);
 
-  const { thread, events, rootId, focusId, loading } = useThreadLoader(id, { enabled: !!id });
+  switch (pointer.type) {
+    case "note":
+      return { id: pointer.data as string, relays: [] };
+    case "nevent":
+      const p = pointer.data as nip19.EventPointer;
+      return { id: p.id, relays: p.relays ?? [] };
+    default:
+      throw new Error(`Unknown type ${pointer.type}`);
+  }
+}
+
+const NoteView = () => {
+  const pointer = useNotePointer();
+
+  const { thread, events, rootId, focusId, loading } = useThreadLoader(pointer.id, pointer.relays, {
+    enabled: !!pointer.id,
+  });
   if (loading) return <Spinner />;
 
   let pageContent = <span>Missing Event</span>;
