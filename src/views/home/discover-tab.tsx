@@ -3,7 +3,7 @@ import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Note } from "../../components/note";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import { isReply } from "../../helpers/nostr-event";
+import { isReply, truncatedId } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -69,7 +69,7 @@ export default function DiscoverTab() {
   const throttledPubkeys = useThrottle(pubkeys, 1000);
 
   const { events, loading, loadMore } = useTimelineLoader(
-    `${account.pubkey}-discover`,
+    `${truncatedId(account.pubkey)}-discover`,
     relays,
     { authors: throttledPubkeys, kinds: [1], since: moment().subtract(1, "hour").unix() },
     { pageSize: moment.duration(1, "hour").asSeconds(), enabled: throttledPubkeys.length > 0 }

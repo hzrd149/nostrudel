@@ -2,7 +2,7 @@ import { Button, Flex, FormControl, FormLabel, Spinner, Switch } from "@chakra-u
 import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { Note } from "../../components/note";
-import { isReply } from "../../helpers/nostr-event";
+import { isReply, truncatedId } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { AddIcon } from "@chakra-ui/icons";
@@ -25,7 +25,7 @@ export default function FollowingTab() {
 
   const following = contacts?.contacts || [];
   const { events, loading, loadMore } = useTimelineLoader(
-    `${account.pubkey}-following-posts`,
+    `${truncatedId(account.pubkey)}-following-posts`,
     readRelays,
     { authors: following, kinds: [1, 6], since: moment().subtract(2, "hour").unix() },
     { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
