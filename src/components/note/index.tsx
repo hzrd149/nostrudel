@@ -2,7 +2,12 @@ import React, { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Box,
+  Button,
   ButtonGroup,
   Card,
   CardBody,
@@ -13,6 +18,7 @@ import {
   Heading,
   IconButton,
   Link,
+  Spacer,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
@@ -29,7 +35,7 @@ import { convertTimestampToDate } from "../../helpers/date";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
-import { ExpandProvider } from "./expanded";
+import { ExpandProvider, useExpand } from "./expanded";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
@@ -38,6 +44,31 @@ import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { ExternalLinkIcon } from "../icons";
+import SensitiveContentWarning from "../sensitive-content-warning";
+import useAppSettings from "../../hooks/use-app-settings";
+
+function NoteContentWithWarning({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
+  const account = useCurrentAccount();
+  const expand = useExpand();
+  const settings = useAppSettings();
+
+  const readRelays = useReadRelayUrls();
+  const contacts = useUserContacts(account.pubkey, readRelays);
+  const following = contacts?.contacts || [];
+
+  const contentWarning = event.tags.find((t) => t[0] === "content-warning")?.[1];
+  const showContentWarning = settings.showContentWarning && contentWarning && !expand?.expanded;
+
+  return showContentWarning ? (
+    <SensitiveContentWarning description={contentWarning} />
+  ) : (
+    <NoteContents
+      event={event}
+      trusted={event.pubkey === account.pubkey || following.includes(event.pubkey)}
+      maxHeight={maxHeight}
+    />
+  );
+}
 
 export type NoteProps = {
   event: NostrEvent;
@@ -46,12 +77,7 @@ export type NoteProps = {
 };
 export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
   const isMobile = useIsMobile();
-  const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
-
-  const readRelays = useReadRelayUrls();
-  const contacts = useUserContacts(account.pubkey, readRelays);
-  const following = contacts?.contacts || [];
 
   // find mostr external link
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr"), [event]);
@@ -75,11 +101,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
           </Flex>
         </CardHeader>
         <CardBody px="2" py="0">
-          <NoteContents
-            event={event}
-            trusted={event.pubkey === account.pubkey || following.includes(event.pubkey)}
-            maxHeight={maxHeight}
-          />
+          <NoteContentWithWarning event={event} maxHeight={maxHeight} />
         </CardBody>
         <CardFooter padding="2" display="flex" gap="2">
           <ButtonGroup size="sm" variant="link">
