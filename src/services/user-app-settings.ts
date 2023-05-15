@@ -26,6 +26,7 @@ export type AppSettings = {
   zapAmounts: number[];
   primaryColor: string;
   imageProxy: string;
+  showContentWarning: boolean;
 };
 
 export const defaultSettings: AppSettings = {
@@ -39,6 +40,7 @@ export const defaultSettings: AppSettings = {
   zapAmounts: [50, 200, 500, 1000],
   primaryColor: "#8DB600",
   imageProxy: "",
+  showContentWarning: true,
 };
 
 function parseAppSettings(event: NostrEvent): AppSettings {

@@ -44,7 +44,7 @@ function ColorPicker({ value, onPickColor, ...props }: { onPickColor?: (color: s
 }
 
 export default function DisplaySettings() {
-  const { blurImages, colorMode, primaryColor, updateSettings } = useAppSettings();
+  const { blurImages, colorMode, primaryColor, updateSettings, showContentWarning } = useAppSettings();
 
   return (
     <AccordionItem>
@@ -104,6 +104,21 @@ export default function DisplaySettings() {
             </Flex>
             <FormHelperText>
               <span>Enabled: blur images for people you aren't following</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="show-content-warning" mb="0">
+                Show content warning
+              </FormLabel>
+              <Switch
+                id="show-content-warning"
+                isChecked={showContentWarning}
+                onChange={(v) => updateSettings({ showContentWarning: v.target.checked })}
+              />
+            </Flex>
+            <FormHelperText>
+              <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
             </FormHelperText>
           </FormControl>
           <FormControl>
