@@ -1,5 +1,17 @@
 # nostrudel
 
+## 0.8.0
+
+### Minor Changes
+
+- 4dfb277: Make photo flush with edge of note
+- 285a2dd: Add content warning for NIP-36 notes
+- 4dfb277: Replace laggy photo lightbox
+
+### Patch Changes
+
+- 0df1db8: Fix subscription id too long
+
 ## 0.7.0
 
 ### Minor Changes
