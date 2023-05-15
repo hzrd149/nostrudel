@@ -41,7 +41,7 @@ const EmbeddedNote = ({ note }: { note: NostrEvent }) => {
           </Link>
         </Flex>
       </CardHeader>
-      <CardBody px="2" pt="0" pb="2">
+      <CardBody p="0">
         <NoteContents event={note} trusted={following.includes(note.pubkey)} maxHeight={200} />
       </CardBody>
     </Card>

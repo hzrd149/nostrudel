@@ -23,7 +23,7 @@ import {
 import { ImageGalleryProvider } from "../image-gallery";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, trusted: boolean = false) {
-  let content: EmbedableContent = [event.content];
+  let content: EmbedableContent = [event.content.trim()];
 
   content = embedLightningInvoice(content);
   content = embedTweet(content);
