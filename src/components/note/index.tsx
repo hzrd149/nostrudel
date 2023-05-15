@@ -100,7 +100,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
             </Link>
           </Flex>
         </CardHeader>
-        <CardBody px="2" py="0">
+        <CardBody p="0">
           <NoteContentWithWarning event={event} maxHeight={maxHeight} />
         </CardBody>
         <CardFooter padding="2" display="flex" gap="2">

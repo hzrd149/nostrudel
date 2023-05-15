@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import styled from "@emotion/styled";
 import { useExpand } from "./expanded";
@@ -20,6 +20,7 @@ import {
   embedAppleMusic,
   embedNostrHashtags,
 } from "../embed-types";
+import { ImageGalleryProvider } from "../image-gallery";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, trusted: boolean = false) {
   let content: EmbedableContent = [event.content];
@@ -82,19 +83,28 @@ export const NoteContents = React.memo(({ event, trusted, maxHeight }: NoteConte
   const showOverlay = !!maxHeight && !expand?.expanded && innerHeight > maxHeight;
 
   return (
-    <Box
-      whiteSpace="pre-wrap"
-      maxHeight={!expand?.expanded ? maxHeight : undefined}
-      position="relative"
-      overflow={maxHeight && !expand?.expanded ? "hidden" : "initial"}
-      onLoad={() => testHeight()}
-    >
-      <div ref={ref}>
-        {content.map((part, i) => (
-          <span key={"part-" + i}>{part}</span>
-        ))}
-      </div>
-      {showOverlay && <GradientOverlay onClick={expand?.onExpand} />}
-    </Box>
+    <ImageGalleryProvider>
+      <Box
+        whiteSpace="pre-wrap"
+        maxHeight={!expand?.expanded ? maxHeight : undefined}
+        position="relative"
+        overflow={maxHeight && !expand?.expanded ? "hidden" : "initial"}
+        onLoad={() => testHeight()}
+        px="2"
+      >
+        <div ref={ref}>
+          {content.map((part, i) =>
+            typeof part === "string" ? (
+              <Text as="span" key={"part-" + i}>
+                {part}
+              </Text>
+            ) : (
+              React.cloneElement(part, { key: "part-" + i })
+            )
+          )}
+        </div>
+        {showOverlay && <GradientOverlay onClick={expand?.onExpand} />}
+      </Box>
+    </ImageGalleryProvider>
   );
 });

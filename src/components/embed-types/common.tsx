@@ -1,10 +1,7 @@
 import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import appSettings from "../../services/app-settings";
-
-import LightGallery from "lightgallery/react";
-import lgThumbnail from "lightgallery/plugins/thumbnail";
-import lgZoom from "lightgallery/plugins/zoom";
+import { ImageGalleryLink } from "../image-gallery";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
@@ -28,11 +25,9 @@ export function embedImages(content: EmbedableContent, trusted = false) {
       const src = match[0];
 
       return (
-        <LightGallery plugins={[lgThumbnail, lgZoom]} licenseKey="1234-5678-9101-1121">
-          <Link href={src} target="_blank" display="inline-block">
-            <ImageComponent src={thumbnail} cursor="pointer" maxW="30rem" />
-          </Link>
-        </LightGallery>
+        <ImageGalleryLink href={src} target="_blank" display="block" mx="-2">
+          <ImageComponent src={thumbnail} cursor="pointer" maxW="30rem" w="full" />
+        </ImageGalleryLink>
       );
     },
     name: "Image",
