@@ -46,7 +46,7 @@ export default function Header({ pubkey }: { pubkey: string }) {
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
       <Flex gap="4">
-        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} />
+        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} noProxy />
         <Flex direction="column" gap={isMobile ? 0 : 2} grow="1" overflow="hidden">
           <Flex gap="2" justifyContent="space-between" width="100%">
             <Flex gap="2" alignItems="center" wrap="wrap">

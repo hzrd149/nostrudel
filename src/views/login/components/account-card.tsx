@@ -21,7 +21,7 @@ export default function AccountCard({ pubkey }: { pubkey: string }) {
       cursor="pointer"
       onClick={() => accountService.switchAccount(pubkey)}
     >
-      <UserAvatar pubkey={pubkey} size="sm" />
+      <UserAvatar pubkey={pubkey} size="sm" noProxy />
       <Text flex={1} mr="4" overflow="hidden">
         {getUserDisplayName(metadata, pubkey)}
       </Text>
