@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.9.0
+
+### Minor Changes
+
+- c21a662: Make all note links nevent
+- 40c5e19: Update nostr-tools dependency
+
+### Patch Changes
+
+- 5e7f6b0: Dont proxy main user profile image
+- 2d2e233: Dont blur images on shared notes
+- f432cf6: Trim note content
+- 40c5e19: Fix link regexp
+
 ## 0.8.0
 
 ### Minor Changes
