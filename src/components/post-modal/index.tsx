@@ -27,6 +27,7 @@ import { ImageIcon } from "../icons";
 import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
+import { TrustProvider } from "../note/trust";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -139,7 +140,9 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
           </Text>
         )}
         {showPreview ? (
-          <NoteContents event={finalizeNote(draft)} trusted />
+          <TrustProvider trust>
+            <NoteContents event={finalizeNote(draft)} />
+          </TrustProvider>
         ) : (
           <Textarea
             autoFocus

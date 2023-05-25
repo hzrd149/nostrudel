@@ -20,7 +20,7 @@ import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
-import RepostNote from "../../components/repost-note";
+import RepostNote from "../../components/note/repost-note";
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";

@@ -1,6 +1,6 @@
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSingleEvent from "../../hooks/use-single-event";
-import EmbeddedNote from "../embeded-note";
+import EmbeddedNote from "./embeded-note";
 import { NoteLink } from "../note-link";
 
 const QuoteNote = ({ noteId, relay }: { noteId: string; relay?: string }) => {
