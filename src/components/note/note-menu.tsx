@@ -13,7 +13,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
-import { nip19 } from "nostr-tools";
 
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
@@ -21,8 +20,6 @@ import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
 import { ClipboardIcon, CodeIcon, LikeIcon, RepostIcon, TrashIcon } from "../icons";
 import NoteReactionsModal from "./note-zaps-modal";
-import { getEventRelays } from "../../services/event-relays";
-import relayScoreboardService from "../../services/relay-scoreboard";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useCallback, useState } from "react";
@@ -31,16 +28,7 @@ import { buildDeleteEvent } from "../../helpers/nostr-event";
 import signingService from "../../services/signing";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
-
-function getShareLink(eventId: string) {
-  const relays = getEventRelays(eventId).value;
-  const ranked = relayScoreboardService.getRankedRelays(relays);
-  const onlyTwo = ranked.slice(0, 2);
-
-  if (onlyTwo.length > 0) {
-    return nip19.neventEncode({ id: eventId, relays: onlyTwo });
-  } else return nip19.noteEncode(eventId);
-}
+import { getSharableEncodedNoteId } from "../note-link";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -80,7 +68,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + getShareLink(event.id))} icon={<RepostIcon />}>
+        <MenuItem onClick={() => copyToClipboard("nostr:" + getSharableEncodedNoteId(event.id))} icon={<RepostIcon />}>
           Copy Share Link
         </MenuItem>
         {noteId && (

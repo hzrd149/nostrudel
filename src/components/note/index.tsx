@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import moment from "moment";
 import {
   Box,
@@ -16,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 
 import { NoteMenu } from "./note-menu";
 import { NoteRelays } from "./note-relays";
@@ -36,6 +34,7 @@ import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { ExternalLinkIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "./trust";
+import { NoteLink } from "../note-link";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -63,9 +62,9 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
               <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
-              <Link as={RouterLink} to={`/n/${normalizeToBech32(event.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
+              <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
                 {moment(convertTimestampToDate(event.created_at)).fromNow()}
-              </Link>
+              </NoteLink>
             </Flex>
           </CardHeader>
           <CardBody p="0">

@@ -12,6 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { TrustProvider } from "./trust";
+import { NoteLink } from "../note-link";
 
 export default function EmbeddedNote({ note }: { note: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
@@ -29,9 +30,9 @@ export default function EmbeddedNote({ note }: { note: NostrEvent }) {
             <UserDnsIdentityIcon pubkey={note.pubkey} onlyIcon />
             <Flex grow={1} />
             {showSignatureVerification && <EventVerificationIcon event={note} />}
-            <Link as={RouterLink} to={`/n/${normalizeToBech32(note.id, Bech32Prefix.Note)}`} whiteSpace="nowrap">
+            <NoteLink noteId={note.id} color="current" whiteSpace="nowrap">
               {moment(convertTimestampToDate(note.created_at)).fromNow()}
-            </Link>
+            </NoteLink>
           </Flex>
         </CardHeader>
         <CardBody p="0">
