@@ -21,9 +21,10 @@ import {
   embedNostrHashtags,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
+import { useTrusted } from "./trust";
 
-function buildContents(event: NostrEvent | DraftNostrEvent, trusted: boolean = false) {
-  let content: EmbedableContent = [event.content];
+function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
+  let content: EmbedableContent = [event.content.trim()];
 
   content = embedLightningInvoice(content);
   content = embedTweet(content);
@@ -59,12 +60,12 @@ const GradientOverlay = styled.div`
 
 export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
-  trusted?: boolean;
   maxHeight?: number;
 };
 
-export const NoteContents = React.memo(({ event, trusted, maxHeight }: NoteContentsProps) => {
-  const content = buildContents(event, trusted ?? false);
+export const NoteContents = React.memo(({ event, maxHeight }: NoteContentsProps) => {
+  const trusted = useTrusted();
+  const content = buildContents(event, trusted);
   const expand = useExpand();
   const [innerHeight, setInnerHeight] = useState(0);
   const ref = useRef<HTMLDivElement | null>(null);

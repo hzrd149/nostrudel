@@ -15,18 +15,21 @@ export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
 
 export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
+  noProxy?: boolean;
 };
-export const UserAvatar = React.memo(({ pubkey, ...props }: UserAvatarProps) => {
+export const UserAvatar = React.memo(({ pubkey, noProxy, ...props }: UserAvatarProps) => {
   const { imageProxy, proxyUserMedia } = useSubject(appSettings);
   const metadata = useUserMetadata(pubkey);
   const picture = useMemo(() => {
     if (metadata?.picture) {
       const src = safeUrl(metadata?.picture);
-      if (imageProxy && src) {
-        return new URL(`/96/${src}`, imageProxy).toString();
-      } else if (proxyUserMedia) {
-        const last4 = String(pubkey).slice(pubkey.length - 4, pubkey.length);
-        return `https://media.nostr.band/thumbs/${last4}/${pubkey}-picture-64`;
+      if (!noProxy) {
+        if (imageProxy && src) {
+          return new URL(`/96/${src}`, imageProxy).toString();
+        } else if (proxyUserMedia) {
+          const last4 = String(pubkey).slice(pubkey.length - 4, pubkey.length);
+          return `https://media.nostr.band/thumbs/${last4}/${pubkey}-picture-64`;
+        }
       }
       return src;
     }

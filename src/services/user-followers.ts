@@ -5,7 +5,6 @@ import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import db from "./db";
 import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
-import clientRelaysService from "./client-relays";
 import { Subject } from "../classes/subject";
 import { Kind } from "nostr-tools";
 
