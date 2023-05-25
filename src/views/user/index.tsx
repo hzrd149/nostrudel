@@ -40,22 +40,24 @@ function useUserPointer() {
   }
 }
 
-function useUserTop4Relays(pubkey: string) {
+function useUserTopRelays(pubkey: string, count: number = 4) {
   // get user relays
   const userRelays = useFallbackUserRelays(pubkey)
     .filter((r) => r.mode & RelayMode.WRITE)
     .map((r) => r.url);
   // merge the users relays with client relays
   const readRelays = useReadRelayUrls();
-  // find the top 4
-  return userRelays.length === 0 ? readRelays : relayScoreboardService.getRankedRelays(userRelays).slice(0, 4);
+  if (userRelays.length === 0) return readRelays;
+  const sorted = relayScoreboardService.getRankedRelays(userRelays);
+
+  return !count ? sorted : sorted.slice(0, count);
 }
 
 const UserView = () => {
   const { pubkey, relays: pointerRelays } = useUserPointer();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const userTopRelays = useUserTop4Relays(pubkey);
+  const userTopRelays = useUserTopRelays(pubkey);
 
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
