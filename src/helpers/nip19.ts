@@ -1,4 +1,5 @@
 import { bech32 } from "bech32";
+import { nip19 } from "nostr-tools";
 
 export function isHex(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
@@ -58,6 +59,12 @@ export function hexStringToUint8(str: string) {
     buffer[i] = parseInt(str.substr(2 * i, 2), 16);
   }
   return buffer;
+}
+
+export function safeDecode(str: string) {
+  try {
+    return nip19.decode(str);
+  } catch (e) {}
 }
 
 export function normalizeToBech32(key: string, prefix: Bech32Prefix = Bech32Prefix.Pubkey) {

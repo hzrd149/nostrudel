@@ -21,6 +21,7 @@ import ZapModal from "../../components/zap-modal";
 import { convertTimestampToDate } from "../../helpers/date";
 import { truncatedId } from "../../helpers/nostr-event";
 import QrScannerModal from "../../components/qr-scanner-modal";
+import { safeDecode } from "../../helpers/nip19";
 
 type relay = string;
 type NostrBandSearchResults = {
@@ -90,7 +91,7 @@ export default function SearchView() {
   // set the search when the form is submitted
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (search.startsWith("nostr:")) {
+    if (search.startsWith("nostr:") || safeDecode(search)) {
       navigate({ pathname: "/l/" + search }, { replace: true });
     } else {
       setSearchParams({ q: search }, { replace: true });

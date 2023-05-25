@@ -14,7 +14,6 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
@@ -26,7 +25,6 @@ import signingService from "../../services/signing";
 
 export default function LoginNsecView() {
   const navigate = useNavigate();
-  const toast = useToast();
 
   const [show, setShow] = useState(false);
   const [error, setError] = useState(false);

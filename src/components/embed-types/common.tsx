@@ -47,12 +47,12 @@ export function embedVideos(content: EmbedableContent) {
 }
 
 // based on http://urlregex.com/
-// note1c34vht0lu2qzrgr4az3u8jn5xl3fycr2gfpahkepthg7hzlqg26sr59amt
+// nostr:nevent1qqsvg6kt4hl79qpp5p673g7ref6r0c5jvp4yys7mmvs4m50t30sy9dgpp4mhxue69uhkummn9ekx7mqpr4mhxue69uhkummnw3ez6ur4vgh8wetvd3hhyer9wghxuet59dl66z
+// nostr:nevent1qqsymds0vlpp4f5s0dckjf4qz283pdsen0rmx8lu7ct6hpnxag2hpacpremhxue69uhkummnw3ez6un9d3shjtnwda4k7arpwfhjucm0d5q3qamnwvaz7tmwdaehgu3wwa5kueghxyq76
 export function embedLinks(content: EmbedableContent) {
   return embedJSX(content, {
     name: "Link",
-    regexp:
-      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
+    regexp: /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})(\/[\+~%\/\.\w\-_]*)?([\?#][^\s]+)?/i,
     render: (match) => (
       <Link color="blue.500" href={match[0]} target="_blank" isExternal>
         {match[0]}
