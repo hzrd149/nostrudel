@@ -32,7 +32,13 @@ function useUserShareLink(pubkey: string) {
   }, [userRelays]);
 }
 
-export default function Header({ pubkey }: { pubkey: string }) {
+export default function Header({
+  pubkey,
+  showRelaySelectionModal,
+}: {
+  pubkey: string;
+  showRelaySelectionModal: () => void;
+}) {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const metadata = useUserMetadata(pubkey);
@@ -40,8 +46,6 @@ export default function Header({ pubkey }: { pubkey: string }) {
 
   const account = useCurrentAccount();
   const isSelf = pubkey === account.pubkey;
-
-  const shareLink = useUserShareLink(pubkey);
 
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
@@ -55,7 +59,13 @@ export default function Header({ pubkey }: { pubkey: string }) {
             </Flex>
             <Flex gap="2">
               <UserTipButton pubkey={pubkey} size="sm" variant="link" />
-              <UserProfileMenu pubkey={pubkey} aria-label="More Options" size="sm" variant="link" />
+              <UserProfileMenu
+                pubkey={pubkey}
+                aria-label="More Options"
+                size="sm"
+                variant="link"
+                showRelaySelectionModal={showRelaySelectionModal}
+              />
             </Flex>
           </Flex>
           {!metadata ? <SkeletonText /> : <Text>{metadata?.about}</Text>}

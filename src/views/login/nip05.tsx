@@ -46,6 +46,9 @@ export default function LoginNip05View() {
           const id = await dnsIdentityService.getIdentity(nip05, true);
           setPubkey(id?.pubkey);
           setRelays(id?.relays);
+          if (id?.relays[0]) {
+            setRelayUrl(id.relays[0]);
+          }
         } catch (e) {}
       }
       setLoading(false);

@@ -22,7 +22,7 @@ const EmbeddedImage = ({ src, blue }: { src: string; blue: boolean }) => {
 
   return (
     <ImageGalleryLink href={src} target="_blank" display="block" mx="-2">
-      <ImageComponent src={thumbnail} cursor="pointer" maxH={isMobile ? "80vh" : "25vh"} mx={isMobile ? "auto" : "0"} />
+      <ImageComponent src={thumbnail} cursor="pointer" maxH={isMobile ? "80vh" : "35vh"} mx={isMobile ? "auto" : "0"} />
     </ImageGalleryLink>
   );
 };

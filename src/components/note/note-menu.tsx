@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
+import { Bech32Prefix, getSharableNoteId, normalizeToBech32 } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
@@ -28,7 +28,6 @@ import { buildDeleteEvent } from "../../helpers/nostr-event";
 import signingService from "../../services/signing";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
-import { getSharableEncodedNoteId } from "../note-link";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -68,7 +67,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + getSharableEncodedNoteId(event.id))} icon={<RepostIcon />}>
+        <MenuItem onClick={() => copyToClipboard("nostr:" + getSharableNoteId(event.id))} icon={<RepostIcon />}>
           Copy Share Link
         </MenuItem>
         {noteId && (

@@ -1,13 +1,5 @@
 import { createIcon, IconProps } from "@chakra-ui/icons";
 
-import nostrGuruIcon from "./icons/nostr-guru.jpg";
-import snortSocialIcon from "./icons/snort-social.png";
-
-export const IMAGE_ICONS = {
-  nostrGuruIcon,
-  snortSocialIcon,
-};
-
 const defaultProps: IconProps = { fontSize: "1.2em" };
 
 export const GlobalIcon = createIcon({

@@ -4,21 +4,12 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  ListItem,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverTrigger,
   Spinner,
   Switch,
-  UnorderedList,
   useDisclosure,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
-import { RelayIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import RepostNote from "../../components/note/repost-note";
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
@@ -56,24 +47,6 @@ const UserNotesTab = () => {
           Reposts
         </FormLabel>
         <Box flexGrow={1} />
-        <Popover>
-          <PopoverTrigger>
-            <Button variant="link" leftIcon={<RelayIcon />}>
-              Using Relays
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody>
-              <UnorderedList>
-                {contextRelays.map((url) => (
-                  <ListItem key={url}>{url}</ListItem>
-                ))}
-              </UnorderedList>
-            </PopoverBody>
-          </PopoverContent>
-        </Popover>
       </FormControl>
       {timeline.map((event) =>
         event.kind === 6 ? (
