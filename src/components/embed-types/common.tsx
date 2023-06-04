@@ -3,6 +3,7 @@ import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import appSettings from "../../services/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
+import { matchImageUrls } from "../../helpers/regexp";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
@@ -30,8 +31,7 @@ const EmbeddedImage = ({ src, blue }: { src: string; blue: boolean }) => {
 // note1n06jceulg3gukw836ghd94p0ppwaz6u3mksnnz960d8vlcp2fnqsgx3fu9
 export function embedImages(content: EmbedableContent, trusted = false) {
   return embedJSX(content, {
-    regexp:
-      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,6})((?:\/[\+~%\/\.\w\-_]*)?\.(?:svg|gif|png|jpg|jpeg|webp|avif))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
+    regexp: matchImageUrls,
     render: (match) => <EmbeddedImage blue={trusted} src={match[0]} />,
     name: "Image",
   });

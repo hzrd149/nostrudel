@@ -4,7 +4,7 @@ import { ModalProps } from "@chakra-ui/react";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import RawValue from "./raw-value";
-import RawJson from "./raw-block";
+import RawJson from "./raw-json";
 
 export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } & Omit<ModalProps, "children">) {
   const npub = useMemo(() => normalizeToBech32(pubkey, Bech32Prefix.Pubkey), [pubkey]);

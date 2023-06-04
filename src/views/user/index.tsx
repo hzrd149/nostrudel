@@ -43,6 +43,7 @@ import { RelayFavicon } from "../../components/relay-favicon";
 
 const tabs = [
   { label: "Notes", path: "notes" },
+  { label: "Media", path: "media" },
   { label: "Zaps", path: "zaps" },
   { label: "Followers", path: "followers" },
   { label: "Following", path: "following" },

@@ -34,6 +34,7 @@ import DirectMessageChatView from "./views/dm/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import appSettings from "./services/app-settings";
+import UserMediaTab from "./views/user/media";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <UserNotesTab /> },
           { path: "notes", element: <UserNotesTab /> },
+          { path: "media", element: <UserMediaTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
