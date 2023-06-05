@@ -19,11 +19,11 @@ import "./commands";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-beforeEach(async () => {
+beforeEach(() => {
   cy.clearAllLocalStorage();
 
   // remove the database for every test
-  await new Promise((res, rej) => {
+  new Promise((res, rej) => {
     const request = window.indexedDB.deleteDatabase("storage");
     request.onsuccess = res;
     request.onerror = rej;

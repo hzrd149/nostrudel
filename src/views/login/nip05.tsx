@@ -46,9 +46,6 @@ export default function LoginNip05View() {
           const id = await dnsIdentityService.getIdentity(nip05, true);
           setPubkey(id?.pubkey);
           setRelays(id?.relays);
-          if (id?.relays[0]) {
-            setRelayUrl(id.relays[0]);
-          }
         } catch (e) {}
       }
       setLoading(false);
@@ -116,7 +113,9 @@ export default function LoginNip05View() {
       </FormControl>
       {relays ? (
         relays.length > 0 ? (
-          <Text>Found {relays.length} relays</Text>
+          <Text>
+            Found {relays.length} relays <CheckIcon color="green.500" />
+          </Text>
         ) : (
           <FormControl>
             <FormLabel>Bootstrap relay</FormLabel>
