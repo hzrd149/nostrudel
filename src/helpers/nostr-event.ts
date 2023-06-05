@@ -117,7 +117,6 @@ export function buildRepost(event: NostrEvent): DraftNostrEvent {
 
   const tags: NostrEvent["tags"] = [];
   tags.push(["e", event.id, relay]);
-  tags.push(["p", event.pubkey]);
 
   return {
     kind: 6, //Kind.Repost
@@ -132,7 +131,6 @@ export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
 
   const tags: NostrEvent["tags"] = [];
   tags.push(["e", event.id, relay, "mention"]);
-  tags.push(["p", event.pubkey]);
 
   return {
     kind: Kind.Text,
