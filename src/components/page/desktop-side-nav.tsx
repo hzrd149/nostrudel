@@ -1,10 +1,19 @@
 import { SettingsIcon } from "@chakra-ui/icons";
 import { Avatar, Button, Flex, Heading, LinkOverlay, Text, VStack } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 import { ConnectedRelays } from "../connected-relays";
-import { ChatIcon, FeedIcon, LogoutIcon, NotificationIcon, ProfileIcon, RelayIcon, SearchIcon } from "../icons";
+import {
+  ChatIcon,
+  FeedIcon,
+  LogoutIcon,
+  NotificationIcon,
+  ProfileIcon,
+  RelayIcon,
+  SearchIcon,
+  ToolsIcon,
+} from "../icons";
 import ProfileLink from "./profile-link";
 import AccountSwitcher from "./account-switcher";
 
@@ -15,7 +24,7 @@ export default function DesktopSideNav() {
   return (
     <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
       <Flex gap="2" alignItems="center" position="relative">
-        <LinkOverlay as={Link} to="/" />
+        <LinkOverlay as={RouterLink} to="/" />
         <Avatar src="/apple-touch-icon.png" size="sm" />
         <Heading size="md">noStrudel</Heading>
       </Flex>

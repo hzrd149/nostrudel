@@ -34,6 +34,8 @@ import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import appSettings from "./services/app-settings";
 import UserMediaTab from "./views/user/media";
+import { ToolsHomeView } from "./views/tools";
+import { Nip19ToolsView } from "./views/tools/nip19";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -85,6 +87,13 @@ const router = createBrowserRouter([
       { path: "dm", element: <DirectMessagesView /> },
       { path: "dm/:key", element: <DirectMessageChatView /> },
       { path: "profile", element: <ProfileView /> },
+      {
+        path: "tools",
+        children: [
+          { path: "", element: <ToolsHomeView /> },
+          { path: "nip19", element: <Nip19ToolsView /> },
+        ],
+      },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },
       {
