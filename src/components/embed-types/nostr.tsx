@@ -67,16 +67,18 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
 
   return embedJSX(content, {
     name: "nostr-hashtag",
-    regexp: /#([^\[\]\s]+)/i,
+    regexp: /#(\w+)/i,
     render: (match) => {
       const hashtag = match[1].toLowerCase();
+
       if (hashtags.includes(hashtag)) {
         return (
           <Link as={RouterLink} to={`/t/${hashtag}`} color="blue.500">
             #{match[1]}
           </Link>
         );
-      }
+      } else console.log(hashtag, hashtags);
+
       return match[0];
     },
   });
