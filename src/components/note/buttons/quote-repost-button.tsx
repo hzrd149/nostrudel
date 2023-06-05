@@ -18,7 +18,7 @@ export function QuoteRepostButton({ event }: { event: NostrEvent }) {
       onClick={handleClick}
       aria-label="Quote repost"
       title="Quote repost"
-      isDisabled={account.readonly}
+      isDisabled={account?.readonly ?? true}
     />
   );
 }

@@ -49,7 +49,7 @@ type MetadataFormProps = {
 };
 
 const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
-  const account = useCurrentAccount();
+  const account = useCurrentAccount()!;
   const isMobile = useIsMobile();
   const {
     register,
@@ -189,7 +189,7 @@ export const ProfileEditView = () => {
   const writeRelays = useWriteRelayUrls();
   const readRelays = useReadRelayUrls();
   const toast = useToast();
-  const account = useCurrentAccount();
+  const account = useCurrentAccount()!;
   const metadata = useUserMetadata(account.pubkey, readRelays, true);
 
   const defaultValues = useMemo<FormData>(

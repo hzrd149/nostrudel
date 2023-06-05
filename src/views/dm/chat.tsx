@@ -19,6 +19,7 @@ import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import { EmbedableContent } from "../../helpers/embeds";
 import { embedImages, embedLinks, embedNostrLinks, embedVideos } from "../../components/embed-types";
+import RequireCurrentAccount from "../../providers/require-current-account";
 
 function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
   let content: EmbedableContent = [text];
@@ -33,7 +34,7 @@ function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
 }
 
 function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
-  const account = useCurrentAccount();
+  const account = useCurrentAccount()!;
   const isOwnMessage = account.pubkey === event.pubkey;
 
   return (
@@ -55,7 +56,7 @@ function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">)
   );
 }
 
-export default function DirectMessageChatView() {
+function DirectMessageChatPage() {
   const { key } = useParams();
   if (!key) return <Navigate to="/" />;
   const pubkey = normalizeToHex(key);
@@ -129,5 +130,12 @@ export default function DirectMessageChatView() {
         </Button>
       </Flex>
     </Flex>
+  );
+}
+export default function DirectMessageChatView() {
+  return (
+    <RequireCurrentAccount>
+      <DirectMessageChatPage />
+    </RequireCurrentAccount>
   );
 }

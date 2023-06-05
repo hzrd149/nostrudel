@@ -42,7 +42,7 @@ export default function LoginStartView() {
             relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
           }
 
-          accountService.addAccount({ pubkey, relays, useExtension: true });
+          accountService.addAccount({ pubkey, relays, useExtension: true, readonly: false });
         }
 
         accountService.switchAccount(pubkey);

@@ -25,6 +25,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import directMessagesService from "../../services/direct-messages";
 import { ExternalLinkIcon } from "../../components/icons";
 import { useIsMobile } from "../../hooks/use-is-mobile";
+import RequireCurrentAccount from "../../providers/require-current-account";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
@@ -48,7 +49,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
   );
 }
 
-function DirectMessagesView() {
+function DirectMessagesPage() {
   const isMobile = useIsMobile();
   const [from, setFrom] = useState(moment().subtract(2, "days"));
   const conversations = useSubject(directMessagesService.conversations);
@@ -121,4 +122,10 @@ function DirectMessagesView() {
   );
 }
 
-export default DirectMessagesView;
+export default function DirectMessagesView() {
+  return (
+    <RequireCurrentAccount>
+      <DirectMessagesPage />
+    </RequireCurrentAccount>
+  );
+}

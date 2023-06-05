@@ -10,6 +10,14 @@ import signingService from "./signing";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
+const DEFAULT_RELAYS = [
+  { url: "wss://relay.damus.io", mode: RelayMode.READ },
+  { url: "wss://nostr.wine", mode: RelayMode.READ },
+  { url: "wss://relay.snort.social", mode: RelayMode.READ },
+  { url: "wss://eden.nostr.land", mode: RelayMode.READ },
+  { url: "wss://nos.lol", mode: RelayMode.READ },
+];
+
 class ClientRelayService {
   bootstrapRelays = new Set<string>();
   relays = new PersistentSubject<RelayConfig[]>([]);
@@ -19,9 +27,10 @@ class ClientRelayService {
   constructor() {
     let lastSubject: Subject<ParsedUserRelays> | undefined;
     accountService.current.subscribe((account) => {
-      this.relays.next([]);
-
-      if (!account) return;
+      if (!account) {
+        this.relays.next(DEFAULT_RELAYS);
+        return;
+      } else this.relays.next([]);
 
       if (account.relays) {
         this.bootstrapRelays.clear();

@@ -26,8 +26,9 @@ import useSubject from "../../hooks/use-subject";
 import { RelayStatus } from "../../components/relay-status";
 import { normalizeRelayUrl } from "../../helpers/url";
 import { RelayScoreBreakdown } from "../../components/relay-score-breakdown";
+import RequireCurrentAccount from "../../providers/require-current-account";
 
-export default function RelaysView() {
+function RelaysPage() {
   const relays = useSubject(clientRelaysService.relays);
   const toast = useToast();
 
@@ -150,5 +151,13 @@ export default function RelaysView() {
         </Button>
       </Flex>
     </Flex>
+  );
+}
+
+export default function RelaysView() {
+  return (
+    <RequireCurrentAccount>
+      <RelaysPage />
+    </RequireCurrentAccount>
   );
 }

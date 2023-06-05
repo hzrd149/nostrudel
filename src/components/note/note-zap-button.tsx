@@ -26,7 +26,7 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
   }, [zaps]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const hasZapped = parsedZaps.some((zapRequest) => zapRequest.request.pubkey === account.pubkey);
+  const hasZapped = !!account && parsedZaps.some((zapRequest) => zapRequest.request.pubkey === account.pubkey);
   const tipAddress = metadata?.lud06 || metadata?.lud16;
 
   const invoicePaid = () => eventZapsService.requestZaps(note.id, clientRelaysService.getReadUrls(), true);

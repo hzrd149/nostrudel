@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import moment from "moment";
 import { Note } from "../../components/note";
@@ -11,6 +11,7 @@ import userContactsService, { UserContacts } from "../../services/user-contacts"
 import { PersistentSubject } from "../../classes/subject";
 import useSubject from "../../hooks/use-subject";
 import { useThrottle } from "react-use";
+import RequireCurrentAccount from "../../providers/require-current-account";
 
 class DiscoverContacts {
   pubkey: string;
@@ -59,9 +60,9 @@ class DiscoverContacts {
   }
 }
 
-export default function DiscoverTab() {
+function DiscoverTabBody() {
   useAppTitle("discover");
-  const account = useCurrentAccount();
+  const account = useCurrentAccount()!;
   const relays = useReadRelayUrls();
 
   const discover = useMemo(() => new DiscoverContacts(account.pubkey, relays), [account.pubkey, relays.join("|")]);
@@ -84,5 +85,13 @@ export default function DiscoverTab() {
       ))}
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
+  );
+}
+
+export default function DiscoverTab() {
+  return (
+    <RequireCurrentAccount>
+      <DiscoverTabBody />
+    </RequireCurrentAccount>
   );
 }

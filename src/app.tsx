@@ -37,37 +37,12 @@ import UserMediaTab from "./views/user/media";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
-  let location = useLocation();
-  const loading = useSubject(accountService.loading);
-  const account = useSubject(accountService.current);
-
-  if (loading) {
-    return (
-      <Flex alignItems="center" height="100%" gap="4" direction="column">
-        <Flex gap="4" grow="1" alignItems="center">
-          <Spinner />
-          <Text>Loading Accounts</Text>
-        </Flex>
-        <Button variant="link" margin="4" onClick={() => deleteDatabase()}>
-          Stuck loading? clear cache
-        </Button>
-      </Flex>
-    );
-  }
-  if (!account) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-
-  return children;
-};
-
 const RootPage = () => (
-  <RequireCurrentAccount>
-    <Page>
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  </RequireCurrentAccount>
+  <Page>
+    <Suspense fallback={<Spinner />}>
+      <Outlet />
+    </Suspense>
+  </Page>
 );
 
 const router = createBrowserRouter([

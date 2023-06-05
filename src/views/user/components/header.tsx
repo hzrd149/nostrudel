@@ -29,7 +29,7 @@ export default function Header({
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   const account = useCurrentAccount();
-  const isSelf = pubkey === account.pubkey;
+  const isSelf = pubkey === account?.pubkey;
 
   return (
     <Flex direction="column" gap="2" px="2" pt="2">

@@ -43,6 +43,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
 
   const deleteNote = useCallback(async () => {
     try {
+      if (!account) throw new Error("not logged in");
       setDeleting(true);
       const deleteEvent = buildDeleteEvent([event.id], reason);
       const signed = await signingService.requestSignature(deleteEvent, account);
@@ -75,7 +76,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
             Copy Note ID
           </MenuItem>
         )}
-        {account.pubkey === event.pubkey && (
+        {account?.pubkey === event.pubkey && (
           <MenuItem icon={<TrashIcon />} color="red.500" onClick={deleteModal.onOpen}>
             Delete Note
           </MenuItem>

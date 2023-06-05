@@ -1,9 +1,9 @@
-import { Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Avatar, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PostModalContext } from "../../providers/post-modal-provider";
-import { ChatIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
+import { ChatIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 
@@ -19,7 +19,11 @@ export default function MobileBottomNav() {
   return (
     <>
       <Flex flexShrink={0} gap="2" padding="2" alignItems="center">
-        <UserAvatar pubkey={account.pubkey} size="sm" onClick={onOpen} />
+        {account ? (
+          <UserAvatar pubkey={account.pubkey} size="sm" onClick={onOpen} noProxy />
+        ) : (
+          <Avatar size="sm" src="/apple-touch-icon.png" onClick={onOpen} cursor="pointer" />
+        )}
         <IconButton icon={<HomeIcon />} aria-label="Home" onClick={() => navigate("/")} flexGrow="1" size="md" />
         <IconButton
           icon={<SearchIcon />}
@@ -36,7 +40,7 @@ export default function MobileBottomNav() {
           }}
           variant="solid"
           colorScheme="brand"
-          isDisabled={account.readonly}
+          isDisabled={account?.readonly ?? true}
         />
         <IconButton icon={<ChatIcon />} aria-label="Messages" onClick={() => navigate(`/dm`)} flexGrow="1" size="md" />
         <IconButton
