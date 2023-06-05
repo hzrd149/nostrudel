@@ -1,9 +1,8 @@
 import React, { Suspense, useEffect } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
 import { Button, Flex, Spinner, Text, useColorMode } from "@chakra-ui/react";
-import { ErrorBoundary, ErrorFallback } from "./components/error-boundary";
+import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
-import { normalizeToHex } from "./helpers/nip19";
 import { deleteDatabase } from "./services/db";
 import accountService from "./services/account";
 import useSubject from "./hooks/use-subject";
@@ -120,7 +119,6 @@ const router = createBrowserRouter([
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
           { path: "discover", element: <DiscoverTab /> },
-          // { path: "popular", element: <PopularTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },

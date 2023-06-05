@@ -1,15 +1,15 @@
-import { AspectRatio, Box, Button, Flex, Grid, IconButton, Image, Spinner } from "@chakra-ui/react";
-import moment from "moment";
+import { Box, Button, Flex, Grid, IconButton, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
-import { truncatedId } from "../../helpers/nostr-event";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { matchImageUrls } from "../../helpers/regexp";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { ImageGalleryLink, ImageGalleryProvider } from "../../components/image-gallery";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getSharableNoteId } from "../../helpers/nip19";
+import { useMount, useUnmount } from "react-use";
+import useSubject from "../../hooks/use-subject";
+import userTimelineService from "../../services/user-timeline";
 
 const matchAllImages = new RegExp(matchImageUrls, "ig");
 
@@ -18,13 +18,17 @@ const UserMediaTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  // TODO: move this out of a hook so its not being re-created every time
-  const { events, loading, loadMore } = useTimelineLoader(
-    `${truncatedId(pubkey)}-media`,
-    contextRelays,
-    { authors: [pubkey], kinds: [1] },
-    { pageSize: moment.duration(1, "week").asSeconds(), startLimit: 40 }
-  );
+  const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
+
+  const events = useSubject(timeline.events);
+  const loading = useSubject(timeline.loading);
+
+  useEffect(() => {
+    timeline.setRelays(contextRelays);
+  }, [timeline, contextRelays.join("|")]);
+
+  useMount(() => timeline.open());
+  useUnmount(() => timeline.close());
 
   const images = useMemo(() => {
     var images: { eventId: string; src: string; index: number }[] = [];
@@ -67,7 +71,11 @@ const UserMediaTab = () => {
           ))}
         </Grid>
       </ImageGalleryProvider>
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      ) : (
+        <Button onClick={() => timeline.loadMore()}>Load More</Button>
+      )}
     </Flex>
   );
 };

@@ -7,7 +7,7 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
 import { QrIconButton } from "./share-qr-button";
 import { UserAvatar } from "../../../components/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { UserFollowButton } from "../../../components/user-follow-button";
 import { UserTipButton } from "../../../components/user-tip-button";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";

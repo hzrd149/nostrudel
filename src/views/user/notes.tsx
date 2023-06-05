@@ -1,20 +1,13 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Spinner,
-  Switch,
-  useDisclosure,
-} from "@chakra-ui/react";
-import moment from "moment";
+import { Box, Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import RepostNote from "../../components/note/repost-note";
-import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { isReply, isRepost } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import userTimelineService from "../../services/user-timeline";
+import { useEffect, useMemo } from "react";
+import useSubject from "../../hooks/use-subject";
+import { useMount, useUnmount } from "react-use";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -23,13 +16,19 @@ const UserNotesTab = () => {
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
   const { isOpen: hideReposts, onToggle: toggleReposts } = useDisclosure();
 
-  const { events, loading, loadMore } = useTimelineLoader(
-    `${truncatedId(pubkey)}-notes`,
-    contextRelays,
-    { authors: [pubkey], kinds: [1, 6] },
-    { pageSize: moment.duration(2, "day").asSeconds(), startLimit: 20 }
-  );
-  const timeline = events.filter((event) => {
+  const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
+
+  const events = useSubject(timeline.events);
+  const loading = useSubject(timeline.loading);
+
+  useEffect(() => {
+    timeline.setRelays(contextRelays);
+  }, [timeline, contextRelays.join("|")]);
+
+  useMount(() => timeline.open());
+  useUnmount(() => timeline.close());
+
+  const filteredEvents = events.filter((event) => {
     if (!showReplies && isReply(event)) return false;
     if (hideReposts && isRepost(event)) return false;
     return true;
@@ -48,14 +47,18 @@ const UserNotesTab = () => {
         </FormLabel>
         <Box flexGrow={1} />
       </FormControl>
-      {timeline.map((event) =>
+      {filteredEvents.map((event) =>
         event.kind === 6 ? (
           <RepostNote key={event.id} event={event} maxHeight={1200} />
         ) : (
           <Note key={event.id} event={event} maxHeight={1200} />
         )
       )}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+      ) : (
+        <Button onClick={() => timeline.loadMore()}>Load More</Button>
+      )}
     </Flex>
   );
 };

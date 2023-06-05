@@ -5,7 +5,7 @@ import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { UserAvatar } from "../../../components/user-avatar";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 
 export const UserCard = ({ pubkey, relay }: { pubkey: string; relay?: string }) => {
   const metadata = useUserMetadata(pubkey, relay ? [relay] : []);

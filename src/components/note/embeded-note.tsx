@@ -5,7 +5,7 @@ import { NoteContents } from "./note-contents";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
-import { UserDnsIdentityIcon } from "../user-dns-identity";
+import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { convertTimestampToDate } from "../../helpers/date";
 import useSubject from "../../hooks/use-subject";

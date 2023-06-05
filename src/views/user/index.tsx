@@ -93,7 +93,7 @@ const UserView = () => {
 
   const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.includes(t.path)) ?? tabs[0]);
 
-  const metadata = useUserMetadata(pubkey, [], true);
+  const metadata = useUserMetadata(pubkey, userTopRelays, true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   useAppTitle(getUserDisplayName(metadata, npub ?? pubkey));

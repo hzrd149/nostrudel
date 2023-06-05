@@ -16,7 +16,7 @@ import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-d
 import { useAsync } from "react-use";
 import { LightningIcon, QrCodeIcon } from "../../components/icons";
 import { UserAvatarLink } from "../../components/user-avatar-link";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import ZapModal from "../../components/zap-modal";
 import { convertTimestampToDate } from "../../helpers/date";
 import { truncatedId } from "../../helpers/nostr-event";

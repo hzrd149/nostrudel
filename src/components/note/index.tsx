@@ -20,7 +20,7 @@ import { NoteMenu } from "./note-menu";
 import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
-import { UserDnsIdentityIcon } from "../user-dns-identity";
+import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import { convertTimestampToDate } from "../../helpers/date";
 import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
