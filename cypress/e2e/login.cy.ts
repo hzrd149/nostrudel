@@ -17,7 +17,7 @@ describe("Login view", () => {
       },
     });
 
-    cy.findByRole("button", { name: /nip-05/i }).click();
+    cy.findByRole("link", { name: /nip-05/i }).click();
 
     cy.findByRole("textbox", { name: /nip-05/i }).type("_@hzrd149.com");
     cy.contains(/found 1 relays/i);
@@ -27,7 +27,7 @@ describe("Login view", () => {
   });
 
   it("login with npub", () => {
-    cy.findByRole("button", { name: /npub/i }).click();
+    cy.findByRole("link", { name: /npub/i }).click();
     cy.findByRole("textbox", { name: /npub/i }).type("npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr");
     cy.findByRole("combobox", { name: /bootstrap relay/i })
       .clear()
@@ -38,7 +38,7 @@ describe("Login view", () => {
   });
 
   it("login with new nsec", () => {
-    cy.findByRole("button", { name: /nsec/i }).click();
+    cy.findByRole("link", { name: /nsec/i }).click();
     cy.findByRole("button", { name: /generate/i }).click();
     cy.findByRole("combobox", { name: /bootstrap relay/i })
       .clear()

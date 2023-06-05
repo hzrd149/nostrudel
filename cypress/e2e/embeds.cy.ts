@@ -1,8 +1,4 @@
 describe("Embeds", () => {
-  beforeEach(() => {
-    cy.loginWithNewUser();
-  });
-
   describe("hashtags", () => {
     it('should handle uppercase hashtags and ","', () => {
       cy.visit(

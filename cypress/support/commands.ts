@@ -42,7 +42,7 @@ Cypress.Commands.add("loginWithNewUser", () => {
     cy.stub($win, "prompt").returns("pass");
   });
 
-  cy.findByRole("button", { name: /nsec/i }).click();
+  cy.findByRole("link", { name: /nsec/i }).click();
   cy.findByRole("button", { name: /generate/i }).click();
   cy.findByRole("combobox", { name: /bootstrap relay/i })
     .clear()

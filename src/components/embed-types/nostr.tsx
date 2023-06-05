@@ -77,7 +77,7 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
             #{match[1]}
           </Link>
         );
-      } else console.log(hashtag, hashtags);
+      }
 
       return match[0];
     },

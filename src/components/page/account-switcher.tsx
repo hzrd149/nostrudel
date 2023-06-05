@@ -18,6 +18,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import { AddIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
+import { useNavigate } from "react-router-dom";
 
 function AccountItem({ pubkey }: { pubkey: string }) {
   const metadata = useUserMetadata(pubkey, []);
@@ -49,6 +50,7 @@ function AccountItem({ pubkey }: { pubkey: string }) {
 }
 
 export function AccountSwitcherList() {
+  const navigate = useNavigate();
   const accounts = useSubject(accountService.accounts);
   const current = useSubject(accountService.current);
 
@@ -59,7 +61,14 @@ export function AccountSwitcherList() {
       {otherAccounts.map((account) => (
         <AccountItem key={account.pubkey} pubkey={account.pubkey} />
       ))}
-      <Button size="sm" leftIcon={<AddIcon />} onClick={() => accountService.logout()}>
+      <Button
+        size="sm"
+        leftIcon={<AddIcon />}
+        onClick={() => {
+          accountService.logout();
+          navigate("/login", { state: { from: location.pathname } });
+        }}
+      >
         Add Account
       </Button>
     </Flex>
