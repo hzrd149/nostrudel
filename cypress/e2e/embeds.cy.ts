@@ -4,7 +4,7 @@ describe("Embeds", () => {
   });
 
   describe("hashtags", () => {
-    it.only('should handle uppercase hashtags and ","', () => {
+    it('should handle uppercase hashtags and ","', () => {
       cy.visit(
         "/n/nevent1qqsrj5ns6wva3fcghlyx0hp7hhajqtqk3kuckp7xhhscrm4jl7futegpz9mhxue69uhkummnw3e82efwvdhk6qgswaehxw309ahx7um5wgh8w6twv5pkpt8l"
       );
