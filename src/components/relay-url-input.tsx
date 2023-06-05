@@ -1,3 +1,4 @@
+import { forwardRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -17,11 +18,9 @@ import {
   ModalProps,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { useAsync } from "react-use";
 import { unique } from "../helpers/array";
 import { RelayIcon, SearchIcon } from "./icons";
-import { safeRelayUrl } from "../helpers/url";
 
 function RelayPickerModal({
   onSelect,
@@ -82,32 +81,31 @@ function RelayPickerModal({
 
 export type RelayUrlInputProps = Omit<InputProps, "type">;
 
-export const RelayUrlInput = ({
-  onChange,
-  ...props
-}: Omit<RelayUrlInputProps, "onChange"> & { onChange: (url: string) => void }) => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const { value: relaysJson } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
-  );
-  const relaySuggestions = unique(relaysJson ?? []);
+export const RelayUrlInput = forwardRef(
+  ({ onChange, ...props }: Omit<RelayUrlInputProps, "onChange"> & { onChange: (url: string) => void }, ref) => {
+    const { isOpen, onClose, onOpen } = useDisclosure();
+    const { value: relaysJson } = useAsync(async () =>
+      fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
+    );
+    const relaySuggestions = unique(relaysJson ?? []);
 
-  return (
-    <>
-      <InputGroup>
-        <Input list="relay-suggestions" type="url" onChange={(e) => onChange(e.target.value)} {...props} />
-        <datalist id="relay-suggestions">
-          {relaySuggestions.map((url) => (
-            <option key={url} value={url}>
-              {url}
-            </option>
-          ))}
-        </datalist>
-        <InputRightElement>
-          <IconButton icon={<RelayIcon />} aria-label="Pick from list" size="sm" onClick={onOpen} />
-        </InputRightElement>
-      </InputGroup>
-      <RelayPickerModal onClose={onClose} isOpen={isOpen} onSelect={(url) => onChange(url)} size="2xl" />
-    </>
-  );
-};
+    return (
+      <>
+        <InputGroup>
+          <Input ref={ref} list="relay-suggestions" type="url" onChange={(e) => onChange(e.target.value)} {...props} />
+          <datalist id="relay-suggestions">
+            {relaySuggestions.map((url) => (
+              <option key={url} value={url}>
+                {url}
+              </option>
+            ))}
+          </datalist>
+          <InputRightElement>
+            <IconButton icon={<RelayIcon />} aria-label="Pick from list" size="sm" onClick={onOpen} />
+          </InputRightElement>
+        </InputGroup>
+        <RelayPickerModal onClose={onClose} isOpen={isOpen} onSelect={(url) => onChange(url)} size="2xl" />
+      </>
+    );
+  }
+);

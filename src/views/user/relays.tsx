@@ -2,13 +2,14 @@ import { Text, Box, IconButton, Flex, Badge } from "@chakra-ui/react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { GlobalIcon } from "../../components/icons";
 import { RelayMode } from "../../classes/relay";
-import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { RelayScoreBreakdown } from "../../components/relay-score-breakdown";
 import useRankedRelayConfigs from "../../hooks/use-ranked-relay-configs";
+import { useUserRelays } from "../../hooks/use-user-relays";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
 const UserRelaysTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const userRelays = useFallbackUserRelays(pubkey);
+  const userRelays = useUserRelays(pubkey);
   const navigate = useNavigate();
 
   const ranked = useRankedRelayConfigs(userRelays);

@@ -2,8 +2,6 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import useSubject from "../hooks/use-subject";
 import clientFollowingService from "../services/client-following";
-import { useAsync } from "react-use";
-import { NostrRequest } from "../classes/nostr-request";
 import clientRelaysService from "../services/client-relays";
 import { useUserContacts } from "../hooks/use-user-contacts";
 
@@ -30,8 +28,14 @@ export const UserFollowButton = ({
   };
 
   return (
-    <Button colorScheme="brand" {...props} isLoading={savingDraft} onClick={toggleFollow} isDisabled={account.readonly}>
-      {isFollowing ? "Unfollow" : userContacts?.contacts.includes(account.pubkey) ? "Follow Back" : "Follow"}
+    <Button
+      colorScheme="brand"
+      {...props}
+      isLoading={savingDraft}
+      onClick={toggleFollow}
+      isDisabled={account?.readonly ?? true}
+    >
+      {isFollowing ? "Unfollow" : account && userContacts?.contacts.includes(account.pubkey) ? "Follow Back" : "Follow"}
     </Button>
   );
 };

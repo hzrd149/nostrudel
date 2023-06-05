@@ -13,6 +13,12 @@ export function ReplyButton({ event }: { event: NostrEvent }) {
   const reply = () => openModal(buildReply(event));
 
   return (
-    <IconButton icon={<ReplyIcon />} title="Reply" aria-label="Reply" onClick={reply} isDisabled={account.readonly} />
+    <IconButton
+      icon={<ReplyIcon />}
+      title="Reply"
+      aria-label="Reply"
+      onClick={reply}
+      isDisabled={account?.readonly ?? true}
+    />
   );
 }

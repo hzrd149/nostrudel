@@ -4,7 +4,7 @@ import { AppSettings } from "./user-app-settings";
 
 export type Account = {
   pubkey: string;
-  readonly?: boolean;
+  readonly: boolean;
   relays?: string[];
   secKey?: ArrayBuffer;
   iv?: Uint8Array;

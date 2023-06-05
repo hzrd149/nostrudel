@@ -4,11 +4,15 @@ import { ModalProps } from "@chakra-ui/react";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import RawValue from "./raw-value";
-import RawJson from "./raw-block";
+import RawJson from "./raw-json";
+import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
+import userRelaysService from "../../services/user-relays";
 
 export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } & Omit<ModalProps, "children">) {
   const npub = useMemo(() => normalizeToBech32(pubkey, Bech32Prefix.Pubkey), [pubkey]);
   const metadata = useUserMetadata(pubkey);
+  const nprofile = useSharableProfileId(pubkey);
+  const relays = userRelaysService.requester.getSubject(pubkey).value;
 
   return (
     <Modal {...props}>
@@ -18,8 +22,10 @@ export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } 
         <ModalBody overflow="auto" p="4">
           <Flex gap="2" direction="column">
             <RawValue heading="Hex pubkey" value={pubkey} />
-            {npub && <RawValue heading="Encoded pubkey (NIP-19)" value={npub} />}
-            <RawJson heading="Metadata (kind 0)" json={metadata} />
+            {npub && <RawValue heading="npub" value={npub} />}
+            <RawValue heading="nprofile" value={nprofile} />
+            <RawJson heading="Parsed Metadata (kind 0)" json={metadata} />
+            {relays && <RawJson heading="Relay List (kind 10002)" json={relays} />}
           </Flex>
         </ModalBody>
       </ModalContent>

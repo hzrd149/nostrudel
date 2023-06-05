@@ -12,7 +12,7 @@ import { Link as RouterLink } from "react-router-dom";
 export function embedNostrLinks(content: EmbedableContent, event: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
     name: "nostr-link",
-    regexp: /(nostr:)?((npub|note|nprofile|nevent)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58,})/i,
+    regexp: /(nostr:|@)?((npub|note|nprofile|nevent)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58,})/i,
     render: (match) => {
       try {
         const decoded = nip19.decode(match[2]);
@@ -67,9 +67,10 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
 
   return embedJSX(content, {
     name: "nostr-hashtag",
-    regexp: /#([^\[\]\s]+)/i,
+    regexp: /#(\w+)/i,
     render: (match) => {
       const hashtag = match[1].toLowerCase();
+
       if (hashtags.includes(hashtag)) {
         return (
           <Link as={RouterLink} to={`/t/${hashtag}`} color="blue.500">
@@ -77,6 +78,7 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
           </Link>
         );
       }
+
       return match[0];
     },
   });

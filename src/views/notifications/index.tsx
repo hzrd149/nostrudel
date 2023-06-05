@@ -1,7 +1,6 @@
 import { Button, Card, CardBody, CardHeader, Flex, Spinner, Text } from "@chakra-ui/react";
 import moment from "moment";
 import { memo } from "react";
-import { useNavigate } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { convertTimestampToDate } from "../../helpers/date";
@@ -10,6 +9,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
+import RequireCurrentAccount from "../../providers/require-current-account";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">
@@ -35,9 +35,9 @@ const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
   return <>Unknown event type {event.kind}</>;
 });
 
-const NotificationsView = () => {
+function NotificationsPage() {
   const readRelays = useReadRelayUrls();
-  const account = useCurrentAccount();
+  const account = useCurrentAccount()!;
   const { events, loading, loadMore } = useTimelineLoader(
     "notifications",
     readRelays,
@@ -60,6 +60,12 @@ const NotificationsView = () => {
       {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
     </Flex>
   );
-};
+}
 
-export default NotificationsView;
+export default function NotificationsView() {
+  return (
+    <RequireCurrentAccount>
+      <NotificationsPage />
+    </RequireCurrentAccount>
+  );
+}

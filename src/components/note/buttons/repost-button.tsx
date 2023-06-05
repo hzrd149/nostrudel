@@ -30,6 +30,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
 
   const handleClick = async () => {
     try {
+      if (!account) throw new Error("not logged in");
       setLoading(true);
       const draftRepost = buildRepost(event);
       const repost = await signingService.requestSignature(draftRepost, account);
@@ -50,7 +51,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
         onClick={onOpen}
         aria-label="Repost Note"
         title="Repost Note"
-        isDisabled={account.readonly}
+        isDisabled={account?.readonly ?? true}
         isLoading={loading}
       />
       {isOpen && (

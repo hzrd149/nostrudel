@@ -113,7 +113,9 @@ export default function LoginNip05View() {
       </FormControl>
       {relays ? (
         relays.length > 0 ? (
-          <Text>Found {relays.length} relays</Text>
+          <Text>
+            Found {relays.length} relays <CheckIcon color="green.500" />
+          </Text>
         ) : (
           <FormControl>
             <FormLabel>Bootstrap relay</FormLabel>

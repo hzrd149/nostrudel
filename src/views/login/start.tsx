@@ -11,13 +11,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import AccountCard from "./components/account-card";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 
 export default function LoginStartView() {
-  const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const accounts = useSubject(accountService.accounts);
@@ -42,7 +42,7 @@ export default function LoginStartView() {
             relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
           }
 
-          accountService.addAccount({ pubkey, relays, useExtension: true });
+          accountService.addAccount({ pubkey, relays, useExtension: true, readonly: false });
         }
 
         accountService.switchAccount(pubkey);
@@ -70,9 +70,15 @@ export default function LoginStartView() {
       <Button onClick={loginWithExtension} colorScheme="brand">
         Use browser extension (NIP-07)
       </Button>
-      <Button onClick={() => navigate("./nip05")}>Login with Nip-05 Id</Button>
-      <Button onClick={() => navigate("./npub")}>Login with pubkey key (npub)</Button>
-      <Button onClick={() => navigate("./nsec")}>Login with secret key (nsec)</Button>
+      <Button as={RouterLink} to="./nip05" state={location.state}>
+        Login with Nip-05 Id
+      </Button>
+      <Button as={RouterLink} to="./npub" state={location.state}>
+        Login with pubkey key (npub)
+      </Button>
+      <Button as={RouterLink} to="./nsec" state={location.state}>
+        Login with secret key (nsec)
+      </Button>
       {accounts.length > 0 && (
         <>
           <Heading size="md" mt="4">

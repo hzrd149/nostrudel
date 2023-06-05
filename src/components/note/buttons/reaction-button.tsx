@@ -45,7 +45,7 @@ export default function ReactionButton({ note, ...props }: { note: NostrEvent } 
     handleClick(input);
   };
 
-  const isLiked = reactions.some((event) => event.pubkey === account.pubkey);
+  const isLiked = !!account && reactions.some((event) => event.pubkey === account.pubkey);
 
   return (
     // <Popover placement="bottom" trigger="hover" openDelay={500}>

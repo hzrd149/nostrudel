@@ -19,22 +19,22 @@ export class CachedPubkeyEventRequester extends PubkeyEventRequester {
   requestEvent(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.getSubject(pubkey);
 
-    if (!sub.value || alwaysRequest) {
+    if (!sub.value) {
       // only call this.readCache once per pubkey
-      const promise = this.readCacheDedupe.get(pubkey) || this.readCache(pubkey);
-      this.readCacheDedupe.set(pubkey, promise);
+      if (!this.readCacheDedupe.has(pubkey)) {
+        const promise = this.readCacheDedupe.get(pubkey) || this.readCache(pubkey);
+        this.readCacheDedupe.set(pubkey, promise);
 
-      promise.then((cached) => {
-        this.readCacheDedupe.delete(pubkey);
+        promise.then((cached) => {
+          this.readCacheDedupe.delete(pubkey);
 
-        if (cached && (!sub.value || cached.created_at > sub.value.created_at)) {
-          sub.next(cached);
-        }
+          if (cached) this.handleEvent(cached);
 
-        if (!sub.value || alwaysRequest) {
-          super.requestEvent(pubkey, relays, alwaysRequest);
-        }
-      });
+          if (!sub.value || alwaysRequest) super.requestEvent(pubkey, relays);
+        });
+      }
+    } else if (alwaysRequest) {
+      super.requestEvent(pubkey, relays);
     }
 
     return sub;

@@ -53,10 +53,10 @@ class PubkeyEventRequestSubscription {
     return this.subjects.get(pubkey);
   }
 
-  requestEvent(pubkey: string, alwaysRequest = false) {
+  requestEvent(pubkey: string) {
     const sub = this.subjects.get(pubkey);
 
-    if (!sub.value || alwaysRequest) {
+    if (!sub.value) {
       this.requestNext.add(pubkey);
     }
 
@@ -129,11 +129,11 @@ export class PubkeyEventRequester {
   }
 
   private connected = new WeakSet<any>();
-  requestEvent(pubkey: string, relays: string[], alwaysRequest = false) {
+  requestEvent(pubkey: string, relays: string[]) {
     const sub = this.subjects.get(pubkey);
 
     for (const relay of relays) {
-      const relaySub = this.subscriptions.get(relay).requestEvent(pubkey, alwaysRequest);
+      const relaySub = this.subscriptions.get(relay).requestEvent(pubkey);
 
       if (!this.connected.has(relaySub)) {
         relaySub.subscribe((event) => event && this.handleEvent(event));

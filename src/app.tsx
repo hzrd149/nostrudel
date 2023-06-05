@@ -1,9 +1,8 @@
 import React, { Suspense, useEffect } from "react";
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
 import { Button, Flex, Spinner, Text, useColorMode } from "@chakra-ui/react";
-import { ErrorBoundary, ErrorFallback } from "./components/error-boundary";
+import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
-import { normalizeToHex } from "./helpers/nip19";
 import { deleteDatabase } from "./services/db";
 import accountService from "./services/account";
 import useSubject from "./hooks/use-subject";
@@ -34,40 +33,18 @@ import DirectMessageChatView from "./views/dm/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import appSettings from "./services/app-settings";
+import UserMediaTab from "./views/user/media";
+import { ToolsHomeView } from "./views/tools";
+import { Nip19ToolsView } from "./views/tools/nip19";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RequireCurrentAccount = ({ children }: { children: JSX.Element }) => {
-  let location = useLocation();
-  const loading = useSubject(accountService.loading);
-  const account = useSubject(accountService.current);
-
-  if (loading) {
-    return (
-      <Flex alignItems="center" height="100%" gap="4" direction="column">
-        <Flex gap="4" grow="1" alignItems="center">
-          <Spinner />
-          <Text>Loading Accounts</Text>
-        </Flex>
-        <Button variant="link" margin="4" onClick={() => deleteDatabase()}>
-          Stuck loading? clear cache
-        </Button>
-      </Flex>
-    );
-  }
-  if (!account) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-
-  return children;
-};
-
 const RootPage = () => (
-  <RequireCurrentAccount>
-    <Page>
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  </RequireCurrentAccount>
+  <Page>
+    <Suspense fallback={<Spinner />}>
+      <Outlet />
+    </Suspense>
+  </Page>
 );
 
 const router = createBrowserRouter([
@@ -91,6 +68,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <UserNotesTab /> },
           { path: "notes", element: <UserNotesTab /> },
+          { path: "media", element: <UserMediaTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
@@ -109,6 +87,13 @@ const router = createBrowserRouter([
       { path: "dm", element: <DirectMessagesView /> },
       { path: "dm/:key", element: <DirectMessageChatView /> },
       { path: "profile", element: <ProfileView /> },
+      {
+        path: "tools",
+        children: [
+          { path: "", element: <ToolsHomeView /> },
+          { path: "nip19", element: <Nip19ToolsView /> },
+        ],
+      },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },
       {
@@ -118,7 +103,6 @@ const router = createBrowserRouter([
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
           { path: "discover", element: <DiscoverTab /> },
-          // { path: "popular", element: <PopularTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },

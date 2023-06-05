@@ -1,5 +1,7 @@
 import { bech32 } from "bech32";
 import { nip19 } from "nostr-tools";
+import { getEventRelays } from "../services/event-relays";
+import relayScoreboardService from "../services/relay-scoreboard";
 
 export function isHex(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
@@ -76,4 +78,14 @@ export function normalizeToHex(hex: string) {
   if (isHex(hex)) return hex;
   if (isBech32Key(hex)) return bech32ToHex(hex);
   return null;
+}
+
+export function getSharableNoteId(eventId: string) {
+  const relays = getEventRelays(eventId).value;
+  const ranked = relayScoreboardService.getRankedRelays(relays);
+  const onlyTwo = ranked.slice(0, 2);
+
+  if (onlyTwo.length > 0) {
+    return nip19.neventEncode({ id: eventId, relays: onlyTwo });
+  } else return nip19.noteEncode(eventId);
 }

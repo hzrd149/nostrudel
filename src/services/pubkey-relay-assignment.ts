@@ -6,15 +6,14 @@ import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import relayScoreboardService from "./relay-scoreboard";
 import userContactsService, { UserContacts } from "./user-contacts";
-import { UserRelays } from "./user-relays";
-import userRelaysFallbackService from "./user-relays-fallback";
+import userRelaysService, { ParsedUserRelays } from "./user-relays";
 
 type pubkey = string;
 type relay = string;
 
 class PubkeyRelayAssignmentService {
   pubkeys = new Map<pubkey, relay[]>();
-  pubkeyRelays = new SuperMap<string, Subject<UserRelays>>(() => new Subject());
+  pubkeyRelays = new SuperMap<string, Subject<ParsedUserRelays>>(() => new Subject());
   assignments = new PersistentSubject<Record<pubkey, relay[]>>({});
 
   constructor() {
@@ -46,7 +45,7 @@ class PubkeyRelayAssignmentService {
     this.pubkeys.set(pubkey, relays);
 
     const readRelays = clientRelaysService.getReadUrls();
-    const subject = userRelaysFallbackService.requestRelays(pubkey, unique([...readRelays, ...relays]));
+    const subject = userRelaysService.requestRelays(pubkey, unique([...readRelays, ...relays]));
     this.pubkeyRelays.set(pubkey, subject);
     // subject.subscribe(this.updateAssignments, this);
   }

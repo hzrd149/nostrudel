@@ -59,7 +59,7 @@ export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
           {eventRelays.map((url) => (
             <Flex alignItems="center" key={url}>
               <RelayFavicon relay={url} size="2xs" mr="2" />
-              <Text>{url}</Text>
+              <Text isTruncated>{url}</Text>
             </Flex>
           ))}
         </PopoverBody>

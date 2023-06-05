@@ -7,7 +7,7 @@ import { ErrorFallback } from "../error-boundary";
 import { Note } from ".";
 import { NoteMenu } from "./note-menu";
 import { UserAvatar } from "../user-avatar";
-import { UserDnsIdentityIcon } from "../user-dns-identity";
+import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import { UserLink } from "../user-link";
 import { unique } from "../../helpers/array";
 import { TrustProvider } from "./trust";

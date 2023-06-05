@@ -1,7 +1,6 @@
 import { NostrEvent } from "../types/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "./nip19";
 import { truncatedId } from "./nostr-event";
-import { safeJson } from "./parse";
 
 export type Kind0ParsedContent = {
   name?: string;
@@ -18,7 +17,12 @@ export type Kind0ParsedContent = {
 export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
   if (event.kind !== 0) throw new Error("expected a kind 0 event");
   try {
-    return JSON.parse(event.content) as Kind0ParsedContent;
+    const metadata = JSON.parse(event.content) as Kind0ParsedContent;
+
+    // ensure nip05 is a string
+    if (metadata.nip05 && typeof metadata.nip05 !== "string") metadata.nip05 = String(metadata.nip05);
+
+    return metadata;
   } catch (e) {}
   return {};
 }
