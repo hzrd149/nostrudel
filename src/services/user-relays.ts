@@ -6,14 +6,15 @@ import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-reque
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { normalizeRelayConfigs } from "../helpers/relay";
+import userContactsService from "./user-contacts";
 
-export type UserRelays = {
+export type ParsedUserRelays = {
   pubkey: string;
   relays: RelayConfig[];
   created_at: number;
 };
 
-function parseRelaysEvent(event: NostrEvent): UserRelays {
+function parseRelaysEvent(event: NostrEvent): ParsedUserRelays {
   return {
     pubkey: event.pubkey,
     relays: normalizeRelayConfigs(event.tags.filter(isRTag).map(parseRTag)),
@@ -25,25 +26,27 @@ class UserRelaysService {
   requester: CachedPubkeyEventRequester;
   constructor() {
     this.requester = new CachedPubkeyEventRequester(10002, "user-relays");
-    this.requester.readCache = this.readCache;
-    this.requester.writeCache = this.writeCache;
+    this.requester.readCache = (pubkey) => db.get("userRelays", pubkey);
+    this.requester.writeCache = (pubkey, event) => db.put("userRelays", event);
   }
 
-  readCache(pubkey: string) {
-    return db.get("userRelays", pubkey);
-  }
-  writeCache(pubkey: string, event: NostrEvent) {
-    return db.put("userRelays", event);
-  }
-
-  private subjects = new SuperMap<string, Subject<UserRelays>>(() => new Subject<UserRelays>());
-  getSubject(pubkey: string) {
+  private subjects = new SuperMap<string, Subject<ParsedUserRelays>>(() => new Subject<ParsedUserRelays>());
+  getRelays(pubkey: string) {
     return this.subjects.get(pubkey);
   }
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.subjects.get(pubkey);
     const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
+
+    // also fetch the relays from the users contacts
+    const contactsSub = userContactsService.requestContacts(pubkey, relays, alwaysRequest);
+    sub.connectWithHandler(contactsSub, (contacts, next, value) => {
+      if (contacts.relays.length > 0 && (!value || contacts.created_at > value.created_at)) {
+        next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });
+      }
+    });
+
     return sub;
   }
 

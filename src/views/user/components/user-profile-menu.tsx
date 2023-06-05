@@ -24,7 +24,7 @@ export const UserProfileMenu = ({
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
 
   const loginAsUser = () => {
-    const readRelays = userRelays?.relays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
+    const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
     if (!accountService.hasAccount(pubkey)) {
       accountService.addAccount({
         pubkey,

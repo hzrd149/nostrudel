@@ -32,7 +32,6 @@ import { Bech32Prefix, isHex, normalizeToBech32 } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import Header from "./components/header";
 import { Suspense, useState } from "react";
-import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { RelayMode } from "../../classes/relay";
@@ -40,6 +39,7 @@ import { AdditionalRelayProvider } from "../../providers/additional-relay-contex
 import { nip19 } from "nostr-tools";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
+import { useUserRelays } from "../../hooks/use-user-relays";
 
 const tabs = [
   { label: "Notes", path: "notes" },
@@ -68,12 +68,12 @@ function useUserPointer() {
 }
 
 function useUserTopRelays(pubkey: string, count: number = 4) {
+  const readRelays = useReadRelayUrls();
   // get user relays
-  const userRelays = useFallbackUserRelays(pubkey)
+  const userRelays = useUserRelays(pubkey, readRelays)
     .filter((r) => r.mode & RelayMode.WRITE)
     .map((r) => r.url);
   // merge the users relays with client relays
-  const readRelays = useReadRelayUrls();
   if (userRelays.length === 0) return readRelays;
   const sorted = relayScoreboardService.getRankedRelays(userRelays);
 

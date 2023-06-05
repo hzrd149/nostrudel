@@ -1,15 +1,12 @@
-import { Box, Button, Flex, Spinner, Text } from "@chakra-ui/react";
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
-import { RelayMode } from "../../classes/relay";
 import { NoteLink } from "../../components/note-link";
 import { UserLink } from "../../components/user-link";
 import { filterTagsByContentRefs, truncatedId } from "../../helpers/nostr-event";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useFallbackUserRelays from "../../hooks/use-fallback-user-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import relayScoreboardService from "../../services/relay-scoreboard";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];
@@ -39,14 +36,7 @@ function ReportEvent({ report }: { report: NostrEvent }) {
 
 export default function UserReportsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  // get user relays
-  const userRelays = useFallbackUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url);
-  // merge the users relays with client relays
-  const readRelays = useReadRelayUrls();
-  // find the top 4
-  const relays = relayScoreboardService.getRankedRelays(userRelays.length === 0 ? readRelays : userRelays).slice(0, 4);
+  const contextRelays = useAdditionalRelayContext();
 
   const {
     events: reports,
@@ -54,7 +44,7 @@ export default function UserReportsTab() {
     loadMore,
   } = useTimelineLoader(
     `${truncatedId(pubkey)}-reports`,
-    relays,
+    contextRelays,
     { authors: [pubkey], kinds: [1984] },
     { pageSize: moment.duration(1, "week").asSeconds() }
   );

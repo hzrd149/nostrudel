@@ -4,7 +4,7 @@ import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
 import accountService from "./account";
 import { RelayConfig, RelayMode } from "../classes/relay";
-import userRelaysService, { UserRelays } from "./user-relays";
+import userRelaysService, { ParsedUserRelays } from "./user-relays";
 import { PersistentSubject, Subject } from "../classes/subject";
 import signingService from "./signing";
 
@@ -17,7 +17,7 @@ class ClientRelayService {
   readRelays = new PersistentSubject<RelayConfig[]>([]);
 
   constructor() {
-    let lastSubject: Subject<UserRelays> | undefined;
+    let lastSubject: Subject<ParsedUserRelays> | undefined;
     accountService.current.subscribe((account) => {
       this.relays.next([]);
 
@@ -49,7 +49,7 @@ class ClientRelayService {
     this.relays.subscribe((relays) => this.readRelays.next(relays.filter((r) => r.mode & RelayMode.READ)));
   }
 
-  private handleRelayChanged(relays: UserRelays) {
+  private handleRelayChanged(relays: ParsedUserRelays) {
     this.relays.next(relays.relays);
   }
 

@@ -1,8 +1,5 @@
-import { Flex, Heading, SkeletonText, Text, Link, IconButton, Image } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
-import { useMemo } from "react";
+import { Flex, Heading, SkeletonText, Text, Link, IconButton } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { RelayMode } from "../../../classes/relay";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
 import { QrIconButton } from "./share-qr-button";
@@ -15,22 +12,8 @@ import { truncatedId } from "../../../helpers/nostr-event";
 import { fixWebsiteUrl, getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
-import useFallbackUserRelays from "../../../hooks/use-fallback-user-relays";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import relayScoreboardService from "../../../services/relay-scoreboard";
 import { UserProfileMenu } from "./user-profile-menu";
-
-function useUserShareLink(pubkey: string) {
-  const userRelays = useFallbackUserRelays(pubkey);
-
-  return useMemo(() => {
-    const writeUrls = userRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    const ranked = relayScoreboardService.getRankedRelays(writeUrls);
-    const onlyTwo = ranked.slice(0, 2);
-
-    return onlyTwo.length > 0 ? nip19.nprofileEncode({ pubkey, relays: onlyTwo }) : nip19.npubEncode(pubkey);
-  }, [userRelays]);
-}
 
 export default function Header({
   pubkey,
