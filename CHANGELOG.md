@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.10.0
+
+### Minor Changes
+
+- 868227a: Add e2e tests
+- 2aa6ec5: Dont require login for profile and note views
+- d58ef29: Add simple nip19 tool
+- 7e92cba: Add media tab in profile view
+
+### Patch Changes
+
+- d4aef8f: cleanup fetching user relays
+- 0189507: Dont add p tag when sharing events
+
 ## 0.9.0
 
 ### Minor Changes
