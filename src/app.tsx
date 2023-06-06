@@ -1,10 +1,8 @@
 import React, { Suspense, useEffect } from "react";
-import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from "react-router-dom";
-import { Button, Flex, Spinner, Text, useColorMode } from "@chakra-ui/react";
+import { createHashRouter, Outlet, RouterProvider } from "react-router-dom";
+import { Spinner, useColorMode } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
-import { deleteDatabase } from "./services/db";
-import accountService from "./services/account";
 import useSubject from "./hooks/use-subject";
 
 import HomeView from "./views/home";
@@ -34,8 +32,8 @@ import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import appSettings from "./services/app-settings";
 import UserMediaTab from "./views/user/media";
-import { ToolsHomeView } from "./views/tools";
-import { Nip19ToolsView } from "./views/tools/nip19";
+import ToolsHomeView from "./views/tools";
+import Nip19ToolsView from "./views/tools/nip19";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -47,7 +45,7 @@ const RootPage = () => (
   </Page>
 );
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "login",
     element: <LoginView />,

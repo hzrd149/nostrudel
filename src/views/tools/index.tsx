@@ -2,7 +2,7 @@ import { Button, Flex, Heading } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { ToolsIcon } from "../../components/icons";
 
-export function ToolsHomeView() {
+export default function ToolsHomeView() {
   return (
     <Flex direction="column" gap="4" p="4">
       <Heading>

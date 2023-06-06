@@ -76,7 +76,7 @@ function EncodeForm() {
   );
 }
 
-export function Nip19ToolsView() {
+export default function Nip19ToolsView() {
   return (
     <Flex direction="column" gap="4" p="4">
       <Heading>
