@@ -1,7 +1,7 @@
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, RelayIcon, SpyIcon } from "../../../components/icons";
+import { ClipboardIcon, CodeIcon, ExternalLinkIcon, RelayIcon, SpyIcon } from "../../../components/icons";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
@@ -40,6 +40,12 @@ export const UserProfileMenu = ({
       <MenuIconButton {...props}>
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {getUserDisplayName(metadata, pubkey)}
+        </MenuItem>
+        <MenuItem
+          onClick={() => window.open(`https://nostrapp.link/#${sharableId}?select=true`, "_blank")}
+          icon={<ExternalLinkIcon />}
+        >
+          View in app...
         </MenuItem>
         <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<ClipboardIcon />}>
           Copy share link
