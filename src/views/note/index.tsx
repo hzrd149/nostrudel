@@ -15,8 +15,7 @@ function useNotePointer() {
     case "note":
       return { id: pointer.data as string, relays: [] };
     case "nevent":
-      const p = pointer.data as nip19.EventPointer;
-      return { id: p.id, relays: p.relays ?? [] };
+      return { id: pointer.data.id, relays: pointer.data.relays ?? [] };
     default:
       throw new Error(`Unknown type ${pointer.type}`);
   }

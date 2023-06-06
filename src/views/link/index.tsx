@@ -13,7 +13,7 @@ export default function NostrLinkView() {
       </Alert>
     );
 
-  const cleanLink = link.replace(/(web\+)?nostr:/, "");
+  const cleanLink = link.replace(/(web\+)?nostr:(\/\/)?/, "");
   const decoded = nip19.decode(cleanLink);
 
   switch (decoded.type) {

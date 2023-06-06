@@ -88,14 +88,18 @@ export default function SearchView() {
     setSearch(searchParams.get("q") ?? "");
   }, [searchParams]);
 
+  const handleSearchText = (text: string) => {
+    if (text.startsWith("nostr:") || text.startsWith("web+nostr:") || safeDecode(search)) {
+      navigate({ pathname: "/l/" + encodeURIComponent(text) }, { replace: true });
+    } else {
+      setSearchParams({ q: text }, { replace: true });
+    }
+  };
+
   // set the search when the form is submitted
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (search.startsWith("nostr:") || safeDecode(search)) {
-      navigate({ pathname: "/l/" + search }, { replace: true });
-    } else {
-      setSearchParams({ q: search }, { replace: true });
-    }
+    handleSearchText(search);
   };
 
   // fetch search data from nostr.band
@@ -107,14 +111,7 @@ export default function SearchView() {
   }, [searchParams.get("q")]);
 
   // handle data from qr code scanner
-  const handleQrCodeData = (text: string) => {
-    // if its a nostr: link pass it on the the link handler
-    if (text.startsWith("nostr:")) {
-      navigate({ pathname: "/l", search: `q=${text}` }, { replace: true });
-    } else {
-      setSearchParams({ q: text }, { replace: true });
-    }
-  };
+  const handleQrCodeData = handleSearchText;
 
   return (
     <Flex direction="column" overflowX="hidden" overflowY="auto" height="100%" p="2" gap="2">
