@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.11.0
+
+### Minor Changes
+
+- ddcafeb: Add nostrapp.link option in profile and note menus
+- ddcafeb: add embeds for wavlake tracks
+
 ## 0.10.0
 
 ### Minor Changes
