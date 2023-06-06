@@ -19,6 +19,7 @@ import {
   embedNostrMentions,
   embedAppleMusic,
   embedNostrHashtags,
+  embedWavlakeTrack,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
@@ -31,6 +32,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
   content = embedYoutubeVideo(content);
   content = embedYoutubePlaylist(content);
   content = embedYoutubeMusic(content);
+  content = embedWavlakeTrack(content);
   content = embedTidalMusic(content);
   content = embedAppleMusic(content);
   content = embedSpotifyMusic(content);

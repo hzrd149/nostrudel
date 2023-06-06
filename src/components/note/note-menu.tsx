@@ -18,7 +18,7 @@ import { Bech32Prefix, getSharableNoteId, normalizeToBech32 } from "../../helper
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, LikeIcon, RepostIcon, TrashIcon } from "../icons";
+import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RepostIcon, TrashIcon } from "../icons";
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -67,6 +67,12 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
       <MenuIconButton {...props}>
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
+        </MenuItem>
+        <MenuItem
+          onClick={() => window.open(`https://nostrapp.link/#${getSharableNoteId(event.id)}?select=true`, "_blank")}
+          icon={<ExternalLinkIcon />}
+        >
+          View in app...
         </MenuItem>
         <MenuItem onClick={() => copyToClipboard("nostr:" + getSharableNoteId(event.id))} icon={<RepostIcon />}>
           Copy Share Link
