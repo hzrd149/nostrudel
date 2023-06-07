@@ -12,7 +12,7 @@ import {
   ProfileIcon,
   RelayIcon,
   SearchIcon,
-  ToolsIcon,
+  ListIcon,
 } from "../icons";
 import ProfileLink from "./profile-link";
 import AccountSwitcher from "./account-switcher";
@@ -44,6 +44,9 @@ export default function DesktopSideNav() {
       </Button>
       <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
         Profile
+      </Button>
+      <Button onClick={() => navigate("/lists")} leftIcon={<ListIcon />}>
+        Lists
       </Button>
       <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
         Relays
