@@ -11,6 +11,7 @@ import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
 import { useCopyToClipboard } from "react-use";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { truncatedId } from "../../../helpers/nostr-event";
+import { buildAppSelectUrl } from "../../../helpers/nostr-apps";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -42,10 +43,7 @@ export const UserProfileMenu = ({
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
-        <MenuItem
-          onClick={() => window.open(`https://nostrapp.link/#${sharableId}?select=true`, "_blank")}
-          icon={<ExternalLinkIcon />}
-        >
+        <MenuItem onClick={() => window.open(buildAppSelectUrl(sharableId), "_blank")} icon={<ExternalLinkIcon />}>
           View in app...
         </MenuItem>
         <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<ClipboardIcon />}>

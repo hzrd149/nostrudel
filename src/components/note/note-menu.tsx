@@ -28,6 +28,7 @@ import { buildDeleteEvent } from "../../helpers/nostr-event";
 import signingService from "../../services/signing";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
+import { buildAppSelectUrl } from "../../helpers/nostr-apps";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -69,7 +70,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
           Zaps/Reactions
         </MenuItem>
         <MenuItem
-          onClick={() => window.open(`https://nostrapp.link/#${getSharableNoteId(event.id)}?select=true`, "_blank")}
+          onClick={() => window.open(buildAppSelectUrl(getSharableNoteId(event.id)), "_blank")}
           icon={<ExternalLinkIcon />}
         >
           View in app...

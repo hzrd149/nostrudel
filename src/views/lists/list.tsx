@@ -8,6 +8,7 @@ import { Button, Flex, Heading, Link } from "@chakra-ui/react";
 import { UserCard } from "../user/components/user-card";
 import { ArrowLeftSIcon, ExternalLinkIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import { buildAppSelectUrl } from "../../helpers/nostr-apps";
 
 function useListPointer() {
   const { addr } = useParams() as { addr: string };
@@ -53,13 +54,8 @@ export default function ListView() {
         </Heading>
 
         {isAuthor && <Button colorScheme="red">Delete</Button>}
-        <Button
-          as={Link}
-          href={`https://listr.lol/a/${list.getAddress()}`}
-          target="_blank"
-          leftIcon={<ExternalLinkIcon />}
-        >
-          Edit
+        <Button as={Link} href={buildAppSelectUrl(list.getAddress())} target="_blank" leftIcon={<ExternalLinkIcon />}>
+          Open in app
         </Button>
       </Flex>
       {people.map(({ pubkey, relay }) => (
