@@ -23,6 +23,8 @@ const UserMediaTab = () => {
   const events = useSubject(timeline.events);
   const loading = useSubject(timeline.loading);
 
+  const filteredEvents = useMemo(() => events.filter((e) => e.kind === 1), [events]);
+
   useEffect(() => {
     timeline.setRelays(contextRelays);
   }, [timeline, contextRelays.join("|")]);
@@ -33,7 +35,7 @@ const UserMediaTab = () => {
   const images = useMemo(() => {
     var images: { eventId: string; src: string; index: number }[] = [];
 
-    for (const event of events) {
+    for (const event of filteredEvents) {
       const urls = event.content.matchAll(matchAllImages);
 
       let i = 0;
@@ -43,7 +45,7 @@ const UserMediaTab = () => {
     }
 
     return images;
-  }, [events]);
+  }, [filteredEvents]);
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
