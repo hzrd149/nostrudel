@@ -1,4 +1,4 @@
-import { Spinner, Tooltip } from "@chakra-ui/react";
+import { Spinner, Text, Tooltip } from "@chakra-ui/react";
 import { useDnsIdentity } from "../hooks/use-dns-identity";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "./icons";
@@ -29,8 +29,8 @@ export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; only
     return <Tooltip label={metadata.nip05}>{renderIcon()}</Tooltip>;
   }
   return (
-    <span>
+    <Text as="span" whiteSpace="nowrap">
       {metadata.nip05} {renderIcon()}
-    </span>
+    </Text>
   );
 };

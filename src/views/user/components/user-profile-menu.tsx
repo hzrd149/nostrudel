@@ -10,6 +10,7 @@ import { RelayMode } from "../../../classes/relay";
 import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
 import { useCopyToClipboard } from "react-use";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
+import { truncatedId } from "../../../helpers/nostr-event";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -39,7 +40,7 @@ export const UserProfileMenu = ({
     <>
       <MenuIconButton {...props}>
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
-          Login as {getUserDisplayName(metadata, pubkey)}
+          Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
         <MenuItem
           onClick={() => window.open(`https://nostrapp.link/#${sharableId}?select=true`, "_blank")}

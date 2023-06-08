@@ -1,36 +1,51 @@
-import moment from "moment";
-import { Flex, Grid, SkeletonText } from "@chakra-ui/react";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 
 import { UserCard } from "./components/user-card";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { useOutletContext } from "react-router-dom";
-import { usePaginatedList } from "../../hooks/use-paginated-list";
-import { PaginationControls } from "../../components/pagination-controls";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { UserContacts } from "../../services/user-contacts";
 
-const UserFollowingTab = () => {
+function ContactItem({ index, style, data: contacts }: ListChildComponentProps<UserContacts>) {
+  const pubkey = contacts.contacts[index];
+
+  return (
+    <div style={style}>
+      <UserCard key={pubkey + index} pubkey={pubkey} relay={contacts.contactRelay[pubkey]} />
+    </div>
+  );
+}
+
+export default function UserFollowingTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
   const contacts = useUserContacts(pubkey, contextRelays, true);
 
-  const pagination = usePaginatedList(contacts?.contacts ?? [], { pageSize: 3 * 10 });
-
   return (
-    <Flex gap="2" direction="column">
+    <Flex gap="2" direction="column" overflowY="auto" p="2" h="full">
       {contacts ? (
-        <>
-          <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)", "2xl": "repeat(3, 1fr)" }} gap="2">
-            {pagination.pageItems.map((pubkey, i) => (
-              <UserCard key={pubkey + i} pubkey={pubkey} relay={contacts.contactRelay[pubkey]} />
-            ))}
-          </Grid>
-          <PaginationControls {...pagination} buttonSize="sm" />
-        </>
+        <Box flex={1}>
+          <AutoSizer disableWidth>
+            {({ height }: { height: number }) => (
+              <FixedSizeList
+                itemCount={contacts.contacts.length}
+                itemData={contacts}
+                itemSize={70}
+                itemKey={(i, d) => d.contacts[i]}
+                width="100%"
+                height={height}
+                overscanCount={10}
+              >
+                {ContactItem}
+              </FixedSizeList>
+            )}
+          </AutoSizer>
+        </Box>
       ) : (
-        <SkeletonText />
+        <Spinner />
       )}
     </Flex>
   );
-};
-
-export default UserFollowingTab;
+}

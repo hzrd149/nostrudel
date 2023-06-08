@@ -22,6 +22,9 @@ export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
     // ensure nip05 is a string
     if (metadata.nip05 && typeof metadata.nip05 !== "string") metadata.nip05 = String(metadata.nip05);
 
+    // fix user website
+    if (metadata.website) metadata.website = fixWebsiteUrl(metadata.website);
+
     return metadata;
   } catch (e) {}
   return {};

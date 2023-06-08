@@ -11,7 +11,7 @@ import {
   embedNostrHashtags,
   renderWavlakeUrl,
   renderYoutubeUrl,
-  renderDefaultUrl,
+  renderGenericUrl,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
@@ -37,14 +37,14 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
     renderTidalUrl,
     renderImageUrl,
     renderVideoUrl,
-    renderDefaultUrl,
+    renderGenericUrl,
   ]);
 
   // bitcoin
   content = embedLightningInvoice(content);
 
   // nostr
-  content = embedNostrLinks(content, event);
+  content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
 
