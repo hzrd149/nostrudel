@@ -10,7 +10,7 @@ describe("Search", () => {
 
     for (const [link, regexp] of links) {
       it(`should handle ${link}`, () => {
-        cy.visit("/search");
+        cy.visit("#/search");
         cy.findByRole("searchbox").type(link, { delay: 0 }).type("{enter}");
 
         cy.contains(regexp).should("be.visible");
@@ -20,7 +20,7 @@ describe("Search", () => {
     for (const [link, regexp] of links) {
       const withoutPrefix = link.replace("nostr:", "");
       it(`should handle ${withoutPrefix}`, () => {
-        cy.visit("/search");
+        cy.visit("#/search");
         cy.findByRole("searchbox").type(link, { delay: 0 }).type("{enter}");
 
         cy.contains(regexp).should("be.visible");
@@ -39,7 +39,7 @@ describe("Search", () => {
 
     for (const [search, regexp] of profiles) {
       it(`should handle ${search}`, () => {
-        cy.visit("/search");
+        cy.visit("#/search");
         cy.findByRole("searchbox").type(search, { delay: 0 }).type("{enter}");
 
         cy.contains(regexp).should("be.visible");
@@ -49,7 +49,7 @@ describe("Search", () => {
     for (const [search, regexp] of profiles) {
       const withoutPrefix = search.replace("nostr:", "");
       it(`should handle ${withoutPrefix}`, () => {
-        cy.visit("/search");
+        cy.visit("#/search");
         cy.findByRole("searchbox").type(search, { delay: 0 }).type("{enter}");
 
         cy.contains(regexp).should("be.visible");

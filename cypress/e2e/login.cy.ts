@@ -1,6 +1,6 @@
 describe("Login view", () => {
   beforeEach(() => {
-    cy.visit("/login");
+    cy.visit("#/login");
 
     cy.window().then(($win) => {
       cy.stub($win, "prompt").returns("pass");

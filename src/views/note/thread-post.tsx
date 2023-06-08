@@ -4,6 +4,7 @@ import { ArrowDownSIcon, ArrowUpSIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import { countReplies, ThreadItem as ThreadItemData } from "../../helpers/thread";
 import { useIsMobile } from "../../hooks/use-is-mobile";
+import { TrustProvider } from "../../components/note/trust";
 
 export type ThreadItemProps = {
   post: ThreadItemData;
@@ -20,7 +21,9 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
 
   return (
     <Flex direction="column" gap="2">
-      <Note event={post.event} variant={focusId === post.event.id ? "filled" : "outline"} />
+      <TrustProvider trust={focusId === post.event.id ? true : undefined}>
+        <Note event={post.event} variant={focusId === post.event.id ? "filled" : "outline"} />
+      </TrustProvider>
       {post.replies.length > 0 && (
         <>
           <Button variant="link" size="sm" alignSelf="flex-start" onClick={toggle}>
