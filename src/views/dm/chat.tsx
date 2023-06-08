@@ -18,7 +18,7 @@ import directMessagesService, { getMessageRecipient } from "../../services/direc
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { embedNostrLinks, renderDefaultUrl, renderImageUrl, renderVideoUrl } from "../../components/embed-types";
+import { embedNostrLinks, renderGenericUrl, renderImageUrl, renderVideoUrl } from "../../components/embed-types";
 import RequireCurrentAccount from "../../providers/require-current-account";
 
 function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
@@ -26,7 +26,7 @@ function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
 
   content = embedNostrLinks(content, event);
 
-  content = embedUrls(content, [renderImageUrl, renderVideoUrl, renderDefaultUrl]);
+  content = embedUrls(content, [renderImageUrl, renderVideoUrl, renderGenericUrl]);
 
   return <Box whiteSpace="pre-wrap">{content}</Box>;
 }

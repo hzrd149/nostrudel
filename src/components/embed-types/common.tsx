@@ -43,7 +43,7 @@ export function renderVideoUrl(match: URL) {
   return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />;
 }
 
-export function renderDefaultUrl(match: URL) {
+export function renderGenericUrl(match: URL) {
   return (
     <Link color="blue.500" href={match.toString()} target="_blank" isExternal>
       {match.toString()}

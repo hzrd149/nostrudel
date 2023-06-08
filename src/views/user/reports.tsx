@@ -54,7 +54,13 @@ export default function UserReportsTab() {
       {reports.map((report) => (
         <ReportEvent key={report.id} report={report} />
       ))}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
+      ) : (
+        <Button onClick={() => loadMore()} flexShrink={0}>
+          Load More
+        </Button>
+      )}
     </Flex>
   );
 }

@@ -1,6 +1,6 @@
 import { replaceDomain } from "../../helpers/url";
 import appSettings from "../../services/app-settings";
-import { renderDefaultUrl } from "./common";
+import { renderGenericUrl } from "./common";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/reddit.js
 const REDDIT_DOMAINS = [
@@ -21,5 +21,5 @@ export function renderRedditUrl(match: URL) {
   const { redditRedirect } = appSettings.value;
   const fixed = redditRedirect ? replaceDomain(match, redditRedirect) : match;
 
-  return renderDefaultUrl(fixed);
+  return renderGenericUrl(fixed);
 }

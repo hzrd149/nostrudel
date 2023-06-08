@@ -34,6 +34,7 @@ import appSettings from "./services/app-settings";
 import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
+import UserAboutTab from "./views/user/about";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -64,7 +65,8 @@ const router = createHashRouter([
         path: "/u/:pubkey",
         element: <UserView />,
         children: [
-          { path: "", element: <UserNotesTab /> },
+          { path: "", element: <UserAboutTab /> },
+          { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
           { path: "media", element: <UserMediaTab /> },
           { path: "zaps", element: <UserZapsTab /> },

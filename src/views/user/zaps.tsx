@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Select, Spinner, Text, useDisclosure } from "@chakra-ui/react";
-import moment from "moment";
+import moment, { isMoment } from "moment";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
@@ -30,6 +30,7 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
         display="flex"
         gap="2"
         flexDirection="column"
+        flexShrink={0}
       >
         <Flex gap="2" alignItems="center" wrap="wrap">
           <UserAvatarLink pubkey={request.pubkey} size="xs" />
@@ -37,10 +38,10 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
           <Text>Zapped</Text>
           {eventId && <NoteLink noteId={eventId} />}
           {payment.amount && (
-            <>
+            <Flex gap="2">
               <LightningIcon color="yellow.400" />
               <Text>{readablizeSats(payment.amount / 1000)} sats</Text>
-            </>
+            </Flex>
           )}
           {request.content && (
             <Button variant="link" onClick={onToggle}>
@@ -79,21 +80,21 @@ const UserZapsTab = () => {
     filter === "note" ? events.filter(isNoteZap) : filter === "profile" ? events.filter(isProfileZap) : events;
 
   return (
-    <Flex direction="column" gap="2" pr="2" pl="2">
-      <Flex gap="2" alignItems="center">
-        <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="lg">
+    <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto">
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
           <option value="both">Note & Profile Zaps</option>
           <option value="note">Note Zaps</option>
           <option value="profile">Profile Zaps</option>
         </Select>
         {timeline.length && (
-          <>
+          <Flex gap="2">
             <LightningIcon color="yellow.400" />
             <Text>
               {readablizeSats(totalZaps(timeline) / 1000)} sats in the last{" "}
               {moment(convertTimestampToDate(timeline[timeline.length - 1].created_at)).fromNow(true)}
             </Text>
-          </>
+          </Flex>
         )}
       </Flex>
       {timeline.map((event) => (
@@ -101,7 +102,13 @@ const UserZapsTab = () => {
           <Zap zapEvent={event} />
         </ErrorBoundary>
       ))}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+      {loading ? (
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
+      ) : (
+        <Button onClick={() => loadMore()} flexShrink={0}>
+          Load More
+        </Button>
+      )}
     </Flex>
   );
 };

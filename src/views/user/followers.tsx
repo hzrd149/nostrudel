@@ -1,41 +1,50 @@
-import { Flex, FormControl, FormLabel, Grid, SkeletonText, Switch, useDisclosure } from "@chakra-ui/react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 
 import { UserCard } from "./components/user-card";
 import { useUserFollowers } from "../../hooks/use-user-followers";
-import { useOutletContext } from "react-router-dom";
-import { usePaginatedList } from "../../hooks/use-paginated-list";
-import { PaginationControls } from "../../components/pagination-controls";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
-const UserFollowersTab = () => {
-  const { pubkey } = useOutletContext() as { pubkey: string };
-  const { isOpen, onToggle } = useDisclosure();
-  const contextRelays = useAdditionalRelayContext();
-  const relays = useReadRelayUrls(contextRelays);
-  const followers = useUserFollowers(pubkey, relays, isOpen);
-
-  const pagination = usePaginatedList(followers ?? [], { pageSize: 3 * 10 });
+function FollowerItem({ index, style, data: followers }: ListChildComponentProps<string[]>) {
+  const pubkey = followers[index];
 
   return (
-    <Flex gap="2" direction="column">
-      <FormControl display="flex" alignItems="center">
-        <FormLabel htmlFor="fetch-followers" mb="0">
-          Fetch Followers
-        </FormLabel>
-        <Switch id="fetch-followers" isChecked={isOpen} onChange={onToggle} />
-      </FormControl>
+    <div style={style}>
+      <UserCard key={pubkey + index} pubkey={pubkey} />
+    </div>
+  );
+}
+
+const UserFollowersTab = () => {
+  const { pubkey } = useOutletContext() as { pubkey: string };
+
+  const relays = useReadRelayUrls(useAdditionalRelayContext());
+  const followers = useUserFollowers(pubkey, relays, true);
+
+  return (
+    <Flex gap="2" direction="column" overflowY="auto" p="2" h="full">
       {followers ? (
-        <>
-          <Grid templateColumns={{ base: "1fr", xl: "repeat(2, 1fr)", "2xl": "repeat(3, 1fr)" }} gap="2">
-            {pagination.pageItems.map((pubkey) => (
-              <UserCard key={pubkey} pubkey={pubkey} />
-            ))}
-          </Grid>
-          <PaginationControls {...pagination} buttonSize="sm" />
-        </>
+        <Box flex={1}>
+          <AutoSizer disableWidth>
+            {({ height }: { height: number }) => (
+              <FixedSizeList
+                itemCount={followers.length}
+                itemData={followers}
+                itemSize={70}
+                itemKey={(i, d) => d[i]}
+                width="100%"
+                height={height}
+              >
+                {FollowerItem}
+              </FixedSizeList>
+            )}
+          </AutoSizer>
+        </Box>
       ) : (
-        <SkeletonText />
+        <Spinner />
       )}
     </Flex>
   );

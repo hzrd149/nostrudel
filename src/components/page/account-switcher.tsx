@@ -18,7 +18,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import { AddIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AccountItem({ pubkey }: { pubkey: string }) {
   const metadata = useUserMetadata(pubkey, []);
@@ -53,6 +53,7 @@ export function AccountSwitcherList() {
   const navigate = useNavigate();
   const accounts = useSubject(accountService.accounts);
   const current = useSubject(accountService.current);
+  const location = useLocation();
 
   const otherAccounts = accounts.filter((acc) => acc.pubkey !== current?.pubkey);
 
