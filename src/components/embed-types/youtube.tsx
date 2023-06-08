@@ -21,7 +21,8 @@ export function renderYoutubeUrl(match: URL) {
 
   const { youtubeRedirect } = appSettings.value;
 
-  const videoId = match.searchParams.get("v");
+  var videoId = match.searchParams.get("v");
+  if (match.hostname === "youtu.be") videoId = match.pathname.split("/")[1];
   if (!videoId) throw new Error("cant find video id");
   const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://youtube.com");
 
