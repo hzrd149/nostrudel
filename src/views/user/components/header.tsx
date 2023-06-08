@@ -14,7 +14,8 @@ import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
-import { embedLinks } from "../../../components/embed-types";
+import { embedUrls } from "../../../helpers/embeds";
+import { renderDefaultUrl } from "../../../components/embed-types";
 
 export default function Header({
   pubkey,
@@ -52,7 +53,7 @@ export default function Header({
               />
             </Flex>
           </Flex>
-          {metadata?.about && <Text>{embedLinks([metadata.about])}</Text>}
+          {metadata?.about && <Text>{embedUrls([metadata.about], [renderDefaultUrl])}</Text>}
         </Flex>
       </Flex>
       <Flex wrap="wrap" gap="2">

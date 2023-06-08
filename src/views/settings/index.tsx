@@ -6,6 +6,7 @@ import LightningSettings from "./lightning-settings";
 import DatabaseSettings from "./database-settings";
 import DisplaySettings from "./display-settings";
 import PerformanceSettings from "./performance-settings";
+import PrivacySettings from "./privacy-settings";
 
 export default function SettingsView() {
   return (
@@ -14,6 +15,8 @@ export default function SettingsView() {
         <DisplaySettings />
 
         <PerformanceSettings />
+
+        <PrivacySettings />
 
         <LightningSettings />
 

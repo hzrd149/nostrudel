@@ -17,18 +17,16 @@ import clientRelaysService from "../../services/client-relays";
 import directMessagesService, { getMessageRecipient } from "../../services/direct-messages";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
-import { EmbedableContent } from "../../helpers/embeds";
-import { embedImages, embedLinks, embedNostrLinks, embedVideos } from "../../components/embed-types";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { embedNostrLinks, renderDefaultUrl, renderImageUrl, renderVideoUrl } from "../../components/embed-types";
 import RequireCurrentAccount from "../../providers/require-current-account";
 
 function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
   let content: EmbedableContent = [text];
 
-  content = embedImages(content, true);
-  content = embedVideos(content);
-  content = embedLinks(content);
-
   content = embedNostrLinks(content, event);
+
+  content = embedUrls(content, [renderImageUrl, renderVideoUrl, renderDefaultUrl]);
 
   return <Box whiteSpace="pre-wrap">{content}</Box>;
 }

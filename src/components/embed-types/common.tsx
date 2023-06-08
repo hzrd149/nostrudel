@@ -1,9 +1,8 @@
 import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
-import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import appSettings from "../../services/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import { matchImageUrls } from "../../helpers/regexp";
+import { useTrusted } from "../note/trust";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
@@ -14,9 +13,10 @@ const BlurredImage = (props: ImageProps) => {
   );
 };
 
-const EmbeddedImage = ({ src, blue }: { src: string; blue: boolean }) => {
+const EmbeddedImage = ({ src }: { src: string }) => {
   const isMobile = useIsMobile();
-  const ImageComponent = blue || !appSettings.value.blurImages ? Image : BlurredImage;
+  const trusted = useTrusted();
+  const ImageComponent = trusted || !appSettings.value.blurImages ? Image : BlurredImage;
   const thumbnail = appSettings.value.imageProxy
     ? new URL(`/256,fit/${src}`, appSettings.value.imageProxy).toString()
     : src;
@@ -29,31 +29,24 @@ const EmbeddedImage = ({ src, blue }: { src: string; blue: boolean }) => {
 };
 
 // note1n06jceulg3gukw836ghd94p0ppwaz6u3mksnnz960d8vlcp2fnqsgx3fu9
-export function embedImages(content: EmbedableContent, trusted = false) {
-  return embedJSX(content, {
-    regexp: matchImageUrls,
-    render: (match) => <EmbeddedImage blue={trusted} src={match[0]} />,
-    name: "Image",
-  });
+const imageExt = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
+export function renderImageUrl(match: URL) {
+  if (!imageExt.some((ext) => match.pathname.endsWith(ext))) return null;
+
+  return <EmbeddedImage src={match.toString()} />;
 }
 
-export function embedVideos(content: EmbedableContent) {
-  return embedJSX(content, {
-    name: "Video",
-    regexp:
-      /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,12})((?:\/[\+~%\/\.\w\-_]*)?\.(?:mp4|mkv|webm|mov))(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/i,
-    render: (match) => <video src={match[0]} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />,
-  });
+const videoExt = [".mp4", ".mkv", ".webm", ".mov"];
+export function renderVideoUrl(match: URL) {
+  if (!videoExt.some((ext) => match.pathname.endsWith(ext))) return null;
+
+  return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />;
 }
 
-export function embedLinks(content: EmbedableContent) {
-  return embedJSX(content, {
-    name: "Link",
-    regexp: /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,12})(\/[\+~%\/\.\w\-_]*)?([\?#][^\s]+)?/i,
-    render: (match) => (
-      <Link color="blue.500" href={match[0]} target="_blank" isExternal>
-        {match[0]}
-      </Link>
-    ),
-  });
+export function renderDefaultUrl(match: URL) {
+  return (
+    <Link color="blue.500" href={match.toString()} target="_blank" isExternal>
+      {match.toString()}
+    </Link>
+  );
 }
