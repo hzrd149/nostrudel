@@ -37,6 +37,7 @@ const UserFollowersTab = () => {
                 itemKey={(i, d) => d[i]}
                 width="100%"
                 height={height}
+                overscanCount={10}
               >
                 {FollowerItem}
               </FixedSizeList>

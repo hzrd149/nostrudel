@@ -31,7 +31,7 @@ export type NostrBandProfileStats = {
   report_pubkey_count: number;
   mute_pubkey_count: number;
   followers_pubkey_count: number;
-  zaps_sent: {
+  zaps_sent?: {
     count: number;
     zapper_count: number;
     target_event_count: number;
@@ -43,19 +43,7 @@ export type NostrBandProfileStats = {
     avg_msats: number;
     median_msats: number;
   };
-  zaps_received: {
-    count: number;
-    zapper_count: number;
-    target_event_count: number;
-    target_pubkey_count: number;
-    provider_count: number;
-    msats: number;
-    min_msats: number;
-    max_msats: number;
-    avg_msats: number;
-    median_msats: number;
-  };
-  zaps_processed: {
+  zaps_received?: {
     count: number;
     zapper_count: number;
     target_event_count: number;

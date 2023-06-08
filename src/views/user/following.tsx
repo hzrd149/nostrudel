@@ -36,6 +36,7 @@ export default function UserFollowingTab() {
                 itemKey={(i, d) => d.contacts[i]}
                 width="100%"
                 height={height}
+                overscanCount={10}
               >
                 {ContactItem}
               </FixedSizeList>
