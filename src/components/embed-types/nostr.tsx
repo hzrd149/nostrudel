@@ -6,13 +6,14 @@ import { UserLink } from "../user-link";
 import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { matchNostrLink } from "../../helpers/regexp";
 
 // nostr:nevent1qqsthg2qlxp9l7egtwa92t8lusm7pjknmjwa75ctrrpcjyulr9754fqpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq36amnwvaz7tmwdaehgu3dwp6kytnhv4kxcmmjv3jhytnwv46q2qg5q9
 // nostr:nevent1qqsq3wc73lqxd70lg43m5rul57d4mhcanttjat56e30yx5zla48qzlspz9mhxue69uhkummnw3e82efwvdhk6qgdwaehxw309ahx7uewd3hkcq5hsum
 export function embedNostrLinks(content: EmbedableContent) {
   return embedJSX(content, {
     name: "nostr-link",
-    regexp: /(nostr:|@)?((npub|note|nprofile|nevent)1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58,})/i,
+    regexp: matchNostrLink,
     render: (match) => {
       try {
         const decoded = nip19.decode(match[2]);

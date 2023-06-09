@@ -8,7 +8,7 @@ describe("Profile view", () => {
     cy.contains("https://rsshub.app/pixiv/user/7569500@rsslay.nostr.moe");
   });
 
-  it("should load a rss feed fiatjef", () => {
+  it("should load PABLOF7z", () => {
     cy.visit("#/u/npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft");
 
     cy.contains("npub1l2vyh...3afqutajft");
