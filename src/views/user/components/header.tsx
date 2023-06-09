@@ -1,7 +1,7 @@
-import { Flex, Heading, SkeletonText, Text, Link, IconButton } from "@chakra-ui/react";
+import { Flex, Heading, SkeletonText, Text, Link, IconButton, Spacer } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { ChatIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
+import { ChatIcon, EditIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
 import { QrIconButton } from "./share-qr-button";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
@@ -14,7 +14,8 @@ import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
-import { embedLinks } from "../../../components/embed-types";
+import { embedUrls } from "../../../helpers/embeds";
+import { renderGenericUrl } from "../../../components/embed-types";
 
 export default function Header({
   pubkey,
@@ -33,56 +34,23 @@ export default function Header({
 
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
-      <Flex gap="4">
-        <UserAvatar pubkey={pubkey} size={isMobile ? "md" : "xl"} noProxy />
-        <Flex direction="column" gap={isMobile ? 0 : 2} grow="1" overflow="hidden">
-          <Flex gap="2" justifyContent="space-between" width="100%">
-            <Flex gap="2" alignItems="center" wrap="wrap">
-              <Heading size={isMobile ? "md" : "lg"}>{getUserDisplayName(metadata, pubkey)}</Heading>
-              <UserDnsIdentityIcon pubkey={pubkey} />
-            </Flex>
-            <Flex gap="2">
-              <UserTipButton pubkey={pubkey} size="sm" variant="link" />
-              <UserProfileMenu
-                pubkey={pubkey}
-                aria-label="More Options"
-                size="sm"
-                variant="link"
-                showRelaySelectionModal={showRelaySelectionModal}
-              />
-            </Flex>
-          </Flex>
-          {metadata?.about && <Text>{embedLinks([metadata.about])}</Text>}
-        </Flex>
-      </Flex>
-      <Flex wrap="wrap" gap="2">
-        {metadata?.website && (
-          <Text>
-            <ExternalLinkIcon />{" "}
-            <Link href={fixWebsiteUrl(metadata.website)} target="_blank" color="blue.500">
-              {metadata.website}
-            </Link>
-          </Text>
+      <Flex gap="2" alignItems="center">
+        <UserAvatar pubkey={pubkey} size="sm" noProxy mr="2" />
+        <Heading size="md">{getUserDisplayName(metadata, pubkey)}</Heading>
+        <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={isMobile} />
+        <Spacer />
+        {isSelf && (
+          <IconButton
+            icon={<EditIcon />}
+            aria-label="Edit profile"
+            title="Edit profile"
+            size="sm"
+            onClick={() => navigate("/profile")}
+          />
         )}
-        {npub && (
-          <Flex gap="2">
-            <KeyIcon />
-            <Text>{truncatedId(npub, 10)}</Text>
-            <CopyIconButton text={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
-            <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
-          </Flex>
-        )}
-        <Flex gap="2" ml="auto">
-          {isMobile && isSelf && (
-            <IconButton
-              icon={<SettingsIcon />}
-              aria-label="Settings"
-              title="Settings"
-              size="sm"
-              onClick={() => navigate("/settings")}
-            />
-          )}
-          {!isSelf && (
+        {!isSelf && (
+          <>
+            <UserTipButton pubkey={pubkey} size="sm" variant="link" />
             <IconButton
               as={RouterLink}
               size="sm"
@@ -90,9 +58,15 @@ export default function Header({
               aria-label="Message"
               to={`/dm/${npub ?? pubkey}`}
             />
-          )}
-          {!isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}
-        </Flex>
+            <UserFollowButton pubkey={pubkey} size="sm" />
+          </>
+        )}
+        <UserProfileMenu
+          pubkey={pubkey}
+          aria-label="More Options"
+          size="sm"
+          showRelaySelectionModal={showRelaySelectionModal}
+        />
       </Flex>
     </Flex>
   );

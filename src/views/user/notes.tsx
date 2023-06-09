@@ -35,8 +35,8 @@ const UserNotesTab = () => {
   });
 
   return (
-    <Flex direction="column" gap="2" pr="2" pl="2">
-      <FormControl display="flex" alignItems="center">
+    <Flex direction="column" gap="2" pt="4" pb="8" h="full" overflowY="auto" overflowX="hidden">
+      <FormControl display="flex" alignItems="center" mx="2">
         <Switch id="replies" mr="2" isChecked={showReplies} onChange={toggleReplies} />
         <FormLabel htmlFor="replies" mb="0">
           Replies
@@ -55,9 +55,11 @@ const UserNotesTab = () => {
         )
       )}
       {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" />
+        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
       ) : (
-        <Button onClick={() => timeline.loadMore()}>Load More</Button>
+        <Button onClick={() => timeline.loadMore()} flexShrink={0}>
+          Load More
+        </Button>
       )}
     </Flex>
   );

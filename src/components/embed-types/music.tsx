@@ -1,75 +1,81 @@
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
+import appSettings from "../../services/app-settings";
 
-export function embedWavlakeTrack(content: EmbedableContent) {
-  return embedJSX(content, {
-    name: "Wavlake Track",
-    regexp: /https?:\/\/wavlake\.com\/track\/[\w-]+/i,
-    render: (match) => (
-      <iframe
-        loading="lazy"
-        frameBorder="0"
-        src={match[0].replace("wavlake.com", "embed.wavlake.com")}
-        style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573 }}
-      ></iframe>
-    ),
-  });
+// nostr:nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0
+export function renderWavlakeUrl(match: URL) {
+  if (match.hostname !== "wavlake.com") return null;
+
+  const embedUrl = new URL(match);
+  embedUrl.hostname = "embed.wavlake.com";
+
+  return (
+    <iframe
+      loading="lazy"
+      frameBorder="0"
+      src={embedUrl.toString()}
+      style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573 }}
+    ></iframe>
+  );
 }
 
-// note1tvqk2mu829yr6asf7w5dgpp8t0mlp2ax5t26ctfdx8m0ptkssamqsleeux
-// note1ygx9tec3af92704d92jwrj3zs7cws2jl29yvrlxzqlcdlykhwssqpupa7t
-export function embedAppleMusic(content: EmbedableContent) {
-  return embedJSX(content, {
-    regexp: /https?:\/\/music\.apple\.com(?:\/[\+~%\/\.\w\-_]*)?(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/,
-    render: (match) => (
-      <iframe
-        allow="encrypted-media *; fullscreen *; clipboard-write"
-        frameBorder="0"
-        height={match[0].includes("?i=") ? 175 : 450}
-        style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
-        // sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-        src={match[0].replace("music.apple.com", "embed.music.apple.com")}
-      ></iframe>
-    ),
-    name: "Apple Music",
-  });
+// nostr:nevent1qqs9kqt9d7r4zjpawcyl82x5qsn4hals4wn294dv95knrahs4mggwasprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2whhzvz
+// nostr:nevent1qqszyrz4uug75j4086kj4f8peg3g0v8g9f04zjxplnpq0uxljtthggqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2aeexmq
+export function renderAppleMusicUrl(match: URL) {
+  if (match.hostname !== "music.apple.com") return null;
+
+  const isList = match.searchParams.get("l") !== null;
+
+  const embedUrl = new URL(match);
+  embedUrl.hostname = "embed.music.apple.com";
+
+  return (
+    <iframe
+      allow="encrypted-media *; fullscreen *; clipboard-write"
+      frameBorder="0"
+      height={isList ? 450 : 175}
+      style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
+      src={embedUrl.toString()}
+    ></iframe>
+  );
 }
 
 // nostr:nevent1qqs9r94qeqhqayvuz6q6u88spvuz0d25nhpyv0c39wympmfu646x4pgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3samnwvaz7tmjv4kxz7fwwdhx7un59eek7cmfv9kqmhxhvq
-export function embedSpotifyMusic(content: EmbedableContent) {
-  return embedJSX(content, {
-    regexp:
-      /https?:\/\/open\.spotify\.com\/(track|episode|album|playlist)\/(\w+)(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/im,
-    render: (match) => {
-      const isList = match[1] === "album" || match[1] === "playlist";
-      return (
-        <iframe
-          style={{ borderRadius: "12px" }}
-          width="100%"
-          height={isList ? 400 : 152}
-          title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          src={`https://open.spotify.com/embed/${match[1]}/${match[2]}`}
-        ></iframe>
-      );
-    },
-    name: "Spotify",
-  });
+// nostr:nevent1qqsx0lz7m72qzq499exwhnfszvgwea8tv38x9wkv32yhkmwwmhgs7jgprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk25m3sln
+// nostr:nevent1qqsqxkmz49hydf8ppa9k6x6zrcq7m4evhhlye0j3lcnz8hrl2q6np4spz3mhxue69uhhyetvv9ujuerpd46hxtnfdult02qz
+const spotifyPaths = ["/track", "/episode", "/album", "/playlist"];
+export function renderSpotifyUrl(match: URL) {
+  if (match.hostname !== "open.spotify.com") return null;
+  if (!spotifyPaths.some((p) => match.pathname.startsWith(p))) return null;
+
+  const isList = match.pathname.startsWith("/album") || match.pathname.startsWith("/playlist");
+
+  const embedUrl = new URL(match);
+  embedUrl.pathname = "/embed" + embedUrl.pathname;
+
+  return (
+    <iframe
+      style={{ borderRadius: "12px" }}
+      width="100%"
+      height={isList ? 400 : 152}
+      title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+      src={embedUrl.toString()}
+    ></iframe>
+  );
 }
 
-// note132m5xc3zhj7fap67vzwx5x3s8xqgz49k669htcn8kppr4m654tuq960tuu
-export function embedTidalMusic(content: EmbedableContent) {
-  return embedJSX(content, {
-    regexp: /https?:\/\/tidal\.com(\/browse)?\/(track|album)\/(\d+)/im,
-    render: (match) => (
-      <iframe
-        src={`https://embed.tidal.com/${match[2]}s/${match[3]}?disableAnalytics=true`}
-        width="100%"
-        height={match[2] === "album" ? 400 : 96}
-      ></iframe>
-    ),
-    name: "Tidal",
-  });
+// nostr:nevent1qqsg4d6rvg3te0y7sa0xp8r2rgcrnqyp2jmddzm4ufnmqs36aa2247qprpmhxue69uhhyetvv9ujuumwdae8gtnnda3kjctvmdc953
+export function renderTidalUrl(match: URL) {
+  if (match.hostname !== "tidal.com") return null;
+
+  const isList = match.pathname.includes("/album");
+  const [_, _browse, type, id] = match.pathname.match(/(\/browse)?\/(track|album)\/(\d+)/i) ?? [];
+
+  const embedUrl = new URL(`https://embed.tidal.com/${type}s/${id}`);
+  embedUrl.searchParams.set("disableAnalytics", "true");
+
+  return <iframe src={embedUrl.toString()} width="100%" height={isList ? 400 : 96}></iframe>;
 }

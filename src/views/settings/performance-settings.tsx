@@ -12,8 +12,6 @@ import {
   Input,
   Link,
 } from "@chakra-ui/react";
-import appSettings, { replaceSettings } from "../../services/app-settings";
-import useSubject from "../../hooks/use-subject";
 import useAppSettings from "../../hooks/use-app-settings";
 import { useEffect, useState } from "react";
 

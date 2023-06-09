@@ -2,7 +2,7 @@ describe("Embeds", () => {
   describe("hashtags", () => {
     it('should handle uppercase hashtags and ","', () => {
       cy.visit(
-        "/n/nevent1qqsrj5ns6wva3fcghlyx0hp7hhajqtqk3kuckp7xhhscrm4jl7futegpz9mhxue69uhkummnw3e82efwvdhk6qgswaehxw309ahx7um5wgh8w6twv5pkpt8l"
+        "#/n/nevent1qqsrj5ns6wva3fcghlyx0hp7hhajqtqk3kuckp7xhhscrm4jl7futegpz9mhxue69uhkummnw3e82efwvdhk6qgswaehxw309ahx7um5wgh8w6twv5pkpt8l"
       );
 
       cy.findByRole("link", { name: "#Japan" }).should("be.visible");
@@ -15,10 +15,10 @@ describe("Embeds", () => {
   describe("links", () => {
     it("embed trustless.computer links", () => {
       cy.visit(
-        "/n/nevent1qqsfn2mv3pe2v7jak4r5wnyengt36t0rx26w04hgysrmtpml8jnlk5cprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2qgawaehxw309ahx7um5wgkhqatz9emk2mrvdaexgetj9ehx2aq2wry06"
+        "#/n/nevent1qqsfn2mv3pe2v7jak4r5wnyengt36t0rx26w04hgysrmtpml8jnlk5cprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2qgawaehxw309ahx7um5wgkhqatz9emk2mrvdaexgetj9ehx2aq2wry06"
       );
 
-      cy.get('[href="https://trustless.computer"]').should("be.visible");
+      cy.get('[href="https://trustless.computer/"]').should("be.visible");
       cy.get(
         '[href="https://mempool.space/tx/461c6f56015c94d74837b68c9d08f4b80e7db7ca1e5ac4c53d9aa8c76b667672"]'
       ).should("be.visible");
@@ -26,7 +26,7 @@ describe("Embeds", () => {
 
     it("embeds links", () => {
       cy.visit(
-        "/n/nevent1qqsvg6kt4hl79qpp5p673g7ref6r0c5jvp4yys7mmvs4m50t30sy9dgpz9mhxue69uhkummnw3e82efwvdhk6qgjwaehxw309aex2mrp0yhxvdm69e5k7r3xlpe"
+        "#/n/nevent1qqsvg6kt4hl79qpp5p673g7ref6r0c5jvp4yys7mmvs4m50t30sy9dgpz9mhxue69uhkummnw3e82efwvdhk6qgjwaehxw309aex2mrp0yhxvdm69e5k7r3xlpe"
       );
 
       cy.get('[href="https://getalby.com/"]').should("exist");
@@ -38,7 +38,7 @@ describe("Embeds", () => {
 
     it("embeds simplex.chat links", () => {
       cy.visit(
-        "/n/nevent1qqsymds0vlpp4f5s0dckjf4qz283pdsen0rmx8lu7ct6hpnxag2hpacpremhxue69uhkummnw3ez6un9d3shjtnwda4k7arpwfhjucm0d5q3qamnwvaz7tmwdaehgu3wwa5kueghxyq76"
+        "#/n/nevent1qqsymds0vlpp4f5s0dckjf4qz283pdsen0rmx8lu7ct6hpnxag2hpacpremhxue69uhkummnw3ez6un9d3shjtnwda4k7arpwfhjucm0d5q3qamnwvaz7tmwdaehgu3wwa5kueghxyq76"
       );
 
       cy.get(
@@ -50,19 +50,30 @@ describe("Embeds", () => {
   describe("Nostr links", () => {
     it("should embed noub1...", () => {
       cy.visit(
-        "/n/nevent1qqsd5yw7sntqfc4e7u4aempvgctry2plz653t9gpf97ctk5vc0ftskgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmdfxdj3a"
+        "#/n/nevent1qqsd5yw7sntqfc4e7u4aempvgctry2plz653t9gpf97ctk5vc0ftskgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmdfxdj3a"
       );
       cy.contains("Alby team");
 
       cy.get(".chakra-card")
         .first()
         .within(() => {
-          cy.get('[href="/u/npub13sajvl5ak6cpz4ycesl0e5v869r5sey5pt50l9mcy6uas0fqtpmscth4np"]').should("be.visible");
-          cy.get('[href="/u/npub167n5w6cj2wseqtmk26zllc7n28uv9c4vw28k2kht206vnghe5a7stgzu3r"]').should("be.visible");
+          cy.get('[href="#/u/npub13sajvl5ak6cpz4ycesl0e5v869r5sey5pt50l9mcy6uas0fqtpmscth4np"]').should("be.visible");
+          cy.get('[href="#/u/npub167n5w6cj2wseqtmk26zllc7n28uv9c4vw28k2kht206vnghe5a7stgzu3r"]').should("be.visible");
 
           // make sure the leading @ is removed
           cy.get(".chakra-card__body").should("not.contain.text", "@@");
         });
+    });
+  });
+
+  describe("youtube", () => {
+    it("should embed playlists", () => {
+      cy.visit(
+        "#/n/nevent1qqs8w6e63smpr5ccmz4l0w5pvnkp6r7z2fxaadjwu2g74y95pl9xv0cpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqqkgf54"
+      );
+
+      cy.findByTitle(/youtube video player/i).should("be.visible");
+      cy.findByTitle(/youtube video player/i).should("have.attr", "src");
     });
   });
 });

@@ -27,10 +27,8 @@ import {
 import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { Bech32Prefix, isHex, normalizeToBech32 } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
-import Header from "./components/header";
 import { Suspense, useState } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -40,15 +38,17 @@ import { nip19 } from "nostr-tools";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";
+import Header from "./components/header";
 
 const tabs = [
+  { label: "About", path: "about" },
   { label: "Notes", path: "notes" },
   { label: "Media", path: "media" },
   { label: "Zaps", path: "zaps" },
-  { label: "Followers", path: "followers" },
   { label: "Following", path: "following" },
   { label: "Relays", path: "relays" },
   { label: "Reports", path: "reports" },
+  { label: "Followers", path: "followers" },
 ];
 
 function useUserPointer() {
@@ -82,7 +82,6 @@ function useUserTopRelays(pubkey: string, count: number = 4) {
 
 const UserView = () => {
   const { pubkey, relays: pointerRelays } = useUserPointer();
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [relayCount, setRelayCount] = useState(4);
   const userTopRelays = useUserTopRelays(pubkey, relayCount);
@@ -91,7 +90,7 @@ const UserView = () => {
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
 
-  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.includes(t.path)) ?? tabs[0]);
+  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
 
   const metadata = useUserMetadata(pubkey, userTopRelays, true);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
@@ -101,14 +100,13 @@ const UserView = () => {
   return (
     <>
       <AdditionalRelayProvider relays={unique([...userTopRelays, ...pointerRelays])}>
-        <Flex direction="column" alignItems="stretch" gap="2" overflow={isMobile ? "auto" : "hidden"} height="100%">
-          {/* {metadata?.banner && <Image src={metadata.banner} mb={-120} />} */}
+        <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" h="full">
           <Header pubkey={pubkey} showRelaySelectionModal={relayModal.onOpen} />
           <Tabs
             display="flex"
             flexDirection="column"
             flexGrow="1"
-            overflow={isMobile ? undefined : "hidden"}
+            overflow="hidden"
             isLazy
             index={activeTab}
             onChange={(v) => navigate(tabs[v].path)}
@@ -120,9 +118,9 @@ const UserView = () => {
               ))}
             </TabList>
 
-            <TabPanels overflow={isMobile ? undefined : "auto"} height="100%">
+            <TabPanels overflow="hidden" h="full">
               {tabs.map(({ label }) => (
-                <TabPanel key={label} pr={0} pl={0}>
+                <TabPanel key={label} p={0} h="full" overflow="hidden">
                   <Suspense fallback={<Spinner />}>
                     <Outlet context={{ pubkey, setRelayCount }} />
                   </Suspense>

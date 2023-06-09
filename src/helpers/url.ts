@@ -1,3 +1,5 @@
+const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
+
 export function normalizeRelayUrl(relayUrl: string) {
   const url = new URL(relayUrl);
 
@@ -17,4 +19,15 @@ export function safeRelayUrl(relayUrl: string) {
     return normalizeRelayUrl(relayUrl);
   } catch (e) {}
   return null;
+}
+
+export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
+  const newUrl = new URL(url);
+  replacementUrl = convertToUrl(replacementUrl);
+  newUrl.host = replacementUrl.host;
+  newUrl.protocol = replacementUrl.protocol;
+  if (replacementUrl.port) newUrl.port = replacementUrl.port;
+  if (replacementUrl.username) newUrl.username = replacementUrl.username;
+  if (replacementUrl.password) newUrl.password = replacementUrl.password;
+  return newUrl;
 }

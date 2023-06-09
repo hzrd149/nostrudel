@@ -1,5 +1,5 @@
 import { Box, Button, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { UserAvatar } from "../user-avatar";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
@@ -29,6 +29,7 @@ function ProfileButton() {
 
 export default function ProfileLink() {
   const account = useCurrentAccount();
+  const location = useLocation();
 
   if (account) return <ProfileButton />;
   else

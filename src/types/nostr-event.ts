@@ -1,5 +1,5 @@
 export type ETag = ["e", string] | ["e", string, string] | ["e", string, string, string];
-export type PTag = ["p", string] | ["p", string, string];
+export type PTag = ["p", string] | ["p", string, string] | ["p", string, string, string];
 export type RTag = ["r", string] | ["r", string, string];
 export type DTag = ["d"] | ["d", string];
 export type Tag = string[] | ETag | PTag | RTag | DTag;

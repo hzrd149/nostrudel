@@ -1,17 +1,55 @@
-import { AspectRatio } from "@chakra-ui/react";
-import { EmbedType, EmbedableContent, embedJSX } from "../../helpers/embeds";
+import { AspectRatio, list } from "@chakra-ui/react";
+import appSettings from "../../services/app-settings";
 
-// nostr:note1ya94hd44g3m2x4gagcydkg28qcp924dd238vq5k4chly84mqt2wqnwgu6d
-// nostr:note1apu56y4h2ms5uwpzz209vychr309kllhq6wz46te84u9rus5x7kqj5f5n9
-export function embedYoutubeVideo(content: EmbedableContent) {
-  return embedJSX(content, {
-    name: "Youtube Video",
-    regexp:
-      /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)(\/(?:[\w\-]+\?v=|embed\/|v\/|live\/|shorts\/)?)([\w\-]+)(\S+)?/,
-    render: (match) => (
-      <AspectRatio ratio={16 / 10} maxWidth="30rem">
+// copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/youtube.js
+export const YOUTUBE_DOMAINS = [
+  "m.youtube.com",
+  "youtube.com",
+  "img.youtube.com",
+  "www.youtube.com",
+  "youtube-nocookie.com",
+  "www.youtube-nocookie.com",
+  "youtu.be",
+  "s.ytimg.com",
+  "music.youtube.com",
+];
+
+// nostr:nevent1qqszwj6mk665ga4r25w5vzxmy9rsvqj42kk4gnkq2t2utljr6as948qpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk245xvyn
+export function renderYoutubeUrl(match: URL) {
+  if (!YOUTUBE_DOMAINS.includes(match.hostname)) return null;
+  if (match.pathname.startsWith("/live")) return null;
+
+  const { youtubeRedirect } = appSettings.value;
+
+  if (match.pathname.startsWith("/playlist")) {
+    const listId = match.searchParams.get("list");
+    if (!listId) throw new Error("missing list id");
+
+    const embedUrl = new URL(`embed/videoseries`, youtubeRedirect || "https://www.youtube-nocookie.com");
+    embedUrl.searchParams.set("list", listId);
+
+    return (
+      <AspectRatio ratio={560 / 315} maxWidth="40rem">
         <iframe
-          src={`https://www.youtube.com/embed/${match[2]}`}
+          src={embedUrl.toString()}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          width="100%"
+        ></iframe>
+      </AspectRatio>
+    );
+  } else {
+    var videoId = match.searchParams.get("v");
+    if (match.hostname === "youtu.be") videoId = match.pathname.split("/")[1];
+    if (!videoId) throw new Error("cant find video id");
+    const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://www.youtube-nocookie.com");
+
+    return (
+      <AspectRatio ratio={16 / 10} maxWidth="40rem">
+        <iframe
+          src={embedUrl.toString()}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -19,47 +57,6 @@ export function embedYoutubeVideo(content: EmbedableContent) {
           width="100%"
         ></iframe>
       </AspectRatio>
-    ),
-  });
-}
-
-// nostr:note12vqqte3gtd729gp65tgdk0a8yym5ynwqjuhk5s6l333yethlvlcsqptvmk
-export function embedYoutubePlaylist(content: EmbedableContent) {
-  return embedJSX(content, {
-    name: "Youtube Playlist",
-    regexp: /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com|youtu\.be)\/(?:playlist\?list=)([\w\-]+)(\S+)?/im,
-    render: (match) => (
-      <AspectRatio ratio={560 / 315} maxWidth="30rem">
-        <iframe
-          // width="560"
-          // height="315"
-          width="100%"
-          height="100%"
-          src={`https://www.youtube.com/embed/videoseries?list=${match[1]}`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
-      </AspectRatio>
-    ),
-  });
-}
-
-export function embedYoutubeMusic(content: EmbedableContent) {
-  return embedJSX(content, {
-    regexp: /https?:\/\/music\.youtube\.com\/watch\?v=(\w+)(\??(?:[\?#\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?/,
-    render: (match) => (
-      <AspectRatio ratio={16 / 10} maxWidth="30rem">
-        <iframe
-          width="100%"
-          src={`https://youtube.com/embed/${match[1]}`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
-      </AspectRatio>
-    ),
-    name: "Youtube Music",
-  });
+    );
+  }
 }

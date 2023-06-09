@@ -27,6 +27,9 @@ export type AppSettings = {
   primaryColor: string;
   imageProxy: string;
   showContentWarning: boolean;
+  twitterRedirect?: string;
+  redditRedirect?: string;
+  youtubeRedirect?: string;
 };
 
 export const defaultSettings: AppSettings = {
@@ -41,6 +44,9 @@ export const defaultSettings: AppSettings = {
   primaryColor: "#8DB600",
   imageProxy: "",
   showContentWarning: true,
+  twitterRedirect: undefined,
+  redditRedirect: undefined,
+  youtubeRedirect: undefined,
 };
 
 function parseAppSettings(event: NostrEvent): AppSettings {

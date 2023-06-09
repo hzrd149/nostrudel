@@ -3,47 +3,48 @@ import { Box, Text } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import styled from "@emotion/styled";
 import { useExpand } from "./expanded";
-import { EmbedableContent } from "../../helpers/embeds";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import {
-  embedTweet,
   embedLightningInvoice,
-  embedImages,
-  embedVideos,
-  embedLinks,
-  embedSpotifyMusic,
-  embedTidalMusic,
-  embedYoutubeVideo,
-  embedYoutubePlaylist,
-  embedYoutubeMusic,
   embedNostrLinks,
   embedNostrMentions,
-  embedAppleMusic,
   embedNostrHashtags,
-  embedWavlakeTrack,
+  renderWavlakeUrl,
+  renderYoutubeUrl,
+  renderGenericUrl,
+  renderImageUrl,
+  renderTwitterUrl,
+  renderAppleMusicUrl,
+  renderSpotifyUrl,
+  renderTidalUrl,
+  renderVideoUrl,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
+import { renderRedditUrl } from "../embed-types/reddit";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
   let content: EmbedableContent = [event.content.trim()];
 
-  content = embedLightningInvoice(content);
-  content = embedTweet(content);
-  content = embedYoutubeVideo(content);
-  content = embedYoutubePlaylist(content);
-  content = embedYoutubeMusic(content);
-  content = embedWavlakeTrack(content);
-  content = embedTidalMusic(content);
-  content = embedAppleMusic(content);
-  content = embedSpotifyMusic(content);
-
   // common
-  content = embedImages(content, trusted);
-  content = embedVideos(content);
-  content = embedLinks(content);
+  content = embedUrls(content, [
+    renderYoutubeUrl,
+    renderTwitterUrl,
+    renderRedditUrl,
+    renderWavlakeUrl,
+    renderAppleMusicUrl,
+    renderSpotifyUrl,
+    renderTidalUrl,
+    renderImageUrl,
+    renderVideoUrl,
+    renderGenericUrl,
+  ]);
+
+  // bitcoin
+  content = embedLightningInvoice(content);
 
   // nostr
-  content = embedNostrLinks(content, event);
+  content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
 

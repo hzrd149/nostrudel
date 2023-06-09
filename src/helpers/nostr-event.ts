@@ -3,26 +3,69 @@ import { getEventRelays } from "../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../types/nostr-event";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import accountService from "../services/account";
-import { Kind } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
+import { matchNostrLink } from "./regexp";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return event.kind === 1 && !!getReferences(event).replyId;
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  return event.kind === 6;
+  const match = event.content.match(matchNostrLink);
+  return event.kind === 6 || (match && match[0].length === event.content.length);
 }
 
 export function truncatedId(id: string, keep = 6) {
   return id.substring(0, keep) + "..." + id.substring(id.length - keep);
 }
 
-export function getContentTagRefs(content: string) {
-  return Array.from(content.matchAll(/#\[(\d+)\]/gi)).map((m) => parseInt(m[1]));
+/**
+ * returns an array of tag indexes that are referenced in the content
+ * either with the legacy #[0] syntax or nostr:xxxxx links
+ */
+export function getContentTagRefs(content: string, tags: Tag[]) {
+  const indexes = new Set();
+  Array.from(content.matchAll(/#\[(\d+)\]/gi)).forEach((m) => indexes.add(parseInt(m[1])));
+
+  const linkMatches = Array.from(content.matchAll(new RegExp(matchNostrLink, "gi")));
+  for (const [_, _prefix, link] of linkMatches) {
+    try {
+      const decoded = nip19.decode(link);
+
+      let type: string;
+      let id: string;
+      switch (decoded.type) {
+        case "npub":
+          id = decoded.data;
+          type = "p";
+          break;
+        case "nprofile":
+          id = decoded.data.pubkey;
+          type = "p";
+          break;
+        case "note":
+          id = decoded.data;
+          type = "e";
+          break;
+        case "nevent":
+          id = decoded.data.id;
+          type = "e";
+          break;
+      }
+
+      let t = tags.find((t) => t[0] === type && t[1] === id);
+      if (t) {
+        let index = tags.indexOf(t);
+        indexes.add(index);
+      }
+    } catch (e) {}
+  }
+
+  return Array.from(indexes);
 }
 
 export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
-  const contentTagRefs = getContentTagRefs(content);
+  const contentTagRefs = getContentTagRefs(content, tags);
 
   const newTags: Tag[] = [];
   for (let i = 0; i < tags.length; i++) {
@@ -39,8 +82,7 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const pTags = event.tags.filter(isPTag);
 
   const events = eTags.map((t) => t[1]);
-  const pubkeys = pTags.map((t) => t[1]);
-  const contentTagRefs = getContentTagRefs(event.content);
+  const contentTagRefs = getContentTagRefs(event.content, event.tags);
 
   let replyId = eTags.find((t) => t[3] === "reply")?.[1];
   let rootId = eTags.find((t) => t[3] === "root")?.[1];
@@ -73,7 +115,6 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   }
 
   return {
-    pubkeys,
     events,
     rootId,
     replyId,
@@ -134,7 +175,6 @@ export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
 
   return {
     kind: Kind.Text,
-    // TODO: be smarter about picking relay
     tags,
     content: "#[0]",
     created_at: moment().unix(),
