@@ -1,5 +1,22 @@
 # nostrudel
 
+## 0.12.0
+
+### Minor Changes
+
+- a6a1ca3: Create about tab in profile view
+- a6a1ca3: Virtulize following and followers tabs in profile view
+- a6a1ca3: Add profile stats from nostr.band
+- 9464e3a: Add settings for Invidious, Nitter, Libreddit, Teddit redirects
+- 305f5e2: Add link to nostr army knife tool
+
+### Patch Changes
+
+- 65bd2e9: Only show kind 0 events in media tab
+- 305f5e2: Correctly handle web+nostr: links in search
+- a6a1ca3: Fix redirect not working on login view
+- 3939f66: Correctly handle quote notes with nostr: links and e tags
+
 ## 0.11.0
 
 ### Minor Changes
