@@ -1,6 +1,6 @@
 import moment, { MomentInput } from "moment";
 import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent, isPTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
 import { utils } from "nostr-tools";
 import { SuperMap } from "../classes/super-map";
@@ -9,10 +9,9 @@ import accountService from "./account";
 import { NostrQuery } from "../types/nostr-query";
 import { convertTimestampToDate } from "../helpers/date";
 import { Kind } from "nostr-tools";
-import { getReferences } from "../helpers/nostr-event";
 
 export function getMessageRecipient(event: NostrEvent): string | undefined {
-  return getReferences(event).pubkeys[0];
+  return event.tags.filter(isPTag)[0][1];
 }
 
 class DirectMessagesService {

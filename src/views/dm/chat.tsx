@@ -24,7 +24,7 @@ import RequireCurrentAccount from "../../providers/require-current-account";
 function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
   let content: EmbedableContent = [text];
 
-  content = embedNostrLinks(content, event);
+  content = embedNostrLinks(content);
 
   content = embedUrls(content, [renderImageUrl, renderVideoUrl, renderGenericUrl]);
 

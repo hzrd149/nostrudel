@@ -1,9 +1,8 @@
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent, isPTag } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { PubkeySubjectCache } from "../classes/pubkey-subject-cache";
 import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import db from "./db";
-import { getReferences } from "../helpers/nostr-event";
 import userContactsService from "./user-contacts";
 import { Subject } from "../classes/subject";
 import { Kind } from "nostr-tools";
@@ -63,9 +62,9 @@ function receiveEvent(event: NostrEvent) {
   if (event.kind !== Kind.Contacts) return;
   const follower = event.pubkey;
 
-  const refs = getReferences(event);
-  if (refs.pubkeys.length > 0) {
-    for (const pubkey of refs.pubkeys) {
+  const pTags = event.tags.filter(isPTag);
+  if (pTags.length > 0) {
+    for (const [_, pubkey] of pTags) {
       if (subjects.hasSubject(pubkey)) {
         const subject = subjects.getSubject(pubkey);
         mergeNext(subject, [follower]);
@@ -75,7 +74,7 @@ function receiveEvent(event: NostrEvent) {
     }
   }
 
-  db.put("userFollows", { pubkey: event.pubkey, follows: refs.pubkeys });
+  db.put("userFollows", { pubkey: event.pubkey, follows: pTags.map((p) => p[1]) });
 }
 
 subscription.onEvent.subscribe((event) => {
