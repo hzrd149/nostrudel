@@ -76,4 +76,42 @@ describe("Embeds", () => {
       cy.findByTitle(/youtube video player/i).should("have.attr", "src");
     });
   });
+
+  describe("Music", () => {
+    it("should handle wavlake links", () => {
+      cy.visit(
+        "#/n/nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0"
+      );
+      cy.findByTitle("Wavlake Embed").should("be.visible");
+    });
+
+    it("should handle spotify links", () => {
+      cy.visit(
+        "#/n/nevent1qqsx0lz7m72qzq499exwhnfszvgwea8tv38x9wkv32yhkmwwmhgs7jgprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk25m3sln"
+      );
+      cy.findByTitle("Spotify List Embed").should("exist");
+
+      cy.visit(
+        "#/n/nevent1qqsqxkmz49hydf8ppa9k6x6zrcq7m4evhhlye0j3lcnz8hrl2q6np4spz3mhxue69uhhyetvv9ujuerpd46hxtnfdult02qz"
+      );
+      cy.findByTitle("Spotify Embed").should("exist");
+    });
+
+    it("should handle apple music links", () => {
+      cy.visit(
+        "#/n/nevent1qqs9kqt9d7r4zjpawcyl82x5qsn4hals4wn294dv95knrahs4mggwasprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2whhzvz"
+      );
+      cy.findByTitle("Apple Music Embed").should("exist");
+
+      cy.visit(
+        "#/n/nevent1qqszyrz4uug75j4086kj4f8peg3g0v8g9f04zjxplnpq0uxljtthggqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2aeexmq"
+      );
+      cy.findByTitle("Apple Music List Embed").should("exist");
+    });
+
+    it("should handle Tidal playlist links", () => {
+      cy.visit("#/n/nevent1qqsg4d6rvg3te0y7sa0xp8r2rgcrnqyp2jmddzm4ufnmqs36aa2247qpp4mhxue69uhkummn9ekx7mqacwd3t");
+      cy.findByTitle("Tidal List Embed").should("be.visible");
+    });
+  });
 });

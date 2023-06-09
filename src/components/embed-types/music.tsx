@@ -1,6 +1,3 @@
-import { EmbedableContent, embedJSX } from "../../helpers/embeds";
-import appSettings from "../../services/app-settings";
-
 // nostr:nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0
 export function renderWavlakeUrl(match: URL) {
   if (match.hostname !== "wavlake.com") return null;
@@ -12,6 +9,7 @@ export function renderWavlakeUrl(match: URL) {
     <iframe
       loading="lazy"
       frameBorder="0"
+      title="Wavlake Embed"
       src={embedUrl.toString()}
       style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573 }}
     ></iframe>
@@ -32,6 +30,7 @@ export function renderAppleMusicUrl(match: URL) {
     <iframe
       allow="encrypted-media *; fullscreen *; clipboard-write"
       frameBorder="0"
+      title={isList ? "Apple Music List Embed" : "Apple Music Embed"}
       height={isList ? 450 : 175}
       style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
       src={embedUrl.toString()}
@@ -57,7 +56,7 @@ export function renderSpotifyUrl(match: URL) {
       style={{ borderRadius: "12px" }}
       width="100%"
       height={isList ? 400 : 152}
-      title="Spotify Embed: Beethoven - Fur Elise - Komuz Remix"
+      title={isList ? "Spotify List Embed" : "Spotify Embed"}
       frameBorder="0"
       allowFullScreen
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -77,5 +76,12 @@ export function renderTidalUrl(match: URL) {
   const embedUrl = new URL(`https://embed.tidal.com/${type}s/${id}`);
   embedUrl.searchParams.set("disableAnalytics", "true");
 
-  return <iframe src={embedUrl.toString()} width="100%" height={isList ? 400 : 96}></iframe>;
+  return (
+    <iframe
+      src={embedUrl.toString()}
+      width="100%"
+      height={isList ? 400 : 96}
+      title={isList ? "Tidal List Embed" : "Tidal Embed"}
+    ></iframe>
+  );
 }
