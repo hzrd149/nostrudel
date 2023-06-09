@@ -10,7 +10,7 @@ import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import RepostNote from "../../components/note/repost-note";
+import RepostNote from "../../components/repost-note";
 import RequireCurrentAccount from "../../providers/require-current-account";
 
 function FollowingTabBody() {

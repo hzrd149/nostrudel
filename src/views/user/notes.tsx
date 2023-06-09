@@ -1,7 +1,7 @@
 import { Box, Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
-import RepostNote from "../../components/note/repost-note";
+import RepostNote from "../../components/repost-note";
 import { isReply, isRepost } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import userTimelineService from "../../services/user-timeline";

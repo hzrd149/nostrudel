@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import moment from "moment";
 import {
   Accordion,
@@ -9,6 +9,7 @@ import {
   AccordionPanel,
   Box,
   Flex,
+  Heading,
   IconButton,
   Image,
   Link,
@@ -37,6 +38,9 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import { convertTimestampToDate } from "../../helpers/date";
 import userTrustedStatsService from "../../services/user-trusted-stats";
 import { readablizeSats } from "../../helpers/bolt11";
+import { UserAvatar } from "../../components/user-avatar";
+import { useIsMobile } from "../../hooks/use-is-mobile";
+import { getUserDisplayName } from "../../helpers/user-metadata";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -48,7 +52,7 @@ function buildDescriptionContent(description: string) {
 }
 
 export default function UserAboutTab() {
-  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
@@ -74,30 +78,45 @@ export default function UserAboutTab() {
       pb="8"
       h="full"
     >
-      {metadata?.banner && (
-        <Box
-          pt={!expanded.isOpen ? "20vh" : 0}
-          px={!expanded.isOpen ? "2" : 0}
-          pb={!expanded.isOpen ? "4" : 0}
-          w="full"
-          position="relative"
-          backgroundImage={!expanded.isOpen ? metadata.banner : ""}
-          backgroundPosition="center"
-          backgroundSize="cover"
-          backgroundRepeat="no-repeat"
+      <Box
+        pt={!expanded.isOpen ? "20vh" : 0}
+        px={!expanded.isOpen ? "2" : 0}
+        pb={!expanded.isOpen ? "4" : 0}
+        w="full"
+        position="relative"
+        backgroundImage={!expanded.isOpen ? metadata?.banner : ""}
+        backgroundPosition="center"
+        backgroundSize="cover"
+        backgroundRepeat="no-repeat"
+      >
+        {expanded.isOpen && <Image src={metadata?.banner} w="full" />}
+        <Flex
+          bottom="0"
+          right="0"
+          left="0"
+          p="2"
+          position="absolute"
+          direction={isMobile ? "column" : "row"}
+          bg="linear-gradient(180deg, rgb(255 255 255 / 0%) 0%, var(--chakra-colors-chakra-body-bg) 100%)"
+          gap="2"
+          alignItems={isMobile ? "flex-start" : "flex-end"}
         >
-          {expanded.isOpen && <Image src={metadata?.banner} w="full" />}
-          <IconButton
-            icon={expanded.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
-            aria-label="expand"
-            onClick={expanded.onToggle}
-            top="2"
-            right="2"
-            variant="solid"
-            position="absolute"
-          />
-        </Box>
-      )}
+          <UserAvatar pubkey={pubkey} size={isMobile ? "lg" : "xl"} noProxy />
+          <Box>
+            <Heading>{getUserDisplayName(metadata, pubkey)}</Heading>
+            <UserDnsIdentityIcon pubkey={pubkey} />
+          </Box>
+        </Flex>
+        <IconButton
+          icon={expanded.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
+          aria-label="expand"
+          onClick={expanded.onToggle}
+          top="2"
+          right="2"
+          variant="solid"
+          position="absolute"
+        />
+      </Box>
       {aboutContent && (
         <Text whiteSpace="pre-wrap" px="2">
           {aboutContent.map((part, i) =>

@@ -6,8 +6,7 @@ type ContextType = { expanded: boolean; onExpand: () => void; onCollapse: () => 
 const ExpandedContext = React.createContext<ContextType | undefined>(undefined);
 
 export function useExpand() {
-  const ctx = useContext(ExpandedContext);
-  return ctx;
+  return useContext(ExpandedContext);
 }
 
 export function ExpandProvider({ children }: PropsWithChildren) {
