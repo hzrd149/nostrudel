@@ -1,4 +1,4 @@
-import { AspectRatio } from "@chakra-ui/react";
+import { AspectRatio, list } from "@chakra-ui/react";
 import appSettings from "../../services/app-settings";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/youtube.js
@@ -21,21 +21,42 @@ export function renderYoutubeUrl(match: URL) {
 
   const { youtubeRedirect } = appSettings.value;
 
-  var videoId = match.searchParams.get("v");
-  if (match.hostname === "youtu.be") videoId = match.pathname.split("/")[1];
-  if (!videoId) throw new Error("cant find video id");
-  const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://youtube.com");
+  if (match.pathname.startsWith("/playlist")) {
+    const listId = match.searchParams.get("list");
+    if (!listId) throw new Error("missing list id");
 
-  return (
-    <AspectRatio ratio={16 / 10} maxWidth="40rem">
-      <iframe
-        src={embedUrl.toString()}
-        title="YouTube video player"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        width="100%"
-      ></iframe>
-    </AspectRatio>
-  );
+    const embedUrl = new URL(`embed/videoseries`, youtubeRedirect || "https://www.youtube-nocookie.com");
+    embedUrl.searchParams.set("list", listId);
+
+    return (
+      <AspectRatio ratio={560 / 315} maxWidth="40rem">
+        <iframe
+          src={embedUrl.toString()}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          width="100%"
+        ></iframe>
+      </AspectRatio>
+    );
+  } else {
+    var videoId = match.searchParams.get("v");
+    if (match.hostname === "youtu.be") videoId = match.pathname.split("/")[1];
+    if (!videoId) throw new Error("cant find video id");
+    const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://www.youtube-nocookie.com");
+
+    return (
+      <AspectRatio ratio={16 / 10} maxWidth="40rem">
+        <iframe
+          src={embedUrl.toString()}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          width="100%"
+        ></iframe>
+      </AspectRatio>
+    );
+  }
 }

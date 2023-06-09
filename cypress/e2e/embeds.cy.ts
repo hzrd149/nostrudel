@@ -65,4 +65,15 @@ describe("Embeds", () => {
         });
     });
   });
+
+  describe("youtube", () => {
+    it("should embed playlists", () => {
+      cy.visit(
+        "#/n/nevent1qqs8w6e63smpr5ccmz4l0w5pvnkp6r7z2fxaadjwu2g74y95pl9xv0cpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqqkgf54"
+      );
+
+      cy.findByTitle(/youtube video player/i).should("be.visible");
+      cy.findByTitle(/youtube video player/i).should("have.attr", "src");
+    });
+  });
 });

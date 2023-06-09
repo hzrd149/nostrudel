@@ -43,8 +43,10 @@ export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[
       try {
         const url = new URL(match[0]);
         for (const handler of handlers) {
-          const content = handler(url);
-          if (content) return content;
+          try {
+            const content = handler(url);
+            if (content) return content;
+          } catch (e) {}
         }
       } catch (e) {
         if (e instanceof Error) {
