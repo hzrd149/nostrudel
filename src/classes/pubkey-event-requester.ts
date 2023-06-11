@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { NostrSubscription } from "./nostr-subscription";
 import { SuperMap } from "./super-map";
 import { NostrEvent } from "../types/nostr-event";
@@ -74,9 +74,9 @@ class PubkeyEventRequestSubscription {
     this.requestNext.clear();
 
     // prune pubkeys
-    const timeout = moment().subtract(1, "minute");
+    const timeout = dayjs().subtract(1, "minute");
     for (const [pubkey, date] of this.requestedPubkeys) {
-      if (moment(date).isBefore(timeout)) {
+      if (dayjs(date).isBefore(timeout)) {
         this.requestedPubkeys.delete(pubkey);
         needsUpdate = true;
       }

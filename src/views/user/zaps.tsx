@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Select, Spinner, Text, useDisclosure } from "@chakra-ui/react";
-import moment, { isMoment } from "moment";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
@@ -8,7 +8,6 @@ import { NoteLink } from "../../components/note-link";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
-import { convertTimestampToDate } from "../../helpers/date";
 import { truncatedId } from "../../helpers/nostr-event";
 import { isProfileZap, isNoteZap, parseZapNote, totalZaps } from "../../helpers/zaps";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -48,7 +47,7 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
               Show message
             </Button>
           )}
-          <Text ml="auto">{moment(convertTimestampToDate(request.created_at)).fromNow()}</Text>
+          <Text ml="auto">{dayjs.unix(request.created_at).fromNow()}</Text>
         </Flex>
         {request.content && isOpen && <Text>{request.content}</Text>}
       </Box>
@@ -73,7 +72,7 @@ const UserZapsTab = () => {
     `${truncatedId(pubkey)}-zaps`,
     relays,
     { "#p": [pubkey], kinds: [9735] },
-    { pageSize: moment.duration(1, "week").asSeconds() }
+    { pageSize: 60 * 60 * 24 * 7 }
   );
 
   const timeline =
@@ -92,7 +91,7 @@ const UserZapsTab = () => {
             <LightningIcon color="yellow.400" />
             <Text>
               {readablizeSats(totalZaps(timeline) / 1000)} sats in the last{" "}
-              {moment(convertTimestampToDate(timeline[timeline.length - 1].created_at)).fromNow(true)}
+              {dayjs.unix(timeline[timeline.length - 1].created_at).fromNow(true)}
             </Text>
           </Flex>
         )}

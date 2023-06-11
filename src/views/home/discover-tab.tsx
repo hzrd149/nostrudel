@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Note } from "../../components/note";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isReply, truncatedId } from "../../helpers/nostr-event";
@@ -72,8 +72,8 @@ function DiscoverTabBody() {
   const { events, loading, loadMore } = useTimelineLoader(
     `${truncatedId(account.pubkey)}-discover`,
     relays,
-    { authors: throttledPubkeys, kinds: [1], since: moment().subtract(1, "hour").unix() },
-    { pageSize: moment.duration(1, "hour").asSeconds(), enabled: throttledPubkeys.length > 0 }
+    { authors: throttledPubkeys, kinds: [1], since: dayjs().subtract(1, "hour").unix() },
+    { pageSize: 60 * 60, enabled: throttledPubkeys.length > 0 }
   );
 
   const timeline = events.filter((e) => !isReply(e));

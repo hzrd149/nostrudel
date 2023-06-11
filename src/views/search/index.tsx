@@ -11,6 +11,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAsync } from "react-use";
@@ -18,7 +19,6 @@ import { LightningIcon, QrCodeIcon } from "../../components/icons";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import ZapModal from "../../components/zap-modal";
-import { convertTimestampToDate } from "../../helpers/date";
 import { truncatedId } from "../../helpers/nostr-event";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
@@ -173,7 +173,7 @@ export default function SearchView() {
             </CardBody>
             <CardFooter display="flex" gap="2">
               <Text>{person.followed_count} Followers</Text>
-              <Text>Created: {convertTimestampToDate(person.first_tm).toLocaleDateString()}</Text>
+              <Text>Created: {dayjs.unix(person.first_tm).toString()}</Text>
             </CardFooter>
           </Card>
         ))}

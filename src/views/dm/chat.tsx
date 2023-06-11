@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardBody, CardProps, Flex, IconButton, Spacer, Text, Textarea } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
@@ -7,7 +7,6 @@ import { nostrPostAction } from "../../classes/nostr-post-action";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { convertTimestampToDate } from "../../helpers/date";
 import { normalizeToHex } from "../../helpers/nip19";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useIsMobile } from "../../hooks/use-is-mobile";
@@ -38,7 +37,7 @@ function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">)
   return (
     <Flex direction="column">
       <Text size="sm" textAlign={isOwnMessage ? "right" : "left"} px="2">
-        {moment(convertTimestampToDate(event.created_at)).fromNow()}
+        {dayjs.unix(event.created_at).fromNow()}
       </Text>
       <Card size="sm" mr={isOwnMessage ? 0 : "8"} ml={isOwnMessage ? "8" : 0}>
         <CardBody position="relative">
@@ -63,14 +62,14 @@ function DirectMessageChatPage() {
   const { requestEncrypt, requestSignature } = useSigningContext();
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
-  const [from, setFrom] = useState(moment().subtract(1, "week"));
+  const [from, setFrom] = useState(dayjs().subtract(1, "week"));
   const [content, setContent] = useState<string>("");
 
   useEffect(() => directMessagesService.loadDateRange(from), [from]);
 
   const loadMore = () => {
     setLoading(true);
-    setFrom((date) => moment(date).subtract(1, "week"));
+    setFrom((date) => dayjs(date).subtract(1, "week"));
     setTimeout(() => {
       setLoading(false);
     }, 1000);
@@ -87,7 +86,7 @@ function DirectMessageChatPage() {
       kind: Kind.EncryptedDirectMessage,
       content: encrypted,
       tags: [["p", pubkey]],
-      created_at: moment().unix(),
+      created_at: dayjs().unix(),
     };
     const signed = await requestSignature(event);
     if (!signed) return;

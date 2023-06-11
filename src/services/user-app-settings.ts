@@ -3,7 +3,7 @@ import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { SuperMap } from "../classes/super-map";
 import { PersistentSubject } from "../classes/subject";
 import { safeJson } from "../helpers/parse";
-import moment from "moment";
+import dayjs from "dayjs";
 import { ColorMode } from "@chakra-ui/react";
 import db from "./db";
 
@@ -98,7 +98,7 @@ class UserAppSettings {
       kind: 30078,
       tags: [["d", DTAG]],
       content: JSON.stringify(settings),
-      created_at: moment().unix(),
+      created_at: dayjs().unix(),
     };
   }
 }

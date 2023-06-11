@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import db from "./db";
 
 function parseAddress(address: string): { name?: string; domain?: string } {
@@ -62,7 +62,7 @@ async function fetchIdentity(address: string) {
 const inMemoryCache = new Map<string, DnsIdentity>();
 
 async function addToCache(domain: string, json: IdentityJson) {
-  const now = moment().unix();
+  const now = dayjs().unix();
   const transaction = db.transaction("dnsIdentifiers", "readwrite");
 
   for (const name of Object.keys(json.names)) {
@@ -98,7 +98,7 @@ async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
     "dnsIdentifiers",
     "updated",
-    IDBKeyRange.upperBound(moment().subtract(1, "day").unix())
+    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
   );
 
   for (const pubkey of keys) {

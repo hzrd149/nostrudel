@@ -1,13 +1,11 @@
-import { Link as RouterLink } from "react-router-dom";
-import moment from "moment";
-import { Card, CardBody, CardHeader, Flex, Heading, Link } from "@chakra-ui/react";
+import dayjs from "dayjs";
+import { Card, CardBody, CardHeader, Flex, Heading } from "@chakra-ui/react";
+
 import { NoteContents } from "./note-contents";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
-import { convertTimestampToDate } from "../../helpers/date";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
@@ -31,7 +29,7 @@ export default function EmbeddedNote({ note }: { note: NostrEvent }) {
             <Flex grow={1} />
             {showSignatureVerification && <EventVerificationIcon event={note} />}
             <NoteLink noteId={note.id} color="current" whiteSpace="nowrap">
-              {moment(convertTimestampToDate(note.created_at)).fromNow()}
+              {dayjs.unix(note.created_at).fromNow()}
             </NoteLink>
           </Flex>
         </CardHeader>

@@ -10,7 +10,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { nostrPostAction } from "../../classes/nostr-post-action";
@@ -225,7 +225,7 @@ export const ProfileEditView = () => {
       }
 
       const draft: DraftNostrEvent = {
-        created_at: moment().unix(),
+        created_at: dayjs().unix(),
         kind: 0,
         content: JSON.stringify(metadata),
         tags: [],

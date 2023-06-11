@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { getEventRelays } from "../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../types/nostr-event";
 import { RelayConfig, RelayMode } from "../classes/relay";
@@ -149,7 +149,7 @@ export function buildReply(event: NostrEvent, account = accountService.current.v
     // TODO: be smarter about picking relay
     tags,
     content: "",
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 
@@ -163,7 +163,7 @@ export function buildRepost(event: NostrEvent): DraftNostrEvent {
     kind: 6, //Kind.Repost
     tags,
     content: "",
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 
@@ -177,7 +177,7 @@ export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
     kind: Kind.Text,
     tags,
     content: "#[0]",
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 
@@ -186,7 +186,7 @@ export function buildDeleteEvent(eventIds: string[], reason = ""): DraftNostrEve
     kind: Kind.EventDeletion,
     tags: eventIds.map((id) => ["e", id]),
     content: reason,
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 

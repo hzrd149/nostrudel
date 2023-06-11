@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { useState } from "react";
 import { nostrPostAction } from "../../../classes/nostr-post-action";
@@ -11,7 +11,7 @@ import clientRelaysService from "../../../services/client-relays";
 import eventReactionsService from "../../../services/event-reactions";
 import { getEventRelays } from "../../../services/event-relays";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { DislikeIcon, LikeIcon } from "../../icons";
+import { LikeIcon } from "../../icons";
 
 export default function ReactionButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
@@ -29,7 +29,7 @@ export default function ReactionButton({ note, ...props }: { note: NostrEvent } 
         ["e", note.id, random(eventRelays)],
         ["p", note.pubkey], // TODO: pick a relay for the user
       ],
-      created_at: moment().unix(),
+      created_at: dayjs().unix(),
     };
     const signed = await requestSignature(event);
     if (signed) {

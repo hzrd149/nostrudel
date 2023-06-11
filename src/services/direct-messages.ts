@@ -1,4 +1,4 @@
-import moment, { MomentInput } from "moment";
+import dayjs from "dayjs";
 import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
 import { NostrEvent, isPTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
@@ -7,7 +7,6 @@ import { SuperMap } from "../classes/super-map";
 import { PersistentSubject } from "../classes/subject";
 import accountService from "./account";
 import { NostrQuery } from "../types/nostr-query";
-import { convertTimestampToDate } from "../helpers/date";
 import { Kind } from "nostr-tools";
 
 export function getMessageRecipient(event: NostrEvent): string | undefined {
@@ -47,14 +46,14 @@ class DirectMessagesService {
         this.incomingSub.setQuery({
           ...this.incomingSub.query,
           "#p": [newAccount.pubkey],
-          since: moment().subtract(1, "day").unix(),
+          since: dayjs().subtract(1, "day").unix(),
         });
       }
       if (this.outgoingSub.query) {
         this.outgoingSub.setQuery({
           ...this.outgoingSub.query,
           authors: [newAccount.pubkey],
-          since: moment().subtract(1, "day").unix(),
+          since: dayjs().subtract(1, "day").unix(),
         });
       }
     });
@@ -91,11 +90,11 @@ class DirectMessagesService {
     return this.messages.size;
   }
 
-  loadDateRange(from: MomentInput) {
+  loadDateRange(from: dayjs.ConfigType) {
     const account = accountService.current.value;
     if (!account) return;
 
-    if (this.incomingSub.query?.since && moment(convertTimestampToDate(this.incomingSub.query.since)).isBefore(from)) {
+    if (this.incomingSub.query?.since && dayjs.unix(this.incomingSub.query.since).isBefore(from)) {
       // "since" is already set on the subscription and its older than "from"
       return;
     }
@@ -103,14 +102,14 @@ class DirectMessagesService {
     const incomingQuery: NostrQuery = {
       kinds: [Kind.EncryptedDirectMessage],
       "#p": [account.pubkey],
-      since: moment(from).unix(),
+      since: dayjs(from).unix(),
     };
     this.incomingSub.setQuery(incomingQuery);
 
     const outgoingQuery: NostrQuery = {
       kinds: [Kind.EncryptedDirectMessage],
       authors: [account.pubkey],
-      since: moment(from).unix(),
+      since: dayjs(from).unix(),
     };
     this.outgoingSub.setQuery(outgoingQuery);
 

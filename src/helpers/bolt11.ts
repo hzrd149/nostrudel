@@ -1,5 +1,5 @@
 import { decode, Section, AmountSection, DescriptionSection, TimestampSection } from "light-bolt11-decoder";
-import { convertTimestampToDate } from "./date";
+import dayjs from "dayjs";
 
 export type ParsedInvoice = {
   paymentRequest: string;
@@ -27,8 +27,8 @@ export function parsePaymentRequest(paymentRequest: string): ParsedInvoice {
     paymentRequest: decoded.paymentRequest,
     description: decoded.sections.find(isDescription)?.value ?? "",
     amount: parseInt(decoded.sections.find(isAmount)?.value ?? "0"),
-    timestamp: convertTimestampToDate(timestamp),
-    expiry: convertTimestampToDate(timestamp + decoded.expiry),
+    timestamp: dayjs.unix(timestamp).toDate(),
+    expiry: dayjs.unix(timestamp + decoded.expiry).toDate(),
   };
 }
 

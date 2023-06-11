@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
-import { requestProvider } from "webln";
-import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { useAsync } from "react-use";
+import dayjs from "dayjs";
+import { requestProvider } from "webln";
+import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
+
+import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { ClipboardIcon } from "./icons";
-import moment from "moment";
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
@@ -37,7 +38,7 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
 
   if (!invoice) return <>Loading Invoice...</>;
 
-  const isExpired = moment(invoice.expiry).isBefore(moment());
+  const isExpired = dayjs(invoice.expiry).isBefore(dayjs());
 
   return (
     <Box
@@ -56,7 +57,7 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
       </Box>
       <Box>
         <Text color={isExpired ? "red.400" : undefined}>
-          {isExpired ? "Expired" : "Expires"}: {moment(invoice.expiry).fromNow()}
+          {isExpired ? "Expired" : "Expires"}: {dayjs(invoice.expiry).fromNow()}
         </Text>
       </Box>
       <ButtonGroup>

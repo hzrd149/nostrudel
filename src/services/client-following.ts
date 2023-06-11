@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { nostrPostAction } from "../classes/nostr-post-action";
 import { PersistentSubject, Subject } from "../classes/subject";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
@@ -66,7 +66,7 @@ function getDraftEvent(): DraftNostrEvent {
     // https://github.com/nostr-protocol/nips/blob/master/02.md
     // some other clients are using the content to store relays.
     content: "",
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 

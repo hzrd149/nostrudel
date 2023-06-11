@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Providers } from "./providers";
 
+// setup dayjs
+import dayjs from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTimePlugin);
+
 // register nostr: protocol handler
 if (import.meta.env.PROD) {
   try {

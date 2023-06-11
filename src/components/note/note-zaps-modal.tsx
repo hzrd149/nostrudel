@@ -15,14 +15,12 @@ import {
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
-import moment from "moment";
-import { convertTimestampToDate } from "../../helpers/date";
+import dayjs from "dayjs";
 import { DislikeIcon, LightningIcon, LikeIcon } from "../icons";
 import { parseZapNote } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
-import { NoteContents } from "./note-contents";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 
 function getReactionIcon(content: string) {
@@ -44,7 +42,7 @@ const ReactionEvent = React.memo(({ event }: { event: NostrEvent }) => (
       <UserLink pubkey={event.pubkey} />
     </Flex>
     <Text ml="auto" flexShrink={0}>
-      {moment(convertTimestampToDate(event.created_at)).fromNow()}
+      {dayjs.unix(event.created_at).fromNow()}
     </Text>
   </Flex>
 ));
@@ -67,7 +65,7 @@ const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
             {readablizeSats(payment.amount / 1000)} <LightningIcon color="yellow.500" />
           </Text>
           {/* <Text width="35%" textAlign="right">
-            {moment(convertTimestampToDate(event.created_at)).fromNow()}
+            {dayjs.unix(event.created_at).fromNow()}
           </Text> */}
         </Flex>
         <Text>{request.content}</Text>

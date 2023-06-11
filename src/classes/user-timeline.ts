@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
@@ -7,7 +7,7 @@ import { PersistentSubject } from "./subject";
 import { utils } from "nostr-tools";
 import { truncatedId } from "../helpers/nostr-event";
 
-const PAGE_SIZE = moment.duration(1, "week").asSeconds();
+const PAGE_SIZE = 60 * 60 * 24 * 7; //in seconds
 
 export default class UserTimeline {
   pubkey: string;
@@ -41,7 +41,7 @@ export default class UserTimeline {
   }
 
   private getPageDates(page: number) {
-    const start = this.events.value[0]?.created_at ?? moment().unix();
+    const start = this.events.value[0]?.created_at ?? dayjs().unix();
     const until = start - page * PAGE_SIZE;
     const since = until - PAGE_SIZE;
 
