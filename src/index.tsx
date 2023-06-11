@@ -4,11 +4,13 @@ import { App } from "./app";
 import { Providers } from "./providers";
 
 // register nostr: protocol handler
-try {
-  navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
-} catch (e) {
-  console.log("Failed to register handler");
-  console.log(e);
+if (import.meta.env.PROD) {
+  try {
+    navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
+  } catch (e) {
+    console.log("Failed to register handler");
+    console.log(e);
+  }
 }
 
 const element = document.getElementById("root");
