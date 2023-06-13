@@ -1,5 +1,4 @@
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
-import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import { NoteLink } from "../../components/note-link";
 import { UserLink } from "../../components/user-link";
@@ -46,7 +45,7 @@ export default function UserReportsTab() {
     `${truncatedId(pubkey)}-reports`,
     contextRelays,
     { authors: [pubkey], kinds: [1984] },
-    { pageSize: moment.duration(1, "week").asSeconds() }
+    { pageSize: 60 * 60 * 24 * 7 }
   );
 
   return (

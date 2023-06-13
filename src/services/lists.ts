@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { NostrRequest } from "../classes/nostr-request";
 import { PersistentSubject } from "../classes/subject";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
@@ -53,7 +53,7 @@ export class List {
     if (this.event.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
 
     const draft: DraftNostrEvent = {
-      created_at: moment().unix(),
+      created_at: dayjs().unix(),
       kind: this.event.kind,
       content: this.event.content,
       tags: [...this.event.tags, relay ? ["p", pubkey, relay] : ["p", pubkey]],

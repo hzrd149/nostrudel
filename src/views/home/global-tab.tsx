@@ -1,5 +1,4 @@
 import { Button, Flex, FormControl, FormLabel, Select, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
-import moment from "moment";
 import { useSearchParams } from "react-router-dom";
 import { Note } from "../../components/note";
 import { unique } from "../../helpers/array";
@@ -26,7 +25,7 @@ export default function GlobalTab() {
     `global`,
     selectedRelay ? [selectedRelay] : [],
     { kinds: [1] },
-    { pageSize: moment.duration(5, "minutes").asSeconds() }
+    { pageSize: 60 * 10 }
   );
 
   const timeline = showReplies ? events : events.filter((e) => !isReply(e));

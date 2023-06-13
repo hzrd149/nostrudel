@@ -1,6 +1,6 @@
 import { Avatar, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ToolsIcon } from "../../components/icons";
+import { ExternalLinkIcon, ToolsIcon } from "../../components/icons";
 
 export default function ToolsHomeView() {
   return (
@@ -17,6 +17,15 @@ export default function ToolsHomeView() {
           leftIcon={<Image src="https://nak.nostr.com/favicon.ico" h="1.5em" />}
         >
           nostr army knife
+        </Button>
+        <Button
+          as={Link}
+          href="https://nostr-delete.vercel.app/"
+          isExternal
+          target="_blank"
+          leftIcon={<ExternalLinkIcon />}
+        >
+          Nostr Event Deletion
         </Button>
         <Button as={RouterLink} to="./nip19">
           Nip-19 encode/decode

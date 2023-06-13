@@ -1,4 +1,4 @@
-import { Link as RouterList, useParams } from "react-router-dom";
+import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useUserLists from "../../hooks/use-user-lists";
@@ -9,6 +9,7 @@ import { UserCard } from "../user/components/user-card";
 import { ArrowLeftSIcon, ExternalLinkIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { buildAppSelectUrl } from "../../helpers/nostr-apps";
+import { useDeleteEventContext } from "../../providers/delete-event-provider";
 
 function useListPointer() {
   const { addr } = useParams() as { addr: string };
@@ -26,6 +27,8 @@ function useListPointer() {
 export default function ListView() {
   const pointer = useListPointer();
   const account = useCurrentAccount();
+  const navigate = useNavigate();
+  const { deleteEvent } = useDeleteEventContext();
 
   const readRelays = useReadRelayUrls(pointer.relays);
   const lists = useUserLists(pointer.pubkey, readRelays, true);
@@ -53,7 +56,11 @@ export default function ListView() {
           {list.name}
         </Heading>
 
-        {isAuthor && <Button colorScheme="red">Delete</Button>}
+        {isAuthor && (
+          <Button colorScheme="red" onClick={() => deleteEvent(list.event).then(() => navigate("/lists"))}>
+            Delete
+          </Button>
+        )}
         <Button as={Link} href={buildAppSelectUrl(list.getAddress())} target="_blank" leftIcon={<ExternalLinkIcon />}>
           Open in app
         </Button>

@@ -9,7 +9,7 @@ function UsersLists() {
   const account = useCurrentAccount()!;
 
   const readRelays = useReadRelayUrls();
-  const lists = useUserLists(account.pubkey, readRelays);
+  const lists = useUserLists(account.pubkey, readRelays, true);
 
   return (
     <>

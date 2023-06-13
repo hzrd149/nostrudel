@@ -13,20 +13,20 @@ import {
   PopoverFooter,
 } from "@chakra-ui/react";
 import { nostrPostAction } from "../../classes/nostr-post-action";
-import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
+import { handleEventFromRelay } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayIcon, SearchIcon } from "../icons";
+import { RelayIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
-import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
-import useSubject from "../../hooks/use-subject";
+import useEventRelays from "../../hooks/use-event-relays";
 
 export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
   event: NostrEvent;
 };
 
 export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
-  const eventRelays = useSubject(getEventRelays(event.id));
+  const eventRelays = useEventRelays();
   const writeRelays = useWriteRelayUrls();
 
   const [broadcasting, setBroadcasting] = useState(false);

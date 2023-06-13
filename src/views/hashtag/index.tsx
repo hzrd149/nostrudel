@@ -10,7 +10,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, useSearchParams } from "react-router-dom";
-import moment from "moment";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -38,7 +37,7 @@ export default function HashTagView() {
     `${hashtag}-hashtag`,
     selectedRelay ? [selectedRelay] : defaultRelays,
     { kinds: [1], "#t": [hashtag] },
-    { pageSize: moment.duration(5, "minutes").asSeconds() }
+    { pageSize: 60 * 10 }
   );
 
   const timeline = showReplies ? events : events.filter((e) => !isReply(e));

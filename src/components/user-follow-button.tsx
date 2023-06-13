@@ -43,7 +43,6 @@ export const UserFollowButton = ({
 }: { pubkey: string } & Omit<ButtonProps, "onClick" | "isLoading" | "isDisabled">) => {
   const account = useCurrentAccount();
   const following = useSubject(clientFollowingService.following) ?? [];
-  const savingDraft = useSubject(clientFollowingService.savingDraft);
 
   const readRelays = useReadRelayUrls(useAdditionalRelayContext());
   const userContacts = useUserContacts(pubkey, readRelays);
@@ -51,8 +50,7 @@ export const UserFollowButton = ({
   const isFollowing = following.some((t) => t[1] === pubkey);
   const isFollowingMe = account && userContacts?.contacts.includes(account.pubkey);
 
-  const userContacts = useUserContacts(pubkey, clientRelaysService.getReadUrls());
-  const followLabel = account && userContacts?.contacts.includes(account.pubkey) ? "Follow Back" : "Follow";
+  const followLabel = account && isFollowingMe ? "Follow Back" : "Follow";
 
   return (
     <Menu>
