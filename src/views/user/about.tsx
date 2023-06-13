@@ -1,5 +1,5 @@
 import React from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 import {
   Accordion,
@@ -40,6 +40,10 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { getUserDisplayName } from "../../helpers/user-metadata";
+import { ChatIcon } from "@chakra-ui/icons";
+import { UserFollowButton } from "../../components/user-follow-button";
+import { UserTipButton } from "../../components/user-tip-button";
+import { UserProfileMenu } from "./components/user-profile-menu";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -105,6 +109,20 @@ export default function UserAboutTab() {
             <Heading>{getUserDisplayName(metadata, pubkey)}</Heading>
             <UserDnsIdentityIcon pubkey={pubkey} />
           </Box>
+
+          <Flex gap="2" ml="auto">
+            <UserTipButton pubkey={pubkey} size="sm" variant="link" />
+
+            <IconButton
+              as={RouterLink}
+              size="sm"
+              icon={<ChatIcon />}
+              aria-label="Message"
+              to={`/dm/${npub ?? pubkey}`}
+            />
+            <UserFollowButton pubkey={pubkey} size="sm" />
+            <UserProfileMenu pubkey={pubkey} aria-label="More Options" size="sm" />
+          </Flex>
         </Flex>
         <IconButton
           icon={expanded.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
@@ -170,9 +188,7 @@ export default function UserAboutTab() {
               <Stat>
                 <StatLabel>Following</StatLabel>
                 <StatNumber>{contacts ? readablizeSats(contacts.contacts.length) : "Unknown"}</StatNumber>
-                {contacts && (
-                  <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>
-                )}
+                {contacts && <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>}
               </Stat>
 
               {stats && (

@@ -61,6 +61,17 @@ export class List {
 
     return draft;
   }
+
+  draftRemovePerson(pubkey: string) {
+    const draft: DraftNostrEvent = {
+      created_at: dayjs().unix(),
+      kind: this.event.kind,
+      content: this.event.content,
+      tags: this.event.tags.filter((t) => t[0] !== "p" || t[1] !== pubkey),
+    };
+
+    return draft;
+  }
 }
 
 class ListsService {

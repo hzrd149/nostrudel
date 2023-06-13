@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Button,
   ButtonProps,
@@ -9,30 +10,69 @@ import {
   MenuGroup,
   MenuOptionGroup,
   MenuDivider,
+  useToast,
 } from "@chakra-ui/react";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import useSubject from "../hooks/use-subject";
 import clientFollowingService from "../services/client-following";
 import { useUserContacts } from "../hooks/use-user-contacts";
 import "../services/lists";
-import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, TrashIcon, UnfollowIcon } from "./icons";
+import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, UnfollowIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useAdditionalRelayContext } from "../providers/additional-relay-context";
 
-function UsersLists() {
+function UsersLists({ pubkey }: { pubkey: string }) {
+  const toast = useToast();
   const account = useCurrentAccount()!;
+  const [isLoading, setLoading] = useState(false);
 
   const readRelays = useReadRelayUrls(useAdditionalRelayContext());
   const lists = useUserLists(account.pubkey, readRelays);
 
+  const listsArray = Array.from(Object.values(lists));
+  const inLists = listsArray.filter((list) => list.people.value.some((p) => p.pubkey === pubkey));
+
+  const handleChange = useCallback(async (names: string | string[]) => {
+    if (!Array.isArray(names)) return;
+
+    setLoading(true);
+    try {
+      const addToList = listsArray.find((list) => !inLists.includes(list) && names.includes(list.name));
+      const removeFromList = listsArray.find((list) => inLists.includes(list) && !names.includes(list.name));
+
+      if (addToList) {
+        const draft = addToList.draftAddPerson(pubkey);
+        console.log(draft);
+      } else if (removeFromList) {
+        const draft = removeFromList.draftRemovePerson(pubkey);
+        console.log(draft);
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        toast({ description: e.message });
+      }
+    }
+    setLoading(false);
+  }, []);
+
   return (
     <>
-      {Array.from(Object.entries(lists)).map(([name, list]) => (
-        <MenuItem isDisabled={account.readonly} isTruncated maxW="90vw">
-          {name}
-        </MenuItem>
-      ))}
+      {listsArray.length > 0 && (
+        <MenuOptionGroup title="Lists" type="checkbox" value={inLists.map((l) => l.name)} onChange={handleChange}>
+          {listsArray.map((list) => (
+            <MenuItemOption
+              key={list.event.id}
+              value={list.name}
+              isDisabled={account.readonly && isLoading}
+              isTruncated
+              maxW="90vw"
+            >
+              {list.name}
+            </MenuItemOption>
+          ))}
+        </MenuOptionGroup>
+      )}
     </>
   );
 }
@@ -53,7 +93,7 @@ export const UserFollowButton = ({
   const followLabel = account && isFollowingMe ? "Follow Back" : "Follow";
 
   return (
-    <Menu>
+    <Menu closeOnSelect={false}>
       <MenuButton
         as={Button}
         colorScheme="brand"
@@ -83,15 +123,12 @@ export const UserFollowButton = ({
         )}
         {account && (
           <>
-            <MenuItem icon={<TrashIcon />} isDisabled={account.readonly}>
-              Remove from all
-            </MenuItem>
             <MenuDivider />
-            <UsersLists />
-            <MenuDivider />
+            <UsersLists pubkey={pubkey} />
+            {/* <MenuDivider />
             <MenuItem icon={<PlusCircleIcon />} isDisabled={account.readonly}>
               New list
-            </MenuItem>
+            </MenuItem> */}
           </>
         )}
       </MenuList>

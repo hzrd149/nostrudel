@@ -17,7 +17,7 @@ export const UserProfileMenu = ({
   pubkey,
   showRelaySelectionModal,
   ...props
-}: { pubkey: string; showRelaySelectionModal: () => void } & Omit<MenuIconButtonProps, "children">) => {
+}: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
   const metadata = useUserMetadata(pubkey);
   const userRelays = useUserRelays(pubkey);
   const infoModal = useDisclosure();
@@ -52,9 +52,11 @@ export const UserProfileMenu = ({
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>
-        <MenuItem icon={<RelayIcon />} onClick={showRelaySelectionModal}>
-          Relay selection
-        </MenuItem>
+        {showRelaySelectionModal && (
+          <MenuItem icon={<RelayIcon />} onClick={showRelaySelectionModal}>
+            Relay selection
+          </MenuItem>
+        )}
       </MenuIconButton>
       {infoModal.isOpen && (
         <UserDebugModal pubkey={pubkey} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
