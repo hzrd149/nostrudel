@@ -1,4 +1,3 @@
-import moment from "moment";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Providers } from "./providers";
@@ -26,7 +25,3 @@ root.render(
     <App />
   </Providers>
 );
-
-if (import.meta.env.DEV) {
-  window.moment = moment;
-}
