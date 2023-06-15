@@ -1,28 +1,18 @@
 import { memo } from "react";
-import { IconButton, IconButtonProps, Flex, useDisclosure } from "@chakra-ui/react";
+import { IconButtonProps } from "@chakra-ui/react";
 import { getEventRelays } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayIcon } from "../icons";
-import { RelayFavicon } from "../relay-favicon";
 import useSubject from "../../hooks/use-subject";
+import { RelayIconStack } from "../relay-icon-stack";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 
-export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
+export type NoteRelaysProps = {
   event: NostrEvent;
 };
 
-export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
+export const NoteRelays = memo(({ event }: NoteRelaysProps) => {
   const isMobile = useIsMobile();
   const eventRelays = useSubject(getEventRelays(event.id));
-  const { isOpen, onOpen } = useDisclosure();
 
-  return isOpen || !isMobile ? (
-    <Flex alignItems="center" gap="-4">
-      {eventRelays.map((url) => (
-        <RelayFavicon key={url} relay={url} size="2xs" title={url} />
-      ))}
-    </Flex>
-  ) : (
-    <IconButton icon={<RelayIcon />} size="xs" aria-label="Relays" onClick={onOpen} variant="link" />
-  );
+  return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={isMobile ? 4 : undefined} />;
 });
