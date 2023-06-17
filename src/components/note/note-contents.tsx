@@ -18,6 +18,7 @@ import {
   renderSpotifyUrl,
   renderTidalUrl,
   renderVideoUrl,
+  embedEmoji,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
@@ -47,6 +48,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
   content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
+  content = embedEmoji(content, event);
 
   return content;
 }
