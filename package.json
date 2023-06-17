@@ -16,6 +16,7 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "bech32": "^2.0.0",
+    "cheerio": "^1.0.0-rc.12",
     "dayjs": "^1.11.8",
     "framer-motion": "^7.10.3",
     "idb": "^7.1.1",

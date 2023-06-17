@@ -29,7 +29,7 @@ async function validateInvidiousUrl(url?: string) {
 }
 
 export default function PrivacySettings() {
-  const { youtubeRedirect, twitterRedirect, redditRedirect, updateSettings } = useAppSettings();
+  const { youtubeRedirect, twitterRedirect, redditRedirect, corsProxy, updateSettings } = useAppSettings();
 
   const { register, handleSubmit, formState } = useForm({
     mode: "onBlur",
@@ -37,6 +37,7 @@ export default function PrivacySettings() {
       youtubeRedirect,
       twitterRedirect,
       redditRedirect,
+      corsProxy,
     },
   });
 
@@ -109,6 +110,19 @@ export default function PrivacySettings() {
                 {", "}
                 <Link href="https://codeberg.org/teddit/teddit#instances" isExternal color="blue.500">
                   Teddit instances
+                </Link>
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl isInvalid={!!formState.errors.corsProxy}>
+              <FormLabel>CORS Proxy</FormLabel>
+              <Input type="url" placeholder="https://cors.example.com/" {...register("corsProxy")} />
+              {formState.errors.corsProxy && <FormErrorMessage>{formState.errors.corsProxy.message}</FormErrorMessage>}
+              <FormHelperText>
+                This is used as a fallback when verifying NIP-05 ids and fetching open-graph metadata. URL to an
+                instance of{" "}
+                <Link href="https://github.com/Rob--W/cors-anywhere" isExternal color="blue.500">
+                  cors-anywhere
                 </Link>
               </FormHelperText>
             </FormControl>

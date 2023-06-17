@@ -3,6 +3,7 @@ import appSettings from "../../services/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useTrusted } from "../note/trust";
+import OpenGraphCard from "../open-graph-card";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
@@ -44,9 +45,5 @@ export function renderVideoUrl(match: URL) {
 }
 
 export function renderGenericUrl(match: URL) {
-  return (
-    <Link color="blue.500" href={match.toString()} target="_blank" isExternal>
-      {match.toString()}
-    </Link>
-  );
+  return <OpenGraphCard url={match} maxW="lg" />;
 }

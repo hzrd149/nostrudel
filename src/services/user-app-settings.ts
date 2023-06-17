@@ -26,6 +26,7 @@ export type AppSettings = {
   zapAmounts: number[];
   primaryColor: string;
   imageProxy: string;
+  corsProxy: string;
   showContentWarning: boolean;
   twitterRedirect?: string;
   redditRedirect?: string;
@@ -43,6 +44,7 @@ export const defaultSettings: AppSettings = {
   zapAmounts: [50, 200, 500, 1000],
   primaryColor: "#8DB600",
   imageProxy: "",
+  corsProxy: "",
   showContentWarning: true,
   twitterRedirect: undefined,
   redditRedirect: undefined,
