@@ -63,15 +63,8 @@ class UserAppSettings {
   requester: CachedPubkeyEventRequester;
   constructor() {
     this.requester = new CachedPubkeyEventRequester(30078, "user-app-data", DTAG);
-    this.requester.readCache = this.readCache;
-    this.requester.writeCache = this.writeCache;
-  }
-
-  readCache(pubkey: string) {
-    return db.get("settings", pubkey);
-  }
-  writeCache(pubkey: string, event: NostrEvent) {
-    return db.put("settings", event);
+    this.requester.readCache = (pubkey) => db.get("settings", pubkey);
+    this.requester.writeCache = (pubkey, event) => db.put("settings", event);
   }
 
   private parsedSubjects = new SuperMap<string, PersistentSubject<AppSettings>>(
