@@ -29,7 +29,9 @@ async function validateInvidiousUrl(url?: string) {
 async function validateCorsProxy(url?: string) {
   if (!url) return true;
   try {
-    const res = await fetch(new URL("/https://example.com", url));
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(new URL("/https://example.com", url), { signal: controller.signal });
     return res.ok || "Cant reach instance";
   } catch (e) {
     return "Cant reach instance";

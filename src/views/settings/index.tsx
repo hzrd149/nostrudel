@@ -13,7 +13,7 @@ export default function SettingsView() {
   const { updateSettings, ...settings } = useAppSettings();
 
   const form = useForm({
-    mode: "onBlur",
+    mode: "all",
     values: settings,
   });
 
@@ -42,7 +42,7 @@ export default function SettingsView() {
           </Link>
           <Button
             ml="auto"
-            isLoading={form.formState.isLoading}
+            isLoading={form.formState.isLoading || form.formState.isValidating}
             isDisabled={!form.formState.isDirty}
             colorScheme="brand"
             type="submit"
