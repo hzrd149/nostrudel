@@ -91,6 +91,8 @@ export default function SearchView() {
   const handleSearchText = (text: string) => {
     if (text.startsWith("nostr:") || text.startsWith("web+nostr:") || safeDecode(search)) {
       navigate({ pathname: "/l/" + encodeURIComponent(text) }, { replace: true });
+    } else if (text.trim().match(/^#(\w+)/i)) {
+      navigate({ pathname: "/t/" + text.toLowerCase().trim().replace(/^#/, "") });
     } else {
       setSearchParams({ q: text }, { replace: true });
     }
