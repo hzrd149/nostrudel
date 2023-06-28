@@ -14,14 +14,25 @@ import {
 } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { AppSettings } from "../../services/user-app-settings";
+import { safeUrl } from "../../helpers/parse";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
   try {
     const res = await fetch(new URL("/api/v1/stats", url));
-    return res.ok || "Catch reach instance";
+    return res.ok || "Cant reach instance";
   } catch (e) {
-    return "Catch reach instance";
+    return "Cant reach instance";
+  }
+}
+
+async function validateCorsProxy(url?: string) {
+  if (!url) return true;
+  try {
+    const res = await fetch(new URL("/https://example.com", url));
+    return res.ok || "Cant reach instance";
+  } catch (e) {
+    return "Cant reach instance";
   }
 }
 
@@ -42,7 +53,11 @@ export default function PrivacySettings() {
         <Flex direction="column" gap="4">
           <FormControl isInvalid={!!formState.errors.twitterRedirect}>
             <FormLabel>Nitter instance</FormLabel>
-            <Input type="url" placeholder="https://nitter.net/" {...register("twitterRedirect")} />
+            <Input
+              type="url"
+              placeholder="https://nitter.net/"
+              {...register("twitterRedirect", { setValueAs: safeUrl })}
+            />
             {formState.errors.twitterRedirect && (
               <FormErrorMessage>{formState.errors.twitterRedirect.message}</FormErrorMessage>
             )}
@@ -61,6 +76,7 @@ export default function PrivacySettings() {
               placeholder="Invidious instance url"
               {...register("youtubeRedirect", {
                 validate: validateInvidiousUrl,
+                setValueAs: safeUrl,
               })}
             />
             {formState.errors.youtubeRedirect && (
@@ -76,7 +92,11 @@ export default function PrivacySettings() {
 
           <FormControl isInvalid={!!formState.errors.redditRedirect}>
             <FormLabel>Teddit / Libreddit instance</FormLabel>
-            <Input type="url" placeholder="https://nitter.net/" {...register("redditRedirect")} />
+            <Input
+              type="url"
+              placeholder="https://nitter.net/"
+              {...register("redditRedirect", { setValueAs: safeUrl })}
+            />
             {formState.errors.redditRedirect && (
               <FormErrorMessage>{formState.errors.redditRedirect.message}</FormErrorMessage>
             )}
@@ -98,7 +118,11 @@ export default function PrivacySettings() {
 
           <FormControl isInvalid={!!formState.errors.corsProxy}>
             <FormLabel>CORS Proxy</FormLabel>
-            <Input type="url" placeholder="https://cors.example.com/" {...register("corsProxy")} />
+            <Input
+              type="url"
+              placeholder="https://cors.example.com/"
+              {...register("corsProxy", { setValueAs: safeUrl, validate: validateCorsProxy })}
+            />
             {formState.errors.corsProxy && <FormErrorMessage>{formState.errors.corsProxy.message}</FormErrorMessage>}
             <FormHelperText>
               This is used as a fallback when verifying NIP-05 ids and fetching open-graph metadata. URL to an instance
