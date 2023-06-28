@@ -25,6 +25,7 @@ import dnsIdentityService from "../../services/dns-identity";
 import signingService from "../../services/signing";
 import userMetadataService from "../../services/user-metadata";
 import { DraftNostrEvent } from "../../types/nostr-event";
+import lnurlMetadataService from "../../services/lnurl-metadata";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -160,9 +161,14 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
               autoComplete="off"
               isDisabled={isSubmitting}
               {...register("lightningAddress", {
-                validate: (v) => {
-                  if (v && !isLNURL(v) && !isLightningAddress(v)) {
+                validate: async (v) => {
+                  if (!v) return true;
+                  if (!isLNURL(v) && !isLightningAddress(v)) {
                     return "Must be lightning address or LNURL";
+                  }
+                  const metadata = await lnurlMetadataService.requestMetadata(v);
+                  if (!metadata) {
+                    return "Incorrect or broken LNURL address";
                   }
                   return true;
                 },
