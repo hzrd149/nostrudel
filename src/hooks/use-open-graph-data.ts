@@ -9,5 +9,5 @@ export default function useOpenGraphData(url: URL) {
       return extractMetaTags(html);
     } catch (e) {}
     return null;
-  }, [url]);
+  }, [url.toString()]);
 }

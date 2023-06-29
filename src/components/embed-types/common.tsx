@@ -45,5 +45,13 @@ export function renderVideoUrl(match: URL) {
 }
 
 export function renderGenericUrl(match: URL) {
+  return (
+    <Link href={match.toString()} isExternal color="blue.500">
+      {match.toString()}
+    </Link>
+  );
+}
+
+export function renderOpenGraphUrl(match: URL) {
   return <OpenGraphCard url={match} maxW="lg" />;
 }

@@ -11,7 +11,6 @@ import {
   embedNostrHashtags,
   renderWavlakeUrl,
   renderYoutubeUrl,
-  renderGenericUrl,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
@@ -19,6 +18,7 @@ import {
   renderTidalUrl,
   renderVideoUrl,
   embedEmoji,
+  renderOpenGraphUrl,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
@@ -38,7 +38,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
     renderTidalUrl,
     renderImageUrl,
     renderVideoUrl,
-    renderGenericUrl,
+    renderOpenGraphUrl,
   ]);
 
   // bitcoin
