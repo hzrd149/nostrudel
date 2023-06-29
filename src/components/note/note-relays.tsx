@@ -1,76 +1,18 @@
-import { memo, useCallback, useState } from "react";
-import {
-  Button,
-  IconButton,
-  IconButtonProps,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Text,
-  Flex,
-  PopoverFooter,
-} from "@chakra-ui/react";
-import { nostrPostAction } from "../../classes/nostr-post-action";
-import { getEventRelays, handleEventFromRelay } from "../../services/event-relays";
+import { memo } from "react";
+import { IconButtonProps } from "@chakra-ui/react";
+import { getEventRelays } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayIcon, SearchIcon } from "../icons";
-import { RelayFavicon } from "../relay-favicon";
-import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
-import relayPoolService from "../../services/relay-pool";
 import useSubject from "../../hooks/use-subject";
+import { RelayIconStack } from "../relay-icon-stack";
+import { useIsMobile } from "../../hooks/use-is-mobile";
 
-export type NoteRelaysProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
+export type NoteRelaysProps = {
   event: NostrEvent;
 };
 
-export const NoteRelays = memo(({ event, ...props }: NoteRelaysProps) => {
+export const NoteRelays = memo(({ event }: NoteRelaysProps) => {
+  const isMobile = useIsMobile();
   const eventRelays = useSubject(getEventRelays(event.id));
-  const writeRelays = useWriteRelayUrls();
 
-  const [broadcasting, setBroadcasting] = useState(false);
-  const broadcast = useCallback(() => {
-    const missingRelays = writeRelays.filter((url) => !eventRelays.includes(url));
-    if (missingRelays.length === 0) {
-      return;
-    }
-
-    setBroadcasting(true);
-    const { results, onComplete } = nostrPostAction(missingRelays, event, 5000);
-
-    results.subscribe((result) => {
-      if (result.status) {
-        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
-      }
-    });
-
-    onComplete.then(() => setBroadcasting(false));
-  }, []);
-
-  return (
-    <Popover isLazy>
-      <PopoverTrigger>
-        <IconButton title="Note Relays" icon={<RelayIcon />} aria-label="Note Relays" {...props} />
-      </PopoverTrigger>
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverBody>
-          {eventRelays.map((url) => (
-            <Flex alignItems="center" key={url}>
-              <RelayFavicon relay={url} size="2xs" mr="2" />
-              <Text isTruncated>{url}</Text>
-            </Flex>
-          ))}
-        </PopoverBody>
-        <PopoverFooter>
-          <Flex gap="2">
-            <Button size="xs" onClick={broadcast} isLoading={broadcasting} leftIcon={<RelayIcon />}>
-              Broadcast
-            </Button>
-          </Flex>
-        </PopoverFooter>
-      </PopoverContent>
-    </Popover>
-  );
+  return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={isMobile ? 4 : undefined} />;
 });

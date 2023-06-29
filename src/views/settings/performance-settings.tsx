@@ -1,3 +1,4 @@
+import { useFormContext } from "react-hook-form";
 import {
   Flex,
   FormControl,
@@ -11,16 +12,13 @@ import {
   FormHelperText,
   Input,
   Link,
+  FormErrorMessage,
 } from "@chakra-ui/react";
-import useAppSettings from "../../hooks/use-app-settings";
-import { useEffect, useState } from "react";
+import { AppSettings } from "../../services/user-app-settings";
+import { safeUrl } from "../../helpers/parse";
 
 export default function PerformanceSettings() {
-  const { autoShowMedia, proxyUserMedia, showReactions, showSignatureVerification, updateSettings, imageProxy } =
-    useAppSettings();
-
-  const [proxyInput, setProxyInput] = useState(imageProxy);
-  useEffect(() => setProxyInput(imageProxy), [imageProxy]);
+  const { register, formState } = useFormContext<AppSettings>();
 
   return (
     <AccordionItem>
@@ -39,11 +37,7 @@ export default function PerformanceSettings() {
               <FormLabel htmlFor="proxy-user-media" mb="0">
                 Proxy user media
               </FormLabel>
-              <Switch
-                id="proxy-user-media"
-                isChecked={proxyUserMedia}
-                onChange={(v) => updateSettings({ proxyUserMedia: v.target.checked })}
-              />
+              <Switch id="proxy-user-media" {...register("proxyUserMedia")} />
             </Flex>
             <FormHelperText>
               <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
@@ -52,24 +46,17 @@ export default function PerformanceSettings() {
             </FormHelperText>
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor="image-proxy" mb="0">
+            <FormLabel htmlFor="imageProxy" mb="0">
               Image proxy service
             </FormLabel>
             <Input
-              id="image-proxy"
+              id="imageProxy"
               type="url"
-              value={proxyInput}
-              onChange={(e) => setProxyInput(e.target.value)}
-              onBlur={() => {
-                try {
-                  const url = proxyInput ? new URL(proxyInput).toString() : "";
-                  if (url !== imageProxy) {
-                    updateSettings({ imageProxy: url });
-                    setProxyInput(url);
-                  }
-                } catch (e) {}
-              }}
+              {...register("imageProxy", {
+                setValueAs: (v) => safeUrl(v) || v,
+              })}
             />
+            {formState.errors.imageProxy && <FormErrorMessage>{formState.errors.imageProxy.message}</FormErrorMessage>}
             <FormHelperText>
               <span>
                 A URL to an instance of{" "}
@@ -81,40 +68,28 @@ export default function PerformanceSettings() {
           </FormControl>
           <FormControl>
             <Flex alignItems="center">
-              <FormLabel htmlFor="auto-show-embeds" mb="0">
-                Automatically show media
+              <FormLabel htmlFor="autoShowMedia" mb="0">
+                Show embeds
               </FormLabel>
-              <Switch
-                id="auto-show-embeds"
-                isChecked={autoShowMedia}
-                onChange={(v) => updateSettings({ autoShowMedia: v.target.checked })}
-              />
+              <Switch id="autoShowMedia" {...register("autoShowMedia")} />
             </Flex>
-            <FormHelperText>Disabled: Images and videos will show expandable buttons</FormHelperText>
+            <FormHelperText>Disabled: Embeds will show an expandable button</FormHelperText>
           </FormControl>
           <FormControl>
             <Flex alignItems="center">
-              <FormLabel htmlFor="show-reactions" mb="0">
+              <FormLabel htmlFor="showReactions" mb="0">
                 Show reactions
               </FormLabel>
-              <Switch
-                id="show-reactions"
-                isChecked={showReactions}
-                onChange={(v) => updateSettings({ showReactions: v.target.checked })}
-              />
+              <Switch id="showReactions" {...register("showReactions")} />
             </Flex>
             <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
           </FormControl>
           <FormControl>
             <Flex alignItems="center">
-              <FormLabel htmlFor="show-sig-verify" mb="0">
+              <FormLabel htmlFor="showSignatureVerification" mb="0">
                 Show signature verification
               </FormLabel>
-              <Switch
-                id="show-sig-verify"
-                isChecked={showSignatureVerification}
-                onChange={(v) => updateSettings({ showSignatureVerification: v.target.checked })}
-              />
+              <Switch id="showSignatureVerification" {...register("showSignatureVerification")} />
             </Flex>
             <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
           </FormControl>

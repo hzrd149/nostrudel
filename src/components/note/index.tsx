@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import moment from "moment";
+import dayjs from "dayjs";
 import {
   Box,
   ButtonGroup,
@@ -21,7 +21,6 @@ import { NoteRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import { convertTimestampToDate } from "../../helpers/date";
 import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
@@ -63,7 +62,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
-                {moment(convertTimestampToDate(event.created_at)).fromNow()}
+                {dayjs.unix(event.created_at).fromNow()}
               </NoteLink>
             </Flex>
           </CardHeader>
@@ -90,7 +89,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
                 target="_blank"
               />
             )}
-            <NoteRelays event={event} size="sm" variant="link" />
+            <NoteRelays event={event} />
             <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
           </CardFooter>
         </Card>

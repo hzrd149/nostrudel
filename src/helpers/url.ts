@@ -1,4 +1,4 @@
-const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
+export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
 
 export function normalizeRelayUrl(relayUrl: string) {
   const url = new URL(relayUrl);

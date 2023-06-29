@@ -11,13 +11,14 @@ import {
   embedNostrHashtags,
   renderWavlakeUrl,
   renderYoutubeUrl,
-  renderGenericUrl,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
   renderSpotifyUrl,
   renderTidalUrl,
   renderVideoUrl,
+  embedEmoji,
+  renderOpenGraphUrl,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
@@ -37,7 +38,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
     renderTidalUrl,
     renderImageUrl,
     renderVideoUrl,
-    renderGenericUrl,
+    renderOpenGraphUrl,
   ]);
 
   // bitcoin
@@ -47,6 +48,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
   content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
+  content = embedEmoji(content, event);
 
   return content;
 }

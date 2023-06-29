@@ -4,3 +4,4 @@ export * from "./music";
 export * from "./common";
 export * from "./youtube";
 export * from "./nostr";
+export * from "./emoji";

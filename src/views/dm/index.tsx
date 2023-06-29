@@ -13,11 +13,10 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
-import { convertTimestampToDate } from "../../helpers/date";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
@@ -39,9 +38,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
         <UserAvatar pubkey={pubkey} />
         <Flex direction="column" gap="1" overflow="hidden" flex={1}>
           <Text flex={1}>{getUserDisplayName(metadata, pubkey)}</Text>
-          {messages[0] && (
-            <Text flexShrink={0}>{moment(convertTimestampToDate(messages[0].created_at)).fromNow()}</Text>
-          )}
+          {messages[0] && <Text flexShrink={0}>{dayjs.unix(messages[0].created_at).fromNow()}</Text>}
         </Flex>
       </CardBody>
       <LinkOverlay as={RouterLink} to={`/dm/${npub ?? pubkey}`} />
@@ -51,7 +48,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
 
 function DirectMessagesPage() {
   const isMobile = useIsMobile();
-  const [from, setFrom] = useState(moment().subtract(2, "days"));
+  const [from, setFrom] = useState(dayjs().subtract(2, "days"));
   const conversations = useSubject(directMessagesService.conversations);
 
   useEffect(() => directMessagesService.loadDateRange(from), [from]);
@@ -59,7 +56,7 @@ function DirectMessagesPage() {
   const [loading, setLoading] = useState(false);
   const loadMore = () => {
     setLoading(true);
-    setFrom((date) => moment(date).subtract(2, "days"));
+    setFrom((date) => dayjs(date).subtract(2, "days"));
     setTimeout(() => {
       setLoading(false);
     }, 1000);

@@ -1,6 +1,6 @@
 import { Button, Flex, FormControl, FormLabel, Spinner, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Note } from "../../components/note";
 import { isReply, truncatedId } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -28,8 +28,8 @@ function FollowingTabBody() {
   const { events, loading, loadMore } = useTimelineLoader(
     `${truncatedId(account.pubkey)}-following-posts`,
     readRelays,
-    { authors: following, kinds: [1, 6], since: moment().subtract(2, "hour").unix() },
-    { pageSize: moment.duration(2, "hour").asSeconds(), enabled: following.length > 0 }
+    { authors: following, kinds: [1, 6], since: dayjs().subtract(2, "hour").unix() },
+    { pageSize: 60 * 60, enabled: following.length > 0 }
   );
 
   const timeline = showReplies ? events : events.filter((e) => !isReply(e));

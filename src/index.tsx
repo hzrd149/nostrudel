@@ -1,14 +1,20 @@
-import moment from "moment";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { Providers } from "./providers";
 
+// setup dayjs
+import dayjs from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTimePlugin);
+
 // register nostr: protocol handler
-try {
-  navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
-} catch (e) {
-  console.log("Failed to register handler");
-  console.log(e);
+if (import.meta.env.PROD) {
+  try {
+    navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
+  } catch (e) {
+    console.log("Failed to register handler");
+    console.log(e);
+  }
 }
 
 const element = document.getElementById("root");
@@ -19,7 +25,3 @@ root.render(
     <App />
   </Providers>
 );
-
-if (import.meta.env.DEV) {
-  window.moment = moment;
-}

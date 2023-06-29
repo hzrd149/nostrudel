@@ -1,9 +1,8 @@
 import { Button, Card, CardBody, CardHeader, Flex, Spinner, Text } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import { memo } from "react";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { convertTimestampToDate } from "../../helpers/date";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -18,7 +17,7 @@ const Kind1Notification = ({ event }: { event: NostrEvent }) => (
         <UserAvatar pubkey={event.pubkey} size="sm" />
         <UserLink pubkey={event.pubkey} />
         <NoteLink noteId={event.id} color="current" ml="auto">
-          {moment(convertTimestampToDate(event.created_at)).fromNow()}
+          {dayjs.unix(event.created_at).fromNow()}
         </NoteLink>
       </Flex>
     </CardHeader>
@@ -45,7 +44,7 @@ function NotificationsPage() {
       "#p": [account.pubkey],
       kinds: [1],
     },
-    { pageSize: moment.duration(1, "day").asSeconds() }
+    { pageSize: 60 * 60 * 24 }
   );
 
   const timeline = events

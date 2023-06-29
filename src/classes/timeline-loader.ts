@@ -1,10 +1,10 @@
-import moment from "moment";
+import dayjs from "dayjs";
+import { utils } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import { PersistentSubject } from "./subject";
-import { utils } from "nostr-tools";
 
 type Options = {
   name?: string;
@@ -22,7 +22,7 @@ export class TimelineLoader {
 
   private seenEvents = new Set<string>();
   private subscription: NostrMultiSubscription;
-  private opts: Options = { pageSize: moment.duration(1, "hour").asSeconds(), startLimit: 10 };
+  private opts: Options = { pageSize: 60*60, startLimit: 10 };
 
   constructor(relays: string[], query: NostrQuery, opts?: TimelineLoaderOptions) {
     this.relays = relays;
@@ -53,7 +53,7 @@ export class TimelineLoader {
   }
 
   private getPageDates(page: number) {
-    const start = this.events.value[0]?.created_at ?? moment().unix();
+    const start = this.events.value[0]?.created_at ?? dayjs().unix();
     const until = start - page * this.opts.pageSize;
     const since = until - this.opts.pageSize;
 

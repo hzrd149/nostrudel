@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { SuperMap } from "../classes/super-map";
 import db from "./db";
 
@@ -121,7 +121,7 @@ class RelayScoreboardService {
   // relayTimeouts = new SuperMap<string, IncidentMeasure>((relay) => new IncidentMeasure(relay));
 
   prune() {
-    const cutOff = moment().subtract(1, "week").toDate();
+    const cutOff = dayjs().subtract(1, "week").toDate();
     for (const [relay, measure] of this.relayResponseTimes) measure.prune(cutOff);
     for (const [relay, measure] of this.relayEjectTime) measure.prune(cutOff);
     for (const [relay, measure] of this.relayConnectionTime) measure.prune(cutOff);

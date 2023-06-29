@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { nostrPostAction } from "../classes/nostr-post-action";
 import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
@@ -79,7 +79,7 @@ class ClientRelayService {
       kind: 10002,
       tags: rTags,
       content: "",
-      created_at: moment().unix(),
+      created_at: dayjs().unix(),
     };
 
     const newRelayUrls = newRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);

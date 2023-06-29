@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   AccordionItem,
@@ -7,7 +8,6 @@ import {
   AccordionIcon,
   ButtonGroup,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { clearCacheData, deleteDatabase } from "../../services/db";
 
 export default function DatabaseSettings() {

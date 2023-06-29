@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import RepostNote from "../../components/repost-note";
@@ -8,10 +8,11 @@ import userTimelineService from "../../services/user-timeline";
 import { useEffect, useMemo } from "react";
 import useSubject from "../../hooks/use-subject";
 import { useMount, useUnmount } from "react-use";
+import { RelayIconStack } from "../../components/relay-icon-stack";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const contextRelays = useAdditionalRelayContext();
+  const readRelays = useAdditionalRelayContext();
 
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
   const { isOpen: hideReposts, onToggle: toggleReposts } = useDisclosure();
@@ -22,8 +23,8 @@ const UserNotesTab = () => {
   const loading = useSubject(timeline.loading);
 
   useEffect(() => {
-    timeline.setRelays(contextRelays);
-  }, [timeline, contextRelays.join("|")]);
+    timeline.setRelays(readRelays);
+  }, [timeline, readRelays.join("|")]);
 
   useMount(() => timeline.open());
   useUnmount(() => timeline.close());
@@ -45,7 +46,7 @@ const UserNotesTab = () => {
         <FormLabel htmlFor="reposts" mb="0">
           Reposts
         </FormLabel>
-        <Box flexGrow={1} />
+        <RelayIconStack ml="auto" relays={readRelays} direction="row-reverse" mr="4" maxRelays={4} />
       </FormControl>
       {filteredEvents.map((event) =>
         event.kind === 6 ? (

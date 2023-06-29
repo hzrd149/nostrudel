@@ -11,18 +11,12 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import appSettings, { replaceSettings } from "../../services/app-settings";
-import useSubject from "../../hooks/use-subject";
 import { LightningIcon } from "../../components/icons";
-import { LightningPayMode } from "../../services/user-app-settings";
-import useAppSettings from "../../hooks/use-app-settings";
+import { AppSettings } from "../../services/user-app-settings";
+import { useFormContext } from "react-hook-form";
 
 export default function LightningSettings() {
-  const { lightningPayMode, zapAmounts, updateSettings } = useAppSettings();
-
-  const [zapInput, setZapInput] = useState(zapAmounts.join(","));
-  useEffect(() => setZapInput(zapAmounts.join(",")), [zapAmounts.join(",")]);
+  const { register } = useFormContext<AppSettings>();
 
   return (
     <AccordionItem>
@@ -37,14 +31,10 @@ export default function LightningSettings() {
       <AccordionPanel>
         <Flex direction="column" gap="4">
           <FormControl>
-            <FormLabel htmlFor="lightning-payment-mode" mb="0">
+            <FormLabel htmlFor="lightningPayMode" mb="0">
               Payment mode
             </FormLabel>
-            <Select
-              id="lightning-payment-mode"
-              value={lightningPayMode}
-              onChange={(e) => updateSettings({ lightningPayMode: e.target.value as LightningPayMode })}
-            >
+            <Select id="lightningPayMode" {...register("lightningPayMode")}>
               <option value="prompt">Prompt</option>
               <option value="webln">WebLN</option>
               <option value="external">External</option>
@@ -64,18 +54,20 @@ export default function LightningSettings() {
             </FormLabel>
             <Input
               id="zap-amounts"
-              value={zapInput}
-              onChange={(e) => setZapInput(e.target.value)}
-              onBlur={() => {
-                const amounts = zapInput
-                  .split(",")
-                  .map((v) => parseInt(v))
-                  .filter(Boolean)
-                  .sort((a, b) => a - b);
-
-                updateSettings({ zapAmounts: amounts });
-                setZapInput(amounts.join(","));
-              }}
+              autoComplete="off"
+              {...register("zapAmounts", {
+                setValueAs: (value: number[] | string) => {
+                  if (Array.isArray(value)) {
+                    return Array.from(value).join(",");
+                  } else {
+                    return value
+                      .split(",")
+                      .map((v) => parseInt(v))
+                      .filter(Boolean)
+                      .sort((a, b) => a - b);
+                  }
+                },
+              })}
             />
             <FormHelperText>
               <span>Comma separated list of custom zap amounts</span>

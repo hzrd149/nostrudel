@@ -1,6 +1,6 @@
 import React from "react";
 import { useOutletContext } from "react-router-dom";
-import moment from "moment";
+import dayjs from "dayjs";
 import {
   Accordion,
   AccordionButton,
@@ -35,7 +35,6 @@ import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { convertTimestampToDate } from "../../helpers/date";
 import userTrustedStatsService from "../../services/user-trusted-stats";
 import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
@@ -172,7 +171,7 @@ export default function UserAboutTab() {
                 <StatLabel>Following</StatLabel>
                 <StatNumber>{contacts ? readablizeSats(contacts.contacts.length) : "Unknown"}</StatNumber>
                 {contacts && (
-                  <StatHelpText>Updated {moment(convertTimestampToDate(contacts.created_at)).fromNow()}</StatHelpText>
+                  <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>
                 )}
               </Stat>
 

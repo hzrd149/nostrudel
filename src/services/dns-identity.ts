@@ -1,5 +1,6 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import db from "./db";
+import { fetchWithCorsFallback } from "../helpers/cors";
 
 function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
@@ -26,7 +27,9 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
 }
 
 async function fetchAllIdentities(domain: string) {
-  const json = await fetch(`//${domain}/.well-known/nostr.json`).then((res) => res.json() as Promise<IdentityJson>);
+  const json = await fetchWithCorsFallback(`//${domain}/.well-known/nostr.json`).then(
+    (res) => res.json() as Promise<IdentityJson>
+  );
 
   await addToCache(domain, json);
 }
@@ -35,7 +38,7 @@ async function fetchIdentity(address: string) {
   const { name, domain } = parseAddress(address);
   if (!name || !domain) throw new Error("invalid address");
 
-  const json = await fetch(`https://${domain}/.well-known/nostr.json?name=${name}`)
+  const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
     .then((res) => res.json() as Promise<IdentityJson>)
     .then((json) => {
       // convert all keys in names, and relays to lower case
@@ -62,7 +65,7 @@ async function fetchIdentity(address: string) {
 const inMemoryCache = new Map<string, DnsIdentity>();
 
 async function addToCache(domain: string, json: IdentityJson) {
-  const now = moment().unix();
+  const now = dayjs().unix();
   const transaction = db.transaction("dnsIdentifiers", "readwrite");
 
   for (const name of Object.keys(json.names)) {
@@ -98,7 +101,7 @@ async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
     "dnsIdentifiers",
     "updated",
-    IDBKeyRange.upperBound(moment().subtract(1, "day").unix())
+    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
   );
 
   for (const pubkey of keys) {

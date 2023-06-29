@@ -12,7 +12,7 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import moment from "moment";
+import dayjs from "dayjs";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
@@ -34,12 +34,12 @@ function emptyDraft(): DraftNostrEvent {
     content: "",
     kind: 1,
     tags: [],
-    created_at: moment().unix(),
+    created_at: dayjs().unix(),
   };
 }
 
 function finalizeNote(draft: DraftNostrEvent) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags), created_at: moment().unix() };
+  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags), created_at: dayjs().unix() };
 
   // replace all occurrences of @npub and @note
   while (true) {
