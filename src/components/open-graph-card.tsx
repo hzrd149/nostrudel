@@ -15,7 +15,7 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
   return (
     <LinkBox borderRadius="lg" borderWidth={1} overflow="hidden" {...props}>
       {data.ogImage?.map((ogImage) => (
-        <Image src={ogImage.url} mx="auto" />
+        <Image key={ogImage.url} src={ogImage.url} mx="auto" />
       ))}
 
       <Box m="2" mt="4">
