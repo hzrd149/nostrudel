@@ -1,7 +1,7 @@
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
 import db from "./db";
-import { nip04, signEvent, getEventHash, getPublicKey } from "nostr-tools";
+import { nip04, getPublicKey, finishEvent } from "nostr-tools";
 
 const decryptedKeys = new Map<string, string>();
 
@@ -85,12 +85,7 @@ class SigningService {
     } else if (account?.secKey) {
       const secKey = await this.decryptSecKey(account);
       const tmpDraft = { ...draft, pubkey: getPublicKey(secKey) };
-      const signature = signEvent(tmpDraft, secKey);
-      const event: NostrEvent = {
-        ...tmpDraft,
-        id: getEventHash(tmpDraft),
-        sig: signature,
-      };
+      const event = finishEvent(tmpDraft, secKey) as NostrEvent;
 
       return event;
     } else throw new Error("No signing method");
