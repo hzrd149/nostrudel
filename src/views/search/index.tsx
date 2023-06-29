@@ -12,10 +12,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAsync } from "react-use";
-import { LightningIcon, QrCodeIcon } from "../../components/icons";
+import { ClipboardIcon, LightningIcon, QrCodeIcon } from "../../components/icons";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import ZapModal from "../../components/zap-modal";
@@ -98,6 +98,10 @@ export default function SearchView() {
     }
   };
 
+  const readClipboard = useCallback(async () => {
+    handleSearchText(await navigator.clipboard.readText());
+  }, []);
+
   // set the search when the form is submitted
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -122,6 +126,9 @@ export default function SearchView() {
       <form onSubmit={handleSubmit}>
         <Flex gap="2">
           <IconButton onClick={openScanner} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
+          {!!navigator.clipboard.readText && (
+            <IconButton onClick={readClipboard} icon={<ClipboardIcon />} aria-label="Read clipboard" />
+          )}
           <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} />
           <Button type="submit" isLoading={loading}>
             Search
