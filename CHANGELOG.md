@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.13.1
+
+### Patch Changes
+
+- 4bdae99: Only fetch open graph metadata for html urls
+
 ## 0.13.0
 
 ### Minor Changes
