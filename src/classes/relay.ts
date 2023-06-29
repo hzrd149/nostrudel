@@ -94,10 +94,6 @@ export class Relay {
       }
 
       this.sendQueued();
-
-      if (import.meta.env.DEV) {
-        console.info(`Relay: ${this.url} connected`);
-      }
     };
     this.ws.onclose = () => {
       this.onClose.next(this);
@@ -105,10 +101,6 @@ export class Relay {
       if (!this.intentionalClose && this.ejectTimer) {
         this.ejectTimer();
         this.ejectTimer = undefined;
-      }
-
-      if (import.meta.env.DEV) {
-        console.info(`Relay: ${this.url} disconnected`);
       }
     };
     this.ws.onmessage = this.handleMessage.bind(this);
@@ -144,9 +136,6 @@ export class Relay {
 
   private sendQueued() {
     if (this.connected) {
-      if (import.meta.env.DEV) {
-        console.info(`Relay: ${this.url} sending ${this.queue.length} queued messages`);
-      }
       for (const message of this.queue) {
         this.send(message);
       }
