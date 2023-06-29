@@ -1,5 +1,24 @@
 # nostrudel
 
+## 0.13.0
+
+### Minor Changes
+
+- 644c53e: Handle hashtags in search view
+- 0cc4059: Fetch open graph metadata for links
+- 2eeb79c: Display custom emojis
+- 214487e: Add relay icons to notes
+- f383903: replace momentjs with dayjs
+- 5d19861: Add multi relay selection to hashtag view
+- 39ef920: Improve editing and saving app settings
+- 0cc4059: Add CORS proxy
+
+### Patch Changes
+
+- 9936c25: Add validation check to LNURL address in profile edit view
+- 7f162ac: Fix user app settings being cached
+- 17d5160: Use nevent when quote reposting note
+
 ## 0.12.0
 
 ### Minor Changes
