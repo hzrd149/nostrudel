@@ -114,4 +114,14 @@ describe("Embeds", () => {
       cy.findByTitle("Tidal List Embed").should("be.visible");
     });
   });
+
+  describe("Emoji", () => {
+    it("should embed emojis", () => {
+      cy.visit(
+        "#/n/nevent1qqsdj7k47uh4z0ypl2m29lvd4ar9zpf6dcy7ls0q6g6qctnxfj5n3pcpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqdyqlpq"
+      );
+
+      cy.findByRole("img", { name: /pepeD/i }).should("be.visible");
+    });
+  });
 });

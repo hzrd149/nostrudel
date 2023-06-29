@@ -35,7 +35,7 @@ export async function loadSettings() {
       appSettings.next(account.localSettings);
     }
   } else {
-    const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls());
+    const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), true);
     appSettings.connect(subject);
   }
 }

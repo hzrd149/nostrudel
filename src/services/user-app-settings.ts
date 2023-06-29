@@ -26,6 +26,7 @@ export type AppSettings = {
   zapAmounts: number[];
   primaryColor: string;
   imageProxy: string;
+  corsProxy: string;
   showContentWarning: boolean;
   twitterRedirect?: string;
   redditRedirect?: string;
@@ -43,6 +44,7 @@ export const defaultSettings: AppSettings = {
   zapAmounts: [50, 200, 500, 1000],
   primaryColor: "#8DB600",
   imageProxy: "",
+  corsProxy: "",
   showContentWarning: true,
   twitterRedirect: undefined,
   redditRedirect: undefined,
@@ -61,15 +63,8 @@ class UserAppSettings {
   requester: CachedPubkeyEventRequester;
   constructor() {
     this.requester = new CachedPubkeyEventRequester(30078, "user-app-data", DTAG);
-    this.requester.readCache = this.readCache;
-    this.requester.writeCache = this.writeCache;
-  }
-
-  readCache(pubkey: string) {
-    return db.get("settings", pubkey);
-  }
-  writeCache(pubkey: string, event: NostrEvent) {
-    return db.put("settings", event);
+    this.requester.readCache = (pubkey) => db.get("settings", pubkey);
+    this.requester.writeCache = (pubkey, event) => db.put("settings", event);
   }
 
   private parsedSubjects = new SuperMap<string, PersistentSubject<AppSettings>>(

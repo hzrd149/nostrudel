@@ -5,6 +5,8 @@ import { RelayConfig, RelayMode } from "../classes/relay";
 import accountService from "../services/account";
 import { Kind, nip19 } from "nostr-tools";
 import { matchNostrLink } from "./regexp";
+import { getSharableNoteId } from "./nip19";
+import relayScoreboardService from "../services/relay-scoreboard";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return event.kind === 1 && !!getReferences(event).replyId;
@@ -154,13 +156,14 @@ export function buildReply(event: NostrEvent, account = accountService.current.v
 }
 
 export function buildRepost(event: NostrEvent): DraftNostrEvent {
-  const relay = getEventRelays(event.id).value?.[0] ?? "";
+  const relays = getEventRelays(event.id).value;
+  const topRelay = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
 
   const tags: NostrEvent["tags"] = [];
-  tags.push(["e", event.id, relay]);
+  tags.push(["e", event.id, topRelay]);
 
   return {
-    kind: 6, //Kind.Repost
+    kind: Kind.Repost,
     tags,
     content: "",
     created_at: dayjs().unix(),
@@ -168,15 +171,12 @@ export function buildRepost(event: NostrEvent): DraftNostrEvent {
 }
 
 export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
-  const relay = getEventRelays(event.id).value?.[0] ?? "";
-
-  const tags: NostrEvent["tags"] = [];
-  tags.push(["e", event.id, relay, "mention"]);
+  const nevent = getSharableNoteId(event.id);
 
   return {
     kind: Kind.Text,
-    tags,
-    content: "#[0]",
+    tags: [],
+    content: "nostr:" + nevent,
     created_at: dayjs().unix(),
   };
 }

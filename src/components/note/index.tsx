@@ -89,7 +89,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
                 target="_blank"
               />
             )}
-            <NoteRelays event={event} size="sm" variant="link" />
+            <NoteRelays event={event} />
             <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
           </CardFooter>
         </Card>

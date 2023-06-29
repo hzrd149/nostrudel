@@ -5,12 +5,17 @@ import { Bech32Prefix, getSharableNoteId, normalizeToBech32 } from "../../helper
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RepostIcon, TrashIcon } from "../icons";
+import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RelayIcon, RepostIcon, TrashIcon } from "../icons";
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { buildAppSelectUrl } from "../../helpers/nostr-apps";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
+import { useCallback } from "react";
+import { nostrPostAction } from "../../classes/nostr-post-action";
+import clientRelaysService from "../../services/client-relays";
+import { handleEventFromRelay } from "../../services/event-relays";
+import relayPoolService from "../../services/relay-pool";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -21,6 +26,18 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
 
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
   const noteId = normalizeToBech32(event.id, Bech32Prefix.Note);
+
+  const broadcast = useCallback(() => {
+    const missingRelays = clientRelaysService.getWriteUrls();
+
+    const { results, onComplete } = nostrPostAction(missingRelays, event, 5000);
+
+    results.subscribe((result) => {
+      if (result.status) {
+        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+      }
+    });
+  }, []);
 
   return (
     <>
@@ -47,6 +64,9 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
             Delete Note
           </MenuItem>
         )}
+        <MenuItem onClick={broadcast} icon={<RelayIcon />}>
+          Broadcast
+        </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>

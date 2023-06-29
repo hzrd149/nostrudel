@@ -25,7 +25,7 @@ export default function GlobalTab() {
     `global`,
     selectedRelay ? [selectedRelay] : [],
     { kinds: [1] },
-    { pageSize: 60 * 10 }
+    { pageSize: 60*10 }
   );
 
   const timeline = showReplies ? events : events.filter((e) => !isReply(e));

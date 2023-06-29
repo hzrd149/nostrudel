@@ -56,4 +56,14 @@ describe("Search", () => {
       });
     }
   });
+
+  describe("Hashtag", () => {
+    it("should redirect to hashtag view", () => {
+      cy.visit("#/search");
+      cy.findByRole("searchbox").type("#bitcoin").type("{enter}");
+
+      cy.url().should("contain", "/t/bitcoin");
+      cy.contains("#bitcoin");
+    });
+  });
 });
