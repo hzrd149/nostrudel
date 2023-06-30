@@ -1,5 +1,16 @@
 # nostrudel
 
+## 0.14.0
+
+### Minor Changes
+
+- c036a9a: Fix all pop-in issues when loading timelines (rebuild timeline loader to use IntersectionObserver to correctly set cursor)
+- b23fe91: Rebuild timeline loader class
+
+### Patch Changes
+
+- b23fe91: Remove broken discover tab
+
 ## 0.13.1
 
 ### Patch Changes
