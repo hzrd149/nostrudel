@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Flex,
   Heading,
   IconButton,
@@ -40,6 +41,7 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { getUserDisplayName } from "../../helpers/user-metadata";
+import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -59,11 +61,9 @@ export default function UserAboutTab() {
   const metadata = useUserMetadata(pubkey, contextRelays);
   const contacts = useUserContacts(pubkey, contextRelays);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
+  const nprofile = useSharableProfileId(pubkey);
 
   const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);
-
-  const account = useCurrentAccount();
-  const isSelf = pubkey === account?.pubkey;
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
 
@@ -259,6 +259,17 @@ export default function UserAboutTab() {
           </AccordionItem>
         )}
       </Accordion>
+      <Flex gap="2">
+        <Button
+          as={Link}
+          href={`https://nosta.me/${nprofile}`}
+          leftIcon={<Image src="https://nosta.me/images/favicon-32x32.png" w="1.2em" />}
+          rightIcon={<ExternalLinkIcon />}
+          isExternal
+        >
+          Nosta.me page
+        </Button>
+      </Flex>
     </Flex>
   );
 }
