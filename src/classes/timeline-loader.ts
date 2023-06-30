@@ -14,6 +14,8 @@ class RelayTimelineLoader {
   relay: string;
   query: NostrQuery;
   blockSize = BLOCK_SIZE;
+  private name?: string;
+  private requestId = 0;
 
   loading = false;
   events: NostrEvent[] = [];
@@ -23,19 +25,20 @@ class RelayTimelineLoader {
   onEvent = new Subject<NostrEvent>();
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrQuery) {
+  constructor(relay: string, query: NostrQuery, name?: string) {
     this.relay = relay;
     this.query = query;
+    this.name = name;
   }
 
   loadNextBlock() {
     this.loading = true;
     const query: NostrQuery = { ...this.query, limit: this.blockSize };
     if (this.events[this.events.length - 1]) {
-      query.until = this.events[this.events.length - 1].created_at;
+      query.until = this.events[this.events.length - 1].created_at + 1;
     }
 
-    const request = new NostrRequest([this.relay]);
+    const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
 
     let gotEvents = 0;
     request.onEvent.subscribe((e) => {
@@ -114,7 +117,7 @@ export class TimelineLoader {
   private createLoaders() {
     for (const relay of this.relays) {
       if (!this.relayTimelineLoaders.has(relay)) {
-        const loader = new RelayTimelineLoader(relay, this.query);
+        const loader = new RelayTimelineLoader(relay, this.query, this.subscription.name);
         this.relayTimelineLoaders.set(relay, loader);
         loader.onEvent.subscribe(this.handleEvent, this);
         loader.onBlockFinish.subscribe(this.updateLoading, this);
@@ -141,6 +144,7 @@ export class TimelineLoader {
     this.createLoaders();
 
     this.subscription.setRelays(relays);
+    this.updateComplete();
   }
   setQuery(query: NostrQuery) {
     this.removeLoaders();
@@ -151,6 +155,7 @@ export class TimelineLoader {
     this.seenEvents.clear();
 
     this.createLoaders();
+    this.updateComplete();
 
     // update the subscription
     this.subscription.forgetEvents();
@@ -200,7 +205,6 @@ export class TimelineLoader {
     if (this.loading.value) this.loading.next(false);
   }
   private updateComplete() {
-    if (this.complete.value) return;
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (!loader.complete) {
         this.complete.next(false);

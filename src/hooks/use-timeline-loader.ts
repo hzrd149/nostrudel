@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useUnmount } from "react-use";
 import { TimelineLoader } from "../classes/timeline-loader";
 import { NostrQuery } from "../types/nostr-query";
-import useSubject from "./use-subject";
 import { NostrEvent } from "../types/nostr-event";
 
 type Options = {
@@ -45,14 +44,5 @@ export function useTimelineLoader(key: string, relays: string[], query: NostrQue
     loader.close();
   });
 
-  const timeline = useSubject(loader.timeline);
-  const loading = useSubject(loader.loading);
-  const complete = useSubject(loader.complete);
-
-  return {
-    loader,
-    timeline,
-    loading,
-    complete,
-  };
+  return loader;
 }

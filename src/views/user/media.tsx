@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Box, Flex, Grid, IconButton } from "@chakra-ui/react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useMount, useUnmount } from "react-use";
@@ -11,12 +11,40 @@ import { getSharableNoteId } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import userTimelineService from "../../services/user-timeline";
 import { NostrEvent } from "../../types/nostr-event";
-import LoadMoreButton from "../../components/load-more-button";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
+type ImagePreview = { eventId: string; src: string; index: number };
 const matchAllImages = new RegExp(matchImageUrls, "ig");
 
-const UserMediaTab = () => {
+const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   const navigate = useNavigate();
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, image.eventId);
+
+  return (
+    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
+      <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
+      <IconButton
+        icon={<ExternalLinkIcon />}
+        aria-label="Open note"
+        position="absolute"
+        right="2"
+        top="2"
+        size="sm"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigate(`/n/${getSharableNoteId(image.eventId)}`);
+        }}
+      />
+    </ImageGalleryLink>
+  );
+});
+
+const UserMediaTab = () => {
   const isMobile = useIsMobile();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
@@ -29,7 +57,6 @@ const UserMediaTab = () => {
   }, [timeline, eventFilter]);
 
   const events = useSubject(timeline.timeline);
-  const loading = useSubject(timeline.loading);
 
   useEffect(() => {
     timeline.setRelays(contextRelays);
@@ -53,38 +80,23 @@ const UserMediaTab = () => {
     return images;
   }, [events]);
 
-  return (
-    <Flex direction="column" gap="2" px="2" pb="8" h="full" overflowY="auto">
-      <ImageGalleryProvider>
-        <Grid templateColumns={`repeat(${isMobile ? 2 : 5}, 1fr)`} gap="4">
-          {images.map((image) => (
-            <ImageGalleryLink key={image.eventId + "-" + image.index} href={image.src} position="relative">
-              <Box
-                aspectRatio={1}
-                backgroundImage={`url(${image.src})`}
-                backgroundSize="cover"
-                backgroundPosition="center"
-              />
-              <IconButton
-                icon={<ExternalLinkIcon />}
-                aria-label="Open note"
-                position="absolute"
-                right="2"
-                top="2"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  navigate(`/n/${getSharableNoteId(image.eventId)}`);
-                }}
-              />
-            </ImageGalleryLink>
-          ))}
-        </Grid>
-      </ImageGalleryProvider>
+  const scrollBox = useRef<HTMLDivElement | null>(null);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
-      <LoadMoreButton timeline={timeline} />
-    </Flex>
+  return (
+    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+      <Flex direction="column" gap="2" px="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+        <ImageGalleryProvider>
+          <Grid templateColumns={`repeat(${isMobile ? 2 : 5}, 1fr)`} gap="4">
+            {images.map((image) => (
+              <ImagePreview key={image.eventId + "-" + image.index} image={image} />
+            ))}
+          </Grid>
+        </ImageGalleryProvider>
+
+        <TimelineActionAndStatus timeline={timeline} />
+      </Flex>
+    </IntersectionObserverProvider>
   );
 };
 

@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Select, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
@@ -14,10 +14,17 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import LoadMoreButton from "../../components/load-more-button";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import useSubject from "../../hooks/use-subject";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const { isOpen, onToggle } = useDisclosure();
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useRegisterIntersectionEntity(ref, zapEvent.id);
+
   try {
     const { request, payment, eventId } = parseZapEvent(zapEvent);
 
@@ -31,6 +38,7 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
         gap="2"
         flexDirection="column"
         flexShrink={0}
+        ref={ref}
       >
         <Flex gap="2" alignItems="center" wrap="wrap">
           <UserAvatarLink pubkey={request.pubkey} size="xs" />
@@ -82,39 +90,46 @@ const UserZapsTab = () => {
     [filter]
   );
 
-  const { timeline, loader } = useTimelineLoader(
+  const timeline = useTimelineLoader(
     `${truncatedId(pubkey)}-zaps`,
     relays,
     { "#p": [pubkey], kinds: [9735] },
     { eventFilter }
   );
 
-  return (
-    <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto">
-      <Flex gap="2" alignItems="center" wrap="wrap">
-        <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
-          <option value="both">Note & Profile Zaps</option>
-          <option value="note">Note Zaps</option>
-          <option value="profile">Profile Zaps</option>
-        </Select>
-        {timeline.length && (
-          <Flex gap="2">
-            <LightningIcon color="yellow.400" />
-            <Text>
-              {readablizeSats(totalZaps(timeline) / 1000)} sats in the last{" "}
-              {dayjs.unix(timeline[timeline.length - 1].created_at).fromNow(true)}
-            </Text>
-          </Flex>
-        )}
-      </Flex>
-      {timeline.map((event) => (
-        <ErrorBoundary key={event.id}>
-          <Zap zapEvent={event} />
-        </ErrorBoundary>
-      ))}
+  const zaps = useSubject(timeline.timeline);
 
-      <LoadMoreButton timeline={loader} />
-    </Flex>
+  const scrollBox = useRef<HTMLDivElement | null>(null);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+      <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+        <Flex gap="2" alignItems="center" wrap="wrap">
+          <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
+            <option value="both">Note & Profile Zaps</option>
+            <option value="note">Note Zaps</option>
+            <option value="profile">Profile Zaps</option>
+          </Select>
+          {zaps.length && (
+            <Flex gap="2">
+              <LightningIcon color="yellow.400" />
+              <Text>
+                {readablizeSats(totalZaps(zaps) / 1000)} sats in the last{" "}
+                {dayjs.unix(zaps[zaps.length - 1].created_at).fromNow(true)}
+              </Text>
+            </Flex>
+          )}
+        </Flex>
+        {zaps.map((event) => (
+          <ErrorBoundary key={event.id}>
+            <Zap zapEvent={event} />
+          </ErrorBoundary>
+        ))}
+
+        <TimelineActionAndStatus timeline={timeline} />
+      </Flex>
+    </IntersectionObserverProvider>
   );
 };
 

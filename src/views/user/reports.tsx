@@ -6,7 +6,8 @@ import { filterTagsByContentRefs, truncatedId } from "../../helpers/nostr-event"
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import LoadMoreButton from "../../components/load-more-button";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import useSubject from "../../hooks/use-subject";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];
@@ -38,18 +39,20 @@ export default function UserReportsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const { timeline, loader } = useTimelineLoader(`${truncatedId(pubkey)}-reports`, contextRelays, {
+  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-reports`, contextRelays, {
     authors: [pubkey],
     kinds: [1984],
   });
 
+  const events = useSubject(timeline.timeline);
+
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
-      {timeline.map((report) => (
+      {events.map((report) => (
         <ReportEvent key={report.id} report={report} />
       ))}
 
-      <LoadMoreButton timeline={loader} />
+      <TimelineActionAndStatus timeline={timeline} />
     </Flex>
   );
 }

@@ -1,6 +1,5 @@
-import { Button, Flex, FormControl, FormLabel, Spinner, Switch } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
-import { useInterval } from "react-use";
 import { Note } from "../../components/note";
 import { isReply, truncatedId } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
@@ -13,8 +12,10 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import RepostNote from "../../components/repost-note";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { NostrEvent } from "../../types/nostr-event";
-import useScrollPosition from "../../hooks/use-scroll-position";
-import LoadMoreButton from "../../components/load-more-button";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useSubject from "../../hooks/use-subject";
 
 function FollowingTabBody() {
   const account = useCurrentAccount()!;
@@ -27,9 +28,6 @@ function FollowingTabBody() {
     showReplies ? setSearch({}) : setSearch({ replies: "show" });
   };
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
-  const scrollPosition = useScrollPosition(scrollBox);
-
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (!showReplies && isReply(event)) return false;
@@ -39,44 +37,47 @@ function FollowingTabBody() {
   );
 
   const following = contacts?.contacts || [];
-  const { timeline, loader } = useTimelineLoader(
+  const timeline = useTimelineLoader(
     `${truncatedId(account.pubkey)}-following`,
     readRelays,
     { authors: following, kinds: [1, 6] },
     { enabled: following.length > 0, eventFilter }
   );
 
-  useInterval(() => {
-    if (scrollPosition > 0.9) loader.loadMore();
-  }, 1000);
+  const events = useSubject(timeline.timeline);
+
+  const scrollBox = useRef<HTMLDivElement | null>(null);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <Flex py="4" direction="column" gap="2" overflowY="auto" overflowX="hidden" ref={scrollBox}>
-      <Button
-        variant="outline"
-        leftIcon={<AddIcon />}
-        onClick={() => openModal()}
-        isDisabled={account.readonly}
-        flexShrink={0}
-      >
-        New Post
-      </Button>
-      <FormControl display="flex" alignItems="center">
-        <FormLabel htmlFor="show-replies" mb="0">
-          Show Replies
-        </FormLabel>
-        <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} />
-      </FormControl>
-      {timeline.map((event) =>
-        event.kind === 6 ? (
-          <RepostNote key={event.id} event={event} maxHeight={600} />
-        ) : (
-          <Note key={event.id} event={event} maxHeight={600} />
-        )
-      )}
+    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+      <Flex py="4" direction="column" gap="2" overflowY="auto" overflowX="hidden" ref={scrollBox}>
+        <Button
+          variant="outline"
+          leftIcon={<AddIcon />}
+          onClick={() => openModal()}
+          isDisabled={account.readonly}
+          flexShrink={0}
+        >
+          New Post
+        </Button>
+        <FormControl display="flex" alignItems="center">
+          <FormLabel htmlFor="show-replies" mb="0">
+            Show Replies
+          </FormLabel>
+          <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} />
+        </FormControl>
+        {events.map((event) =>
+          event.kind === 6 ? (
+            <RepostNote key={event.id} event={event} maxHeight={600} />
+          ) : (
+            <Note key={event.id} event={event} maxHeight={600} />
+          )
+        )}
 
-      <LoadMoreButton timeline={loader} />
-    </Flex>
+        <TimelineActionAndStatus timeline={timeline} />
+      </Flex>
+    </IntersectionObserverProvider>
   );
 }
 

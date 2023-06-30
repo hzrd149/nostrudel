@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react";
-import { createHashRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createHashRouter, Outlet, RouterProvider, ScrollRestoration, useLocation } from "react-router-dom";
 import { Spinner, useColorMode } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
@@ -37,13 +37,18 @@ import UserAboutTab from "./views/user/about";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => (
-  <Page>
-    <Suspense fallback={<Spinner />}>
-      <Outlet />
-    </Suspense>
-  </Page>
-);
+const RootPage = () => {
+  console.log(useLocation());
+
+  return (
+    <Page>
+      <ScrollRestoration />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
+    </Page>
+  );
+};
 
 const router = createHashRouter([
   {
