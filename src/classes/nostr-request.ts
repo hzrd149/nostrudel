@@ -21,8 +21,8 @@ export class NostrRequest {
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
-  constructor(relayUrls: string[], timeout?: number) {
-    this.id = `request-${lastId++}`;
+  constructor(relayUrls: string[], timeout?: number, name?: string) {
+    this.id = name || `request-${lastId++}`;
     this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {

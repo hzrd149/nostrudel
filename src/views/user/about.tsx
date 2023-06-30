@@ -155,7 +155,7 @@ export default function UserAboutTab() {
         )}
       </Flex>
 
-      <Accordion allowToggle allowMultiple>
+      <Accordion allowMultiple>
         <AccordionItem>
           <h2>
             <AccordionButton>
@@ -170,9 +170,7 @@ export default function UserAboutTab() {
               <Stat>
                 <StatLabel>Following</StatLabel>
                 <StatNumber>{contacts ? readablizeSats(contacts.contacts.length) : "Unknown"}</StatNumber>
-                {contacts && (
-                  <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>
-                )}
+                {contacts && <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>}
               </Stat>
 
               {stats && (

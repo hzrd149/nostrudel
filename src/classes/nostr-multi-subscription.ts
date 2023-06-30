@@ -70,10 +70,6 @@ export class NostrMultiSubscription {
 
     this.subscribeToRelays();
 
-    if (import.meta.env.DEV) {
-      console.info(`Subscription: "${this.name || this.id}" opened`);
-    }
-
     return this;
   }
   setQuery(query: NostrQuery) {
@@ -125,10 +121,6 @@ export class NostrMultiSubscription {
     this.seenEvents.clear();
     // unsubscribe from relay messages
     this.unsubscribeFromRelays();
-
-    if (import.meta.env.DEV) {
-      console.info(`Subscription: "${this.name || this.id}" closed`);
-    }
 
     return this;
   }

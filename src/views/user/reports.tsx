@@ -1,4 +1,4 @@
-import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { NoteLink } from "../../components/note-link";
 import { UserLink } from "../../components/user-link";
@@ -6,6 +6,8 @@ import { filterTagsByContentRefs, truncatedId } from "../../helpers/nostr-event"
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import useSubject from "../../hooks/use-subject";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];
@@ -37,29 +39,20 @@ export default function UserReportsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const {
-    events: reports,
-    loading,
-    loadMore,
-  } = useTimelineLoader(
-    `${truncatedId(pubkey)}-reports`,
-    contextRelays,
-    { authors: [pubkey], kinds: [1984] },
-    { pageSize: 60 * 60 * 24 * 7 }
-  );
+  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-reports`, contextRelays, {
+    authors: [pubkey],
+    kinds: [1984],
+  });
+
+  const events = useSubject(timeline.timeline);
 
   return (
     <Flex direction="column" gap="2" pr="2" pl="2">
-      {reports.map((report) => (
+      {events.map((report) => (
         <ReportEvent key={report.id} report={report} />
       ))}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
-      ) : (
-        <Button onClick={() => loadMore()} flexShrink={0}>
-          Load More
-        </Button>
-      )}
+
+      <TimelineActionAndStatus timeline={timeline} />
     </Flex>
   );
 }

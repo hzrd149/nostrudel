@@ -1,4 +1,5 @@
-import { Box, Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
+import { useRef } from "react";
+import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 import singleEventService from "../services/single-event";
 import { isETag, NostrEvent } from "../types/nostr-event";
@@ -12,6 +13,7 @@ import { TrustProvider } from "./note/trust";
 import { safeJson } from "../helpers/parse";
 import { verifySignature } from "nostr-tools";
 import { useReadRelayUrls } from "../hooks/use-client-relays";
+import { useRegisterIntersectionEntity } from "../providers/intersection-observer";
 
 function parseHardcodedNoteContent(event: NostrEvent): NostrEvent | null {
   const json = safeJson(event.content, null);
@@ -20,6 +22,9 @@ function parseHardcodedNoteContent(event: NostrEvent): NostrEvent | null {
 }
 
 export default function RepostNote({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
+
   const hardCodedNote = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
@@ -40,7 +45,7 @@ export default function RepostNote({ event, maxHeight }: { event: NostrEvent; ma
 
   return (
     <TrustProvider event={event}>
-      <Flex gap="2" direction="column">
+      <Flex gap="2" direction="column" ref={ref}>
         <Flex gap="2" alignItems="center" pl="1">
           <UserAvatar pubkey={event.pubkey} size="xs" />
           <Heading size="sm" display="inline" isTruncated whiteSpace="pre">

@@ -215,7 +215,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
   fields
     .filter((item) => item.multiple && item.fieldName && item.fieldName.match("(ogImage|ogVideo|twitter|musicSong).*"))
     .forEach((item) => {
-			// @ts-ignore
+      // @ts-ignore
       delete ogObject[item.fieldName];
     });
 

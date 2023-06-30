@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import dayjs from "dayjs";
 import {
   Box,
@@ -34,6 +34,7 @@ import { ExternalLinkIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "./trust";
 import { NoteLink } from "../note-link";
+import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -44,13 +45,17 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
   const isMobile = useIsMobile();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
 
+  // if there is a parent intersection observer, register this card
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
+
   // find mostr external link
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr"), [event]);
 
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
-        <Card variant={variant}>
+        <Card variant={variant} ref={ref}>
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
               <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />

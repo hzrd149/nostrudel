@@ -17,7 +17,7 @@ import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import dayjs from "dayjs";
 import { DislikeIcon, LightningIcon, LikeIcon } from "../icons";
-import { parseZapNote } from "../../helpers/zaps";
+import { parseZapEvent } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
@@ -50,7 +50,7 @@ const ReactionEvent = React.memo(({ event }: { event: NostrEvent }) => (
 const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
   const isMobile = useIsMobile();
   try {
-    const { payment, request } = parseZapNote(event);
+    const { payment, request } = parseZapEvent(event);
 
     if (!payment.amount) return null;
 

@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react";
-import { createHashRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createHashRouter, Outlet, RouterProvider, ScrollRestoration, useLocation } from "react-router-dom";
 import { Spinner, useColorMode } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
@@ -10,7 +10,6 @@ import SettingsView from "./views/settings";
 import LoginView from "./views/login";
 import ProfileView from "./views/profile";
 import FollowingTab from "./views/home/following-tab";
-import DiscoverTab from "./views/home/discover-tab";
 import GlobalTab from "./views/home/global-tab";
 import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
@@ -38,13 +37,18 @@ import UserAboutTab from "./views/user/about";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => (
-  <Page>
-    <Suspense fallback={<Spinner />}>
-      <Outlet />
-    </Suspense>
-  </Page>
-);
+const RootPage = () => {
+  console.log(useLocation());
+
+  return (
+    <Page>
+      <ScrollRestoration />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
+    </Page>
+  );
+};
 
 const router = createHashRouter([
   {
@@ -102,7 +106,6 @@ const router = createHashRouter([
         children: [
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
-          { path: "discover", element: <DiscoverTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },

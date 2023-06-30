@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { Box, Button, Flex, Grid, IconButton, Spinner } from "@chakra-ui/react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { Box, Flex, Grid, IconButton } from "@chakra-ui/react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useMount, useUnmount } from "react-use";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
@@ -10,21 +10,53 @@ import { ExternalLinkIcon } from "../../components/icons";
 import { getSharableNoteId } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import userTimelineService from "../../services/user-timeline";
+import { NostrEvent } from "../../types/nostr-event";
+import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
+type ImagePreview = { eventId: string; src: string; index: number };
 const matchAllImages = new RegExp(matchImageUrls, "ig");
 
-const UserMediaTab = () => {
+const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   const navigate = useNavigate();
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, image.eventId);
+
+  return (
+    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
+      <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
+      <IconButton
+        icon={<ExternalLinkIcon />}
+        aria-label="Open note"
+        position="absolute"
+        right="2"
+        top="2"
+        size="sm"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigate(`/n/${getSharableNoteId(image.eventId)}`);
+        }}
+      />
+    </ImageGalleryLink>
+  );
+});
+
+const UserMediaTab = () => {
   const isMobile = useIsMobile();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
   const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
 
-  const events = useSubject(timeline.events);
-  const loading = useSubject(timeline.loading);
+  const eventFilter = useCallback((e: NostrEvent) => e.kind === 1 && !!e.content.match(matchAllImages), []);
+  useEffect(() => {
+    timeline.setFilter(eventFilter);
+  }, [timeline, eventFilter]);
 
-  const filteredEvents = useMemo(() => events.filter((e) => e.kind === 1), [events]);
+  const events = useSubject(timeline.timeline);
 
   useEffect(() => {
     timeline.setRelays(contextRelays);
@@ -36,7 +68,7 @@ const UserMediaTab = () => {
   const images = useMemo(() => {
     var images: { eventId: string; src: string; index: number }[] = [];
 
-    for (const event of filteredEvents) {
+    for (const event of events) {
       const urls = event.content.matchAll(matchAllImages);
 
       let i = 0;
@@ -46,45 +78,25 @@ const UserMediaTab = () => {
     }
 
     return images;
-  }, [filteredEvents]);
+  }, [events]);
+
+  const scrollBox = useRef<HTMLDivElement | null>(null);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <Flex direction="column" gap="2" px="2" pb="8" h="full" overflowY="auto">
-      <ImageGalleryProvider>
-        <Grid templateColumns={`repeat(${isMobile ? 2 : 5}, 1fr)`} gap="4">
-          {images.map((image) => (
-            <ImageGalleryLink key={image.eventId + "-" + image.index} href={image.src} position="relative">
-              <Box
-                aspectRatio={1}
-                backgroundImage={`url(${image.src})`}
-                backgroundSize="cover"
-                backgroundPosition="center"
-              />
-              <IconButton
-                icon={<ExternalLinkIcon />}
-                aria-label="Open note"
-                position="absolute"
-                right="2"
-                top="2"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  navigate(`/n/${getSharableNoteId(image.eventId)}`);
-                }}
-              />
-            </ImageGalleryLink>
-          ))}
-        </Grid>
-      </ImageGalleryProvider>
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
-      ) : (
-        <Button onClick={() => timeline.loadMore()} flexShrink={0}>
-          Load More
-        </Button>
-      )}
-    </Flex>
+    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+      <Flex direction="column" gap="2" px="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+        <ImageGalleryProvider>
+          <Grid templateColumns={`repeat(${isMobile ? 2 : 5}, 1fr)`} gap="4">
+            {images.map((image) => (
+              <ImagePreview key={image.eventId + "-" + image.index} image={image} />
+            ))}
+          </Grid>
+        </ImageGalleryProvider>
+
+        <TimelineActionAndStatus timeline={timeline} />
+      </Flex>
+    </IntersectionObserverProvider>
   );
 };
 
