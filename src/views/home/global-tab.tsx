@@ -1,7 +1,6 @@
 import { useCallback, useRef } from "react";
 import { Flex, FormControl, FormLabel, Select, Switch, useDisclosure } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
-import { Note } from "../../components/note";
 import { unique } from "../../helpers/array";
 import { isReply } from "../../helpers/nostr-event";
 import { useAppTitle } from "../../hooks/use-app-title";
@@ -9,9 +8,9 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import GenericNoteTimeline from "../../components/generric-note-timeline";
 
 export default function GlobalTab() {
   useAppTitle("global");
@@ -42,8 +41,6 @@ export default function GlobalTab() {
     { eventFilter }
   );
 
-  const events = useSubject(timeline.timeline);
-
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
@@ -72,10 +69,8 @@ export default function GlobalTab() {
             </FormLabel>
           </FormControl>
         </Flex>
-        {events.map((event) => (
-          <Note key={event.id} event={event} maxHeight={600} />
-        ))}
 
+        <GenericNoteTimeline timeline={timeline} />
         <TimelineActionAndStatus timeline={timeline} />
       </Flex>
     </IntersectionObserverProvider>

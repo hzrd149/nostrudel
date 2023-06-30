@@ -14,22 +14,7 @@ import TimelineActionAndStatus from "../../components/timeline-action-and-status
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-
-const NoteTimeline = React.memo(({ timeline }: { timeline: TimelineLoader }) => {
-  const notes = useSubject(timeline.timeline);
-
-  return (
-    <>
-      {notes.map((note) =>
-        note.kind === 6 ? (
-          <RepostNote key={note.id} event={note} maxHeight={1200} />
-        ) : (
-          <Note key={note.id} event={note} maxHeight={1200} />
-        )
-      )}
-    </>
-  );
-});
+import GenericNoteTimeline from "../../components/generric-note-timeline";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -76,8 +61,7 @@ const UserNotesTab = () => {
           <RelayIconStack ml="auto" relays={readRelays} direction="row-reverse" mr="4" maxRelays={4} />
         </FormControl>
 
-        <NoteTimeline timeline={timeline} />
-
+        <GenericNoteTimeline timeline={timeline} />
         <TimelineActionAndStatus timeline={timeline} />
       </Flex>
     </IntersectionObserverProvider>

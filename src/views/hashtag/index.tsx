@@ -19,7 +19,6 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isReply } from "../../helpers/nostr-event";
-import { Note } from "../../components/note";
 import { CheckIcon, EditIcon, RelayIcon } from "../../components/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import RelaySelectionModal from "./relay-selection-modal";
@@ -27,7 +26,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
+import GenericNoteTimeline from "../../components/generric-note-timeline";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -68,8 +67,6 @@ export default function HashTagView() {
     { kinds: [1], "#t": [hashtag] },
     { eventFilter }
   );
-
-  const events = useSubject(timeline.timeline);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -118,10 +115,8 @@ export default function HashTagView() {
               </FormLabel>
             </FormControl>
           </Flex>
-          {events.map((event) => (
-            <Note key={event.id} event={event} maxHeight={600} />
-          ))}
 
+          <GenericNoteTimeline timeline={timeline} />
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>
       </IntersectionObserverProvider>
