@@ -24,7 +24,7 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
             {data.ogTitle ?? data.dcTitle}
           </LinkOverlay>
         </Heading>
-        <Text>{data.ogDescription || data.dcDescription}</Text>
+        <Text isTruncated>{data.ogDescription || data.dcDescription}</Text>
         {link}
       </Box>
     </LinkBox>
