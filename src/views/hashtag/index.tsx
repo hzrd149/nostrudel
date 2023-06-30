@@ -27,6 +27,7 @@ import TimelineActionAndStatus from "../../components/timeline-action-and-status
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import GenericNoteTimeline from "../../components/generric-note-timeline";
+import { unique } from "../../helpers/array";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -51,6 +52,11 @@ export default function HashTagView() {
 
   const defaultRelays = useReadRelayUrls();
   const [selectedRelays, setSelectedRelays] = useState(defaultRelays);
+
+  // add the default relays to the selection when they load
+  useEffect(() => {
+    setSelectedRelays((a) => unique([...a, ...defaultRelays]));
+  }, [defaultRelays.join("|")]);
 
   const relaysModal = useDisclosure();
   const { isOpen: showReplies, onToggle } = useDisclosure();
