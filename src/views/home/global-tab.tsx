@@ -33,9 +33,8 @@ export default function GlobalTab() {
     },
     [showReplies]
   );
-
   const timeline = useTimelineLoader(
-    [`global`, ...selectedRelay].join(","),
+    [`global`, selectedRelay].join(","),
     selectedRelay ? [selectedRelay] : [],
     { kinds: [1] },
     { eventFilter }

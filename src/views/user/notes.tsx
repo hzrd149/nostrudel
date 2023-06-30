@@ -1,20 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { Flex, FormControl, FormLabel, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { Note } from "../../components/note";
-import RepostNote from "../../components/repost-note";
-import { isReply, isRepost } from "../../helpers/nostr-event";
+import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import userTimelineService from "../../services/user-timeline";
-import useSubject from "../../hooks/use-subject";
-import { useMount, useUnmount } from "react-use";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
-import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import GenericNoteTimeline from "../../components/generric-note-timeline";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -23,9 +18,6 @@ const UserNotesTab = () => {
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
   const { isOpen: hideReposts, onToggle: toggleReposts } = useDisclosure();
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
-
-  const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (!showReplies && isReply(event)) return false;
@@ -34,16 +26,17 @@ const UserNotesTab = () => {
     },
     [showReplies, hideReposts]
   );
-  useEffect(() => {
-    timeline.setFilter(eventFilter);
-  }, [timeline, eventFilter]);
-  useEffect(() => {
-    timeline.setRelays(readRelays);
-  }, [timeline, readRelays.join("|")]);
+  const timeline = useTimelineLoader(
+    truncatedId(pubkey) + "-notes",
+    readRelays,
+    {
+      authors: [pubkey],
+      kinds: [1, 6],
+    },
+    { eventFilter }
+  );
 
-  useMount(() => timeline.open());
-  useUnmount(() => timeline.close());
-
+  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (

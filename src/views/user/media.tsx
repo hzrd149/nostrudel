@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Box, Flex, Grid, IconButton } from "@chakra-ui/react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { useMount, useUnmount } from "react-use";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { matchImageUrls } from "../../helpers/regexp";
 import { useIsMobile } from "../../hooks/use-is-mobile";
@@ -9,11 +8,12 @@ import { ImageGalleryLink, ImageGalleryProvider } from "../../components/image-g
 import { ExternalLinkIcon } from "../../components/icons";
 import { getSharableNoteId } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
-import userTimelineService from "../../services/user-timeline";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { truncatedId } from "../../helpers/nostr-event";
 
 type ImagePreview = { eventId: string; src: string; index: number };
 const matchAllImages = new RegExp(matchImageUrls, "ig");
@@ -49,21 +49,18 @@ const UserMediaTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
-
   const eventFilter = useCallback((e: NostrEvent) => e.kind === 1 && !!e.content.match(matchAllImages), []);
-  useEffect(() => {
-    timeline.setFilter(eventFilter);
-  }, [timeline, eventFilter]);
+  const timeline = useTimelineLoader(
+    truncatedId(pubkey) + "-notes",
+    contextRelays,
+    {
+      authors: [pubkey],
+      kinds: [1, 6],
+    },
+    { eventFilter }
+  );
 
   const events = useSubject(timeline.timeline);
-
-  useEffect(() => {
-    timeline.setRelays(contextRelays);
-  }, [timeline, contextRelays.join("|")]);
-
-  useMount(() => timeline.open());
-  useUnmount(() => timeline.close());
 
   const images = useMemo(() => {
     var images: { eventId: string; src: string; index: number }[] = [];

@@ -37,18 +37,14 @@ import UserAboutTab from "./views/user/about";
 // code split search view because QrScanner library is 400kB
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => {
-  console.log(useLocation());
-
-  return (
-    <Page>
-      <ScrollRestoration />
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  );
-};
+const RootPage = () => (
+  <Page>
+    <ScrollRestoration />
+    <Suspense fallback={<Spinner />}>
+      <Outlet />
+    </Suspense>
+  </Page>
+);
 
 const router = createHashRouter([
   {
