@@ -1,7 +1,7 @@
 import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { readablizeSats } from "../../helpers/bolt11";
-import { parseZapNote, totalZaps } from "../../helpers/zaps";
+import { parseZapEvent, totalZaps } from "../../helpers/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -19,7 +19,7 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
     const parsed = [];
     for (const zap of zaps) {
       try {
-        parsed.push(parseZapNote(zap));
+        parsed.push(parseZapEvent(zap));
       } catch (e) {}
     }
     return parsed;

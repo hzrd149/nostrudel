@@ -9,7 +9,6 @@ import {
   FormLabel,
   IconButton,
   Input,
-  Spinner,
   Switch,
   useDisclosure,
   useEditableControls,
@@ -22,8 +21,10 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isReply } from "../../helpers/nostr-event";
 import { Note } from "../../components/note";
 import { CheckIcon, EditIcon, RelayIcon } from "../../components/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import RelaySelectionModal from "./relay-selection-modal";
+import { NostrEvent } from "../../types/nostr-event";
+import LoadMoreButton from "../../components/load-more-button";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -51,18 +52,23 @@ export default function HashTagView() {
 
   const relaysModal = useDisclosure();
   const { isOpen: showReplies, onToggle } = useDisclosure();
-  const { events, loading, loadMore, loader } = useTimelineLoader(
+
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      return showReplies ? true : !isReply(event);
+    },
+    [showReplies]
+  );
+  const { timeline, loader } = useTimelineLoader(
     `${hashtag}-hashtag`,
     selectedRelays,
     { kinds: [1], "#t": [hashtag] },
-    { pageSize: 60 * 10 }
+    { eventFilter }
   );
-
-  const timeline = showReplies ? events : events.filter((e) => !isReply(e));
 
   return (
     <>
-      <Flex direction="column" gap="4" overflow="auto" flex={1} pb="4" pt="4" pl="1" pr="1">
+      <Flex direction="column" gap="4" overflowY="auto" overflowX="hidden" flex={1} pb="4" pt="4" pl="1" pr="1">
         <Flex gap="4" alignItems="center" wrap="wrap">
           <Editable
             value={editableHashtag}
@@ -95,13 +101,8 @@ export default function HashTagView() {
         {timeline.map((event) => (
           <Note key={event.id} event={event} maxHeight={600} />
         ))}
-        {loading ? (
-          <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
-        ) : (
-          <Button onClick={() => loadMore()} flexShrink={0}>
-            Load More
-          </Button>
-        )}
+
+        <LoadMoreButton timeline={loader} />
       </Flex>
 
       {relaysModal.isOpen && (

@@ -1,6 +1,6 @@
-import { Button, Card, CardBody, CardHeader, Flex, Spinner, Text } from "@chakra-ui/react";
+import { memo, useCallback } from "react";
+import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { memo } from "react";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -9,6 +9,7 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import RequireCurrentAccount from "../../providers/require-current-account";
+import LoadMoreButton from "../../components/load-more-button";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">
@@ -37,26 +38,25 @@ const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
 function NotificationsPage() {
   const readRelays = useReadRelayUrls();
   const account = useCurrentAccount()!;
-  const { events, loading, loadMore } = useTimelineLoader(
+
+  const eventFilter = useCallback((event: NostrEvent) => event.pubkey !== account.pubkey, [account]);
+  const { timeline, loader } = useTimelineLoader(
     "notifications",
     readRelays,
     {
       "#p": [account.pubkey],
       kinds: [1],
     },
-    { pageSize: 60 * 60 * 24 }
+    { eventFilter }
   );
-
-  const timeline = events
-    // ignore events made my the user
-    .filter((e) => e.pubkey !== account.pubkey);
 
   return (
     <Flex direction="column" overflowX="hidden" overflowY="auto" gap="2">
       {timeline.map((event) => (
         <NotificationItem key={event.id} event={event} />
       ))}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
+
+      <LoadMoreButton timeline={loader} />
     </Flex>
   );
 }

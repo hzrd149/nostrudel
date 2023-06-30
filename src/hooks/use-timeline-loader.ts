@@ -1,27 +1,37 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useUnmount } from "react-use";
-import { TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
+import { TimelineLoader } from "../classes/timeline-loader";
 import { NostrQuery } from "../types/nostr-query";
 import useSubject from "./use-subject";
+import { NostrEvent } from "../types/nostr-event";
 
-type Options = TimelineLoaderOptions & {
+type Options = {
   enabled?: boolean;
+  eventFilter?: (event: NostrEvent) => boolean;
+  cursor?: number;
+  name?: string;
 };
 
 export function useTimelineLoader(key: string, relays: string[], query: NostrQuery, opts?: Options) {
   if (opts && !opts.name) opts.name = key;
 
   const ref = useRef<TimelineLoader | null>(null);
-  const loader = (ref.current = ref.current || new TimelineLoader(relays, query, opts));
+  const loader = (ref.current = ref.current || new TimelineLoader(relays, query, opts?.name));
 
   useEffect(() => {
-    loader.forgetEvents();
     loader.setQuery(query);
-  }, [key]);
-
+  }, [JSON.stringify(query)]);
   useEffect(() => {
     loader.setRelays(relays);
   }, [relays.join("|")]);
+  useEffect(() => {
+    loader.setFilter(opts?.eventFilter);
+  }, [opts?.eventFilter]);
+  useEffect(() => {
+    if (opts?.cursor !== undefined) {
+      loader.setCursor(opts.cursor);
+    }
+  }, [opts?.cursor]);
 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {
@@ -35,17 +45,14 @@ export function useTimelineLoader(key: string, relays: string[], query: NostrQue
     loader.close();
   });
 
-  const events = useSubject(loader.events);
+  const timeline = useSubject(loader.timeline);
   const loading = useSubject(loader.loading);
-
-  const loadMore = useCallback(() => {
-    if (enabled) loader.loadMore();
-  }, [enabled]);
+  const complete = useSubject(loader.complete);
 
   return {
     loader,
-    events,
+    timeline,
     loading,
-    loadMore,
+    complete,
   };
 }

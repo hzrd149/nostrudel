@@ -1,14 +1,17 @@
-import { Button, Flex, FormControl, FormLabel, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
+import { Flex, FormControl, FormLabel, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Note } from "../../components/note";
 import RepostNote from "../../components/repost-note";
 import { isReply, isRepost } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import userTimelineService from "../../services/user-timeline";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import useSubject from "../../hooks/use-subject";
-import { useMount, useUnmount } from "react-use";
+import { useInterval, useMount, useUnmount } from "react-use";
 import { RelayIconStack } from "../../components/relay-icon-stack";
+import { NostrEvent } from "../../types/nostr-event";
+import useScrollPosition from "../../hooks/use-scroll-position";
+import LoadMoreButton from "../../components/load-more-button";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -17,11 +20,21 @@ const UserNotesTab = () => {
   const { isOpen: showReplies, onToggle: toggleReplies } = useDisclosure();
   const { isOpen: hideReposts, onToggle: toggleReposts } = useDisclosure();
 
+  const scrollBox = useRef<HTMLDivElement | null>(null);
+  const scrollPosition = useScrollPosition(scrollBox);
+
   const timeline = useMemo(() => userTimelineService.getTimeline(pubkey), [pubkey]);
-
-  const events = useSubject(timeline.events);
-  const loading = useSubject(timeline.loading);
-
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (!showReplies && isReply(event)) return false;
+      if (hideReposts && isRepost(event)) return false;
+      return true;
+    },
+    [showReplies, hideReposts]
+  );
+  useEffect(() => {
+    timeline.setFilter(eventFilter);
+  }, [timeline, eventFilter]);
   useEffect(() => {
     timeline.setRelays(readRelays);
   }, [timeline, readRelays.join("|")]);
@@ -29,14 +42,20 @@ const UserNotesTab = () => {
   useMount(() => timeline.open());
   useUnmount(() => timeline.close());
 
-  const filteredEvents = events.filter((event) => {
-    if (!showReplies && isReply(event)) return false;
-    if (hideReposts && isRepost(event)) return false;
-    return true;
-  });
+  useInterval(() => {
+    const events = timeline.timeline.value;
+    if (events.length > 0) {
+      const eventAtScrollPos = events[Math.floor(scrollPosition * (events.length - 1))];
+      timeline.setCursor(eventAtScrollPos.created_at);
+    }
+
+    timeline.loadNextBlocks();
+  }, 1000);
+
+  const eventsTimeline = useSubject(timeline.timeline);
 
   return (
-    <Flex direction="column" gap="2" pt="4" pb="8" h="full" overflowY="auto" overflowX="hidden">
+    <Flex direction="column" gap="2" pt="4" pb="8" h="full" overflowY="auto" overflowX="hidden" ref={scrollBox}>
       <FormControl display="flex" alignItems="center" mx="2">
         <Switch id="replies" mr="2" isChecked={showReplies} onChange={toggleReplies} />
         <FormLabel htmlFor="replies" mb="0">
@@ -48,20 +67,15 @@ const UserNotesTab = () => {
         </FormLabel>
         <RelayIconStack ml="auto" relays={readRelays} direction="row-reverse" mr="4" maxRelays={4} />
       </FormControl>
-      {filteredEvents.map((event) =>
+      {eventsTimeline.map((event) =>
         event.kind === 6 ? (
           <RepostNote key={event.id} event={event} maxHeight={1200} />
         ) : (
           <Note key={event.id} event={event} maxHeight={1200} />
         )
       )}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
-      ) : (
-        <Button onClick={() => timeline.loadMore()} flexShrink={0}>
-          Load More
-        </Button>
-      )}
+
+      <LoadMoreButton timeline={timeline} />
     </Flex>
   );
 };

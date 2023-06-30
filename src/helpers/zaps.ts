@@ -55,7 +55,7 @@ export function totalZaps(events: NostrEvent[]) {
   return total;
 }
 
-export function parseZapNote(event: NostrEvent) {
+function parseZapEvent(event: NostrEvent) {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");
 
@@ -77,3 +77,14 @@ export function parseZapNote(event: NostrEvent) {
     eventId,
   };
 }
+
+const zapEventCache = new Map<string, ReturnType<typeof parseZapEvent>>();
+function cachedParseZapEvent(event: NostrEvent) {
+  let result = zapEventCache.get(event.id);
+  if (result) return result;
+  result = parseZapEvent(event);
+  if (result) zapEventCache.set(event.id, result);
+  return result;
+}
+
+export { cachedParseZapEvent as parseZapEvent };

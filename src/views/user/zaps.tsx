@@ -1,6 +1,6 @@
-import { Box, Button, Flex, Select, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Flex, Select, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
@@ -9,16 +9,17 @@ import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
 import { truncatedId } from "../../helpers/nostr-event";
-import { isProfileZap, isNoteZap, parseZapNote, totalZaps } from "../../helpers/zaps";
+import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/zaps";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import LoadMoreButton from "../../components/load-more-button";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const { isOpen, onToggle } = useDisclosure();
   try {
-    const { request, payment, eventId } = parseZapNote(zapEvent);
+    const { request, payment, eventId } = parseZapEvent(zapEvent);
 
     return (
       <Box
@@ -68,15 +69,25 @@ const UserZapsTab = () => {
   const contextRelays = useAdditionalRelayContext();
   const relays = useReadRelayUrls(contextRelays);
 
-  const { events, loading, loadMore } = useTimelineLoader(
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      switch (filter) {
+        case "note":
+          return isNoteZap(event);
+        case "profile":
+          return isProfileZap(event);
+      }
+      return true;
+    },
+    [filter]
+  );
+
+  const { timeline, loader } = useTimelineLoader(
     `${truncatedId(pubkey)}-zaps`,
     relays,
     { "#p": [pubkey], kinds: [9735] },
-    { pageSize: 60 * 60 * 24 * 7 }
+    { eventFilter }
   );
-
-  const timeline =
-    filter === "note" ? events.filter(isNoteZap) : filter === "profile" ? events.filter(isProfileZap) : events;
 
   return (
     <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto">
@@ -101,13 +112,8 @@ const UserZapsTab = () => {
           <Zap zapEvent={event} />
         </ErrorBoundary>
       ))}
-      {loading ? (
-        <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />
-      ) : (
-        <Button onClick={() => loadMore()} flexShrink={0}>
-          Load More
-        </Button>
-      )}
+
+      <LoadMoreButton timeline={loader} />
     </Flex>
   );
 };

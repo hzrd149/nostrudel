@@ -10,7 +10,6 @@ import SettingsView from "./views/settings";
 import LoginView from "./views/login";
 import ProfileView from "./views/profile";
 import FollowingTab from "./views/home/following-tab";
-import DiscoverTab from "./views/home/discover-tab";
 import GlobalTab from "./views/home/global-tab";
 import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
@@ -102,7 +101,6 @@ const router = createHashRouter([
         children: [
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
-          { path: "discover", element: <DiscoverTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },

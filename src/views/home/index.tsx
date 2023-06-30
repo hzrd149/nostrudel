@@ -3,7 +3,7 @@ import { Outlet, useMatches, useNavigate } from "react-router-dom";
 
 const tabs = [
   { label: "Following", path: "/following" },
-  { label: "Discover", path: "/discover" },
+  // { label: "Discover", path: "/discover" },
   // { label: "Popular", path: "/popular" },
   { label: "Global", path: "/global" },
 ];
@@ -30,9 +30,9 @@ export default function HomeView() {
           <Tab key={label}>{label}</Tab>
         ))}
       </TabList>
-      <TabPanels overflow="auto" height="100%">
+      <TabPanels overflow="hidden" h="full">
         {tabs.map(({ label }) => (
-          <TabPanel key={label} pr={0} pl={0}>
+          <TabPanel key={label} p={0} overflow="hidden" h="full" display="flex" flexDirection="column">
             <Outlet />
           </TabPanel>
         ))}
