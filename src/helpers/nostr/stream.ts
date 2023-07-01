@@ -66,7 +66,7 @@ export function getATag(stream: ParsedStream) {
 
 export function buildChatMessage(stream: ParsedStream, content: string) {
   const template: DraftNostrEvent = {
-    tags: [["a", getATag(stream)]],
+    tags: [["a", getATag(stream), "", "root"]],
     content,
     created_at: dayjs().unix(),
     kind: 1311,
