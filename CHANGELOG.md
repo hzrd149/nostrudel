@@ -1,5 +1,17 @@
 # nostrudel
 
+## 0.15.0
+
+### Minor Changes
+
+- 0c92da8: Add views for watching streams
+- 7a339ae: cache timelines
+
+### Patch Changes
+
+- 593ad6b: show type of account on account picker
+- 038d342: truncate open graph card description
+
 ## 0.14.0
 
 ### Minor Changes
