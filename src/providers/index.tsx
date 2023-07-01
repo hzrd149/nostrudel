@@ -3,6 +3,7 @@ import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 import { SigningProvider } from "./signing-provider";
 import createTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
+import { InvoiceModalProvider } from "./invoice-modal";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const { primaryColor } = useAppSettings();
@@ -10,7 +11,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
-      <SigningProvider>{children}</SigningProvider>
+      <SigningProvider>
+        <InvoiceModalProvider>{children}</InvoiceModalProvider>
+      </SigningProvider>
     </ChakraProvider>
   );
 };

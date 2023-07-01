@@ -77,8 +77,8 @@ class RelayTimelineLoader {
 
 export class TimelineLoader {
   cursor = dayjs().unix();
-  query: NostrQuery;
-  relays: string[];
+  query?: NostrQuery;
+  relays: string[] = [];
 
   events = new PersistentSubject<NostrEvent[]>([]);
   timeline = new PersistentSubject<NostrEvent[]>([]);
@@ -92,14 +92,9 @@ export class TimelineLoader {
 
   private relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
 
-  constructor(relays: string[], query: NostrQuery, name?: string) {
-    this.query = query;
-    this.relays = relays;
-
-    this.subscription = new NostrMultiSubscription(relays, { ...query, limit: BLOCK_SIZE / 2 }, name);
+  constructor(name?: string) {
+    this.subscription = new NostrMultiSubscription([], undefined, name);
     this.subscription.onEvent.subscribe(this.handleEvent, this);
-
-    this.createLoaders();
   }
 
   private seenEvents = new Set<string>();
@@ -115,6 +110,8 @@ export class TimelineLoader {
   }
 
   private createLoaders() {
+    if (!this.query) return;
+
     for (const relay of this.relays) {
       if (!this.relayTimelineLoaders.has(relay)) {
         const loader = new RelayTimelineLoader(relay, this.query, this.subscription.name);
@@ -137,6 +134,8 @@ export class TimelineLoader {
   }
 
   setRelays(relays: string[]) {
+    if (this.relays.sort().join("|") === relays.sort().join("|")) return;
+
     // remove loaders
     this.removeLoaders((loader) => !relays.includes(loader.relay));
 
@@ -147,6 +146,8 @@ export class TimelineLoader {
     this.updateComplete();
   }
   setQuery(query: NostrQuery) {
+    if (JSON.stringify(this.query) === JSON.stringify(query)) return;
+
     this.removeLoaders();
 
     this.query = query;

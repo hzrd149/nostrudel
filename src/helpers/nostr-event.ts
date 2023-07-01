@@ -17,8 +17,9 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
   return event.kind === 6 || (match && match[0].length === event.content.length);
 }
 
-export function truncatedId(id: string, keep = 6) {
-  return id.substring(0, keep) + "..." + id.substring(id.length - keep);
+export function truncatedId(str: string, keep = 6) {
+  if (str.length < keep * 2 + 3) return str;
+  return str.substring(0, keep) + "..." + str.substring(str.length - keep);
 }
 
 /**

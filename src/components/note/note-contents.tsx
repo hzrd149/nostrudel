@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import styled from "@emotion/styled";
 import { useExpand } from "./expanded";
@@ -23,6 +23,7 @@ import {
 import { ImageGalleryProvider } from "../image-gallery";
 import { useTrusted } from "./trust";
 import { renderRedditUrl } from "../embed-types/reddit";
+import EmbeddedContent from "../embeded-content";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -99,15 +100,7 @@ export const NoteContents = React.memo(({ event, maxHeight }: NoteContentsProps)
         px="2"
       >
         <div ref={ref}>
-          {content.map((part, i) =>
-            typeof part === "string" ? (
-              <Text as="span" key={"part-" + i}>
-                {part}
-              </Text>
-            ) : (
-              React.cloneElement(part, { key: "part-" + i })
-            )
-          )}
+          <EmbeddedContent content={content} />
         </div>
         {showOverlay && <GradientOverlay onClick={expand?.onExpand} />}
       </Box>

@@ -34,21 +34,19 @@ import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
-// code split search view because QrScanner library is 400kB
+
+const LiveStreamsTab = React.lazy(() => import("./views/home/streams"));
+const StreamView = React.lazy(() => import("./views/home/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => {
-  console.log(useLocation());
-
-  return (
-    <Page>
-      <ScrollRestoration />
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </Page>
-  );
-};
+const RootPage = () => (
+  <Page>
+    <ScrollRestoration />
+    <Suspense fallback={<Spinner />}>
+      <Outlet />
+    </Suspense>
+  </Page>
+);
 
 const router = createHashRouter([
   {
@@ -61,6 +59,7 @@ const router = createHashRouter([
       { path: "nsec", element: <LoginNsecView /> },
     ],
   },
+  { path: "streams/:naddr", element: <StreamView /> },
   {
     path: "/",
     element: <RootPage />,
@@ -106,6 +105,10 @@ const router = createHashRouter([
         children: [
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
+          {
+            path: "streams",
+            element: <LiveStreamsTab />,
+          },
           { path: "global", element: <GlobalTab /> },
         ],
       },

@@ -15,12 +15,14 @@ import {
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
-import accountService from "../../services/account";
+import accountService, { Account } from "../../services/account";
 import { AddIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import { useLocation, useNavigate } from "react-router-dom";
+import AccountInfoBadge from "../account-info-badge";
 
-function AccountItem({ pubkey }: { pubkey: string }) {
+function AccountItem({ account }: { account: Account }) {
+  const pubkey = account.pubkey;
   const metadata = useUserMetadata(pubkey, []);
   const accord = useAccordionContext();
 
@@ -32,9 +34,10 @@ function AccountItem({ pubkey }: { pubkey: string }) {
   return (
     <Box display="flex" gap="4" alignItems="center" cursor="pointer" onClick={handleClick}>
       <UserAvatar pubkey={pubkey} size="sm" />
-      <Text flex={1} mr="4" overflow="hidden">
-        {getUserDisplayName(metadata, pubkey)}
-      </Text>
+      <Box flex={1}>
+        <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
+        <AccountInfoBadge fontSize="0.7em" account={account} />
+      </Box>
       <IconButton
         icon={<CloseIcon />}
         aria-label="Remove Account"
@@ -60,7 +63,7 @@ export function AccountSwitcherList() {
   return (
     <Flex gap="2" direction="column" padding="2">
       {otherAccounts.map((account) => (
-        <AccountItem key={account.pubkey} pubkey={account.pubkey} />
+        <AccountItem key={account.pubkey} account={account} />
       ))}
       <Button
         size="sm"

@@ -34,6 +34,8 @@ import { CopyIconButton } from "./copy-icon-button";
 import { useIsMobile } from "../hooks/use-is-mobile";
 import appSettings from "../services/app-settings";
 import useSubject from "../hooks/use-subject";
+import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
+import { requestZapInvoice } from "../helpers/zaps";
 
 type FormValues = {
   amount: number;
@@ -79,11 +81,7 @@ export default function ZapModal({
     },
   });
 
-  const tipAddress = metadata?.lud06 || metadata?.lud16;
-  const { value: lnurlMetadata } = useAsync(
-    async () => (tipAddress ? lnurlMetadataService.requestMetadata(tipAddress) : undefined),
-    [tipAddress]
-  );
+  const { metadata: lnurlMetadata, address: tipAddress } = useUserLNURLMetadata(pubkey);
 
   const canZap = lnurlMetadata?.allowsNostr && lnurlMetadata?.nostrPubkey;
   const actionName = canZap ? "Zap" : "Tip";
@@ -110,18 +108,8 @@ export default function ZapModal({
 
           const signed = await requestSignature(zapRequest);
           if (signed) {
-            const callbackUrl = new URL(lnurlMetadata.callback);
-            callbackUrl.searchParams.append("amount", String(amountInMilisat));
-            callbackUrl.searchParams.append("nostr", JSON.stringify(signed));
-
-            const { pr: payRequest } = await fetch(callbackUrl).then((res) => res.json());
-
-            if (payRequest as string) {
-              const parsed = parsePaymentRequest(payRequest);
-              if (parsed.amount !== amountInMilisat) throw new Error("incorrect amount");
-
-              payInvoice(payRequest);
-            } else throw new Error("Failed to get invoice");
+            const payRequest = await requestZapInvoice(signed, lnurlMetadata.callback);
+            payInvoice(payRequest);
           }
         } else {
           const callbackUrl = new URL(lnurlMetadata.callback);
