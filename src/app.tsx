@@ -34,9 +34,9 @@ import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
-import LiveStreamsTab from "./views/home/streams";
-import StreamView from "./views/home/streams/stream";
-// code split search view because QrScanner library is 400kB
+
+const LiveStreamsTab = React.lazy(() => import("./views/home/streams"));
+const StreamView = React.lazy(() => import("./views/home/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 
 const RootPage = () => (
