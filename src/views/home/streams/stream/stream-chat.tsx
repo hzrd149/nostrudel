@@ -139,7 +139,7 @@ export default function StreamChat({ stream, ...props }: CardProps & { stream: P
 
   const { requestPay } = useInvoiceModalContext();
   const zapMetadata = useUserLNURLMetadata(stream.author);
-  const zapMessage = useCallback(async () => {
+  const zapMessage = async () => {
     try {
       if (!zapMetadata.metadata?.callback) throw new Error("bad lnurl endpoint");
 
@@ -167,7 +167,7 @@ export default function StreamChat({ stream, ...props }: CardProps & { stream: P
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message });
     }
-  }, [stream]);
+  };
 
   return (
     <IntersectionObserverProvider callback={callback} root={scrollBox}>
