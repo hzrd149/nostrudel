@@ -11,6 +11,7 @@ export type NostrQuery = {
   authors?: string[];
   kinds?: number[];
   "#e"?: string[];
+  "#a"?: string[];
   "#p"?: string[];
   "#d"?: string[];
   "#t"?: string[];

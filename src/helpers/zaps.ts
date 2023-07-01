@@ -87,4 +87,22 @@ function cachedParseZapEvent(event: NostrEvent) {
   return result;
 }
 
+export async function requestZapInvoice(zapRequest: NostrEvent, lnurl: string) {
+  const amount = zapRequest.tags.find((t) => t[0] === "amount")?.[1];
+  if (!amount) throw new Error("missing amount");
+
+  const callbackUrl = new URL(lnurl);
+  callbackUrl.searchParams.append("amount", amount);
+  callbackUrl.searchParams.append("nostr", JSON.stringify(zapRequest));
+
+  const { pr: payRequest } = await fetch(callbackUrl).then((res) => res.json());
+
+  if (payRequest as string) {
+    const parsed = parsePaymentRequest(payRequest);
+    if (parsed.amount !== parseInt(amount)) throw new Error("incorrect amount");
+
+    return payRequest as string;
+  } else throw new Error("Failed to get invoice");
+}
+
 export { cachedParseZapEvent as parseZapEvent };
