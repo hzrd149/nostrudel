@@ -90,7 +90,7 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
     <Flex direction="column" borderRadius="md" borderColor="yellow.400" borderWidth="1px" p="2" ref={ref}>
       <Flex gap="2">
         <LightningIcon color="yellow.400" />
-        <UserAvatar pubkey={zap.pubkey} size="xs" />
+        <UserAvatar pubkey={request.pubkey} size="xs" />
         <UserLink pubkey={request.pubkey} fontWeight="bold" color="yellow.400" />
         <Text>zapped {readablizeSats(payment.amount / 1000)} sats</Text>
         <Spacer />
