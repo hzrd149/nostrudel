@@ -10,10 +10,12 @@ import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 import ZapModal from "../zap-modal";
+import { useInvoiceModalContext } from "../../providers/invoice-modal";
 
 export default function NoteZapButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
   const account = useCurrentAccount();
   const metadata = useUserMetadata(note.pubkey);
+  const { requestPay } = useInvoiceModalContext();
   const zaps = useEventZaps(note.id) ?? [];
   const parsedZaps = useMemo(() => {
     const parsed = [];
@@ -29,7 +31,11 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
   const hasZapped = !!account && parsedZaps.some((zapRequest) => zapRequest.request.pubkey === account.pubkey);
   const tipAddress = metadata?.lud06 || metadata?.lud16;
 
-  const invoicePaid = () => eventZapsService.requestZaps(note.id, clientRelaysService.getReadUrls(), true);
+  const handleInvoice = async (invoice: string) => {
+    onClose();
+    await requestPay(invoice);
+    eventZapsService.requestZaps(note.id, clientRelaysService.getReadUrls(), true);
+  };
 
   return (
     <>
@@ -44,7 +50,9 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
       >
         {readablizeSats(totalZaps(zaps) / 1000)}
       </Button>
-      {isOpen && <ZapModal isOpen={isOpen} onClose={onClose} event={note} onPaid={invoicePaid} pubkey={note.pubkey} />}
+      {isOpen && (
+        <ZapModal isOpen={isOpen} onClose={onClose} event={note} onInvoice={handleInvoice} pubkey={note.pubkey} />
+      )}
     </>
   );
 }

@@ -21,11 +21,10 @@ import {
   renderOpenGraphUrl,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
-import { useTrusted } from "./trust";
 import { renderRedditUrl } from "../embed-types/reddit";
 import EmbeddedContent from "../embeded-content";
 
-function buildContents(event: NostrEvent | DraftNostrEvent, trusted = false) {
+function buildContents(event: NostrEvent | DraftNostrEvent) {
   let content: EmbedableContent = [event.content.trim()];
 
   // common
@@ -70,8 +69,7 @@ export type NoteContentsProps = {
 };
 
 export const NoteContents = React.memo(({ event, maxHeight }: NoteContentsProps) => {
-  const trusted = useTrusted();
-  const content = buildContents(event, trusted);
+  const content = buildContents(event);
   const expand = useExpand();
   const [innerHeight, setInnerHeight] = useState(0);
   const ref = useRef<HTMLDivElement | null>(null);

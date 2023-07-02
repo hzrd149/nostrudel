@@ -7,12 +7,12 @@ import { ConnectedRelays } from "../connected-relays";
 import {
   ChatIcon,
   FeedIcon,
+  LiveStreamIcon,
   LogoutIcon,
   NotificationIcon,
   ProfileIcon,
   RelayIcon,
   SearchIcon,
-  ToolsIcon,
 } from "../icons";
 import ProfileLink from "./profile-link";
 import AccountSwitcher from "./account-switcher";
@@ -41,6 +41,9 @@ export default function DesktopSideNav() {
       </Button>
       <Button onClick={() => navigate("/search")} leftIcon={<SearchIcon />}>
         Search
+      </Button>
+      <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
+        Streams
       </Button>
       <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
         Profile

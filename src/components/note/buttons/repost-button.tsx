@@ -37,9 +37,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
       await nostrPostAction(clientRelaysService.getWriteUrls(), repost);
       onClose();
     } catch (e) {
-      if (e instanceof Error) {
-        toast({ status: "error", description: e.message });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
     setLoading(false);
   };

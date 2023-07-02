@@ -243,12 +243,7 @@ export const ProfileEditView = () => {
 
       await results.onComplete;
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   };
 

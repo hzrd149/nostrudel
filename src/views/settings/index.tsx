@@ -1,4 +1,4 @@
-import { Button, Flex, Accordion, Link } from "@chakra-ui/react";
+import { Button, Flex, Accordion, Link, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { GithubIcon, ToolsIcon } from "../../components/icons";
 import LightningSettings from "./lightning-settings";
@@ -10,6 +10,7 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { FormProvider, useForm } from "react-hook-form";
 
 export default function SettingsView() {
+  const toast = useToast();
   const { updateSettings, ...settings } = useAppSettings();
 
   const form = useForm({
@@ -18,7 +19,12 @@ export default function SettingsView() {
   });
 
   const saveSettings = form.handleSubmit(async (values) => {
-    await updateSettings(values);
+    try {
+      await updateSettings(values);
+      toast({ title: "Settings saved", status: "success" });
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
   });
 
   return (

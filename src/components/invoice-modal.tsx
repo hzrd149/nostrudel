@@ -11,10 +11,9 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon, LightningIcon, QrCodeIcon } from "./icons";
+import { ExternalLinkIcon, QrCodeIcon } from "./icons";
 import QrCodeSvg from "./qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
-import { useIsMobile } from "../hooks/use-is-mobile";
 
 export default function InvoiceModal({
   invoice,
@@ -22,17 +21,19 @@ export default function InvoiceModal({
   onPaid,
   ...props
 }: Omit<ModalProps, "children"> & { invoice: string; onPaid: () => void }) {
-  const isMobile = useIsMobile();
   const toast = useToast();
   const showQr = useDisclosure();
 
   const payWithWebLn = async (invoice: string) => {
-    if (window.webln && invoice) {
-      if (!window.webln.enabled) await window.webln.enable();
-      await window.webln.sendPayment(invoice);
+    try {
+      if (window.webln && invoice) {
+        if (!window.webln.enabled) await window.webln.enable();
+        await window.webln.sendPayment(invoice);
 
-      if (onPaid) onPaid();
-      onClose();
+        if (onPaid) onPaid();
+      }
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   };
   const payWithApp = async (invoice: string) => {

@@ -2,14 +2,27 @@ import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import appSettings from "../../services/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import { useTrusted } from "../note/trust";
+import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
   return (
     <Box overflow="hidden">
-      <Image onClick={onOpen} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />
+      <Image
+        onClick={
+          !isOpen
+            ? (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onOpen();
+              }
+            : undefined
+        }
+        cursor="pointer"
+        filter={isOpen ? "" : "blur(1.5rem)"}
+        {...props}
+      />
     </Box>
   );
 };

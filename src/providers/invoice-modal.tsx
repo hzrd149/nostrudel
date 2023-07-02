@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
 import InvoiceModal from "../components/invoice-modal";
 import createDefer, { Deferred } from "../classes/deferred";
+import appSettings from "../services/app-settings";
 
 export type InvoiceModalContext = {
   requestPay: (invoice: string) => Promise<void>;
@@ -20,7 +21,17 @@ export const InvoiceModalProvider = ({ children }: { children: React.ReactNode }
   const [invoice, setInvoice] = useState<string>();
   const [defer, setDefer] = useState<Deferred<void>>();
 
-  const requestPay = useCallback((invoice: string) => {
+  const requestPay = useCallback(async (invoice: string) => {
+    if (window.webln && appSettings.value.autoPayWithWebLN) {
+      try {
+        if (!window.webln.enabled) await window.webln.enable();
+        await window.webln.sendPayment(invoice);
+
+        handlePaid();
+        return;
+      } catch (e) {}
+    }
+
     const defer = createDefer<void>();
     setDefer(defer);
     setInvoice(invoice);

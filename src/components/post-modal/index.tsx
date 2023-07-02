@@ -27,7 +27,7 @@ import { ImageIcon } from "../icons";
 import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
-import { TrustProvider } from "../note/trust";
+import { TrustProvider } from "../../providers/trust";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -96,12 +96,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
         setDraft((d) => ({ ...d, content: (d.content += imageUrl) }));
       }
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
     setUploading(false);
   };

@@ -61,9 +61,7 @@ function RelaysPage() {
       }
       setRelayInputValue("");
     } catch (e) {
-      if (e instanceof Error) {
-        toast({ status: "error", description: e.message });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   };
   const savePending = async () => {
