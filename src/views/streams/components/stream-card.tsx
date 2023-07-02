@@ -36,7 +36,7 @@ import RawValue from "../../../components/debug-modals/raw-value";
 import RawJson from "../../../components/debug-modals/raw-json";
 
 export default function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
-  const { title, summary, identifier, image } = stream;
+  const { title, identifier, image } = stream;
   const devModal = useDisclosure();
 
   const naddr = useMemo(() => {

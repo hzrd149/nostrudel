@@ -4,7 +4,7 @@ import { ArrowDownSIcon, ArrowUpSIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import { countReplies, ThreadItem as ThreadItemData } from "../../helpers/thread";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import { TrustProvider } from "../../components/note/trust";
+import { TrustProvider } from "../../providers/trust";
 
 export type ThreadItemProps = {
   post: ThreadItemData;

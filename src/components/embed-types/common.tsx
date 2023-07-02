@@ -2,7 +2,7 @@ import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import appSettings from "../../services/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
-import { useTrusted } from "../note/trust";
+import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
 
 const BlurredImage = (props: ImageProps) => {

@@ -32,7 +32,7 @@ import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { ExternalLinkIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
-import { TrustProvider } from "./trust";
+import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 

@@ -13,12 +13,7 @@ export default function useAppSettings() {
       try {
         return replaceSettings({ ...settings, ...newSettings });
       } catch (e) {
-        if (e instanceof Error) {
-          toast({
-            status: "error",
-            description: e.message,
-          });
-        }
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
     [settings]

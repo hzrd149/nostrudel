@@ -9,12 +9,6 @@ import db from "./db";
 
 const DTAG = "nostrudel-settings";
 
-export enum LightningPayMode {
-  Prompt = "prompt",
-  Webln = "webln",
-  External = "external",
-}
-
 export type AppSettings = {
   colorMode: ColorMode;
   blurImages: boolean;
@@ -22,8 +16,10 @@ export type AppSettings = {
   proxyUserMedia: boolean;
   showReactions: boolean;
   showSignatureVerification: boolean;
-  lightningPayMode: LightningPayMode;
-  zapAmounts: number[];
+
+  autoPayWithWebLN: boolean;
+  customZapAmounts: string;
+
   primaryColor: string;
   imageProxy: string;
   corsProxy: string;
@@ -40,8 +36,10 @@ export const defaultSettings: AppSettings = {
   proxyUserMedia: false,
   showReactions: true,
   showSignatureVerification: false,
-  lightningPayMode: LightningPayMode.Prompt,
-  zapAmounts: [50, 200, 500, 1000],
+
+  autoPayWithWebLN: true,
+  customZapAmounts: "50,200,500,1000,2000,5000",
+
   primaryColor: "#8DB600",
   imageProxy: "",
   corsProxy: "",

@@ -59,13 +59,13 @@ export default function ZapModal({
   initialAmount,
   ...props
 }: ZapModalProps) {
+  const isMobile = useIsMobile();
   const metadata = useUserMetadata(pubkey);
   const { requestSignature } = useSigningContext();
   const toast = useToast();
   const [promptInvoice, setPromptInvoice] = useState<string>();
   const { isOpen: showQr, onToggle: toggleQr } = useDisclosure();
-  const isMobile = useIsMobile();
-  const { zapAmounts } = useSubject(appSettings);
+  const { customZapAmounts } = useSubject(appSettings);
 
   const {
     register,
@@ -76,7 +76,7 @@ export default function ZapModal({
   } = useForm<FormValues>({
     mode: "onBlur",
     defaultValues: {
-      amount: initialAmount ?? zapAmounts[0],
+      amount: initialAmount ?? (parseInt(customZapAmounts.split(",")[0]) || 100),
       comment: initialComment ?? "",
     },
   });
@@ -160,19 +160,11 @@ export default function ZapModal({
     }, 1000 * 2);
   };
 
-  const payInvoice = (invoice: string) => {
-    switch (appSettings.value.lightningPayMode) {
-      case "webln":
-        payWithWebLn(invoice);
-        break;
-      case "external":
-        payWithApp(invoice);
-        break;
-      default:
-      case "prompt":
-        setPromptInvoice(invoice);
-        break;
+  const payInvoice = async (invoice: string) => {
+    if (appSettings.value.autoPayWithWebLN) {
+      await payWithWebLn(invoice);
     }
+    setPromptInvoice(invoice);
   };
 
   const handleClose = () => {
@@ -228,11 +220,14 @@ export default function ZapModal({
                   <UserLink pubkey={pubkey} />
                 </Flex>
                 <Flex gap="2" alignItems="center" flexWrap="wrap">
-                  {zapAmounts.map((amount, i) => (
-                    <Button key={amount + i} onClick={() => setValue("amount", amount)} size="sm" variant="outline">
-                      {amount}
-                    </Button>
-                  ))}
+                  {customZapAmounts
+                    .split(",")
+                    .map((v) => parseInt(v))
+                    .map((amount, i) => (
+                      <Button key={amount + i} onClick={() => setValue("amount", amount)} size="sm" variant="outline">
+                        {amount}
+                      </Button>
+                    ))}
                 </Flex>
                 <Flex gap="2">
                   <InputGroup maxWidth={32}>

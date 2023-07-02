@@ -9,7 +9,7 @@ import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
-import { TrustProvider } from "./trust";
+import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 
 export default function EmbeddedNote({ note }: { note: NostrEvent }) {

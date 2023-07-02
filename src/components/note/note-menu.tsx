@@ -53,12 +53,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
       await results.onComplete;
       deleteModal.onClose();
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     } finally {
       setDeleting(false);
     }

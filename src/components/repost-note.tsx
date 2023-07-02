@@ -9,7 +9,7 @@ import { NoteMenu } from "./note/note-menu";
 import { UserAvatar } from "./user-avatar";
 import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
 import { UserLink } from "./user-link";
-import { TrustProvider } from "./note/trust";
+import { TrustProvider } from "../providers/trust";
 import { safeJson } from "../helpers/parse";
 import { verifySignature } from "nostr-tools";
 import { useReadRelayUrls } from "../hooks/use-client-relays";

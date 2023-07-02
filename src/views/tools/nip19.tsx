@@ -45,9 +45,7 @@ function EncodeForm() {
 
       setOutput(nprofile);
     } catch (e) {
-      if (e instanceof Error) {
-        toast({ description: e.message });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   });
 
@@ -92,9 +90,7 @@ function DecodeForm() {
     try {
       setOutput(nip19.decode(values.input));
     } catch (e) {
-      if (e instanceof Error) {
-        toast({ description: e.message });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   });
 

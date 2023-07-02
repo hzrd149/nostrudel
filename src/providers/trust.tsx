@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext } from "react";
-import { NostrEvent } from "../../types/nostr-event";
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import clientFollowingService from "../../services/client-following";
-import useSubject from "../../hooks/use-subject";
+import { NostrEvent } from "../types/nostr-event";
+import { useCurrentAccount } from "../hooks/use-current-account";
+import clientFollowingService from "../services/client-following";
+import useSubject from "../hooks/use-subject";
 
 const TrustContext = React.createContext<boolean>(false);
 
