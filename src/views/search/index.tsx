@@ -22,6 +22,7 @@ import ZapModal from "../../components/zap-modal";
 import { truncatedId } from "../../helpers/nostr-event";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
+import { useInvoiceModalContext } from "../../providers/invoice-modal";
 
 type relay = string;
 type NostrBandSearchResults = {
@@ -82,6 +83,7 @@ export default function SearchView() {
   const { isOpen: qrScannerOpen, onOpen: openScanner, onClose: closeScanner } = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
+  const { requestPay } = useInvoiceModalContext();
 
   // update the input value when search changes
   useEffect(() => {
@@ -149,6 +151,10 @@ export default function SearchView() {
               initialAmount={500}
               initialComment="Thanks for creating nostr.band"
               onClose={closeDonate}
+              onInvoice={async (invoice) => {
+                closeDonate();
+                await requestPay(invoice);
+              }}
             />
           )}
         </Flex>
