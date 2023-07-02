@@ -9,7 +9,20 @@ const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();
   return (
     <Box overflow="hidden">
-      <Image onClick={onOpen} cursor="pointer" filter={isOpen ? "" : "blur(1.5rem)"} {...props} />
+      <Image
+        onClick={
+          !isOpen
+            ? (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onOpen();
+              }
+            : undefined
+        }
+        cursor="pointer"
+        filter={isOpen ? "" : "blur(1.5rem)"}
+        {...props}
+      />
     </Box>
   );
 };

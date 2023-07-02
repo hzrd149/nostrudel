@@ -23,8 +23,6 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 import { UserLink } from "./user-link";
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { ExternalLinkIcon, LightningIcon, QrCodeIcon } from "./icons";
-import lnurlMetadataService from "../services/lnurl-metadata";
-import { useAsync } from "react-use";
 import { nip57 } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
