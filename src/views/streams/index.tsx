@@ -1,13 +1,13 @@
 import { Flex, Select } from "@chakra-ui/react";
-import { useTimelineLoader } from "../../../hooks/use-timeline-loader";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../../providers/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../../hooks/use-subject";
-import StreamCard from "./stream-card";
-import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
-import { NostrEvent } from "../../../types/nostr-event";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useSubject from "../../hooks/use-subject";
+import StreamCard from "./components/stream-card";
+import { ParsedStream, parseStreamEvent } from "../../helpers/nostr/stream";
+import { NostrEvent } from "../../types/nostr-event";
 
 export default function LiveStreamsTab() {
   const readRelays = useReadRelayUrls();

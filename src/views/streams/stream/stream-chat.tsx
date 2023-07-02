@@ -15,34 +15,32 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { ParsedStream, buildChatMessage, getATag } from "../../../../helpers/nostr/stream";
-import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../../providers/additional-relay-context";
-import useSubject from "../../../../hooks/use-subject";
-import { truncatedId } from "../../../../helpers/nostr-event";
-import { UserAvatar } from "../../../../components/user-avatar";
-import { UserLink } from "../../../../components/user-link";
-import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../../../providers/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
-import { embedUrls } from "../../../../helpers/embeds";
-import { embedEmoji, renderGenericUrl, renderImageUrl } from "../../../../components/embed-types";
-import EmbeddedContent from "../../../../components/embeded-content";
+import { ParsedStream, buildChatMessage, getATag } from "../../../helpers/nostr/stream";
+import { useTimelineLoader } from "../../../hooks/use-timeline-loader";
+import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import useSubject from "../../../hooks/use-subject";
+import { truncatedId } from "../../../helpers/nostr-event";
+import { UserAvatar } from "../../../components/user-avatar";
+import { UserLink } from "../../../components/user-link";
+import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import { embedUrls } from "../../../helpers/embeds";
+import { embedEmoji, renderGenericUrl, renderImageUrl } from "../../../components/embed-types";
+import EmbeddedContent from "../../../components/embeded-content";
 import { useForm } from "react-hook-form";
-import { useSigningContext } from "../../../../providers/signing-provider";
-import { nostrPostAction } from "../../../../classes/nostr-post-action";
-import { useUserRelays } from "../../../../hooks/use-user-relays";
-import { RelayMode } from "../../../../classes/relay";
-import { unique } from "../../../../helpers/array";
-import { LightningIcon } from "../../../../components/icons";
-import { parseZapEvent, requestZapInvoice } from "../../../../helpers/zaps";
-import { readablizeSats } from "../../../../helpers/bolt11";
+import { useSigningContext } from "../../../providers/signing-provider";
+import { nostrPostAction } from "../../../classes/nostr-post-action";
+import { useUserRelays } from "../../../hooks/use-user-relays";
+import { RelayMode } from "../../../classes/relay";
+import { unique } from "../../../helpers/array";
+import { LightningIcon } from "../../../components/icons";
+import { parseZapEvent, requestZapInvoice } from "../../../helpers/zaps";
+import { readablizeSats } from "../../../helpers/bolt11";
 import { Kind } from "nostr-tools";
-import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
-import { useInvoiceModalContext } from "../../../../providers/invoice-modal";
+import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
+import { useInvoiceModalContext } from "../../../providers/invoice-modal";
 
 function ChatMessage({ event, stream }: { event: NostrEvent; stream: ParsedStream }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -103,7 +101,11 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
   );
 }
 
-export default function StreamChat({ stream, ...props }: CardProps & { stream: ParsedStream }) {
+export default function StreamChat({
+  stream,
+  actions,
+  ...props
+}: CardProps & { stream: ParsedStream; actions?: React.ReactNode }) {
   const toast = useToast();
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
@@ -172,8 +174,9 @@ export default function StreamChat({ stream, ...props }: CardProps & { stream: P
   return (
     <IntersectionObserverProvider callback={callback} root={scrollBox}>
       <Card {...props} overflow="hidden">
-        <CardHeader py="3">
+        <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
           <Heading size="md">Stream Chat</Heading>
+          {actions}
         </CardHeader>
         <CardBody display="flex" flexDirection="column" gap="2" overflow="hidden" p={0}>
           <Flex

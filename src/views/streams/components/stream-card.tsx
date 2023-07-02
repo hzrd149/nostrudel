@@ -2,8 +2,6 @@ import { useMemo } from "react";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import {
   Badge,
-  Button,
-  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
@@ -13,7 +11,6 @@ import {
   Heading,
   IconButton,
   Image,
-  Link,
   LinkBox,
   LinkOverlay,
   Modal,
@@ -33,14 +30,13 @@ import dayjs from "dayjs";
 import relayScoreboardService from "../../../services/relay-scoreboard";
 import { getEventRelays } from "../../../services/event-relays";
 import { nip19 } from "nostr-tools";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import StreamStatusBadge from "./status-badge";
 import { CodeIcon } from "../../../components/icons";
 import RawValue from "../../../components/debug-modals/raw-value";
 import RawJson from "../../../components/debug-modals/raw-json";
 
 export default function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
-  const { title, summary, starts, identifier, status, image } = stream;
+  const { title, summary, identifier, image } = stream;
   const devModal = useDisclosure();
 
   const naddr = useMemo(() => {
@@ -71,7 +67,6 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
               {title}
             </LinkOverlay>
           </Heading>
-          <Text>{summary}</Text>
           {stream.tags.length > 0 && (
             <Flex gap="2" wrap="wrap">
               {stream.tags.map((tag) => (
