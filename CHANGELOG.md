@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.16.0
+
+### Minor Changes
+
+- e4b40dd: Blur images in stream chat
+- 33acce5: UX improvements to zap modal
+- 5a537ab: Add toggle chat button to mobile stream view
+- 086279e: Add user likes tab under profile view
+
+### Patch Changes
+
+- 33acce5: Fixed bug with stream loading wrong chat
+- 871d699: Fix blured images opening when clicked
+
 ## 0.15.0
 
 ### Minor Changes
