@@ -1,39 +1,40 @@
 import {
+  Box,
   Button,
   Flex,
-  IconButton,
+  Heading,
+  Image,
   Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   ModalProps,
   Text,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { getUserDisplayName } from "../helpers/user-metadata";
-import { NostrEvent } from "../types/nostr-event";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import { useForm } from "react-hook-form";
 import { UserAvatar } from "./user-avatar";
-import { useUserMetadata } from "../hooks/use-user-metadata";
 import { UserLink } from "./user-link";
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
-import { ExternalLinkIcon, LightningIcon, QrCodeIcon } from "./icons";
-import { nip57 } from "nostr-tools";
+import { LightningIcon } from "./icons";
+import { Kind } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
 import { useSigningContext } from "../providers/signing-provider";
-import QrCodeSvg from "./qr-code-svg";
-import { CopyIconButton } from "./copy-icon-button";
-import { useIsMobile } from "../hooks/use-is-mobile";
 import appSettings from "../services/app-settings";
 import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
 import { requestZapInvoice } from "../helpers/zaps";
+import { ParsedStream, getATag } from "../helpers/nostr/stream";
+import EmbeddedNote from "./note/embedded-note";
+import dayjs from "dayjs";
+import { unique } from "../helpers/array";
+import { useUserRelays } from "../hooks/use-user-relays";
+import { RelayMode } from "../classes/relay";
+import relayScoreboardService from "../services/relay-scoreboard";
 
 type FormValues = {
   amount: number;
@@ -41,29 +42,30 @@ type FormValues = {
 };
 
 export type ZapModalProps = Omit<ModalProps, "children"> & {
-  event?: NostrEvent;
   pubkey: string;
-  onPaid?: () => void;
+  event?: NostrEvent;
+  stream?: ParsedStream;
   initialComment?: string;
   initialAmount?: number;
+  onInvoice: (invoice: string) => void;
 };
 
 export default function ZapModal({
   event,
   pubkey,
+  stream,
   onClose,
-  onPaid,
   initialComment,
   initialAmount,
+  onInvoice,
   ...props
 }: ZapModalProps) {
-  const isMobile = useIsMobile();
-  const metadata = useUserMetadata(pubkey);
-  const { requestSignature } = useSigningContext();
   const toast = useToast();
-  const [promptInvoice, setPromptInvoice] = useState<string>();
-  const { isOpen: showQr, onToggle: toggleQr } = useDisclosure();
+  const { requestSignature } = useSigningContext();
   const { customZapAmounts } = useSubject(appSettings);
+  const userReadRelays = useUserRelays(pubkey)
+    .filter((r) => r.mode & RelayMode.READ)
+    .map((r) => r.url);
 
   const {
     register,
@@ -84,7 +86,7 @@ export default function ZapModal({
   const canZap = lnurlMetadata?.allowsNostr && lnurlMetadata?.nostrPubkey;
   const actionName = canZap ? "Zap" : "Tip";
 
-  const onSubmitZap: SubmitHandler<FormValues> = async (values) => {
+  const onSubmitZap = handleSubmit(async (values) => {
     try {
       if (!tipAddress) throw new Error("No lightning address");
       if (lnurlMetadata) {
@@ -93,21 +95,29 @@ export default function ZapModal({
         if (amountInMilisat > lnurlMetadata.maxSendable) throw new Error("amount to large");
         if (amountInMilisat < lnurlMetadata.minSendable) throw new Error("amount to small");
         if (canZap) {
-          const otherRelays = event ? getEventRelays(event.id).value : [];
-          const readRelays = clientRelaysService.getReadUrls();
+          const eventRelays = event ? getEventRelays(event.id).value : [];
+          const eventRelaysRanked = relayScoreboardService.getRankedRelays(eventRelays).slice(0, 4);
+          const writeRelays = clientRelaysService.getWriteUrls();
+          const writeRelaysRanked = relayScoreboardService.getRankedRelays(writeRelays).slice(0, 4);
+          const userReadRelaysRanked = relayScoreboardService.getRankedRelays(userReadRelays).slice(0, 4);
 
-          const zapRequest = nip57.makeZapRequest({
-            profile: pubkey,
-            event: event?.id ?? null,
-            relays: [...otherRelays, ...readRelays],
-            amount: amountInMilisat,
-            comment: values.comment,
-          });
+          const zapRequest: DraftNostrEvent = {
+            kind: Kind.ZapRequest,
+            created_at: dayjs().unix(),
+            content: values.comment,
+            tags: [
+              ["p", pubkey],
+              ["relays", ...unique([...writeRelaysRanked, ...userReadRelaysRanked, ...eventRelaysRanked])],
+              ["amount", String(amountInMilisat)],
+            ],
+          };
+          if (event) zapRequest.tags.push(["e", event.id]);
+          if (stream) zapRequest.tags.push(["a", getATag(stream)]);
 
           const signed = await requestSignature(zapRequest);
           if (signed) {
             const payRequest = await requestZapInvoice(signed, lnurlMetadata.callback);
-            payInvoice(payRequest);
+            await onInvoice(payRequest);
           }
         } else {
           const callbackUrl = new URL(lnurlMetadata.callback);
@@ -119,143 +129,83 @@ export default function ZapModal({
             const parsed = parsePaymentRequest(payRequest);
             if (parsed.amount !== amountInMilisat) throw new Error("incorrect amount");
 
-            payInvoice(payRequest);
+            await onInvoice(payRequest);
           } else throw new Error("Failed to get invoice");
         }
       } else throw new Error("Failed to get LNURL metadata");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }
-  };
-
-  const payWithWebLn = async (invoice: string) => {
-    if (window.webln && invoice) {
-      if (!window.webln.enabled) await window.webln.enable();
-      await window.webln.sendPayment(invoice);
-
-      toast({
-        title: actionName + " sent",
-        status: "success",
-        duration: 3000,
-      });
-
-      if (onPaid) onPaid();
-      onClose();
-    }
-  };
-  const payWithApp = async (invoice: string) => {
-    window.open("lightning:" + invoice);
-
-    const listener = () => {
-      if (document.visibilityState === "visible") {
-        if (onPaid) onPaid();
-        onClose();
-        document.removeEventListener("visibilitychange", listener);
-      }
-    };
-    setTimeout(() => {
-      document.addEventListener("visibilitychange", listener);
-    }, 1000 * 2);
-  };
-
-  const payInvoice = async (invoice: string) => {
-    if (appSettings.value.autoPayWithWebLN) {
-      await payWithWebLn(invoice);
-    }
-    setPromptInvoice(invoice);
-  };
-
-  const handleClose = () => {
-    // if there was an invoice and we are closing the modal. presume it was paid
-    if (promptInvoice && onPaid) {
-      onPaid();
-    }
-    onClose();
-  };
+  });
 
   return (
-    <Modal onClose={handleClose} {...props}>
+    <Modal onClose={onClose} size="xl" {...props}>
       <ModalOverlay />
       <ModalContent>
+        <ModalCloseButton />
         <ModalBody padding="4">
-          {promptInvoice ? (
+          <form onSubmit={onSubmitZap}>
             <Flex gap="4" direction="column">
-              {showQr && <QrCodeSvg content={promptInvoice} />}
-              <Flex gap="2">
-                <Input value={promptInvoice} readOnly />
-                <IconButton
-                  icon={<QrCodeIcon />}
-                  aria-label="Show QrCode"
-                  onClick={toggleQr}
-                  variant="solid"
-                  size="md"
-                />
-                <CopyIconButton text={promptInvoice} aria-label="Copy Invoice" variant="solid" size="md" />
+              <Flex gap="2" alignItems="center">
+                <UserAvatar pubkey={pubkey} size="md" />
+                <Box>
+                  <UserLink pubkey={pubkey} fontWeight="bold" />
+                  <Text>{tipAddress}</Text>
+                </Box>
               </Flex>
+
+              {stream && (
+                <Box>
+                  <Heading size="sm" mb="2">
+                    Stream: {stream.title}
+                  </Heading>
+                  {stream.image && <Image src={stream.image} />}
+                </Box>
+              )}
+              {event && <EmbeddedNote note={event} />}
+
+              {(canZap || lnurlMetadata?.commentAllowed) && (
+                <Input
+                  placeholder="Comment"
+                  {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
+                  autoComplete="off"
+                  autoFocus={!initialComment}
+                />
+              )}
+
+              <Flex gap="2" alignItems="center" flexWrap="wrap">
+                {customZapAmounts
+                  .split(",")
+                  .map((v) => parseInt(v))
+                  .map((amount, i) => (
+                    <Button
+                      key={amount + i}
+                      onClick={() => {
+                        setValue("amount", amount);
+                      }}
+                      leftIcon={<LightningIcon color="yellow.400" />}
+                      variant="solid"
+                    >
+                      {amount}
+                    </Button>
+                  ))}
+              </Flex>
+
               <Flex gap="2">
-                {window.webln && (
-                  <Button onClick={() => payWithWebLn(promptInvoice)} flex={1} variant="solid" size="md">
-                    Pay with WebLN
-                  </Button>
-                )}
-                <Button
-                  leftIcon={<ExternalLinkIcon />}
-                  onClick={() => payWithApp(promptInvoice)}
+                <Input
+                  type="number"
+                  placeholder="Custom amount"
+                  isInvalid={!!errors.amount}
+                  step={1}
                   flex={1}
-                  variant="solid"
-                  size="md"
-                >
-                  Open App
+                  {...register("amount", { valueAsNumber: true, min: 1 })}
+                />
+                <Button leftIcon={<LightningIcon />} type="submit" isLoading={isSubmitting} variant="solid" size="md">
+                  {actionName} {readablizeSats(watch("amount"))} sats
                 </Button>
               </Flex>
             </Flex>
-          ) : (
-            <form onSubmit={handleSubmit(onSubmitZap)}>
-              <Flex gap="4" direction="column">
-                <Flex gap="2" alignItems="center">
-                  <UserAvatar pubkey={pubkey} size="sm" />
-                  <Text>{actionName}</Text>
-                  <UserLink pubkey={pubkey} />
-                </Flex>
-                <Flex gap="2" alignItems="center" flexWrap="wrap">
-                  {customZapAmounts
-                    .split(",")
-                    .map((v) => parseInt(v))
-                    .map((amount, i) => (
-                      <Button key={amount + i} onClick={() => setValue("amount", amount)} size="sm" variant="outline">
-                        {amount}
-                      </Button>
-                    ))}
-                </Flex>
-                <Flex gap="2">
-                  <InputGroup maxWidth={32}>
-                    {!isMobile && (
-                      <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
-                        <LightningIcon fontSize="1rem" color="yellow.400" />
-                      </InputLeftElement>
-                    )}
-                    <Input
-                      type="number"
-                      placeholder="amount"
-                      isInvalid={!!errors.amount}
-                      step={1}
-                      {...register("amount", { valueAsNumber: true, min: 1, required: true })}
-                    />
-                  </InputGroup>
-                  {(canZap || lnurlMetadata?.commentAllowed) && (
-                    <Input
-                      placeholder="Comment"
-                      {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
-                      autoComplete="off"
-                    />
-                  )}
-                </Flex>
-                <Button leftIcon={<LightningIcon />} type="submit" isLoading={isSubmitting} variant="solid" size="md">
-                  {actionName} {getUserDisplayName(metadata, pubkey)} {readablizeSats(watch("amount"))} sats
-                </Button>
-              </Flex>
-            </form>
-          )}
+          </form>
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -61,7 +61,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
 }
 
 export function getATag(stream: ParsedStream) {
-  return `${stream.event.kind}:${stream.author}:${stream.starts}`;
+  return `${stream.event.kind}:${stream.author}:${stream.identifier}`;
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {

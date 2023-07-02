@@ -31,7 +31,6 @@ export default function InvoiceModal({
         await window.webln.sendPayment(invoice);
 
         if (onPaid) onPaid();
-        onClose();
       }
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

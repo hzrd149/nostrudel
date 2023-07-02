@@ -11,12 +11,6 @@ import {
   Heading,
   IconButton,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Spacer,
   Text,
   useDisclosure,
@@ -30,7 +24,7 @@ import useSubject from "../../../hooks/use-subject";
 import { truncatedId } from "../../../helpers/nostr-event";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "../../../types/nostr-event";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
@@ -50,14 +44,13 @@ import { useUserRelays } from "../../../hooks/use-user-relays";
 import { RelayMode } from "../../../classes/relay";
 import { unique } from "../../../helpers/array";
 import { LightningIcon } from "../../../components/icons";
-import { parseZapEvent, requestZapInvoice } from "../../../helpers/zaps";
+import { parseZapEvent } from "../../../helpers/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
-import { Kind } from "nostr-tools";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import { useInvoiceModalContext } from "../../../providers/invoice-modal";
 import { ImageGalleryProvider } from "../../../components/image-gallery";
-import appSettings from "../../../services/app-settings";
 import { TrustProvider } from "../../../providers/trust";
+import ZapModal from "../../../components/zap-modal";
 
 function ChatMessageContent({ event }: { event: NostrEvent }) {
   const content = useMemo(() => {
@@ -133,11 +126,10 @@ export default function StreamChat({
   actions,
   ...props
 }: CardProps & { stream: ParsedStream; actions?: React.ReactNode }) {
-  const { customZapAmounts } = useSubject(appSettings);
   const toast = useToast();
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
-  const writeRelays = useUserRelays(stream.author)
+  const userReadRelays = useUserRelays(stream.author)
     .filter((r) => r.mode & RelayMode.READ)
     .map((r) => r.url);
 
@@ -160,44 +152,16 @@ export default function StreamChat({
       const draft = buildChatMessage(stream, values.content);
       const signed = await requestSignature(draft);
       if (!signed) throw new Error("Failed to sign");
-      nostrPostAction(unique([...contextRelays, ...writeRelays]), signed);
+      nostrPostAction(unique([...contextRelays, ...userReadRelays]), signed);
       reset();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   });
 
-  const zapAmountModal = useDisclosure();
+  const zapModal = useDisclosure();
   const { requestPay } = useInvoiceModalContext();
   const zapMetadata = useUserLNURLMetadata(stream.author);
-  const zapMessage = async (amount: number) => {
-    try {
-      if (!zapMetadata.metadata?.callback) throw new Error("bad lnurl endpoint");
-
-      const content = getValues().content;
-      const zapRequest: DraftNostrEvent = {
-        kind: Kind.ZapRequest,
-        created_at: dayjs().unix(),
-        content,
-        tags: [
-          ["p", stream.author],
-          ["a", getATag(stream)],
-          ["relays", ...writeRelays],
-          ["amount", String(amount * 1000)],
-        ],
-      };
-
-      const signed = await requestSignature(zapRequest);
-      if (!signed) throw new Error("Failed to sign");
-
-      const invoice = await requestZapInvoice(signed, zapMetadata.metadata.callback);
-      await requestPay(invoice);
-
-      reset();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  };
 
   return (
     <>
@@ -247,7 +211,7 @@ export default function StreamChat({
                     aria-label="Zap stream"
                     borderColor="yellow.400"
                     variant="outline"
-                    onClick={zapAmountModal.onOpen}
+                    onClick={zapModal.onOpen}
                   />
                 )}
               </Box>
@@ -255,33 +219,20 @@ export default function StreamChat({
           </Card>
         </ImageGalleryProvider>
       </IntersectionObserverProvider>
-      <Modal isOpen={zapAmountModal.isOpen} onClose={zapAmountModal.onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader pb="0">Zap Amount</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Flex gap="2" alignItems="center" flexWrap="wrap">
-              {customZapAmounts
-                .split(",")
-                .map((v) => parseInt(v))
-                .map((amount, i) => (
-                  <Button
-                    key={amount + i}
-                    onClick={() => {
-                      zapAmountModal.onClose();
-                      zapMessage(amount);
-                    }}
-                    size="sm"
-                    variant="outline"
-                  >
-                    {amount}
-                  </Button>
-                ))}
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      {zapModal.isOpen && (
+        <ZapModal
+          isOpen
+          stream={stream}
+          pubkey={stream.author}
+          onInvoice={async (invoice) => {
+            reset();
+            zapModal.onClose();
+            await requestPay(invoice);
+          }}
+          onClose={zapModal.onClose}
+          initialComment={getValues().content}
+        />
+      )}
     </>
   );
 }
