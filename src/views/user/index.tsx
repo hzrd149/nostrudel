@@ -46,6 +46,7 @@ const tabs = [
   { label: "Media", path: "media" },
   { label: "Zaps", path: "zaps" },
   { label: "Following", path: "following" },
+  { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },

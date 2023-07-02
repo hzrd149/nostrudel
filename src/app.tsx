@@ -34,6 +34,7 @@ import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
+import UserLikesTab from "./views/user/likes";
 
 const LiveStreamsTab = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -73,6 +74,7 @@ const router = createHashRouter([
           { path: "notes", element: <UserNotesTab /> },
           { path: "media", element: <UserMediaTab /> },
           { path: "zaps", element: <UserZapsTab /> },
+          { path: "likes", element: <UserLikesTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },
