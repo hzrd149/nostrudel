@@ -25,7 +25,12 @@ export class RelayPoolService {
 
     const relay = this.relays.get(url) as Relay;
     if (connect && !relay.okay) {
-      relay.open();
+      try {
+        relay.open();
+      } catch (e) {
+        console.log(`Failed to connect to ${relay.url}`);
+        console.log(e);
+      }
     }
     return relay;
   }
@@ -42,7 +47,12 @@ export class RelayPoolService {
     for (const [url, relay] of this.relays.entries()) {
       const claims = this.getRelayClaims(url).size;
       if (!relay.okay && claims > 0) {
-        relay.open();
+        try {
+          relay.open();
+        } catch (e) {
+          console.log(`Failed to connect to ${relay.url}`);
+          console.log(e);
+        }
       }
     }
   }
