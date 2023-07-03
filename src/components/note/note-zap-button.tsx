@@ -11,7 +11,12 @@ import ZapModal from "../zap-modal";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 
-export default function NoteZapButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function NoteZapButton({
+  note,
+  allowComment,
+  showEventPreview,
+  ...props
+}: { note: NostrEvent; allowComment?: boolean; showEventPreview?: boolean } & Omit<ButtonProps, "children">) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(note.pubkey);
   const { requestPay } = useInvoiceModalContext();
@@ -40,7 +45,15 @@ export default function NoteZapButton({ note, ...props }: { note: NostrEvent } &
         {readablizeSats(totalZaps(zaps) / 1000)}
       </Button>
       {isOpen && (
-        <ZapModal isOpen={isOpen} onClose={onClose} event={note} onInvoice={handleInvoice} pubkey={note.pubkey} />
+        <ZapModal
+          isOpen={isOpen}
+          onClose={onClose}
+          event={note}
+          onInvoice={handleInvoice}
+          pubkey={note.pubkey}
+          allowComment={allowComment}
+          showEventPreview={showEventPreview}
+        />
       )}
     </>
   );

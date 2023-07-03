@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Select, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Select, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
@@ -20,7 +20,6 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
-  const { isOpen, onToggle } = useDisclosure();
   const ref = useRef<HTMLDivElement | null>(null);
 
   useRegisterIntersectionEntity(ref, zapEvent.id);
@@ -51,14 +50,9 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
               <Text>{readablizeSats(payment.amount / 1000)} sats</Text>
             </Flex>
           )}
-          {request.content && (
-            <Button variant="link" onClick={onToggle}>
-              Show message
-            </Button>
-          )}
           <Text ml="auto">{dayjs.unix(request.created_at).fromNow()}</Text>
         </Flex>
-        {request.content && isOpen && <Text>{request.content}</Text>}
+        {request.content && <Text>{request.content}</Text>}
       </Box>
     );
   } catch (e) {

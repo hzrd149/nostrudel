@@ -48,6 +48,8 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   initialComment?: string;
   initialAmount?: number;
   onInvoice: (invoice: string) => void;
+  allowComment?: boolean;
+  showEventPreview?: boolean;
 };
 
 export default function ZapModal({
@@ -58,6 +60,8 @@ export default function ZapModal({
   initialComment,
   initialAmount,
   onInvoice,
+  allowComment = true,
+  showEventPreview = true,
   ...props
 }: ZapModalProps) {
   const toast = useToast();
@@ -146,15 +150,15 @@ export default function ZapModal({
         <ModalBody padding="4">
           <form onSubmit={onSubmitZap}>
             <Flex gap="4" direction="column">
-              <Flex gap="2" alignItems="center">
+              <Flex gap="2" alignItems="center" overflow="hidden">
                 <UserAvatar pubkey={pubkey} size="md" />
                 <Box>
                   <UserLink pubkey={pubkey} fontWeight="bold" />
-                  <Text>{tipAddress}</Text>
+                  <Text isTruncated>{tipAddress}</Text>
                 </Box>
               </Flex>
 
-              {stream && (
+              {showEventPreview && stream && (
                 <Box>
                   <Heading size="sm" mb="2">
                     Stream: {stream.title}
@@ -162,9 +166,9 @@ export default function ZapModal({
                   {stream.image && <Image src={stream.image} />}
                 </Box>
               )}
-              {event && <EmbeddedNote note={event} />}
+              {showEventPreview && event && <EmbeddedNote note={event} />}
 
-              {(canZap || lnurlMetadata?.commentAllowed) && (
+              {allowComment && (canZap || lnurlMetadata?.commentAllowed) && (
                 <Input
                   placeholder="Comment"
                   {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}

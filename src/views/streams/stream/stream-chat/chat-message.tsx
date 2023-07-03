@@ -16,7 +16,7 @@ export default function ChatMessage({ event, stream }: { event: NostrEvent; stre
   return (
     <TrustProvider event={event}>
       <Box>
-        <NoteZapButton note={event} size="xs" variant="ghost" float="right" ml="2" />
+        <NoteZapButton note={event} size="xs" variant="ghost" float="right" ml="2" allowComment={false} />
         <Text ref={ref}>
           <UserAvatar pubkey={event.pubkey} size="xs" display="inline-block" mr="2" />
           <Text as="span" fontWeight="bold" color={event.pubkey === stream.author ? "rgb(248, 56, 217)" : "cyan"}>
