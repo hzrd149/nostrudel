@@ -23,7 +23,7 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
   const scrollState = useScroll(scrollBox);
 
   const action =
-    scrollState.y < 256 ? (
+    scrollState.y === 0 ? (
       <Button
         size="sm"
         onClick={() => scrollBox.current?.scroll(0, scrollBox.current.scrollHeight)}
@@ -69,6 +69,7 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
         flexGrow={1}
         maxW={isMobile ? undefined : "lg"}
         maxH="100vh"
+        minH={isMobile ? "100vh" : undefined}
         flexShrink={0}
         actions={isMobile && action}
       />

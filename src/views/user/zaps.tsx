@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Select, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
@@ -97,7 +97,16 @@ const UserZapsTab = () => {
     { eventFilter }
   );
 
-  const zaps = useSubject(timeline.timeline);
+  const events = useSubject(timeline.timeline);
+  const zaps = useMemo(() => {
+    const parsed = [];
+    for (const zap of events) {
+      try {
+        parsed.push(parseZapEvent(zap));
+      } catch (e) {}
+    }
+    return parsed;
+  }, [events]);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -111,17 +120,17 @@ const UserZapsTab = () => {
             <option value="note">Note Zaps</option>
             <option value="profile">Profile Zaps</option>
           </Select>
-          {zaps.length && (
+          {events.length && (
             <Flex gap="2">
               <LightningIcon color="yellow.400" />
               <Text>
                 {readablizeSats(totalZaps(zaps) / 1000)} sats in the last{" "}
-                {dayjs.unix(zaps[zaps.length - 1].created_at).fromNow(true)}
+                {dayjs.unix(events[events.length - 1].created_at).fromNow(true)}
               </Text>
             </Flex>
           )}
         </Flex>
-        {zaps.map((event) => (
+        {events.map((event) => (
           <ErrorBoundary key={event.id}>
             <Zap zapEvent={event} />
           </ErrorBoundary>

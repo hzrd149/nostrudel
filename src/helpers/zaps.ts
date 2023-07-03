@@ -1,6 +1,6 @@
 import { bech32 } from "@scure/base";
 import { isETag, isPTag, NostrEvent } from "../types/nostr-event";
-import { parsePaymentRequest } from "./bolt11";
+import { ParsedInvoice, parsePaymentRequest } from "./bolt11";
 
 import { Kind0ParsedContent } from "./user-metadata";
 import { nip57, utils } from "nostr-tools";
@@ -41,21 +41,18 @@ export function isProfileZap(event: NostrEvent) {
   return !isNoteZap(event) && event.tags.some(isPTag);
 }
 
-export function totalZaps(events: NostrEvent[]) {
-  let total = 0;
-  for (const event of events) {
-    const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
-    try {
-      if (bolt11) {
-        const parsed = parsePaymentRequest(bolt11);
-        if (parsed.amount) total += parsed.amount;
-      }
-    } catch (e) {}
-  }
-  return total;
+export function totalZaps(zaps: ParsedZap[]) {
+  return zaps.reduce((t, zap) => t + (zap.payment.amount || 0), 0);
 }
 
-function parseZapEvent(event: NostrEvent) {
+export type ParsedZap = {
+  event: NostrEvent;
+  request: NostrEvent;
+  payment: ParsedInvoice;
+  eventId?: string;
+};
+
+function parseZapEvent(event: NostrEvent): ParsedZap {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");
 
@@ -65,14 +62,14 @@ function parseZapEvent(event: NostrEvent) {
   const error = nip57.validateZapRequest(zapRequestStr);
   if (error) throw new Error(error);
 
-  const zapRequest = JSON.parse(zapRequestStr) as NostrEvent;
+  const request = JSON.parse(zapRequestStr) as NostrEvent;
   const payment = parsePaymentRequest(bolt11);
 
-  const eventId = zapRequest.tags.find(isETag)?.[1];
+  const eventId = request.tags.find(isETag)?.[1];
 
   return {
-    zap: event,
-    request: zapRequest,
+    event,
+    request,
     payment,
     eventId,
   };
