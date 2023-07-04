@@ -6,7 +6,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
-import { ParsedStream, parseStreamEvent } from "../../helpers/nostr/stream";
+import { ParsedStream, getATag, parseStreamEvent } from "../../helpers/nostr/stream";
 import { NostrEvent } from "../../types/nostr-event";
 
 export default function LiveStreamsTab() {
@@ -29,13 +29,17 @@ export default function LiveStreamsTab() {
 
   const events = useSubject(timeline.timeline);
   const streams = useMemo(() => {
-    const parsed: ParsedStream[] = [];
+    const parsedStreams: Record<string, ParsedStream> = {};
     for (const event of events) {
       try {
-        parsed.push(parseStreamEvent(event));
+        const parsed = parseStreamEvent(event);
+        const aTag = getATag(parsed);
+        if (!parsedStreams[aTag] || parsed.event.created_at > parsedStreams[aTag].event.created_at) {
+          parsedStreams[aTag] = parsed;
+        }
       } catch (e) {}
     }
-    return parsed.sort((a, b) => b.updated - a.updated);
+    return Array.from(Object.values(parsedStreams)).sort((a, b) => b.updated - a.updated);
   }, [events]);
 
   return (
