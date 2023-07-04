@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   Box,
   Button,
@@ -36,6 +36,9 @@ import useSubject from "../../../../hooks/use-subject";
 import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
 import { truncatedId } from "../../../../helpers/nostr-event";
 import { css } from "@emotion/react";
+import TopZappers from "./top-zappers";
+import { Kind } from "nostr-tools";
+import { parseZapEvent } from "../../../../helpers/zaps";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -66,6 +69,16 @@ export default function StreamChat({
   });
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
+
+  const zaps = useMemo(() => {
+    const parsed = [];
+    for (const event of events) {
+      try {
+        parsed.push(parseZapEvent(event));
+      } catch (e) {}
+    }
+    return parsed;
+  }, [events]);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -104,7 +117,8 @@ export default function StreamChat({
                 {actions}
               </CardHeader>
             )}
-            <CardBody display="flex" flexDirection="column" gap="2" overflow="hidden" p={0}>
+            <CardBody display="flex" flexDirection="column" overflow="hidden" p={0}>
+              <TopZappers zaps={zaps} pt={!isPopup ? 0 : undefined} />
               <Flex
                 overflowY="scroll"
                 overflowX="hidden"
@@ -113,6 +127,7 @@ export default function StreamChat({
                 flex={1}
                 px="4"
                 py="2"
+                mb="2"
                 gap="2"
                 css={isChatLog && hideScrollbar}
               >

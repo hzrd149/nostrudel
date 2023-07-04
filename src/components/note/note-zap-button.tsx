@@ -1,4 +1,4 @@
-import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { readablizeSats } from "../../helpers/bolt11";
 import { totalZaps } from "../../helpers/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -31,19 +31,33 @@ export default function NoteZapButton({
     eventZapsService.requestZaps(note.id, clientRelaysService.getReadUrls(), true);
   };
 
+  const total = totalZaps(zaps);
+
   return (
     <>
-      <Button
-        leftIcon={<LightningIcon color="yellow.500" />}
-        aria-label="Zap Note"
-        title="Zap Note"
-        colorScheme={hasZapped ? "brand" : undefined}
-        {...props}
-        onClick={onOpen}
-        isDisabled={!metadata?.allowsNostr}
-      >
-        {readablizeSats(totalZaps(zaps) / 1000)}
-      </Button>
+      {total > 0 ? (
+        <Button
+          leftIcon={<LightningIcon />}
+          aria-label="Zap Note"
+          title="Zap Note"
+          colorScheme={hasZapped ? "brand" : undefined}
+          {...props}
+          onClick={onOpen}
+          isDisabled={!metadata?.allowsNostr}
+        >
+          {readablizeSats(total / 1000)}
+        </Button>
+      ) : (
+        <IconButton
+          icon={<LightningIcon />}
+          aria-label="Zap Note"
+          title="Zap Note"
+          {...props}
+          onClick={onOpen}
+          isDisabled={!metadata?.allowsNostr}
+        />
+      )}
+
       {isOpen && (
         <ZapModal
           isOpen={isOpen}

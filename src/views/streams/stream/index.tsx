@@ -44,12 +44,14 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
     return (
       <ButtonGroup>
         {isMobile && toggleButton}
-        <CopyIconButton
-          text={location.href + "?displayMode=log&colorMode=dark"}
-          aria-label="Copy chat log URL"
-          title="Copy chat log URL"
-          size="sm"
-        />
+        {!isMobile && (
+          <CopyIconButton
+            text={location.href + "?displayMode=log&colorMode=dark"}
+            aria-label="Copy chat log URL"
+            title="Copy chat log URL"
+            size="sm"
+          />
+        )}
         <Button
           rightIcon={<ExternalLinkIcon />}
           size="sm"
