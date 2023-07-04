@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 
 export type ParsedStream = {
   event: NostrEvent;
   author: string;
+  host: string;
   title: string;
   summary?: string;
   image?: string;
@@ -42,10 +43,12 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     status = "ended";
   }
 
+  const host = stream.tags.filter(isPTag)[0]?.[1] ?? stream.pubkey;
   const tags = unique(stream.tags.filter((t) => t[0] === "t" && t[1]).map((t) => t[1] as string));
 
   return {
     author: stream.pubkey,
+    host,
     event: stream,
     updated: stream.created_at,
     streaming,

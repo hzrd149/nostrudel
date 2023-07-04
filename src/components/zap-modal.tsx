@@ -35,6 +35,7 @@ import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
+import { useAdditionalRelayContext } from "../providers/additional-relay-context";
 
 type FormValues = {
   amount: number;
@@ -50,6 +51,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   onInvoice: (invoice: string) => void;
   allowComment?: boolean;
   showEventPreview?: boolean;
+  additionalRelays?: string[];
 };
 
 export default function ZapModal({
@@ -62,9 +64,11 @@ export default function ZapModal({
   onInvoice,
   allowComment = true,
   showEventPreview = true,
+  additionalRelays = [],
   ...props
 }: ZapModalProps) {
   const toast = useToast();
+  const contextRelays = useAdditionalRelayContext();
   const { requestSignature } = useSigningContext();
   const { customZapAmounts } = useSubject(appSettings);
   const userReadRelays = useUserRelays(pubkey)
@@ -104,6 +108,7 @@ export default function ZapModal({
           const writeRelays = clientRelaysService.getWriteUrls();
           const writeRelaysRanked = relayScoreboardService.getRankedRelays(writeRelays).slice(0, 4);
           const userReadRelaysRanked = relayScoreboardService.getRankedRelays(userReadRelays).slice(0, 4);
+          const contextRelaysRanked = relayScoreboardService.getRankedRelays(contextRelays).slice(0, 4);
 
           const zapRequest: DraftNostrEvent = {
             kind: Kind.ZapRequest,
@@ -111,10 +116,22 @@ export default function ZapModal({
             content: values.comment,
             tags: [
               ["p", pubkey],
-              ["relays", ...unique([...writeRelaysRanked, ...userReadRelaysRanked, ...eventRelaysRanked])],
+              [
+                "relays",
+                ...unique([
+                  ...contextRelaysRanked,
+                  ...writeRelaysRanked,
+                  ...userReadRelaysRanked,
+                  ...eventRelaysRanked,
+                  ...additionalRelays,
+                ]),
+              ],
               ["amount", String(amountInMilisat)],
             ],
           };
+
+          console.log(zapRequest);
+
           if (event) zapRequest.tags.push(["e", event.id]);
           if (stream) zapRequest.tags.push(["a", getATag(stream)]);
 

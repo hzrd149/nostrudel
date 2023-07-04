@@ -35,16 +35,28 @@ import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-tim
 import useSubject from "../../../../hooks/use-subject";
 import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
 import { truncatedId } from "../../../../helpers/nostr-event";
+import { css } from "@emotion/react";
+
+const hideScrollbar = css`
+  scrollbar-width: 0;
+
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+`;
+
+export type ChatDisplayMode = "log" | "popup";
 
 export default function StreamChat({
   stream,
   actions,
+  displayMode,
   ...props
-}: CardProps & { stream: ParsedStream; actions?: React.ReactNode }) {
+}: CardProps & { stream: ParsedStream; actions?: React.ReactNode; displayMode?: ChatDisplayMode }) {
   const toast = useToast();
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
-  const userReadRelays = useUserRelays(stream.author)
+  const hostReadRelays = useUserRelays(stream.host)
     .filter((r) => r.mode & RelayMode.READ)
     .map((r) => r.url);
 
@@ -67,7 +79,7 @@ export default function StreamChat({
       const draft = buildChatMessage(stream, values.content);
       const signed = await requestSignature(draft);
       if (!signed) throw new Error("Failed to sign");
-      nostrPostAction(unique([...contextRelays, ...userReadRelays]), signed);
+      nostrPostAction(unique([...contextRelays, ...hostReadRelays]), signed);
       reset();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -76,17 +88,22 @@ export default function StreamChat({
 
   const zapModal = useDisclosure();
   const { requestPay } = useInvoiceModalContext();
-  const zapMetadata = useUserLNURLMetadata(stream.author);
+  const zapMetadata = useUserLNURLMetadata(stream.host);
+
+  const isPopup = !!displayMode;
+  const isChatLog = displayMode === "log";
 
   return (
     <>
       <IntersectionObserverProvider callback={callback} root={scrollBox}>
         <ImageGalleryProvider>
-          <Card {...props} overflow="hidden">
-            <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
-              <Heading size="md">Stream Chat</Heading>
-              {actions}
-            </CardHeader>
+          <Card {...props} overflow="hidden" background={isChatLog ? "transparent" : undefined}>
+            {!isPopup && (
+              <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
+                <Heading size="md">Stream Chat</Heading>
+                {actions}
+              </CardHeader>
+            )}
             <CardBody display="flex" flexDirection="column" gap="2" overflow="hidden" p={0}>
               <Flex
                 overflowY="scroll"
@@ -97,6 +114,7 @@ export default function StreamChat({
                 px="4"
                 py="2"
                 gap="2"
+                css={isChatLog && hideScrollbar}
               >
                 {events.map((event) =>
                   event.kind === 1311 ? (
@@ -106,30 +124,32 @@ export default function StreamChat({
                   )
                 )}
               </Flex>
-              <Box
-                as="form"
-                borderRadius="md"
-                flexShrink={0}
-                display="flex"
-                gap="2"
-                px="2"
-                pb="2"
-                onSubmit={sendMessage}
-              >
-                <Input placeholder="Message" {...register("content", { required: true })} autoComplete="off" />
-                <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
-                  Send
-                </Button>
-                {zapMetadata.metadata?.allowsNostr && (
-                  <IconButton
-                    icon={<LightningIcon color="yellow.400" />}
-                    aria-label="Zap stream"
-                    borderColor="yellow.400"
-                    variant="outline"
-                    onClick={zapModal.onOpen}
-                  />
-                )}
-              </Box>
+              {!isChatLog && (
+                <Box
+                  as="form"
+                  borderRadius="md"
+                  flexShrink={0}
+                  display="flex"
+                  gap="2"
+                  px="2"
+                  pb="2"
+                  onSubmit={sendMessage}
+                >
+                  <Input placeholder="Message" {...register("content", { required: true })} autoComplete="off" />
+                  <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
+                    Send
+                  </Button>
+                  {zapMetadata.metadata?.allowsNostr && (
+                    <IconButton
+                      icon={<LightningIcon color="yellow.400" />}
+                      aria-label="Zap stream"
+                      borderColor="yellow.400"
+                      variant="outline"
+                      onClick={zapModal.onOpen}
+                    />
+                  )}
+                </Box>
+              )}
             </CardBody>
           </Card>
         </ImageGalleryProvider>
@@ -138,7 +158,7 @@ export default function StreamChat({
         <ZapModal
           isOpen
           stream={stream}
-          pubkey={stream.author}
+          pubkey={stream.host}
           onInvoice={async (invoice) => {
             reset();
             zapModal.onClose();
@@ -146,6 +166,7 @@ export default function StreamChat({
           }}
           onClose={zapModal.onClose}
           initialComment={getValues().content}
+          additionalRelays={contextRelays}
         />
       )}
     </>

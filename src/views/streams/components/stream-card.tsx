@@ -43,6 +43,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
     const relays = getEventRelays(stream.event.id).value;
     const ranked = relayScoreboardService.getRankedRelays(relays);
     const onlyTwo = ranked.slice(0, 2);
+
     return nip19.naddrEncode({
       identifier,
       relays: onlyTwo,
@@ -57,9 +58,9 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
         <LinkBox as={CardBody} p="2" display="flex" flexDirection="column" gap="2">
           {image && <Image src={image} alt={title} borderRadius="lg" />}
           <Flex gap="2" alignItems="center">
-            <UserAvatar pubkey={stream.author} size="sm" />
+            <UserAvatar pubkey={stream.host} size="sm" noProxy />
             <Heading size="sm">
-              <UserLink pubkey={stream.author} />
+              <UserLink pubkey={stream.host} />
             </Heading>
           </Flex>
           <Heading size="md">

@@ -1,41 +1,71 @@
 import { useEffect, useRef, useState } from "react";
 import { useScroll } from "react-use";
-import { Box, Button, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useParams, Navigate } from "react-router-dom";
+import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { Link as RouterLink, useParams, Navigate, useSearchParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { Global, css } from "@emotion/react";
 
 import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
 import { NostrRequest } from "../../../classes/nostr-request";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
-import StreamChat from "./stream-chat";
+import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { AdditionalRelayProvider } from "../../../providers/additional-relay-context";
 import StreamSummaryContent from "../components/stream-summary-content";
-import { ArrowDownSIcon, ArrowUpSIcon } from "../../../components/icons";
+import { ArrowDownSIcon, ArrowUpSIcon, ExternalLinkIcon } from "../../../components/icons";
+import useSetColorMode from "../../../hooks/use-set-color-mode";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 
-function StreamPage({ stream }: { stream: ParsedStream }) {
+function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   const isMobile = useIsMobile();
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const scrollState = useScroll(scrollBox);
 
-  const action =
-    scrollState.y === 0 ? (
-      <Button
-        size="sm"
-        onClick={() => scrollBox.current?.scroll(0, scrollBox.current.scrollHeight)}
-        leftIcon={<ArrowDownSIcon />}
-      >
-        View Chat
-      </Button>
-    ) : (
-      <Button size="sm" onClick={() => scrollBox.current?.scroll(0, 0)} leftIcon={<ArrowUpSIcon />}>
-        View Stream
-      </Button>
+  const renderActions = () => {
+    const toggleButton =
+      scrollState.y === 0 ? (
+        <Button
+          size="sm"
+          onClick={() => scrollBox.current?.scroll(0, scrollBox.current.scrollHeight)}
+          leftIcon={<ArrowDownSIcon />}
+        >
+          View Chat
+        </Button>
+      ) : (
+        <Button size="sm" onClick={() => scrollBox.current?.scroll(0, 0)} leftIcon={<ArrowUpSIcon />}>
+          View Stream
+        </Button>
+      );
+
+    return (
+      <ButtonGroup>
+        {isMobile && toggleButton}
+        <CopyIconButton
+          text={location.href + "?displayMode=log&colorMode=dark"}
+          aria-label="Copy chat log URL"
+          title="Copy chat log URL"
+          size="sm"
+        />
+        <Button
+          rightIcon={<ExternalLinkIcon />}
+          size="sm"
+          onClick={() => {
+            const w = 512;
+            const h = 910;
+            const y = window.screenTop + window.innerHeight - h;
+            const x = window.screenLeft + window.innerWidth - w;
+            window.open(location.href + "?displayMode=popup", "_blank", `width=${w},height=${h},left=${x},top=${y}`);
+          }}
+        >
+          Open
+        </Button>
+      </ButtonGroup>
     );
+  };
 
   return (
     <Flex
@@ -43,35 +73,47 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
       overflowX="hidden"
       overflowY="auto"
       direction={isMobile ? "column" : "row"}
-      p={isMobile ? 0 : "2"}
+      p={isMobile || !!displayMode ? 0 : "2"}
       gap={isMobile ? 0 : "4"}
       ref={scrollBox}
     >
-      <Flex gap={isMobile ? "2" : "4"} direction="column" flexGrow={isMobile ? 0 : 1}>
-        <LiveVideoPlayer stream={stream.streaming} autoPlay poster={stream.image} maxH="100vh" />
-        <Flex gap={isMobile ? "2" : "4"} alignItems="center" p={isMobile ? "2" : 0}>
-          <UserAvatarLink pubkey={stream.author} />
-          <Box>
-            <Heading size="md">
-              <UserLink pubkey={stream.author} />
-            </Heading>
-            <Text>{stream.title}</Text>
-          </Box>
-          <Spacer />
-          <Button as={RouterLink} to="/streams">
-            Back
-          </Button>
+      {displayMode && (
+        <Global
+          styles={css`
+            body {
+              background: transparent;
+            }
+          `}
+        />
+      )}
+      {!displayMode && (
+        <Flex gap={isMobile ? "2" : "4"} direction="column" flexGrow={isMobile ? 0 : 1}>
+          <LiveVideoPlayer stream={stream.streaming} autoPlay poster={stream.image} maxH="100vh" />
+          <Flex gap={isMobile ? "2" : "4"} alignItems="center" p={isMobile ? "2" : 0}>
+            <UserAvatarLink pubkey={stream.host} noProxy />
+            <Box>
+              <Heading size="md">
+                <UserLink pubkey={stream.host} />
+              </Heading>
+              <Text>{stream.title}</Text>
+            </Box>
+            <Spacer />
+            <Button as={RouterLink} to="/streams">
+              Back
+            </Button>
+          </Flex>
+          <StreamSummaryContent stream={stream} px={isMobile ? "2" : 0} />
         </Flex>
-        <StreamSummaryContent stream={stream} px={isMobile ? "2" : 0} />
-      </Flex>
+      )}
       <StreamChat
         stream={stream}
         flexGrow={1}
-        maxW={isMobile ? undefined : "lg"}
+        maxW={isMobile || !!displayMode ? undefined : "lg"}
         maxH="100vh"
         minH={isMobile ? "100vh" : undefined}
         flexShrink={0}
-        actions={isMobile && action}
+        actions={renderActions()}
+        displayMode={displayMode}
       />
     </Flex>
   );
@@ -79,6 +121,9 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
 
 export default function StreamView() {
   const { naddr } = useParams();
+  const [params] = useSearchParams();
+  useSetColorMode();
+
   if (!naddr) return <Navigate replace to="/streams" />;
 
   const readRelays = useReadRelayUrls();
@@ -104,8 +149,11 @@ export default function StreamView() {
 
   if (!stream) return <Spinner />;
   return (
-    <AdditionalRelayProvider relays={relays}>
-      <StreamPage stream={stream} />
+    // add snort and damus relays so zap.stream will always see zaps
+    <AdditionalRelayProvider
+      relays={unique([...relays, "wss://relay.snort.social", "wss://relay.damus.io", "wss://nos.lol"])}
+    >
+      <StreamPage stream={stream} displayMode={(params.get("displayMode") as ChatDisplayMode) ?? undefined} />
     </AdditionalRelayProvider>
   );
 }

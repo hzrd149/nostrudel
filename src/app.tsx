@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react";
-import { createHashRouter, Outlet, RouterProvider, ScrollRestoration, useLocation } from "react-router-dom";
+import { createHashRouter, Outlet, RouterProvider, ScrollRestoration, useSearchParams } from "react-router-dom";
 import { Spinner, useColorMode } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
@@ -35,19 +35,24 @@ import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
 import UserLikesTab from "./views/user/likes";
+import useSetColorMode from "./hooks/use-set-color-mode";
 
 const LiveStreamsTab = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => (
-  <Page>
-    <ScrollRestoration />
-    <Suspense fallback={<Spinner />}>
-      <Outlet />
-    </Suspense>
-  </Page>
-);
+const RootPage = () => {
+  useSetColorMode();
+
+  return (
+    <Page>
+      <ScrollRestoration />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
+    </Page>
+  );
+};
 
 const router = createHashRouter([
   {
@@ -118,19 +123,10 @@ const router = createHashRouter([
   },
 ]);
 
-export const App = () => {
-  const { setColorMode } = useColorMode();
-  const { colorMode } = useSubject(appSettings);
-
-  useEffect(() => {
-    setColorMode(colorMode);
-  }, [colorMode]);
-
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<Spinner />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-};
+export const App = () => (
+  <ErrorBoundary>
+    <Suspense fallback={<Spinner />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  </ErrorBoundary>
+);
