@@ -19,15 +19,14 @@ export default function TopZappers({ zaps, ...props }: FlexProps & { zaps: Parse
   return (
     <Flex overflowX="auto" overflowY="hidden" gap="4" py="2" px="4" {...props}>
       {sortedTotals.map(([pubkey, total]) => (
-        <Flex key={pubkey} gap="2" alignItems="center" maxW="sm">
+        <Flex key={pubkey} gap="2" alignItems="center" maxW="2xs">
           <UserAvatar pubkey={pubkey} size="sm" noProxy />
-          <Box>
-            <UserLink pubkey={pubkey} isTruncated fontWeight="bold" />
-            <Text whiteSpace="nowrap">
-              <LightningIcon />
-              {readablizeSats(total / 1000)}
-            </Text>
-          </Box>
+          <Text whiteSpace="nowrap" isTruncated>
+            <UserLink pubkey={pubkey} fontWeight="bold" />
+            <br />
+            <LightningIcon />
+            {readablizeSats(total / 1000)}
+          </Text>
         </Flex>
       ))}
     </Flex>
