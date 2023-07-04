@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import {
   Badge,
@@ -34,10 +34,16 @@ import StreamStatusBadge from "./status-badge";
 import { CodeIcon } from "../../../components/icons";
 import RawValue from "../../../components/debug-modals/raw-value";
 import RawJson from "../../../components/debug-modals/raw-json";
+import { NoteRelays } from "../../../components/note/note-relays";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 
 export default function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, identifier, image } = stream;
   const devModal = useDisclosure();
+
+  // if there is a parent intersection observer, register this card
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, stream.event.id);
 
   const naddr = useMemo(() => {
     const relays = getEventRelays(stream.event.id).value;
@@ -54,7 +60,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
 
   return (
     <>
-      <Card {...props}>
+      <Card {...props} ref={ref}>
         <LinkBox as={CardBody} p="2" display="flex" flexDirection="column" gap="2">
           {image && <Image src={image} alt={title} borderRadius="lg" />}
           <Flex gap="2" alignItems="center">
@@ -81,6 +87,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
         <CardFooter p="2" display="flex" gap="2" alignItems="center">
           <StreamStatusBadge stream={stream} />
           <Spacer />
+          <NoteRelays event={stream.event} />
           <IconButton
             icon={<CodeIcon />}
             aria-label="show raw event"

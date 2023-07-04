@@ -38,8 +38,9 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   if (endTime > dayjs().unix()) {
     status = "ended";
   }
+
   // if the stream has not been updated in a day consider it ended
-  if (stream.created_at < dayjs().subtract(1, "day").unix()) {
+  if (stream.created_at < dayjs().subtract(2, "day").unix()) {
     status = "ended";
   }
 

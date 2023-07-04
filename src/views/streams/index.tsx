@@ -8,9 +8,11 @@ import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
 import { ParsedStream, getATag, parseStreamEvent } from "../../helpers/nostr/stream";
 import { NostrEvent } from "../../types/nostr-event";
+import { RelayIconStack } from "../../components/relay-icon-stack";
 
 export default function LiveStreamsTab() {
-  const readRelays = useReadRelayUrls();
+  // hard code damus and snort relays for finding streams
+  const readRelays = useReadRelayUrls(["wss://relay.damus.io", "wss://relay.snort.social"]);
   const [filterStatus, setFilterStatus] = useState<string>("live");
 
   const eventFilter = useCallback(

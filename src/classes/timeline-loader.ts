@@ -6,7 +6,7 @@ import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 
-const BLOCK_SIZE = 10;
+const BLOCK_SIZE = 20;
 
 type EventFilter = (event: NostrEvent) => boolean;
 

@@ -19,6 +19,7 @@ import StreamSummaryContent from "../components/stream-summary-content";
 import { ArrowDownSIcon, ArrowUpSIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
+import { NoteRelays } from "../../../components/note/note-relays";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   const isMobile = useIsMobile();
@@ -100,6 +101,7 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
               <Text>{stream.title}</Text>
             </Box>
             <Spacer />
+            <NoteRelays event={stream.event} />
             <Button as={RouterLink} to="/streams">
               Back
             </Button>

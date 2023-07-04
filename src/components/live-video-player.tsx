@@ -55,6 +55,7 @@ export function LiveVideoPlayer({
       </Badge>
       <video
         ref={video}
+        playsInline={true}
         controls={status === VideoStatus.Online}
         autoPlay={autoPlay}
         poster={poster}
