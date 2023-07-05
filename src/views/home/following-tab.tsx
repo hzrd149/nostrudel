@@ -1,11 +1,9 @@
-import { Button, Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
+import { Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 import { isReply, truncatedId } from "../../helpers/nostr-event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { AddIcon } from "@chakra-ui/icons";
-import { useCallback, useContext, useRef } from "react";
-import { PostModalContext } from "../../providers/post-modal-provider";
+import { useCallback, useRef } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
@@ -18,7 +16,6 @@ import GenericNoteTimeline from "../../components/generic-note-timeline";
 function FollowingTabBody() {
   const account = useCurrentAccount()!;
   const readRelays = useReadRelayUrls();
-  const { openModal } = useContext(PostModalContext);
   const contacts = useUserContacts(account.pubkey, readRelays);
   const [search, setSearch] = useSearchParams();
   const showReplies = search.has("replies");
@@ -48,15 +45,6 @@ function FollowingTabBody() {
   return (
     <IntersectionObserverProvider callback={callback} root={scrollBox}>
       <Flex py="4" direction="column" gap="2" overflowY="auto" overflowX="hidden" ref={scrollBox}>
-        <Button
-          variant="outline"
-          leftIcon={<AddIcon />}
-          onClick={() => openModal()}
-          isDisabled={account.readonly}
-          flexShrink={0}
-        >
-          New Post
-        </Button>
         <FormControl display="flex" alignItems="center">
           <FormLabel htmlFor="show-replies" mb="0">
             Show Replies

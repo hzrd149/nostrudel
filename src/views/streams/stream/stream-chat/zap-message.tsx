@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ParsedStream } from "../../../../helpers/nostr/stream";
 import { UserAvatar } from "../../../../components/user-avatar";
@@ -11,7 +11,7 @@ import { readablizeSats } from "../../../../helpers/bolt11";
 import { TrustProvider } from "../../../../providers/trust";
 import ChatMessageContent from "./chat-message-content";
 
-export default function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) {
+function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, zap.id);
 
@@ -34,3 +34,6 @@ export default function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: P
     </TrustProvider>
   );
 }
+
+const ZapMessageMemo = React.memo(ZapMessage);
+export default ZapMessageMemo;

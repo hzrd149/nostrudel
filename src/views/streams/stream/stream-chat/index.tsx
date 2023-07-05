@@ -37,7 +37,6 @@ import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
 import { truncatedId } from "../../../../helpers/nostr-event";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";
-import { Kind } from "nostr-tools";
 import { parseZapEvent } from "../../../../helpers/zaps";
 
 const hideScrollbar = css`
