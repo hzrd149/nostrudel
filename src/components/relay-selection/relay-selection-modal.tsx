@@ -15,8 +15,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { RelayFavicon } from "../../components/relay-favicon";
-import { RelayUrlInput } from "../../components/relay-url-input";
+import { RelayFavicon } from "../relay-favicon";
+import { RelayUrlInput } from "../relay-url-input";
 import { normalizeRelayUrl } from "../../helpers/url";
 import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -63,7 +63,7 @@ export default function RelaySelectionModal({
   const relays = useReadRelayUrls([...selected, ...newSelected, ...Array.from(manuallyAddedRelays)]);
 
   return (
-    <Modal isOpen={true} onClose={onClose} closeOnOverlayClick={false}>
+    <Modal isOpen={true} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Select Relays</ModalHeader>
@@ -108,7 +108,7 @@ export default function RelaySelectionModal({
               onClose();
             }}
           >
-            Save
+            Set relays
           </Button>
         </ModalFooter>
       </ModalContent>

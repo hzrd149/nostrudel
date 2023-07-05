@@ -11,7 +11,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import GenericNoteTimeline from "../../components/generic-note-timeline";
+import GenericNoteTimeline from "../../components/timeline/generic-note-timeline";
 
 function FollowingTabBody() {
   const account = useCurrentAccount()!;

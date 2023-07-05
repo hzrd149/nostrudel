@@ -1,10 +1,17 @@
 import dayjs from "dayjs";
 import { utils } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
+
+function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
+  if (Array.isArray(filter)) {
+    return filter.map((f) => ({ ...f, ...query }));
+  }
+  return { ...filter, ...query };
+}
 
 const BLOCK_SIZE = 20;
 
@@ -12,7 +19,7 @@ type EventFilter = (event: NostrEvent) => boolean;
 
 class RelayTimelineLoader {
   relay: string;
-  query: NostrQuery;
+  query: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
   private name?: string;
   private requestId = 0;
@@ -25,7 +32,7 @@ class RelayTimelineLoader {
   onEvent = new Subject<NostrEvent>();
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrQuery, name?: string) {
+  constructor(relay: string, query: NostrRequestFilter, name?: string) {
     this.relay = relay;
     this.query = query;
     this.name = name;
@@ -33,9 +40,9 @@ class RelayTimelineLoader {
 
   loadNextBlock() {
     this.loading = true;
-    const query: NostrQuery = { ...this.query, limit: this.blockSize };
+    let query: NostrRequestFilter = addToQuery(this.query, { limit: this.blockSize });
     if (this.events[this.events.length - 1]) {
-      query.until = this.events[this.events.length - 1].created_at + 1;
+      query = addToQuery(query, { until: this.events[this.events.length - 1].created_at + 1 });
     }
 
     const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
@@ -77,7 +84,7 @@ class RelayTimelineLoader {
 
 export class TimelineLoader {
   cursor = dayjs().unix();
-  query?: NostrQuery;
+  query?: NostrRequestFilter;
   relays: string[] = [];
 
   events = new PersistentSubject<NostrEvent[]>([]);
@@ -145,7 +152,7 @@ export class TimelineLoader {
     this.subscription.setRelays(relays);
     this.updateComplete();
   }
-  setQuery(query: NostrQuery) {
+  setQuery(query: NostrRequestFilter) {
     if (JSON.stringify(this.query) === JSON.stringify(query)) return;
 
     this.removeLoaders();
@@ -160,7 +167,7 @@ export class TimelineLoader {
 
     // update the subscription
     this.subscription.forgetEvents();
-    this.subscription.setQuery({ ...query, limit: BLOCK_SIZE / 2 });
+    this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
   }
   setFilter(filter?: (event: NostrEvent) => boolean) {
     this.eventFilter = filter;
@@ -219,6 +226,12 @@ export class TimelineLoader {
   }
   close() {
     this.subscription.close();
+  }
+
+  reset() {
+    this.cursor = dayjs().unix();
+    this.relayTimelineLoaders.clear();
+    this.forgetEvents();
   }
 
   // TODO: this is only needed because the current logic dose not remove events when the relay they where fetched from is removed

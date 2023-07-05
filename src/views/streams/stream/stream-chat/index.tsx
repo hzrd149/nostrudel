@@ -14,7 +14,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import { ParsedStream, buildChatMessage, getATag } from "../../../../helpers/nostr/stream";
+import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, buildChatMessage, getATag } from "../../../../helpers/nostr/stream";
 import { useAdditionalRelayContext } from "../../../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
 import { useUserRelays } from "../../../../hooks/use-user-relays";
@@ -38,6 +38,7 @@ import { truncatedId } from "../../../../helpers/nostr-event";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";
 import { parseZapEvent } from "../../../../helpers/zaps";
+import { Kind } from "nostr-tools";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -64,7 +65,7 @@ export default function StreamChat({
 
   const timeline = useTimelineLoader(`${truncatedId(stream.event.id)}-chat`, readRelays, {
     "#a": [getATag(stream)],
-    kinds: [1311, 9735],
+    kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
   });
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
@@ -131,7 +132,7 @@ export default function StreamChat({
                 css={isChatLog && hideScrollbar}
               >
                 {events.map((event) =>
-                  event.kind === 1311 ? (
+                  event.kind === STREAM_CHAT_MESSAGE_KIND ? (
                     <ChatMessage key={event.id} event={event} stream={stream} />
                   ) : (
                     <ZapMessage key={event.id} zap={event} stream={stream} />

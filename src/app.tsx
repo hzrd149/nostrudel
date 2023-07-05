@@ -36,8 +36,9 @@ import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
 import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
+import UserStreamsTab from "./views/user/streams";
 
-const LiveStreamsTab = React.lazy(() => import("./views/streams"));
+const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -78,6 +79,7 @@ const router = createHashRouter([
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
           { path: "media", element: <UserMediaTab /> },
+          { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserLikesTab /> },
           { path: "followers", element: <UserFollowersTab /> },
@@ -106,7 +108,7 @@ const router = createHashRouter([
       },
       {
         path: "streams",
-        element: <LiveStreamsTab />,
+        element: <StreamsView />,
       },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },

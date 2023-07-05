@@ -1,6 +1,6 @@
 import { Subject } from "./subject";
 import { NostrEvent } from "../types/nostr-event";
-import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
+import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import { IncomingEvent, Relay } from "./relay";
 import relayPoolService from "../services/relay-pool";
 
@@ -13,14 +13,14 @@ export class NostrMultiSubscription {
 
   id: string;
   name?: string;
-  query?: NostrQuery;
+  query?: NostrRequestFilter;
   relayUrls: string[];
   relays: Relay[];
   state = NostrMultiSubscription.INIT;
   onEvent = new Subject<NostrEvent>();
   seenEvents = new Set<string>();
 
-  constructor(relayUrls: string[], query?: NostrQuery, name?: string) {
+  constructor(relayUrls: string[], query?: NostrRequestFilter, name?: string) {
     this.id = String(name || lastId++);
     this.query = query;
     this.name = name;
@@ -66,16 +66,20 @@ export class NostrMultiSubscription {
     if (this.state === NostrMultiSubscription.OPEN) return this;
 
     this.state = NostrMultiSubscription.OPEN;
-    this.send(["REQ", this.id, this.query]);
+    if (Array.isArray(this.query)) {
+      this.send(["REQ", this.id, ...this.query]);
+    } else this.send(["REQ", this.id, this.query]);
 
     this.subscribeToRelays();
 
     return this;
   }
-  setQuery(query: NostrQuery) {
+  setQuery(query: NostrRequestFilter) {
     this.query = query;
     if (this.state === NostrMultiSubscription.OPEN) {
-      this.send(["REQ", this.id, this.query]);
+      if (Array.isArray(this.query)) {
+        this.send(["REQ", this.id, ...this.query]);
+      } else this.send(["REQ", this.id, this.query]);
     }
     return this;
   }
@@ -97,7 +101,9 @@ export class NostrMultiSubscription {
         // if the subscription is open and it has a query
         if (this.state === NostrMultiSubscription.OPEN && this.query) {
           // open a connection to this relay
-          relay.send(["REQ", this.id, this.query]);
+          if (Array.isArray(this.query)) {
+            relay.send(["REQ", this.id, ...this.query]);
+          } else relay.send(["REQ", this.id, this.query]);
         }
       }
     }

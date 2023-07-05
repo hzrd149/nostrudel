@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react";
 import { Flex, FormControl, FormLabel, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
+import { Kind } from "nostr-tools";
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
@@ -8,8 +9,9 @@ import { NostrEvent } from "../../types/nostr-event";
 import TimelineActionAndStatus from "../../components/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import GenericNoteTimeline from "../../components/generic-note-timeline";
+import GenericNoteTimeline from "../../components/timeline/generic-note-timeline";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { STREAM_KIND } from "../../helpers/nostr/stream";
 
 const UserNotesTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -31,7 +33,7 @@ const UserNotesTab = () => {
     readRelays,
     {
       authors: [pubkey],
-      kinds: [1, 6],
+      kinds: [Kind.Text, Kind.Repost, STREAM_KIND],
     },
     { eventFilter }
   );
