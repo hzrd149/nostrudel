@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { ParsedStream } from "../../../../helpers/nostr/stream";
 import { UserAvatar } from "../../../../components/user-avatar";
@@ -15,20 +15,25 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, zap.id);
 
-  const { request, payment } = parseZapEvent(zap);
-  if (!payment.amount) return null;
+  const parsed = useMemo(() => {
+    try {
+      return parseZapEvent(zap);
+    } catch (e) {}
+  }, [zap]);
+
+  if (!parsed || !parsed.payment.amount) return null;
 
   return (
-    <TrustProvider event={request}>
+    <TrustProvider event={parsed.request}>
       <Flex direction="column" borderRadius="md" borderColor="yellow.400" borderWidth="1px" p="2" ref={ref}>
         <Flex gap="2">
           <LightningIcon color="yellow.400" />
-          <UserAvatar pubkey={request.pubkey} size="xs" />
-          <UserLink pubkey={request.pubkey} fontWeight="bold" color="yellow.400" />
-          <Text>zapped {readablizeSats(payment.amount / 1000)} sats</Text>
+          <UserAvatar pubkey={parsed.request.pubkey} size="xs" />
+          <UserLink pubkey={parsed.request.pubkey} fontWeight="bold" color="yellow.400" />
+          <Text>zapped {readablizeSats(parsed.payment.amount / 1000)} sats</Text>
         </Flex>
         <Box>
-          <ChatMessageContent event={request} />
+          <ChatMessageContent event={parsed.request} />
         </Box>
       </Flex>
     </TrustProvider>
