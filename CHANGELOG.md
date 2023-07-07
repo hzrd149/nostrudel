@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.17.1
+
+### Patch Changes
+
+- 5d4a680: Fix stream view crashing when failing to parse zap request
+- dd4cb0b: Fix npub in url getting replaced in post modal
+
 ## 0.17.0
 
 ### Minor Changes
