@@ -1,5 +1,18 @@
 # nostrudel
 
+## 0.17.0
+
+### Minor Changes
+
+- d4a8110: Standardize timeline rendering between views
+- facb287: Add more prominent new post button
+- bdc1c98: Rebuild direct message chat view using timeline loader
+
+### Patch Changes
+
+- d4a8110: Fix performance bug with large timelines
+- bdc1c98: Don't show multiple images on open-graph link card
+
 ## 0.16.0
 
 ### Minor Changes
