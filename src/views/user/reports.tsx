@@ -6,7 +6,7 @@ import { filterTagsByContentRefs, truncatedId } from "../../helpers/nostr-event"
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
 
 function ReportEvent({ report }: { report: NostrEvent }) {

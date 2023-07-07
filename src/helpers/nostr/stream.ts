@@ -2,11 +2,14 @@ import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 
+export const STREAM_KIND = 30311;
+export const STREAM_CHAT_MESSAGE_KIND = 1311;
+
 export type ParsedStream = {
   event: NostrEvent;
   author: string;
   host: string;
-  title: string;
+  title?: string;
   summary?: string;
   image?: string;
   updated: number;
@@ -30,7 +33,6 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const startTime = starts ? parseInt(starts) : stream.created_at;
   const endTime = endsTag ? parseInt(endsTag) : dayjs(startTime).add(4, "hour").unix();
 
-  if (!title) throw new Error("missing title");
   if (!identifier) throw new Error("missing identifier");
   if (!streaming) throw new Error("missing streaming");
 
@@ -73,7 +75,7 @@ export function buildChatMessage(stream: ParsedStream, content: string) {
     tags: [["a", getATag(stream), "", "root"]],
     content,
     created_at: dayjs().unix(),
-    kind: 1311,
+    kind: STREAM_CHAT_MESSAGE_KIND,
   };
 
   return template;

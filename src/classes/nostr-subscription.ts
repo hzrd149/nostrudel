@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { NostrOutgoingMessage, NostrQuery } from "../types/nostr-query";
+import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import { IncomingEOSE, Relay } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import { Subject } from "./subject";
@@ -13,13 +13,13 @@ export class NostrSubscription {
 
   id: string;
   name?: string;
-  query?: NostrQuery;
+  query?: NostrRequestFilter;
   relay: Relay;
   state = NostrSubscription.INIT;
   onEvent = new Subject<NostrEvent>();
   onEOSE = new Subject<IncomingEOSE>();
 
-  constructor(relayUrl: string, query?: NostrQuery, name?: string) {
+  constructor(relayUrl: string, query?: NostrRequestFilter, name?: string) {
     this.id = String(name || lastId++);
     this.query = query;
     this.name = name;
@@ -43,16 +43,20 @@ export class NostrSubscription {
     if (this.state === NostrSubscription.OPEN) return this;
 
     this.state = NostrSubscription.OPEN;
-    this.send(["REQ", this.id, this.query]);
+    if (Array.isArray(this.query)) {
+      this.send(["REQ", this.id, ...this.query]);
+    } else this.send(["REQ", this.id, this.query]);
 
     relayPoolService.addClaim(this.relay.url, this);
 
     return this;
   }
-  setQuery(query: NostrQuery) {
+  setQuery(query: NostrRequestFilter) {
     this.query = query;
     if (this.state === NostrSubscription.OPEN) {
-      this.send(["REQ", this.id, this.query]);
+      if (Array.isArray(this.query)) {
+        this.send(["REQ", this.id, ...this.query]);
+      } else this.send(["REQ", this.id, this.query]);
     }
     return this;
   }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-query";
 import { NostrEvent } from "../types/nostr-event";
 import timelineCacheService from "../services/timeline-cache";
 
@@ -10,7 +10,7 @@ type Options = {
   cursor?: number;
 };
 
-export function useTimelineLoader(key: string, relays: string[], query: NostrQuery, opts?: Options) {
+export function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {

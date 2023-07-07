@@ -1,21 +1,16 @@
-import { Flex, Heading, SkeletonText, Text, Link, IconButton, Spacer } from "@chakra-ui/react";
+import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { CopyIconButton } from "../../../components/copy-icon-button";
-import { ChatIcon, EditIcon, ExternalLinkIcon, KeyIcon, SettingsIcon } from "../../../components/icons";
-import { QrIconButton } from "./share-qr-button";
+import { ChatIcon, EditIcon } from "../../../components/icons";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { UserFollowButton } from "../../../components/user-follow-button";
 import { UserTipButton } from "../../../components/user-tip-button";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
-import { truncatedId } from "../../../helpers/nostr-event";
-import { fixWebsiteUrl, getUserDisplayName } from "../../../helpers/user-metadata";
+import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
-import { embedUrls } from "../../../helpers/embeds";
-import { renderGenericUrl } from "../../../components/embed-types";
 
 export default function Header({
   pubkey,
@@ -45,6 +40,7 @@ export default function Header({
             aria-label="Edit profile"
             title="Edit profile"
             size="sm"
+            colorScheme="brand"
             onClick={() => navigate("/profile")}
           />
         )}

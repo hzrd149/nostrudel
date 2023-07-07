@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { EmbedableContent, embedUrls } from "../../../../helpers/embeds";
 import {
   embedEmoji,
@@ -11,7 +11,7 @@ import {
 import EmbeddedContent from "../../../../components/embeded-content";
 import { NostrEvent } from "../../../../types/nostr-event";
 
-export default function ChatMessageContent({ event }: { event: NostrEvent }) {
+const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
   const content = useMemo(() => {
     let c: EmbedableContent = [event.content];
 
@@ -27,4 +27,6 @@ export default function ChatMessageContent({ event }: { event: NostrEvent }) {
   }, [event.content]);
 
   return <EmbeddedContent content={content} />;
-}
+});
+
+export default ChatMessageContent;

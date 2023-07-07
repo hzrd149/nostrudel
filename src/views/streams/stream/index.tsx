@@ -5,7 +5,7 @@ import { Link as RouterLink, useParams, Navigate, useSearchParams } from "react-
 import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
 
-import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
+import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../../helpers/nostr/stream";
 import { NostrRequest } from "../../../classes/nostr-request";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
@@ -138,7 +138,7 @@ export default function StreamView() {
     try {
       const parsed = nip19.decode(naddr);
       if (parsed.type !== "naddr") throw new Error("Invalid stream address");
-      if (parsed.data.kind !== 30311) throw new Error("Invalid stream kind");
+      if (parsed.data.kind !== STREAM_KIND) throw new Error("Invalid stream kind");
 
       const request = new NostrRequest(unique([...readRelays, ...(parsed.data.relays ?? [])]));
       request.onEvent.subscribe((event) => {

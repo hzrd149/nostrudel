@@ -36,6 +36,7 @@ import RawValue from "../../../components/debug-modals/raw-value";
 import RawJson from "../../../components/debug-modals/raw-json";
 import { NoteRelays } from "../../../components/note/note-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import useEventNaddr from "../../../hooks/use-event-naddr";
 
 export default function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, identifier, image } = stream;
@@ -45,18 +46,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, stream.event.id);
 
-  const naddr = useMemo(() => {
-    const relays = getEventRelays(stream.event.id).value;
-    const ranked = relayScoreboardService.getRankedRelays(relays);
-    const onlyTwo = ranked.slice(0, 2);
-
-    return nip19.naddrEncode({
-      identifier,
-      relays: onlyTwo,
-      pubkey: stream.author,
-      kind: stream.event.kind,
-    });
-  }, [identifier]);
+  const naddr = useEventNaddr(stream.event);
 
   return (
     <>

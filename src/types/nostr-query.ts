@@ -1,7 +1,7 @@
 import { NostrEvent } from "./nostr-event";
 
 export type NostrOutgoingEvent = ["EVENT", NostrEvent];
-export type NostrOutgoingRequest = ["REQ", string, NostrQuery];
+export type NostrOutgoingRequest = ["REQ", string, ...NostrQuery[]];
 export type NostrOutgoingClose = ["CLOSE", string];
 
 export type NostrOutgoingMessage = NostrOutgoingEvent | NostrOutgoingRequest | NostrOutgoingClose;
@@ -19,3 +19,5 @@ export type NostrQuery = {
   until?: number;
   limit?: number;
 };
+
+export type NostrRequestFilter = NostrQuery | NostrQuery[];

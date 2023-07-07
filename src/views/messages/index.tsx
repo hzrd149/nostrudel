@@ -14,7 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";

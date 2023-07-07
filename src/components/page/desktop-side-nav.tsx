@@ -1,11 +1,12 @@
 import { SettingsIcon } from "@chakra-ui/icons";
-import { Avatar, Button, Flex, Heading, LinkOverlay, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Button, Flex, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 import { ConnectedRelays } from "../connected-relays";
 import {
   ChatIcon,
+  EditIcon,
   FeedIcon,
   LiveStreamIcon,
   LogoutIcon,
@@ -16,10 +17,13 @@ import {
 } from "../icons";
 import ProfileLink from "./profile-link";
 import AccountSwitcher from "./account-switcher";
+import { useContext } from "react";
+import { PostModalContext } from "../../providers/post-modal-provider";
 
 export default function DesktopSideNav() {
   const navigate = useNavigate();
   const account = useCurrentAccount();
+  const { openModal } = useContext(PostModalContext);
 
   return (
     <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
@@ -65,6 +69,18 @@ export default function DesktopSideNav() {
         </Text>
       )}
       <ConnectedRelays />
+      <Flex justifyContent="flex-end" py="8">
+        <IconButton
+          icon={<EditIcon />}
+          aria-label="New post"
+          w="4rem"
+          h="4rem"
+          fontSize="1.5rem"
+          borderRadius="50%"
+          colorScheme="brand"
+          onClick={() => openModal()}
+        />
+      </Flex>
     </VStack>
   );
 }

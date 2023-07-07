@@ -1,9 +1,8 @@
-import React, { Suspense, useEffect } from "react";
-import { createHashRouter, Outlet, RouterProvider, ScrollRestoration, useSearchParams } from "react-router-dom";
-import { Spinner, useColorMode } from "@chakra-ui/react";
+import React, { Suspense } from "react";
+import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
+import { Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Page } from "./components/page";
-import useSubject from "./hooks/use-subject";
 
 import HomeView from "./views/home";
 import SettingsView from "./views/settings";
@@ -25,19 +24,18 @@ import RelaysView from "./views/relays";
 import LoginNip05View from "./views/login/nip05";
 import LoginNsecView from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
-import DirectMessagesView from "./views/dm";
-import DirectMessageChatView from "./views/dm/chat";
+import DirectMessagesView from "./views/messages";
+import DirectMessageChatView from "./views/messages/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
-import appSettings from "./services/app-settings";
-import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
 import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
+import UserStreamsTab from "./views/user/streams";
 
-const LiveStreamsTab = React.lazy(() => import("./views/streams"));
+const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 
@@ -77,7 +75,7 @@ const router = createHashRouter([
           { path: "", element: <UserAboutTab /> },
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
-          { path: "media", element: <UserMediaTab /> },
+          { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserLikesTab /> },
           { path: "followers", element: <UserFollowersTab /> },
@@ -106,7 +104,7 @@ const router = createHashRouter([
       },
       {
         path: "streams",
-        element: <LiveStreamsTab />,
+        element: <StreamsView />,
       },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },

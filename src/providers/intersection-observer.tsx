@@ -100,10 +100,13 @@ export default function IntersectionObserverProvider<T = undefined>({
     [elementIds]
   );
 
-  const context = {
-    observer,
-    setElementId,
-  };
+  const context = useMemo(
+    () => ({
+      observer,
+      setElementId,
+    }),
+    [observer, setElementId]
+  );
 
   return <IntersectionObserverContext.Provider value={context}>{children}</IntersectionObserverContext.Provider>;
 }

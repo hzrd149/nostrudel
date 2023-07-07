@@ -9,7 +9,7 @@ import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { truncatedId } from "../../helpers/nostr-event";
