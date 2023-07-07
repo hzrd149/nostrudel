@@ -1,19 +1,19 @@
 import { useRef } from "react";
 import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
 import { useAsync } from "react-use";
-import singleEventService from "../../services/single-event";
-import { isETag, NostrEvent } from "../../types/nostr-event";
-import { ErrorFallback } from "../error-boundary";
-import { Note } from "../note";
-import { NoteMenu } from "../note/note-menu";
-import { UserAvatar } from "../user-avatar";
-import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import { UserLink } from "../user-link";
-import { TrustProvider } from "../../providers/trust";
-import { safeJson } from "../../helpers/parse";
+import singleEventService from "../../../services/single-event";
+import { isETag, NostrEvent } from "../../../types/nostr-event";
+import { ErrorFallback } from "../../error-boundary";
+import { Note } from "../../note";
+import { NoteMenu } from "../../note/note-menu";
+import { UserAvatar } from "../../user-avatar";
+import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
+import { UserLink } from "../../user-link";
+import { TrustProvider } from "../../../providers/trust";
+import { safeJson } from "../../../helpers/parse";
 import { verifySignature } from "nostr-tools";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 
 function parseHardcodedNoteContent(event: NostrEvent): NostrEvent | null {
   const json = safeJson(event.content, null);

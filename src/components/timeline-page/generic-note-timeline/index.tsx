@@ -1,12 +1,12 @@
 import React from "react";
-import useSubject from "../../hooks/use-subject";
-import { TimelineLoader } from "../../classes/timeline-loader";
+import useSubject from "../../../hooks/use-subject";
+import { TimelineLoader } from "../../../classes/timeline-loader";
 import RepostNote from "./repost-note";
-import { Note } from "../note";
-import { NostrEvent } from "../../types/nostr-event";
+import { Note } from "../../note";
+import { NostrEvent } from "../../../types/nostr-event";
 import { Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
-import { STREAM_KIND } from "../../helpers/nostr/stream";
+import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
 
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {

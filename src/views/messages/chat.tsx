@@ -21,7 +21,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const isMobile = useIsMobile();

@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Button, Spinner } from "@chakra-ui/react";
-import { TimelineLoader } from "../classes/timeline-loader";
-import useSubject from "../hooks/use-subject";
+import { TimelineLoader } from "../../classes/timeline-loader";
+import useSubject from "../../hooks/use-subject";
 
 export default function TimelineActionAndStatus({ timeline }: { timeline: TimelineLoader }) {
   const loading = useSubject(timeline.loading);
@@ -20,7 +20,7 @@ export default function TimelineActionAndStatus({ timeline }: { timeline: Timeli
   }
 
   return (
-    <Button onClick={() => timeline.loadMore()} flexShrink={0} size="lg" mx="auto" minW="lg">
+    <Button onClick={() => timeline.loadMore()} flexShrink={0} size="lg" mx="auto" colorScheme="brand" my="4">
       Load More
     </Button>
   );

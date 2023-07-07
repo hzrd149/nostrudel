@@ -3,10 +3,10 @@ import { Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { truncatedId } from "../../helpers/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import TimelineActionAndStatus from "../../components/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import GenericNoteTimeline from "../../components/timeline/generic-note-timeline";
+import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 

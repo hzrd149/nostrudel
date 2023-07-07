@@ -17,14 +17,14 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
-import { NostrEvent } from "../../types/nostr-event";
-import { parseStreamEvent } from "../../helpers/nostr/stream";
-import useEventNaddr from "../../hooks/use-event-naddr";
-import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
-import { UserAvatar } from "../user-avatar";
-import { UserLink } from "../user-link";
-import StreamStatusBadge from "../../views/streams/components/status-badge";
-import { NoteRelays } from "../note/note-relays";
+import { NostrEvent } from "../../../types/nostr-event";
+import { parseStreamEvent } from "../../../helpers/nostr/stream";
+import useEventNaddr from "../../../hooks/use-event-naddr";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { UserAvatar } from "../../user-avatar";
+import { UserLink } from "../../user-link";
+import StreamStatusBadge from "../../../views/streams/components/status-badge";
+import { NoteRelays } from "../../note/note-relays";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
   const stream = useMemo(() => parseStreamEvent(event), [event]);
