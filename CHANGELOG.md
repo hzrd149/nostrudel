@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.17.2
+
+### Patch Changes
+
+- b32b6be: Image gallery: Only show open button on over
+
 ## 0.17.1
 
 ### Patch Changes
