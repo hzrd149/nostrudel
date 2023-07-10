@@ -3,16 +3,23 @@ import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { matchImageUrls } from "../../../helpers/regexp";
 import { ImageGalleryLink, ImageGalleryProvider } from "../../image-gallery";
-import { Box, Grid, IconButton } from "@chakra-ui/react";
+import { Box, IconButton } from "@chakra-ui/react";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useNavigate } from "react-router-dom";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
 import { ExternalLinkIcon } from "../../icons";
+import styled from "@emotion/styled";
 
 const matchAllImages = new RegExp(matchImageUrls, "ig");
 
 type ImagePreview = { eventId: string; src: string; index: number };
+
+const StyledImageGalleryLink = styled(ImageGalleryLink)`
+  &:not(:hover) > button {
+    display: none;
+  }
+`;
 
 const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   const navigate = useNavigate();
@@ -21,7 +28,7 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   useRegisterIntersectionEntity(ref, image.eventId);
 
   return (
-    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
+    <StyledImageGalleryLink href={image.src} position="relative" ref={ref}>
       <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
       <IconButton
         icon={<ExternalLinkIcon />}
@@ -30,13 +37,14 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
         right="2"
         top="2"
         size="sm"
+        colorScheme="brand"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           navigate(`/n/${getSharableNoteId(image.eventId)}`);
         }}
       />
-    </ImageGalleryLink>
+    </StyledImageGalleryLink>
   );
 });
 
