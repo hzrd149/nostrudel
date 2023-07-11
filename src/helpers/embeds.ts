@@ -5,7 +5,16 @@ export type EmbedType = {
   regexp: RegExp;
   render: (match: RegExpMatchArray) => JSX.Element | string | null;
   name: string;
+  getLocation?: (match: RegExpMatchArray) => { start: number; end: number };
 };
+
+function defaultGetLocation(match: RegExpMatchArray) {
+  if (match.index === undefined) throw new Error("match dose not have index");
+  return {
+    start: match.index,
+    end: match.index + match[0].length,
+  };
+}
 
 export function embedJSX(content: EmbedableContent, embed: EmbedType): EmbedableContent {
   return content
@@ -14,8 +23,9 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
         const match = subContent.match(embed.regexp);
 
         if (match && match.index !== undefined) {
-          const before = subContent.slice(0, match.index);
-          const after = subContent.slice(match.index + match[0].length, subContent.length);
+          const { start, end } = (embed.getLocation || defaultGetLocation)(match);
+          const before = subContent.slice(0, start);
+          const after = subContent.slice(end, subContent.length);
           let embedRender = embed.render(match);
 
           if (embedRender === null) return subContent;

@@ -18,7 +18,7 @@ import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
 import { normalizeToHex } from "../../helpers/nip19";
 import { getReferences } from "../../helpers/nostr-event";
-import { mentionNpubOrNote } from "../../helpers/regexp";
+import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
@@ -58,6 +58,15 @@ function finalizeNote(draft: DraftNostrEvent) {
     // replace the npub1 or note1 with a mention tag #[0]
     const c = updatedDraft.content;
     updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
+  }
+
+  // replace all uses of #hashtag
+  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "gi"));
+  for (const [_, space, hashtag] of matches) {
+    const lower = hashtag.toLocaleLowerCase();
+    if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {
+      updatedDraft.tags.push(["t", lower]);
+    }
   }
 
   return updatedDraft;
