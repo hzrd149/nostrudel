@@ -1,5 +1,15 @@
 # nostrudel
 
+## 0.18.0
+
+### Minor Changes
+
+- d46327e: Support hashtags in new post modal
+
+### Patch Changes
+
+- d46327e: Fix bug with non-english hashtags not showing
+
 ## 0.17.2
 
 ### Patch Changes
