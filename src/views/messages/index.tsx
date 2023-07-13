@@ -98,12 +98,12 @@ function DirectMessagesPage() {
       <Alert status="info" flexShrink={0}>
         <AlertIcon />
         <Flex direction={isMobile ? "column" : "row"}>
-          <AlertTitle>Give NostrChat a try</AlertTitle>
+          <AlertTitle>Give Blowater a try</AlertTitle>
           <AlertDescription>
             <Text>
               Its a much better chat app than what I can build inside of noStrudel.{" "}
-              <Link href="https://www.nostrchat.io/" isExternal>
-                nostrchat.io <ExternalLinkIcon />
+              <Link href="https://blowater.deno.dev/" isExternal>
+                blowater.deno.dev <ExternalLinkIcon />
               </Link>
             </Text>
           </AlertDescription>
