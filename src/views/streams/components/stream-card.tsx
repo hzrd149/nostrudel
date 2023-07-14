@@ -93,7 +93,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
         <ModalContent>
           <ModalHeader>Raw event</ModalHeader>
           <ModalCloseButton />
-          <ModalBody overflow="auto" p="4">
+          <ModalBody p="4">
             <Flex gap="2" direction="column">
               <RawValue heading="Event Id" value={stream.event.id} />
               <RawValue heading="naddr" value={naddr} />

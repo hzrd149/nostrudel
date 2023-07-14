@@ -1,5 +1,5 @@
 import { SettingsIcon } from "@chakra-ui/icons";
-import { Avatar, Button, Flex, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -20,13 +20,13 @@ import AccountSwitcher from "./account-switcher";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 
-export default function DesktopSideNav() {
+export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
   const navigate = useNavigate();
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
 
   return (
-    <VStack width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
+    <Flex {...props} gap="2" direction="column" width="15rem" pt="2" alignItems="stretch" flexShrink={0}>
       <Flex gap="2" alignItems="center" position="relative">
         <LinkOverlay as={RouterLink} to="/" />
         <Avatar src="/apple-touch-icon.png" size="sm" />
@@ -81,6 +81,6 @@ export default function DesktopSideNav() {
           onClick={() => openModal()}
         />
       </Flex>
-    </VStack>
+    </Flex>
   );
 }

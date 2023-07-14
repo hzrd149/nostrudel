@@ -74,7 +74,7 @@ function RelaysPage() {
   const hasPending = pendingAdd.length > 0 || pendingRemove.length > 0;
 
   return (
-    <Flex direction="column" pt="2" pb="2" overflow="auto">
+    <Flex direction="column" pt="2" pb="2">
       <TableContainer mb="4" overflowY="initial">
         <Table variant="simple" size="sm">
           <Thead>

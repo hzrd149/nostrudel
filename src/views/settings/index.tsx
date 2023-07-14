@@ -28,7 +28,7 @@ export default function SettingsView() {
   });
 
   return (
-    <Flex direction="column" pt="2" pb="2" overflow="auto">
+    <Flex direction="column" pt="2" pb="2">
       <form onSubmit={saveSettings}>
         <FormProvider {...form}>
           <Accordion defaultIndex={[0]} allowMultiple>

@@ -101,13 +101,12 @@ const UserView = () => {
   return (
     <>
       <AdditionalRelayProvider relays={unique([...userTopRelays, ...pointerRelays])}>
-        <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" h="full">
+        <Flex direction="column" alignItems="stretch" gap="2">
           <Header pubkey={pubkey} showRelaySelectionModal={relayModal.onOpen} />
           <Tabs
             display="flex"
             flexDirection="column"
             flexGrow="1"
-            overflow="hidden"
             isLazy
             index={activeTab}
             onChange={(v) => navigate(tabs[v].path)}
@@ -119,9 +118,9 @@ const UserView = () => {
               ))}
             </TabList>
 
-            <TabPanels overflow="hidden" h="full">
+            <TabPanels>
               {tabs.map(({ label }) => (
-                <TabPanel key={label} p={0} h="full" overflow="hidden">
+                <TabPanel key={label} p={0}>
                   <Suspense fallback={<Spinner />}>
                     <Outlet context={{ pubkey, setRelayCount }} />
                   </Suspense>

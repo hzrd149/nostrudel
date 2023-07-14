@@ -54,7 +54,7 @@ const videoExt = [".mp4", ".mkv", ".webm", ".mov"];
 export function renderVideoUrl(match: URL) {
   if (!videoExt.some((ext) => match.pathname.endsWith(ext))) return null;
 
-  return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem" }} />;
+  return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem", width: "100%" }} />;
 }
 
 export function renderGenericUrl(match: URL) {

@@ -1,4 +1,4 @@
-import { Avatar, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Avatar, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -7,7 +7,7 @@ import { ChatIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchI
 import { UserAvatar } from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 
-export default function MobileBottomNav() {
+export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { openModal } = useContext(PostModalContext);
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <Flex flexShrink={0} gap="2" padding="2" alignItems="center">
+      <Flex {...props} gap="2" padding="2" alignItems="center">
         {account ? (
           <UserAvatar pubkey={account.pubkey} size="sm" onClick={onOpen} noProxy />
         ) : (

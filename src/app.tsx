@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
-import { Page } from "./components/page";
+import Layout from "./components/layout";
 
 import HomeView from "./views/home";
 import SettingsView from "./views/settings";
@@ -43,12 +43,12 @@ const RootPage = () => {
   useSetColorMode();
 
   return (
-    <Page>
+    <Layout>
       <ScrollRestoration />
       <Suspense fallback={<Spinner />}>
         <Outlet />
       </Suspense>
-    </Page>
+    </Layout>
   );
 };
 
