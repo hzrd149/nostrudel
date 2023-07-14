@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
-import { Providers } from "./providers";
+import { GlobalProviders } from "./providers";
 
 // setup dayjs
 import dayjs from "dayjs";
@@ -21,7 +21,7 @@ const element = document.getElementById("root");
 if (!element) throw new Error("missing mount point");
 const root = createRoot(element);
 root.render(
-  <Providers>
+  <GlobalProviders>
     <App />
-  </Providers>
+  </GlobalProviders>
 );
