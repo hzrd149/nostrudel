@@ -24,7 +24,7 @@ export default function UserFollowingTab() {
   const contacts = useUserContacts(pubkey, contextRelays, true);
 
   return (
-    <Flex gap="2" direction="column" overflowY="auto" p="2" h="full">
+    <Flex gap="2" direction="column" p="2" h="90vh">
       {contacts ? (
         <Box flex={1}>
           <AutoSizer disableWidth>
