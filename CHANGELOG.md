@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.19.0
+
+### Minor Changes
+
+- f786056: Replace nostrchat clink with blowater
+- 0074c9e: Remove scroll-boxes and return to natural page scrolling
+
 ## 0.18.0
 
 ### Minor Changes
