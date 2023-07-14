@@ -5,6 +5,7 @@ import createTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
 import { InvoiceModalProvider } from "./invoice-modal";
 import NotificationTimelineProvider from "./notification-timeline";
+import PostModalProvider from "./post-modal-provider";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const { primaryColor } = useAppSettings();
@@ -14,7 +15,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
       <SigningProvider>
         <InvoiceModalProvider>
-          <NotificationTimelineProvider>{children}</NotificationTimelineProvider>
+          <NotificationTimelineProvider>
+            <PostModalProvider>{children}</PostModalProvider>
+          </NotificationTimelineProvider>
         </InvoiceModalProvider>
       </SigningProvider>
     </ChakraProvider>

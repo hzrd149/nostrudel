@@ -13,7 +13,7 @@ export default function NoteDebugModal({ event, ...props }: { event: NostrEvent 
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalBody overflow="auto" p="4">
+        <ModalBody p="4">
           <Flex gap="2" direction="column">
             <RawValue heading="Event Id" value={event.id} />
             <RawValue heading="Encoded id (NIP-19)" value={hexToBech32(event.id, Bech32Prefix.Note) ?? "failed"} />

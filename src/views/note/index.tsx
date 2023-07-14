@@ -61,7 +61,7 @@ const NoteView = () => {
   }
 
   return (
-    <Flex direction="column" gap="4" overflow="auto" flex={1} pb="4" pt="4" pl="1" pr="1">
+    <Flex direction="column" gap="4" flex={1} pb="4" pt="4" pl="1" pr="1">
       {pageContent}
     </Flex>
   );

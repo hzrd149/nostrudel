@@ -21,7 +21,7 @@ export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } 
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalBody overflow="auto" p="4">
+        <ModalBody p="4">
           <Flex gap="2" direction="column">
             <RawValue heading="Hex pubkey" value={pubkey} />
             {npub && <RawValue heading="npub" value={npub} />}
