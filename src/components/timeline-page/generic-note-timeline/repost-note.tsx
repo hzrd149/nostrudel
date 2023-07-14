@@ -11,14 +11,16 @@ import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import { UserLink } from "../../user-link";
 import { TrustProvider } from "../../../providers/trust";
 import { safeJson } from "../../../helpers/parse";
-import { verifySignature } from "nostr-tools";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 
-function parseHardcodedNoteContent(event: NostrEvent): NostrEvent | null {
+function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
-  if (json) verifySignature(json);
-  return null;
+
+  // TODO: disabled until signature verification can be done in another thread
+  // if (json && !verifySignature(json)) return null;
+
+  return (json as NostrEvent) ?? null;
 }
 
 export default function RepostNote({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {

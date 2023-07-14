@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { truncatedId } from "../../helpers/nostr-event";
@@ -22,12 +21,11 @@ export default function UserStreamsTab() {
     { "#p": [pubkey], kinds: [STREAM_KIND] },
   ]);
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider<string> root={scrollBox} callback={callback}>
-      <Flex direction="column" gap="2" pt="4" pb="8" h="full" overflowY="auto" overflowX="hidden" ref={scrollBox}>
+    <IntersectionObserverProvider<string> callback={callback}>
+      <Flex direction="column" gap="2" pt="4" pb="8">
         <GenericNoteTimeline timeline={timeline} />
         <TimelineActionAndStatus timeline={timeline} />
       </Flex>

@@ -1,4 +1,3 @@
-import React from "react";
 import { EmbedableContent } from "../helpers/embeds";
 import { Text } from "@chakra-ui/react";
 
@@ -11,7 +10,7 @@ export default function EmbeddedContent({ content }: { content: EmbedableContent
             {part}
           </Text>
         ) : (
-          React.cloneElement(part, { key: "part-" + i })
+          part
         )
       )}
     </>

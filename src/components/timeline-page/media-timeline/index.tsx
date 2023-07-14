@@ -9,17 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
 import { ExternalLinkIcon } from "../../icons";
-import styled from "@emotion/styled";
 
 const matchAllImages = new RegExp(matchImageUrls, "ig");
 
 type ImagePreview = { eventId: string; src: string; index: number };
-
-const StyledImageGalleryLink = styled(ImageGalleryLink)`
-  &:not(:hover) > button {
-    display: none;
-  }
-`;
 
 const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   const navigate = useNavigate();
@@ -28,7 +21,7 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   useRegisterIntersectionEntity(ref, image.eventId);
 
   return (
-    <StyledImageGalleryLink href={image.src} position="relative" ref={ref}>
+    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
       <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
       <IconButton
         icon={<ExternalLinkIcon />}
@@ -44,7 +37,7 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
           navigate(`/n/${getSharableNoteId(image.eventId)}`);
         }}
       />
-    </StyledImageGalleryLink>
+    </ImageGalleryLink>
   );
 });
 

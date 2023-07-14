@@ -102,12 +102,11 @@ const UserZapsTab = () => {
     return parsed;
   }, [events]);
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider callback={callback} root={scrollBox}>
-      <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+    <IntersectionObserverProvider callback={callback}>
+      <Flex direction="column" gap="2" p="2" pb="8">
         <Flex gap="2" alignItems="center" wrap="wrap">
           <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
             <option value="both">Note & Profile Zaps</option>

@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import styled from "@emotion/styled";
+import { css } from "@emotion/react";
 import { useExpand } from "./expanded";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import {
@@ -53,7 +53,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent) {
   return content;
 }
 
-const GradientOverlay = styled.div`
+const gradientOverlayStyles = css`
   position: absolute;
   left: 0;
   right: 0;
@@ -100,7 +100,7 @@ export const NoteContents = React.memo(({ event, maxHeight }: NoteContentsProps)
         <div ref={ref}>
           <EmbeddedContent content={content} />
         </div>
-        {showOverlay && <GradientOverlay onClick={expand?.onExpand} />}
+        {showOverlay && <Box css={gradientOverlayStyles} onClick={expand?.onExpand} />}
       </Box>
     </ImageGalleryProvider>
   );

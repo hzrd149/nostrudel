@@ -59,10 +59,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
               <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
-
-              <Heading size="sm" display="inline">
-                <UserLink pubkey={event.pubkey} />
-              </Heading>
+              <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
               <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}

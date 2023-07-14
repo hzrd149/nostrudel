@@ -26,15 +26,20 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
           const { start, end } = (embed.getLocation || defaultGetLocation)(match);
           const before = subContent.slice(0, start);
           const after = subContent.slice(end, subContent.length);
-          let embedRender = embed.render(match);
+          let render = embed.render(match);
 
-          if (embedRender === null) return subContent;
+          if (render === null) return subContent;
 
-          if (typeof embedRender !== "string" && !embedRender.props.key) {
-            embedRender = cloneElement(embedRender, { key: embed.name + i });
+          if (typeof render !== "string" && !render.props.key) {
+            render = cloneElement(render, { key: embed.name + i });
           }
 
-          return [...embedJSX([before], embed), embedRender, ...embedJSX([after], embed)];
+          const newContent: EmbedableContent = [];
+          if (before.length > 0) newContent.push(...embedJSX([before], embed));
+          newContent.push(render);
+          if (after.length > 0) newContent.push(...embedJSX([after], embed));
+
+          return newContent;
         }
       }
 

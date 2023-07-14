@@ -52,15 +52,17 @@ export type ParsedZap = {
   eventId?: string;
 };
 
-function parseZapEvent(event: NostrEvent): ParsedZap {
+export function parseZapEvent(event: NostrEvent): ParsedZap {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");
 
   const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
   if (!bolt11) throw new Error("missing bolt11 invoice");
 
-  const error = nip57.validateZapRequest(zapRequestStr);
-  if (error) throw new Error(error);
+  // TODO: disabled until signature verification can be offloaded to a web worker
+
+  // const error = nip57.validateZapRequest(zapRequestStr);
+  // if (error) throw new Error(error);
 
   const request = JSON.parse(zapRequestStr) as NostrEvent;
   const payment = parsePaymentRequest(bolt11);
@@ -73,15 +75,6 @@ function parseZapEvent(event: NostrEvent): ParsedZap {
     payment,
     eventId,
   };
-}
-
-const zapEventCache = new Map<string, ReturnType<typeof parseZapEvent>>();
-function cachedParseZapEvent(event: NostrEvent) {
-  let result = zapEventCache.get(event.id);
-  if (result) return result;
-  result = parseZapEvent(event);
-  if (result) zapEventCache.set(event.id, result);
-  return result;
 }
 
 export async function requestZapInvoice(zapRequest: NostrEvent, lnurl: string) {
@@ -101,5 +94,3 @@ export async function requestZapInvoice(zapRequest: NostrEvent, lnurl: string) {
     return payRequest as string;
   } else throw new Error("Failed to get invoice");
 }
-
-export { cachedParseZapEvent as parseZapEvent };

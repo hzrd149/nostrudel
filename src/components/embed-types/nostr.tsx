@@ -32,10 +32,10 @@ export function embedNostrLinks(content: EmbedableContent) {
             return <QuoteNote noteId={pointer.id} relay={pointer.relays?.[0]} />;
           }
           default:
-            return match[0];
+            return null;
         }
       } catch (e) {
-        return match[0];
+        return null;
       }
     },
   });
@@ -58,7 +58,7 @@ export function embedNostrMentions(content: EmbedableContent, event: NostrEvent 
         }
       }
 
-      return match[0];
+      return null;
     },
   });
 }
@@ -87,7 +87,7 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
         );
       }
 
-      return match[0];
+      return null;
     },
   });
 }

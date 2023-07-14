@@ -21,7 +21,7 @@ function useNotePointer() {
   }
 }
 
-const NoteView = () => {
+export default function NoteView() {
   const pointer = useNotePointer();
 
   const { thread, events, rootId, focusId, loading } = useThreadLoader(pointer.id, pointer.relays, {
@@ -65,6 +65,4 @@ const NoteView = () => {
       {pageContent}
     </Flex>
   );
-};
-
-export default NoteView;
+}

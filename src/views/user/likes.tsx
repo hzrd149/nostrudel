@@ -60,13 +60,12 @@ export default function UserLikesTab() {
 
   const lines = useSubject(timeline.timeline);
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+    <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
-        <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+        <Flex direction="column" gap="2" p="2" pb="8">
           {lines.map((event) => (
             <Like event={event} />
           ))}
