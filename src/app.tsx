@@ -34,6 +34,7 @@ import UserAboutTab from "./views/user/about";
 import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
+import { PageProviders } from "./providers";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -43,12 +44,14 @@ const RootPage = () => {
   useSetColorMode();
 
   return (
-    <Layout>
-      <ScrollRestoration />
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </Layout>
+    <PageProviders>
+      <Layout>
+        <ScrollRestoration />
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </Layout>
+    </PageProviders>
   );
 };
 
@@ -63,7 +66,14 @@ const router = createHashRouter([
       { path: "nsec", element: <LoginNsecView /> },
     ],
   },
-  { path: "streams/:naddr", element: <StreamView /> },
+  {
+    path: "streams/:naddr",
+    element: (
+      <PageProviders>
+        <StreamView />
+      </PageProviders>
+    ),
+  },
   {
     path: "/",
     element: <RootPage />,
