@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.19.1
+
+### Patch Changes
+
+- af5ed2f: Fix broken post button
+
 ## 0.19.0
 
 ### Minor Changes
