@@ -1,6 +1,5 @@
 import { replaceDomain } from "../../helpers/url";
 import appSettings from "../../services/app-settings";
-import { TweetEmbed } from "../tweet-embed";
 import { renderOpenGraphUrl } from "./common";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/twitter.js
@@ -11,5 +10,5 @@ export function renderTwitterUrl(match: URL) {
 
   const { twitterRedirect } = appSettings.value;
   if (twitterRedirect) return renderOpenGraphUrl(replaceDomain(match, twitterRedirect));
-  else return <TweetEmbed href={match.toString()} conversation={false} />;
+  else return renderOpenGraphUrl(match);
 }

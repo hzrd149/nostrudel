@@ -10,7 +10,6 @@ import {
   renderImageUrl,
 } from "../../../components/embed-types";
 import { Box, BoxProps } from "@chakra-ui/react";
-import EmbeddedContent from "../../../components/embeded-content";
 
 export default function StreamSummaryContent({ stream, ...props }: BoxProps & { stream: ParsedStream }) {
   const content = useMemo(() => {
@@ -32,7 +31,7 @@ export default function StreamSummaryContent({ stream, ...props }: BoxProps & { 
   return (
     content && (
       <Box whiteSpace="pre-wrap" {...props}>
-        <EmbeddedContent content={content} />
+        {content}
       </Box>
     )
   );

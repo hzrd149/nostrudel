@@ -31,7 +31,7 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
           if (render === null) return subContent;
 
           if (typeof render !== "string" && !render.props.key) {
-            render = cloneElement(render, { key: embed.name + i });
+            render = cloneElement(render, { key: match[0] });
           }
 
           const newContent: EmbedableContent = [];

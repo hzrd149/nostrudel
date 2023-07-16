@@ -38,10 +38,9 @@ import { useRegisterIntersectionEntity } from "../../providers/intersection-obse
 
 export type NoteProps = {
   event: NostrEvent;
-  maxHeight?: number;
   variant?: CardProps["variant"];
 };
-export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
+export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   const isMobile = useIsMobile();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
 
@@ -69,7 +68,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
             </Flex>
           </CardHeader>
           <CardBody p="0">
-            <NoteContentWithWarning event={event} maxHeight={maxHeight} />
+            <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2">
             <ButtonGroup size="sm" variant="link">

@@ -14,7 +14,9 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
 
   return (
     <LinkBox borderRadius="lg" borderWidth={1} overflow="hidden" {...props}>
-      {data.ogImage?.length === 1 && <Image key={data.ogImage[0].url} src={data.ogImage[0].url} mx="auto" />}
+      {data.ogImage?.length === 1 && (
+        <Image key={data.ogImage[0].url} src={new URL(data.ogImage[0].url, url).toString()} mx="auto" maxH="3in" />
+      )}
 
       <Box m="2" mt="4">
         <Heading size="sm" my="2">

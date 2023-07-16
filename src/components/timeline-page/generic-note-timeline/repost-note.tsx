@@ -23,7 +23,7 @@ function parseHardcodedNoteContent(event: NostrEvent) {
   return (json as NostrEvent) ?? null;
 }
 
-export default function RepostNote({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
+export default function RepostNote({ event }: { event: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
 
@@ -59,13 +59,7 @@ export default function RepostNote({ event, maxHeight }: { event: NostrEvent; ma
           </Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
         </Flex>
-        {loading ? (
-          <SkeletonText />
-        ) : note ? (
-          <Note event={note} maxHeight={maxHeight} />
-        ) : (
-          <ErrorFallback error={error} />
-        )}
+        {loading ? <SkeletonText /> : note ? <Note event={note} /> : <ErrorFallback error={error} />}
       </Flex>
     </TrustProvider>
   );

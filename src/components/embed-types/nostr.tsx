@@ -20,17 +20,13 @@ export function embedNostrLinks(content: EmbedableContent) {
 
         switch (decoded.type) {
           case "npub":
-            return <UserLink color="blue.500" pubkey={decoded.data as string} showAt />;
-          case "nprofile": {
-            const pointer = decoded.data as ProfilePointer;
-            return <UserLink color="blue.500" pubkey={pointer.pubkey} showAt />;
-          }
+            return <UserLink color="blue.500" pubkey={decoded.data} showAt />;
+          case "nprofile":
+            return <UserLink color="blue.500" pubkey={decoded.data.pubkey} showAt />;
           case "note":
-            return <QuoteNote noteId={decoded.data as string} />;
-          case "nevent": {
-            const pointer = decoded.data as EventPointer;
-            return <QuoteNote noteId={pointer.id} relay={pointer.relays?.[0]} />;
-          }
+            return <QuoteNote noteId={decoded.data} />;
+          case "nevent":
+            return <QuoteNote noteId={decoded.data.id} relays={decoded.data.relays} />;
           default:
             return null;
         }
@@ -54,7 +50,7 @@ export function embedNostrMentions(content: EmbedableContent, event: NostrEvent 
           return <UserLink color="blue.500" pubkey={tag[1]} showAt />;
         }
         if (tag[0] === "e" && tag[1]) {
-          return <QuoteNote noteId={tag[1]} relay={tag[2]} />;
+          return <QuoteNote noteId={tag[1]} relays={tag[2] ? [tag[2]] : undefined} />;
         }
       }
 

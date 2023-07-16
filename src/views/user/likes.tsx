@@ -43,7 +43,7 @@ const Like = ({ event }: { event: NostrEvent }) => {
           <Spacer />
           <NoteMenu event={event} aria-label="Note menu" variant="ghost" size="xs" />
         </Flex>
-        <Note key={note.id} event={note} maxHeight={1200} />
+        <Note key={note.id} event={note} />
       </>
     );
   } else content = <>Unknown note type {note.kind}</>;

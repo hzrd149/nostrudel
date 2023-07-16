@@ -51,7 +51,7 @@ export default function NoteView() {
     pageContent = (
       <>
         {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} maxHeight={200} />
+          <Note key={parent.event.id + "-rely"} event={parent.event} />
         ))}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
