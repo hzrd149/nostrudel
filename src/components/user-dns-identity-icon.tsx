@@ -13,7 +13,7 @@ export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; only
 
   const renderIcon = () => {
     if (loading) {
-      return <Spinner size="xs" ml="1" />;
+      return <Spinner size="xs" ml="1" title={metadata.nip05} />;
     } else if (error) {
       return <VerificationFailed color="yellow.500" />;
     } else if (!identity) {

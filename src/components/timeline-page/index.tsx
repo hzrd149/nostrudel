@@ -30,7 +30,6 @@ export type TimelineViewType = "timeline" | "images";
 export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
   const isMobile = useIsMobile();
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const [params, setParams] = useSearchParams();
@@ -54,8 +53,8 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
     }
   };
   return (
-    <IntersectionObserverProvider<string> root={scrollBox} callback={callback}>
-      <Flex direction="column" gap="2" pt="4" pb="8" h="full" overflowY="auto" overflowX="hidden" ref={scrollBox}>
+    <IntersectionObserverProvider<string> callback={callback}>
+      <Flex direction="column" gap="2" pt="4" pb="8">
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus timeline={timeline} />

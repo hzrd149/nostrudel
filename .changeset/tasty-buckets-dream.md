@@ -1,0 +1,5 @@
+---
+"nostrudel": patch
+---
+
+Performance improvements

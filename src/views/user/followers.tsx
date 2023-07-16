@@ -18,14 +18,14 @@ function FollowerItem({ index, style, data: followers }: ListChildComponentProps
   );
 }
 
-const UserFollowersTab = () => {
+export default function UserFollowersTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
 
   const relays = useReadRelayUrls(useAdditionalRelayContext());
   const followers = useUserFollowers(pubkey, relays, true);
 
   return (
-    <Flex gap="2" direction="column" overflowY="auto" p="2" h="full">
+    <Flex gap="2" direction="column" p="2" h="90vh">
       {followers ? (
         <Box flex={1}>
           <AutoSizer disableWidth>
@@ -49,6 +49,4 @@ const UserFollowersTab = () => {
       )}
     </Flex>
   );
-};
-
-export default UserFollowersTab;
+}

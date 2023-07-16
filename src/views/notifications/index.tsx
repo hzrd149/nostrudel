@@ -115,12 +115,11 @@ function NotificationsPage() {
 
   const events = useSubject(timeline?.timeline) ?? [];
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider callback={callback} root={scrollBox}>
-      <Flex direction="column" overflowX="hidden" overflowY="auto" gap="2" ref={scrollBox}>
+    <IntersectionObserverProvider callback={callback}>
+      <Flex direction="column" gap="2">
         {events.map((event) => (
           <NotificationItem key={event.id} event={event} />
         ))}

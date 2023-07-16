@@ -43,7 +43,7 @@ const Like = ({ event }: { event: NostrEvent }) => {
           <Spacer />
           <NoteMenu event={event} aria-label="Note menu" variant="ghost" size="xs" />
         </Flex>
-        <Note key={note.id} event={note} maxHeight={1200} />
+        <Note key={note.id} event={note} />
       </>
     );
   } else content = <>Unknown note type {note.kind}</>;
@@ -60,13 +60,12 @@ export default function UserLikesTab() {
 
   const lines = useSubject(timeline.timeline);
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider callback={callback} root={scrollBox}>
+    <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
-        <Flex direction="column" gap="2" p="2" pb="8" h="full" overflowY="auto" ref={scrollBox}>
+        <Flex direction="column" gap="2" p="2" pb="8">
           {lines.map((event) => (
             <Like event={event} />
           ))}

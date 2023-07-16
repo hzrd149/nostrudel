@@ -8,7 +8,6 @@ import {
   renderGenericUrl,
   renderImageUrl,
 } from "../../../../components/embed-types";
-import EmbeddedContent from "../../../../components/embeded-content";
 import { NostrEvent } from "../../../../types/nostr-event";
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
@@ -26,7 +25,7 @@ const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
     return c;
   }, [event.content]);
 
-  return <EmbeddedContent content={content} />;
+  return <>{content}</>;
 });
 
 export default ChatMessageContent;

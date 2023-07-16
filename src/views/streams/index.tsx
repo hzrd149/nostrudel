@@ -31,7 +31,6 @@ function StreamsPage() {
 
   useRelaysChanged(readRelays, () => timeline.reset());
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const events = useSubject(timeline.timeline);
@@ -58,8 +57,8 @@ function StreamsPage() {
         </Select>
         <RelaySelectionButton ml="auto" />
       </Flex>
-      <IntersectionObserverProvider callback={callback} root={scrollBox}>
-        <Flex gap="2" wrap="wrap" overflowY="auto" overflowX="hidden" ref={scrollBox}>
+      <IntersectionObserverProvider callback={callback}>
+        <Flex gap="2" wrap="wrap">
           {streams.map((stream) => (
             <StreamCard key={stream.event.id} stream={stream} w="sm" />
           ))}

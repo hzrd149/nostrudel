@@ -109,7 +109,7 @@ const UserView = () => {
             flexGrow="1"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(tabs[v].path)}
+            onChange={(v) => navigate(tabs[v].path, { replace: true })}
             colorScheme="brand"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>

@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ReloadPrompt mb="2" />
       <Container size="lg" display="flex" padding="0" gap="4" alignItems="flex-start">
         {!isMobile && <DesktopSideNav position="sticky" top="0" />}
-        <Flex flexGrow={1} direction="column" w="full" overflowX="hidden" pb={isMobile ? "14" : 0}>
+        <Flex flexGrow={1} direction="column" w="full" overflowX="hidden" overflowY="visible" pb={isMobile ? "14" : 0}>
           <ErrorBoundary>{children}</ErrorBoundary>
         </Flex>
         {isMobile && (

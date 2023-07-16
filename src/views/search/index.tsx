@@ -23,6 +23,7 @@ import { truncatedId } from "../../helpers/nostr-event";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";
+import { matchHashtag } from "../../helpers/regexp";
 
 type relay = string;
 type NostrBandSearchResults = {
@@ -91,13 +92,20 @@ export default function SearchView() {
   }, [searchParams]);
 
   const handleSearchText = (text: string) => {
-    if (text.startsWith("nostr:") || text.startsWith("web+nostr:") || safeDecode(search)) {
+    const cleanText = text.trim();
+
+    if (cleanText.startsWith("nostr:") || cleanText.startsWith("web+nostr:") || safeDecode(search)) {
       navigate({ pathname: "/l/" + encodeURIComponent(text) }, { replace: true });
-    } else if (text.trim().match(/^#(\w+)/i)) {
-      navigate({ pathname: "/t/" + text.toLowerCase().trim().replace(/^#/, "") });
-    } else {
-      setSearchParams({ q: text }, { replace: true });
+      return;
     }
+
+    const hashTagMatch = cleanText.match(matchHashtag);
+    if (hashTagMatch) {
+      navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() });
+      return;
+    }
+
+    setSearchParams({ q: cleanText }, { replace: true });
   };
 
   const readClipboard = useCallback(async () => {

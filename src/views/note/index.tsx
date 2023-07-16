@@ -21,7 +21,7 @@ function useNotePointer() {
   }
 }
 
-const NoteView = () => {
+export default function NoteView() {
   const pointer = useNotePointer();
 
   const { thread, events, rootId, focusId, loading } = useThreadLoader(pointer.id, pointer.relays, {
@@ -51,7 +51,7 @@ const NoteView = () => {
     pageContent = (
       <>
         {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} maxHeight={200} />
+          <Note key={parent.event.id + "-rely"} event={parent.event} />
         ))}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
@@ -65,6 +65,4 @@ const NoteView = () => {
       {pageContent}
     </Flex>
   );
-};
-
-export default NoteView;
+}

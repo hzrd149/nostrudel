@@ -12,9 +12,9 @@ import StreamNote from "./stream-note";
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
     case Kind.Text:
-      return <Note event={event} maxHeight={1200} />;
+      return <Note event={event} />;
     case Kind.Repost:
-      return <RepostNote event={event} maxHeight={1200} />;
+      return <RepostNote event={event} />;
     case STREAM_KIND:
       return <StreamNote event={event} />;
     default:

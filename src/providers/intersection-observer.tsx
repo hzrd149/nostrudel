@@ -64,29 +64,29 @@ export default function IntersectionObserverProvider<T = undefined>({
   threshold,
   callback,
 }: PropsWithChildren & {
-  root: MutableRefObject<HTMLElement | null>;
+  root?: MutableRefObject<HTMLElement | null>;
   rootMargin?: IntersectionObserverInit["rootMargin"];
   threshold?: IntersectionObserverInit["threshold"];
   callback: ExtendedIntersectionObserverCallback<T>;
 }) {
   const elementIds = useMemo(() => new WeakMap<Element, T>(), []);
-  const [observer, setObserver] = useState<IntersectionObserver>();
+
+  const handleIntersection = useCallback<IntersectionObserverCallback>((entries, observer) => {
+    callback(
+      entries.map((entry) => {
+        return { entry, id: elementIds.get(entry.target) };
+      }),
+      observer
+    );
+  }, []);
+  const [observer, setObserver] = useState<IntersectionObserver>(
+    () => new IntersectionObserver(handleIntersection, { rootMargin, threshold })
+  );
 
   useMount(() => {
-    if (root.current) {
-      const observer = new IntersectionObserver(
-        (entries, observer) => {
-          callback(
-            entries.map((entry) => {
-              return { entry, id: elementIds.get(entry.target) };
-            }),
-            observer
-          );
-        },
-        { rootMargin, threshold }
-      );
-
-      setObserver(observer);
+    if (root?.current) {
+      // recreate observer with root
+      setObserver(new IntersectionObserver(handleIntersection, { rootMargin, threshold, root: root.current }));
     }
   });
   useUnmount(() => {

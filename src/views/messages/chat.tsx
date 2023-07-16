@@ -63,11 +63,10 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     setContent("");
   };
 
-  const scrollBox = useRef<HTMLDivElement | null>(null);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider root={scrollBox} callback={callback}>
+    <IntersectionObserverProvider callback={callback}>
       <Flex height="100%" overflow="hidden" direction="column">
         <Card size="sm" flexShrink={0}>
           <CardBody display="flex" gap="2" alignItems="center">
