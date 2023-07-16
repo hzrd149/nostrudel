@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.20.0
+
+### Minor Changes
+
+- 52d567c: Cleanup embed content (hopefully performance improvement)
+- 7cc9c9a: cache url open graph data
+- 52d567c: Remove twitter tweet embeds
+- 1afbe85: Add docker image
+
+### Patch Changes
+
+- b8a3fd1: small fix for hashtags
+- 7cc9c9a: Performance improvements
+
 ## 0.19.1
 
 ### Patch Changes
