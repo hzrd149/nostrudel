@@ -30,7 +30,7 @@ export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; only
   }
   return (
     <Text as="span" whiteSpace="nowrap">
-      {metadata.nip05} {renderIcon()}
+      {metadata.nip05.startsWith("_@")?metadata.nip05.substr(2):metadata.nip05} {renderIcon()}
     </Text>
   );
 };
