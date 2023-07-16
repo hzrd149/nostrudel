@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import { Navigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { STREAM_KIND } from "../../helpers/nostr/stream";
 
 export default function NostrLinkView() {
   const { link } = useParams() as { link?: string };
@@ -23,6 +24,8 @@ export default function NostrLinkView() {
     case "note":
     case "nevent":
       return <Navigate to={`/n/${cleanLink}`} replace />;
+    case "naddr":
+      if (decoded.data.kind === STREAM_KIND) return <Navigate to={`/streams/${cleanLink}`} replace />;
   }
 
   return (
