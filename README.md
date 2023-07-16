@@ -1,10 +1,10 @@
 # noStrudel
 
-> NOTE: This client is still in development and is very buggy
+> NOTE: This client is still in development and is buggy
 
 ## noStrudel is my personal nostr client.
 
-My goals for this project is to learn as much as I can about nostr (by implementing everything myself) and to have a client that works exactly how I like.
+My goals for this project is to learn as much as I can about nostr and to have a client that works exactly how I like.
 
 There are many features missing from this client and I wont get around to implementing everything. but if you like the client you are welcome to use it.
 
@@ -18,18 +18,11 @@ While logging in with a secret key is supported. please don't. This is a web cli
 
 I would recommend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x)
 
-## Ideas
+## Running with docker
 
-- Update main timeline to only connect to the necessary relays for your contacts
-- Add mentions in notes (https://css-tricks.com/so-you-want-to-build-an-mention-autocomplete-feature/)
-- Save note drafts and let users manage them
-- Make app a valid web share target https://developer.chrome.com/articles/web-share-target/
-  - Handle image share
-- Improve link previews https://github.com/pengx17/logseq-plugin-link-preview/blob/master/src/use-link-preview-metadata.tsx
-- Support `magnet:` links
-  - in-browser video player? https://webtorrent.io/
-  - Button to open magnet link in system default app
-  - Add support for uploading files (seed files in background?, how to pick trackers?)
+```bash
+docker run --rm -p 8080:80 ghcr.io/hzrd149/nostrudel
+```
 
 ## Running locally
 
@@ -42,4 +35,4 @@ yarn start
 
 ## Contributing
 
-For now this is only a personal project, and while im more than happy to fix any issues that are found. id like to spend as much time as possible build the app and not responding to PRs. If you do want to open a PR please keep it small and don't rewrite the whole project :D
+This is only a personal project, so if you open any PRs please keep them small. thanks
