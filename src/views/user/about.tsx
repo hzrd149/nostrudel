@@ -269,6 +269,15 @@ export default function UserAboutTab() {
         >
           Nosta.me page
         </Button>
+        <Button
+          as={Link}
+          href={`https://slidestr.net/${npub}`}
+          leftIcon={<Image src="https://slidestr.net/slidestr.svg" w="1.2em" />}
+          rightIcon={<ExternalLinkIcon />}
+          isExternal
+        >
+          Slidestr Slideshow
+        </Button>
       </Flex>
     </Flex>
   );
