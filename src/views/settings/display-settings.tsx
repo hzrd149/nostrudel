@@ -33,7 +33,7 @@ export default function DisplaySettings() {
         <Flex direction="column" gap="4">
           <FormControl>
             <FormLabel htmlFor="colorMode" mb="0">
-              Use dark theme
+              Color Mode
             </FormLabel>
             <Select id="colorMode" {...register("colorMode")}>
               <option value="system">System Default</option>

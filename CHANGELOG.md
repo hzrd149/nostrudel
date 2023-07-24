@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.20.1
+
+### Patch Changes
+
+- 85dd32a: Add logging to app setting services
+- 85dd32a: Fix Color Mode setting
+
 ## 0.20.0
 
 ### Minor Changes
