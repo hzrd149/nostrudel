@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import appSettings, { replaceSettings } from "../services/app-settings";
+import appSettings, { replaceSettings } from "../services/settings/app-settings";
 import useSubject from "./use-subject";
-import { AppSettings } from "../services/user-app-settings";
 import { useToast } from "@chakra-ui/react";
+import { AppSettings } from "../services/settings/migrations";
 
 export default function useAppSettings() {
   const settings = useSubject(appSettings);

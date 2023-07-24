@@ -25,7 +25,7 @@ import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { ReplyButton } from "./buttons/reply-button";
 import { RepostButton } from "./buttons/repost-button";

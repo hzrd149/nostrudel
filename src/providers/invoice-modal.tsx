@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
 import InvoiceModal from "../components/invoice-modal";
 import createDefer, { Deferred } from "../classes/deferred";
-import appSettings from "../services/app-settings";
+import appSettings from "../services/settings/app-settings";
 
 export type InvoiceModalContext = {
   requestPay: (invoice: string) => Promise<void>;

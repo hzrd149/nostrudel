@@ -24,7 +24,7 @@ import { Kind } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
 import { useSigningContext } from "../providers/signing-provider";
-import appSettings from "../services/app-settings";
+import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
 import { requestZapInvoice } from "../helpers/zaps";

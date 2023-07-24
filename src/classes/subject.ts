@@ -19,6 +19,8 @@ export class Subject<Value> implements Connectable<Value> {
   }
 
   next(value: Value) {
+    if (this.value === value) return;
+
     this.value = value;
     for (const [listener, ctx] of this.listeners) {
       if (ctx) listener.call(ctx, value);

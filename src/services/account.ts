@@ -1,6 +1,6 @@
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
-import { AppSettings } from "./user-app-settings";
+import { AppSettings } from "./settings/migrations";
 
 export type Account = {
   pubkey: string;

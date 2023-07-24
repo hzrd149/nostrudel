@@ -16,6 +16,9 @@ export default function SettingsView() {
   const form = useForm({
     mode: "all",
     values: settings,
+    resetOptions: {
+      keepDirty: true,
+    },
   });
 
   const saveSettings = form.handleSubmit(async (values) => {
@@ -48,7 +51,7 @@ export default function SettingsView() {
           </Link>
           <Button
             ml="auto"
-            isLoading={form.formState.isLoading || form.formState.isValidating}
+            isLoading={form.formState.isLoading || form.formState.isValidating || form.formState.isSubmitting}
             isDisabled={!form.formState.isDirty}
             colorScheme="brand"
             type="submit"

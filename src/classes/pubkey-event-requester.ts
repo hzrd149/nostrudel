@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
+import debug, { Debugger } from "debug";
 import { NostrSubscription } from "./nostr-subscription";
 import { SuperMap } from "./super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 import { NostrQuery } from "../types/nostr-query";
+import { nameOrPubkey } from "../helpers/debug";
 
 type pubkey = string;
 type relay = string;
@@ -19,13 +21,17 @@ class PubkeyEventRequestSubscription {
 
   private requestedPubkeys = new Map<pubkey, Date>();
 
-  constructor(relay: string, kind: number, name?: string, dTag?: string) {
+  log: Debugger;
+
+  constructor(relay: string, kind: number, name?: string, dTag?: string, log?: Debugger) {
     this.kind = kind;
     this.dTag = dTag;
     this.subscription = new NostrSubscription(relay, undefined, name);
 
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
     this.subscription.onEOSE.subscribe(this.handleEOSE.bind(this));
+
+    this.log = log || debug("misc");
   }
 
   private handleEvent(event: NostrEvent) {
@@ -41,6 +47,7 @@ class PubkeyEventRequestSubscription {
 
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
+      this.log(`Found newer event for ${nameOrPubkey(event.pubkey)}`);
       sub.next(event);
     }
   }
@@ -57,6 +64,7 @@ class PubkeyEventRequestSubscription {
     const sub = this.subjects.get(pubkey);
 
     if (!sub.value) {
+      this.log(`Adding ${nameOrPubkey(pubkey)} to queue`);
       this.requestNext.add(pubkey);
     }
 
@@ -79,6 +87,7 @@ class PubkeyEventRequestSubscription {
       if (dayjs(date).isBefore(timeout)) {
         this.requestedPubkeys.delete(pubkey);
         needsUpdate = true;
+        this.log(`Request for ${nameOrPubkey(pubkey)} expired`);
       }
     }
 
@@ -87,7 +96,10 @@ class PubkeyEventRequestSubscription {
       if (this.requestedPubkeys.size > 0) {
         const query: NostrQuery = { authors: Array.from(this.requestedPubkeys.keys()), kinds: [this.kind] };
         if (this.dTag) query["#d"] = [this.dTag];
+
+        this.log(`Updating query with ${query.authors?.length} pubkeys`);
         this.subscription.setQuery(query);
+
         if (this.subscription.state !== NostrSubscription.OPEN) {
           this.subscription.open();
         }
@@ -105,13 +117,17 @@ export class PubkeyEventRequester {
   private subjects = new SuperMap<pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private subscriptions = new SuperMap<relay, PubkeyEventRequestSubscription>(
-    (relay) => new PubkeyEventRequestSubscription(relay, this.kind, this.name, this.dTag)
+    (relay) => new PubkeyEventRequestSubscription(relay, this.kind, this.name, this.dTag, this.log.extend(relay))
   );
 
-  constructor(kind: number, name?: string, dTag?: string) {
+  log: Debugger;
+
+  constructor(kind: number, name?: string, dTag?: string, log?: Debugger) {
     this.kind = kind;
     this.name = name;
     this.dTag = dTag;
+
+    this.log = log || debug("misc");
   }
 
   getSubject(pubkey: string) {
@@ -120,25 +136,29 @@ export class PubkeyEventRequester {
 
   handleEvent(event: NostrEvent) {
     if (event.kind !== this.kind) return;
-    const sub = this.subjects.get(event.pubkey);
 
+    const sub = this.subjects.get(event.pubkey);
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
+      this.log(`New event for ${nameOrPubkey(event.pubkey)}`);
       sub.next(event);
     }
   }
 
-  private connected = new WeakSet<any>();
   requestEvent(pubkey: string, relays: string[]) {
+    this.log(`Requesting event for ${nameOrPubkey(pubkey)}`);
     const sub = this.subjects.get(pubkey);
 
     for (const relay of relays) {
       const relaySub = this.subscriptions.get(relay).requestEvent(pubkey);
 
-      if (!this.connected.has(relaySub)) {
-        relaySub.subscribe((event) => event && this.handleEvent(event));
-        this.connected.add(relaySub);
-      }
+      sub.connectWithHandler(relaySub, (event, next, current) => {
+        if (event.kind !== this.kind) return;
+        if (!current || event.created_at > current.created_at) {
+          this.log(`Event for ${nameOrPubkey(event.pubkey)} from connection`);
+          next(event);
+        }
+      });
     }
 
     return sub;

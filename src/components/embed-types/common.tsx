@@ -1,5 +1,5 @@
 import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useTrusted } from "../../providers/trust";

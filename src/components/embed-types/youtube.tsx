@@ -1,5 +1,5 @@
 import { AspectRatio, list } from "@chakra-ui/react";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
 import { renderOpenGraphUrl } from "./common";
 import { replaceDomain } from "../../helpers/url";
 

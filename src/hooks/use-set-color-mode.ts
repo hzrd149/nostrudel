@@ -1,6 +1,6 @@
 import { useColorMode } from "@chakra-ui/react";
 import useSubject from "./use-subject";
-import appSettings from "../services/app-settings";
+import appSettings from "../services/settings/app-settings";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 

@@ -7,7 +7,7 @@ import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import useSubject from "../../hooks/use-subject";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";

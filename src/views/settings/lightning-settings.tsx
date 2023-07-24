@@ -14,8 +14,8 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { LightningIcon } from "../../components/icons";
-import { AppSettings } from "../../services/user-app-settings";
 import { useFormContext } from "react-hook-form";
+import { AppSettings } from "../../services/settings/migrations";
 
 export default function LightningSettings() {
   const { register, formState } = useFormContext<AppSettings>();
