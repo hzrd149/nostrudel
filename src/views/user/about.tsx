@@ -27,8 +27,7 @@ import { useAdditionalRelayContext } from "../../providers/additional-relay-cont
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon } from "../../components/icons";
+import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, LightningIcon } from "../../components/icons";
 import { normalizeToBech32 } from "../../helpers/nip19";
 import { Bech32Prefix } from "../../helpers/nip19";
 import { truncatedId } from "../../helpers/nostr-event";
@@ -131,6 +130,12 @@ export default function UserAboutTab() {
       )}
 
       <Flex gap="2" px="2" direction="column">
+        {metadata?.lud16 && (
+          <Flex gap="2">
+            <LightningIcon />
+            <Text>{metadata.lud16}</Text>
+          </Flex>
+        )}
         {metadata?.nip05 && (
           <Flex gap="2">
             <AtIcon />
