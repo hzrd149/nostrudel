@@ -1,12 +1,12 @@
-import db from "./db";
 import { isRTag, NostrEvent } from "../types/nostr-event";
 import { RelayConfig } from "../classes/relay";
 import { parseRTag } from "../helpers/nostr-event";
-import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";
+import replaceableEventLoaderService from "./replaceable-event-requester";
+import { Kind } from "nostr-tools";
 
 export type ParsedUserRelays = {
   pubkey: string;
@@ -23,20 +23,13 @@ function parseRelaysEvent(event: NostrEvent): ParsedUserRelays {
 }
 
 class UserRelaysService {
-  requester: CachedPubkeyEventRequester;
-  constructor() {
-    this.requester = new CachedPubkeyEventRequester(10002, "user-relays");
-    this.requester.readCache = (pubkey) => db.get("userRelays", pubkey);
-    this.requester.writeCache = (pubkey, event) => db.put("userRelays", event);
-  }
-
   private subjects = new SuperMap<string, Subject<ParsedUserRelays>>(() => new Subject<ParsedUserRelays>());
   getRelays(pubkey: string) {
     return this.subjects.get(pubkey);
   }
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.subjects.get(pubkey);
-    const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.RelayList, pubkey);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
 
     // also fetch the relays from the users contacts
@@ -51,19 +44,11 @@ class UserRelaysService {
   }
 
   receiveEvent(event: NostrEvent) {
-    this.requester.handleEvent(event);
-  }
-
-  update() {
-    this.requester.update();
+    replaceableEventLoaderService.handleEvent(event);
   }
 }
 
 const userRelaysService = new UserRelaysService();
-
-setInterval(() => {
-  userRelaysService.update();
-}, 1000 * 2);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

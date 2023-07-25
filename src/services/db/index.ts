@@ -1,11 +1,11 @@
 import { openDB, deleteDB } from "idb";
 
 import { IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3 } from "./schema";
 
 const dbName = "storage";
-const version = 2;
-const db = await openDB<SchemaV2>(dbName, version, {
+const version = 3;
+const db = await openDB<SchemaV3>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -56,14 +56,29 @@ const db = await openDB<SchemaV2>(dbName, version, {
       });
       settings.createIndex("created_at", "created_at");
     }
+
+    if (oldVersion < 3) {
+      const v2 = db as unknown as IDBPDatabase<SchemaV2>;
+      const v3 = db as unknown as IDBPDatabase<SchemaV3>;
+
+      // rename the old event caches
+      v3.deleteObjectStore("userMetadata");
+      v3.deleteObjectStore("userContacts");
+      v3.deleteObjectStore("userRelays");
+      v3.deleteObjectStore("settings");
+
+      // create new replaceable event object store
+      const settings = v3.createObjectStore("replaceableEvents", {
+        keyPath: "addr",
+      });
+      settings.createIndex("created", "created");
+    }
   },
 });
 
 export async function clearCacheData() {
-  await db.clear("userMetadata");
-  await db.clear("userContacts");
+  await db.clear("replaceableEvents");
   await db.clear("userFollows");
-  await db.clear("userRelays");
   await db.clear("relayInfo");
   await db.clear("dnsIdentifiers");
   await db.clear("relayScoreboardStats");
