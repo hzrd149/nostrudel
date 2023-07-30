@@ -1,10 +1,12 @@
 import dayjs from "dayjs";
 import { utils } from "nostr-tools";
+import debug, { Debug, Debugger } from "debug";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
+import { logger } from "../helpers/debug";
 
 function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {
@@ -23,6 +25,7 @@ class RelayTimelineLoader {
   blockSize = BLOCK_SIZE;
   private name?: string;
   private requestId = 0;
+  private log: Debugger;
 
   loading = false;
   events: NostrEvent[] = [];
@@ -32,17 +35,19 @@ class RelayTimelineLoader {
   onEvent = new Subject<NostrEvent>();
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrRequestFilter, name?: string) {
+  constructor(relay: string, query: NostrRequestFilter, name: string, log?: Debugger) {
     this.relay = relay;
     this.query = query;
     this.name = name;
+
+    this.log = log || logger.extend(name);
   }
 
   loadNextBlock() {
     this.loading = true;
     let query: NostrRequestFilter = addToQuery(this.query, { limit: this.blockSize });
     if (this.events[this.events.length - 1]) {
-      query = addToQuery(query, { until: this.events[this.events.length - 1].created_at + 1 });
+      query = addToQuery(query, { until: this.events[this.events.length - 1].created_at - 1 });
     }
 
     const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
@@ -56,6 +61,7 @@ class RelayTimelineLoader {
     request.onComplete.then(() => {
       this.loading = false;
       if (gotEvents === 0) this.complete = true;
+      this.log(`Got ${gotEvents} events`);
       this.onBlockFinish.next();
     });
 
@@ -95,11 +101,15 @@ export class TimelineLoader {
   loadNextBlockBuffer = 2;
   eventFilter?: (event: NostrEvent) => boolean;
 
+  private name: string;
+  private log: Debugger;
   private subscription: NostrMultiSubscription;
 
   private relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
 
-  constructor(name?: string) {
+  constructor(name: string) {
+    this.name = name;
+    this.log = logger.extend("TimelineLoader:" + name);
     this.subscription = new NostrMultiSubscription([], undefined, name);
     this.subscription.onEvent.subscribe(this.handleEvent, this);
   }
@@ -121,7 +131,7 @@ export class TimelineLoader {
 
     for (const relay of this.relays) {
       if (!this.relayTimelineLoaders.has(relay)) {
-        const loader = new RelayTimelineLoader(relay, this.query, this.subscription.name);
+        const loader = new RelayTimelineLoader(relay, this.query, this.name, this.log.extend(relay));
         this.relayTimelineLoaders.set(relay, loader);
         loader.onEvent.subscribe(this.handleEvent, this);
         loader.onBlockFinish.subscribe(this.updateLoading, this);
@@ -195,10 +205,13 @@ export class TimelineLoader {
   }
   /** @deprecated */
   loadMore() {
+    let triggeredLoad = false;
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (loader.complete || loader.loading) continue;
       loader.loadNextBlock();
+      triggeredLoad = true;
     }
+    if (triggeredLoad) this.updateLoading();
   }
 
   private updateLoading() {
