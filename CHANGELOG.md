@@ -1,5 +1,15 @@
 # nostrudel
 
+## 0.21.0
+
+### Minor Changes
+
+- 980c68a: Show lightning address on about page
+- 68001bb: Add people list context and selector
+- 640edef: Use timeline loader for followers view
+- 5c061ca: Add expiration to cached metadata events
+- 5c061ca: Rebuild underlying event requester classes
+
 ## 0.20.1
 
 ### Patch Changes
