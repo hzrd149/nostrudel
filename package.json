@@ -34,8 +34,6 @@
     "react-router-dom": "^6.14.1",
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",
-    "react-virtualized-auto-sizer": "^1.0.20",
-    "react-window": "^1.8.9",
     "webln": "^0.3.2"
   },
   "devDependencies": {
@@ -45,7 +43,6 @@
     "@types/identicon.js": "^2.3.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
-    "@types/react-window": "^1.8.5",
     "@vitejs/plugin-react": "^4.0.1",
     "cypress": "^12.16.0",
     "prettier": "^2.8.8",

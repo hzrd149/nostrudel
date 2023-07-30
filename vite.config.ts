@@ -16,7 +16,7 @@ export default defineConfig({
         name: "noStrudel",
         short_name: "noStrudel",
         description: "A simple PWA nostr client",
-        orientation: "portrait-primary",
+        orientation: "any",
         theme_color: "#8DB600",
         categories: ["nostr"],
         icons: [

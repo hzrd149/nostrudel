@@ -1,52 +1,58 @@
-import AutoSizer from "react-virtualized-auto-sizer";
-import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
+import { Event, Kind } from "nostr-tools";
 
-import { UserCard } from "./components/user-card";
-import { useUserFollowers } from "../../hooks/use-user-followers";
+import { UserCard, UserCardProps } from "./components/user-card";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { truncatedId } from "../../helpers/nostr-event";
+import useSubject from "../../hooks/use-subject";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { useMemo, useRef } from "react";
 
-function FollowerItem({ index, style, data: followers }: ListChildComponentProps<string[]>) {
-  const pubkey = followers[index];
+function FollowerItem({ event, ...props }: { event: Event } & Omit<UserCardProps, "pubkey">) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
 
   return (
-    <div style={style}>
-      <UserCard key={pubkey + index} pubkey={pubkey} />
+    <div ref={ref}>
+      <UserCard pubkey={event.pubkey} {...props} />
     </div>
   );
 }
 
 export default function UserFollowersTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
+  const contextRelays = useAdditionalRelayContext();
+  const readRelays = useReadRelayUrls(contextRelays);
 
-  const relays = useReadRelayUrls(useAdditionalRelayContext());
-  const followers = useUserFollowers(pubkey, relays, true);
+  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-followers`, readRelays, {
+    "#p": [pubkey],
+    kinds: [Kind.Contacts],
+  });
+
+  const followerEvents = useSubject(timeline.timeline);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  const followers = useMemo(() => {
+    const dedupe = new Map<string, Event>();
+    for (const event of followerEvents) {
+      dedupe.set(event.pubkey, event);
+    }
+    return Array.from(dedupe.values());
+  }, [followerEvents]);
 
   return (
-    <Flex gap="2" direction="column" p="2" h="90vh">
-      {followers ? (
-        <Box flex={1}>
-          <AutoSizer disableWidth>
-            {({ height }: { height: number }) => (
-              <FixedSizeList
-                itemCount={followers.length}
-                itemData={followers}
-                itemSize={70}
-                itemKey={(i, d) => d[i]}
-                width="100%"
-                height={height}
-                overscanCount={10}
-              >
-                {FollowerItem}
-              </FixedSizeList>
-            )}
-          </AutoSizer>
-        </Box>
-      ) : (
-        <Spinner />
-      )}
-    </Flex>
+    <IntersectionObserverProvider callback={callback}>
+      <SimpleGrid minChildWidth="4in" spacing="2" py="2">
+        {followers.map((event) => (
+          <FollowerItem key={event.pubkey} event={event} />
+        ))}
+      </SimpleGrid>
+      <TimelineActionAndStatus timeline={timeline} />
+    </IntersectionObserverProvider>
   );
 }
