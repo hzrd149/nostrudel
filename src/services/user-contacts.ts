@@ -1,11 +1,11 @@
 import { isPTag, NostrEvent } from "../types/nostr-event";
 import { safeJson } from "../helpers/parse";
-import db from "./db";
-import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";
+import replaceableEventLoaderService from "./replaceable-event-requester";
+import { Kind } from "nostr-tools";
 
 export type UserContacts = {
   pubkey: string;
@@ -48,21 +48,6 @@ function parseContacts(event: NostrEvent): UserContacts {
 }
 
 class UserContactsService {
-  requester: CachedPubkeyEventRequester;
-
-  constructor() {
-    this.requester = new CachedPubkeyEventRequester(3, "user-contacts");
-    this.requester.readCache = this.readCache;
-    this.requester.writeCache = this.writeCache;
-  }
-
-  readCache(pubkey: string) {
-    return db.get("userContacts", pubkey);
-  }
-  writeCache(pubkey: string, event: NostrEvent) {
-    return db.put("userContacts", event);
-  }
-
   private subjects = new SuperMap<string, Subject<UserContacts>>(() => new Subject<UserContacts>());
   getSubject(pubkey: string) {
     return this.subjects.get(pubkey);
@@ -70,7 +55,13 @@ class UserContactsService {
   requestContacts(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.subjects.get(pubkey);
 
-    const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
+    const requestSub = replaceableEventLoaderService.requestEvent(
+      relays,
+      Kind.Contacts,
+      pubkey,
+      undefined,
+      alwaysRequest
+    );
 
     sub.connectWithHandler(requestSub, (event, next) => next(parseContacts(event)));
 
@@ -78,19 +69,11 @@ class UserContactsService {
   }
 
   receiveEvent(event: NostrEvent) {
-    this.requester.handleEvent(event);
-  }
-
-  update() {
-    this.requester.update();
+    replaceableEventLoaderService.handleEvent(event);
   }
 }
 
 const userContactsService = new UserContactsService();
-
-setInterval(() => {
-  userContactsService.update();
-}, 1000 * 2);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

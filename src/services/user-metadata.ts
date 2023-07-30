@@ -1,17 +1,18 @@
 import db from "./db";
-import { CachedPubkeyEventRequester } from "../classes/cached-pubkey-event-requester";
 import { NostrEvent } from "../types/nostr-event";
 import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
+import replaceableEventLoaderService from "./replaceable-event-requester";
+import { Kind } from "nostr-tools";
 
 class UserMetadataService {
-  requester: CachedPubkeyEventRequester;
-  constructor() {
-    this.requester = new CachedPubkeyEventRequester(0, "user-metadata");
-    this.requester.readCache = this.readCache;
-    this.requester.writeCache = this.writeCache;
-  }
+  // requester: CachedPubkeyEventRequester;
+  // constructor() {
+  //   this.requester = new CachedPubkeyEventRequester(0, "user-metadata");
+  //   this.requester.readCache = this.readCache;
+  //   this.requester.writeCache = this.writeCache;
+  // }
 
   readCache(pubkey: string) {
     return db.get("userMetadata", pubkey);
@@ -26,25 +27,23 @@ class UserMetadataService {
   }
   requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = this.requester.requestEvent(pubkey, relays, alwaysRequest);
+    const requestSub = replaceableEventLoaderService.requestEvent(
+      relays,
+      Kind.Metadata,
+      pubkey,
+      undefined,
+      alwaysRequest
+    );
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;
   }
 
   receiveEvent(event: NostrEvent) {
-    this.requester.handleEvent(event);
-  }
-
-  update() {
-    this.requester.update();
+    replaceableEventLoaderService.handleEvent(event);
   }
 }
 
 const userMetadataService = new UserMetadataService();
-
-setInterval(() => {
-  userMetadataService.update();
-}, 1000 * 2);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

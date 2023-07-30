@@ -1,7 +1,6 @@
 import { useMemo, useRef } from "react";
 import {
   Badge,
-  Box,
   Card,
   CardBody,
   CardFooter,
@@ -25,16 +24,18 @@ import { UserAvatar } from "../../user-avatar";
 import { UserLink } from "../../user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { NoteRelays } from "../../note/note-relays";
+import { useAsync } from "react-use";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
-  const stream = useMemo(() => parseStreamEvent(event), [event]);
-  const { title, image } = stream;
+  const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
 
   const naddr = useEventNaddr(event);
+
+  if (!stream || error) return null;
 
   return (
     <Card {...props} ref={ref}>
@@ -47,10 +48,10 @@ export default function StreamNote({ event, ...props }: CardProps & { event: Nos
                 <UserLink pubkey={stream.host} />
               </Heading>
             </Flex>
-            {image && <Image src={image} alt={title} borderRadius="lg" maxH="15rem" />}
+            {stream.image && <Image src={stream.image} alt={stream.title} borderRadius="lg" maxH="15rem" />}
             <Heading size="md">
               <LinkOverlay as={RouterLink} to={`/streams/${naddr}`}>
-                {title}
+                {stream.title}
               </LinkOverlay>
             </Heading>
           </Flex>

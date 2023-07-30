@@ -27,9 +27,6 @@ import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
 import dayjs from "dayjs";
-import relayScoreboardService from "../../../services/relay-scoreboard";
-import { getEventRelays } from "../../../services/event-relays";
-import { nip19 } from "nostr-tools";
 import StreamStatusBadge from "./status-badge";
 import { CodeIcon } from "../../../components/icons";
 import RawValue from "../../../components/debug-modals/raw-value";
@@ -71,7 +68,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
               ))}
             </Flex>
           )}
-          <Text>Updated: {dayjs.unix(stream.updated).fromNow()}</Text>
+          {stream.starts && <Text>Started: {dayjs.unix(stream.starts).fromNow()}</Text>}
         </LinkBox>
         <Divider />
         <CardFooter p="2" display="flex" gap="2" alignItems="center">

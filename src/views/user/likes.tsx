@@ -58,7 +58,7 @@ export default function UserLikesTab() {
 
   const timeline = useTimelineLoader(`${truncatedId(pubkey)}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
 
-  const lines = useSubject(timeline.timeline);
+  const likes = useSubject(timeline.timeline);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
@@ -66,7 +66,7 @@ export default function UserLikesTab() {
     <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
         <Flex direction="column" gap="2" p="2" pb="8">
-          {lines.map((event) => (
+          {likes.map((event) => (
             <Like event={event} />
           ))}
 

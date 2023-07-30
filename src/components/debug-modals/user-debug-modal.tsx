@@ -6,14 +6,15 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import RawValue from "./raw-value";
 import RawJson from "./raw-json";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
-import userRelaysService from "../../services/user-relays";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
+import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import { Kind } from "nostr-tools";
 
 export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } & Omit<ModalProps, "children">) {
   const npub = useMemo(() => normalizeToBech32(pubkey, Bech32Prefix.Pubkey), [pubkey]);
   const metadata = useUserMetadata(pubkey);
   const nprofile = useSharableProfileId(pubkey);
-  const relays = userRelaysService.requester.getSubject(pubkey).value;
+  const relays = replaceableEventLoaderService.getEvent(Kind.RelayList, pubkey).value;
   const tipMetadata = useUserLNURLMetadata(pubkey);
 
   return (
