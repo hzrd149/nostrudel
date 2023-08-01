@@ -5,7 +5,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
-import { ParsedStream, STREAM_KIND, getATag, parseStreamEvent } from "../../helpers/nostr/stream";
+import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../helpers/nostr/stream";
 import { NostrEvent } from "../../types/nostr-event";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
@@ -15,8 +15,7 @@ import PeopleListProvider, { usePeopleListContext } from "../../components/peopl
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 
 function StreamsPage() {
-  // hard code damus and snort relays for finding streams
-  const readRelays = useRelaySelectionRelays(); //useReadRelayUrls(["wss://relay.damus.io", "wss://relay.snort.social"]);
+  const relays = useRelaySelectionRelays();
   const [filterStatus, setFilterStatus] = useState<string>("live");
 
   const eventFilter = useCallback(
@@ -38,25 +37,22 @@ function StreamsPage() {
           { "#p": people, kinds: [STREAM_KIND] },
         ]
       : { kinds: [STREAM_KIND] };
-  const timeline = useTimelineLoader(`streams`, readRelays, query, { eventFilter });
+  const timeline = useTimelineLoader(`streams`, relays, query, { eventFilter });
 
-  useRelaysChanged(readRelays, () => timeline.reset());
+  useRelaysChanged(relays, () => timeline.reset());
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const events = useSubject(timeline.timeline);
   const streams = useMemo(() => {
-    const parsedStreams: Record<string, ParsedStream> = {};
+    const parsedStreams: ParsedStream[] = [];
     for (const event of events) {
       try {
         const parsed = parseStreamEvent(event);
-        const aTag = getATag(parsed);
-        if (!parsedStreams[aTag] || parsed.event.created_at > parsedStreams[aTag].event.created_at) {
-          parsedStreams[aTag] = parsed;
-        }
+        parsedStreams.push(parsed);
       } catch (e) {}
     }
-    return Array.from(Object.values(parsedStreams)).sort((a, b) => (b.starts ?? 0) - (a.starts ?? 0));
+    return parsedStreams.sort((a, b) => (b.starts ?? 0) - (a.starts ?? 0));
   }, [events]);
 
   return (
@@ -83,7 +79,7 @@ function StreamsPage() {
 export default function StreamsView() {
   return (
     <RelaySelectionProvider
-      additionalDefaults={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
+      overrideDefault={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
     >
       <PeopleListProvider>
         <StreamsPage />

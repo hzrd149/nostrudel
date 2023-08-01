@@ -1,4 +1,4 @@
-import { getReferences } from "../helpers/nostr-event";
+import { getReferences } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";

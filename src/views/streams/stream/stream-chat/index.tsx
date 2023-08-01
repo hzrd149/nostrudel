@@ -34,11 +34,12 @@ import { useSigningContext } from "../../../../providers/signing-provider";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../../../hooks/use-subject";
 import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
-import { truncatedId } from "../../../../helpers/nostr-event";
+import { truncatedId } from "../../../../helpers/nostr/event";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";
 import { parseZapEvent } from "../../../../helpers/zaps";
 import { Kind } from "nostr-tools";
+import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -57,13 +58,14 @@ export default function StreamChat({
   ...props
 }: CardProps & { stream: ParsedStream; actions?: React.ReactNode; displayMode?: ChatDisplayMode }) {
   const toast = useToast();
-  const contextRelays = useAdditionalRelayContext();
-  const readRelays = useReadRelayUrls(contextRelays);
+  const streamRelays = useRelaySelectionRelays();
   const hostReadRelays = useUserRelays(stream.host)
     .filter((r) => r.mode & RelayMode.READ)
     .map((r) => r.url);
 
-  const timeline = useTimelineLoader(`${truncatedId(stream.event.id)}-chat`, readRelays, {
+  const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);
+
+  const timeline = useTimelineLoader(`${truncatedId(stream.identifier)}-chat`, streamRelays, {
     "#a": [getATag(stream)],
     kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
   });
@@ -92,7 +94,7 @@ export default function StreamChat({
       const draft = buildChatMessage(stream, values.content);
       const signed = await requestSignature(draft);
       if (!signed) throw new Error("Failed to sign");
-      nostrPostAction(unique([...contextRelays, ...hostReadRelays]), signed);
+      nostrPostAction(relays, signed);
       reset();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -181,7 +183,7 @@ export default function StreamChat({
           }}
           onClose={zapModal.onClose}
           initialComment={getValues().content}
-          additionalRelays={contextRelays}
+          additionalRelays={relays}
         />
       )}
     </>

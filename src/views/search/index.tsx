@@ -19,7 +19,7 @@ import { ClipboardIcon, LightningIcon, QrCodeIcon } from "../../components/icons
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import ZapModal from "../../components/zap-modal";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";

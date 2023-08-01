@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/intersection-observer";

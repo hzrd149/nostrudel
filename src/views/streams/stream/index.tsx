@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "react-use";
 import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useParams, Navigate, useSearchParams } from "react-router-dom";
@@ -6,7 +6,6 @@ import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
 
 import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../../helpers/nostr/stream";
-import { NostrRequest } from "../../../classes/nostr-request";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
@@ -14,12 +13,15 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { useIsMobile } from "../../../hooks/use-is-mobile";
-import { AdditionalRelayProvider } from "../../../providers/additional-relay-context";
 import StreamSummaryContent from "../components/stream-summary-content";
 import { ArrowDownSIcon, ArrowUpSIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { NoteRelays } from "../../../components/note/note-relays";
+import StreamDebugButton from "../components/stream-debug-button";
+import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import useSubject from "../../../hooks/use-subject";
+import RelaySelectionButton from "../../../components/relay-selection/relay-selection-button";
+import RelaySelectionProvider from "../../../providers/relay-selection-provider";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   const isMobile = useIsMobile();
@@ -91,7 +93,12 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
       )}
       {!displayMode && (
         <Flex gap={isMobile ? "2" : "4"} direction="column" flexGrow={isMobile ? 0 : 1}>
-          <LiveVideoPlayer stream={stream.streaming} autoPlay poster={stream.image} maxH="100vh" />
+          <LiveVideoPlayer
+            stream={stream.streaming || stream.recording}
+            autoPlay={!!stream.streaming}
+            poster={stream.image}
+            maxH="100vh"
+          />
           <Flex gap={isMobile ? "2" : "4"} alignItems="center" p={isMobile ? "2" : 0}>
             <UserAvatarLink pubkey={stream.host} noProxy />
             <Box>
@@ -101,7 +108,8 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
               <Text>{stream.title}</Text>
             </Box>
             <Spacer />
-            <NoteRelays event={stream.event} />
+            <StreamDebugButton stream={stream} variant="ghost" />
+            <RelaySelectionButton />
             <Button as={RouterLink} to="/streams">
               Back
             </Button>
@@ -131,33 +139,40 @@ export default function StreamView() {
   if (!naddr) return <Navigate replace to="/streams" />;
 
   const readRelays = useReadRelayUrls();
-  const [stream, setStream] = useState<ParsedStream>();
-  const [relays, setRelays] = useState<string[]>([]);
+  const [streamRelays, setStreamRelays] = useState<string[]>([]);
 
-  useEffect(() => {
+  const subject = useMemo(() => {
     try {
       const parsed = nip19.decode(naddr);
       if (parsed.type !== "naddr") throw new Error("Invalid stream address");
       if (parsed.data.kind !== STREAM_KIND) throw new Error("Invalid stream kind");
 
-      const request = new NostrRequest(unique([...readRelays, ...(parsed.data.relays ?? [])]));
-      request.onEvent.subscribe((event) => {
-        setStream(parseStreamEvent(event));
-        if (parsed.data.relays) setRelays(parsed.data.relays);
-      });
-      request.start({ kinds: [parsed.data.kind], "#d": [parsed.data.identifier], authors: [parsed.data.pubkey] });
+      const addrRelays = parsed.data.relays ?? [];
+      return replaceableEventLoaderService.requestEvent(
+        unique([...readRelays, ...streamRelays, ...addrRelays]),
+        parsed.data.kind,
+        parsed.data.pubkey,
+        parsed.data.identifier,
+        true
+      );
     } catch (e) {
       console.log(e);
     }
-  }, [naddr]);
+  }, [naddr, streamRelays.join("|")]);
+
+  const streamEvent = useSubject(subject);
+  const stream = useMemo(() => streamEvent && parseStreamEvent(streamEvent), [streamEvent]);
+
+  // refetch the stream from the correct relays when its loaded to ensure we have the latest
+  useEffect(() => {
+    if (stream?.relays) setStreamRelays(stream.relays);
+  }, [stream?.relays]);
 
   if (!stream) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
-    <AdditionalRelayProvider
-      relays={unique([...relays, "wss://relay.snort.social", "wss://relay.damus.io", "wss://nos.lol"])}
-    >
+    <RelaySelectionProvider additionalDefaults={streamRelays}>
       <StreamPage stream={stream} displayMode={(params.get("displayMode") as ChatDisplayMode) ?? undefined} />
-    </AdditionalRelayProvider>
+    </RelaySelectionProvider>
   );
 }

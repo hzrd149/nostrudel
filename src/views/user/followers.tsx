@@ -6,7 +6,7 @@ import { UserCard, UserCardProps } from "./components/user-card";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";

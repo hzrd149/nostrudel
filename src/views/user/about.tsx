@@ -30,7 +30,7 @@ import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, LightningIcon } from "../../components/icons";
 import { normalizeToBech32 } from "../../helpers/nip19";
 import { Bech32Prefix } from "../../helpers/nip19";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";

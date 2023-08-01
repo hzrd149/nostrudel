@@ -1,6 +1,6 @@
 import { NostrEvent } from "../types/nostr-event";
 import { Bech32Prefix, normalizeToBech32 } from "./nip19";
-import { truncatedId } from "./nostr-event";
+import { truncatedId } from "./nostr/event";
 
 export type Kind0ParsedContent = {
   name?: string;

@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
-import { getEventRelays } from "../services/event-relays";
-import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../types/nostr-event";
-import { RelayConfig, RelayMode } from "../classes/relay";
-import accountService from "../services/account";
+import { getEventRelays } from "../../services/event-relays";
+import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
+import { RelayConfig, RelayMode } from "../../classes/relay";
+import accountService from "../../services/account";
 import { Kind, nip19 } from "nostr-tools";
-import { matchNostrLink } from "./regexp";
-import { getSharableNoteId } from "./nip19";
-import relayScoreboardService from "../services/relay-scoreboard";
+import { matchNostrLink } from "../regexp";
+import { getSharableNoteId } from "../nip19";
+import relayScoreboardService from "../../services/relay-scoreboard";
+import { getAddr } from "../../services/replaceable-event-requester";
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return event.kind === 1 && !!getReferences(event).replyId;
@@ -20,6 +21,14 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
   return str.substring(0, keep) + "..." + str.substring(str.length - keep);
+}
+
+// used to get a unique Id for each event, should take into account replaceable events
+export function getEventUID(event: NostrEvent) {
+  if (event.kind >= 30000 && event.kind < 40000) {
+    return getAddr(event.kind, event.pubkey, event.tags.find((t) => t[0] === "d" && t[1])?.[1]);
+  }
+  return event.id;
 }
 
 /**

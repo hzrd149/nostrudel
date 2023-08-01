@@ -44,15 +44,6 @@ export function LiveVideoPlayer({
 
   return (
     <Flex justifyContent="center" alignItems="center" {...props} position="relative">
-      <Badge
-        position="absolute"
-        top="4"
-        left="4"
-        fontSize="1.2rem"
-        colorScheme={status === VideoStatus.Offline ? "red" : undefined}
-      >
-        {status}
-      </Badge>
       <video
         ref={video}
         playsInline={true}

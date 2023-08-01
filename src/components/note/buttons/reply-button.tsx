@@ -3,7 +3,7 @@ import { IconButton } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { ReplyIcon } from "../../icons";
 import { PostModalContext } from "../../../providers/post-modal-provider";
-import { buildReply } from "../../../helpers/nostr-event";
+import { buildReply } from "../../../helpers/nostr/event";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 
 export function ReplyButton({ event }: { event: NostrEvent }) {
