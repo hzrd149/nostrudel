@@ -79,7 +79,7 @@ function StreamsPage() {
 export default function StreamsView() {
   return (
     <RelaySelectionProvider
-      overrideDefault={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
+      additionalDefaults={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
     >
       <PeopleListProvider>
         <StreamsPage />

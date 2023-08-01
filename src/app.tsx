@@ -35,8 +35,6 @@ import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
-import { NostrRequest } from "./classes/nostr-request";
-import { NostrEvent } from "./types/nostr-event";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
