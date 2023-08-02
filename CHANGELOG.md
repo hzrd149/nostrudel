@@ -1,5 +1,16 @@
 # nostrudel
 
+## 0.22.0
+
+### Minor Changes
+
+- c7d9a04: Rebuild search view to use NIP-50
+- 69bea82: Add support for playing back stream recordings
+
+### Patch Changes
+
+- 69bea82: Correctly handle replaceable events in timeline loader
+
 ## 0.21.0
 
 ### Minor Changes
