@@ -39,6 +39,7 @@ import { PageProviders } from "./providers";
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
+const MapView = React.lazy(() => import("./views/map"));
 
 const RootPage = () => {
   useSetColorMode();
@@ -73,6 +74,10 @@ const router = createHashRouter([
         <StreamView />
       </PageProviders>
     ),
+  },
+  {
+    path: "map",
+    element: <MapView />,
   },
   {
     path: "/",
