@@ -100,8 +100,8 @@ export default function UserAboutTab() {
           alignItems={isMobile ? "flex-start" : "flex-end"}
         >
           <UserAvatar pubkey={pubkey} size={isMobile ? "lg" : "xl"} noProxy />
-          <Box>
-            <Heading>{getUserDisplayName(metadata, pubkey)}</Heading>
+          <Box overflow="hidden">
+            <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
             <UserDnsIdentityIcon pubkey={pubkey} />
           </Box>
         </Flex>
@@ -115,19 +115,7 @@ export default function UserAboutTab() {
           position="absolute"
         />
       </Box>
-      {aboutContent && (
-        <Text whiteSpace="pre-wrap" px="2">
-          {aboutContent.map((part, i) =>
-            typeof part === "string" ? (
-              <Text as="span" key={"part-" + i}>
-                {part}
-              </Text>
-            ) : (
-              React.cloneElement(part, { key: "part-" + i })
-            )
-          )}
-        </Text>
-      )}
+      {aboutContent && <Box whiteSpace="pre">{aboutContent}</Box>}
 
       <Flex gap="2" px="2" direction="column">
         {metadata?.lud16 && (

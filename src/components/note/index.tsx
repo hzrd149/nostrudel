@@ -17,7 +17,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 
 import { NoteMenu } from "./note-menu";
-import { NoteRelays } from "./note-relays";
+import { EventRelays } from "./note-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
@@ -90,7 +90,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
                 target="_blank"
               />
             )}
-            <NoteRelays event={event} />
+            <EventRelays event={event} />
             <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
           </CardFooter>
         </Card>

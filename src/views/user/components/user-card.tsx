@@ -1,5 +1,5 @@
-import { Box, Flex, FlexProps, Heading, Input, Link } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Flex, FlexProps, Heading, Link } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
@@ -28,7 +28,7 @@ export const UserCard = ({ pubkey, relay, ...props }: UserCardProps) => {
     >
       <UserAvatar pubkey={pubkey} />
       <Flex direction="column" flex={1} overflow="hidden">
-        <Link as={ReactRouterLink} to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
+        <Link as={RouterLink} to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
           <Heading size="sm" whiteSpace="nowrap" isTruncated>
             {getUserDisplayName(metadata, pubkey)}
           </Heading>

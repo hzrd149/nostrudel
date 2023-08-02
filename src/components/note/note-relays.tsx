@@ -10,7 +10,7 @@ export type NoteRelaysProps = {
   event: NostrEvent;
 };
 
-export const NoteRelays = memo(({ event }: NoteRelaysProps) => {
+export const EventRelays = memo(({ event }: NoteRelaysProps) => {
   const isMobile = useIsMobile();
   const eventRelays = useSubject(getEventRelays(getEventUID(event)));
 

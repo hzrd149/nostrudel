@@ -18,6 +18,7 @@ export type NostrQuery = {
   since?: number;
   until?: number;
   limit?: number;
+  search?: string;
 };
 
 export type NostrRequestFilter = NostrQuery | NostrQuery[];

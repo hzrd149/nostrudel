@@ -20,7 +20,7 @@ import { UserAvatar } from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
 import dayjs from "dayjs";
 import StreamStatusBadge from "./status-badge";
-import { NoteRelays } from "../../../components/note/note-relays";
+import { EventRelays } from "../../../components/note/note-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import StreamDebugButton from "./stream-debug-button";
@@ -62,7 +62,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
       <CardFooter p="2" display="flex" gap="2" alignItems="center">
         <StreamStatusBadge stream={stream} />
         <Spacer />
-        <NoteRelays event={stream.event} />
+        <EventRelays event={stream.event} />
         <StreamDebugButton stream={stream} variant="ghost" size="sm" />
       </CardFooter>
     </Card>

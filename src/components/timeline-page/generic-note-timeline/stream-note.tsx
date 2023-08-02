@@ -23,7 +23,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { UserAvatar } from "../../user-avatar";
 import { UserLink } from "../../user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { NoteRelays } from "../../note/note-relays";
+import { EventRelays } from "../../note/note-relays";
 import { useAsync } from "react-use";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
@@ -69,7 +69,7 @@ export default function StreamNote({ event, ...props }: CardProps & { event: Nos
       <CardFooter p="2" display="flex" gap="2" alignItems="center">
         <StreamStatusBadge stream={stream} />
         <Spacer />
-        <NoteRelays event={stream.event} />
+        <EventRelays event={stream.event} />
       </CardFooter>
     </Card>
   );

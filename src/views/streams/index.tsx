@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { Flex, Select } from "@chakra-ui/react";
+import { useCallback, useMemo, useState } from "react";
+import { Flex, Select, SimpleGrid } from "@chakra-ui/react";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -66,12 +66,12 @@ function StreamsPage() {
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        <Flex gap="2" wrap="wrap">
+        <SimpleGrid minChildWidth="25rem" spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} w="sm" />
+            <StreamCard key={stream.event.id} stream={stream} />
           ))}
-          <TimelineActionAndStatus timeline={timeline} />
-        </Flex>
+        </SimpleGrid>
+        <TimelineActionAndStatus timeline={timeline} />
       </IntersectionObserverProvider>
     </Flex>
   );
