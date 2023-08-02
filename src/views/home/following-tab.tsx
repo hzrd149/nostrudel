@@ -1,6 +1,6 @@
 import { Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
-import { isReply, truncatedId } from "../../helpers/nostr-event";
+import { isReply, truncatedId } from "../../helpers/nostr/event";
 import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { useCallback } from "react";

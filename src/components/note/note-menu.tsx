@@ -24,7 +24,7 @@ import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useCallback, useState } from "react";
 import QuoteNote from "./quote-note";
-import { buildDeleteEvent } from "../../helpers/nostr-event";
+import { buildDeleteEvent } from "../../helpers/nostr/event";
 import signingService from "../../services/signing";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";

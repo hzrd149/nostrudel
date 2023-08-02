@@ -10,7 +10,7 @@ import { RelayMode } from "../../../classes/relay";
 import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
 import { useCopyToClipboard } from "react-use";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import { truncatedId } from "../../../helpers/nostr-event";
+import { truncatedId } from "../../../helpers/nostr/event";
 
 export const UserProfileMenu = ({
   pubkey,

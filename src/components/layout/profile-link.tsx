@@ -3,7 +3,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { UserAvatar } from "../user-avatar";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 
 function ProfileButton() {

@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Flex } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
 import { Bech32Prefix, hexToBech32 } from "../../helpers/nip19";
-import { getReferences } from "../../helpers/nostr-event";
+import { getReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawJson from "./raw-json";
 import RawValue from "./raw-value";

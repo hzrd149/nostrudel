@@ -1,100 +1,129 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Box,
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   Flex,
-  Heading,
   IconButton,
   Input,
-  Text,
+  Link,
+  SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAsync } from "react-use";
-import { ClipboardIcon, LightningIcon, QrCodeIcon } from "../../components/icons";
-import { UserAvatarLink } from "../../components/user-avatar-link";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import ZapModal from "../../components/zap-modal";
-import { truncatedId } from "../../helpers/nostr-event";
+import { ClipboardIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
-import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import { matchHashtag } from "../../helpers/regexp";
+import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
+import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
+import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import { Kind, nip19 } from "nostr-tools";
+import useSubject from "../../hooks/use-subject";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { NostrEvent } from "../../types/nostr-event";
+import { getUserDisplayName, parseKind0Event } from "../../helpers/user-metadata";
+import { UserAvatar } from "../../components/user-avatar";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { EventRelays } from "../../components/note/note-relays";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
+import { getEventRelays } from "../../services/event-relays";
+import relayScoreboardService from "../../services/relay-scoreboard";
 
-type relay = string;
-type NostrBandSearchResults = {
-  query: string;
-  page: number;
-  page_size: number;
-  nip05_count: number;
-  timeline: any[];
-  page_count: number;
-  result_count: number;
-  serp: any[];
-  people_count: number;
-  people: [
-    {
-      i: number;
-      pubkey: string;
-      name: string;
-      about: string;
-      picture: string;
-      nip05: string;
-      nip05_verified: boolean;
-      website: string;
-      display_name: string;
-      lud06: string;
-      lud16: string;
-      lud06_url: string;
-      first_tm: number;
-      last_tm: number;
-      last_tm_str: string;
-      followed_count: number;
-      following_count: number;
-      zappers: number;
-      zap_amount: number;
-      zapped_pubkeys: number;
-      zap_amount_sent: number;
-      zap_amount_processed: number;
-      zapped_pubkeys_processed: number;
-      zappers_processed: number;
-      twitter?: {
-        verified: boolean;
-        verify_event: string;
-        handle: string;
-        name: string;
-        bio: string;
-        picture: string;
-        followers: number;
-        tweet: string;
-      };
-      relays: number[];
-    }
-  ];
-  relays: Record<number | string, relay>;
-};
+function buildDescriptionContent(description: string) {
+  let content: EmbedableContent = [description.trim()];
 
-export default function SearchView() {
+  content = embedNostrLinks(content);
+  content = embedUrls(content, [renderGenericUrl]);
+
+  return content;
+}
+
+function ProfileResult({ event }: { event: NostrEvent }) {
+  const metadata = parseKind0Event(event);
+
+  const aboutContent = metadata.about && buildDescriptionContent(metadata.about);
+  const nprofile = useMemo(() => {
+    const relays = getEventRelays(event.id).value;
+    const ranked = relayScoreboardService.getRankedRelays(relays).slice(2);
+    return nip19.nprofileEncode({ pubkey: event.pubkey, relays: ranked });
+  }, [event.id]);
+
+  return (
+    <Card overflow="hidden" variant="outline" size="sm">
+      <CardHeader display="flex" gap="4" alignItems="flex-start">
+        <UserAvatar pubkey={event.pubkey} noProxy />
+        <Flex alignItems="center" gap="2" overflow="hidden">
+          <Link as={RouterLink} to={`/u/${nprofile}`} whiteSpace="nowrap" fontWeight="bold" fontSize="xl" isTruncated>
+            {getUserDisplayName(metadata, event.pubkey)}
+          </Link>
+          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+        </Flex>
+      </CardHeader>
+      <CardBody py={0} overflow="hidden" maxH="20rem">
+        {aboutContent && (
+          <Box whiteSpace="pre" isTruncated>
+            {aboutContent}
+          </Box>
+        )}
+      </CardBody>
+      <CardFooter>
+        <EventRelays event={event} />
+      </CardFooter>
+    </Card>
+  );
+}
+
+function SearchResults({ search }: { search: string }) {
+  const searchRelays = useRelaySelectionRelays();
+
+  const timeline = useTimelineLoader(
+    `search`,
+    searchRelays,
+    { search: search || "", kinds: [Kind.Metadata] },
+    { enabled: !!search }
+  );
+
+  const events = useSubject(timeline?.timeline) ?? [];
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback}>
+      <SimpleGrid minChildWidth="30rem" spacing="2">
+        {events.map((event) => (
+          <ProfileResult key={event.id} event={event} />
+        ))}
+      </SimpleGrid>
+
+      <TimelineActionAndStatus timeline={timeline} />
+    </IntersectionObserverProvider>
+  );
+}
+
+export function SearchPage() {
   const navigate = useNavigate();
-  const { isOpen: donateOpen, onOpen: openDonate, onClose: closeDonate } = useDisclosure();
-  const { isOpen: qrScannerOpen, onOpen: openScanner, onClose: closeScanner } = useDisclosure();
+  const qrScannerModal = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState(searchParams.get("q") ?? "");
-  const { requestPay } = useInvoiceModalContext();
+  const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "");
+
+  const search = searchParams.get("q");
 
   // update the input value when search changes
   useEffect(() => {
-    setSearch(searchParams.get("q") ?? "");
+    setSearchInput(searchParams.get("q") ?? "");
   }, [searchParams]);
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
 
-    if (cleanText.startsWith("nostr:") || cleanText.startsWith("web+nostr:") || safeDecode(search)) {
+    if (cleanText.startsWith("nostr:") || cleanText.startsWith("web+nostr:") || safeDecode(text)) {
       navigate({ pathname: "/l/" + encodeURIComponent(text) }, { replace: true });
       return;
     }
@@ -115,92 +144,41 @@ export default function SearchView() {
   // set the search when the form is submitted
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    handleSearchText(search);
+    handleSearchText(searchInput);
   };
 
-  // fetch search data from nostr.band
-  const { value: searchResults, loading } = useAsync(async () => {
-    if (!searchParams.has("q")) return;
-    return await fetch(`https://nostr.realsearch.cc/nostr?method=search&count=10&q=${searchParams.get("q")}`).then(
-      (res) => res.json() as Promise<NostrBandSearchResults>
-    );
-  }, [searchParams.get("q")]);
-
-  // handle data from qr code scanner
-  const handleQrCodeData = handleSearchText;
-
   return (
-    <Flex direction="column" overflowX="hidden" overflowY="auto" height="100%" p="2" gap="2">
-      <QrScannerModal isOpen={qrScannerOpen} onClose={closeScanner} onData={handleQrCodeData} />
+    <Flex direction="column" py="2" gap="2">
+      <QrScannerModal isOpen={qrScannerModal.isOpen} onClose={qrScannerModal.onClose} onData={handleSearchText} />
 
       <form onSubmit={handleSubmit}>
         <Flex gap="2">
-          <IconButton onClick={openScanner} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
+          <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
           {!!navigator.clipboard.readText && (
             <IconButton onClick={readClipboard} icon={<ClipboardIcon />} aria-label="Read clipboard" />
           )}
-          <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <Button type="submit" isLoading={loading}>
-            Search
-          </Button>
+          <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+          <Button type="submit">Search</Button>
+          <RelaySelectionButton />
         </Flex>
       </form>
 
-      {searchResults && (
-        <Flex gap="2" alignItems="center" justifyContent="center">
-          <Text>Find what you where looking for?</Text>
-          <Button leftIcon={<LightningIcon color="yellow.400" />} size="sm" onClick={openDonate} flexShrink={0}>
-            Support Creator
-          </Button>
-          {donateOpen && (
-            <ZapModal
-              isOpen={donateOpen}
-              pubkey="3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd"
-              initialAmount={500}
-              initialComment="Thanks for creating nostr.band"
-              onClose={closeDonate}
-              onInvoice={async (invoice) => {
-                closeDonate();
-                await requestPay(invoice);
-              }}
-            />
-          )}
-        </Flex>
-      )}
-
-      <Flex direction="column" gap="2">
-        {searchResults?.people.map((person) => (
-          <Card key={person.pubkey} overflow="hidden" variant="outline" size="sm">
-            <CardHeader display="flex" gap="4" alignItems="flex-start">
-              <UserAvatarLink pubkey={person.pubkey} />
-              <Flex alignItems="center" gap="2">
-                <Heading size="md" overflow="hidden">
-                  {person.name || truncatedId(person.pubkey)}
-                </Heading>
-                <UserDnsIdentityIcon pubkey={person.pubkey} onlyIcon />
-              </Flex>
-              <Button
-                as={RouterLink}
-                variant="solid"
-                colorScheme="blue"
-                to={`/u/${person.pubkey}`}
-                size="sm"
-                ml="auto"
-                flexShrink={0}
-              >
-                View Profile
-              </Button>
-            </CardHeader>
-            <CardBody py={0}>
-              <Text>{person.about}</Text>
-            </CardBody>
-            <CardFooter display="flex" gap="2">
-              <Text>{person.followed_count} Followers</Text>
-              <Text>Created: {dayjs.unix(person.first_tm).toString()}</Text>
-            </CardFooter>
-          </Card>
-        ))}
-      </Flex>
+      {search && <SearchResults search={search} />}
     </Flex>
+  );
+}
+
+// TODO: remove this when there is a good way to allow the user to select from a list of filtered relays that support NIP-50
+const searchRelays = ["wss://relay.nostr.band", "wss://search.nos.today"];
+export default function SearchView() {
+  // const { value: searchRelays = ["wss://relay.nostr.band"] } = useAsync(async () => {
+  //   const relays: string[] = await fetch("https://api.nostr.watch/v1/nip/50").then((res) => res.json());
+  //   return relays;
+  // });
+
+  return (
+    <RelaySelectionProvider overrideDefault={searchRelays}>
+      <SearchPage />
+    </RelaySelectionProvider>
   );
 }

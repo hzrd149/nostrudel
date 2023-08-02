@@ -2,7 +2,7 @@ import { Kind } from "nostr-tools";
 import { NostrRequest } from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import { SuperMap } from "../classes/super-map";
-import { getReferences } from "../helpers/nostr-event";
+import { getReferences } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
 
 type eventId = string;

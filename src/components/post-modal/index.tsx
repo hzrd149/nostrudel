@@ -17,7 +17,7 @@ import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
 import { normalizeToHex } from "../../helpers/nip19";
-import { getReferences } from "../../helpers/nostr-event";
+import { getReferences } from "../../helpers/nostr/event";
 import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useIsMobile } from "../../hooks/use-is-mobile";

@@ -1,5 +1,6 @@
 import { Relay } from "../classes/relay";
 import { PersistentSubject } from "../classes/subject";
+import { getEventUID } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "./relay-pool";
 
@@ -14,12 +15,19 @@ export function getEventRelays(id: string) {
   return relays;
 }
 
-export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
-  const relays = getEventRelays(event.id);
+function addRelay(id: string, relay: string) {
+  const relays = getEventRelays(id);
 
-  if (!relays.value.includes(relay.url)) {
-    relays.next(relays.value.concat(relay.url));
+  if (!relays.value.includes(relay)) {
+    relays.next(relays.value.concat(relay));
   }
+}
+
+export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
+  const uid = getEventUID(event);
+
+  addRelay(uid, relay.url);
+  if (event.id !== uid) addRelay(event.id, relay.url);
 }
 
 relayPoolService.onRelayCreated.subscribe((relay) => {

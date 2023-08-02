@@ -31,7 +31,9 @@ export default function Header({
     <Flex direction="column" gap="2" px="2" pt="2">
       <Flex gap="2" alignItems="center">
         <UserAvatar pubkey={pubkey} size="sm" noProxy mr="2" />
-        <Heading size="md">{getUserDisplayName(metadata, pubkey)}</Heading>
+        <Heading size="md" isTruncated>
+          {getUserDisplayName(metadata, pubkey)}
+        </Heading>
         <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={isMobile} />
         <Spacer />
         {isSelf && (

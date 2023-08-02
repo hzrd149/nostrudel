@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
+import { getAddr } from "../../services/replaceable-event-requester";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;
@@ -18,7 +19,9 @@ export type ParsedStream = {
   ends?: number;
   identifier: string;
   tags: string[];
-  streaming: string;
+  streaming?: string;
+  recording?: string;
+  relays?: string[];
 };
 
 export function parseStreamEvent(stream: NostrEvent): ParsedStream {
@@ -28,16 +31,23 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const starts = stream.tags.find((t) => t[0] === "starts")?.[1];
   const endsTag = stream.tags.find((t) => t[0] === "ends")?.[1];
   const streaming = stream.tags.find((t) => t[0] === "streaming")?.[1];
+  const recording = stream.tags.find((t) => t[0] === "recording")?.[1];
   const identifier = stream.tags.find((t) => t[0] === "d")?.[1];
 
+  let relays = stream.tags.find((t) => t[0] === "relays");
+  // remove the first "relays" element
+  if (relays) {
+    relays = Array.from(relays);
+    relays.shift();
+  }
+
   const startTime = starts ? parseInt(starts) : stream.created_at;
-  const endTime = endsTag ? parseInt(endsTag) : dayjs(startTime).add(4, "hour").unix();
+  const endTime = endsTag ? parseInt(endsTag) : undefined;
 
   if (!identifier) throw new Error("missing identifier");
-  if (!streaming) throw new Error("missing streaming");
 
   let status = stream.tags.find((t) => t[0] === "status")?.[1] || "ended";
-  if (endTime > dayjs().unix()) {
+  if (endTime && endTime > dayjs().unix()) {
     status = "ended";
   }
 
@@ -55,6 +65,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     event: stream,
     updated: stream.created_at,
     streaming,
+    recording,
     tags,
     title,
     summary,
@@ -63,11 +74,12 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     starts: startTime,
     ends: endTime,
     identifier,
+    relays,
   };
 }
 
 export function getATag(stream: ParsedStream) {
-  return `${stream.event.kind}:${stream.author}:${stream.identifier}`;
+  return getAddr(stream.event.kind, stream.author, stream.identifier);
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {
