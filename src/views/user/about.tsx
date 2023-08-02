@@ -1,4 +1,3 @@
-import React from "react";
 import { useOutletContext } from "react-router-dom";
 import dayjs from "dayjs";
 import {
@@ -38,7 +37,6 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import userTrustedStatsService from "../../services/user-trusted-stats";
 import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 
@@ -52,7 +50,6 @@ function buildDescriptionContent(description: string) {
 }
 
 export default function UserAboutTab() {
-  const isMobile = useIsMobile();
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
@@ -94,12 +91,12 @@ export default function UserAboutTab() {
           left="0"
           p="2"
           position="absolute"
-          direction={isMobile ? "column" : "row"}
+          direction={["column", "row"]}
           bg="linear-gradient(180deg, rgb(255 255 255 / 0%) 0%, var(--chakra-colors-chakra-body-bg) 100%)"
           gap="2"
-          alignItems={isMobile ? "flex-start" : "flex-end"}
+          alignItems={["flex-start", "flex-end"]}
         >
-          <UserAvatar pubkey={pubkey} size={isMobile ? "lg" : "xl"} noProxy />
+          <UserAvatar pubkey={pubkey} size={["lg", "lg", "xl"]} noProxy />
           <Box overflow="hidden">
             <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
             <UserDnsIdentityIcon pubkey={pubkey} />
@@ -115,7 +112,11 @@ export default function UserAboutTab() {
           position="absolute"
         />
       </Box>
-      {aboutContent && <Box whiteSpace="pre">{aboutContent}</Box>}
+      {aboutContent && (
+        <Box whiteSpace="pre-wrap" px="2">
+          {aboutContent}
+        </Box>
+      )}
 
       <Flex gap="2" px="2" direction="column">
         {metadata?.lud16 && (

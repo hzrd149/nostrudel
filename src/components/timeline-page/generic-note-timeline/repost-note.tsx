@@ -13,12 +13,16 @@ import { TrustProvider } from "../../../providers/trust";
 import { safeJson } from "../../../helpers/parse";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { validateEvent } from "nostr-tools";
 
 function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
+  if (!json) return null;
 
-  // TODO: disabled until signature verification can be done in another thread
-  // if (json && !verifySignature(json)) return null;
+  // ensure the note has tags
+  json.tags = json.tags || [];
+
+  validateEvent(json);
 
   return (json as NostrEvent) ?? null;
 }

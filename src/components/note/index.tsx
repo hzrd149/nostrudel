@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardProps,
   Flex,
-  Heading,
   IconButton,
   Link,
 } from "@chakra-ui/react";
@@ -18,7 +17,6 @@ import { UserAvatarLink } from "../user-avatar-link";
 
 import { NoteMenu } from "./note-menu";
 import { EventRelays } from "./note-relays";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import ReactionButton from "./buttons/reaction-button";
@@ -41,7 +39,6 @@ export type NoteProps = {
   variant?: CardProps["variant"];
 };
 export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
-  const isMobile = useIsMobile();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
 
   // if there is a parent intersection observer, register this card
@@ -57,7 +54,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
         <Card variant={variant} ref={ref}>
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
-              <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
+              <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
               <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
               <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
               <Flex grow={1} />

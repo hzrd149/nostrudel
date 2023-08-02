@@ -1,7 +1,6 @@
 import { Box, Image, ImageProps, Link, useDisclosure } from "@chakra-ui/react";
 import appSettings from "../../services/settings/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
 
@@ -28,7 +27,6 @@ const BlurredImage = (props: ImageProps) => {
 };
 
 const EmbeddedImage = ({ src }: { src: string }) => {
-  const isMobile = useIsMobile();
   const trusted = useTrusted();
   const ImageComponent = trusted || !appSettings.value.blurImages ? Image : BlurredImage;
   const thumbnail = appSettings.value.imageProxy
@@ -37,7 +35,7 @@ const EmbeddedImage = ({ src }: { src: string }) => {
 
   return (
     <ImageGalleryLink href={src} target="_blank" display="block" mx="-2">
-      <ImageComponent src={thumbnail} cursor="pointer" maxH={isMobile ? "80vh" : "35vh"} mx={isMobile ? "auto" : "0"} />
+      <ImageComponent src={thumbnail} cursor="pointer" maxH={["initial", "35vh"]} mx={["auto", 0]} />
     </ImageGalleryLink>
   );
 };
