@@ -13,6 +13,7 @@ import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../components/people-list-selection/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import useParsedStreams from "../../hooks/use-parsed-streams";
 
 function StreamsPage() {
   const relays = useRelaySelectionRelays();
@@ -44,16 +45,7 @@ function StreamsPage() {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const events = useSubject(timeline.timeline);
-  const streams = useMemo(() => {
-    const parsedStreams: ParsedStream[] = [];
-    for (const event of events) {
-      try {
-        const parsed = parseStreamEvent(event);
-        parsedStreams.push(parsed);
-      } catch (e) {}
-    }
-    return parsedStreams.sort((a, b) => (b.starts ?? 0) - (a.starts ?? 0));
-  }, [events]);
+  const streams = useParsedStreams(events);
 
   return (
     <Flex p="2" gap="2" overflow="hidden" direction="column">
