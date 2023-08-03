@@ -66,7 +66,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
   }, [defaultValues]);
 
   return (
-    <Flex direction="column" pb="4" px={["2",0]}>
+    <Flex direction="column" pb="4" px={["2", 0]}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction="column" gap="2" pt="4">
           <Flex gap="2">

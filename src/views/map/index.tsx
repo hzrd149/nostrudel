@@ -17,6 +17,9 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import { NostrEvent } from "../../types/nostr-event";
 import MapTimeline from "./timeline";
 
+import iconUrl from "./marker-icon.svg";
+const pinIcon = L.icon({ iconUrl, iconSize: [32, 32], iconAnchor: [16, 32] });
+
 function getPrecision(zoom: number) {
   if (zoom <= 4) return 1;
   if (zoom <= 8) return 2;
@@ -46,7 +49,7 @@ function useEventMarkers(events: NostrEvent[], map?: L.Map, onClick?: (event: No
       const geohash = getEventGeohash(event);
       if (!geohash) continue;
 
-      const marker = markers.current[event.id] || L.marker([0, 0]);
+      const marker = markers.current[event.id] || L.marker([0, 0], { icon: pinIcon });
 
       const latLng = ngeohash.decode(geohash);
       marker.setLatLng([latLng.latitude, latLng.longitude]);
