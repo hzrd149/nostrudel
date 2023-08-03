@@ -51,7 +51,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
-        <Card variant={variant} ref={ref}>
+        <Card variant={variant} ref={ref} data-event-id={event.id}>
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
               <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />

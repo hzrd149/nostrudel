@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Flex, Select, SimpleGrid } from "@chakra-ui/react";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";

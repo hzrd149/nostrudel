@@ -6,7 +6,7 @@ import { isReply, isRepost, truncatedId } from "../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import TimelineViewType from "../../components/timeline-page/timeline-view-type";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";

@@ -17,7 +17,7 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply } from "../../helpers/nostr/event";
 import { CheckIcon, EditIcon } from "../../components/icons";
 import { NostrEvent } from "../../types/nostr-event";

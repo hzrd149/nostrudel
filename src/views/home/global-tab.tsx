@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, FormControl, FormLabel, Switch, useDisclosure } from "@chakra-ui/react";
 import { isReply } from "../../helpers/nostr/event";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";

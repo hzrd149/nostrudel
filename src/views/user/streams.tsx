@@ -6,7 +6,7 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 
 export default function UserStreamsTab() {

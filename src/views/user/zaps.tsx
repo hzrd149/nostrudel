@@ -10,7 +10,7 @@ import { UserLink } from "../../components/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
 import { truncatedId } from "../../helpers/nostr/event";
 import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/zaps";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";

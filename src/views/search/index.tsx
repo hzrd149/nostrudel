@@ -20,7 +20,7 @@ import { safeDecode } from "../../helpers/nip19";
 import { matchHashtag } from "../../helpers/regexp";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { Kind, nip19 } from "nostr-tools";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";

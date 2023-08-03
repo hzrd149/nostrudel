@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useSearchParams } from "react-router-dom";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
+import ngeohash from "ngeohash";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import "leaflet.locatecontrol";
-import ngeohash from "ngeohash";
 
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useSubject from "../../hooks/use-subject";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 
-import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
+import { debounce } from "../../helpers/function";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
+import MapTimeline from "./timeline";
 
 function getPrecision(zoom: number) {
   if (zoom <= 4) return 1;
@@ -36,10 +37,51 @@ function getEventGeohash(event: NostrEvent) {
   return hash || null;
 }
 
+function useEventMarkers(events: NostrEvent[], map?: L.Map, onClick?: (event: NostrEvent) => void) {
+  const markers = useRef<Record<string, L.Marker>>({});
+
+  // create markers
+  useEffect(() => {
+    for (const event of events) {
+      const geohash = getEventGeohash(event);
+      if (!geohash) continue;
+
+      const marker = markers.current[event.id] || L.marker([0, 0]);
+
+      const latLng = ngeohash.decode(geohash);
+      marker.setLatLng([latLng.latitude, latLng.longitude]);
+
+      if (onClick) {
+        marker.addEventListener("click", () => onClick(event));
+      }
+
+      markers.current[event.id] = marker;
+    }
+  }, [events]);
+
+  // add makers to map
+  useEffect(() => {
+    if (!map) return;
+
+    const ids = events.map((e) => e.id);
+
+    for (const [id, marker] of Object.entries(markers.current)) {
+      if (ids.includes(id)) marker?.addTo(map);
+      else marker?.remove();
+    }
+
+    return () => {
+      for (const [id, marker] of Object.entries(markers.current)) {
+        marker?.removeFrom(map);
+      }
+    };
+  }, [map, events]);
+}
+
 export default function MapView() {
   const ref = useRef<HTMLDivElement | null>(null);
-
   const [map, setMap] = useState<L.Map>();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (!ref.current) return;
@@ -52,11 +94,21 @@ export default function MapView() {
 
     L.control.locate().addTo(map);
 
+    map.addEventListener(
+      "move",
+      debounce(() => {
+        const center = map.getCenter();
+        const hash = ngeohash.encode(center.lat, center.lng, 5);
+
+        setSearchParams({ hash }, { replace: true });
+      }, 1000)
+    );
+
     setMap(map);
 
     return () => {
-      map.remove();
       setMap(undefined);
+      map.remove();
     };
   }, []);
 
@@ -84,25 +136,14 @@ export default function MapView() {
     setCells(hashes);
   }, [map]);
 
+  const [focused, setFocused] = useState<string>();
+  const handleMarkerClick = useCallback((event: NostrEvent) => {
+    document.querySelector(`[data-event-id="${event.id}"]`)?.scrollIntoView();
+    setFocused(event.id);
+  }, []);
+
   const events = useSubject(timeline.timeline);
-  useEffect(() => {
-    if (!map) return;
-
-    const markers: L.Marker[] = [];
-    for (const event of events) {
-      const geohash = getEventGeohash(event);
-      if (!geohash) continue;
-      const latLng = ngeohash.decode(geohash);
-      const marker = L.marker([latLng.latitude, latLng.longitude]).addTo(map);
-      markers.push(marker);
-    }
-
-    return () => {
-      for (const marker of markers) {
-        marker.remove();
-      }
-    };
-  }, [map, events]);
+  useEventMarkers(events, map, handleMarkerClick);
 
   return (
     <Flex overflow={{ lg: "hidden" }} h={{ lg: "full" }} direction={{ base: "column-reverse", lg: "row" }}>
@@ -117,7 +158,7 @@ export default function MapView() {
         </Flex>
 
         <Flex overflowY="auto" overflowX="hidden" gap="2" direction="column" h="full">
-          <GenericNoteTimeline timeline={timeline} />
+          <MapTimeline timeline={timeline} focused={focused} />
           {cells.length > 0 && <TimelineActionAndStatus timeline={timeline} />}
         </Flex>
       </Flex>

@@ -10,7 +10,7 @@ type Options = {
   cursor?: number;
 };
 
-export function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
+export default function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {

@@ -33,7 +33,7 @@ import { useForm } from "react-hook-form";
 import { useSigningContext } from "../../../../providers/signing-provider";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../../../hooks/use-subject";
-import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { truncatedId } from "../../../../helpers/nostr/event";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";

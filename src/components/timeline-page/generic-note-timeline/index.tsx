@@ -8,6 +8,7 @@ import { Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
+import { ErrorBoundary } from "../../error-boundary";
 
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
@@ -28,7 +29,9 @@ const GenericNoteTimeline = React.memo(({ timeline }: { timeline: TimelineLoader
   return (
     <>
       {notes.map((note) => (
-        <RenderEvent key={note.id} event={note} />
+        <ErrorBoundary key={note.id}>
+          <RenderEvent event={note} />
+        </ErrorBoundary>
       ))}
     </>
   );
