@@ -15,6 +15,8 @@ export type NostrQuery = {
   "#p"?: string[];
   "#d"?: string[];
   "#t"?: string[];
+  "#r"?: string[];
+  "#l"?: string[];
   "#g"?: string[];
   since?: number;
   until?: number;

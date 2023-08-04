@@ -1,39 +1,41 @@
 import db from "./db";
+import { fetchWithCorsFallback } from "../helpers/cors";
 
 export type RelayInformationDocument = {
   name: string;
   description: string;
+  icon?: string;
   pubkey: string;
   contact: string;
-  supported_nips: string;
+  supported_nips?: number[];
   software: string;
   version: string;
-};
-export type DnsIdentity = {
-  name: string;
-  domain: string;
-  pubkey: string;
-  relays: string[];
 };
 
 async function fetchInfo(relay: string) {
   const url = new URL(relay);
   url.protocol = url.protocol === "ws:" ? "http" : "https";
 
-  const infoDoc = await fetch(url, { headers: { Accept: "application/nostr+json" } }).then(
+  const infoDoc = await fetchWithCorsFallback(url, { headers: { Accept: "application/nostr+json" } }).then(
     (res) => res.json() as Promise<RelayInformationDocument>
   );
 
+  memoryCache.set(relay, infoDoc);
   await db.put("relayInfo", infoDoc, relay);
 
   return infoDoc;
 }
 
+const memoryCache = new Map<string, RelayInformationDocument>();
 async function getInfo(relay: string) {
-  const cached = await db.get("relayInfo", relay);
-  if (cached) return cached;
+  if (memoryCache.has(relay)) return memoryCache.get(relay)!;
 
-  // TODO: if it fails, maybe cache a failure message
+  const cached = await db.get("relayInfo", relay);
+  if (cached) {
+    memoryCache.set(relay, cached);
+    return cached;
+  }
+
   return fetchInfo(relay);
 }
 
@@ -48,6 +50,7 @@ function dedupedGetIdentity(relay: string) {
 }
 
 export const relayInfoService = {
+  cache: memoryCache,
   fetchInfo,
   getInfo: dedupedGetIdentity,
 };

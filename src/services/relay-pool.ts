@@ -1,35 +1,41 @@
 import { Relay } from "../classes/relay";
 import Subject from "../classes/subject";
+import { logger } from "../helpers/debug";
+import { normalizeRelayUrl } from "../helpers/url";
 
 export class RelayPoolService {
   relays = new Map<string, Relay>();
   relayClaims = new Map<string, Set<any>>();
   onRelayCreated = new Subject<Relay>();
 
+  log = logger.extend("RelayPool");
+
   getRelays() {
     return Array.from(this.relays.values());
   }
   getRelayClaims(url: string) {
-    if (!this.relayClaims.has(url)) {
-      this.relayClaims.set(url, new Set());
+    const normalized = normalizeRelayUrl(url);
+    if (!this.relayClaims.has(normalized)) {
+      this.relayClaims.set(normalized, new Set());
     }
-    return this.relayClaims.get(url) as Set<any>;
+    return this.relayClaims.get(normalized) as Set<any>;
   }
 
   requestRelay(url: string, connect = true) {
-    if (!this.relays.has(url)) {
-      const newRelay = new Relay(url);
-      this.relays.set(url, newRelay);
+    const normalized = normalizeRelayUrl(url);
+    if (!this.relays.has(normalized)) {
+      const newRelay = new Relay(normalized);
+      this.relays.set(normalized, newRelay);
       this.onRelayCreated.next(newRelay);
     }
 
-    const relay = this.relays.get(url) as Relay;
+    const relay = this.relays.get(normalized) as Relay;
     if (connect && !relay.okay) {
       try {
         relay.open();
       } catch (e) {
-        console.log(`Failed to connect to ${relay.url}`);
-        console.log(e);
+        this.log(`Failed to connect to ${relay.url}`);
+        this.log(e);
       }
     }
     return relay;
@@ -50,8 +56,8 @@ export class RelayPoolService {
         try {
           relay.open();
         } catch (e) {
-          console.log(`Failed to connect to ${relay.url}`);
-          console.log(e);
+          this.log(`Failed to connect to ${relay.url}`);
+          this.log(e);
         }
       }
     }
@@ -59,10 +65,12 @@ export class RelayPoolService {
 
   // id can be anything
   addClaim(url: string, id: any) {
-    this.getRelayClaims(url).add(id);
+    const normalized = normalizeRelayUrl(url);
+    this.getRelayClaims(normalized).add(id);
   }
   removeClaim(url: string, id: any) {
-    this.getRelayClaims(url).delete(id);
+    const normalized = normalizeRelayUrl(url);
+    this.getRelayClaims(normalized).delete(id);
   }
 
   get connectedCount() {
@@ -79,7 +87,7 @@ const relayPoolService = new RelayPoolService();
 setInterval(() => {
   if (document.visibilityState === "visible") {
     relayPoolService.reconnectRelays();
-    // relayPoolService.pruneRelays();
+    relayPoolService.pruneRelays();
   }
 }, 1000 * 15);
 

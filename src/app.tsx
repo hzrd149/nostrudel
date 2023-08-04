@@ -20,7 +20,6 @@ import NoteView from "./views/note";
 import LoginStartView from "./views/login/start";
 import LoginNpubView from "./views/login/npub";
 import NotificationsView from "./views/notifications";
-import RelaysView from "./views/relays";
 import LoginNip05View from "./views/login/nip05";
 import LoginNsecView from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
@@ -35,6 +34,7 @@ import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
+import RelaysView from "./views/relays";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));

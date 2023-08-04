@@ -9,6 +9,8 @@ import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
+import { useSearchParams } from "react-router-dom";
+import { safeUrl } from "../../helpers/parse";
 
 function GlobalPage() {
   const readRelays = useRelaySelectionRelays();
@@ -44,9 +46,19 @@ function GlobalPage() {
 }
 
 export default function GlobalTab() {
+  const [params] = useSearchParams();
+
   // wrap the global page with another relay selection so it dose not effect the rest of the app
+  let relays = ["wss://welcome.nostr.wine"];
+
+  const setRelay = params.get("relay");
+  if (setRelay) {
+    const url = safeUrl(setRelay);
+    relays = [setRelay];
+  }
+
   return (
-    <RelaySelectionProvider overrideDefault={["wss://welcome.nostr.wine"]}>
+    <RelaySelectionProvider overrideDefault={relays}>
       <GlobalPage />
     </RelaySelectionProvider>
   );
