@@ -23,14 +23,14 @@ class DirectMessagesService {
     this.incomingSub = new NostrMultiSubscription(
       clientRelaysService.getReadUrls(),
       undefined,
-      "incoming-direct-messages"
+      "incoming-direct-messages",
     );
     this.incomingSub.onEvent.subscribe(this.receiveEvent, this);
 
     this.outgoingSub = new NostrMultiSubscription(
       clientRelaysService.getReadUrls(),
       undefined,
-      "outgoing-direct-messages"
+      "outgoing-direct-messages",
     );
     this.outgoingSub.onEvent.subscribe(this.receiveEvent, this);
 

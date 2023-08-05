@@ -152,7 +152,7 @@ export default function StreamView() {
         parsed.data.kind,
         parsed.data.pubkey,
         parsed.data.identifier,
-        true
+        true,
       );
     } catch (e) {
       console.log(e);

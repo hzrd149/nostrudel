@@ -98,7 +98,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       const payload = new FormData();
       payload.append("fileToUpload", imageFile);
       const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
-        res.text()
+        res.text(),
       );
       const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
       if (imageUrl) {

@@ -50,7 +50,7 @@ describe("Login view", () => {
 
   it("should redirect after login", () => {
     cy.visit(
-      "#/n/nevent1qqs88gdxv36qsjfwr66k7wxuq9r2tg8rsdcnfkcqdg4sc6vlnsma98qpzpmhxue69uhkummnw3ezuamfdejsz9rhwden5te0wfjkccte9ejxzmt4wvhxjmccew89d"
+      "#/n/nevent1qqs88gdxv36qsjfwr66k7wxuq9r2tg8rsdcnfkcqdg4sc6vlnsma98qpzpmhxue69uhkummnw3ezuamfdejsz9rhwden5te0wfjkccte9ejxzmt4wvhxjmccew89d",
     );
 
     cy.findByRole("link", { name: /login/i }).click();

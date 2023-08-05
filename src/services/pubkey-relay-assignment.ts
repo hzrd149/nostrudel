@@ -86,7 +86,7 @@ class PubkeyRelayAssignmentService {
       if (userRelays.length === 0) userRelays = Array.from(readRelays);
 
       const rankedOptions = Array.from(userRelays).sort(
-        (a, b) => (relayScores.get(b) ?? 0) - (relayScores.get(a) ?? 0)
+        (a, b) => (relayScores.get(b) ?? 0) - (relayScores.get(a) ?? 0),
       );
 
       assignments[pubkey] = rankedOptions.slice(0, 3);

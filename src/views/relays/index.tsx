@@ -25,7 +25,7 @@ export default function RelaysView() {
     .map((r) => r.url)
     .filter(safeRelayUrl);
   const { value: onlineRelays = [] } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
+    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
   );
 
   const filteredRelays = useMemo(() => {

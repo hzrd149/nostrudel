@@ -17,7 +17,7 @@ async function fetchInfo(relay: string) {
   url.protocol = url.protocol === "ws:" ? "http" : "https";
 
   const infoDoc = await fetchWithCorsFallback(url, { headers: { Accept: "application/nostr+json" } }).then(
-    (res) => res.json() as Promise<RelayInformationDocument>
+    (res) => res.json() as Promise<RelayInformationDocument>,
   );
 
   memoryCache.set(relay, infoDoc);

@@ -27,7 +27,7 @@ function StreamsPage() {
       } catch (e) {}
       return false;
     },
-    [filterStatus]
+    [filterStatus],
   );
 
   const { people } = usePeopleListContext();

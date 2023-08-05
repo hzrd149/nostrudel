@@ -24,7 +24,7 @@ function GlobalPage() {
       if (!showReplies && isReply(event)) return false;
       return timelineEventFilter(event);
     },
-    [showReplies, timelineEventFilter]
+    [showReplies, timelineEventFilter],
   );
   const timeline = useTimelineLoader(`global`, readRelays, { kinds: [1] }, { eventFilter });
   useRelaysChanged(readRelays, () => timeline.reset());
