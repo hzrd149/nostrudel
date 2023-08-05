@@ -33,7 +33,7 @@ async function getInfo(relay: string) {
   const cached = await db.get("relayInfo", relay);
   if (cached) {
     memoryCache.set(relay, cached);
-    return cached;
+    return cached as RelayInformationDocument;
   }
 
   return fetchInfo(relay);
