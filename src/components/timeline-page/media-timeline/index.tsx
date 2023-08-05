@@ -4,7 +4,6 @@ import useSubject from "../../../hooks/use-subject";
 import { matchImageUrls } from "../../../helpers/regexp";
 import { ImageGalleryLink, ImageGalleryProvider } from "../../image-gallery";
 import { Box, IconButton } from "@chakra-ui/react";
-import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useNavigate } from "react-router-dom";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
@@ -42,7 +41,6 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
 });
 
 export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }) {
-  const isMobile = useIsMobile();
   const events = useSubject(timeline.timeline);
 
   const images = useMemo(() => {

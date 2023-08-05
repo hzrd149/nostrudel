@@ -87,14 +87,14 @@ const UserZapsTab = () => {
       }
       return true;
     },
-    [filter],
+    [filter]
   );
 
   const timeline = useTimelineLoader(
     `${truncatedId(pubkey)}-zaps`,
     relays,
     { "#p": [pubkey], kinds: [9735] },
-    { eventFilter },
+    { eventFilter }
   );
 
   const events = useSubject(timeline.timeline);

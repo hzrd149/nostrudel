@@ -87,7 +87,7 @@ function SearchResults({ search }: { search: string }) {
     `search`,
     searchRelays,
     { search: search || "", kinds: [Kind.Metadata] },
-    { enabled: !!search },
+    { enabled: !!search }
   );
 
   const events = useSubject(timeline?.timeline) ?? [];
@@ -96,7 +96,7 @@ function SearchResults({ search }: { search: string }) {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleGrid minChildWidth="30rem" spacing="2">
+      <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
         {events.map((event) => (
           <ProfileResult key={event.id} event={event} />
         ))}
@@ -148,17 +148,19 @@ export function SearchPage() {
   };
 
   return (
-    <Flex direction="column" py="2" gap="2">
+    <Flex direction="column" py="2" px={["2", "2", 0]} gap="2">
       <QrScannerModal isOpen={qrScannerModal.isOpen} onClose={qrScannerModal.onClose} onData={handleSearchText} />
 
       <form onSubmit={handleSubmit}>
-        <Flex gap="2">
-          <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
-          {!!navigator.clipboard.readText && (
-            <IconButton onClick={readClipboard} icon={<ClipboardIcon />} aria-label="Read clipboard" />
-          )}
-          <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
-          <Button type="submit">Search</Button>
+        <Flex gap="2" wrap="wrap">
+          <Flex gap="2" grow={1}>
+            <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
+            {!!navigator.clipboard.readText && (
+              <IconButton onClick={readClipboard} icon={<ClipboardIcon />} aria-label="Read clipboard" />
+            )}
+            <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+            <Button type="submit">Search</Button>
+          </Flex>
           <RelaySelectionButton />
         </Flex>
       </form>

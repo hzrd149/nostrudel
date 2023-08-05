@@ -25,7 +25,7 @@ export default function UserNotesTab() {
       if (hideReposts && isRepost(event)) return false;
       return timelineEventFilter(event);
     },
-    [showReplies, hideReposts, timelineEventFilter],
+    [showReplies, hideReposts, timelineEventFilter]
   );
   const timeline = useTimelineLoader(
     truncatedId(pubkey) + "-notes",
@@ -34,7 +34,7 @@ export default function UserNotesTab() {
       authors: [pubkey],
       kinds: [Kind.Text, Kind.Repost, STREAM_KIND, 2],
     },
-    { eventFilter },
+    { eventFilter }
   );
 
   const header = (

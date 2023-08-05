@@ -20,7 +20,6 @@ import { normalizeToHex } from "../../helpers/nip19";
 import { getReferences } from "../../helpers/nostr/event";
 import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { ImageIcon } from "../icons";
@@ -79,7 +78,6 @@ type PostModalProps = {
 };
 
 export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => {
-  const isMobile = useIsMobile();
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
@@ -98,7 +96,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       const payload = new FormData();
       payload.append("fileToUpload", imageFile);
       const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
-        res.text(),
+        res.text()
       );
       const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
       if (imageUrl) {
@@ -193,7 +191,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding={isMobile ? "2" : "4"}>{renderContent()}</ModalBody>
+        <ModalBody padding={["2", "2", "4"]}>{renderContent()}</ModalBody>
       </ModalContent>
     </Modal>
   );

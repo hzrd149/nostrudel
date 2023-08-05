@@ -1,14 +1,13 @@
+import { useState } from "react";
 import { Button, Card, CardBody, Flex, IconButton, Textarea } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
-import { useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { normalizeToHex } from "../../helpers/nip19";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import useSubject from "../../hooks/use-subject";
 import { useSigningContext } from "../../providers/signing-provider";
 import clientRelaysService from "../../services/client-relays";
@@ -24,7 +23,6 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
-  const isMobile = useIsMobile();
   const account = useCurrentAccount()!;
   const { requestEncrypt, requestSignature } = useSigningContext();
   const [content, setContent] = useState<string>("");
@@ -76,9 +74,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
               icon={<ArrowLeftSIcon />}
               aria-label="Back"
               to="/dm"
-              size={isMobile ? "sm" : "md"}
+              size={["sm", "md"]}
             />
-            <UserAvatar pubkey={pubkey} size={isMobile ? "sm" : "md"} />
+            <UserAvatar pubkey={pubkey} size={["sm", "md"]} />
             <UserLink pubkey={pubkey} />
           </CardBody>
         </Card>

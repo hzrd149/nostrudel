@@ -12,7 +12,7 @@ export function usePaginatedList<T extends unknown>(list: T[], opts?: Options) {
   const previous = useCallback(() => setPage((v) => Math.max(v - 1, 0)), [setPage]);
   const pageItems = useMemo(
     () => list.slice(pageSize * currentPage, pageSize * currentPage + pageSize),
-    [list, currentPage, pageSize],
+    [list, currentPage, pageSize]
   );
 
   return {

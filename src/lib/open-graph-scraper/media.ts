@@ -38,7 +38,7 @@ const mediaMapper = (item: ImageObject[] | VideoObject[]) => ({
 
 const mediaSorter = (
   a: ImageObject | TwitterImageObject | VideoObject | TwitterPlayerObject,
-  b: ImageObject | TwitterImageObject | VideoObject | TwitterPlayerObject,
+  b: ImageObject | TwitterImageObject | VideoObject | TwitterPlayerObject
 ) => {
   if (!(a.url && b.url)) {
     return 0;
@@ -114,7 +114,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.ogImageProperty,
     ogObject.ogImageWidth,
     ogObject.ogImageHeight,
-    ogObject.ogImageType,
+    ogObject.ogImageType
   )
     .map(mediaMapper)
     .filter((value: ImageObject) => value.url !== undefined && value.url !== "")
@@ -134,7 +134,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.ogVideoProperty,
     ogObject.ogVideoWidth,
     ogObject.ogVideoHeight,
-    ogObject.ogVideoType,
+    ogObject.ogVideoType
   )
     .map(mediaMapper)
     .filter((value: VideoObject) => value.url !== undefined && value.url !== "")
@@ -164,7 +164,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.twitterImageProperty,
     ogObject.twitterImageWidth,
     ogObject.twitterImageHeight,
-    ogObject.twitterImageAlt,
+    ogObject.twitterImageAlt
   )
     .map(mediaMapperTwitterImage)
     .filter((value: TwitterImageObject) => value.url !== undefined && value.url !== "")
@@ -189,7 +189,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.twitterPlayerProperty,
     ogObject.twitterPlayerWidth,
     ogObject.twitterPlayerHeight,
-    ogObject.twitterPlayerStream,
+    ogObject.twitterPlayerStream
   )
     .map(mediaMapperTwitterPlayer)
     .filter((value: TwitterPlayerObject) => value.url !== undefined && value.url !== "")

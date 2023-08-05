@@ -51,7 +51,7 @@ export default function LoginNip05View() {
       setLoading(false);
     },
     1000,
-    [nip05, setPubkey, setRelays, setLoading],
+    [nip05, setPubkey, setRelays, setLoading]
   );
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {

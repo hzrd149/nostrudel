@@ -28,7 +28,7 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
 
 async function fetchAllIdentities(domain: string) {
   const json = await fetchWithCorsFallback(`//${domain}/.well-known/nostr.json`).then(
-    (res) => res.json() as Promise<IdentityJson>,
+    (res) => res.json() as Promise<IdentityJson>
   );
 
   await addToCache(domain, json);
@@ -101,7 +101,7 @@ async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
     "dnsIdentifiers",
     "updated",
-    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
+    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
   );
 
   for (const pubkey of keys) {

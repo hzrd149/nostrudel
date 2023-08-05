@@ -7,7 +7,7 @@ export function useUserRelays(pubkey: string, additionalRelays: string[] = [], a
   const relays = useReadRelayUrls(additionalRelays);
   const subject = useMemo(
     () => userRelaysService.requestRelays(pubkey, relays, alwaysRequest),
-    [pubkey, relays.join("|"), alwaysRequest],
+    [pubkey, relays.join("|"), alwaysRequest]
   );
   const userRelays = useSubject(subject);
 

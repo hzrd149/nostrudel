@@ -206,7 +206,7 @@ export const ProfileEditView = () => {
       nip05: metadata?.nip05,
       lightningAddress: metadata?.lud16 || metadata?.lud06,
     }),
-    [metadata],
+    [metadata]
   );
 
   const handleSubmit = async (data: FormData) => {

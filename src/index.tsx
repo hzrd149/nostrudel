@@ -23,5 +23,5 @@ const root = createRoot(element);
 root.render(
   <GlobalProviders>
     <App />
-  </GlobalProviders>,
+  </GlobalProviders>
 );

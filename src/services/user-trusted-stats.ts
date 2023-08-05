@@ -63,7 +63,7 @@ class UserTrustedStatsService {
   async fetchUserStats(pubkey: string) {
     try {
       const stats = await fetch(`https://api.nostr.band/v0/stats/profile/${pubkey}`).then(
-        (res) => res.json() as Promise<{ stats: Record<string, NostrBandProfileStats> }>,
+        (res) => res.json() as Promise<{ stats: Record<string, NostrBandProfileStats> }>
       );
 
       if (stats?.stats[pubkey]) {

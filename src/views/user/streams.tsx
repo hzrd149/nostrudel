@@ -31,9 +31,9 @@ export default function UserStreamsTab() {
   return (
     <Flex p="2" gap="2" overflow="hidden" direction="column">
       <IntersectionObserverProvider<string> callback={callback}>
-        <SimpleGrid minChildWidth="20rem" spacing="2">
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} maxW="lg" />
+            <StreamCard key={stream.event.id} stream={stream} />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />

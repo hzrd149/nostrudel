@@ -62,7 +62,7 @@ export default function LoginNsecView() {
         setError(true);
       }
     },
-    [setInputValue, setHexKey, setNpub, setError],
+    [setInputValue, setHexKey, setNpub, setError]
   );
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = async (e) => {

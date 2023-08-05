@@ -9,7 +9,7 @@ export default function useEventZaps(eventId: string, additionalRelays: string[]
 
   const subject = useMemo(
     () => eventZapsService.requestZaps(eventId, relays, alwaysFetch),
-    [eventId, relays.join("|"), alwaysFetch],
+    [eventId, relays.join("|"), alwaysFetch]
   );
 
   const events = useSubject(subject) || [];

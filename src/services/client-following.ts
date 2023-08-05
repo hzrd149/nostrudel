@@ -21,7 +21,7 @@ function handleNewContacts(contacts: UserContacts | undefined) {
       const relay = contacts.contactRelay[key];
       if (relay) return ["p", key, relay];
       else return ["p", key];
-    }),
+    })
   );
 
   // reset the pending list since we just got a new contacts list
@@ -98,7 +98,7 @@ function addContact(pubkey: string, relay?: string) {
           return newTag;
         }
         return t;
-      }),
+      })
     );
   } else {
     following.next([...pTags, newTag]);

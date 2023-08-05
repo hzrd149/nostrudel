@@ -19,7 +19,7 @@ const IntersectionObserverContext = createContext<{
 export type ExtendedIntersectionObserverEntry<T> = { entry: IntersectionObserverEntry; id: T | undefined };
 export type ExtendedIntersectionObserverCallback<T> = (
   entries: ExtendedIntersectionObserverEntry<T>[],
-  observer: IntersectionObserver,
+  observer: IntersectionObserver
 ) => void;
 
 export function useIntersectionObserver() {
@@ -42,7 +42,7 @@ export function useRegisterIntersectionEntity<T>(ref: MutableRefObject<Element |
 
 export function useIntersectionMapCallback<T>(
   callback: (map: Map<T, IntersectionObserverEntry>) => void,
-  watch: DependencyList,
+  watch: DependencyList
 ) {
   const map = useMemo(() => new Map<T, IntersectionObserverEntry>(), []);
   return useCallback<ExtendedIntersectionObserverCallback<T>>(
@@ -53,7 +53,7 @@ export function useIntersectionMapCallback<T>(
 
       callback(map);
     },
-    [callback, ...watch],
+    [callback, ...watch]
   );
 }
 
@@ -76,11 +76,11 @@ export default function IntersectionObserverProvider<T = undefined>({
       entries.map((entry) => {
         return { entry, id: elementIds.get(entry.target) };
       }),
-      observer,
+      observer
     );
   }, []);
   const [observer, setObserver] = useState<IntersectionObserver>(
-    () => new IntersectionObserver(handleIntersection, { rootMargin, threshold }),
+    () => new IntersectionObserver(handleIntersection, { rootMargin, threshold })
   );
 
   useMount(() => {
@@ -97,7 +97,7 @@ export default function IntersectionObserverProvider<T = undefined>({
     (element: Element, id: T) => {
       elementIds.set(element, id);
     },
-    [elementIds],
+    [elementIds]
   );
 
   const context = useMemo(
@@ -105,7 +105,7 @@ export default function IntersectionObserverProvider<T = undefined>({
       observer,
       setElementId,
     }),
-    [observer, setElementId],
+    [observer, setElementId]
   );
 
   return <IntersectionObserverContext.Provider value={context}>{children}</IntersectionObserverContext.Provider>;

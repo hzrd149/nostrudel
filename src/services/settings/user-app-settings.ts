@@ -11,7 +11,7 @@ const DTAG = "nostrudel-settings";
 
 class UserAppSettings {
   private parsedSubjects = new SuperMap<string, PersistentSubject<AppSettings>>(
-    () => new PersistentSubject<AppSettings>(defaultSettings),
+    () => new PersistentSubject<AppSettings>(defaultSettings)
   );
   getSubject(pubkey: string) {
     return this.parsedSubjects.get(pubkey);

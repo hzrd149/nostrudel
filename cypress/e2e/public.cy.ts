@@ -2,7 +2,7 @@ describe("No account", () => {
   describe("note view", () => {
     it("should fetch and render note", () => {
       cy.visit(
-        "#/n/nevent1qqs84hwdlls703w4yf66qsszxjqfc0xselfxrzr6n4qp40vzdnczragpr4mhxue69uhkummnw3ez6ur4vgh8wetvd3hhyer9wghxuet5jcwczn",
+        "#/n/nevent1qqs84hwdlls703w4yf66qsszxjqfc0xselfxrzr6n4qp40vzdnczragpr4mhxue69uhkummnw3ez6ur4vgh8wetvd3hhyer9wghxuet5jcwczn"
       );
 
       cy.get(".chakra-card")

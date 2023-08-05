@@ -7,7 +7,7 @@ export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNo
     regexp: /:([a-zA-Z0-9_]+):/i,
     render: (match) => {
       const emojiTag = note.tags.find(
-        (tag) => tag[0] === "emoji" && tag[1].toLowerCase() === match[1].toLowerCase() && tag[2],
+        (tag) => tag[0] === "emoji" && tag[1].toLowerCase() === match[1].toLowerCase() && tag[2]
       );
       if (emojiTag) {
         return (

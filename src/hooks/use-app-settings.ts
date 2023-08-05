@@ -16,7 +16,7 @@ export default function useAppSettings() {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
-    [settings],
+    [settings]
   );
 
   return {

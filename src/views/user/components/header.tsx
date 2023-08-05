@@ -1,4 +1,4 @@
-import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
+import { Flex, Heading, IconButton, Spacer, useBreakpointValue } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { ChatIcon, EditIcon } from "../../../components/icons";
 import { UserAvatar } from "../../../components/user-avatar";
@@ -8,7 +8,6 @@ import { UserTipButton } from "../../../components/user-tip-button";
 import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
-import { useIsMobile } from "../../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 
@@ -19,13 +18,14 @@ export default function Header({
   pubkey: string;
   showRelaySelectionModal: () => void;
 }) {
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const metadata = useUserMetadata(pubkey);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   const account = useCurrentAccount();
   const isSelf = pubkey === account?.pubkey;
+
+  const showFullNip05 = useBreakpointValue({ base: false, md: true });
 
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
@@ -34,7 +34,7 @@ export default function Header({
         <Heading size="md" isTruncated>
           {getUserDisplayName(metadata, pubkey)}
         </Heading>
-        <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={isMobile} />
+        <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={showFullNip05} />
         <Spacer />
         {isSelf && (
           <IconButton

@@ -8,7 +8,7 @@ export function useUserMetadata(pubkey: string, additionalRelays: string[] = [],
 
   const subject = useMemo(
     () => userMetadataService.requestMetadata(pubkey, relays, alwaysRequest),
-    [pubkey, relays, alwaysRequest],
+    [pubkey, relays, alwaysRequest]
   );
   const metadata = useSubject(subject);
 

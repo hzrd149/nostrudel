@@ -20,7 +20,7 @@ export default function PostModalProvider({ children }: PropsWithChildren) {
       setDraft(draft);
       onOpen();
     },
-    [setDraft, onOpen],
+    [setDraft, onOpen]
   );
   const context = useMemo(() => ({ openModal }), [openModal]);
 

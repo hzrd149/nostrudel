@@ -53,7 +53,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
       <ExpandProvider>
         <Card variant={variant} ref={ref} data-event-id={event.id}>
           <CardHeader padding="2">
-            <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
+            <Flex flex="1" gap="2" alignItems="center">
               <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
               <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
               <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />

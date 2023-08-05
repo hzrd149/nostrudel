@@ -1,10 +1,9 @@
-import { useCallback, useRef } from "react";
-import { Flex, Grid, SimpleGrid } from "@chakra-ui/react";
+import { useCallback } from "react";
+import { Flex, SimpleGrid } from "@chakra-ui/react";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import { ImageGalleryProvider } from "../image-gallery";
 import MediaTimeline from "./media-timeline";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "./timeline-action-and-status";
@@ -21,7 +20,7 @@ export function useTimelinePageEventFilter() {
       if (view === "images" && !event.content.match(matchImageUrls)) return false;
       return true;
     },
-    [view],
+    [view]
   );
 }
 
@@ -41,7 +40,7 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
       case "images":
         return (
           <ImageGalleryProvider>
-            <SimpleGrid minChildWidth={["full", "15rem"]} gap="4">
+            <SimpleGrid columns={[1, 2, 2, 3, 4, 5]} gap="4">
               <MediaTimeline timeline={timeline} />
             </SimpleGrid>
           </ImageGalleryProvider>

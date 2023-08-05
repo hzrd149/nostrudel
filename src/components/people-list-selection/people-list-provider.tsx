@@ -67,7 +67,7 @@ export default function PeopleListProvider({ children }: PropsWithChildren) {
       list,
       setList,
     }),
-    [list, setList],
+    [list, setList]
   );
 
   return <PeopleListContext.Provider value={context}>{children}</PeopleListContext.Provider>;

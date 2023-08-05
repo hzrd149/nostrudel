@@ -115,7 +115,7 @@ class ReplaceableEventRelayLoader {
           `Updating query`,
           Array.from(Object.keys(filters))
             .map((kind: string) => `kind ${kind}: ${filters[parseInt(kind)].authors?.length}`)
-            .join(", "),
+            .join(", ")
         );
         this.subscription.setQuery(query);
 
@@ -133,7 +133,7 @@ class ReplaceableEventLoaderService {
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private loaders = new SuperMap<Relay, ReplaceableEventRelayLoader>(
-    (relay) => new ReplaceableEventRelayLoader(relay, this.log.extend(relay)),
+    (relay) => new ReplaceableEventRelayLoader(relay, this.log.extend(relay))
   );
 
   log = logger.extend("ReplaceableEventLoader");
@@ -180,7 +180,7 @@ class ReplaceableEventLoaderService {
     const keys = await db.getAllKeysFromIndex(
       "replaceableEvents",
       "created",
-      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
+      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
     );
 
     this.log(`Pruning ${keys.length} events`);
@@ -243,12 +243,9 @@ replaceableEventLoaderService.pruneCache();
 setInterval(() => {
   replaceableEventLoaderService.update();
 }, 1000 * 2);
-setInterval(
-  () => {
-    replaceableEventLoaderService.pruneCache();
-  },
-  1000 * 60 * 60,
-);
+setInterval(() => {
+  replaceableEventLoaderService.pruneCache();
+}, 1000 * 60 * 60);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

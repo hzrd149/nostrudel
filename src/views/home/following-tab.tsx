@@ -29,7 +29,7 @@ function FollowingTabBody() {
       if (!showReplies && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [showReplies, timelinePageEventFilter],
+    [showReplies, timelinePageEventFilter]
   );
 
   const following = contacts?.contacts || [];
@@ -37,7 +37,7 @@ function FollowingTabBody() {
     `${truncatedId(account.pubkey)}-following`,
     readRelays,
     { authors: following, kinds: [Kind.Text, Kind.Repost, 2] },
-    { enabled: following.length > 0, eventFilter },
+    { enabled: following.length > 0, eventFilter }
   );
 
   const header = (

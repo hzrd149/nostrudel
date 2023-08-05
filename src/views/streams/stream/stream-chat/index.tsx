@@ -71,7 +71,7 @@ export default function StreamChat({
   const muteList = useUserMuteList(account?.pubkey);
   const mutedPubkeys = useMemo(
     () => [...(hostMuteList?.tags ?? []), ...(muteList?.tags ?? [])].filter(isPTag).map((t) => t[1] as string),
-    [hostMuteList, muteList],
+    [hostMuteList, muteList]
   );
   const eventFilter = useCallback((event: NostrEvent) => !mutedPubkeys.includes(event.pubkey), [mutedPubkeys]);
 
@@ -82,7 +82,7 @@ export default function StreamChat({
       "#a": [getATag(stream)],
       kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
     },
-    { eventFilter },
+    { eventFilter }
   );
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
@@ -153,7 +153,7 @@ export default function StreamChat({
                     <ChatMessage key={event.id} event={event} stream={stream} />
                   ) : (
                     <ZapMessage key={event.id} zap={event} stream={stream} />
-                  ),
+                  )
                 )}
               </Flex>
               {!isChatLog && (

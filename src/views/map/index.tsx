@@ -104,7 +104,7 @@ export default function MapView() {
         const hash = ngeohash.encode(center.lat, center.lng, 5);
 
         setSearchParams({ hash }, { replace: true });
-      }, 1000),
+      }, 1000)
     );
 
     setMap(map);
@@ -122,7 +122,7 @@ export default function MapView() {
     "geo-events",
     readRelays,
     { "#g": cells, kinds: [Kind.Text] },
-    { enabled: cells.length > 0 },
+    { enabled: cells.length > 0 }
   );
 
   const setCellsFromMap = useCallback(() => {
@@ -133,7 +133,7 @@ export default function MapView() {
       bbox.getWest(),
       bbox.getNorth(),
       bbox.getEast(),
-      getPrecision(map.getZoom()),
+      getPrecision(map.getZoom())
     );
 
     setCells(hashes);

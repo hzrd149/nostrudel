@@ -105,7 +105,11 @@ function RelayPage({ relay }: { relay: string }) {
         <RelayJoinAction url={relay} />
       </Flex>
       <RelayMetadata url={relay} />
-      <Flex gap="2">{info?.supported_nips?.map((nip) => <NipTag key={nip} nip={nip} />)}</Flex>
+      <Flex gap="2">
+        {info?.supported_nips?.map((nip) => (
+          <NipTag key={nip} nip={nip} />
+        ))}
+      </Flex>
       <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="brand">
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>

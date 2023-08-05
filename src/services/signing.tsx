@@ -19,7 +19,7 @@ class SigningService {
 
   private async getKeyMaterial() {
     const password = window.prompt(
-      "Enter local encryption password. This password is used to keep your secret key save.",
+      "Enter local encryption password. This password is used to keep your secret key save."
     );
     if (!password) throw new Error("Password required");
     const enc = new TextEncoder();
@@ -38,7 +38,7 @@ class SigningService {
       keyMaterial,
       { name: "AES-GCM", length: 256 },
       true,
-      ["encrypt", "decrypt"],
+      ["encrypt", "decrypt"]
     );
   }
 
