@@ -35,6 +35,7 @@ import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
 import RelaysView from "./views/relays";
+import RelayReviewsView from "./views/relays/reviews";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -104,6 +105,7 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "relays/reviews", element: <RelayReviewsView /> },
       { path: "relays", element: <RelaysView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },

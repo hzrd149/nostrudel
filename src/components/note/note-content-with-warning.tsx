@@ -12,5 +12,9 @@ export default function NoteContentWithWarning({ event }: { event: NostrEvent })
   const contentWarning = event.tags.find((t) => t[0] === "content-warning")?.[1];
   const showContentWarning = settings.showContentWarning && contentWarning && !expand?.expanded;
 
-  return showContentWarning ? <SensitiveContentWarning description={contentWarning} /> : <NoteContents event={event} />;
+  return showContentWarning ? (
+    <SensitiveContentWarning description={contentWarning} />
+  ) : (
+    <NoteContents px="2" event={event} />
+  );
 }

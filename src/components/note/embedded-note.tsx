@@ -33,7 +33,7 @@ export default function EmbeddedNote({ note }: { note: NostrEvent }) {
             {dayjs.unix(note.created_at).fromNow()}
           </NoteLink>
         </CardHeader>
-        <CardBody p="0">{expand.isOpen && <NoteContents event={note} />}</CardBody>
+        <CardBody p="0">{expand.isOpen && <NoteContents px="2" event={note} />}</CardBody>
       </Card>
     </TrustProvider>
   );

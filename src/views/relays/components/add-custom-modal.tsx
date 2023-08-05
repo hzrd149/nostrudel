@@ -20,13 +20,13 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useRelayInfo } from "../../hooks/use-relay-info";
-import { UserAvatar } from "../../components/user-avatar";
-import { UserLink } from "../../components/user-link";
-import { safeRelayUrl } from "../../helpers/url";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import { UserAvatar } from "../../../components/user-avatar";
+import { UserLink } from "../../../components/user-link";
+import { safeRelayUrl } from "../../../helpers/url";
 import { useDebounce } from "react-use";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import { CodeIcon } from "../../components/icons";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import { CodeIcon } from "../../../components/icons";
 import { Metadata } from "./relay-card";
 
 function RelayDetails({ url, debug }: { url: string; debug?: boolean }) {

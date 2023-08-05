@@ -1,12 +1,13 @@
 import { useDeferredValue, useMemo, useState } from "react";
-import { Button, Divider, Flex, Heading, Input, SimpleGrid, Spacer, Switch, useDisclosure } from "@chakra-ui/react";
 import { useAsync } from "react-use";
+import { Link as RouterLink } from "react-router-dom";
+import { Button, Divider, Flex, Heading, Input, SimpleGrid, Spacer, Switch, useDisclosure } from "@chakra-ui/react";
 
 import { useClientRelays } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
 import { safeRelayUrl } from "../../helpers/url";
-import AddCustomRelayModal from "./add-custom-modal";
-import RelayCard from "./relay-card";
+import AddCustomRelayModal from "./components/add-custom-modal";
+import RelayCard from "./components/relay-card";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
 
@@ -43,13 +44,16 @@ export default function RelaysView() {
           Show All
         </Switch>
         <Spacer />
+        <Button as={RouterLink} to="/relays/reviews">
+          Browse Reviews
+        </Button>
         <Button colorScheme="brand" onClick={addRelayModal.onOpen}>
           Add Custom
         </Button>
       </Flex>
       <SimpleGrid minChildWidth="25rem" spacing="2">
         {filteredRelays.map((url) => (
-          <RelayCard key={url} url={url} />
+          <RelayCard key={url} url={url} variant="outline" />
         ))}
       </SimpleGrid>
 
@@ -59,7 +63,7 @@ export default function RelaysView() {
           <Heading size="lg">Discovered Relays</Heading>
           <SimpleGrid minChildWidth="25rem" spacing="2">
             {discoveredRelays.map((url) => (
-              <RelayCard key={url} url={url} />
+              <RelayCard key={url} url={url} variant="outline" />
             ))}
           </SimpleGrid>
         </>

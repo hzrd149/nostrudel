@@ -28,8 +28,6 @@ export function useTimelinePageEventFilter() {
 export type TimelineViewType = "timeline" | "images";
 
 export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
-  const isMobile = useIsMobile();
-
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const [params, setParams] = useSearchParams();
