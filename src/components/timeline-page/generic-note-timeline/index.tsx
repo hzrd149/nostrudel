@@ -8,6 +8,9 @@ import { Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
+import { ErrorBoundary } from "../../error-boundary";
+import RelayCard from "../../../views/relays/components/relay-card";
+import { safeRelayUrl } from "../../../helpers/url";
 
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
@@ -17,6 +20,9 @@ const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
       return <RepostNote event={event} />;
     case STREAM_KIND:
       return <StreamNote event={event} />;
+    case 2:
+      const safeUrl = safeRelayUrl(event.content);
+      return safeUrl ? <RelayCard url={safeUrl} /> : null;
     default:
       return <Text>Unknown event kind: {event.kind}</Text>;
   }
@@ -28,7 +34,9 @@ const GenericNoteTimeline = React.memo(({ timeline }: { timeline: TimelineLoader
   return (
     <>
       {notes.map((note) => (
-        <RenderEvent key={note.id} event={note} />
+        <ErrorBoundary key={note.id}>
+          <RenderEvent event={note} />
+        </ErrorBoundary>
       ))}
     </>
   );

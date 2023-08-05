@@ -20,7 +20,6 @@ import NoteView from "./views/note";
 import LoginStartView from "./views/login/start";
 import LoginNpubView from "./views/login/npub";
 import NotificationsView from "./views/notifications";
-import RelaysView from "./views/relays";
 import LoginNip05View from "./views/login/nip05";
 import LoginNsecView from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
@@ -35,10 +34,14 @@ import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
+import RelaysView from "./views/relays";
+import RelayReviewsView from "./views/relays/reviews";
+import RelayView from "./views/relays/relay";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
+const MapView = React.lazy(() => import("./views/map"));
 
 const RootPage = () => {
   useSetColorMode();
@@ -75,6 +78,10 @@ const router = createHashRouter([
     ),
   },
   {
+    path: "map",
+    element: <MapView />,
+  },
+  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -99,7 +106,9 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "relays/reviews", element: <RelayReviewsView /> },
       { path: "relays", element: <RelaysView /> },
+      { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
       { path: "dm", element: <DirectMessagesView /> },

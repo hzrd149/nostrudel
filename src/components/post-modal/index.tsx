@@ -61,7 +61,7 @@ function finalizeNote(draft: DraftNostrEvent) {
   }
 
   // replace all uses of #hashtag
-  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "gi"));
+  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "giu"));
   for (const [_, space, hashtag] of matches) {
     const lower = hashtag.toLocaleLowerCase();
     if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {

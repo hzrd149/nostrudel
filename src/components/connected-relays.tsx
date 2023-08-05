@@ -43,7 +43,7 @@ export const ConnectedRelays = () => {
   return (
     <>
       <Button variant="link" onClick={onOpen} leftIcon={<RelayIcon />}>
-        {connected.length}/{relays.length} of relays connected
+        {connected.length} relays connected
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />

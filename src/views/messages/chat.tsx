@@ -15,7 +15,7 @@ import clientRelaysService from "../../services/client-relays";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { Message } from "./message";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { truncatedId } from "../../helpers/nostr/event";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";

@@ -1,18 +1,19 @@
 import {
-  Avatar,
-  Box,
   Flex,
   FlexProps,
-  IconButton,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Tag,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+
 import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
 
@@ -34,18 +35,27 @@ export function RelayIconStack({ relays, maxRelays, ...props }: { relays: string
           </Text>
         )}
       </Flex>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Relays</ModalHeader>
+          <ModalHeader px="4" pt="4" pb="2">
+            Seen on relays:
+          </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <Flex direction="column" gap="1">
+          <ModalBody px="4" pb="4" pt="0">
+            <Flex gap="2" wrap="wrap">
               {topRelays.map((url) => (
-                <Flex key={url}>
-                  <RelayFavicon relay={url} size="2xs" mr="2" />
-                  <Text>{url}</Text>
-                </Flex>
+                <Tag
+                  key={url}
+                  as={RouterLink}
+                  p="2"
+                  fontWeight="bold"
+                  fontSize="md"
+                  to={`/r/${encodeURIComponent(url)}`}
+                >
+                  <RelayFavicon relay={url} size="xs" mr="2" />
+                  {url}
+                </Tag>
               ))}
             </Flex>
           </ModalBody>

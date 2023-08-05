@@ -10,6 +10,7 @@ import {
   FeedIcon,
   LiveStreamIcon,
   LogoutIcon,
+  MapIcon,
   NotificationIcon,
   ProfileIcon,
   RelayIcon,
@@ -48,6 +49,9 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       </Button>
       <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
         Streams
+      </Button>
+      <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />}>
+        Map
       </Button>
       <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
         Profile

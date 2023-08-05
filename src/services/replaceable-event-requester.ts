@@ -5,8 +5,9 @@ import { SuperMap } from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 import { NostrQuery } from "../types/nostr-query";
-import { logger, nameOrPubkey } from "../helpers/debug";
+import { logger } from "../helpers/debug";
 import db from "./db";
+import { nameOrPubkey } from "./user-metadata";
 
 type Pubkey = string;
 type Relay = string;

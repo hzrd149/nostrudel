@@ -62,6 +62,25 @@ class ClientRelayService {
     this.relays.next(relays.relays);
   }
 
+  async addRelay(url: string, mode: RelayMode) {
+    if (!this.relays.value.some((r) => r.url === url)) {
+      const newRelays = [...this.relays.value, { url, mode }];
+      await this.postUpdatedRelays(newRelays);
+    }
+  }
+  async updateRelay(url: string, mode: RelayMode) {
+    if (this.relays.value.some((r) => r.url === url)) {
+      const newRelays = this.relays.value.map((r) => (r.url === url ? { url, mode } : r));
+      await this.postUpdatedRelays(newRelays);
+    }
+  }
+  async removeRelay(url: string) {
+    if (this.relays.value.some((r) => r.url === url)) {
+      const newRelays = this.relays.value.filter((r) => r.url !== url);
+      await this.postUpdatedRelays(newRelays);
+    }
+  }
+
   async postUpdatedRelays(newRelays: RelayConfig[]) {
     const rTags: RTag[] = newRelays.map((r) => {
       switch (r.mode) {
@@ -91,10 +110,11 @@ class ClientRelayService {
     const event = await signingService.requestSignature(draft, current);
 
     const results = nostrPostAction(writeUrls, event);
-    await results.onComplete;
 
     // pass new event to the user relay service
     userRelaysService.receiveEvent(event);
+
+    await results.onComplete;
   }
 
   getWriteUrls() {

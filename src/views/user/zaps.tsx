@@ -10,7 +10,7 @@ import { UserLink } from "../../components/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
 import { truncatedId } from "../../helpers/nostr/event";
 import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/zaps";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -18,6 +18,8 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -26,6 +28,10 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
 
   try {
     const { request, payment, eventId } = parseZapEvent(zapEvent);
+
+    let embedContent: EmbedableContent = [request.content];
+    embedContent = embedNostrLinks(embedContent);
+    embedContent = embedUrls(embedContent, [renderGenericUrl]);
 
     return (
       <Box
@@ -52,7 +58,7 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
           )}
           <Text ml="auto">{dayjs.unix(request.created_at).fromNow()}</Text>
         </Flex>
-        {request.content && <Text>{request.content}</Text>}
+        {embedContent && <Box>{embedContent}</Box>}
       </Box>
     );
   } catch (e) {

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Flex, Select, SimpleGrid } from "@chakra-ui/react";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
@@ -13,6 +13,7 @@ import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../components/people-list-selection/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import useParsedStreams from "../../hooks/use-parsed-streams";
 
 function StreamsPage() {
   const relays = useRelaySelectionRelays();
@@ -44,16 +45,7 @@ function StreamsPage() {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const events = useSubject(timeline.timeline);
-  const streams = useMemo(() => {
-    const parsedStreams: ParsedStream[] = [];
-    for (const event of events) {
-      try {
-        const parsed = parseStreamEvent(event);
-        parsedStreams.push(parsed);
-      } catch (e) {}
-    }
-    return parsedStreams.sort((a, b) => (b.starts ?? 0) - (a.starts ?? 0));
-  }, [events]);
+  const streams = useParsedStreams(events);
 
   return (
     <Flex p="2" gap="2" overflow="hidden" direction="column">
@@ -66,9 +58,9 @@ function StreamsPage() {
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid minChildWidth="25rem" spacing="2">
+        <SimpleGrid minChildWidth={["full", "20rem"]} spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} />
+            <StreamCard key={stream.event.id} stream={stream} maxW="lg" />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />

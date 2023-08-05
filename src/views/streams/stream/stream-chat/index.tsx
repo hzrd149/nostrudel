@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import {
   Box,
   Button,
@@ -15,8 +15,6 @@ import {
 } from "@chakra-ui/react";
 
 import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, buildChatMessage, getATag } from "../../../../helpers/nostr/stream";
-import { useAdditionalRelayContext } from "../../../../providers/additional-relay-context";
-import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
 import { useUserRelays } from "../../../../hooks/use-user-relays";
 import { RelayMode } from "../../../../classes/relay";
 import ZapModal from "../../../../components/zap-modal";
@@ -33,13 +31,16 @@ import { useForm } from "react-hook-form";
 import { useSigningContext } from "../../../../providers/signing-provider";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../../../hooks/use-subject";
-import { useTimelineLoader } from "../../../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { truncatedId } from "../../../../helpers/nostr/event";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";
 import { parseZapEvent } from "../../../../helpers/zaps";
 import { Kind } from "nostr-tools";
 import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
+import useUserMuteList from "../../../../hooks/use-user-mute-list";
+import { NostrEvent, isPTag } from "../../../../types/nostr-event";
+import { useCurrentAccount } from "../../../../hooks/use-current-account";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -58,6 +59,7 @@ export default function StreamChat({
   ...props
 }: CardProps & { stream: ParsedStream; actions?: React.ReactNode; displayMode?: ChatDisplayMode }) {
   const toast = useToast();
+  const account = useCurrentAccount();
   const streamRelays = useRelaySelectionRelays();
   const hostReadRelays = useUserRelays(stream.host)
     .filter((r) => r.mode & RelayMode.READ)
@@ -65,10 +67,23 @@ export default function StreamChat({
 
   const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);
 
-  const timeline = useTimelineLoader(`${truncatedId(stream.identifier)}-chat`, streamRelays, {
-    "#a": [getATag(stream)],
-    kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
-  });
+  const hostMuteList = useUserMuteList(stream.host);
+  const muteList = useUserMuteList(account?.pubkey);
+  const mutedPubkeys = useMemo(
+    () => [...(hostMuteList?.tags ?? []), ...(muteList?.tags ?? [])].filter(isPTag).map((t) => t[1] as string),
+    [hostMuteList, muteList]
+  );
+  const eventFilter = useCallback((event: NostrEvent) => !mutedPubkeys.includes(event.pubkey), [mutedPubkeys]);
+
+  const timeline = useTimelineLoader(
+    `${truncatedId(stream.identifier)}-chat`,
+    streamRelays,
+    {
+      "#a": [getATag(stream)],
+      kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
+    },
+    { eventFilter }
+  );
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
 

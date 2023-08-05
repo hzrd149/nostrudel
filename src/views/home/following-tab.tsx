@@ -1,9 +1,11 @@
+import { useCallback } from "react";
 import { Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
+import { Kind } from "nostr-tools";
+
 import { isReply, truncatedId } from "../../helpers/nostr/event";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
-import { useCallback } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
@@ -34,7 +36,7 @@ function FollowingTabBody() {
   const timeline = useTimelineLoader(
     `${truncatedId(account.pubkey)}-following`,
     readRelays,
-    { authors: following, kinds: [1, 6] },
+    { authors: following, kinds: [Kind.Text, Kind.Repost, 2] },
     { enabled: following.length > 0, eventFilter }
   );
 

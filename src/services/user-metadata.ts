@@ -50,4 +50,10 @@ if (import.meta.env.DEV) {
   window.userMetadataService = userMetadataService;
 }
 
+// random helper for logging
+export function nameOrPubkey(pubkey: string) {
+  const parsed = userMetadataService.getSubject(pubkey).value;
+  return parsed?.name || parsed?.display_name || pubkey;
+}
+
 export default userMetadataService;

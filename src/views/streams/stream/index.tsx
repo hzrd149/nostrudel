@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "react-use";
 import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useParams, Navigate, useSearchParams } from "react-router-dom";
+import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
 
@@ -27,6 +27,7 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
   const isMobile = useIsMobile();
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const scrollState = useScroll(scrollBox);
+  const navigate = useNavigate();
 
   const renderActions = () => {
     const toggleButton =
@@ -110,9 +111,7 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
             <Spacer />
             <StreamDebugButton stream={stream} variant="ghost" />
             <RelaySelectionButton />
-            <Button as={RouterLink} to="/streams">
-              Back
-            </Button>
+            <Button onClick={() => navigate(-1)}>Back</Button>
           </Flex>
           <StreamSummaryContent stream={stream} px={isMobile ? "2" : 0} />
         </Flex>

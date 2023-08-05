@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import {
@@ -54,12 +54,12 @@ export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
 };
 
-export const NoteContents = React.memo(({ event }: NoteContentsProps) => {
+export const NoteContents = React.memo(({ event, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
   const content = buildContents(event);
 
   return (
     <ImageGalleryProvider>
-      <Box whiteSpace="pre-wrap" px="2">
+      <Box whiteSpace="pre-wrap" {...props}>
         {content}
       </Box>
     </ImageGalleryProvider>

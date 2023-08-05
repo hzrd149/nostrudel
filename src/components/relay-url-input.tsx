@@ -1,6 +1,5 @@
 import { forwardRef, useState } from "react";
 import {
-  Badge,
   Button,
   Flex,
   IconButton,
@@ -31,9 +30,6 @@ function RelayPickerModal({
   const { value: onlineRelays } = useAsync(async () =>
     fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
   );
-  const { value: paidRelays } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/paid").then((res) => res.json() as Promise<string[]>)
-  );
   const relayList = unique(onlineRelays ?? []);
 
   const filteredRelays = search ? relayList.filter((url) => url.includes(search)) : relayList;
@@ -57,20 +53,17 @@ function RelayPickerModal({
           </InputGroup>
           <Flex gap="2" direction="column">
             {filteredRelays.map((url) => (
-              <Flex key={url} gap="2" alignItems="center">
-                <Button
-                  value={url}
-                  onClick={() => {
-                    onSelect(url);
-                    onClose();
-                  }}
-                  variant="outline"
-                  size="sm"
-                >
-                  {url}
-                </Button>
-                {paidRelays?.includes(url) && <Badge colorScheme="green">Paid</Badge>}
-              </Flex>
+              <Button
+                value={url}
+                onClick={() => {
+                  onSelect(url);
+                  onClose();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                {url}
+              </Button>
             ))}
           </Flex>
         </ModalBody>

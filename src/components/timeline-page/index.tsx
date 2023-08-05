@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { Flex, Grid } from "@chakra-ui/react";
+import { Flex, Grid, SimpleGrid } from "@chakra-ui/react";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import { ImageGalleryProvider } from "../image-gallery";
@@ -28,8 +28,6 @@ export function useTimelinePageEventFilter() {
 export type TimelineViewType = "timeline" | "images";
 
 export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
-  const isMobile = useIsMobile();
-
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const [params, setParams] = useSearchParams();
@@ -43,9 +41,9 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
       case "images":
         return (
           <ImageGalleryProvider>
-            <Grid templateColumns={`repeat(${isMobile ? 2 : 5}, 1fr)`} gap="4">
+            <SimpleGrid minChildWidth={["full", "15rem"]} gap="4">
               <MediaTimeline timeline={timeline} />
-            </Grid>
+            </SimpleGrid>
           </ImageGalleryProvider>
         );
       default:

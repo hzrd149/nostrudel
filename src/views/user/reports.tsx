@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { NoteLink } from "../../components/note-link";
 import { UserLink } from "../../components/user-link";
 import { filterTagsByContentRefs, truncatedId } from "../../helpers/nostr/event";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
