@@ -19,11 +19,12 @@ import {
   ModalOverlay,
   ModalProps,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";
-import { CodeIcon, ExternalLinkIcon } from "../../../components/icons";
+import { CodeIcon, ExternalLinkIcon, RepostIcon } from "../../../components/icons";
 import { UserLink } from "../../../components/user-link";
 import { UserAvatar } from "../../../components/user-avatar";
 import { useClientRelays, useReadRelayUrls } from "../../../hooks/use-client-relays";
@@ -35,8 +36,12 @@ import useSubject from "../../../hooks/use-subject";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RelayReviewNote from "./relay-review-note";
 import styled from "@emotion/styled";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import RawJson from "../../../components/debug-modals/raw-json";
+import { DraftNostrEvent } from "../../../types/nostr-event";
+import dayjs from "dayjs";
+import { useSigningContext } from "../../../providers/signing-provider";
+import { nostrPostAction } from "../../../classes/nostr-post-action";
 
 const B = styled.span`
   font-weight: bold;
@@ -116,10 +121,50 @@ export function RelayDebugButton({ url, ...props }: { url: string } & Omit<IconB
   );
 }
 
+export function RelayShareButton({
+  relay,
+  ...props
+}: { relay: string } & Omit<IconButtonProps, "icon" | "aria-label">) {
+  const toast = useToast();
+  const { requestSignature } = useSigningContext();
+
+  const recommendRelay = useCallback(async () => {
+    try {
+      const writeRelays = clientRelaysService.getWriteUrls();
+
+      const draft: DraftNostrEvent = {
+        kind: 2,
+        content: relay,
+        tags: [],
+        created_at: dayjs().unix(),
+      };
+
+      const signed = await requestSignature(draft);
+      if (!signed) return;
+
+      const post = nostrPostAction(writeRelays, signed);
+      await post.onComplete;
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  }, []);
+
+  return (
+    <IconButton
+      icon={<RepostIcon />}
+      aria-label="Recommend Relay"
+      title="Recommend Relay"
+      onClick={recommendRelay}
+      variant="ghost"
+      {...props}
+    />
+  );
+}
+
 export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
   return (
     <>
-      <Card {...props}>
+      <Card variant="outline" {...props}>
         <CardHeader display="flex" gap="2" alignItems="center" p="2">
           <RelayFavicon relay={url} size="xs" />
           <Heading size="md" isTruncated>
@@ -132,7 +177,8 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
         <CardFooter p="2" as={Flex} gap="2">
           <RelayJoinAction url={url} size="sm" />
 
-          <RelayDebugButton url={url} ml="auto" size="sm" />
+          <RelayShareButton relay={url} ml="auto" size="sm" />
+          <RelayDebugButton url={url} size="sm" />
           <Button
             as="a"
             href={`https://nostr.watch/relay/${new URL(url).host}`}

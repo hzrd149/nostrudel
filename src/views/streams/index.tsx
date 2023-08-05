@@ -58,9 +58,9 @@ function StreamsPage() {
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid minChildWidth="20rem" spacing="2">
+        <SimpleGrid minChildWidth={["full", "20rem"]} spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} />
+            <StreamCard key={stream.event.id} stream={stream} maxW="lg" />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />

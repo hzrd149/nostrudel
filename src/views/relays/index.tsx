@@ -53,7 +53,7 @@ export default function RelaysView() {
       </Flex>
       <SimpleGrid minChildWidth="25rem" spacing="2">
         {filteredRelays.map((url) => (
-          <RelayCard key={url} url={url} variant="outline" />
+          <RelayCard key={url} url={url} variant="outline" maxW="xl" />
         ))}
       </SimpleGrid>
 
@@ -63,7 +63,7 @@ export default function RelaysView() {
           <Heading size="lg">Discovered Relays</Heading>
           <SimpleGrid minChildWidth="25rem" spacing="2">
             {discoveredRelays.map((url) => (
-              <RelayCard key={url} url={url} variant="outline" />
+              <RelayCard key={url} url={url} variant="outline" maxW="xl" />
             ))}
           </SimpleGrid>
         </>

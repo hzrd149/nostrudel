@@ -8,7 +8,7 @@ import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../relays/components/relay-card";
+import { RelayDebugButton, RelayJoinAction, RelayMetadata, RelayShareButton } from "../relays/components/relay-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
@@ -21,12 +21,12 @@ function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
           {url}
         </Heading>
         <Spacer />
-        <RelayJoinAction url={url} size="sm" />
+        <RelayDebugButton url={url} size="sm" />
+        <RelayShareButton relay={url} size="sm" />
         <Button as={RouterLink} to={`/global?relay=${url}`} size="sm">
           Notes
         </Button>
-
-        <RelayDebugButton url={url} size="sm" />
+        <RelayJoinAction url={url} size="sm" />
       </Flex>
       <RelayMetadata url={url} />
       <Flex py="0" direction="column" gap="2">
