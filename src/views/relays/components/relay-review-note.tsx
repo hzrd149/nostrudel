@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { useRef } from "react";
-import { Card, CardBody, CardHeader, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Link, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
@@ -30,7 +31,13 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
         <Text ml="auto">{dayjs.unix(event.created_at).fromNow()}</Text>
       </CardHeader>
       <CardBody p="2">
-        {!hideUrl && <Metadata name="URL">{url}</Metadata>}
+        {!hideUrl && url && (
+          <Metadata name="URL">
+            <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`}>
+              {url}
+            </Link>
+          </Metadata>
+        )}
         {rating && <StarRating quality={rating.quality} color="yellow.400" mb="1" />}
         <NoteContents event={event} />
       </CardBody>
