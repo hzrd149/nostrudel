@@ -1,5 +1,20 @@
 # nostrudel
 
+## 0.23.0
+
+### Minor Changes
+
+- e24e55c: Show relay reviews under user relays tab
+- fa30250: Add relay view
+- e24e55c: Add relay reviews page
+- d984577: Show relay recommendations in timeline
+- 33da3e2: Rebuild relay view and show relay reviews
+- 615e19b: Hide muted users in stream chat
+
+### Patch Changes
+
+- cb780e1: Cleanup responsive breakpoints
+
 ## 0.22.0
 
 ### Minor Changes
