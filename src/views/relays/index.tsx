@@ -38,7 +38,7 @@ export default function RelaysView() {
 
   return (
     <Flex direction="column" gap="2" p="2">
-      <Flex alignItems="center" gap="2">
+      <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
         <Switch isChecked={showAll.isOpen} onChange={showAll.onToggle}>
           Show All

@@ -105,7 +105,7 @@ function RelayPage({ relay }: { relay: string }) {
         <RelayJoinAction url={relay} />
       </Flex>
       <RelayMetadata url={relay} />
-      <Flex gap="2">
+      <Flex gap="2" wrap="wrap">
         {info?.supported_nips?.map((nip) => (
           <NipTag key={nip} nip={nip} />
         ))}

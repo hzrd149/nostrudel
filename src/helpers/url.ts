@@ -23,6 +23,10 @@ export function safeRelayUrl(relayUrl: string) {
   return null;
 }
 
+export function safeRelayUrls(urls: string[]): string[] {
+  return urls.map(safeRelayUrl).filter(Boolean) as string[];
+}
+
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
   const newUrl = new URL(url);
   replacementUrl = convertToUrl(replacementUrl);

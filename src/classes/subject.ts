@@ -8,7 +8,7 @@ interface ConnectableApi<T> {
   connect(connectable: Connectable<T>): this;
   disconnect(connectable: Connectable<T>): this;
 }
-type Connection<From, To = From, Prev = To> = (value: From, next: (value: To) => any, prevValue: Prev) => void;
+export type Connection<From, To = From, Prev = To> = (value: From, next: (value: To) => any, prevValue: Prev) => void;
 
 export class Subject<Value> implements Connectable<Value> {
   listeners: [ListenerFn<Value>, Object | undefined][] = [];
