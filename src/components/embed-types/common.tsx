@@ -3,28 +3,7 @@ import appSettings from "../../services/settings/app-settings";
 import { ImageGalleryLink } from "../image-gallery";
 import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
-
-const BlurredImage = (props: ImageProps) => {
-  const { isOpen, onOpen } = useDisclosure();
-  return (
-    <Box overflow="hidden">
-      <Image
-        onClick={
-          !isOpen
-            ? (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onOpen();
-              }
-            : undefined
-        }
-        cursor="pointer"
-        filter={isOpen ? "" : "blur(1.5rem)"}
-        {...props}
-      />
-    </Box>
-  );
-};
+import BlurredImage from "../blured-image";
 
 const EmbeddedImage = ({ src }: { src: string }) => {
   const trusted = useTrusted();

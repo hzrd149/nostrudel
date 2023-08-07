@@ -13,7 +13,17 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ConnectedRelays } from "../connected-relays";
-import { HomeIcon, LiveStreamIcon, LogoutIcon, ProfileIcon, RelayIcon, SearchIcon, SettingsIcon } from "../icons";
+import {
+  FileIcon,
+  HomeIcon,
+  LiveStreamIcon,
+  LogoutIcon,
+  MapIcon,
+  ProfileIcon,
+  RelayIcon,
+  SearchIcon,
+  SettingsIcon,
+} from "../icons";
 import { UserAvatar } from "../user-avatar";
 import { UserLink } from "../user-link";
 import AccountSwitcher from "./account-switcher";
@@ -56,6 +66,12 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
             </Button>
             <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
               Streams
+            </Button>
+            <Button onClick={() => navigate("/files")} leftIcon={<FileIcon />}>
+              Files
+            </Button>
+            <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />}>
+              Map
             </Button>
             <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
               Relays

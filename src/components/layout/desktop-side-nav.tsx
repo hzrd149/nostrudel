@@ -8,6 +8,7 @@ import {
   ChatIcon,
   EditIcon,
   FeedIcon,
+  FileIcon,
   LiveStreamIcon,
   LogoutIcon,
   MapIcon,
@@ -49,6 +50,9 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       </Button>
       <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
         Streams
+      </Button>
+      <Button onClick={() => navigate("/files")} leftIcon={<FileIcon />}>
+        Files
       </Button>
       <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />}>
         Map

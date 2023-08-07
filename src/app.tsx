@@ -42,6 +42,7 @@ const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 const MapView = React.lazy(() => import("./views/map"));
+const FilesView = React.lazy(() => import("./views/files"));
 
 const RootPage = () => {
   useSetColorMode();
@@ -106,6 +107,7 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "files", element: <FilesView /> },
       { path: "relays/reviews", element: <RelayReviewsView /> },
       { path: "relays", element: <RelaysView /> },
       { path: "r/:relay", element: <RelayView /> },
