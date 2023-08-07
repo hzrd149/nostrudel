@@ -1,5 +1,6 @@
 import Subject from "./subject";
 
+/** @deprecated */
 export class PubkeySubjectCache<T> {
   subjects = new Map<string, Subject<T | null>>();
   relays = new Map<string, Set<string>>();

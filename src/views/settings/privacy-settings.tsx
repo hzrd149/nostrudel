@@ -13,8 +13,8 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
-import { AppSettings } from "../../services/user-app-settings";
 import { safeUrl } from "../../helpers/parse";
+import { AppSettings } from "../../services/settings/migrations";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;

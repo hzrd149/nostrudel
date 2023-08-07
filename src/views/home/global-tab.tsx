@@ -1,64 +1,65 @@
-import { Button, Flex, FormControl, FormLabel, Select, Spinner, Switch, useDisclosure } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
-import { Note } from "../../components/note";
-import { unique } from "../../helpers/array";
-import { isReply } from "../../helpers/nostr-event";
+import { useCallback } from "react";
+import { Flex, FormControl, FormLabel, Switch, useDisclosure } from "@chakra-ui/react";
+import { isReply } from "../../helpers/nostr/event";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { NostrEvent } from "../../types/nostr-event";
+import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
+import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
+import useRelaysChanged from "../../hooks/use-relays-changed";
+import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
+import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
+import { useSearchParams } from "react-router-dom";
+import { safeUrl } from "../../helpers/parse";
 
-export default function GlobalTab() {
-  useAppTitle("global");
-  const defaultRelays = useReadRelayUrls();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedRelay = searchParams.get("relay") ?? "";
-  const setSelectedRelay = (url: string) => {
-    if (url) {
-      setSearchParams({ relay: url });
-    } else setSearchParams({});
-  };
-
-  const availableRelays = unique([...defaultRelays, selectedRelay]).filter(Boolean);
-
+function GlobalPage() {
+  const readRelays = useRelaySelectionRelays();
   const { isOpen: showReplies, onToggle } = useDisclosure();
-  const { events, loading, loadMore, loader } = useTimelineLoader(
-    `global`,
-    selectedRelay ? [selectedRelay] : [],
-    { kinds: [1] },
-    { pageSize: 60*10 }
+
+  useAppTitle("global");
+
+  const timelineEventFilter = useTimelinePageEventFilter();
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (!showReplies && isReply(event)) return false;
+      return timelineEventFilter(event);
+    },
+    [showReplies, timelineEventFilter]
+  );
+  const timeline = useTimelineLoader(`global`, readRelays, { kinds: [1] }, { eventFilter });
+  useRelaysChanged(readRelays, () => timeline.reset());
+
+  const header = (
+    <Flex gap="2" pr="2">
+      <RelaySelectionButton />
+      <FormControl display="flex" alignItems="center">
+        <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
+        <FormLabel htmlFor="show-replies" mb="0">
+          Show Replies
+        </FormLabel>
+      </FormControl>
+      <TimelineViewTypeButtons />
+    </Flex>
   );
 
-  const timeline = showReplies ? events : events.filter((e) => !isReply(e));
+  return <TimelinePage timeline={timeline} header={header} />;
+}
+
+export default function GlobalTab() {
+  const [params] = useSearchParams();
+
+  // wrap the global page with another relay selection so it dose not effect the rest of the app
+  let relays = ["wss://welcome.nostr.wine"];
+
+  const setRelay = params.get("relay");
+  if (setRelay) {
+    const url = safeUrl(setRelay);
+    relays = [setRelay];
+  }
 
   return (
-    <Flex direction="column" gap="2">
-      <Flex gap="2">
-        <Select
-          placeholder="Select Relay"
-          maxWidth="250"
-          value={selectedRelay}
-          onChange={(e) => {
-            setSelectedRelay(e.target.value);
-            loader.forgetEvents();
-          }}
-        >
-          {availableRelays.map((url) => (
-            <option key={url} value={url}>
-              {url}
-            </option>
-          ))}
-        </Select>
-        <FormControl display="flex" alignItems="center">
-          <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
-          <FormLabel htmlFor="show-replies" mb="0">
-            Show Replies
-          </FormLabel>
-        </FormControl>
-      </Flex>
-      {timeline.map((event) => (
-        <Note key={event.id} event={event} maxHeight={600} />
-      ))}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
-    </Flex>
+    <RelaySelectionProvider overrideDefault={relays}>
+      <GlobalPage />
+    </RelaySelectionProvider>
   );
 }

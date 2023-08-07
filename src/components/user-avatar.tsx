@@ -2,9 +2,9 @@ import React, { useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
-import { getIdenticon } from "../services/identicon";
+import { getIdenticon } from "../helpers/identicon";
 import { safeUrl } from "../helpers/parse";
-import appSettings from "../services/app-settings";
+import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
 
 export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {

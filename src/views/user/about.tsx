@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Flex,
   Heading,
   IconButton,
@@ -26,11 +27,10 @@ import { useAdditionalRelayContext } from "../../providers/additional-relay-cont
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon } from "../../components/icons";
+import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, LightningIcon } from "../../components/icons";
 import { normalizeToBech32 } from "../../helpers/nip19";
 import { Bech32Prefix } from "../../helpers/nip19";
-import { truncatedId } from "../../helpers/nostr-event";
+import { truncatedId } from "../../helpers/nostr/event";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
@@ -38,12 +38,12 @@ import { useUserContacts } from "../../hooks/use-user-contacts";
 import userTrustedStatsService from "../../services/user-trusted-stats";
 import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { UserTipButton } from "../../components/user-tip-button";
 import { UserProfileMenu } from "./components/user-profile-menu";
+import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -55,7 +55,6 @@ function buildDescriptionContent(description: string) {
 }
 
 export default function UserAboutTab() {
-  const isMobile = useIsMobile();
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
@@ -63,11 +62,9 @@ export default function UserAboutTab() {
   const metadata = useUserMetadata(pubkey, contextRelays);
   const contacts = useUserContacts(pubkey, contextRelays);
   const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
+  const nprofile = useSharableProfileId(pubkey);
 
   const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);
-
-  const account = useCurrentAccount();
-  const isSelf = pubkey === account?.pubkey;
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
 
@@ -99,14 +96,14 @@ export default function UserAboutTab() {
           left="0"
           p="2"
           position="absolute"
-          direction={isMobile ? "column" : "row"}
+          direction={["column", "row"]}
           bg="linear-gradient(180deg, rgb(255 255 255 / 0%) 0%, var(--chakra-colors-chakra-body-bg) 100%)"
           gap="2"
-          alignItems={isMobile ? "flex-start" : "flex-end"}
+          alignItems={["flex-start", "flex-end"]}
         >
-          <UserAvatar pubkey={pubkey} size={isMobile ? "lg" : "xl"} noProxy />
-          <Box>
-            <Heading>{getUserDisplayName(metadata, pubkey)}</Heading>
+          <UserAvatar pubkey={pubkey} size={["lg", "lg", "xl"]} noProxy />
+          <Box overflow="hidden">
+            <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
             <UserDnsIdentityIcon pubkey={pubkey} />
           </Box>
 
@@ -135,20 +132,18 @@ export default function UserAboutTab() {
         />
       </Box>
       {aboutContent && (
-        <Text whiteSpace="pre-wrap" px="2">
-          {aboutContent.map((part, i) =>
-            typeof part === "string" ? (
-              <Text as="span" key={"part-" + i}>
-                {part}
-              </Text>
-            ) : (
-              React.cloneElement(part, { key: "part-" + i })
-            )
-          )}
-        </Text>
+        <Box whiteSpace="pre-wrap" px="2">
+          {aboutContent}
+        </Box>
       )}
 
       <Flex gap="2" px="2" direction="column">
+        {metadata?.lud16 && (
+          <Flex gap="2">
+            <LightningIcon />
+            <Text>{metadata.lud16}</Text>
+          </Flex>
+        )}
         {metadata?.nip05 && (
           <Flex gap="2">
             <AtIcon />
@@ -173,7 +168,7 @@ export default function UserAboutTab() {
         )}
       </Flex>
 
-      <Accordion allowToggle allowMultiple>
+      <Accordion allowMultiple>
         <AccordionItem>
           <h2>
             <AccordionButton>
@@ -277,6 +272,26 @@ export default function UserAboutTab() {
           </AccordionItem>
         )}
       </Accordion>
+      <Flex gap="2">
+        <Button
+          as={Link}
+          href={`https://nosta.me/${nprofile}`}
+          leftIcon={<Image src="https://nosta.me/images/favicon-32x32.png" w="1.2em" />}
+          rightIcon={<ExternalLinkIcon />}
+          isExternal
+        >
+          Nosta.me page
+        </Button>
+        <Button
+          as={Link}
+          href={`https://slidestr.net/${npub}`}
+          leftIcon={<Image src="https://slidestr.net/slidestr.svg" w="1.2em" />}
+          rightIcon={<ExternalLinkIcon />}
+          isExternal
+        >
+          Slidestr Slideshow
+        </Button>
+      </Flex>
     </Flex>
   );
 }

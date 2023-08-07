@@ -1,21 +1,29 @@
-import { Button, Card, CardBody, CardHeader, Flex, Spinner, Text } from "@chakra-ui/react";
+import { memo, useCallback, useMemo, useRef } from "react";
+import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { memo } from "react";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { useTimelineLoader } from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import RequireCurrentAccount from "../../providers/require-current-account";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import useSubject from "../../hooks/use-subject";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { useNotificationTimeline } from "../../providers/notification-timeline";
+import { Kind, getEventHash } from "nostr-tools";
+import { parseZapEvent } from "../../helpers/zaps";
+import { readablizeSats } from "../../helpers/bolt11";
+import { getReferences } from "../../helpers/nostr/event";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">
     <CardHeader>
-      <Flex gap="4" alignItems="center">
-        <UserAvatar pubkey={event.pubkey} size="sm" />
+      <Flex gap="2" alignItems="center">
+        <UserAvatar pubkey={event.pubkey} size="xs" />
         <UserLink pubkey={event.pubkey} />
+        <Text>replied to your post</Text>
         <NoteLink noteId={event.id} color="current" ml="auto">
           {dayjs.unix(event.created_at).fromNow()}
         </NoteLink>
@@ -27,37 +35,98 @@ const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   </Card>
 );
 
+const ReactionNotification = ({ event }: { event: NostrEvent }) => {
+  const refs = getReferences(event);
+
+  return (
+    <Flex gap="2" alignItems="center" px="2">
+      <UserAvatar pubkey={event.pubkey} size="xs" />
+      <UserLink pubkey={event.pubkey} />
+      <Text>reacted {event.content} to your post</Text>
+      <NoteLink noteId={refs.replyId || event.id} color="current" ml="auto">
+        {dayjs.unix(event.created_at).fromNow()}
+      </NoteLink>
+    </Flex>
+  );
+};
+
+const ZapNotification = ({ event }: { event: NostrEvent }) => {
+  const zap = useMemo(() => {
+    try {
+      return parseZapEvent(event);
+    } catch (e) {}
+  }, [event]);
+
+  if (!zap || !zap.payment.amount) return null;
+
+  return (
+    <Flex
+      direction="row"
+      borderRadius="md"
+      borderColor="yellow.400"
+      borderWidth="1px"
+      p="2"
+      gap="2"
+      alignItems="center"
+    >
+      <UserAvatar pubkey={zap.request.pubkey} size="xs" />
+      <UserLink pubkey={zap.request.pubkey} />
+      <Text>
+        zapped {readablizeSats(zap.payment.amount / 1000)} sats
+        {zap.eventId && (
+          <span>
+            {" "}
+            on note: <NoteLink noteId={zap.eventId} />
+          </span>
+        )}
+      </Text>
+      <Text color="current" ml="auto">
+        {dayjs.unix(zap.request.created_at).fromNow()}
+      </Text>
+    </Flex>
+  );
+};
+
 const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
-  if (event.kind === 1) {
-    return <Kind1Notification event={event} />;
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
+
+  let content = <Text>Unknown event type {event.kind}</Text>;
+  switch (event.kind) {
+    case Kind.Text:
+      content = <Kind1Notification event={event} />;
+      break;
+    case Kind.Reaction:
+      content = <ReactionNotification event={event} />;
+      break;
+    case Kind.Zap:
+      content = <ZapNotification event={event} />;
+      break;
   }
-  return <>Unknown event type {event.kind}</>;
+
+  return <div ref={ref}>{content}</div>;
 });
 
 function NotificationsPage() {
-  const readRelays = useReadRelayUrls();
   const account = useCurrentAccount()!;
-  const { events, loading, loadMore } = useTimelineLoader(
-    "notifications",
-    readRelays,
-    {
-      "#p": [account.pubkey],
-      kinds: [1],
-    },
-    { pageSize: 60 * 60 * 24 }
-  );
 
-  const timeline = events
-    // ignore events made my the user
-    .filter((e) => e.pubkey !== account.pubkey);
+  const eventFilter = useCallback((event: NostrEvent) => event.pubkey !== account.pubkey, [account]);
+  const timeline = useNotificationTimeline();
+
+  const events = useSubject(timeline?.timeline) ?? [];
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <Flex direction="column" overflowX="hidden" overflowY="auto" gap="2">
-      {timeline.map((event) => (
-        <NotificationItem key={event.id} event={event} />
-      ))}
-      {loading ? <Spinner ml="auto" mr="auto" mt="8" mb="8" /> : <Button onClick={() => loadMore()}>Load More</Button>}
-    </Flex>
+    <IntersectionObserverProvider callback={callback}>
+      <Flex direction="column" gap="2">
+        {events.map((event) => (
+          <NotificationItem key={event.id} event={event} />
+        ))}
+
+        <TimelineActionAndStatus timeline={timeline} />
+      </Flex>
+    </IntersectionObserverProvider>
   );
 }
 

@@ -21,7 +21,6 @@ import {
 import relayPoolService from "../services/relay-pool";
 import { useInterval } from "react-use";
 import { RelayStatus } from "./relay-status";
-import { useIsMobile } from "../hooks/use-is-mobile";
 import { RelayIcon } from "./icons";
 import { Relay } from "../classes/relay";
 import { RelayFavicon } from "./relay-favicon";
@@ -29,7 +28,6 @@ import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayScoreBreakdown } from "./relay-score-breakdown";
 
 export const ConnectedRelays = () => {
-  const isMobile = useIsMobile();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [relays, setRelays] = useState<Relay[]>(relayPoolService.getRelays());
   const sortedRelays = useMemo(() => relayScoreboardService.getRankedRelays(relays.map((r) => r.url)), [relays]);
@@ -43,7 +41,7 @@ export const ConnectedRelays = () => {
   return (
     <>
       <Button variant="link" onClick={onOpen} leftIcon={<RelayIcon />}>
-        {connected.length}/{relays.length} of relays connected
+        {connected.length} relays connected
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />

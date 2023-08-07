@@ -1,5 +1,7 @@
 import { AspectRatio, list } from "@chakra-ui/react";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
+import { renderOpenGraphUrl } from "./common";
+import { replaceDomain } from "../../helpers/url";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/youtube.js
 export const YOUTUBE_DOMAINS = [
@@ -21,6 +23,9 @@ export function renderYoutubeUrl(match: URL) {
 
   const { youtubeRedirect } = appSettings.value;
 
+  // render opengraph card for performance
+  // return renderOpenGraphUrl(youtubeRedirect ? replaceDomain(match, youtubeRedirect) : match);
+
   if (match.pathname.startsWith("/playlist")) {
     const listId = match.searchParams.get("list");
     if (!listId) throw new Error("missing list id");
@@ -34,8 +39,7 @@ export function renderYoutubeUrl(match: URL) {
           src={embedUrl.toString()}
           title="YouTube video player"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
           width="100%"
         ></iframe>
       </AspectRatio>
@@ -52,8 +56,7 @@ export function renderYoutubeUrl(match: URL) {
           src={embedUrl.toString()}
           title="YouTube video player"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           width="100%"
         ></iframe>
       </AspectRatio>

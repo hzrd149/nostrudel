@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
-import { buildRepost } from "../../../helpers/nostr-event";
+import { buildRepost } from "../../../helpers/nostr/event";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { nostrPostAction } from "../../../classes/nostr-post-action";
 import clientRelaysService from "../../../services/client-relays";
@@ -37,9 +37,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
       await nostrPostAction(clientRelaysService.getWriteUrls(), repost);
       onClose();
     } catch (e) {
-      if (e instanceof Error) {
-        toast({ status: "error", description: e.message });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
     setLoading(false);
   };

@@ -19,7 +19,6 @@ import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
 import signingService from "../../services/signing";
@@ -51,7 +50,6 @@ type MetadataFormProps = {
 
 const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
   const account = useCurrentAccount()!;
-  const isMobile = useIsMobile();
   const {
     register,
     reset,
@@ -68,7 +66,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
   }, [defaultValues]);
 
   return (
-    <Flex direction="column" pb="4" overflow="auto" px={isMobile ? "2" : 0}>
+    <Flex direction="column" pb="4" px={["2", 0]}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction="column" gap="2" pt="4">
           <Flex gap="2">
@@ -243,12 +241,7 @@ export const ProfileEditView = () => {
 
       await results.onComplete;
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   };
 

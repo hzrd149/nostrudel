@@ -14,8 +14,8 @@ import {
   Link,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { AppSettings } from "../../services/user-app-settings";
 import { safeUrl } from "../../helpers/parse";
+import { AppSettings } from "../../services/settings/migrations";
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();

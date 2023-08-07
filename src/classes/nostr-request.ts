@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
 import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
 import Subject from "./subject";
@@ -21,8 +21,8 @@ export class NostrRequest {
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
-  constructor(relayUrls: string[], timeout?: number) {
-    this.id = `request-${lastId++}`;
+  constructor(relayUrls: string[], timeout?: number, name?: string) {
+    this.id = name || `request-${lastId++}`;
     this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {
@@ -59,14 +59,16 @@ export class NostrRequest {
     }
   }
 
-  start(query: NostrQuery) {
+  start(filter: NostrRequestFilter) {
     if (this.state !== NostrRequest.IDLE) {
       throw new Error("cant restart a nostr request");
     }
 
     this.state = NostrRequest.RUNNING;
     for (const relay of this.relays) {
-      relay.send(["REQ", this.id, query]);
+      if (Array.isArray(filter)) {
+        relay.send(["REQ", this.id, ...filter]);
+      } else relay.send(["REQ", this.id, filter]);
     }
 
     setTimeout(() => this.complete(), this.timeout);

@@ -61,3 +61,19 @@ export interface SchemaV2 extends SchemaV1 {
     value: any;
   };
 }
+
+export interface SchemaV3 {
+  replaceableEvents: {
+    key: string;
+    value: {
+      addr: string;
+      created: number;
+      event: NostrEvent;
+    };
+  };
+  userFollows: SchemaV2["userFollows"];
+  dnsIdentifiers: SchemaV2["dnsIdentifiers"];
+  relayInfo: SchemaV2["relayInfo"];
+  relayScoreboardStats: SchemaV2["relayScoreboardStats"];
+  misc: SchemaV2["misc"];
+}

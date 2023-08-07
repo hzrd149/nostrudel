@@ -1,92 +1,251 @@
 import dayjs from "dayjs";
 import { utils } from "nostr-tools";
+import { Debugger } from "debug";
 import { NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
-import { PersistentSubject } from "./subject";
+import Subject, { PersistentSubject } from "./subject";
+import { logger } from "../helpers/debug";
+import EventStore from "./event-store";
 
-type Options = {
-  name?: string;
-  pageSize: number;
-  startLimit: number;
-};
-export type TimelineLoaderOptions = Partial<Options>;
+function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
+  if (Array.isArray(filter)) {
+    return filter.map((f) => ({ ...f, ...query }));
+  }
+  return { ...filter, ...query };
+}
 
-export class TimelineLoader {
-  relays: string[];
-  query: NostrQuery;
-  events = new PersistentSubject<NostrEvent[]>([]);
-  loading = new PersistentSubject(false);
-  page = new PersistentSubject(0);
+const BLOCK_SIZE = 20;
 
-  private seenEvents = new Set<string>();
-  private subscription: NostrMultiSubscription;
-  private opts: Options = { pageSize: 60*60, startLimit: 10 };
+type EventFilter = (event: NostrEvent) => boolean;
 
-  constructor(relays: string[], query: NostrQuery, opts?: TimelineLoaderOptions) {
-    this.relays = relays;
-    Object.assign(this.opts, opts);
-    this.query = { ...query, limit: this.opts.startLimit };
+class RelayTimelineLoader {
+  relay: string;
+  query: NostrRequestFilter;
+  blockSize = BLOCK_SIZE;
+  private name?: string;
+  private requestId = 0;
+  private log: Debugger;
 
-    this.subscription = new NostrMultiSubscription(relays, query, opts?.name);
+  loading = false;
+  events: EventStore;
+  /** set to true when the next block produces 0 events */
+  complete = false;
 
-    this.subscription.onEvent.subscribe(this.handleEvent, this);
+  onBlockFinish = new Subject<void>();
+
+  constructor(relay: string, query: NostrRequestFilter, name: string, log?: Debugger) {
+    this.relay = relay;
+    this.query = query;
+    this.name = name;
+
+    this.log = log || logger.extend(name);
+    this.events = new EventStore(relay);
   }
 
-  setQuery(query: NostrQuery) {
-    this.query = { ...query, limit: this.opts.startLimit };
-    this.subscription.setQuery(this.query);
-  }
+  loadNextBlock() {
+    this.loading = true;
+    let query: NostrRequestFilter = addToQuery(this.query, { limit: this.blockSize });
+    let oldestEvent = this.getLastEvent();
+    if (oldestEvent) {
+      query = addToQuery(query, { until: oldestEvent.created_at - 1 });
+    }
 
-  setRelays(relays: string[]) {
-    this.relays = relays;
-    this.subscription.setRelays(relays);
+    const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
+
+    let gotEvents = 0;
+    request.onEvent.subscribe((e) => {
+      // if(oldestEvent && e.created_at<oldestEvent.created_at){
+      //   this.log('Got event older than oldest')
+      // }
+      if (this.handleEvent(e)) {
+        gotEvents++;
+      }
+    });
+    request.onComplete.then(() => {
+      this.loading = false;
+      if (gotEvents === 0) this.complete = true;
+      this.log(`Got ${gotEvents} events`);
+      this.onBlockFinish.next();
+    });
+
+    request.start(query);
   }
 
   private handleEvent(event: NostrEvent) {
-    if (!this.seenEvents.has(event.id)) {
-      this.seenEvents.add(event.id);
-      this.events.next(utils.insertEventIntoDescendingList(Array.from(this.events.value), event));
-      if (this.loading.value) this.loading.next(false);
+    return this.events.addEvent(event);
+  }
+
+  getLastEvent(nth = 0, filter?: EventFilter) {
+    return this.events.getLastEvent(nth, filter);
+  }
+}
+
+export class TimelineLoader {
+  cursor = dayjs().unix();
+  query?: NostrRequestFilter;
+  relays: string[] = [];
+
+  events: EventStore;
+  timeline = new PersistentSubject<NostrEvent[]>([]);
+  loading = new PersistentSubject(false);
+  complete = new PersistentSubject(false);
+
+  loadNextBlockBuffer = 2;
+  eventFilter?: (event: NostrEvent) => boolean;
+
+  private name: string;
+  private log: Debugger;
+  private subscription: NostrMultiSubscription;
+
+  private relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
+
+  constructor(name: string) {
+    this.name = name;
+    this.log = logger.extend("TimelineLoader:" + name);
+    this.events = new EventStore(name);
+
+    this.subscription = new NostrMultiSubscription([], undefined, name);
+    this.subscription.onEvent.subscribe(this.handleEvent, this);
+
+    // update the timeline when there are new events
+    this.events.onEvent.subscribe(this.updateTimeline, this);
+    this.events.onClear.subscribe(this.updateTimeline, this);
+  }
+
+  private updateTimeline() {
+    if (this.eventFilter) {
+      this.timeline.next(this.events.getSortedEvents().filter(this.eventFilter));
+    } else this.timeline.next(this.events.getSortedEvents());
+  }
+  private handleEvent(event: NostrEvent) {
+    this.events.addEvent(event);
+  }
+
+  private createLoaders() {
+    if (!this.query) return;
+
+    for (const relay of this.relays) {
+      if (!this.relayTimelineLoaders.has(relay)) {
+        const loader = new RelayTimelineLoader(relay, this.query, this.name, this.log.extend(relay));
+        this.relayTimelineLoaders.set(relay, loader);
+        this.events.connect(loader.events);
+        loader.onBlockFinish.subscribe(this.updateLoading, this);
+        loader.onBlockFinish.subscribe(this.updateComplete, this);
+      }
+    }
+  }
+  private removeLoaders(filter?: (loader: RelayTimelineLoader) => boolean) {
+    for (const [relay, loader] of this.relayTimelineLoaders) {
+      if (!filter || filter(loader)) {
+        this.events.disconnect(loader.events);
+        loader.onBlockFinish.unsubscribe(this.updateLoading, this);
+        loader.onBlockFinish.unsubscribe(this.updateComplete, this);
+        this.relayTimelineLoaders.delete(relay);
+      }
     }
   }
 
-  private getPageDates(page: number) {
-    const start = this.events.value[0]?.created_at ?? dayjs().unix();
-    const until = start - page * this.opts.pageSize;
-    const since = until - this.opts.pageSize;
+  setRelays(relays: string[]) {
+    if (this.relays.sort().join("|") === relays.sort().join("|")) return;
 
-    return {
-      until,
-      since,
-    };
+    // remove loaders
+    this.removeLoaders((loader) => !relays.includes(loader.relay));
+
+    this.relays = relays;
+    this.createLoaders();
+
+    this.subscription.setRelays(relays);
+    this.updateComplete();
   }
+  setQuery(query: NostrRequestFilter) {
+    if (JSON.stringify(this.query) === JSON.stringify(query)) return;
 
-  loadMore() {
-    if (this.loading.value) return;
+    this.removeLoaders();
 
-    const query = { ...this.query, ...this.getPageDates(this.page.value) };
-    const request = new NostrRequest(this.relays);
-    request.onEvent.subscribe(this.handleEvent, this);
-    request.onComplete.then(() => {
-      this.loading.next(false);
-    });
-    request.start(query);
+    this.query = query;
+    this.events.clear();
+    this.timeline.next([]);
 
-    this.loading.next(true);
-    this.page.next(this.page.value + 1);
-  }
+    this.createLoaders();
+    this.updateComplete();
 
-  forgetEvents() {
-    this.events.next([]);
-    this.seenEvents.clear();
+    // update the subscription
     this.subscription.forgetEvents();
+    this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
+  }
+  setFilter(filter?: (event: NostrEvent) => boolean) {
+    this.eventFilter = filter;
+    this.updateTimeline();
+  }
+
+  setCursor(cursor: number) {
+    this.cursor = cursor;
+    this.loadNextBlocks();
+  }
+
+  loadNextBlocks() {
+    let triggeredLoad = false;
+    for (const [relay, loader] of this.relayTimelineLoaders) {
+      if (loader.complete || loader.loading) continue;
+      const event = loader.getLastEvent(this.loadNextBlockBuffer, this.eventFilter);
+      if (!event || event.created_at >= this.cursor) {
+        loader.loadNextBlock();
+        triggeredLoad = true;
+      }
+    }
+    if (triggeredLoad) this.updateLoading();
+  }
+  /** @deprecated */
+  loadMore() {
+    let triggeredLoad = false;
+    for (const [relay, loader] of this.relayTimelineLoaders) {
+      if (loader.complete || loader.loading) continue;
+      loader.loadNextBlock();
+      triggeredLoad = true;
+    }
+    if (triggeredLoad) this.updateLoading();
+  }
+
+  private updateLoading() {
+    for (const [relay, loader] of this.relayTimelineLoaders) {
+      if (loader.loading) {
+        if (!this.loading.value) {
+          this.loading.next(true);
+          return;
+        }
+      }
+    }
+    if (this.loading.value) this.loading.next(false);
+  }
+  private updateComplete() {
+    for (const [relay, loader] of this.relayTimelineLoaders) {
+      if (!loader.complete) {
+        this.complete.next(false);
+        return;
+      }
+    }
+    return this.complete.next(true);
   }
   open() {
     this.subscription.open();
   }
   close() {
     this.subscription.close();
+  }
+
+  reset() {
+    this.cursor = dayjs().unix();
+    this.relayTimelineLoaders.clear();
+    this.forgetEvents();
+  }
+
+  // TODO: this is only needed because the current logic dose not remove events when the relay they where fetched from is removed
+  /** @deprecated */
+  forgetEvents() {
+    this.events.clear();
+    this.timeline.next([]);
+    this.subscription.forgetEvents();
   }
 }

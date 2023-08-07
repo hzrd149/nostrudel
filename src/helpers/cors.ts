@@ -1,4 +1,4 @@
-import appSettings from "../services/app-settings";
+import appSettings from "../services/settings/app-settings";
 import { convertToUrl } from "./url";
 
 const corsFailedHosts = new Set();

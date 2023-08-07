@@ -10,13 +10,15 @@ import {
   FormHelperText,
   Input,
   Select,
+  Switch,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { LightningIcon } from "../../components/icons";
-import { AppSettings } from "../../services/user-app-settings";
 import { useFormContext } from "react-hook-form";
+import { AppSettings } from "../../services/settings/migrations";
 
 export default function LightningSettings() {
-  const { register } = useFormContext<AppSettings>();
+  const { register, formState } = useFormContext<AppSettings>();
 
   return (
     <AccordionItem>
@@ -31,44 +33,35 @@ export default function LightningSettings() {
       <AccordionPanel>
         <Flex direction="column" gap="4">
           <FormControl>
-            <FormLabel htmlFor="lightningPayMode" mb="0">
-              Payment mode
-            </FormLabel>
-            <Select id="lightningPayMode" {...register("lightningPayMode")}>
-              <option value="prompt">Prompt</option>
-              <option value="webln">WebLN</option>
-              <option value="external">External</option>
-            </Select>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="autoPayWithWebLN" mb="0">
+                Auto pay with WebLN
+              </FormLabel>
+              <Switch id="autoPayWithWebLN" {...register("autoPayWithWebLN")} />
+            </Flex>
+
             <FormHelperText>
-              <span>Prompt: Ask every time</span>
-              <br />
-              <span>WebLN: Use browser extension</span>
-              <br />
-              <span>External: Open an external app using "lightning:" link</span>
+              <span>Enabled: Attempt to automatically pay with WebLN if its available</span>
             </FormHelperText>
           </FormControl>
 
           <FormControl>
-            <FormLabel htmlFor="zap-amounts" mb="0">
+            <FormLabel htmlFor="customZapAmounts" mb="0">
               Zap Amounts
             </FormLabel>
             <Input
-              id="zap-amounts"
+              id="customZapAmounts"
               autoComplete="off"
-              {...register("zapAmounts", {
-                setValueAs: (value: number[] | string) => {
-                  if (Array.isArray(value)) {
-                    return Array.from(value).join(",");
-                  } else {
-                    return value
-                      .split(",")
-                      .map((v) => parseInt(v))
-                      .filter(Boolean)
-                      .sort((a, b) => a - b);
-                  }
+              {...register("customZapAmounts", {
+                validate: (v) => {
+                  if (!/^[\d,]*$/.test(v)) return "Must be a list of comma separated numbers";
+                  return true;
                 },
               })}
             />
+            {formState.errors.customZapAmounts && (
+              <FormErrorMessage>{formState.errors.customZapAmounts.message}</FormErrorMessage>
+            )}
             <FormHelperText>
               <span>Comma separated list of custom zap amounts</span>
             </FormHelperText>

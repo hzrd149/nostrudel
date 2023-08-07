@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
+import { nip19 } from "nostr-tools";
+
 import { NostrRequest } from "../classes/nostr-request";
 import { PersistentSubject } from "../classes/subject";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
-import { nip19 } from "nostr-tools";
 import { getEventRelays } from "./event-relays";
 import relayScoreboardService from "./relay-scoreboard";
 
@@ -107,7 +108,7 @@ class ListsService {
     return subject;
   }
 
-  loadListsForPubkey(pubkey: string, relays: string[], alwaysFetch = false) {
+  requestUserLists(pubkey: string, relays: string[], alwaysFetch = false) {
     if (!this.pubkeyLists.has(pubkey) || alwaysFetch) {
       return this.fetchListsForPubkey(pubkey, relays);
     }

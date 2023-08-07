@@ -37,12 +37,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (!current) throw new Error("No account");
         return await signingService.requestSignature(draft, current);
       } catch (e) {
-        if (e instanceof Error) {
-          toast({
-            status: "error",
-            description: e.message,
-          });
-        }
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
     [toast, current]
@@ -53,12 +48,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (!current) throw new Error("No account");
         return await signingService.requestDecrypt(data, pubkey, current);
       } catch (e) {
-        if (e instanceof Error) {
-          toast({
-            status: "error",
-            description: e.message,
-          });
-        }
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
     [toast, current]
@@ -69,12 +59,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (!current) throw new Error("No account");
         return await signingService.requestEncrypt(data, pubkey, current);
       } catch (e) {
-        if (e instanceof Error) {
-          toast({
-            status: "error",
-            description: e.message,
-          });
-        }
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
     [toast, current]

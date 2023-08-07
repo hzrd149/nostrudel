@@ -1,12 +1,21 @@
-import { Alert, AlertDescription, AlertIcon, AlertProps, AlertTitle, Button, Spacer, useModal } from "@chakra-ui/react";
-import { useIsMobile } from "../hooks/use-is-mobile";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertProps,
+  AlertTitle,
+  Button,
+  Spacer,
+  useBreakpointValue,
+  useModal,
+} from "@chakra-ui/react";
 import { useExpand } from "./note/expanded";
 
 export default function SensitiveContentWarning({ description }: { description: string } & AlertProps) {
-  const isMobile = useIsMobile();
   const expand = useExpand();
+  const smallScreen = useBreakpointValue({ base: true, md: false });
 
-  if (isMobile) {
+  if (smallScreen) {
     return (
       <Alert
         status="warning"

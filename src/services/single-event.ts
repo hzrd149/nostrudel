@@ -1,5 +1,6 @@
 import createDefer, { Deferred } from "../classes/deferred";
 import { NostrRequest } from "../classes/nostr-request";
+import { safeRelayUrl, safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 
 class SingleEventService {
@@ -8,10 +9,10 @@ class SingleEventService {
   pendingPromises = new Map<string, Deferred<NostrEvent>>();
 
   async requestEvent(id: string, relays: string[]) {
-    if (this.eventCache.has(id)) {
-      return this.eventCache.get(id);
-    }
-    this.pending.set(id, this.pending.get(id)?.concat(relays) ?? relays);
+    const event = this.eventCache.get(id);
+    if (event) return event;
+
+    this.pending.set(id, this.pending.get(id)?.concat(relays) ?? safeRelayUrls(relays));
     const deferred = createDefer<NostrEvent>();
     this.pendingPromises.set(id, deferred);
     return deferred;

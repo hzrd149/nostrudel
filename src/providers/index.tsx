@@ -4,19 +4,33 @@ import { SigningProvider } from "./signing-provider";
 import createTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
 import DeleteEventProvider from "./delete-event-provider";
-import { ErrorBoundary } from "../components/error-boundary";
+import { InvoiceModalProvider } from "./invoice-modal";
+import NotificationTimelineProvider from "./notification-timeline";
+import PostModalProvider from "./post-modal-provider";
 
-export const Providers = ({ children }: { children: React.ReactNode }) => {
+// Top level providers, should be render as close to the root as possible
+export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   const { primaryColor } = useAppSettings();
   const theme = useMemo(() => createTheme(primaryColor), [primaryColor]);
 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
-      <SigningProvider>
-        <ErrorBoundary>
-          <DeleteEventProvider>{children}</DeleteEventProvider>
-        </ErrorBoundary>
-      </SigningProvider>
+      {children}
     </ChakraProvider>
   );
 };
+
+/** Providers that provider functionality to pages (needs to be rendered under a router) */
+export function PageProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <SigningProvider>
+      <DeleteEventProvider>
+        <InvoiceModalProvider>
+          <NotificationTimelineProvider>
+            <PostModalProvider>{children}</PostModalProvider>
+          </NotificationTimelineProvider>
+        </InvoiceModalProvider>
+      </DeleteEventProvider>
+    </SigningProvider>
+  );
+}

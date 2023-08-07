@@ -94,7 +94,11 @@ class DirectMessagesService {
     const account = accountService.current.value;
     if (!account) return;
 
-    if (this.incomingSub.query?.since && dayjs.unix(this.incomingSub.query.since).isBefore(from)) {
+    if (
+      !Array.isArray(this.incomingSub.query) &&
+      this.incomingSub.query?.since &&
+      dayjs.unix(this.incomingSub.query.since).isBefore(from)
+    ) {
       // "since" is already set on the subscription and its older than "from"
       return;
     }

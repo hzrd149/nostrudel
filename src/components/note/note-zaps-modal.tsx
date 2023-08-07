@@ -17,11 +17,10 @@ import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import dayjs from "dayjs";
 import { DislikeIcon, LightningIcon, LikeIcon } from "../icons";
-import { parseZapNote } from "../../helpers/zaps";
+import { ParsedZap } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 
 function getReactionIcon(content: string) {
   switch (content) {
@@ -47,33 +46,23 @@ const ReactionEvent = React.memo(({ event }: { event: NostrEvent }) => (
   </Flex>
 ));
 
-const ZapEvent = React.memo(({ event }: { event: NostrEvent }) => {
-  const isMobile = useIsMobile();
-  try {
-    const { payment, request } = parseZapNote(event);
+const ZapEvent = React.memo(({ zap }: { zap: ParsedZap }) => {
+  if (!zap.payment.amount) return null;
 
-    if (!payment.amount) return null;
-
-    return (
-      <Box borderWidth="1px" borderRadius="lg" py="2" px={isMobile ? "2" : "4"}>
-        <Flex gap="2" justifyContent="space-between">
-          <Box>
-            <UserAvatarLink pubkey={request.pubkey} size="xs" mr="2" />
-            <UserLink pubkey={request.pubkey} />
-          </Box>
-          <Text fontWeight="bold">
-            {readablizeSats(payment.amount / 1000)} <LightningIcon color="yellow.500" />
-          </Text>
-          {/* <Text width="35%" textAlign="right">
-            {dayjs.unix(event.created_at).fromNow()}
-          </Text> */}
-        </Flex>
-        <Text>{request.content}</Text>
-      </Box>
-    );
-  } catch (e) {
-    return <Text>Invalid Zap</Text>;
-  }
+  return (
+    <Box borderWidth="1px" borderRadius="lg" py="2" px={["2", "4"]}>
+      <Flex gap="2" justifyContent="space-between">
+        <Box>
+          <UserAvatarLink pubkey={zap.request.pubkey} size="xs" mr="2" />
+          <UserLink pubkey={zap.request.pubkey} />
+        </Box>
+        <Text fontWeight="bold">
+          {readablizeSats(zap.payment.amount / 1000)} <LightningIcon color="yellow.500" />
+        </Text>
+      </Flex>
+      <Text>{zap.request.content}</Text>
+    </Box>
+  );
 });
 
 function sortEvents(a: NostrEvent, b: NostrEvent) {
@@ -88,14 +77,13 @@ export default function NoteReactionsModal({
   const zaps = useEventZaps(noteId, [], true) ?? [];
   const reactions = useEventReactions(noteId, [], true) ?? [];
   const [selected, setSelected] = useState("zaps");
-  const isMobile = useIsMobile();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalBody p={isMobile ? "2" : "4"}>
+        <ModalBody p={["2", "4"]}>
           <Flex direction="column" gap="2">
             <ButtonGroup>
               <Button size="sm" variant={selected === "zaps" ? "solid" : "outline"} onClick={() => setSelected("zaps")}>
@@ -111,7 +99,10 @@ export default function NoteReactionsModal({
             </ButtonGroup>
             {selected === "reactions" &&
               reactions.sort(sortEvents).map((event) => <ReactionEvent key={event.id} event={event} />)}
-            {selected === "zaps" && zaps.sort(sortEvents).map((event) => <ZapEvent key={event.id} event={event} />)}
+            {selected === "zaps" &&
+              zaps
+                .sort((a, b) => b.request.created_at - a.request.created_at)
+                .map((zap) => <ZapEvent key={zap.request.id} zap={zap} />)}
           </Flex>
         </ModalBody>
       </ModalContent>

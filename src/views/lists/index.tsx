@@ -4,7 +4,6 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useUserLists from "../../hooks/use-user-lists";
 import { Link as RouterLink } from "react-router-dom";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import RequireCurrentAccount from "../../providers/require-current-account";
 
 function UsersLists() {
@@ -26,7 +25,7 @@ function UsersLists() {
 
 function ListsPage() {
   return (
-    <Flex direction="column" p="2" overflowY="auto" overflowX="hidden" h="full" gap="2">
+    <Flex direction="column" p="2" gap="2">
       <Flex gap="2">
         <Spacer />
         <Button

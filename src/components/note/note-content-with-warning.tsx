@@ -5,7 +5,7 @@ import { useExpand } from "./expanded";
 import SensitiveContentWarning from "../sensitive-content-warning";
 import useAppSettings from "../../hooks/use-app-settings";
 
-export default function NoteContentWithWarning({ event, maxHeight }: { event: NostrEvent; maxHeight?: number }) {
+export default function NoteContentWithWarning({ event }: { event: NostrEvent }) {
   const expand = useExpand();
   const settings = useAppSettings();
 
@@ -15,6 +15,6 @@ export default function NoteContentWithWarning({ event, maxHeight }: { event: No
   return showContentWarning ? (
     <SensitiveContentWarning description={contentWarning} />
   ) : (
-    <NoteContents event={event} maxHeight={maxHeight} />
+    <NoteContents px="2" event={event} />
   );
 }

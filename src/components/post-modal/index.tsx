@@ -17,17 +17,16 @@ import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
 import { normalizeToHex } from "../../helpers/nip19";
-import { getReferences } from "../../helpers/nostr-event";
-import { mentionNpubOrNote } from "../../helpers/regexp";
+import { getReferences } from "../../helpers/nostr/event";
+import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { ImageIcon } from "../icons";
 import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
-import { TrustProvider } from "../note/trust";
+import { TrustProvider } from "../../providers/trust";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -60,6 +59,15 @@ function finalizeNote(draft: DraftNostrEvent) {
     updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
   }
 
+  // replace all uses of #hashtag
+  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "giu"));
+  for (const [_, space, hashtag] of matches) {
+    const lower = hashtag.toLocaleLowerCase();
+    if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {
+      updatedDraft.tags.push(["t", lower]);
+    }
+  }
+
   return updatedDraft;
 }
 
@@ -70,7 +78,6 @@ type PostModalProps = {
 };
 
 export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => {
-  const isMobile = useIsMobile();
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
@@ -96,12 +103,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
         setDraft((d) => ({ ...d, content: (d.content += imageUrl) }));
       }
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
     setUploading(false);
   };
@@ -189,7 +191,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding={isMobile ? "2" : "4"}>{renderContent()}</ModalBody>
+        <ModalBody padding={["2", "2", "4"]}>{renderContent()}</ModalBody>
       </ModalContent>
     </Modal>
   );

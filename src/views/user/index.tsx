@@ -43,9 +43,10 @@ import Header from "./components/header";
 const tabs = [
   { label: "About", path: "about" },
   { label: "Notes", path: "notes" },
-  { label: "Media", path: "media" },
+  { label: "Streams", path: "streams" },
   { label: "Zaps", path: "zaps" },
   { label: "Following", path: "following" },
+  { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },
@@ -100,16 +101,15 @@ const UserView = () => {
   return (
     <>
       <AdditionalRelayProvider relays={unique([...userTopRelays, ...pointerRelays])}>
-        <Flex direction="column" alignItems="stretch" gap="2" overflow="hidden" h="full">
+        <Flex direction="column" alignItems="stretch" gap="2">
           <Header pubkey={pubkey} showRelaySelectionModal={relayModal.onOpen} />
           <Tabs
             display="flex"
             flexDirection="column"
             flexGrow="1"
-            overflow="hidden"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(tabs[v].path)}
+            onChange={(v) => navigate(tabs[v].path, { replace: true })}
             colorScheme="brand"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
@@ -118,9 +118,9 @@ const UserView = () => {
               ))}
             </TabList>
 
-            <TabPanels overflow="hidden" h="full">
+            <TabPanels>
               {tabs.map(({ label }) => (
-                <TabPanel key={label} p={0} h="full" overflow="hidden">
+                <TabPanel key={label} p={0}>
                   <Suspense fallback={<Spinner />}>
                     <Outlet context={{ pubkey, setRelayCount }} />
                   </Suspense>

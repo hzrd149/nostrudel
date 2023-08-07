@@ -1,16 +1,14 @@
-import React, { Suspense, useEffect } from "react";
-import { createHashRouter, Outlet, RouterProvider } from "react-router-dom";
-import { Spinner, useColorMode } from "@chakra-ui/react";
+import React, { Suspense } from "react";
+import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
+import { Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
-import { Page } from "./components/page";
-import useSubject from "./hooks/use-subject";
+import Layout from "./components/layout";
 
 import HomeView from "./views/home";
 import SettingsView from "./views/settings";
 import LoginView from "./views/login";
 import ProfileView from "./views/profile";
 import FollowingTab from "./views/home/following-tab";
-import DiscoverTab from "./views/home/discover-tab";
 import GlobalTab from "./views/home/global-tab";
 import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
@@ -22,31 +20,45 @@ import NoteView from "./views/note";
 import LoginStartView from "./views/login/start";
 import LoginNpubView from "./views/login/npub";
 import NotificationsView from "./views/notifications";
-import RelaysView from "./views/relays";
 import LoginNip05View from "./views/login/nip05";
 import LoginNsecView from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
-import DirectMessagesView from "./views/dm";
-import DirectMessageChatView from "./views/dm/chat";
+import DirectMessagesView from "./views/messages";
+import DirectMessageChatView from "./views/messages/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
-import appSettings from "./services/app-settings";
-import UserMediaTab from "./views/user/media";
 import ToolsHomeView from "./views/tools";
 import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
+import UserLikesTab from "./views/user/likes";
+import useSetColorMode from "./hooks/use-set-color-mode";
+import UserStreamsTab from "./views/user/streams";
+import { PageProviders } from "./providers";
+import RelaysView from "./views/relays";
+import RelayView from "./views/relays/relay";
+import RelayReviewsView from "./views/relays/reviews";
 import ListsView from "./views/lists";
 import ListView from "./views/lists/list";
-// code split search view because QrScanner library is 400kB
-const SearchView = React.lazy(() => import("./views/search"));
 
-const RootPage = () => (
-  <Page>
-    <Suspense fallback={<Spinner />}>
-      <Outlet />
-    </Suspense>
-  </Page>
-);
+const StreamsView = React.lazy(() => import("./views/streams"));
+const StreamView = React.lazy(() => import("./views/streams/stream"));
+const SearchView = React.lazy(() => import("./views/search"));
+const MapView = React.lazy(() => import("./views/map"));
+
+const RootPage = () => {
+  useSetColorMode();
+
+  return (
+    <PageProviders>
+      <Layout>
+        <ScrollRestoration />
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </Layout>
+    </PageProviders>
+  );
+};
 
 const router = createHashRouter([
   {
@@ -60,6 +72,18 @@ const router = createHashRouter([
     ],
   },
   {
+    path: "streams/:naddr",
+    element: (
+      <PageProviders>
+        <StreamView />
+      </PageProviders>
+    ),
+  },
+  {
+    path: "map",
+    element: <MapView />,
+  },
+  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -70,8 +94,9 @@ const router = createHashRouter([
           { path: "", element: <UserAboutTab /> },
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
-          { path: "media", element: <UserMediaTab /> },
+          { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
+          { path: "likes", element: <UserLikesTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },
@@ -83,7 +108,9 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "relays/reviews", element: <RelayReviewsView /> },
       { path: "relays", element: <RelaysView /> },
+      { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
       { path: "dm", element: <DirectMessagesView /> },
@@ -103,6 +130,10 @@ const router = createHashRouter([
           { path: ":addr", element: <ListView /> },
         ],
       },
+      {
+        path: "streams",
+        element: <StreamsView />,
+      },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },
       {
@@ -111,7 +142,6 @@ const router = createHashRouter([
         children: [
           { path: "", element: <FollowingTab /> },
           { path: "following", element: <FollowingTab /> },
-          { path: "discover", element: <DiscoverTab /> },
           { path: "global", element: <GlobalTab /> },
         ],
       },
@@ -119,19 +149,10 @@ const router = createHashRouter([
   },
 ]);
 
-export const App = () => {
-  const { setColorMode } = useColorMode();
-  const { colorMode } = useSubject(appSettings);
-
-  useEffect(() => {
-    setColorMode(colorMode);
-  }, [colorMode]);
-
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<Spinner />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-};
+export const App = () => (
+  <ErrorBoundary>
+    <Suspense fallback={<Spinner />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  </ErrorBoundary>
+);

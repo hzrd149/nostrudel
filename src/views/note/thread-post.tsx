@@ -3,8 +3,7 @@ import { useState } from "react";
 import { ArrowDownSIcon, ArrowUpSIcon } from "../../components/icons";
 import { Note } from "../../components/note";
 import { countReplies, ThreadItem as ThreadItemData } from "../../helpers/thread";
-import { useIsMobile } from "../../hooks/use-is-mobile";
-import { TrustProvider } from "../../components/note/trust";
+import { TrustProvider } from "../../providers/trust";
 
 export type ThreadItemProps = {
   post: ThreadItemData;
@@ -13,7 +12,6 @@ export type ThreadItemProps = {
 };
 
 export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) => {
-  const isMobile = useIsMobile();
   const [showReplies, setShowReplies] = useState(initShowReplies ?? post.replies.length === 1);
   const toggle = () => setShowReplies((v) => !v);
 
@@ -31,7 +29,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
             {showReplies ? <ArrowDownSIcon /> : <ArrowUpSIcon />}
           </Button>
           {showReplies && (
-            <Flex direction="column" gap="2" pl={isMobile ? 2 : 4} borderLeftColor="gray.500" borderLeftWidth="1px">
+            <Flex direction="column" gap="2" pl={[2, 2, 4]} borderLeftColor="gray.500" borderLeftWidth="1px">
               {post.replies.map((child) => (
                 <ThreadPost key={child.event.id} post={child} focusId={focusId} />
               ))}

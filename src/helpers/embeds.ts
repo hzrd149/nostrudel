@@ -5,7 +5,16 @@ export type EmbedType = {
   regexp: RegExp;
   render: (match: RegExpMatchArray) => JSX.Element | string | null;
   name: string;
+  getLocation?: (match: RegExpMatchArray) => { start: number; end: number };
 };
+
+function defaultGetLocation(match: RegExpMatchArray) {
+  if (match.index === undefined) throw new Error("match dose not have index");
+  return {
+    start: match.index,
+    end: match.index + match[0].length,
+  };
+}
 
 export function embedJSX(content: EmbedableContent, embed: EmbedType): EmbedableContent {
   return content
@@ -14,17 +23,23 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
         const match = subContent.match(embed.regexp);
 
         if (match && match.index !== undefined) {
-          const before = subContent.slice(0, match.index);
-          const after = subContent.slice(match.index + match[0].length, subContent.length);
-          let embedRender = embed.render(match);
+          const { start, end } = (embed.getLocation || defaultGetLocation)(match);
+          const before = subContent.slice(0, start);
+          const after = subContent.slice(end, subContent.length);
+          let render = embed.render(match);
 
-          if (embedRender === null) return subContent;
+          if (render === null) return subContent;
 
-          if (typeof embedRender !== "string" && !embedRender.props.key) {
-            embedRender = cloneElement(embedRender, { key: embed.name + i });
+          if (typeof render !== "string" && !render.props.key) {
+            render = cloneElement(render, { key: match[0] });
           }
 
-          return [...embedJSX([before], embed), embedRender, ...embedJSX([after], embed)];
+          const newContent: EmbedableContent = [];
+          if (before.length > 0) newContent.push(...embedJSX([before], embed));
+          newContent.push(render);
+          if (after.length > 0) newContent.push(...embedJSX([after], embed));
+
+          return newContent;
         }
       }
 
@@ -38,7 +53,7 @@ export type LinkEmbedHandler = (link: URL) => JSX.Element | string | null;
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
-    regexp: /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,12})(\/[\+~%\/\.\w\-_]*)?([\?#][^\s]+)?/i,
+    regexp: /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,12})(\/[\+~%\/\.\w\-_@]*)?([\?#][^\s]+)?/i,
     render: (match) => {
       try {
         const url = new URL(match[0]);

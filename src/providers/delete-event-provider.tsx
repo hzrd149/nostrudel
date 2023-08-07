@@ -1,3 +1,4 @@
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -21,8 +22,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Event, Kind, nip19 } from "nostr-tools";
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
-import { buildDeleteEvent } from "../helpers/nostr-event";
+
 import { useCurrentAccount } from "../hooks/use-current-account";
 import signingService from "../services/signing";
 import { nostrPostAction } from "../classes/nostr-post-action";
@@ -32,6 +32,7 @@ import useEventRelays from "../hooks/use-event-relays";
 import { useWriteRelayUrls } from "../hooks/use-client-relays";
 import { RelayFavicon } from "../components/relay-favicon";
 import { ExternalLinkIcon } from "../components/icons";
+import { buildDeleteEvent } from "../helpers/nostr/event";
 
 type DeleteEventContextType = {
   isLoading: boolean;

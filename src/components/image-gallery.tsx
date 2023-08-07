@@ -1,4 +1,3 @@
-import { DownloadIcon } from "@chakra-ui/icons";
 import {
   LinkProps,
   Link,
@@ -13,7 +12,7 @@ import {
   ModalFooter,
   Button,
 } from "@chakra-ui/react";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { PropsWithChildren, createContext, forwardRef, useContext, useState } from "react";
 
 const GalleryContext = createContext({
   isOpen: false,
@@ -23,7 +22,7 @@ export function useGalleryContext() {
   return useContext(GalleryContext);
 }
 
-export function ImageGalleryLink({ children, href, ...props }: Omit<LinkProps, "onClick">) {
+export const ImageGalleryLink = forwardRef(({ children, href, ...props }: Omit<LinkProps, "onClick">, ref) => {
   const { openImage } = useGalleryContext();
 
   return (
@@ -36,11 +35,12 @@ export function ImageGalleryLink({ children, href, ...props }: Omit<LinkProps, "
           openImage(href);
         }
       }}
+      ref={ref}
     >
       {children}
     </Link>
   );
-}
+});
 
 export function ImageGalleryProvider({ children }: PropsWithChildren) {
   const { isOpen, onOpen, onClose } = useDisclosure();

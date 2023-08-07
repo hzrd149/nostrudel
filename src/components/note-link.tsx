@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { truncatedId } from "../helpers/nostr-event";
+import { truncatedId } from "../helpers/nostr/event";
 import { nip19 } from "nostr-tools";
 import { getSharableNoteId } from "../helpers/nip19";
 

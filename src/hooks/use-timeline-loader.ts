@@ -1,51 +1,44 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
-import { TimelineLoader, TimelineLoaderOptions } from "../classes/timeline-loader";
-import { NostrQuery } from "../types/nostr-query";
-import useSubject from "./use-subject";
+import { NostrRequestFilter } from "../types/nostr-query";
+import { NostrEvent } from "../types/nostr-event";
+import timelineCacheService from "../services/timeline-cache";
 
-type Options = TimelineLoaderOptions & {
+type Options = {
   enabled?: boolean;
+  eventFilter?: (event: NostrEvent) => boolean;
+  cursor?: number;
 };
 
-export function useTimelineLoader(key: string, relays: string[], query: NostrQuery, opts?: Options) {
-  if (opts && !opts.name) opts.name = key;
-
-  const ref = useRef<TimelineLoader | null>(null);
-  const loader = (ref.current = ref.current || new TimelineLoader(relays, query, opts));
+export default function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
+  const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {
-    loader.forgetEvents();
-    loader.setQuery(query);
-  }, [key]);
-
+    timeline.setQuery(query);
+  }, [timeline, JSON.stringify(query)]);
   useEffect(() => {
-    loader.setRelays(relays);
-  }, [relays.join("|")]);
+    timeline.setRelays(relays);
+  }, [timeline, relays.join("|")]);
+  useEffect(() => {
+    timeline.setFilter(opts?.eventFilter);
+  }, [timeline, opts?.eventFilter]);
+  useEffect(() => {
+    if (opts?.cursor !== undefined) {
+      timeline.setCursor(opts.cursor);
+    }
+  }, [timeline, opts?.cursor]);
 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {
     if (enabled) {
-      loader.setQuery(query);
-      loader.open();
-    } else loader.close();
-  }, [enabled]);
+      timeline.setQuery(query);
+      timeline.open();
+    } else timeline.close();
+  }, [timeline, enabled]);
 
   useUnmount(() => {
-    loader.close();
+    timeline.close();
   });
 
-  const events = useSubject(loader.events);
-  const loading = useSubject(loader.loading);
-
-  const loadMore = useCallback(() => {
-    if (enabled) loader.loadMore();
-  }, [enabled]);
-
-  return {
-    loader,
-    events,
-    loading,
-    loadMore,
-  };
+  return timeline;
 }

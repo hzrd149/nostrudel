@@ -3,6 +3,8 @@ export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : n
 export function normalizeRelayUrl(relayUrl: string) {
   const url = new URL(relayUrl);
 
+  if (relayUrl.includes(",ws")) throw new Error("Can not have multiple relays in one string");
+
   if (url.protocol !== "wss:" && url.protocol !== "ws:") throw new Error("Incorrect protocol");
 
   url.pathname = url.pathname.replace(/\/+/g, "/");
@@ -19,6 +21,10 @@ export function safeRelayUrl(relayUrl: string) {
     return normalizeRelayUrl(relayUrl);
   } catch (e) {}
   return null;
+}
+
+export function safeRelayUrls(urls: string[]): string[] {
+  return urls.map(safeRelayUrl).filter(Boolean) as string[];
 }
 
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {

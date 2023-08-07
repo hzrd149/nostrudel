@@ -11,8 +11,10 @@ import {
   AccordionIcon,
   FormHelperText,
   Input,
+  Stack,
+  Select,
 } from "@chakra-ui/react";
-import { AppSettings } from "../../services/user-app-settings";
+import { AppSettings } from "../../services/settings/migrations";
 
 export default function DisplaySettings() {
   const { register } = useFormContext<AppSettings>();
@@ -30,15 +32,14 @@ export default function DisplaySettings() {
       <AccordionPanel>
         <Flex direction="column" gap="4">
           <FormControl>
-            <Flex alignItems="center">
-              <FormLabel htmlFor="colorMode" mb="0">
-                Use dark theme
-              </FormLabel>
-              <Switch id="colorMode" {...register("colorMode")} />
-            </Flex>
-            <FormHelperText>
-              <span>Enables hacker mode</span>
-            </FormHelperText>
+            <FormLabel htmlFor="colorMode" mb="0">
+              Color Mode
+            </FormLabel>
+            <Select id="colorMode" {...register("colorMode")}>
+              <option value="system">System Default</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </Select>
           </FormControl>
           <FormControl>
             <Flex alignItems="center">

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import dayjs from "dayjs";
 import {
   Box,
@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardProps,
   Flex,
-  Heading,
   IconButton,
   Link,
 } from "@chakra-ui/react";
@@ -17,32 +16,34 @@ import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 
 import { NoteMenu } from "./note-menu";
-import { NoteRelays } from "./note-relays";
-import { useIsMobile } from "../../hooks/use-is-mobile";
+import { EventRelays } from "./note-relays";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import ReactionButton from "./buttons/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
-import appSettings from "../../services/app-settings";
+import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { ReplyButton } from "./buttons/reply-button";
 import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { ExternalLinkIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
-import { TrustProvider } from "./trust";
+import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
+import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 
 export type NoteProps = {
   event: NostrEvent;
-  maxHeight?: number;
   variant?: CardProps["variant"];
 };
-export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteProps) => {
-  const isMobile = useIsMobile();
+export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
+
+  // if there is a parent intersection observer, register this card
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
 
   // find mostr external link
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr"), [event]);
@@ -50,14 +51,11 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
-        <Card variant={variant}>
+        <Card variant={variant} ref={ref} data-event-id={event.id}>
           <CardHeader padding="2">
-            <Flex flex="1" gap="2" alignItems="center" wrap="wrap">
-              <UserAvatarLink pubkey={event.pubkey} size={isMobile ? "xs" : "sm"} />
-
-              <Heading size="sm" display="inline">
-                <UserLink pubkey={event.pubkey} />
-              </Heading>
+            <Flex flex="1" gap="2" alignItems="center">
+              <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
+              <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
               <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
@@ -67,7 +65,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
             </Flex>
           </CardHeader>
           <CardBody p="0">
-            <NoteContentWithWarning event={event} maxHeight={maxHeight} />
+            <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2">
             <ButtonGroup size="sm" variant="link">
@@ -89,7 +87,7 @@ export const Note = React.memo(({ event, maxHeight, variant = "outline" }: NoteP
                 target="_blank"
               />
             )}
-            <NoteRelays event={event} />
+            <EventRelays event={event} />
             <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
           </CardFooter>
         </Card>

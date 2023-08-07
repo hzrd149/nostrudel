@@ -1,18 +1,18 @@
 import { memo } from "react";
-import { IconButtonProps } from "@chakra-ui/react";
 import { getEventRelays } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { RelayIconStack } from "../relay-icon-stack";
-import { useIsMobile } from "../../hooks/use-is-mobile";
+import { getEventUID } from "../../helpers/nostr/event";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 export type NoteRelaysProps = {
   event: NostrEvent;
 };
 
-export const NoteRelays = memo(({ event }: NoteRelaysProps) => {
-  const isMobile = useIsMobile();
-  const eventRelays = useSubject(getEventRelays(event.id));
+export const EventRelays = memo(({ event }: NoteRelaysProps) => {
+  const maxRelays = useBreakpointValue({ base: 3, md: undefined });
+  const eventRelays = useSubject(getEventRelays(getEventUID(event)));
 
-  return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={isMobile ? 4 : undefined} />;
+  return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={maxRelays} />;
 });

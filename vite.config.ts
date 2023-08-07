@@ -4,6 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: process.env.VITE_BASE ?? "/",
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
   },
@@ -15,7 +16,7 @@ export default defineConfig({
         name: "noStrudel",
         short_name: "noStrudel",
         description: "A simple PWA nostr client",
-        orientation: "portrait",
+        orientation: "any",
         theme_color: "#8DB600",
         categories: ["nostr"],
         icons: [

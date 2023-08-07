@@ -1,5 +1,5 @@
+import React, { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
-import React, { useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "../components/error-boundary";
 import { PostModal } from "../components/post-modal";
 import { DraftNostrEvent } from "../types/nostr-event";
@@ -12,7 +12,7 @@ export const PostModalContext = React.createContext<PostModalContextType>({
   openModal: () => {},
 });
 
-export const PostModalProvider = ({ children }: { children: React.ReactNode }) => {
+export default function PostModalProvider({ children }: PropsWithChildren) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [draft, setDraft] = useState<Partial<DraftNostrEvent> | undefined>(undefined);
   const openModal = useCallback(
@@ -32,4 +32,4 @@ export const PostModalProvider = ({ children }: { children: React.ReactNode }) =
       </ErrorBoundary>
     </PostModalContext.Provider>
   );
-};
+}

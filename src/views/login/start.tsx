@@ -86,7 +86,7 @@ export default function LoginStartView() {
           </Heading>
           <Flex gap="2" direction="column" minW={300}>
             {accounts.map((account) => (
-              <AccountCard key={account.pubkey} pubkey={account.pubkey} />
+              <AccountCard key={account.pubkey} account={account} />
             ))}
           </Flex>
         </>

@@ -1,5 +1,154 @@
 # nostrudel
 
+## 0.23.0
+
+### Minor Changes
+
+- e24e55c: Show relay reviews under user relays tab
+- fa30250: Add relay view
+- e24e55c: Add relay reviews page
+- d984577: Show relay recommendations in timeline
+- 33da3e2: Rebuild relay view and show relay reviews
+- 615e19b: Hide muted users in stream chat
+
+### Patch Changes
+
+- cb780e1: Cleanup responsive breakpoints
+
+## 0.22.0
+
+### Minor Changes
+
+- c7d9a04: Rebuild search view to use NIP-50
+- 69bea82: Add support for playing back stream recordings
+
+### Patch Changes
+
+- 69bea82: Correctly handle replaceable events in timeline loader
+
+## 0.21.0
+
+### Minor Changes
+
+- 980c68a: Show lightning address on about page
+- 68001bb: Add people list context and selector
+- 640edef: Use timeline loader for followers view
+- 5c061ca: Add expiration to cached metadata events
+- 5c061ca: Rebuild underlying event requester classes
+
+## 0.20.1
+
+### Patch Changes
+
+- 85dd32a: Add logging to app setting services
+- 85dd32a: Fix Color Mode setting
+
+## 0.20.0
+
+### Minor Changes
+
+- 52d567c: Cleanup embed content (hopefully performance improvement)
+- 7cc9c9a: cache url open graph data
+- 52d567c: Remove twitter tweet embeds
+- 1afbe85: Add docker image
+
+### Patch Changes
+
+- b8a3fd1: small fix for hashtags
+- 7cc9c9a: Performance improvements
+
+## 0.19.1
+
+### Patch Changes
+
+- af5ed2f: Fix broken post button
+
+## 0.19.0
+
+### Minor Changes
+
+- f786056: Replace nostrchat clink with blowater
+- 0074c9e: Remove scroll-boxes and return to natural page scrolling
+
+## 0.18.0
+
+### Minor Changes
+
+- d46327e: Support hashtags in new post modal
+
+### Patch Changes
+
+- d46327e: Fix bug with non-english hashtags not showing
+
+## 0.17.2
+
+### Patch Changes
+
+- b32b6be: Image gallery: Only show open button on over
+
+## 0.17.1
+
+### Patch Changes
+
+- 5d4a680: Fix stream view crashing when failing to parse zap request
+- dd4cb0b: Fix npub in url getting replaced in post modal
+
+## 0.17.0
+
+### Minor Changes
+
+- d4a8110: Standardize timeline rendering between views
+- facb287: Add more prominent new post button
+- bdc1c98: Rebuild direct message chat view using timeline loader
+
+### Patch Changes
+
+- d4a8110: Fix performance bug with large timelines
+- bdc1c98: Don't show multiple images on open-graph link card
+
+## 0.16.0
+
+### Minor Changes
+
+- e4b40dd: Blur images in stream chat
+- 33acce5: UX improvements to zap modal
+- 5a537ab: Add toggle chat button to mobile stream view
+- 086279e: Add user likes tab under profile view
+
+### Patch Changes
+
+- 33acce5: Fixed bug with stream loading wrong chat
+- 871d699: Fix blured images opening when clicked
+
+## 0.15.0
+
+### Minor Changes
+
+- 0c92da8: Add views for watching streams
+- 7a339ae: cache timelines
+
+### Patch Changes
+
+- 593ad6b: show type of account on account picker
+- 038d342: truncate open graph card description
+
+## 0.14.0
+
+### Minor Changes
+
+- c036a9a: Fix all pop-in issues when loading timelines (rebuild timeline loader to use IntersectionObserver to correctly set cursor)
+- b23fe91: Rebuild timeline loader class
+
+### Patch Changes
+
+- b23fe91: Remove broken discover tab
+
+## 0.13.1
+
+### Patch Changes
+
+- 4bdae99: Only fetch open graph metadata for html urls
+
 ## 0.13.0
 
 ### Minor Changes
