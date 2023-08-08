@@ -18,7 +18,7 @@ function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
       <Flex gap="2" alignItems="center">
         <RelayFavicon relay={url} size="xs" />
         <Heading size="md" isTruncated>
-          {url}
+          <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
         </Heading>
         <Spacer />
         <RelayDebugButton url={url} size="sm" />

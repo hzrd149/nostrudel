@@ -53,11 +53,11 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />}>
         Map
       </Button>
-      <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
-        Profile
-      </Button>
       <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
         Relays
+      </Button>
+      <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
+        Profile
       </Button>
       <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
         Settings

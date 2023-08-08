@@ -1,86 +1,39 @@
 import { useParams } from "react-router-dom";
-import { Box, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs, Tag, Tooltip } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Textarea,
+  useDisclosure,
+} from "@chakra-ui/react";
 
 import { safeRelayUrl } from "../../helpers/url";
 import { useRelayInfo } from "../../hooks/use-relay-info";
 import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "./components/relay-card";
 import useSubject from "../../hooks/use-subject";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import RelayReviewNote from "./components/relay-review-note";
-
-// copied from github
-const NIP_NAMES: Record<string, string> = {
-  "01": "Basic protocol",
-  "02": "Contact List and Petnames",
-  "03": "OpenTimestamps Attestations for Events",
-  "04": "Encrypted Direct Message",
-  "05": "Mapping Nostr keys to DNS-based internet identifiers",
-  "06": "Basic key derivation from mnemonic seed phrase",
-  "07": "window.nostr capability for web browsers",
-  "08": "Handling Mentions",
-  "09": "Event Deletion",
-  "10": "Conventions for clients' use of e and p tags in text events",
-  "11": "Relay Information Document",
-  "12": "Generic Tag Queries",
-  "13": "Proof of Work",
-  "14": "Subject tag in text events",
-  "15": "Nostr Marketplace",
-  "16": "Event Treatment",
-  "18": "Reposts",
-  "19": "bech32-encoded entities",
-  "20": "Command Results",
-  "21": "nostr: URI scheme",
-  "22": "Event created_at Limits",
-  "23": "Long-form Content",
-  "25": "Reactions",
-  "26": "Delegated Event Signing",
-  "27": "Text Note References",
-  "28": "Public Chat",
-  "30": "Custom Emoji",
-  "31": "Dealing with Unknown Events",
-  "32": "Labeling",
-  "33": "Parameterized Replaceable Events",
-  "36": "Sensitive Content",
-  "39": "External Identities in Profiles",
-  "40": "Expiration Timestamp",
-  "42": "Authentication of clients to relays",
-  "45": "Counting results",
-  "46": "Nostr Connect",
-  "47": "Wallet Connect",
-  "50": "Keywords filter",
-  "51": "Lists",
-  "52": "Calendar Events",
-  "53": "Live Activities",
-  "56": "Reporting",
-  "57": "Lightning Zaps",
-  "58": "Badges",
-  "65": "Relay List Metadata",
-  "78": "Application-specific data",
-  "89": "Recommended Application Handlers",
-  "94": "File Metadata",
-  "98": "HTTP Auth",
-  "99": "Classified Listings",
-};
-
-function NipTag({ nip }: { nip: number }) {
-  const nipStr = String(nip).padStart(2, "0");
-
-  return (
-    <Tooltip label={NIP_NAMES[nipStr]}>
-      <Tag as="a" target="_blank" href={`https://github.com/nostr-protocol/nips/blob/master/${nipStr}.md`}>
-        NIP-{nip}
-      </Tag>
-    </Tooltip>
-  );
-}
+import SupportedNIPs from "./components/supported-nips";
+import { useForm } from "react-hook-form";
+import StarRating from "../../components/star-rating";
+import { DraftNostrEvent } from "../../types/nostr-event";
+import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../helpers/nostr/reviews";
+import dayjs from "dayjs";
+import { useSigningContext } from "../../providers/signing-provider";
+import { nostrPostAction } from "../../classes/nostr-post-action";
 
 function RelayReviews({ relay }: { relay: string }) {
   const readRelays = useReadRelayUrls();
   const timeline = useTimelineLoader(`${relay}-reviews`, readRelays, {
     kinds: [1985],
     "#r": [relay],
-    "#l": ["review/relay"],
+    "#l": [RELAY_REVIEW_LABEL],
   });
 
   const events = useSubject(timeline.timeline);
@@ -94,22 +47,68 @@ function RelayReviews({ relay }: { relay: string }) {
   );
 }
 
-function RelayPage({ relay }: { relay: string }) {
-  const { info } = useRelayInfo(relay);
+function RelayReviewForm({ onClose, relay }: { onClose: () => void; relay: string }) {
+  const { requestSignature } = useSigningContext();
+  const writeRelays = useWriteRelayUrls();
+  const { register, getValues, watch, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      quality: 0.6,
+      content: "",
+    },
+  });
+
+  watch("quality");
+
+  const onSubmit = handleSubmit(async (values) => {
+    const draft: DraftNostrEvent = {
+      kind: REVIEW_KIND,
+      content: values.content,
+      tags: [
+        ["l", RELAY_REVIEW_LABEL, new URL(relay).host, JSON.stringify({ quality: values.quality })],
+        ["L", RELAY_REVIEW_LABEL_NAMESPACE],
+        ["r", relay],
+      ],
+      created_at: dayjs().unix(),
+    };
+
+    const signed = await requestSignature(draft);
+    if (!signed) return;
+    nostrPostAction(writeRelays, signed);
+    onClose();
+  });
 
   return (
-    <Flex direction="column" alignItems="stretch" gap="2" py="2">
+    <Flex as="form" direction="column" onSubmit={onSubmit} gap="2" mb="2">
+      <Flex gap="2">
+        <Heading size="md">Write review</Heading>
+        <StarRating quality={getValues().quality} fontSize="1.5rem" onChange={(q) => setValue("quality", q)} />
+      </Flex>
+      <Textarea {...register("content")} rows={5} placeholder="A short description of your experience with the relay" />
+      <Flex gap="2" ml="auto">
+        <Button onClick={onClose}>Cancel</Button>
+        <Button type="submit" colorScheme="brand">
+          Submit
+        </Button>
+      </Flex>
+    </Flex>
+  );
+}
+
+function RelayPage({ relay }: { relay: string }) {
+  const { info } = useRelayInfo(relay);
+  const showReviewForm = useDisclosure();
+
+  return (
+    <Flex direction="column" alignItems="stretch" gap="2" p="2">
       <Flex gap="2" alignItems="center">
-        <Heading>{relay}</Heading>
+        <Heading isTruncated size={{ base: "md", sm: "lg" }}>
+          {relay}
+        </Heading>
         <RelayDebugButton url={relay} ml="auto" />
         <RelayJoinAction url={relay} />
       </Flex>
       <RelayMetadata url={relay} />
-      <Flex gap="2" wrap="wrap">
-        {info?.supported_nips?.map((nip) => (
-          <NipTag key={nip} nip={nip} />
-        ))}
-      </Flex>
+      {info?.supported_nips && <SupportedNIPs nips={info?.supported_nips} />}
       <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="brand">
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>
@@ -118,6 +117,13 @@ function RelayPage({ relay }: { relay: string }) {
 
         <TabPanels>
           <TabPanel py="2" px="0">
+            {showReviewForm.isOpen ? (
+              <RelayReviewForm onClose={showReviewForm.onClose} relay={relay} />
+            ) : (
+              <Button colorScheme="brand" ml="aut" mb="2" onClick={showReviewForm.onOpen}>
+                Write review
+              </Button>
+            )}
             <RelayReviews relay={relay} />
           </TabPanel>
           <TabPanel py="2" px="0"></TabPanel>
