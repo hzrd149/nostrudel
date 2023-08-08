@@ -10,6 +10,7 @@ import TimelineActionAndStatus from "./timeline-action-and-status";
 import { useSearchParams } from "react-router-dom";
 import { NostrEvent } from "../../types/nostr-event";
 import { matchImageUrls } from "../../helpers/regexp";
+import TimelineHealth from "./timeline-health";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -24,7 +25,7 @@ export function useTimelinePageEventFilter() {
   );
 }
 
-export type TimelineViewType = "timeline" | "images";
+export type TimelineViewType = "timeline" | "images" | "health";
 
 export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -45,6 +46,9 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
             </SimpleGrid>
           </ImageGalleryProvider>
         );
+
+      case "health":
+        return <TimelineHealth timeline={timeline} />;
       default:
         return null;
     }
