@@ -1,8 +1,9 @@
+import { useMemo, useRef } from "react";
 import {
-  Button,
-  Flex,
+  Box,
   Table,
   TableContainer,
+  TableRowProps,
   Tbody,
   Td,
   Text,
@@ -11,18 +12,25 @@ import {
   Tooltip,
   Tr,
   useColorMode,
+  useToast,
 } from "@chakra-ui/react";
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import { getEventRelays } from "../../../services/event-relays";
+import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useMemo, useRef } from "react";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
 import dayjs from "dayjs";
+import { nostrPostAction } from "../../../classes/nostr-post-action";
+import relayPoolService from "../../../services/relay-pool";
 
-function EventRow({ event, relays }: { event: NostrEvent; relays: string[] }) {
+function EventRow({
+  event,
+  relays,
+  ...props
+}: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
+  const toast = useToast();
   const sub = useMemo(() => getEventRelays(event.id), [event.id]);
   const seenRelays = useSubject(sub);
 
@@ -33,8 +41,20 @@ function EventRow({ event, relays }: { event: NostrEvent; relays: string[] }) {
   const yes = colorMode === "light" ? "green.200" : "green.800";
   const no = colorMode === "light" ? "red.200" : "red.800";
 
+  const broadcast = (relay: string) => {
+    const { results } = nostrPostAction([relay], event, 5000);
+
+    results.subscribe((result) => {
+      if (result.status) {
+        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+      } else if (result.message) {
+        toast({ description: result.message, status: result.status ? "success" : "error" });
+      }
+    });
+  };
+
   return (
-    <Tr ref={ref}>
+    <Tr ref={ref} {...props}>
       <Td isTruncated p="2">
         {dayjs.unix(event.created_at).fromNow()}
       </Td>
@@ -47,7 +67,14 @@ function EventRow({ event, relays }: { event: NostrEvent; relays: string[] }) {
         </Text>
       </Td>
       {relays.map((relay) => (
-        <Td key={relay} backgroundColor={seenRelays.includes(relay) ? yes : no} title={relay} p="2">
+        <Td
+          key={relay}
+          title={relay}
+          p="2"
+          backgroundColor={seenRelays.includes(relay) ? yes : no}
+          onClick={() => !seenRelays.includes(relay) && broadcast(relay)}
+          cursor={seenRelays.includes(relay) ? undefined : "pointer"}
+        >
           <RelayFavicon relay={relay} size="2xs" />
         </Td>
       ))}
@@ -60,10 +87,6 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
 
   return (
     <>
-      <Flex gap="2">
-        {/* <Button>All Relays</Button> */}
-        {/* <Button>Repair feed</Button> */}
-      </Flex>
       <TableContainer>
         <Table size="sm">
           <Thead>
@@ -76,11 +99,13 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
               </Th>
               <Th p="p">Content</Th>
               {timeline.relays.map((relay) => (
-                <Tooltip label={relay}>
-                  <Th title={relay} w="0.1rem" p="2">
-                    <RelayFavicon relay={relay} size="2xs" />
-                  </Th>
-                </Tooltip>
+                <Th key={relay} title={relay} w="0.1rem" p="0">
+                  <Tooltip label={relay}>
+                    <Box p="2">
+                      <RelayFavicon relay={relay} size="2xs" />
+                    </Box>
+                  </Tooltip>
+                </Th>
               ))}
             </Tr>
           </Thead>
