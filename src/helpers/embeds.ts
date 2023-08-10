@@ -53,7 +53,7 @@ export type LinkEmbedHandler = (link: URL) => JSX.Element | string | null;
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
-    regexp: /https?:\/\/([\dA-z\.-]+\.[A-z\.]{2,12})(\/[\+~%\/\.\w\-_@]*)?([\?#][^\s]+)?/i,
+    regexp: /https?:\/\/([a-zA-Z0-9\.\-]+\.[a-zA-Z]+)([\p{Letter}\p{Number}&\.-\/\?=#\-@%\+]*)/iu,
     render: (match) => {
       try {
         const url = new URL(match[0]);
