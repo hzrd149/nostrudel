@@ -39,6 +39,7 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
+import { parseAddress } from "../../services/dns-identity";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -62,6 +63,7 @@ export default function UserAboutTab() {
   const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
+  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
 
   return (
     <Flex
@@ -125,10 +127,12 @@ export default function UserAboutTab() {
             <Text>{metadata.lud16}</Text>
           </Flex>
         )}
-        {metadata?.nip05 && (
+        {parsedNip05 && (
           <Flex gap="2">
             <AtIcon />
-            <UserDnsIdentityIcon pubkey={pubkey} />
+            <Link href={`//${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`} isExternal>
+              <UserDnsIdentityIcon pubkey={pubkey} />
+            </Link>
           </Flex>
         )}
         {metadata?.website && (

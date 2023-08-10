@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import db from "./db";
 import { fetchWithCorsFallback } from "../helpers/cors";
 
-function parseAddress(address: string): { name?: string; domain?: string } {
+export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
   return { name: parts[0], domain: parts[1] };
 }
