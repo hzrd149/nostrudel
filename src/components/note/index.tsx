@@ -46,7 +46,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   useRegisterIntersectionEntity(ref, event.id);
 
   // find mostr external link
-  const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr"), [event]);
+  const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
 
   return (
     <TrustProvider event={event}>
@@ -81,7 +81,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
                 as={Link}
                 icon={<ExternalLinkIcon />}
                 aria-label="Open External"
-                href={externalLink[1]}
+                href={externalLink}
                 size="sm"
                 variant="link"
                 target="_blank"
