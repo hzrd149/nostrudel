@@ -6,6 +6,7 @@ import { getIdenticon } from "../helpers/identicon";
 import { safeUrl } from "../helpers/parse";
 import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
+import { getUserDisplayName } from "../helpers/user-metadata";
 
 export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -35,6 +36,14 @@ export const UserAvatar = React.memo(({ pubkey, noProxy, ...props }: UserAvatarP
     }
   }, [metadata?.picture, imageProxy]);
 
-  return <Avatar src={picture} icon={<UserIdenticon pubkey={pubkey} />} overflow="hidden" {...props} />;
+  return (
+    <Avatar
+      src={picture}
+      icon={<UserIdenticon pubkey={pubkey} />}
+      overflow="hidden"
+      title={getUserDisplayName(metadata, pubkey)}
+      {...props}
+    />
+  );
 });
 UserAvatar.displayName = "UserAvatar";

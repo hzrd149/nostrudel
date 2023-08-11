@@ -16,9 +16,7 @@ import dayjs from "dayjs";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
-import { normalizeToHex } from "../../helpers/nip19";
 import { getReferences } from "../../helpers/nostr/event";
-import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
@@ -27,6 +25,7 @@ import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PostResults } from "./post-results";
 import { TrustProvider } from "../../providers/trust";
+import { finalizeNote } from "../../helpers/nostr/post";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -35,40 +34,6 @@ function emptyDraft(): DraftNostrEvent {
     tags: [],
     created_at: dayjs().unix(),
   };
-}
-
-function finalizeNote(draft: DraftNostrEvent) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags), created_at: dayjs().unix() };
-
-  // replace all occurrences of @npub and @note
-  while (true) {
-    const match = mentionNpubOrNote.exec(updatedDraft.content);
-    if (!match || match.index === undefined) break;
-
-    const hex = normalizeToHex(match[1]);
-    if (!hex) continue;
-    const mentionType = match[2] === "npub1" ? "p" : "e";
-    // TODO: find the best relay for this user or note
-    const existingMention = updatedDraft.tags.find((t) => t[0] === mentionType && t[1] === hex);
-    const index = existingMention
-      ? updatedDraft.tags.indexOf(existingMention)
-      : updatedDraft.tags.push([mentionType, hex, "", "mention"]) - 1;
-
-    // replace the npub1 or note1 with a mention tag #[0]
-    const c = updatedDraft.content;
-    updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
-  }
-
-  // replace all uses of #hashtag
-  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "giu"));
-  for (const [_, space, hashtag] of matches) {
-    const lower = hashtag.toLocaleLowerCase();
-    if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {
-      updatedDraft.tags.push(["t", lower]);
-    }
-  }
-
-  return updatedDraft;
 }
 
 type PostModalProps = {

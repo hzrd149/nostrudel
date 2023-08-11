@@ -25,7 +25,6 @@ import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
-import { ReplyButton } from "./buttons/reply-button";
 import { RepostButton } from "./buttons/repost-button";
 import { QuoteRepostButton } from "./buttons/quote-repost-button";
 import { ExternalLinkIcon } from "../icons";
@@ -69,7 +68,6 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2">
             <ButtonGroup size="sm" variant="link">
-              <ReplyButton event={event} />
               <RepostButton event={event} />
               <QuoteRepostButton event={event} />
               <NoteZapButton note={event} size="sm" />
