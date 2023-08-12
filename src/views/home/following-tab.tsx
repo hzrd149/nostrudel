@@ -52,7 +52,7 @@ function FollowingTabBody() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} />;
+  return <TimelinePage timeline={timeline} header={header} pt="4" pb="8" />;
 }
 
 export default function FollowingTab() {

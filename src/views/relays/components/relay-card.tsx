@@ -178,16 +178,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           <RelayJoinAction url={url} size="sm" />
 
           <RelayShareButton relay={url} ml="auto" size="sm" />
-          <RelayDebugButton url={url} size="sm" />
-          <Button
-            as="a"
-            href={`https://nostr.watch/relay/${new URL(url).host}`}
-            target="_blank"
-            rightIcon={<ExternalLinkIcon />}
-            size="sm"
-          >
-            More
-          </Button>
+          <RelayDebugButton url={url} size="sm" title="Show raw NIP-11 metadata" />
         </CardFooter>
       </Card>
     </>

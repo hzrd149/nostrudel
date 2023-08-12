@@ -38,24 +38,18 @@ export default function UserNotesTab() {
   );
 
   const header = (
-    <Flex gap="2" px="2">
-      <FormControl display="flex" alignItems="center" w="auto">
-        <Switch id="replies" mr="2" isChecked={showReplies} onChange={toggleReplies} />
-        <FormLabel htmlFor="replies" mb="0">
-          Replies
-        </FormLabel>
-      </FormControl>
-      <FormControl display="flex" alignItems="center" w="auto">
-        <Switch id="reposts" mr="2" isChecked={!hideReposts} onChange={toggleReposts} />
-        <FormLabel htmlFor="reposts" mb="0">
-          Reposts
-        </FormLabel>
-      </FormControl>
+    <Flex gap="2" px="2" alignItems="center">
+      <Switch id="replies" mr="2" isChecked={showReplies} onChange={toggleReplies} size="sm">
+        Replies
+      </Switch>
+      <Switch id="reposts" mr="2" isChecked={!hideReposts} onChange={toggleReposts} size="sm">
+        Reposts
+      </Switch>
       <Spacer />
       <RelayIconStack relays={readRelays} direction="row-reverse" maxRelays={4} />
       <TimelineViewType />
     </Flex>
   );
 
-  return <TimelinePage header={header} timeline={timeline} />;
+  return <TimelinePage header={header} timeline={timeline} pt="2" pb="8" />;
 }

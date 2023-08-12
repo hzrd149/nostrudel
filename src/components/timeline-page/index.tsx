@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Flex, SimpleGrid } from "@chakra-ui/react";
+import { Flex, FlexProps, SimpleGrid } from "@chakra-ui/react";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import { ImageGalleryProvider } from "../image-gallery";
@@ -27,7 +27,11 @@ export function useTimelinePageEventFilter() {
 
 export type TimelineViewType = "timeline" | "images" | "health";
 
-export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
+export default function TimelinePage({
+  timeline,
+  header,
+  ...props
+}: { timeline: TimelineLoader; header?: React.ReactNode } & Omit<FlexProps, "children" | "direction" | "gap">) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const [params, setParams] = useSearchParams();
@@ -55,7 +59,7 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
   };
   return (
     <IntersectionObserverProvider<string> callback={callback}>
-      <Flex direction="column" gap="2" pt="4" pb="8">
+      <Flex direction="column" gap="2" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus timeline={timeline} />
