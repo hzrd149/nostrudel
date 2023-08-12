@@ -7,6 +7,8 @@ import {
   CardFooter,
   CardHeader,
   CardProps,
+  Checkbox,
+  CheckboxProps,
   Flex,
   Heading,
   IconButton,
@@ -17,24 +19,21 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  ModalProps,
+  Tag,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";
-import { CodeIcon, ExternalLinkIcon, RepostIcon } from "../../../components/icons";
+import { CodeIcon, RepostIcon } from "../../../components/icons";
 import { UserLink } from "../../../components/user-link";
 import { UserAvatar } from "../../../components/user-avatar";
-import { useClientRelays, useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useClientRelays } from "../../../hooks/use-client-relays";
 import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
-import useSubject from "../../../hooks/use-subject";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import RelayReviewNote from "./relay-review-note";
 import styled from "@emotion/styled";
 import { PropsWithChildren, useCallback } from "react";
 import RawJson from "../../../components/debug-modals/raw-json";
@@ -68,6 +67,8 @@ export function RelayMetadata({ url }: { url: string }) {
           <UserDnsIdentityIcon pubkey={info.pubkey} onlyIcon />
         </Flex>
       )}
+      <Metadata name="Software">{info?.software}</Metadata>
+      <Metadata name="Version">{info?.version}</Metadata>
     </Box>
   );
 }
@@ -75,9 +76,9 @@ export function RelayMetadata({ url }: { url: string }) {
 export function RelayJoinAction({ url, ...props }: { url: string } & Omit<ButtonProps, "children" | "onClick">) {
   const account = useCurrentAccount();
   const clientRelays = useClientRelays();
-  const joined = clientRelays.some((r) => r.url === url);
+  const relayConfig = clientRelays.find((r) => r.url === url);
 
-  return joined ? (
+  return relayConfig ? (
     <Button
       colorScheme="red"
       variant="outline"
@@ -97,6 +98,26 @@ export function RelayJoinAction({ url, ...props }: { url: string } & Omit<Button
       Join
     </Button>
   );
+}
+
+export function RelayModeAction({
+  url,
+  ...props
+}: { url: string } & Omit<CheckboxProps, "children" | "isChecked" | "onChange">) {
+  const clientRelays = useClientRelays();
+  const relayConfig = clientRelays.find((r) => r.url === url);
+
+  return relayConfig ? (
+    <Checkbox
+      isChecked={!!(relayConfig.mode & RelayMode.WRITE)}
+      onChange={(e) => {
+        clientRelaysService.updateRelay(relayConfig.url, e.target.checked ? RelayMode.WRITE : RelayMode.READ);
+      }}
+      {...props}
+    >
+      Write
+    </Checkbox>
+  ) : null;
 }
 
 export function RelayDebugButton({ url, ...props }: { url: string } & Omit<IconButtonProps, "icon" | "aria-label">) {
@@ -162,6 +183,7 @@ export function RelayShareButton({
 }
 
 export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
+  const { info } = useRelayInfo(url);
   return (
     <>
       <Card variant="outline" {...props}>
@@ -169,6 +191,11 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           <RelayFavicon relay={url} size="xs" />
           <Heading size="md" isTruncated>
             <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
+            {info?.payments_url && (
+              <Tag as="a" variant="solid" colorScheme="green" size="sm" ml="2" target="_blank" href={info.payments_url}>
+                Paid
+              </Tag>
+            )}
           </Heading>
         </CardHeader>
         <CardBody px="2" py="0" display="flex" flexDirection="column" gap="2">
@@ -176,6 +203,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
         </CardBody>
         <CardFooter p="2" as={Flex} gap="2">
           <RelayJoinAction url={url} size="sm" />
+          <RelayModeAction url={url} />
 
           <RelayShareButton relay={url} ml="auto" size="sm" />
           <RelayDebugButton url={url} size="sm" title="Show raw NIP-11 metadata" />

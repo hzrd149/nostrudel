@@ -1,5 +1,6 @@
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import { Button, Flex, Heading, Spacer, StackDivider, VStack } from "@chakra-ui/react";
+import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakra-ui/react";
+
 import { useUserRelays } from "../../hooks/use-user-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { truncatedId } from "../../helpers/nostr/event";
@@ -11,14 +12,22 @@ import { RelayFavicon } from "../../components/relay-favicon";
 import { RelayDebugButton, RelayJoinAction, RelayMetadata, RelayShareButton } from "../relays/components/relay-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { useRelayInfo } from "../../hooks/use-relay-info";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
+  const { info } = useRelayInfo(url);
+
   return (
     <Flex p="2" gap="2" direction="column">
       <Flex gap="2" alignItems="center">
         <RelayFavicon relay={url} size="xs" />
         <Heading size="md" isTruncated>
           <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
+          {info?.payments_url && (
+            <Tag as="a" variant="solid" colorScheme="green" size="sm" ml="2" target="_blank" href={info.payments_url}>
+              Paid
+            </Tag>
+          )}
         </Heading>
         <Spacer />
         <RelayDebugButton url={url} size="sm" />

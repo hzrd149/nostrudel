@@ -9,6 +9,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tag,
   useDisclosure,
 } from "@chakra-ui/react";
 
@@ -30,6 +31,19 @@ function RelayPage({ relay }: { relay: string }) {
       <Flex gap="2" alignItems="center" wrap="wrap" justifyContent="space-between">
         <Heading isTruncated size={{ base: "md", sm: "lg" }}>
           {relay}
+          {info?.payments_url && (
+            <Tag
+              as="a"
+              variant="solid"
+              colorScheme="green"
+              size={{ base: "sm", md: "lg" }}
+              ml="2"
+              target="_blank"
+              href={info.payments_url}
+            >
+              Paid
+            </Tag>
+          )}
         </Heading>
         <ButtonGroup size={["sm", "md"]}>
           <RelayDebugButton url={relay} ml="auto" />

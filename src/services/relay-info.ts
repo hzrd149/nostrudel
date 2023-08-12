@@ -10,6 +10,7 @@ export type RelayInformationDocument = {
   supported_nips?: number[];
   software: string;
   version: string;
+  payments_url?: string
 };
 
 async function fetchInfo(relay: string) {
