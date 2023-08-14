@@ -40,7 +40,7 @@ export function embedNostrLinks(content: EmbedableContent) {
 export function embedNostrMentions(content: EmbedableContent, event: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
     name: "nostr-mention",
-    regexp: /#\[(\d+)\]/,
+    regexp: /#\[(\d+)\]/g,
     render: (match) => {
       const index = parseInt(match[1]);
       const tag = event?.tags[index];

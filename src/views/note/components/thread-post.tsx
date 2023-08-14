@@ -27,7 +27,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
       {showReplyForm.isOpen && (
         <ReplyForm item={post} onCancel={showReplyForm.onClose} onSubmitted={showReplyForm.onClose} />
       )}
-      <ButtonGroup variant="ghost" size="sm" alignSelf="flex-start">
+      <ButtonGroup variant="link" size="sm" alignSelf="flex-start">
         {!showReplyForm.isOpen && (
           <Button onClick={showReplyForm.onOpen} leftIcon={<ReplyIcon />}>
             Write relay

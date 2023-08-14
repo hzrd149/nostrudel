@@ -20,24 +20,43 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
   return content
     .map((subContent, i) => {
       if (typeof subContent === "string") {
-        const match = subContent.match(embed.regexp);
+        const matches = subContent.matchAll(embed.regexp);
 
-        if (match && match.index !== undefined) {
-          const { start, end } = (embed.getLocation || defaultGetLocation)(match);
-          const before = subContent.slice(0, start);
-          const after = subContent.slice(end, subContent.length);
-          let render = embed.render(match);
+        if (matches) {
+          const newContent: EmbedableContent = [];
+          let cursor = 0;
+          let str = subContent;
+          for (const match of matches) {
+            if (match.index !== undefined) {
+              const { start, end } = (embed.getLocation || defaultGetLocation)(match);
 
-          if (render === null) return subContent;
+              if (start < cursor) continue;
 
-          if (typeof render !== "string" && !render.props.key) {
-            render = cloneElement(render, { key: match[0] });
+              const before = str.slice(0, start - cursor);
+              const after = str.slice(end - cursor, str.length);
+              let render = embed.render(match);
+              if (render === null) continue;
+
+              if (typeof render !== "string" && !render.props.key) {
+                render = cloneElement(render, { key: embed.name + match[0] });
+              }
+
+              newContent.push(before, render);
+
+              cursor = end;
+              str = after;
+            }
           }
 
-          const newContent: EmbedableContent = [];
-          if (before.length > 0) newContent.push(...embedJSX([before], embed));
-          newContent.push(render);
-          if (after.length > 0) newContent.push(...embedJSX([after], embed));
+          // if all matches failed just return the existing content
+          if (newContent.length === 0) {
+            return subContent;
+          }
+
+          // add the remaining string to the content
+          if (str.length > 0) {
+            newContent.push(str);
+          }
 
           return newContent;
         }
@@ -53,7 +72,7 @@ export type LinkEmbedHandler = (link: URL) => JSX.Element | string | null;
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
-    regexp: /https?:\/\/([a-zA-Z0-9\.\-]+\.[a-zA-Z]+)([\p{Letter}\p{Number}&\.-\/\?=#\-@%\+_,:]*)/iu,
+    regexp: /https?:\/\/([a-zA-Z0-9\.\-]+\.[a-zA-Z]+)([\p{Letter}\p{Number}&\.-\/\?=#\-@%\+_,:]*)/giu,
     render: (match) => {
       try {
         const url = new URL(match[0]);

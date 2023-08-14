@@ -53,7 +53,7 @@ export const Metadata = ({ name, children }: { name: string } & PropsWithChildre
     </div>
   ) : null;
 
-export function RelayMetadata({ url }: { url: string }) {
+export function RelayMetadata({ url, extended }: { url: string; extended?: boolean }) {
   const { info } = useRelayInfo(url);
 
   return (
@@ -62,13 +62,17 @@ export function RelayMetadata({ url }: { url: string }) {
       {info?.pubkey && (
         <Flex gap="2" alignItems="center">
           <B>Owner:</B>
-          <UserAvatar pubkey={info.pubkey} size="xs" />
+          <UserAvatar pubkey={info.pubkey} size="xs" noProxy />
           <UserLink pubkey={info.pubkey} />
           <UserDnsIdentityIcon pubkey={info.pubkey} onlyIcon />
         </Flex>
       )}
-      <Metadata name="Software">{info?.software}</Metadata>
-      <Metadata name="Version">{info?.version}</Metadata>
+      {extended && (
+        <>
+          <Metadata name="Software">{info?.software}</Metadata>
+          <Metadata name="Version">{info?.version}</Metadata>
+        </>
+      )}
     </Box>
   );
 }

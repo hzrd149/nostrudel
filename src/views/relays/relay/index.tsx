@@ -58,7 +58,7 @@ function RelayPage({ relay }: { relay: string }) {
           <RelayJoinAction url={relay} />
         </ButtonGroup>
       </Flex>
-      <RelayMetadata url={relay} />
+      <RelayMetadata url={relay} extended />
       {info?.supported_nips && <SupportedNIPs nips={info?.supported_nips} />}
       <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="brand">
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>

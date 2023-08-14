@@ -4,7 +4,7 @@ import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 
 export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
-    regexp: /:([a-zA-Z0-9_]+):/i,
+    regexp: /:([a-zA-Z0-9_]+):/gi,
     render: (match) => {
       const emojiTag = note.tags.find(
         (tag) => tag[0] === "emoji" && tag[1].toLowerCase() === match[1].toLowerCase() && tag[2]
