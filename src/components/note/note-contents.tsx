@@ -17,12 +17,16 @@ import {
   renderVideoUrl,
   embedEmoji,
   renderOpenGraphUrl,
+  embedImageGallery,
 } from "../embed-types";
 import { ImageGalleryProvider } from "../image-gallery";
 import { renderRedditUrl } from "../embed-types/reddit";
 
 function buildContents(event: NostrEvent | DraftNostrEvent) {
   let content: EmbedableContent = [event.content.trim()];
+
+  // image gallery
+  content = embedImageGallery(content);
 
   // common
   content = embedUrls(content, [

@@ -1,4 +1,5 @@
 import { cloneElement } from "react";
+import { matchLink } from "./regexp";
 
 export type EmbedableContent = (string | JSX.Element)[];
 export type EmbedType = {
@@ -8,7 +9,7 @@ export type EmbedType = {
   getLocation?: (match: RegExpMatchArray) => { start: number; end: number };
 };
 
-function defaultGetLocation(match: RegExpMatchArray) {
+export function defaultGetLocation(match: RegExpMatchArray) {
   if (match.index === undefined) throw new Error("match dose not have index");
   return {
     start: match.index,
@@ -72,7 +73,7 @@ export type LinkEmbedHandler = (link: URL) => JSX.Element | string | null;
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
-    regexp: /https?:\/\/([a-zA-Z0-9\.\-]+\.[a-zA-Z]+)([\p{Letter}\p{Number}&\.-\/\?=#\-@%\+_,:]*)/giu,
+    regexp: matchLink,
     render: (match) => {
       try {
         const url = new URL(match[0]);
