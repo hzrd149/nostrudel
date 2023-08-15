@@ -128,7 +128,7 @@ export function SearchPage() {
       return;
     }
 
-    const hashTagMatch = cleanText.match(matchHashtag);
+    const hashTagMatch = matchHashtag.exec(cleanText);
     if (hashTagMatch) {
       navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() });
       return;
