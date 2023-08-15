@@ -40,6 +40,7 @@ import { UserAvatar } from "../../components/user-avatar";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 import { parseAddress } from "../../services/dns-identity";
+import { getLudEndpoint } from "../../helpers/lnurl";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -124,7 +125,9 @@ export default function UserAboutTab() {
         {metadata?.lud16 && (
           <Flex gap="2">
             <LightningIcon />
-            <Text>{metadata.lud16}</Text>
+            <Link href={getLudEndpoint(metadata.lud16)} isExternal>
+              {metadata.lud16}
+            </Link>
           </Flex>
         )}
         {parsedNip05 && (
