@@ -19,7 +19,7 @@ import {
   renderOpenGraphUrl,
   embedImageGallery,
 } from "../embed-types";
-import { ImageGalleryProvider } from "../image-gallery";
+import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
 
 function buildContents(event: NostrEvent | DraftNostrEvent) {
@@ -62,10 +62,10 @@ export const NoteContents = React.memo(({ event, ...props }: NoteContentsProps &
   const content = buildContents(event);
 
   return (
-    <ImageGalleryProvider>
+    <LightboxProvider>
       <Box whiteSpace="pre-wrap" {...props}>
         {content}
       </Box>
-    </ImageGalleryProvider>
+    </LightboxProvider>
   );
 });

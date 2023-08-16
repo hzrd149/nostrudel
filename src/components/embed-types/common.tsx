@@ -1,10 +1,33 @@
-import { Box, Image, ImageProps, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
+import { useRef } from "react";
+import { Box, Image, ImageProps, Link, LinkProps, SimpleGrid, useDisclosure } from "@chakra-ui/react";
+
 import appSettings from "../../services/settings/app-settings";
-import { ImageGalleryLink } from "../image-gallery";
 import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { matchLink } from "../../helpers/regexp";
+import { useRegisterSlide } from "../lightbox-provider";
+
+export const ImageGalleryLink = ({ children, href, ...props }: Omit<LinkProps, "onClick">) => {
+  const ref = useRef<HTMLAnchorElement | null>(null);
+  const { show } = useRegisterSlide(ref, href ? { type: "image", src: href } : undefined);
+
+  return (
+    <Link
+      {...props}
+      href={href}
+      onClick={(e) => {
+        if (href) {
+          e.preventDefault();
+          show();
+        }
+      }}
+      ref={ref}
+    >
+      {children}
+    </Link>
+  );
+};
 
 const BlurredImage = (props: ImageProps) => {
   const { isOpen, onOpen } = useDisclosure();

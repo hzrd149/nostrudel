@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, FlexProps, SimpleGrid } from "@chakra-ui/react";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
-import { ImageGalleryProvider } from "../image-gallery";
+import { LightboxProvider } from "../lightbox-provider";
 import MediaTimeline from "./media-timeline";
 import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -44,11 +44,11 @@ export default function TimelinePage({
 
       case "images":
         return (
-          <ImageGalleryProvider>
+          <LightboxProvider>
             <SimpleGrid columns={[1, 2, 2, 3, 4, 5]} gap="4">
               <MediaTimeline timeline={timeline} />
             </SimpleGrid>
-          </ImageGalleryProvider>
+          </LightboxProvider>
         );
 
       case "health":

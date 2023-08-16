@@ -21,7 +21,7 @@ import ZapModal from "../../../../components/zap-modal";
 import { LightningIcon } from "../../../../components/icons";
 import ChatMessage from "./chat-message";
 import ZapMessage from "./zap-message";
-import { ImageGalleryProvider } from "../../../../components/image-gallery";
+import { LightboxProvider } from "../../../../components/lightbox-provider";
 import IntersectionObserverProvider from "../../../../providers/intersection-observer";
 import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
 import { useInvoiceModalContext } from "../../../../providers/invoice-modal";
@@ -126,7 +126,7 @@ export default function StreamChat({
   return (
     <>
       <IntersectionObserverProvider callback={callback} root={scrollBox}>
-        <ImageGalleryProvider>
+        <LightboxProvider>
           <Card {...props} overflow="hidden" background={isChatLog ? "transparent" : undefined}>
             {!isPopup && (
               <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
@@ -184,7 +184,7 @@ export default function StreamChat({
               )}
             </CardBody>
           </Card>
-        </ImageGalleryProvider>
+        </LightboxProvider>
       </IntersectionObserverProvider>
       {zapModal.isOpen && (
         <ZapModal

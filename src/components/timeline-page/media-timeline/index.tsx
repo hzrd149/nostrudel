@@ -2,8 +2,8 @@ import React, { useMemo, useRef } from "react";
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { matchImageUrls } from "../../../helpers/regexp";
-import { ImageGalleryLink, ImageGalleryProvider } from "../../image-gallery";
-import { Box, IconButton } from "@chakra-ui/react";
+import { LightboxProvider, useRegisterSlide } from "../../lightbox-provider";
+import { Box, IconButton, Link } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
@@ -19,9 +19,26 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, image.eventId);
 
+  const { show } = useRegisterSlide(ref, { type: "image", src: image.src });
+
   return (
-    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
-      <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
+    <Link
+      href={image.src}
+      position="relative"
+      onClick={(e) => {
+        if (image.src) {
+          e.preventDefault();
+          show();
+        }
+      }}
+    >
+      <Box
+        aspectRatio={1}
+        backgroundImage={`url(${image.src})`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        ref={ref}
+      />
       <IconButton
         icon={<ExternalLinkIcon />}
         aria-label="Open note"
@@ -36,7 +53,7 @@ const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
           navigate(`/n/${getSharableNoteId(image.eventId)}`);
         }}
       />
-    </ImageGalleryLink>
+    </Link>
   );
 });
 
@@ -59,10 +76,10 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
   }, [events]);
 
   return (
-    <ImageGalleryProvider>
+    <LightboxProvider>
       {images.map((image) => (
         <ImagePreview key={image.eventId + "-" + image.index} image={image} />
       ))}
-    </ImageGalleryProvider>
+    </LightboxProvider>
   );
 }
