@@ -1,18 +1,12 @@
-import {
-  LinkProps,
-  Link,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Image,
-  ModalFooter,
-  Button,
-} from "@chakra-ui/react";
-import { PropsWithChildren, createContext, forwardRef, useContext, useState } from "react";
+import { PropsWithChildren, createContext, forwardRef, useCallback, useContext, useMemo, useState } from "react";
+import { LinkProps, Link, useDisclosure } from "@chakra-ui/react";
+import Lightbox, { SlideImage } from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Counter from "yet-another-react-lightbox/plugins/counter";
+import Download from "yet-another-react-lightbox/plugins/download";
+
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/counter.css";
 
 const GalleryContext = createContext({
   isOpen: false,
@@ -43,34 +37,29 @@ export const ImageGalleryLink = forwardRef(({ children, href, ...props }: Omit<L
 });
 
 export function ImageGalleryProvider({ children }: PropsWithChildren) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [image, setImage] = useState("");
+  const open = useDisclosure();
+  const [slides, setSlides] = useState<SlideImage[]>([]);
 
-  const openImage = (url: string) => {
-    setImage(url);
-    onOpen();
-  };
-  const context = { isOpen, openImage };
+  const openImage = useCallback(
+    (url: string) => {
+      setSlides([{ src: url }]);
+      open.onOpen();
+    },
+    [setSlides, open.onOpen]
+  );
+
+  const context = useMemo(() => ({ isOpen: open.isOpen, openImage }), [open.isOpen, openImage]);
 
   return (
     <GalleryContext.Provider value={context}>
       {children}
-      <Modal isOpen={isOpen} onClose={onClose} size="6xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Image</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody p="0">
-            <Image src={image} w="full" />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="brand" onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <Lightbox
+        open={open.isOpen}
+        slides={slides}
+        close={open.onClose}
+        plugins={[Zoom, Counter, Download]}
+        zoom={{ scrollToZoom: true, maxZoomPixelRatio: 4, wheelZoomDistanceFactor: 100 }}
+      />
     </GalleryContext.Provider>
   );
 }

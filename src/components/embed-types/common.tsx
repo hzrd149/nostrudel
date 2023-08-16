@@ -61,6 +61,8 @@ function ImageGallery({ images }: { images: string[] }) {
 }
 
 const imageExt = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
+
+// nevent1qqs8397rp8tt60f3lm8zldt8uqljuqw9axp8z79w0qsmj3r96lmg4tgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmd0mkwa9
 export function embedImageGallery(content: EmbedableContent): EmbedableContent {
   return content
     .map((subContent, i) => {
@@ -122,7 +124,7 @@ export function embedImageGallery(content: EmbedableContent): EmbedableContent {
     .flat();
 }
 
-// note1n06jceulg3gukw836ghd94p0ppwaz6u3mksnnz960d8vlcp2fnqsgx3fu9
+// nostr:nevent1qqsfhafvv705g5wt8rcaytkj6shsshw3dwgamgfe3za8knk0uq4yesgpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqsrnltk
 export function renderImageUrl(match: URL) {
   if (!imageExt.some((ext) => match.pathname.endsWith(ext))) return null;
 
