@@ -83,7 +83,7 @@ export class QrCode {
     minVersion: int = 1,
     maxVersion: int = 40,
     mask: int = -1,
-    boostEcl: boolean = true
+    boostEcl: boolean = true,
   ): QrCode {
     if (
       !(QrCode.MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= QrCode.MAX_VERSION) ||
@@ -175,7 +175,7 @@ export class QrCode {
 
     dataCodewords: Readonly<Array<byte>>,
 
-    msk: int
+    msk: int,
   ) {
     // Check scalar arguments
     if (version < QrCode.MIN_VERSION || version > QrCode.MAX_VERSION)
@@ -822,7 +822,7 @@ export class QrSegment {
     public readonly numChars: int,
 
     // The data bits of this segment. Accessed through getData().
-    private readonly bitData: Array<bit>
+    private readonly bitData: Array<bit>,
   ) {
     if (numChars < 0) throw new RangeError("Invalid argument");
     this.bitData = bitData.slice(); // Make defensive copy
@@ -897,7 +897,7 @@ export class Ecc {
     // In the range 0 to 3 (unsigned 2-bit integer).
     public readonly ordinal: int,
     // (Package-private) In the range 0 to 3 (unsigned 2-bit integer).
-    public readonly formatBits: int
+    public readonly formatBits: int,
   ) {}
 }
 // }
@@ -925,7 +925,7 @@ export class Mode {
     // The mode indicator bits, which is a uint4 value (range 0 to 15).
     public readonly modeBits: int,
     // Number of character count bits for three different version ranges.
-    private readonly numBitsCharCount: [int, int, int]
+    private readonly numBitsCharCount: [int, int, int],
   ) {}
 
   /*-- Method --*/

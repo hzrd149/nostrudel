@@ -25,7 +25,7 @@ export async function replaceSettings(newSettings: AppSettings) {
     const draft = userAppSettings.buildAppSettingsEvent(newSettings);
     const event = await signingService.requestSignature(draft, account);
     userAppSettings.receiveEvent(event);
-    const pub = new NostrPublishAction('Update Settings', clientRelaysService.getWriteUrls(), event);
+    const pub = new NostrPublishAction("Update Settings", clientRelaysService.getWriteUrls(), event);
     await pub.onComplete;
   }
 }

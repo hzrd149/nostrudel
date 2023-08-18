@@ -125,7 +125,7 @@ class ClientRelayService {
     if (!current) throw new Error("no account");
     const event = await signingService.requestSignature(draft, current);
 
-    const pub = new NostrPublishAction('Update Relays', writeUrls, event);
+    const pub = new NostrPublishAction("Update Relays", writeUrls, event);
 
     // pass new event to the user relay service
     userRelaysService.receiveEvent(event);

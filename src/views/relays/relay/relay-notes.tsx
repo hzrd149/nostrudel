@@ -19,7 +19,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
       if (!showReplies.isOpen && isReply(event)) return false;
       return timelineEventFilter(event);
     },
-    [showReplies.isOpen, timelineEventFilter]
+    [showReplies.isOpen, timelineEventFilter],
   );
   const timeline = useTimelineLoader(`${relay}-notes`, [relay], { kinds: [1] }, { eventFilter });
 

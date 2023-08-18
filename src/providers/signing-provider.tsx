@@ -40,7 +40,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
-    [toast, current]
+    [toast, current],
   );
   const requestDecrypt = useCallback(
     async (data: string, pubkey: string) => {
@@ -51,7 +51,7 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
-    [toast, current]
+    [toast, current],
   );
   const requestEncrypt = useCallback(
     async (data: string, pubkey: string) => {
@@ -62,12 +62,12 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
     },
-    [toast, current]
+    [toast, current],
   );
 
   const context = useMemo(
     () => ({ requestSignature, requestDecrypt, requestEncrypt }),
-    [requestSignature, requestDecrypt, requestEncrypt]
+    [requestSignature, requestDecrypt, requestEncrypt],
   );
 
   return <SigningContext.Provider value={context}>{children}</SigningContext.Provider>;

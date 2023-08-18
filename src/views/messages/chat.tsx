@@ -58,7 +58,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     const signed = await requestSignature(event);
     if (!signed) return;
     const writeRelays = clientRelaysService.getWriteUrls();
-    const pub = new NostrPublishAction('Send DM', writeRelays, signed);
+    const pub = new NostrPublishAction("Send DM", writeRelays, signed);
     setContent("");
   };
 

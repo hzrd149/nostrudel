@@ -21,7 +21,7 @@ export function useTimelinePageEventFilter() {
       if (view === "images" && !event.content.match(matchLink)) return false;
       return true;
     },
-    [view]
+    [view],
   );
 }
 

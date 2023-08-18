@@ -92,7 +92,7 @@ export function LightboxProvider({ children }: PropsWithChildren) {
 
   const orderedSlides = useRef<DynamicSlide[]>([]);
   orderedSlides.current = Array.from(Object.values(slides)).sort((a, b) =>
-    comparePaths(getRefPath(a.ref), getRefPath(b.ref))
+    comparePaths(getRefPath(a.ref), getRefPath(b.ref)),
   );
 
   const addSlide = useCallback(
@@ -104,13 +104,13 @@ export function LightboxProvider({ children }: PropsWithChildren) {
         return arr.concat({ ref, slide });
       });
     },
-    [setSlides]
+    [setSlides],
   );
   const removeSlide = useCallback(
     (ref: RefType) => {
       setSlides((arr) => arr.filter((s) => s.ref !== ref));
     },
-    [setSlides]
+    [setSlides],
   );
   const showSlide = useCallback(
     (ref: RefType) => {
@@ -127,12 +127,12 @@ export function LightboxProvider({ children }: PropsWithChildren) {
       setIndex(0);
       lightbox.onOpen();
     },
-    [lightbox.onOpen, setIndex]
+    [lightbox.onOpen, setIndex],
   );
 
   const context = useMemo(
     () => ({ isOpen: lightbox.isOpen, removeSlide, addSlide, showSlide }),
-    [lightbox.isOpen, removeSlide, addSlide, showSlide]
+    [lightbox.isOpen, removeSlide, addSlide, showSlide],
   );
 
   const lightboxSlides = useMemo(() => orderedSlides.current.map((s) => s.slide), [orderedSlides.current, slides]);
@@ -141,7 +141,7 @@ export function LightboxProvider({ children }: PropsWithChildren) {
     ({ index }: { index: number }) => {
       setIndex(index);
     },
-    [setIndex]
+    [setIndex],
   );
 
   return (

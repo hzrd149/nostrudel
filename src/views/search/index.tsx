@@ -87,7 +87,7 @@ function SearchResults({ search }: { search: string }) {
     `search`,
     searchRelays,
     { search: search || "", kinds: [Kind.Metadata] },
-    { enabled: !!search }
+    { enabled: !!search },
   );
 
   const events = useSubject(timeline?.timeline) ?? [];

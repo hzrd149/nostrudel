@@ -8,7 +8,7 @@ export default function useEventReactions(eventId: string, additionalRelays: str
 
   const subject = useMemo(
     () => eventReactionsService.requestReactions(eventId, relays, alwaysFetch),
-    [eventId, relays.join("|"), alwaysFetch]
+    [eventId, relays.join("|"), alwaysFetch],
   );
 
   return useSubject(subject);

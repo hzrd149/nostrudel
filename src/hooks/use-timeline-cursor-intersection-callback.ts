@@ -22,6 +22,6 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
         }
       }
     },
-    [timeline]
+    [timeline],
   );
 }
