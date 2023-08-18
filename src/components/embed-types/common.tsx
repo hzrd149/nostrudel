@@ -7,6 +7,7 @@ import OpenGraphCard from "../open-graph-card";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { matchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
+import { isImageURL, isVideoURL } from "../../helpers/url";
 
 export const ImageGalleryLink = ({ children, href, ...props }: Omit<LinkProps, "onClick">) => {
   const ref = useRef<HTMLAnchorElement | null>(null);
@@ -83,8 +84,6 @@ function ImageGallery({ images }: { images: string[] }) {
   );
 }
 
-const imageExt = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
-
 // nevent1qqs8397rp8tt60f3lm8zldt8uqljuqw9axp8z79w0qsmj3r96lmg4tgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmd0mkwa9
 export function embedImageGallery(content: EmbedableContent): EmbedableContent {
   return content
@@ -113,7 +112,7 @@ export function embedImageGallery(content: EmbedableContent): EmbedableContent {
         for (const match of matches) {
           try {
             const url = new URL(match[0]);
-            if (!imageExt.some((ext) => url.pathname.endsWith(ext))) throw new Error("not an image");
+            if (!isImageURL(url)) throw new Error("not an image");
 
             // if this is the first image, add it to the batch
             if (batch.length === 0) {
@@ -149,14 +148,13 @@ export function embedImageGallery(content: EmbedableContent): EmbedableContent {
 
 // nostr:nevent1qqsfhafvv705g5wt8rcaytkj6shsshw3dwgamgfe3za8knk0uq4yesgpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqsrnltk
 export function renderImageUrl(match: URL) {
-  if (!imageExt.some((ext) => match.pathname.endsWith(ext))) return null;
+  if (!isImageURL(match)) return null;
 
   return <EmbeddedImage src={match.toString()} />;
 }
 
-const videoExt = [".mp4", ".mkv", ".webm", ".mov"];
 export function renderVideoUrl(match: URL) {
-  if (!videoExt.some((ext) => match.pathname.endsWith(ext))) return null;
+  if (!isVideoURL(match)) return null;
 
   return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem", width: "100%" }} />;
 }

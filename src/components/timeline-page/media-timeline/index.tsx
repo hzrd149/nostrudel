@@ -1,15 +1,15 @@
 import React, { useMemo, useRef } from "react";
-import { TimelineLoader } from "../../../classes/timeline-loader";
-import useSubject from "../../../hooks/use-subject";
-import { matchImageUrls } from "../../../helpers/regexp";
-import { LightboxProvider, useRegisterSlide } from "../../lightbox-provider";
 import { Box, IconButton, Link } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+
+import { TimelineLoader } from "../../../classes/timeline-loader";
+import useSubject from "../../../hooks/use-subject";
+import { matchLink } from "../../../helpers/regexp";
+import { LightboxProvider, useRegisterSlide } from "../../lightbox-provider";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
 import { ExternalLinkIcon } from "../../icons";
-
-const matchAllImages = new RegExp(matchImageUrls, "ig");
+import { isImageURL } from "../../../helpers/url";
 
 type ImagePreview = { eventId: string; src: string; index: number };
 
@@ -64,11 +64,11 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: { eventId: string; src: string; index: number }[] = [];
 
     for (const event of events) {
-      const urls = event.content.matchAll(matchAllImages);
+      const urls = event.content.matchAll(matchLink);
 
       let i = 0;
-      for (const url of urls) {
-        images.push({ eventId: event.id, src: url[0], index: i++ });
+      for (const match of urls) {
+        if (isImageURL(match[0])) images.push({ eventId: event.id, src: match[0], index: i++ });
       }
     }
 

@@ -9,7 +9,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "./timeline-action-and-status";
 import { useSearchParams } from "react-router-dom";
 import { NostrEvent } from "../../types/nostr-event";
-import { matchImageUrls } from "../../helpers/regexp";
+import { matchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";
 
 export function useTimelinePageEventFilter() {
@@ -18,7 +18,7 @@ export function useTimelinePageEventFilter() {
 
   return useCallback(
     (event: NostrEvent) => {
-      if (view === "images" && !event.content.match(matchImageUrls)) return false;
+      if (view === "images" && !event.content.match(matchLink)) return false;
       return true;
     },
     [view]

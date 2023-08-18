@@ -12,16 +12,16 @@
     "test": "cypress run --e2e --browser=chrome"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.19",
-    "@chakra-ui/react": "^2.7.1",
-    "@emotion/react": "^11.11.0",
+    "@chakra-ui/icons": "^2.1.0",
+    "@chakra-ui/react": "^2.8.0",
+    "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
     "dayjs": "^1.11.9",
     "debug": "^4.3.4",
-    "framer-motion": "^7.10.3",
-    "hls.js": "^1.4.7",
+    "framer-motion": "^10.16.0",
+    "hls.js": "^1.4.10",
     "idb": "^7.1.1",
     "identicon.js": "^2.3.3",
     "leaflet": "^1.9.4",
@@ -29,17 +29,17 @@
     "light-bolt11-decoder": "^3.0.0",
     "ngeohash": "^0.6.3",
     "noble-secp256k1": "^1.2.14",
-    "nostr-tools": "^1.12.1",
+    "nostr-tools": "^1.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-error-boundary": "^4.0.10",
-    "react-hook-form": "^7.45.1",
+    "react-error-boundary": "^4.0.11",
+    "react-hook-form": "^7.45.4",
     "react-qr-barcode-scanner": "^1.0.6",
-    "react-router-dom": "^6.14.1",
+    "react-router-dom": "^6.15.0",
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",
     "webln": "^0.3.2",
-    "yet-another-react-lightbox": "^3.12.0"
+    "yet-another-react-lightbox": "^3.12.1"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
@@ -49,17 +49,17 @@
     "@types/leaflet": "^1.9.3",
     "@types/leaflet.locatecontrol": "^0.74.1",
     "@types/ngeohash": "^0.6.4",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "@vitejs/plugin-react": "^4.0.1",
-    "cypress": "^12.16.0",
-    "prettier": "^2.8.8",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.4",
+    "cypress": "^12.17.4",
+    "prettier": "^3.0.2",
     "typescript": "^5.1.6",
-    "vite": "^4.3.9",
+    "vite": "^4.4.9",
     "vite-plugin-pwa": "^0.16.4"
   },
   "resolutions": {
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6"
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7"
   }
 }
