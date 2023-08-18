@@ -14,14 +14,16 @@ export class Subject<Value> implements Connectable<Value> {
   listeners: [ListenerFn<Value>, Object | undefined][] = [];
 
   value?: Value;
-  constructor(value?: Value) {
-    this.value = value;
+  cacheValue: boolean;
+  constructor(value?: Value, cacheValue = true) {
+    this.cacheValue = cacheValue;
+    if (this.cacheValue) this.value = value;
   }
 
   next(value: Value) {
     if (this.value === value) return;
 
-    this.value = value;
+    if (this.cacheValue) this.value = value;
     for (const [listener, ctx] of this.listeners) {
       if (ctx) listener.call(ctx, value);
       else listener(value);
@@ -99,7 +101,7 @@ export class Subject<Value> implements Connectable<Value> {
 export class PersistentSubject<Value> extends Subject<Value> implements ConnectableApi<Value> {
   value: Value;
   constructor(value: Value) {
-    super();
+    super(value, true);
     this.value = value;
   }
 }

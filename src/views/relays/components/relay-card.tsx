@@ -40,7 +40,7 @@ import RawJson from "../../../components/debug-modals/raw-json";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import dayjs from "dayjs";
 import { useSigningContext } from "../../../providers/signing-provider";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 const B = styled.span`
   font-weight: bold;
@@ -167,7 +167,7 @@ export function RelayShareButton({
       const signed = await requestSignature(draft);
       if (!signed) return;
 
-      const post = nostrPostAction(writeRelays, signed);
+      const post = new NostrPublishAction('Share Relay', writeRelays, signed);
       await post.onComplete;
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

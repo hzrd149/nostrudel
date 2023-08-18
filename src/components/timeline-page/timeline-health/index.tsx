@@ -1,6 +1,7 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Box,
+  Spinner,
   Table,
   TableContainer,
   TableRowProps,
@@ -22,8 +23,8 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
 import dayjs from "dayjs";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
-import relayPoolService from "../../../services/relay-pool";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { RelayIcon } from "../../icons";
 
 function EventRow({
   event,
@@ -41,15 +42,21 @@ function EventRow({
   const yes = colorMode === "light" ? "green.200" : "green.800";
   const no = colorMode === "light" ? "red.200" : "red.800";
 
-  const broadcast = (relay: string) => {
-    const { results } = nostrPostAction([relay], event, 5000);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const broadcast = () => {
+    setBroadcasting(true);
+    const pub = new NostrPublishAction("Broadcast", relays, event);
 
-    results.subscribe((result) => {
+    pub.onResult.subscribe((result) => {
       if (result.status) {
-        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+        handleEventFromRelay(result.relay, event);
       } else if (result.message) {
         toast({ description: result.message, status: result.status ? "success" : "error" });
       }
+    });
+
+    pub.onComplete.then(() => {
+      setBroadcasting(false);
     });
   };
 
@@ -66,15 +73,11 @@ function EventRow({
           {event.content}
         </Text>
       </Td>
+      <Td title="Broadcast" p="2" onClick={() => !broadcasting && broadcast()} cursor="pointer">
+        {broadcasting ? <Spinner size="xs" /> : <RelayIcon />}
+      </Td>
       {relays.map((relay) => (
-        <Td
-          key={relay}
-          title={relay}
-          p="2"
-          backgroundColor={seenRelays.includes(relay) ? yes : no}
-          onClick={() => !seenRelays.includes(relay) && broadcast(relay)}
-          cursor={seenRelays.includes(relay) ? undefined : "pointer"}
-        >
+        <Td key={relay} title={relay} p="2" backgroundColor={seenRelays.includes(relay) ? yes : no}>
           <RelayFavicon relay={relay} size="2xs" />
         </Td>
       ))}
@@ -94,10 +97,11 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
               <Th p="2" w="1">
                 Date
               </Th>
-              <Th p="p" w="1">
+              <Th p="2" w="1">
                 Event
               </Th>
-              <Th p="p">Content</Th>
+              <Th p="2">Content</Th>
+              <Th />
               {timeline.relays.map((relay) => (
                 <Th key={relay} title={relay} w="0.1rem" p="0">
                   <Tooltip label={relay}>

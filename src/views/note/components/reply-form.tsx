@@ -12,12 +12,12 @@ import { addReplyTags, ensureNotifyUsers, finalizeNote } from "../../../helpers/
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 function NoteContentPreview({ content }: { content: string }) {
   const draft = useMemo(
     () => finalizeNote({ kind: Kind.Text, content, created_at: dayjs().unix(), tags: [] }),
-    [content]
+    [content],
   );
 
   return <NoteContents event={draft} />;
@@ -55,7 +55,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
       const signed = await requestSignature(draft);
       if (!signed) return;
       // TODO: write to other users inbox relays
-      const pub = nostrPostAction(writeRelays, signed);
+      const pub = new NostrPublishAction("Reply", writeRelays, signed);
       await pub.onComplete;
 
       if (onSubmitted) onSubmitted(signed);

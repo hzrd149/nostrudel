@@ -1,13 +1,13 @@
 import { Button, Flex, Heading, Textarea } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import dayjs from "dayjs";
 
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
-import { useForm } from "react-hook-form";
 import StarRating from "../../../components/star-rating";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
-import dayjs from "dayjs";
 import { useSigningContext } from "../../../providers/signing-provider";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 export default function RelayReviewForm({ onClose, relay }: { onClose: () => void; relay: string }) {
   const { requestSignature } = useSigningContext();
@@ -35,7 +35,7 @@ export default function RelayReviewForm({ onClose, relay }: { onClose: () => voi
 
     const signed = await requestSignature(draft);
     if (!signed) return;
-    nostrPostAction(writeRelays, signed);
+    const pub = new NostrPublishAction("Review Relay", writeRelays, signed);
     onClose();
   });
 

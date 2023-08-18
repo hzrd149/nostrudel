@@ -26,10 +26,10 @@ import { useCallback, useState } from "react";
 import QuoteNote from "./quote-note";
 import { buildDeleteEvent } from "../../helpers/nostr/event";
 import signingService from "../../services/signing";
-import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
 import relayPoolService from "../../services/relay-pool";
+import NostrPublishAction from "../../classes/nostr-publish-action";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -49,8 +49,8 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
       setDeleting(true);
       const deleteEvent = buildDeleteEvent([event.id], reason);
       const signed = await signingService.requestSignature(deleteEvent, account);
-      const results = nostrPostAction(clientRelaysService.getWriteUrls(), signed);
-      await results.onComplete;
+      const pub = new NostrPublishAction("Delete", clientRelaysService.getWriteUrls(), signed);
+      await pub.onComplete;
       deleteModal.onClose();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -62,11 +62,11 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
   const broadcast = useCallback(() => {
     const missingRelays = clientRelaysService.getWriteUrls();
 
-    const { results, onComplete } = nostrPostAction(missingRelays, event, 5000);
+    const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
 
-    results.subscribe((result) => {
+    pub.onResult.subscribe((result) => {
       if (result.status) {
-        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+        handleEventFromRelay(result.relay, event);
       }
     });
   }, []);
