@@ -1,5 +1,5 @@
 import { cloneElement } from "react";
-import { matchLink } from "./regexp";
+import { getMatchLink } from "./regexp";
 
 export type EmbedableContent = (string | JSX.Element)[];
 export type EmbedType = {
@@ -30,6 +30,7 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
           for (const match of matches) {
             if (match.index !== undefined) {
               const { start, end } = (embed.getLocation || defaultGetLocation)(match);
+              if (start === 0 && match[0].includes("#")) debugger;
 
               if (start < cursor) continue;
 
@@ -73,7 +74,7 @@ export type LinkEmbedHandler = (link: URL) => JSX.Element | string | null;
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
-    regexp: matchLink,
+    regexp: getMatchLink(),
     render: (match) => {
       try {
         const url = new URL(match[0]);

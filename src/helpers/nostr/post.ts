@@ -1,5 +1,5 @@
 import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
-import { matchHashtag, mentionNpubOrNote } from "../regexp";
+import { getMatchHashtag, getMentionNpubOrNote } from "../regexp";
 import { normalizeToHex } from "../nip19";
 import { getReferences } from "./event";
 import { getEventRelays } from "../../services/event-relays";
@@ -65,7 +65,7 @@ export function replaceAtMentions(draft: DraftNostrEvent) {
 
   // replace all occurrences of @npub and @note
   while (true) {
-    const match = mentionNpubOrNote.exec(updatedDraft.content);
+    const match = getMentionNpubOrNote().exec(updatedDraft.content);
     if (!match || match.index === undefined) break;
 
     const hex = normalizeToHex(match[1]);
@@ -90,7 +90,7 @@ export function createHashtagTags(draft: DraftNostrEvent) {
   const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
   // create tags for all occurrences of #hashtag
-  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "giu"));
+  const matches = updatedDraft.content.matchAll(getMatchHashtag());
   for (const [_, space, hashtag] of matches) {
     const lower = hashtag.toLocaleLowerCase();
     if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {

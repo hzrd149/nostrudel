@@ -17,7 +17,7 @@ import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-d
 import { ClipboardIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
-import { matchHashtag } from "../../helpers/regexp";
+import { getMatchHashtag } from "../../helpers/regexp";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -128,7 +128,7 @@ export function SearchPage() {
       return;
     }
 
-    const hashTagMatch = matchHashtag.exec(cleanText);
+    const hashTagMatch = getMatchHashtag().exec(cleanText);
     if (hashTagMatch) {
       navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() });
       return;

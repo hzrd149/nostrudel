@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import { matchLink } from "../../../helpers/regexp";
+import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider, useRegisterSlide } from "../../lightbox-provider";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getSharableNoteId } from "../../../helpers/nip19";
@@ -64,7 +64,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: { eventId: string; src: string; index: number }[] = [];
 
     for (const event of events) {
-      const urls = event.content.matchAll(matchLink);
+      const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;
       for (const match of urls) {

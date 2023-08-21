@@ -5,7 +5,7 @@ import appSettings from "../../services/settings/app-settings";
 import { useTrusted } from "../../providers/trust";
 import OpenGraphCard from "../open-graph-card";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
-import { matchLink } from "../../helpers/regexp";
+import { getMatchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
 import { isImageURL, isVideoURL } from "../../helpers/url";
 
@@ -89,7 +89,7 @@ export function embedImageGallery(content: EmbedableContent): EmbedableContent {
   return content
     .map((subContent, i) => {
       if (typeof subContent === "string") {
-        const matches = Array.from(subContent.matchAll(matchLink));
+        const matches = Array.from(subContent.matchAll(getMatchLink()));
 
         const newContent: EmbedableContent = [];
         let lastBatchEnd = 0;
