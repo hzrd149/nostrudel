@@ -18,6 +18,7 @@ import { useRegisterSlide } from "../lightbox-provider";
 import { isImageURL } from "../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
 import { NostrEvent } from "../../types/nostr-event";
+import useAppSettings from "../../hooks/use-app-settings";
 
 function useElementBlur(initBlur = false): { style: CSSProperties; onClick: MouseEventHandler } {
   const [blur, setBlur] = useState(initBlur);
@@ -41,6 +42,7 @@ function useElementBlur(initBlur = false): { style: CSSProperties; onClick: Mous
 export type TrustImageProps = ImageProps;
 
 export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, ref) => {
+  const { blurImages } = useAppSettings();
   const trusted = useTrusted();
   const { onClick, style } = useElementBlur(!trusted);
 
@@ -54,7 +56,8 @@ export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, 
     [onClick, props.onClick],
   );
 
-  return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
+  if (!blurImages) return <Image {...props} ref={ref} />;
+  else return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
 });
 
 export type EmbeddedImageProps = TrustImageProps & {
