@@ -10,6 +10,7 @@ import {
   RelayIcon,
   SearchIcon,
   SettingsIcon,
+  ToolsIcon,
 } from "../icons";
 
 export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean }) {
@@ -46,6 +47,9 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       </Button>
       <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />} justifyContent="flex-start">
         Map
+      </Button>
+      <Button onClick={() => navigate("/tools")} leftIcon={<ToolsIcon />} justifyContent="flex-start">
+        Tools
       </Button>
       <Divider my="2" />
       <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />} justifyContent="flex-start">
