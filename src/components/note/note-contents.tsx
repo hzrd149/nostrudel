@@ -26,7 +26,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent) {
   let content: EmbedableContent = [event.content.trim()];
 
   // image gallery
-  content = embedImageGallery(content);
+  content = embedImageGallery(content, event as NostrEvent);
 
   // common
   content = embedUrls(content, [

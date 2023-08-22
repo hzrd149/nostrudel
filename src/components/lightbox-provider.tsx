@@ -21,6 +21,15 @@ import Download from "yet-another-react-lightbox/plugins/download";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 
+// extend slide type to include eventId
+declare module "yet-another-react-lightbox" {
+  interface GenericSlide {
+    event?: NostrEvent;
+  }
+}
+
+import { NostrEvent } from "../types/nostr-event";
+
 type RefType = MutableRefObject<HTMLElement | null>;
 
 function getElementPath(element: HTMLElement): HTMLElement[] {
@@ -84,6 +93,20 @@ function getRefPath(ref: RefType) {
   refPaths.set(ref, path);
   return path;
 }
+
+// function EventSlideHeader({ event }: { event: NostrEvent }) {
+//   return (
+//     <Flex gap="2" alignItems="center" w="full">
+//       <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
+//       <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+//       <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+//       <Flex grow={1} />
+//       <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
+//         {dayjs.unix(event.created_at).fromNow()}
+//       </NoteLink>
+//     </Flex>
+//   );
+// }
 
 export function LightboxProvider({ children }: PropsWithChildren) {
   const lightbox = useDisclosure();

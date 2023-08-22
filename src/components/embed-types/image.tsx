@@ -17,6 +17,7 @@ import { getMatchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
 import { isImageURL } from "../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
+import { NostrEvent } from "../../types/nostr-event";
 
 function useElementBlur(initBlur = false): { style: CSSProperties; onClick: MouseEventHandler } {
   const [blur, setBlur] = useState(initBlur);
@@ -37,7 +38,9 @@ function useElementBlur(initBlur = false): { style: CSSProperties; onClick: Mous
   return { onClick, style };
 }
 
-export const TrustImage = forwardRef<HTMLImageElement, ImageProps>((props, ref) => {
+export type TrustImageProps = ImageProps;
+
+export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, ref) => {
   const trusted = useTrusted();
   const { onClick, style } = useElementBlur(!trusted);
 
@@ -54,7 +57,11 @@ export const TrustImage = forwardRef<HTMLImageElement, ImageProps>((props, ref) 
   return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
 });
 
-export const EmbeddedImage = forwardRef<HTMLImageElement, ImageProps>(({ src, ...props }, ref) => {
+export type EmbeddedImageProps = TrustImageProps & {
+  event?: NostrEvent;
+};
+
+export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(({ src, event, ...props }, ref) => {
   const thumbnail = appSettings.value.imageProxy
     ? new URL(`/256,fit/${src}`, appSettings.value.imageProxy).toString()
     : src;
@@ -62,13 +69,13 @@ export const EmbeddedImage = forwardRef<HTMLImageElement, ImageProps>(({ src, ..
   ref = ref || useRef<HTMLImageElement | null>(null);
   const { show } = useRegisterSlide(
     ref as MutableRefObject<HTMLImageElement | null>,
-    src ? { type: "image", src } : undefined,
+    src ? { type: "image", src, event } : undefined,
   );
 
   return <TrustImage {...props} src={thumbnail} cursor="pointer" ref={ref} onClick={show} />;
 });
 
-export function ImageGallery({ images }: { images: string[] }) {
+export function ImageGallery({ images, event }: { images: string[]; event?: NostrEvent }) {
   const photos = useMemo(() => {
     return images.map((img) => {
       const photo: PhotoWithoutSize = { src: img };
@@ -89,7 +96,7 @@ export function ImageGallery({ images }: { images: string[] }) {
 }
 
 // nevent1qqs8397rp8tt60f3lm8zldt8uqljuqw9axp8z79w0qsmj3r96lmg4tgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmd0mkwa9
-export function embedImageGallery(content: EmbedableContent): EmbedableContent {
+export function embedImageGallery(content: EmbedableContent, event?: NostrEvent): EmbedableContent {
   return content
     .map((subContent, i) => {
       if (typeof subContent === "string") {
@@ -104,7 +111,7 @@ export function embedImageGallery(content: EmbedableContent): EmbedableContent {
             // render previous batch
             const lastMatchPosition = defaultGetLocation(batch[batch.length - 1]);
             const before = subContent.substring(lastBatchEnd, defaultGetLocation(batch[0]).start);
-            const render = <ImageGallery images={batch.map((m) => m[0])} />;
+            const render = <ImageGallery images={batch.map((m) => m[0])} event={event} />;
 
             newContent.push(before, render);
             lastBatchEnd = lastMatchPosition.end;
