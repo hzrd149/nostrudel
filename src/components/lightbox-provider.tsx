@@ -10,10 +10,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, FlexProps, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useUnmount } from "react-use";
+import { Link as RouterLink } from "react-router-dom";
 
-import Lightbox, { Slide } from "yet-another-react-lightbox";
+import Lightbox, { RenderSlideContainerProps, Slide } from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import Download from "yet-another-react-lightbox/plugins/download";
@@ -29,6 +30,11 @@ declare module "yet-another-react-lightbox" {
 }
 
 import { NostrEvent } from "../types/nostr-event";
+import { UserAvatarLink } from "./user-avatar-link";
+import { UserLink } from "./user-link";
+import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
+import styled from "@emotion/styled";
+import { getSharableNoteId } from "../helpers/nip19";
 
 type RefType = MutableRefObject<HTMLElement | null>;
 
@@ -94,19 +100,38 @@ function getRefPath(ref: RefType) {
   return path;
 }
 
-// function EventSlideHeader({ event }: { event: NostrEvent }) {
-//   return (
-//     <Flex gap="2" alignItems="center" w="full">
-//       <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
-//       <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-//       <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-//       <Flex grow={1} />
-//       <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
-//         {dayjs.unix(event.created_at).fromNow()}
-//       </NoteLink>
-//     </Flex>
-//   );
-// }
+function EventSlideHeader({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
+  const encoded = useMemo(() => getSharableNoteId(event.id), [event.id]);
+
+  return (
+    <Flex gap="2" alignItems="center" p="2" {...props}>
+      <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
+      <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+      <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+      <Spacer />
+      <Button as={RouterLink} to={`/n/${encoded}`} colorScheme="brand" size="sm">
+        View Note
+      </Button>
+    </Flex>
+  );
+}
+
+const StyledContainer = styled(Flex)`
+  & > .yarl__fullsize {
+    overflow: hidden;
+  }
+`;
+export function CustomSlideContainer({ slide, children }: RenderSlideContainerProps) {
+  if (slide.event) {
+    return (
+      <StyledContainer direction="column" w="full" h="full" overflow="hidden">
+        <EventSlideHeader event={slide.event} w="full" maxW="4xl" mx="auto" bg="Background" flexShrink={0} />
+        {children}
+      </StyledContainer>
+    );
+  }
+  return <>{children}</>;
+}
 
 export function LightboxProvider({ children }: PropsWithChildren) {
   const lightbox = useDisclosure();
@@ -179,6 +204,9 @@ export function LightboxProvider({ children }: PropsWithChildren) {
         zoom={{ scrollToZoom: true, maxZoomPixelRatio: 4, wheelZoomDistanceFactor: 500 }}
         controller={{ closeOnBackdropClick: true, closeOnPullDown: true }}
         on={{ view: handleView }}
+        render={{
+          slideContainer: CustomSlideContainer,
+        }}
       />
     </LightboxContext.Provider>
   );
