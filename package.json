@@ -34,6 +34,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
     "react-hook-form": "^7.45.4",
+    "react-photo-album": "^2.3.0",
     "react-qr-barcode-scanner": "^1.0.6",
     "react-router-dom": "^6.15.0",
     "react-singleton-hook": "^4.0.1",

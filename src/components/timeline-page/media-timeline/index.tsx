@@ -1,61 +1,37 @@
-import React, { useMemo, useRef } from "react";
-import { Box, IconButton, Link } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useRef } from "react";
+import { ImageProps, useBreakpointValue } from "@chakra-ui/react";
 
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
-import { LightboxProvider, useRegisterSlide } from "../../lightbox-provider";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { getSharableNoteId } from "../../../helpers/nip19";
-import { ExternalLinkIcon } from "../../icons";
+import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
+import { EmbeddedImage } from "../../embed-types";
+import { TrustProvider } from "../../../providers/trust";
+import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { Photo } from "react-photo-album";
 
-type ImagePreview = { eventId: string; src: string; index: number };
+function GalleryImage({ eventId, ...props }: ImageProps & { eventId: string }) {
+  const ref = useRef<HTMLImageElement | null>(null);
+  useRegisterIntersectionEntity(ref, eventId);
 
-const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
-  const navigate = useNavigate();
+  return <EmbeddedImage {...props} ref={ref} />;
+}
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, image.eventId);
-
-  const { show } = useRegisterSlide(ref, { type: "image", src: image.src });
+type PhotoWithEventId = PhotoWithoutSize & { eventId: string };
+function ImageGallery({ images }: { images: PhotoWithEventId[] }) {
+  const rowMultiplier = useBreakpointValue({ base: 2, sm: 3, md: 3, lg: 4, xl: 5 }) ?? 2;
 
   return (
-    <Link
-      href={image.src}
-      position="relative"
-      onClick={(e) => {
-        if (image.src) {
-          e.preventDefault();
-          show();
-        }
-      }}
-    >
-      <Box
-        aspectRatio={1}
-        backgroundImage={`url(${image.src})`}
-        backgroundSize="cover"
-        backgroundPosition="center"
-        ref={ref}
-      />
-      <IconButton
-        icon={<ExternalLinkIcon />}
-        aria-label="Open note"
-        position="absolute"
-        right="2"
-        top="2"
-        size="sm"
-        colorScheme="brand"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          navigate(`/n/${getSharableNoteId(image.eventId)}`);
-        }}
-      />
-    </Link>
+    <PhotoGallery<Photo & { eventId: string }>
+      layout="masonry"
+      photos={images}
+      renderPhoto={({ photo, imageProps }) => <GalleryImage eventId={photo.eventId} {...imageProps} />}
+      columns={rowMultiplier}
+    />
   );
-});
+}
 
 export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }) {
   const events = useSubject(timeline.timeline);
@@ -77,9 +53,9 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
 
   return (
     <LightboxProvider>
-      {images.map((image) => (
-        <ImagePreview key={image.eventId + "-" + image.index} image={image} />
-      ))}
+      <TrustProvider trust>
+        <ImageGallery images={images} />
+      </TrustProvider>
     </LightboxProvider>
   );
 }

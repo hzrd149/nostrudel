@@ -30,7 +30,6 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
           for (const match of matches) {
             if (match.index !== undefined) {
               const { start, end } = (embed.getLocation || defaultGetLocation)(match);
-              if (start === 0 && match[0].includes("#")) debugger;
 
               if (start < cursor) continue;
 

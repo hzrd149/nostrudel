@@ -43,13 +43,7 @@ export default function TimelinePage({
         return <GenericNoteTimeline timeline={timeline} />;
 
       case "images":
-        return (
-          <LightboxProvider>
-            <SimpleGrid columns={[1, 2, 2, 3, 4, 5]} gap="4">
-              <MediaTimeline timeline={timeline} />
-            </SimpleGrid>
-          </LightboxProvider>
-        );
+        return <MediaTimeline timeline={timeline} />;
 
       case "health":
         return <TimelineHealth timeline={timeline} />;
