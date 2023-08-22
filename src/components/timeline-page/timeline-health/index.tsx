@@ -13,7 +13,6 @@ import {
   Tooltip,
   Tr,
   useColorMode,
-  useToast,
 } from "@chakra-ui/react";
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
@@ -31,7 +30,6 @@ function EventRow({
   relays,
   ...props
 }: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
-  const toast = useToast();
   const sub = useMemo(() => getEventRelays(event.id), [event.id]);
   const seenRelays = useSubject(sub);
 
@@ -50,8 +48,6 @@ function EventRow({
     pub.onResult.subscribe((result) => {
       if (result.status) {
         handleEventFromRelay(result.relay, event);
-      } else if (result.message) {
-        toast({ description: result.message, status: result.status ? "success" : "error" });
       }
     });
 

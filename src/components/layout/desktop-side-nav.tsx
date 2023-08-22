@@ -1,29 +1,17 @@
-import { SettingsIcon } from "@chakra-ui/icons";
-import { Avatar, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay, Text, VStack } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Avatar, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 import { ConnectedRelays } from "../connected-relays";
-import {
-  ChatIcon,
-  EditIcon,
-  FeedIcon,
-  LiveStreamIcon,
-  LogoutIcon,
-  MapIcon,
-  NotificationIcon,
-  ProfileIcon,
-  RelayIcon,
-  SearchIcon,
-} from "../icons";
+import { EditIcon, LogoutIcon } from "../icons";
 import ProfileLink from "./profile-link";
 import AccountSwitcher from "./account-switcher";
 import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import PublishLog from "../publish-log";
+import NavItems from "./nav-items";
 
 export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
-  const navigate = useNavigate();
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
 
@@ -48,35 +36,9 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
         </Flex>
         <ProfileLink />
         <AccountSwitcher />
-        <Button onClick={() => navigate("/")} leftIcon={<FeedIcon />}>
-          Home
-        </Button>
-        <Button onClick={() => navigate("/notifications")} leftIcon={<NotificationIcon />}>
-          Notifications
-        </Button>
-        <Button onClick={() => navigate("/dm")} leftIcon={<ChatIcon />}>
-          Messages
-        </Button>
-        <Button onClick={() => navigate("/search")} leftIcon={<SearchIcon />}>
-          Search
-        </Button>
-        <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
-          Streams
-        </Button>
-        <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />}>
-          Map
-        </Button>
-        <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
-          Relays
-        </Button>
-        <Button onClick={() => navigate("/profile")} leftIcon={<ProfileIcon />}>
-          Profile
-        </Button>
-        <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
-          Settings
-        </Button>
+        <NavItems />
         {account && (
-          <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />}>
+          <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} justifyContent="flex-start">
             Logout
           </Button>
         )}

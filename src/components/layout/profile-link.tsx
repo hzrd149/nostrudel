@@ -1,27 +1,29 @@
-import { Box, Button, LinkBox, Text } from "@chakra-ui/react";
+import { Box, Button, LinkBox, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { UserAvatar } from "../user-avatar";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
-import { truncatedId } from "../../helpers/nostr/event";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
+import { useUserMetadata } from "../../hooks/use-user-metadata";
+import { nip19 } from "nostr-tools";
+import { getUserDisplayName } from "../../helpers/user-metadata";
 
 function ProfileButton() {
   const account = useCurrentAccount()!;
   const metadata = useUserMetadata(account.pubkey);
 
   return (
-    <LinkBox
-      as={RouterLink}
-      to={`/u/${normalizeToBech32(account.pubkey, Bech32Prefix.Pubkey)}`}
-      display="flex"
-      gap="2"
-      overflow="hidden"
-    >
-      <UserAvatar pubkey={account.pubkey} noProxy />
+    <LinkBox borderRadius="lg" borderWidth={1} p="2" display="flex" gap="2" alignItems="center">
+      <UserAvatar pubkey={account.pubkey} noProxy size="sm" />
       <Box>
-        <Text fontWeight="bold">{metadata?.name}</Text>
-        <Text>{truncatedId(normalizeToBech32(account.pubkey) ?? "")}</Text>
+        <LinkOverlay
+          as={RouterLink}
+          to={`/u/${nip19.npubEncode(account.pubkey)}`}
+          whiteSpace="nowrap"
+          fontWeight="bold"
+          fontSize="lg"
+        >
+          {getUserDisplayName(metadata, account.pubkey)}
+        </LinkOverlay>
       </Box>
     </LinkBox>
   );
