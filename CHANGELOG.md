@@ -1,5 +1,27 @@
 # nostrudel
 
+## 0.24.0
+
+### Minor Changes
+
+- 03d84eb: Show notes in relay view
+- 1e75dbd: Improve layout of image galleries
+- 07f67cc: Show all images in lightbox
+- d2948e7: Rebuild event publish details
+- 1148093: Render multiple images as image gallery
+- d8b29b4: Add relay review form
+- 9b6c653: Add simple timeline health view
+- b7deb16: Clean up navigation menu
+- 018c917: Add mobile friendly lightbox
+- ce550f5: Show label for paid relays
+- e052991: Add inline reply form
+- 70bada5: Add <url> and <encoded_url> options to CORS proxy url
+- 70bada5: Use corsproxy.io as default service for CORS proxy
+
+### Patch Changes
+
+- 1bc4500: Fix non-english characters breaking links
+
 ## 0.23.0
 
 ### Minor Changes
