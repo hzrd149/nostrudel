@@ -2,7 +2,6 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { useState } from "react";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
 import { random } from "../../../helpers/array";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
@@ -12,6 +11,7 @@ import eventReactionsService from "../../../services/event-reactions";
 import { getEventRelays } from "../../../services/event-relays";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { LikeIcon } from "../../icons";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 export default function ReactionButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
@@ -34,7 +34,7 @@ export default function ReactionButton({ note, ...props }: { note: NostrEvent } 
     const signed = await requestSignature(event);
     if (signed) {
       const writeRelays = clientRelaysService.getWriteUrls();
-      nostrPostAction(writeRelays, signed);
+      new NostrPublishAction("Reaction", writeRelays, signed);
       eventReactionsService.handleEvent(signed);
     }
     setLoading(false);

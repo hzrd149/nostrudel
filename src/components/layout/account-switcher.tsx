@@ -32,9 +32,9 @@ function AccountItem({ account }: { account: Account }) {
   };
 
   return (
-    <Box display="flex" gap="4" alignItems="center" cursor="pointer" onClick={handleClick}>
+    <Box display="flex" gap="2" alignItems="center" cursor="pointer" onClick={handleClick}>
       <UserAvatar pubkey={pubkey} size="sm" />
-      <Box flex={1}>
+      <Box flex={1} overflow="hidden">
         <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
         <AccountInfoBadge fontSize="0.7em" account={account} />
       </Box>

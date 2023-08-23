@@ -40,12 +40,12 @@ const CONNECTION_TIMEOUT = 1000 * 30;
 
 export class Relay {
   url: string;
-  onOpen = new Subject<Relay>();
-  onClose = new Subject<Relay>();
-  onEvent = new Subject<IncomingEvent>();
-  onNotice = new Subject<IncomingNotice>();
-  onEOSE = new Subject<IncomingEOSE>();
-  onCommandResult = new Subject<IncomingCommandResult>();
+  onOpen = new Subject<Relay>(undefined, false);
+  onClose = new Subject<Relay>(undefined, false);
+  onEvent = new Subject<IncomingEvent>(undefined, false);
+  onNotice = new Subject<IncomingNotice>(undefined, false);
+  onEOSE = new Subject<IncomingEOSE>(undefined, false);
+  onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
   ws?: WebSocket;
   mode: RelayMode = RelayMode.ALL;
 

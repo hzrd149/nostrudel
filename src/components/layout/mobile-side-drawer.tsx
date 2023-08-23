@@ -11,27 +11,18 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import { ConnectedRelays } from "../connected-relays";
-import {
-  HomeIcon,
-  LiveStreamIcon,
-  LogoutIcon,
-  ProfileIcon,
-  RelayIcon,
-  SearchIcon,
-  SettingsIcon,
-  ListIcon,
-} from "../icons";
+import { LogoutIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import { UserLink } from "../user-link";
 import AccountSwitcher from "./account-switcher";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
+import NavItems from "./nav-items";
 
 export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "children">) {
-  const navigate = useNavigate();
   const account = useCurrentAccount();
 
   return (
@@ -39,7 +30,7 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader px="4" py="4">
+        <DrawerHeader px="2" py="4">
           {account ? (
             <Flex gap="2">
               <UserAvatar pubkey={account.pubkey} size="sm" noProxy />
@@ -55,29 +46,9 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
         <DrawerBody padding={0} overflowY="auto" overflowX="hidden">
           <AccountSwitcher />
           <Flex direction="column" gap="2" padding="2">
-            <Button onClick={() => navigate(`/`)} leftIcon={<HomeIcon />}>
-              Home
-            </Button>
-            <Button onClick={() => navigate(`/search`)} leftIcon={<SearchIcon />}>
-              Search
-            </Button>
-            <Button onClick={() => navigate(`/profile`)} leftIcon={<ProfileIcon />}>
-              Profile
-            </Button>
-            <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />}>
-              Streams
-            </Button>
-            <Button onClick={() => navigate("/lists")} leftIcon={<ListIcon />}>
-              Lists
-            </Button>
-            <Button onClick={() => navigate("/relays")} leftIcon={<RelayIcon />}>
-              Relays
-            </Button>
-            <Button onClick={() => navigate("/settings")} leftIcon={<SettingsIcon />}>
-              Settings
-            </Button>
+            <NavItems isInDrawer />
             {account ? (
-              <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />}>
+              <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} justifyContent="flex-start">
                 Logout
               </Button>
             ) : (

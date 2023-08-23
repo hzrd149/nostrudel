@@ -24,7 +24,7 @@ function GlobalPage() {
       if (!showReplies && isReply(event)) return false;
       return timelineEventFilter(event);
     },
-    [showReplies, timelineEventFilter]
+    [showReplies, timelineEventFilter],
   );
   const timeline = useTimelineLoader(`global`, readRelays, { kinds: [1] }, { eventFilter });
   useRelaysChanged(readRelays, () => timeline.reset());
@@ -42,7 +42,7 @@ function GlobalPage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} />;
+  return <TimelinePage timeline={timeline} header={header} pt="4" pb="8" />;
 }
 
 export default function GlobalTab() {

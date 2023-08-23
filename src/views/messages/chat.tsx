@@ -3,7 +3,7 @@ import { Button, Card, CardBody, Flex, IconButton, Textarea } from "@chakra-ui/r
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { nostrPostAction } from "../../classes/nostr-post-action";
+
 import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
@@ -21,6 +21,7 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import NostrPublishAction from "../../classes/nostr-publish-action";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useCurrentAccount()!;
@@ -57,7 +58,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     const signed = await requestSignature(event);
     if (!signed) return;
     const writeRelays = clientRelaysService.getWriteUrls();
-    nostrPostAction(writeRelays, signed);
+    const pub = new NostrPublishAction("Send DM", writeRelays, signed);
     setContent("");
   };
 

@@ -21,12 +21,11 @@ import ZapModal from "../../../../components/zap-modal";
 import { LightningIcon } from "../../../../components/icons";
 import ChatMessage from "./chat-message";
 import ZapMessage from "./zap-message";
-import { ImageGalleryProvider } from "../../../../components/image-gallery";
+import { LightboxProvider } from "../../../../components/lightbox-provider";
 import IntersectionObserverProvider from "../../../../providers/intersection-observer";
 import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
 import { useInvoiceModalContext } from "../../../../providers/invoice-modal";
 import { unique } from "../../../../helpers/array";
-import { nostrPostAction } from "../../../../classes/nostr-post-action";
 import { useForm } from "react-hook-form";
 import { useSigningContext } from "../../../../providers/signing-provider";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
@@ -41,6 +40,7 @@ import { useRelaySelectionRelays } from "../../../../providers/relay-selection-p
 import useUserMuteList from "../../../../hooks/use-user-mute-list";
 import { NostrEvent, isPTag } from "../../../../types/nostr-event";
 import { useCurrentAccount } from "../../../../hooks/use-current-account";
+import NostrPublishAction from "../../../../classes/nostr-publish-action";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -71,7 +71,7 @@ export default function StreamChat({
   const muteList = useUserMuteList(account?.pubkey);
   const mutedPubkeys = useMemo(
     () => [...(hostMuteList?.tags ?? []), ...(muteList?.tags ?? [])].filter(isPTag).map((t) => t[1] as string),
-    [hostMuteList, muteList]
+    [hostMuteList, muteList],
   );
   const eventFilter = useCallback((event: NostrEvent) => !mutedPubkeys.includes(event.pubkey), [mutedPubkeys]);
 
@@ -82,7 +82,7 @@ export default function StreamChat({
       "#a": [getATag(stream)],
       kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
     },
-    { eventFilter }
+    { eventFilter },
   );
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
@@ -109,7 +109,7 @@ export default function StreamChat({
       const draft = buildChatMessage(stream, values.content);
       const signed = await requestSignature(draft);
       if (!signed) throw new Error("Failed to sign");
-      nostrPostAction(relays, signed);
+      new NostrPublishAction("Send Chat", relays, signed);
       reset();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -126,7 +126,7 @@ export default function StreamChat({
   return (
     <>
       <IntersectionObserverProvider callback={callback} root={scrollBox}>
-        <ImageGalleryProvider>
+        <LightboxProvider>
           <Card {...props} overflow="hidden" background={isChatLog ? "transparent" : undefined}>
             {!isPopup && (
               <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
@@ -153,7 +153,7 @@ export default function StreamChat({
                     <ChatMessage key={event.id} event={event} stream={stream} />
                   ) : (
                     <ZapMessage key={event.id} zap={event} stream={stream} />
-                  )
+                  ),
                 )}
               </Flex>
               {!isChatLog && (
@@ -184,7 +184,7 @@ export default function StreamChat({
               )}
             </CardBody>
           </Card>
-        </ImageGalleryProvider>
+        </LightboxProvider>
       </IntersectionObserverProvider>
       {zapModal.isOpen && (
         <ZapModal

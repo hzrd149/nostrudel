@@ -10,12 +10,17 @@ import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RelayIcon, RepostI
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import { useCallback, useState } from "react";
+import QuoteNote from "./quote-note";
+import { buildDeleteEvent } from "../../helpers/nostr/event";
+import signingService from "../../services/signing";
 import { buildAppSelectUrl } from "../../helpers/nostr-apps";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
 import relayPoolService from "../../services/relay-pool";
+import NostrPublishAction from "../../classes/nostr-publish-action";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
@@ -30,11 +35,11 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
   const broadcast = useCallback(() => {
     const missingRelays = clientRelaysService.getWriteUrls();
 
-    const { results, onComplete } = nostrPostAction(missingRelays, event, 5000);
+    const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
 
-    results.subscribe((result) => {
+    pub.onResult.subscribe((result) => {
       if (result.status) {
-        handleEventFromRelay(relayPoolService.requestRelay(result.url, false), event);
+        handleEventFromRelay(result.relay, event);
       }
     });
   }, []);

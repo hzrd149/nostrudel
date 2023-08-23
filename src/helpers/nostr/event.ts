@@ -4,7 +4,7 @@ import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../../ty
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import accountService from "../../services/account";
 import { Kind, nip19 } from "nostr-tools";
-import { matchNostrLink } from "../regexp";
+import { getMatchNostrLink } from "../regexp";
 import { getSharableNoteId } from "../nip19";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getAddr } from "../../services/replaceable-event-requester";
@@ -14,7 +14,7 @@ export function isReply(event: NostrEvent | DraftNostrEvent) {
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  const match = event.content.match(matchNostrLink);
+  const match = event.content.match(getMatchNostrLink());
   return event.kind === 6 || (match && match[0].length === event.content.length);
 }
 
@@ -39,7 +39,7 @@ export function getContentTagRefs(content: string, tags: Tag[]) {
   const indexes = new Set();
   Array.from(content.matchAll(/#\[(\d+)\]/gi)).forEach((m) => indexes.add(parseInt(m[1])));
 
-  const linkMatches = Array.from(content.matchAll(new RegExp(matchNostrLink, "gi")));
+  const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
   for (const [_, _prefix, link] of linkMatches) {
     try {
       const decoded = nip19.decode(link);
@@ -209,4 +209,20 @@ export function parseRTag(tag: RTag): RelayConfig {
     default:
       return { url: tag[1], mode: RelayMode.ALL };
   }
+}
+
+export function parseCoordinate(a: string) {
+  const parts = a.split(":") as (string | undefined)[];
+  const kind = parts[0] && parseInt(parts[0]);
+  const pubkey = parts[1];
+  const d = parts[2];
+
+  if (!kind) return null;
+  if (!pubkey) return null;
+
+  return {
+    kind,
+    pubkey,
+    d,
+  };
 }

@@ -1,15 +1,16 @@
 import { useCallback } from "react";
-import { Flex, SimpleGrid } from "@chakra-ui/react";
+import { Flex, FlexProps, SimpleGrid } from "@chakra-ui/react";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
-import { ImageGalleryProvider } from "../image-gallery";
+import { LightboxProvider } from "../lightbox-provider";
 import MediaTimeline from "./media-timeline";
 import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "./timeline-action-and-status";
 import { useSearchParams } from "react-router-dom";
 import { NostrEvent } from "../../types/nostr-event";
-import { matchImageUrls } from "../../helpers/regexp";
+import { getMatchLink } from "../../helpers/regexp";
+import TimelineHealth from "./timeline-health";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -17,16 +18,20 @@ export function useTimelinePageEventFilter() {
 
   return useCallback(
     (event: NostrEvent) => {
-      if (view === "images" && !event.content.match(matchImageUrls)) return false;
+      if (view === "images" && !event.content.match(getMatchLink())) return false;
       return true;
     },
-    [view]
+    [view],
   );
 }
 
-export type TimelineViewType = "timeline" | "images";
+export type TimelineViewType = "timeline" | "images" | "health";
 
-export default function TimelinePage({ timeline, header }: { timeline: TimelineLoader; header?: React.ReactNode }) {
+export default function TimelinePage({
+  timeline,
+  header,
+  ...props
+}: { timeline: TimelineLoader; header?: React.ReactNode } & Omit<FlexProps, "children" | "direction" | "gap">) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const [params, setParams] = useSearchParams();
@@ -38,20 +43,17 @@ export default function TimelinePage({ timeline, header }: { timeline: TimelineL
         return <GenericNoteTimeline timeline={timeline} />;
 
       case "images":
-        return (
-          <ImageGalleryProvider>
-            <SimpleGrid columns={[1, 2, 2, 3, 4, 5]} gap="4">
-              <MediaTimeline timeline={timeline} />
-            </SimpleGrid>
-          </ImageGalleryProvider>
-        );
+        return <MediaTimeline timeline={timeline} />;
+
+      case "health":
+        return <TimelineHealth timeline={timeline} />;
       default:
         return null;
     }
   };
   return (
     <IntersectionObserverProvider<string> callback={callback}>
-      <Flex direction="column" gap="2" pt="4" pb="8">
+      <Flex direction="column" gap="2" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus timeline={timeline} />

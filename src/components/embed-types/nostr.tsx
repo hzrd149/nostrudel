@@ -3,17 +3,16 @@ import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import QuoteNote from "../note/quote-note";
 import { UserLink } from "../user-link";
-import { EventPointer, ProfilePointer } from "nostr-tools/lib/nip19";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { matchHashtag, matchNostrLink } from "../../helpers/regexp";
+import { getMatchHashtag, getMatchNostrLink, stripInvisibleChar } from "../../helpers/regexp";
 
 // nostr:nevent1qqsthg2qlxp9l7egtwa92t8lusm7pjknmjwa75ctrrpcjyulr9754fqpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq36amnwvaz7tmwdaehgu3dwp6kytnhv4kxcmmjv3jhytnwv46q2qg5q9
 // nostr:nevent1qqsq3wc73lqxd70lg43m5rul57d4mhcanttjat56e30yx5zla48qzlspz9mhxue69uhkummnw3e82efwvdhk6qgdwaehxw309ahx7uewd3hkcq5hsum
 export function embedNostrLinks(content: EmbedableContent) {
   return embedJSX(content, {
     name: "nostr-link",
-    regexp: matchNostrLink,
+    regexp: getMatchNostrLink(),
     render: (match) => {
       try {
         const decoded = nip19.decode(match[2]);
@@ -40,7 +39,7 @@ export function embedNostrLinks(content: EmbedableContent) {
 export function embedNostrMentions(content: EmbedableContent, event: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
     name: "nostr-mention",
-    regexp: /#\[(\d+)\]/,
+    regexp: /#\[(\d+)\]/g,
     render: (match) => {
       const index = parseInt(match[1]);
       const tag = event?.tags[index];
@@ -60,11 +59,14 @@ export function embedNostrMentions(content: EmbedableContent, event: NostrEvent 
 }
 
 export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent | DraftNostrEvent) {
-  const hashtags = event.tags.filter((t) => t[0] === "t" && t[1]).map((t) => t[1]?.toLowerCase()) as string[];
+  const hashtags = event.tags
+    .filter((t) => t[0] === "t" && t[1])
+    .map((t) => t[1]?.toLowerCase())
+    .map(stripInvisibleChar);
 
   return embedJSX(content, {
     name: "nostr-hashtag",
-    regexp: matchHashtag,
+    regexp: getMatchHashtag(),
     getLocation: (match) => {
       if (match.index === undefined) throw new Error("match dose not have index");
 

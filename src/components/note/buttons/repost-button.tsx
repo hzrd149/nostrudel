@@ -9,7 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -17,10 +16,10 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
 import { buildRepost } from "../../../helpers/nostr/event";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
-import { nostrPostAction } from "../../../classes/nostr-post-action";
 import clientRelaysService from "../../../services/client-relays";
 import signingService from "../../../services/signing";
 import QuoteNote from "../quote-note";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 export function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -33,8 +32,9 @@ export function RepostButton({ event }: { event: NostrEvent }) {
       if (!account) throw new Error("not logged in");
       setLoading(true);
       const draftRepost = buildRepost(event);
-      const repost = await signingService.requestSignature(draftRepost, account);
-      await nostrPostAction(clientRelaysService.getWriteUrls(), repost);
+      const signed = await signingService.requestSignature(draftRepost, account);
+      const pub = new NostrPublishAction("Repost", clientRelaysService.getWriteUrls(), signed);
+      await pub.onComplete;
       onClose();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

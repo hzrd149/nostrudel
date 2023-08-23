@@ -28,7 +28,7 @@ function RelayPickerModal({
 }: { onSelect: (relay: string) => void } & Omit<ModalProps, "children">) {
   const [search, setSearch] = useState("");
   const { value: onlineRelays } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
+    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
   );
   const relayList = unique(onlineRelays ?? []);
 
@@ -78,7 +78,7 @@ export const RelayUrlInput = forwardRef(
   ({ onChange, ...props }: Omit<RelayUrlInputProps, "onChange"> & { onChange: (url: string) => void }, ref) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
     const { value: relaysJson } = useAsync(async () =>
-      fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
+      fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
     );
     const relaySuggestions = unique(relaysJson ?? []);
 
@@ -100,5 +100,5 @@ export const RelayUrlInput = forwardRef(
         <RelayPickerModal onClose={onClose} isOpen={isOpen} onSelect={(url) => onChange(url)} size="2xl" />
       </>
     );
-  }
+  },
 );

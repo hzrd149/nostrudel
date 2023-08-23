@@ -34,7 +34,7 @@ class UserRelaysService {
       Kind.RelayList,
       pubkey,
       undefined,
-      alwaysRequest
+      alwaysRequest,
     );
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
 

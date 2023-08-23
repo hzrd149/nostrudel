@@ -44,6 +44,8 @@ import { UserFollowButton } from "../../components/user-follow-button";
 import { UserTipButton } from "../../components/user-tip-button";
 import { UserProfileMenu } from "./components/user-profile-menu";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
+import { parseAddress } from "../../services/dns-identity";
+import { getLudEndpoint } from "../../helpers/lnurl";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -67,6 +69,7 @@ export default function UserAboutTab() {
   const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
+  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
 
   return (
     <Flex
@@ -141,13 +144,17 @@ export default function UserAboutTab() {
         {metadata?.lud16 && (
           <Flex gap="2">
             <LightningIcon />
-            <Text>{metadata.lud16}</Text>
+            <Link href={getLudEndpoint(metadata.lud16)} isExternal>
+              {metadata.lud16}
+            </Link>
           </Flex>
         )}
-        {metadata?.nip05 && (
+        {parsedNip05 && (
           <Flex gap="2">
             <AtIcon />
-            <UserDnsIdentityIcon pubkey={pubkey} />
+            <Link href={`//${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`} isExternal>
+              <UserDnsIdentityIcon pubkey={pubkey} />
+            </Link>
           </Flex>
         )}
         {metadata?.website && (
