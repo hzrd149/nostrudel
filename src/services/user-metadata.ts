@@ -32,7 +32,7 @@ class UserMetadataService {
       Kind.Metadata,
       pubkey,
       undefined,
-      alwaysRequest
+      alwaysRequest,
     );
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;

@@ -28,7 +28,6 @@ import DirectMessageChatView from "./views/messages/chat";
 import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import ToolsHomeView from "./views/tools";
-import Nip19ToolsView from "./views/tools/nip19";
 import UserAboutTab from "./views/user/about";
 import UserLikesTab from "./views/user/likes";
 import useSetColorMode from "./hooks/use-set-color-mode";
@@ -116,10 +115,7 @@ const router = createHashRouter([
       { path: "profile", element: <ProfileView /> },
       {
         path: "tools",
-        children: [
-          { path: "", element: <ToolsHomeView /> },
-          { path: "nip19", element: <Nip19ToolsView /> },
-        ],
+        children: [{ path: "", element: <ToolsHomeView /> }],
       },
       {
         path: "streams",

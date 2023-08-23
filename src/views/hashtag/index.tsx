@@ -57,13 +57,13 @@ function HashTagPage() {
       if (!showReplies && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [showReplies]
+    [showReplies],
   );
   const timeline = useTimelineLoader(
     `${hashtag}-hashtag`,
     readRelays,
     { kinds: [1], "#t": [hashtag] },
-    { eventFilter }
+    { eventFilter },
   );
 
   useRelaysChanged(readRelays, () => timeline.reset());
@@ -100,7 +100,7 @@ function HashTagPage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} />;
+  return <TimelinePage timeline={timeline} header={header} pt="4" pb="8" />;
 }
 
 export default function HashTagView() {

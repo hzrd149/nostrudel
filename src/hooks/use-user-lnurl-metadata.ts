@@ -7,7 +7,7 @@ export default function useUserLNURLMetadata(pubkey: string) {
   const address = userMetadata?.lud16 || userMetadata?.lud06;
   const { value: metadata } = useAsync(
     async () => (address ? lnurlMetadataService.requestMetadata(address) : undefined),
-    [address]
+    [address],
   );
 
   return { metadata, address };

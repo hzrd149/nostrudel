@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
-import { nostrPostAction } from "../classes/nostr-post-action";
 import { PersistentSubject, Subject } from "../classes/subject";
 import { DraftNostrEvent, PTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
 import accountService from "./account";
 import userContactsService, { UserContacts } from "./user-contacts";
 import signingService from "./signing";
+import NostrPublishAction from "../classes/nostr-publish-action";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -21,7 +21,7 @@ function handleNewContacts(contacts: UserContacts | undefined) {
       const relay = contacts.contactRelay[key];
       if (relay) return ["p", key, relay];
       else return ["p", key];
-    })
+    }),
   );
 
   // reset the pending list since we just got a new contacts list
@@ -79,8 +79,8 @@ async function savePending() {
   if (!current) throw new Error("no account");
   const event = await signingService.requestSignature(draft, current);
 
-  const results = nostrPostAction(clientRelaysService.getWriteUrls(), event);
-  await results.onComplete;
+  const pub = new NostrPublishAction("Update Following", clientRelaysService.getWriteUrls(), event);
+  await pub.onComplete;
 
   savingDraft.next(false);
 
@@ -98,7 +98,7 @@ function addContact(pubkey: string, relay?: string) {
           return newTag;
         }
         return t;
-      })
+      }),
     );
   } else {
     following.next([...pTags, newTag]);

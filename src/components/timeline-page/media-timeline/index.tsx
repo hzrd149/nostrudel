@@ -1,59 +1,51 @@
-import React, { useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
+import { useBreakpointValue } from "@chakra-ui/react";
+
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import { matchImageUrls } from "../../../helpers/regexp";
-import { ImageGalleryLink, ImageGalleryProvider } from "../../image-gallery";
-import { Box, IconButton } from "@chakra-ui/react";
-import { useIsMobile } from "../../../hooks/use-is-mobile";
-import { useNavigate } from "react-router-dom";
+import { getMatchLink } from "../../../helpers/regexp";
+import { LightboxProvider } from "../../lightbox-provider";
+import { isImageURL } from "../../../helpers/url";
+import { EmbeddedImage, EmbeddedImageProps } from "../../embed-types";
+import { TrustProvider } from "../../../providers/trust";
+import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { getSharableNoteId } from "../../../helpers/nip19";
-import { ExternalLinkIcon } from "../../icons";
+import { Photo } from "react-photo-album";
+import { NostrEvent } from "../../../types/nostr-event";
 
-const matchAllImages = new RegExp(matchImageUrls, "ig");
+function GalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
+  const ref = useRef<HTMLImageElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
 
-type ImagePreview = { eventId: string; src: string; index: number };
+  return <EmbeddedImage {...props} event={event} ref={ref} />;
+}
 
-const ImagePreview = React.memo(({ image }: { image: ImagePreview }) => {
-  const navigate = useNavigate();
-
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, image.eventId);
+type PhotoWithEvent = PhotoWithoutSize & { event: NostrEvent };
+function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
+  const rowMultiplier = useBreakpointValue({ base: 2, sm: 3, md: 3, lg: 4, xl: 5 }) ?? 2;
 
   return (
-    <ImageGalleryLink href={image.src} position="relative" ref={ref}>
-      <Box aspectRatio={1} backgroundImage={`url(${image.src})`} backgroundSize="cover" backgroundPosition="center" />
-      <IconButton
-        icon={<ExternalLinkIcon />}
-        aria-label="Open note"
-        position="absolute"
-        right="2"
-        top="2"
-        size="sm"
-        colorScheme="brand"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          navigate(`/n/${getSharableNoteId(image.eventId)}`);
-        }}
-      />
-    </ImageGalleryLink>
+    <PhotoGallery<Photo & { event: NostrEvent }>
+      layout="masonry"
+      photos={images}
+      renderPhoto={({ photo, imageProps }) => <GalleryImage event={photo.event} {...imageProps} />}
+      columns={rowMultiplier}
+    />
   );
-});
+}
 
 export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }) {
-  const isMobile = useIsMobile();
   const events = useSubject(timeline.timeline);
 
   const images = useMemo(() => {
-    var images: { eventId: string; src: string; index: number }[] = [];
+    var images: PhotoWithEvent[] = [];
 
     for (const event of events) {
-      const urls = event.content.matchAll(matchAllImages);
+      const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;
-      for (const url of urls) {
-        images.push({ eventId: event.id, src: url[0], index: i++ });
+      for (const match of urls) {
+        if (isImageURL(match[0])) images.push({ event, src: match[0] });
       }
     }
 
@@ -61,10 +53,10 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
   }, [events]);
 
   return (
-    <ImageGalleryProvider>
-      {images.map((image) => (
-        <ImagePreview key={image.eventId + "-" + image.index} image={image} />
-      ))}
-    </ImageGalleryProvider>
+    <LightboxProvider>
+      <TrustProvider trust>
+        <ImageGallery images={images} />
+      </TrustProvider>
+    </LightboxProvider>
   );
 }

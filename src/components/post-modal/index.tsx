@@ -1,3 +1,4 @@
+import React, { useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -13,21 +14,17 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import React, { useRef, useState } from "react";
-import { useList } from "react-use";
-import { nostrPostAction, PostResult } from "../../classes/nostr-post-action";
-import { normalizeToHex } from "../../helpers/nip19";
+import NostrPublishAction from "../../classes/nostr-publish-action";
 import { getReferences } from "../../helpers/nostr/event";
-import { matchHashtag, mentionNpubOrNote } from "../../helpers/regexp";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import { useSigningContext } from "../../providers/signing-provider";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { DraftNostrEvent } from "../../types/nostr-event";
 import { ImageIcon } from "../icons";
 import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
-import { PostResults } from "./post-results";
+import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
+import { finalizeNote } from "../../helpers/nostr/post";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -38,40 +35,6 @@ function emptyDraft(): DraftNostrEvent {
   };
 }
 
-function finalizeNote(draft: DraftNostrEvent) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags), created_at: dayjs().unix() };
-
-  // replace all occurrences of @npub and @note
-  while (true) {
-    const match = mentionNpubOrNote.exec(updatedDraft.content);
-    if (!match || match.index === undefined) break;
-
-    const hex = normalizeToHex(match[1]);
-    if (!hex) continue;
-    const mentionType = match[2] === "npub1" ? "p" : "e";
-    // TODO: find the best relay for this user or note
-    const existingMention = updatedDraft.tags.find((t) => t[0] === mentionType && t[1] === hex);
-    const index = existingMention
-      ? updatedDraft.tags.indexOf(existingMention)
-      : updatedDraft.tags.push([mentionType, hex, "", "mention"]) - 1;
-
-    // replace the npub1 or note1 with a mention tag #[0]
-    const c = updatedDraft.content;
-    updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
-  }
-
-  // replace all uses of #hashtag
-  const matches = updatedDraft.content.matchAll(new RegExp(matchHashtag, "giu"));
-  for (const [_, space, hashtag] of matches) {
-    const lower = hashtag.toLocaleLowerCase();
-    if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {
-      updatedDraft.tags.push(["t", lower]);
-    }
-  }
-
-  return updatedDraft;
-}
-
 type PostModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -79,13 +42,11 @@ type PostModalProps = {
 };
 
 export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => {
-  const isMobile = useIsMobile();
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
   const [waiting, setWaiting] = useState(false);
-  const [signedEvent, setSignedEvent] = useState<NostrEvent | null>(null);
-  const [results, resultsActions] = useList<PostResult>();
+  const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const { isOpen: showPreview, onToggle: togglePreview } = useDisclosure();
   const [draft, setDraft] = useState<DraftNostrEvent>(() => Object.assign(emptyDraft(), initialDraft));
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
@@ -98,7 +59,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       const payload = new FormData();
       payload.append("fileToUpload", imageFile);
       const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
-        res.text()
+        res.text(),
       );
       const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
       if (imageUrl) {
@@ -117,15 +78,12 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const handleSubmit = async () => {
     setWaiting(true);
     const updatedDraft = finalizeNote(draft);
-    const event = await requestSignature(updatedDraft);
+    const signed = await requestSignature(updatedDraft);
     setWaiting(false);
-    if (!event) return;
-    setSignedEvent(event);
+    if (!signed) return;
 
-    const { results } = nostrPostAction(writeRelays, event);
-    results.subscribe((result) => {
-      resultsActions.push(result);
-    });
+    const pub = new NostrPublishAction("Post", writeRelays, signed);
+    setPublishAction(pub);
   };
 
   const refs = getReferences(draft);
@@ -133,8 +91,15 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const canSubmit = draft.content.length > 0;
 
   const renderContent = () => {
-    if (signedEvent) {
-      return <PostResults event={signedEvent} results={results} onClose={onClose} />;
+    if (publishAction) {
+      return (
+        <>
+          <PublishDetails pub={publishAction} />
+          <Button onClick={onClose} mt="2" ml="auto">
+            Close
+          </Button>
+        </>
+      );
     }
     return (
       <>
@@ -190,10 +155,10 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={false}>
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={!!publishAction}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding={isMobile ? "2" : "4"}>{renderContent()}</ModalBody>
+        <ModalBody padding={["2", "2", "4"]}>{renderContent()}</ModalBody>
       </ModalContent>
     </Modal>
   );

@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import db from "./db";
 import { fetchWithCorsFallback } from "../helpers/cors";
 
-function parseAddress(address: string): { name?: string; domain?: string } {
+export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
   return { name: parts[0], domain: parts[1] };
 }
@@ -28,7 +28,7 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
 
 async function fetchAllIdentities(domain: string) {
   const json = await fetchWithCorsFallback(`//${domain}/.well-known/nostr.json`).then(
-    (res) => res.json() as Promise<IdentityJson>
+    (res) => res.json() as Promise<IdentityJson>,
   );
 
   await addToCache(domain, json);
@@ -101,7 +101,7 @@ async function pruneCache() {
   const keys = await db.getAllKeysFromIndex(
     "dnsIdentifiers",
     "updated",
-    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
+    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
   );
 
   for (const pubkey of keys) {

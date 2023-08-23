@@ -1,5 +1,20 @@
 export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
 
+export const IMAGE_EXT = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
+export const VIDEO_EXT = [".mp4", ".mkv", ".webm", ".mov"];
+
+export function isMediaURL(url: string | URL) {
+  return isImageURL(url) || isVideoURL(url);
+}
+export function isImageURL(url: string | URL) {
+  const u = new URL(url);
+  return IMAGE_EXT.some((ext) => u.pathname.endsWith(ext));
+}
+export function isVideoURL(url: string | URL) {
+  const u = new URL(url);
+  return VIDEO_EXT.some((ext) => u.pathname.endsWith(ext));
+}
+
 export function normalizeRelayUrl(relayUrl: string) {
   const url = new URL(relayUrl);
 
@@ -21,6 +36,10 @@ export function safeRelayUrl(relayUrl: string) {
     return normalizeRelayUrl(relayUrl);
   } catch (e) {}
   return null;
+}
+
+export function safeRelayUrls(urls: string[]): string[] {
+  return urls.map(safeRelayUrl).filter(Boolean) as string[];
 }
 
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {

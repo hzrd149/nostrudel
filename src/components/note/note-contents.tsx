@@ -17,12 +17,16 @@ import {
   renderVideoUrl,
   embedEmoji,
   renderOpenGraphUrl,
+  embedImageGallery,
 } from "../embed-types";
-import { ImageGalleryProvider } from "../image-gallery";
+import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
 
 function buildContents(event: NostrEvent | DraftNostrEvent) {
   let content: EmbedableContent = [event.content.trim()];
+
+  // image gallery
+  content = embedImageGallery(content, event as NostrEvent);
 
   // common
   content = embedUrls(content, [
@@ -58,10 +62,10 @@ export const NoteContents = React.memo(({ event, ...props }: NoteContentsProps &
   const content = buildContents(event);
 
   return (
-    <ImageGalleryProvider>
+    <LightboxProvider>
       <Box whiteSpace="pre-wrap" {...props}>
         {content}
       </Box>
-    </ImageGalleryProvider>
+    </LightboxProvider>
   );
 });

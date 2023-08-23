@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
-import { nostrPostAction } from "../classes/nostr-post-action";
 import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
 import accountService from "./account";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import userRelaysService, { ParsedUserRelays } from "./user-relays";
-import { PersistentSubject, Subject } from "../classes/subject";
+import { Connection, PersistentSubject, Subject } from "../classes/subject";
 import signingService from "./signing";
+import { logger } from "../helpers/debug";
+import NostrPublishAction from "../classes/nostr-publish-action";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -18,21 +19,30 @@ const DEFAULT_RELAYS = [
   { url: "wss://nos.lol", mode: RelayMode.READ },
 ];
 
+const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], RelayConfig[] | undefined> = (
+  userRelays,
+  next,
+) => next(userRelays.relays);
+
 class ClientRelayService {
   bootstrapRelays = new Set<string>();
   relays = new PersistentSubject<RelayConfig[]>([]);
   writeRelays = new PersistentSubject<RelayConfig[]>([]);
   readRelays = new PersistentSubject<RelayConfig[]>([]);
 
+  log = logger.extend("ClientRelays");
+
   constructor() {
     let lastSubject: Subject<ParsedUserRelays> | undefined;
     accountService.current.subscribe((account) => {
       if (!account) {
+        this.log("No account, using default relays");
         this.relays.next(DEFAULT_RELAYS);
         return;
       } else this.relays.next([]);
 
       if (account.relays) {
+        this.log("Found bootstrap relays");
         this.bootstrapRelays.clear();
         for (const relay of account.relays) {
           this.bootstrapRelays.add(relay);
@@ -40,41 +50,47 @@ class ClientRelayService {
       }
 
       if (lastSubject) {
-        lastSubject.unsubscribe(this.handleRelayChanged, this);
+        this.log("Disconnecting from previous user relays");
+        this.relays.disconnect(lastSubject);
         lastSubject = undefined;
       }
 
       // load the relays from cache or bootstrap relays
+      this.log("Load users relays from cache or bootstrap relays");
       lastSubject = userRelaysService.requestRelays(account.pubkey, Array.from(this.bootstrapRelays));
       setTimeout(() => {
         // double check for new relay notes
+        this.log("Requesting latest relays from the write relays");
         userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), true);
       }, 1000);
 
-      lastSubject.subscribe(this.handleRelayChanged, this);
+      this.relays.connectWithHandler(lastSubject, userRelaysToRelayConfig);
     });
 
-    this.relays.subscribe((relays) => this.writeRelays.next(relays.filter((r) => r.mode & RelayMode.WRITE)));
-    this.relays.subscribe((relays) => this.readRelays.next(relays.filter((r) => r.mode & RelayMode.READ)));
-  }
-
-  private handleRelayChanged(relays: ParsedUserRelays) {
-    this.relays.next(relays.relays);
+    // set the read and write relays
+    this.relays.subscribe((relays) => {
+      this.log("Got new relay list");
+      this.writeRelays.next(relays.filter((r) => r.mode & RelayMode.WRITE));
+      this.readRelays.next(relays.filter((r) => r.mode & RelayMode.READ));
+    });
   }
 
   async addRelay(url: string, mode: RelayMode) {
+    this.log(`Adding ${url} relay`);
     if (!this.relays.value.some((r) => r.url === url)) {
       const newRelays = [...this.relays.value, { url, mode }];
       await this.postUpdatedRelays(newRelays);
     }
   }
   async updateRelay(url: string, mode: RelayMode) {
+    this.log(`Updating ${url} relay`);
     if (this.relays.value.some((r) => r.url === url)) {
       const newRelays = this.relays.value.map((r) => (r.url === url ? { url, mode } : r));
       await this.postUpdatedRelays(newRelays);
     }
   }
   async removeRelay(url: string) {
+    this.log(`Removing ${url} relay`);
     if (this.relays.value.some((r) => r.url === url)) {
       const newRelays = this.relays.value.filter((r) => r.url !== url);
       await this.postUpdatedRelays(newRelays);
@@ -109,12 +125,12 @@ class ClientRelayService {
     if (!current) throw new Error("no account");
     const event = await signingService.requestSignature(draft, current);
 
-    const results = nostrPostAction(writeUrls, event);
+    const pub = new NostrPublishAction("Update Relays", writeUrls, event);
 
     // pass new event to the user relay service
     userRelaysService.receiveEvent(event);
 
-    await results.onComplete;
+    await pub.onComplete;
   }
 
   getWriteUrls() {

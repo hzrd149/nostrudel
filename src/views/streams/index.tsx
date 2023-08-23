@@ -27,7 +27,7 @@ function StreamsPage() {
       } catch (e) {}
       return false;
     },
-    [filterStatus]
+    [filterStatus],
   );
 
   const { people } = usePeopleListContext();
@@ -49,18 +49,18 @@ function StreamsPage() {
 
   return (
     <Flex p="2" gap="2" overflow="hidden" direction="column">
-      <Flex gap="2">
-        <PeopleListSelection maxW="sm" />
-        <Select maxW="sm" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+      <Flex gap="2" wrap="wrap">
+        <PeopleListSelection w={["full", "xs"]} />
+        <Select w={["full", "xs"]} value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
           <option value="live">Live</option>
           <option value="ended">Ended</option>
         </Select>
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid minChildWidth={["full", "20rem"]} spacing="2">
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} maxW="lg" />
+            <StreamCard key={stream.event.id} stream={stream} />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />

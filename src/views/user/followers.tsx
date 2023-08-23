@@ -47,7 +47,7 @@ export default function UserFollowersTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleGrid minChildWidth={["full", "4in"]} spacing="2" py="2">
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" py="2">
         {followers.map((event) => (
           <FollowerItem key={event.pubkey} event={event} />
         ))}

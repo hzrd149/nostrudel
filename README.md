@@ -1,6 +1,6 @@
 # noStrudel
 
-> NOTE: This client is still in development and is buggy
+> NOTE: This client is still in development and will have bugs
 
 ## noStrudel is my personal nostr client.
 
@@ -10,7 +10,7 @@ There are many features missing from this client and I wont get around to implem
 
 Live Instance: [nostrudel.ninja](https://nostrudel.ninja)
 
-You can find better clients with more features in the [awesome-nostr](https://github.com/aljazceru/awesome-nostr) repo.
+You can find better clients with more features on [nostrapps.com](https://www.nostrapps.com/) or in the [awesome-nostr](https://github.com/aljazceru/awesome-nostr) repo.
 
 ## Please don't trust my app with your nsec
 
@@ -30,7 +30,7 @@ docker run --rm -p 8080:80 ghcr.io/hzrd149/nostrudel
 git clone git@github.com:hzrd149/nostrudel.git
 cd nostrudel
 yarn install
-yarn start
+yarn dev
 ```
 
 ## Contributing

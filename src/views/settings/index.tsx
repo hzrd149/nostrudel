@@ -43,9 +43,6 @@ export default function SettingsView() {
           </Accordion>
         </FormProvider>
         <Flex gap="4" padding="4" alignItems="center">
-          <Button as={RouterLink} to="/tools" leftIcon={<ToolsIcon />}>
-            Tools
-          </Button>
           <Link isExternal href="https://github.com/hzrd149/nostrudel">
             <GithubIcon /> Github
           </Link>

@@ -25,7 +25,7 @@ export default function RelaysView() {
     .map((r) => r.url)
     .filter(safeRelayUrl);
   const { value: onlineRelays = [] } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>)
+    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
   );
 
   const filteredRelays = useMemo(() => {
@@ -38,7 +38,7 @@ export default function RelaysView() {
 
   return (
     <Flex direction="column" gap="2" p="2">
-      <Flex alignItems="center" gap="2">
+      <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
         <Switch isChecked={showAll.isOpen} onChange={showAll.onToggle}>
           Show All
@@ -51,9 +51,9 @@ export default function RelaysView() {
           Add Custom
         </Button>
       </Flex>
-      <SimpleGrid minChildWidth="25rem" spacing="2">
+      <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
         {filteredRelays.map((url) => (
-          <RelayCard key={url} url={url} variant="outline" maxW="xl" />
+          <RelayCard key={url} url={url} variant="outline" />
         ))}
       </SimpleGrid>
 
@@ -61,9 +61,9 @@ export default function RelaysView() {
         <>
           <Divider />
           <Heading size="lg">Discovered Relays</Heading>
-          <SimpleGrid minChildWidth="25rem" spacing="2">
+          <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
             {discoveredRelays.map((url) => (
-              <RelayCard key={url} url={url} variant="outline" maxW="xl" />
+              <RelayCard key={url} url={url} variant="outline" />
             ))}
           </SimpleGrid>
         </>

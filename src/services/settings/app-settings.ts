@@ -3,9 +3,9 @@ import accountService from "../account";
 import userAppSettings from "./user-app-settings";
 import clientRelaysService from "../client-relays";
 import signingService from "../signing";
-import { nostrPostAction } from "../../classes/nostr-post-action";
 import { AppSettings, defaultSettings } from "./migrations";
 import { logger } from "../../helpers/debug";
+import NostrPublishAction from "../../classes/nostr-publish-action";
 
 const log = logger.extend("AppSettings");
 
@@ -25,7 +25,8 @@ export async function replaceSettings(newSettings: AppSettings) {
     const draft = userAppSettings.buildAppSettingsEvent(newSettings);
     const event = await signingService.requestSignature(draft, account);
     userAppSettings.receiveEvent(event);
-    await nostrPostAction(clientRelaysService.getWriteUrls(), event).onComplete;
+    const pub = new NostrPublishAction("Update Settings", clientRelaysService.getWriteUrls(), event);
+    await pub.onComplete;
   }
 }
 

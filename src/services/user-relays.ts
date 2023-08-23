@@ -29,7 +29,13 @@ class UserRelaysService {
   }
   requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.subjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.RelayList, pubkey);
+    const requestSub = replaceableEventLoaderService.requestEvent(
+      relays,
+      Kind.RelayList,
+      pubkey,
+      undefined,
+      alwaysRequest,
+    );
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
 
     // also fetch the relays from the users contacts

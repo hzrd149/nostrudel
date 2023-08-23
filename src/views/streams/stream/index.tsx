@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "react-use";
-import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text, useBreakpointValue } from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
@@ -12,7 +12,6 @@ import { LiveVideoPlayer } from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import { useIsMobile } from "../../../hooks/use-is-mobile";
 import StreamSummaryContent from "../components/stream-summary-content";
 import { ArrowDownSIcon, ArrowUpSIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
@@ -24,7 +23,7 @@ import RelaySelectionButton from "../../../components/relay-selection/relay-sele
 import RelaySelectionProvider from "../../../providers/relay-selection-provider";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
-  const isMobile = useIsMobile();
+  const vertical = useBreakpointValue({ base: true, lg: false });
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const scrollState = useScroll(scrollBox);
   const navigate = useNavigate();
@@ -47,8 +46,8 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
 
     return (
       <ButtonGroup>
-        {isMobile && toggleButton}
-        {!isMobile && (
+        {vertical && toggleButton}
+        {!vertical && (
           <CopyIconButton
             text={location.href + "?displayMode=log&colorMode=dark"}
             aria-label="Copy chat log URL"
@@ -78,9 +77,9 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
       h="full"
       overflowX="hidden"
       overflowY="auto"
-      direction={isMobile ? "column" : "row"}
-      p={isMobile || !!displayMode ? 0 : "2"}
-      gap={isMobile ? 0 : "4"}
+      direction={vertical ? "column" : "row"}
+      p={vertical || !!displayMode ? 0 : "2"}
+      gap={vertical ? 0 : "4"}
       ref={scrollBox}
     >
       {displayMode && (
@@ -93,14 +92,14 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
         />
       )}
       {!displayMode && (
-        <Flex gap={isMobile ? "2" : "4"} direction="column" flexGrow={isMobile ? 0 : 1}>
+        <Flex gap={vertical ? "2" : "4"} direction="column" flexGrow={vertical ? 0 : 1}>
           <LiveVideoPlayer
             stream={stream.streaming || stream.recording}
             autoPlay={!!stream.streaming}
             poster={stream.image}
             maxH="100vh"
           />
-          <Flex gap={isMobile ? "2" : "4"} alignItems="center" p={isMobile ? "2" : 0}>
+          <Flex gap={vertical ? "2" : "4"} alignItems="center" p={vertical ? "2" : 0}>
             <UserAvatarLink pubkey={stream.host} noProxy />
             <Box>
               <Heading size="md">
@@ -113,15 +112,15 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
             <RelaySelectionButton />
             <Button onClick={() => navigate(-1)}>Back</Button>
           </Flex>
-          <StreamSummaryContent stream={stream} px={isMobile ? "2" : 0} />
+          <StreamSummaryContent stream={stream} px={vertical ? "2" : 0} />
         </Flex>
       )}
       <StreamChat
         stream={stream}
         flexGrow={1}
-        maxW={isMobile || !!displayMode ? undefined : "lg"}
+        maxW={vertical || !!displayMode ? undefined : "lg"}
         maxH="100vh"
-        minH={isMobile ? "100vh" : undefined}
+        minH={vertical ? "100vh" : undefined}
         flexShrink={0}
         actions={renderActions()}
         displayMode={displayMode}
@@ -152,7 +151,7 @@ export default function StreamView() {
         parsed.data.kind,
         parsed.data.pubkey,
         parsed.data.identifier,
-        true
+        true,
       );
     } catch (e) {
       console.log(e);

@@ -23,7 +23,6 @@ import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import directMessagesService from "../../services/direct-messages";
 import { ExternalLinkIcon } from "../../components/icons";
-import { useIsMobile } from "../../hooks/use-is-mobile";
 import RequireCurrentAccount from "../../providers/require-current-account";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
@@ -47,7 +46,6 @@ function ContactCard({ pubkey }: { pubkey: string }) {
 }
 
 function DirectMessagesPage() {
-  const isMobile = useIsMobile();
   const [from, setFrom] = useState(dayjs().subtract(2, "days"));
   const conversations = useSubject(directMessagesService.conversations);
 
@@ -97,7 +95,7 @@ function DirectMessagesPage() {
     <Flex direction="column" gap="2" overflowX="hidden" overflowY="auto" height="100%" pt="2" pb="8">
       <Alert status="info" flexShrink={0}>
         <AlertIcon />
-        <Flex direction={isMobile ? "column" : "row"}>
+        <Flex direction={{ base: "column", lg: "row" }}>
           <AlertTitle>Give Blowater a try</AlertTitle>
           <AlertDescription>
             <Text>
