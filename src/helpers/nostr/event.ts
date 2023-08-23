@@ -210,3 +210,19 @@ export function parseRTag(tag: RTag): RelayConfig {
       return { url: tag[1], mode: RelayMode.ALL };
   }
 }
+
+export function parseCoordinate(a: string) {
+  const parts = a.split(":") as (string | undefined)[];
+  const kind = parts[0] && parseInt(parts[0]);
+  const pubkey = parts[1];
+  const d = parts[2];
+
+  if (!kind) return null;
+  if (!pubkey) return null;
+
+  return {
+    kind,
+    pubkey,
+    d,
+  };
+}

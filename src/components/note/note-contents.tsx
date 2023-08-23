@@ -18,11 +18,12 @@ import {
   embedEmoji,
   renderOpenGraphUrl,
   embedImageGallery,
+  renderGenericUrl,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
 
-function buildContents(event: NostrEvent | DraftNostrEvent) {
+function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
 
   // image gallery
@@ -39,7 +40,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent) {
     renderTidalUrl,
     renderImageUrl,
     renderVideoUrl,
-    renderOpenGraphUrl,
+    simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 
   // bitcoin
@@ -56,16 +57,19 @@ function buildContents(event: NostrEvent | DraftNostrEvent) {
 
 export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
+  noOpenGraphLinks?: boolean;
 };
 
-export const NoteContents = React.memo(({ event, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
-  const content = buildContents(event);
+export const NoteContents = React.memo(
+  ({ event, noOpenGraphLinks, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
+    const content = buildContents(event, noOpenGraphLinks);
 
-  return (
-    <LightboxProvider>
-      <Box whiteSpace="pre-wrap" {...props}>
-        {content}
-      </Box>
-    </LightboxProvider>
-  );
-});
+    return (
+      <LightboxProvider>
+        <Box whiteSpace="pre-wrap" {...props}>
+          {content}
+        </Box>
+      </LightboxProvider>
+    );
+  },
+);
