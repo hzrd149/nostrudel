@@ -1,49 +1,58 @@
 import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
-import { nip19 } from "nostr-tools";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import useUserLists from "../../hooks/use-user-lists";
+import { Kind, nip19 } from "nostr-tools";
 import { UserLink } from "../../components/user-link";
-import useSubject from "../../hooks/use-subject";
-import { Button, Flex, Heading, Link } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import { UserCard } from "../user/components/user-card";
-import { ArrowLeftSIcon, ExternalLinkIcon } from "../../components/icons";
+import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { buildAppSelectUrl } from "../../helpers/nostr-apps";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
+import { parseCoordinate } from "../../helpers/nostr/events";
+import accountService from "../../services/account";
+import { MUTE_LIST, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
 
-function useListPointer() {
+function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
-  const pointer = nip19.decode(addr);
 
-  switch (pointer.type) {
-    case "naddr":
-      if (pointer.data.kind !== 30000) throw new Error("Unknown event kind");
-      return pointer.data;
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
+  const current = accountService.current.value;
+
+  if (addr === "following") {
+    if (!current) throw new Error("No account");
+    return { kind: Kind.Contacts, pubkey: current.pubkey };
   }
+  if (addr === "mute") {
+    if (!current) throw new Error("No account");
+    return { kind: MUTE_LIST, pubkey: current.pubkey };
+  }
+
+  if (addr.includes(":")) {
+    const parsed = parseCoordinate(addr);
+    if (!parsed) throw new Error("Bad coordinate");
+    return parsed;
+  }
+
+  const parsed = nip19.decode(addr);
+  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
+  return parsed.data;
 }
 
 export default function ListView() {
-  const pointer = useListPointer();
-  const account = useCurrentAccount();
   const navigate = useNavigate();
+  const coordinate = useListCoordinate();
   const { deleteEvent } = useDeleteEventContext();
+  const account = useCurrentAccount();
 
-  const readRelays = useReadRelayUrls(pointer.relays);
-  const lists = useUserLists(pointer.pubkey, readRelays, true);
+  const event = useReplaceableEvent(coordinate);
 
-  const list = lists[pointer.identifier];
-  const people = useSubject(list?.people) ?? [];
-
-  if (!list)
+  if (!event)
     return (
       <>
-        Looking for list "{pointer.identifier}" created by <UserLink pubkey={pointer.pubkey} />
+        Looking for list "{coordinate.identifier}" created by <UserLink pubkey={coordinate.pubkey} />
       </>
     );
 
-  const isAuthor = account?.pubkey === list.author;
+  const isAuthor = account?.pubkey === event.pubkey;
+  const people = getPubkeysFromList(event);
 
   return (
     <Flex direction="column" px="2" pt="2" pb="8" overflowY="auto" overflowX="hidden" h="full" gap="2">
@@ -53,17 +62,14 @@ export default function ListView() {
         </Button>
 
         <Heading size="md" flex={1} isTruncated>
-          {list.name}
+          {getListName(event)}
         </Heading>
 
         {isAuthor && (
-          <Button colorScheme="red" onClick={() => deleteEvent(list.event).then(() => navigate("/lists"))}>
+          <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>
             Delete
           </Button>
         )}
-        <Button as={Link} href={buildAppSelectUrl(list.getAddress())} target="_blank" leftIcon={<ExternalLinkIcon />}>
-          Open in app
-        </Button>
       </Flex>
       {people.map(({ pubkey, relay }) => (
         <UserCard pubkey={pubkey} relay={relay} />

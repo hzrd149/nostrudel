@@ -3,7 +3,7 @@ import { getEventRelays } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { RelayIconStack } from "../relay-icon-stack";
-import { getEventUID } from "../../helpers/nostr/event";
+import { getEventUID } from "../../helpers/nostr/events";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 export type NoteRelaysProps = {

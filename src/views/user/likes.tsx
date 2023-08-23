@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Box, Flex, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
-import { getReferences, truncatedId } from "../../helpers/nostr/event";
+import { getReferences, truncatedId } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";

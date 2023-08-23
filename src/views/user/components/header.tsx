@@ -1,11 +1,8 @@
 import { Flex, Heading, IconButton, Spacer, useBreakpointValue } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { ChatIcon, EditIcon } from "../../../components/icons";
+import { useNavigate } from "react-router-dom";
+import { EditIcon } from "../../../components/icons";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import { UserFollowButton } from "../../../components/user-follow-button";
-import { UserTipButton } from "../../../components/user-tip-button";
-import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";

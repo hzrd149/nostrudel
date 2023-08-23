@@ -1,8 +1,5 @@
-import { Avatar, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { ExternalLinkIcon, ToolsIcon } from "../../components/icons";
-import { ToolsIcon } from "../../components/icons";
-import OpenGraphCard from "../../components/open-graph-card";
 
 export default function ToolsHomeView() {
   return (

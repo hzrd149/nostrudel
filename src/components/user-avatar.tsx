@@ -16,11 +16,12 @@ export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
 
 export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
+  relay?: string;
   noProxy?: boolean;
 };
-export const UserAvatar = React.memo(({ pubkey, noProxy, ...props }: UserAvatarProps) => {
+export const UserAvatar = React.memo(({ pubkey, noProxy, relay, ...props }: UserAvatarProps) => {
   const { imageProxy, proxyUserMedia } = useSubject(appSettings);
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
   const picture = useMemo(() => {
     if (metadata?.picture) {
       const src = safeUrl(metadata?.picture);

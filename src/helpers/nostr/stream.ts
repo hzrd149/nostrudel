@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
-import { getAddr } from "../../services/replaceable-event-requester";
+import { createCoordinate } from "../../services/replaceable-event-requester";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;
@@ -79,7 +79,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
 }
 
 export function getATag(stream: ParsedStream) {
-  return getAddr(stream.event.kind, stream.author, stream.identifier);
+  return createCoordinate(stream.event.kind, stream.author, stream.identifier);
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {

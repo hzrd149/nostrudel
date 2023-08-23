@@ -38,6 +38,7 @@ import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import ListsView from "./views/lists";
 import ListView from "./views/lists/list";
+import UserListsTab from "./views/user/lists";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -96,6 +97,7 @@ const router = createHashRouter([
           { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserLikesTab /> },
+          { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },

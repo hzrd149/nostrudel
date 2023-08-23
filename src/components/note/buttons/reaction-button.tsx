@@ -13,7 +13,10 @@ import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { LikeIcon } from "../../icons";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 
-export default function ReactionButton({ note, ...props }: { note: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function ReactionButton({
+  event: note,
+  ...props
+}: { event: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
   const account = useCurrentAccount();
 

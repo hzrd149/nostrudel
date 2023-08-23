@@ -1,4 +1,4 @@
-import { getEventUID } from "../helpers/nostr/event";
+import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 

@@ -31,7 +31,7 @@ import { useSigningContext } from "../../../../providers/signing-provider";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../../../hooks/use-subject";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { truncatedId } from "../../../../helpers/nostr/event";
+import { truncatedId } from "../../../../helpers/nostr/events";
 import { css } from "@emotion/react";
 import TopZappers from "./top-zappers";
 import { parseZapEvent } from "../../../../helpers/zaps";

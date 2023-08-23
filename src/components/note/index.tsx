@@ -70,8 +70,8 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
             <ButtonGroup size="sm" variant="link">
               <RepostButton event={event} />
               <QuoteRepostButton event={event} />
-              <NoteZapButton note={event} size="sm" />
-              {showReactions && <ReactionButton note={event} size="sm" />}
+              <NoteZapButton event={event} size="sm" />
+              {showReactions && <ReactionButton event={event} size="sm" />}
             </ButtonGroup>
             <Box flexGrow={1} />
             {externalLink && (

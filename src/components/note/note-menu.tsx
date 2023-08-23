@@ -1,8 +1,9 @@
 import { useCallback } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
+import { nip19 } from "nostr-tools";
 
-import { Bech32Prefix, getSharableNoteId, normalizeToBech32 } from "../../helpers/nip19";
+import { getSharableNoteId } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
@@ -10,16 +11,10 @@ import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RelayIcon, RepostI
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { useCallback, useState } from "react";
-import QuoteNote from "./quote-note";
-import { buildDeleteEvent } from "../../helpers/nostr/event";
-import signingService from "../../services/signing";
-import { buildAppSelectUrl } from "../../helpers/nostr-apps";
+import { buildAppSelectUrl } from "../../helpers/nostr/apps";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
-import { nostrPostAction } from "../../classes/nostr-post-action";
 import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
-import relayPoolService from "../../services/relay-pool";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
@@ -30,7 +25,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
   const { deleteEvent } = useDeleteEventContext();
 
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
-  const noteId = normalizeToBech32(event.id, Bech32Prefix.Note);
+  const noteId = nip19.noteEncode(event.id);
 
   const broadcast = useCallback(() => {
     const missingRelays = clientRelaysService.getWriteUrls();

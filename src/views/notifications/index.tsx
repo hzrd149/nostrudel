@@ -15,7 +15,7 @@ import { useNotificationTimeline } from "../../providers/notification-timeline";
 import { Kind, getEventHash } from "nostr-tools";
 import { parseZapEvent } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getReferences } from "../../helpers/nostr/event";
+import { getReferences } from "../../helpers/nostr/events";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">

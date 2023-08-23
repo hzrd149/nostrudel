@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, FormControl, FormLabel, Spacer, Switch, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Kind } from "nostr-tools";
-import { isReply, isRepost, truncatedId } from "../../helpers/nostr/event";
+import { isReply, isRepost, truncatedId } from "../../helpers/nostr/events";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";

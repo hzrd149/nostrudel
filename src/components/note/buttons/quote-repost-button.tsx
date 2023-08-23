@@ -3,7 +3,7 @@ import { IconButton } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { QuoteRepostIcon } from "../../icons";
 import { PostModalContext } from "../../../providers/post-modal-provider";
-import { buildQuoteRepost } from "../../../helpers/nostr/event";
+import { buildQuoteRepost } from "../../../helpers/nostr/events";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 
 export function QuoteRepostButton({ event }: { event: NostrEvent }) {

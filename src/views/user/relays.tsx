@@ -3,7 +3,7 @@ import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakr
 
 import { useUserRelays } from "../../hooks/use-user-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr/event";
+import { truncatedId } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";

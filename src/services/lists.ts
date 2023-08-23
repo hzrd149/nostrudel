@@ -1,18 +1,18 @@
-import dayjs from "dayjs";
 import { nip19 } from "nostr-tools";
 
 import { NostrRequest } from "../classes/nostr-request";
 import { PersistentSubject } from "../classes/subject";
-import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
+import { NostrEvent, isPTag } from "../types/nostr-event";
 import { getEventRelays } from "./event-relays";
 import relayScoreboardService from "./relay-scoreboard";
+import { getEventCoordinate } from "../helpers/nostr/events";
+import { draftAddPerson, draftRemovePerson, getListName } from "../helpers/nostr/lists";
+import replaceableEventLoaderService from "./replaceable-event-requester";
 
-function getListName(event: NostrEvent) {
-  return event.tags.find((t) => t[0] === "d")?.[1];
-}
-
+/** @deprecated */
 export class List {
   event: NostrEvent;
+  cord: string;
   people = new PersistentSubject<{ pubkey: string; relay?: string }[]>([]);
 
   get author() {
@@ -36,6 +36,7 @@ export class List {
 
   constructor(event: NostrEvent) {
     this.event = event;
+    this.cord = getEventCoordinate(event);
     this.updatePeople();
   }
 
@@ -51,27 +52,11 @@ export class List {
   }
 
   draftAddPerson(pubkey: string, relay?: string) {
-    if (this.event.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
-
-    const draft: DraftNostrEvent = {
-      created_at: dayjs().unix(),
-      kind: this.event.kind,
-      content: this.event.content,
-      tags: [...this.event.tags, relay ? ["p", pubkey, relay] : ["p", pubkey]],
-    };
-
-    return draft;
+    return draftAddPerson(this.event, pubkey, relay);
   }
 
   draftRemovePerson(pubkey: string) {
-    const draft: DraftNostrEvent = {
-      created_at: dayjs().unix(),
-      kind: this.event.kind,
-      content: this.event.content,
-      tags: this.event.tags.filter((t) => t[0] !== "p" || t[1] !== pubkey),
-    };
-
-    return draft;
+    return draftRemovePerson(this.event, pubkey);
   }
 }
 
@@ -91,6 +76,8 @@ class ListsService {
 
     const request = new NostrRequest(relays);
     request.onEvent.subscribe((event) => {
+      replaceableEventLoaderService.handleEvent(event);
+
       const listName = getListName(event);
 
       if (listName && event.kind === 30000) {

@@ -25,14 +25,14 @@ import { Event, Kind, nip19 } from "nostr-tools";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
 import signingService from "../services/signing";
-import { nostrPostAction } from "../classes/nostr-post-action";
 import QuoteNote from "../components/note/quote-note";
 import createDefer, { Deferred } from "../classes/deferred";
 import useEventRelays from "../hooks/use-event-relays";
 import { useWriteRelayUrls } from "../hooks/use-client-relays";
 import { RelayFavicon } from "../components/relay-favicon";
 import { ExternalLinkIcon } from "../components/icons";
-import { buildDeleteEvent } from "../helpers/nostr/event";
+import { buildDeleteEvent } from "../helpers/nostr/events";
+import NostrPublishAction from "../classes/nostr-publish-action";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -82,8 +82,8 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       const deleteEvent = buildDeleteEvent([event.id], reason);
       const signed = await signingService.requestSignature(deleteEvent, account);
 
-      const results = nostrPostAction(writeRelays, signed);
-      await results.onComplete;
+      const pub = new NostrPublishAction("Delete", writeRelays, signed);
+      await pub.onComplete;
       defer?.resolve();
     } catch (e) {
       if (e instanceof Error) {
@@ -106,7 +106,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       isLoading,
       deleteEvent,
     }),
-    [isLoading, deleteEvent]
+    [isLoading, deleteEvent],
   );
 
   return (

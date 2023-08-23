@@ -3,7 +3,7 @@ import { Flex, FormControl, FormLabel, Switch } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
-import { isReply, truncatedId } from "../../helpers/nostr/event";
+import { isReply, truncatedId } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";

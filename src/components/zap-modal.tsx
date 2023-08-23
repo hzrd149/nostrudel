@@ -183,7 +183,7 @@ export default function ZapModal({
                   {stream.image && <Image src={stream.image} />}
                 </Box>
               )}
-              {showEventPreview && event && <EmbeddedNote note={event} />}
+              {showEventPreview && event && <EmbeddedNote event={event} />}
 
               {allowComment && (canZap || lnurlMetadata?.commentAllowed) && (
                 <Input

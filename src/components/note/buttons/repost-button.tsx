@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
-import { buildRepost } from "../../../helpers/nostr/event";
+import { buildRepost } from "../../../helpers/nostr/events";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import clientRelaysService from "../../../services/client-relays";
 import signingService from "../../../services/signing";

@@ -1,22 +1,14 @@
 import dayjs from "dayjs";
+import { Kind, nip19 } from "nostr-tools";
+
 import { getEventRelays } from "../../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import accountService from "../../services/account";
-import { Kind, nip19 } from "nostr-tools";
 import { getMatchNostrLink } from "../regexp";
 import { getSharableNoteId } from "../nip19";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { getAddr } from "../../services/replaceable-event-requester";
-
-export function isReply(event: NostrEvent | DraftNostrEvent) {
-  return event.kind === 1 && !!getReferences(event).replyId;
-}
-
-export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  const match = event.content.match(getMatchNostrLink());
-  return event.kind === 6 || (match && match[0].length === event.content.length);
-}
+import { AddressPointer } from "nostr-tools/lib/nip19";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -26,9 +18,18 @@ export function truncatedId(str: string, keep = 6) {
 // used to get a unique Id for each event, should take into account replaceable events
 export function getEventUID(event: NostrEvent) {
   if (event.kind >= 30000 && event.kind < 40000) {
-    return getAddr(event.kind, event.pubkey, event.tags.find((t) => t[0] === "d" && t[1])?.[1]);
+    return getEventCoordinate(event);
   }
   return event.id;
+}
+
+export function isReply(event: NostrEvent | DraftNostrEvent) {
+  return event.kind === 1 && !!getReferences(event).replyId;
+}
+
+export function isRepost(event: NostrEvent | DraftNostrEvent) {
+  const match = event.content.match(getMatchNostrLink());
+  return event.kind === 6 || (match && match[0].length === event.content.length);
 }
 
 /**
@@ -211,7 +212,15 @@ export function parseRTag(tag: RTag): RelayConfig {
   }
 }
 
-export function parseCoordinate(a: string) {
+export function getEventCoordinate(event: NostrEvent) {
+  const d = event.tags.find((t) => t[0] === "d")?.[1];
+  return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
+}
+
+export type ParsedCoordinate = Omit<AddressPointer, "identifier"> & {
+  identifier?: string;
+};
+export function parseCoordinate(a: string): ParsedCoordinate | null {
   const parts = a.split(":") as (string | undefined)[];
   const kind = parts[0] && parseInt(parts[0]);
   const pubkey = parts[1];
@@ -223,6 +232,6 @@ export function parseCoordinate(a: string) {
   return {
     kind,
     pubkey,
-    d,
+    identifier: d,
   };
 }

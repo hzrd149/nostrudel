@@ -23,29 +23,29 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useAsync } from "react-use";
+
+import { readablizeSats } from "../../helpers/bolt11";
+import { getUserDisplayName } from "../../helpers/user-metadata";
+import { getLudEndpoint } from "../../helpers/lnurl";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { truncatedId } from "../../helpers/nostr/events";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
-import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, LightningIcon } from "../../components/icons";
-import { normalizeToBech32 } from "../../helpers/nip19";
-import { Bech32Prefix } from "../../helpers/nip19";
-import { truncatedId } from "../../helpers/nostr/event";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useUserContacts } from "../../hooks/use-user-contacts";
 import userTrustedStatsService from "../../services/user-trusted-stats";
-import { readablizeSats } from "../../helpers/bolt11";
 import { UserAvatar } from "../../components/user-avatar";
-import { getUserDisplayName } from "../../helpers/user-metadata";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { UserTipButton } from "../../components/user-tip-button";
 import { UserProfileMenu } from "./components/user-profile-menu";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 import { parseAddress } from "../../services/dns-identity";
-import { getLudEndpoint } from "../../helpers/lnurl";
+import { nip19 } from "nostr-tools";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -63,7 +63,7 @@ export default function UserAboutTab() {
 
   const metadata = useUserMetadata(pubkey, contextRelays);
   const contacts = useUserContacts(pubkey, contextRelays);
-  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
+  const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
 
   const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);

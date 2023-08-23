@@ -12,15 +12,15 @@ import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 
 export default function NoteZapButton({
-  note,
+  event,
   allowComment,
   showEventPreview,
   ...props
-}: { note: NostrEvent; allowComment?: boolean; showEventPreview?: boolean } & Omit<ButtonProps, "children">) {
+}: { event: NostrEvent; allowComment?: boolean; showEventPreview?: boolean } & Omit<ButtonProps, "children">) {
   const account = useCurrentAccount();
-  const { metadata } = useUserLNURLMetadata(note.pubkey);
+  const { metadata } = useUserLNURLMetadata(event.pubkey);
   const { requestPay } = useInvoiceModalContext();
-  const zaps = useEventZaps(note.id);
+  const zaps = useEventZaps(event.id);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const hasZapped = !!account && zaps.some((zap) => zap.request.pubkey === account.pubkey);
@@ -28,7 +28,7 @@ export default function NoteZapButton({
   const handleInvoice = async (invoice: string) => {
     onClose();
     await requestPay(invoice);
-    eventZapsService.requestZaps(note.id, clientRelaysService.getReadUrls(), true);
+    eventZapsService.requestZaps(event.id, clientRelaysService.getReadUrls(), true);
   };
 
   const total = totalZaps(zaps);
@@ -62,9 +62,9 @@ export default function NoteZapButton({
         <ZapModal
           isOpen={isOpen}
           onClose={onClose}
-          event={note}
+          event={event}
           onInvoice={handleInvoice}
-          pubkey={note.pubkey}
+          pubkey={event.pubkey}
           allowComment={allowComment}
           showEventPreview={showEventPreview}
         />

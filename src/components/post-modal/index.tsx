@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { getReferences } from "../../helpers/nostr/event";
+import { getReferences } from "../../helpers/nostr/events";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";

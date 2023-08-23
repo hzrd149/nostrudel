@@ -7,7 +7,7 @@ const QuoteNote = ({ noteId, relays }: { noteId: string; relays?: string[] }) =>
   const readRelays = useReadRelayUrls(relays);
   const { event, loading } = useSingleEvent(noteId, readRelays);
 
-  return event ? <EmbeddedNote note={event} /> : <NoteLink noteId={noteId} />;
+  return event ? <EmbeddedNote event={event} /> : <NoteLink noteId={noteId} />;
 };
 
 export default QuoteNote;

@@ -13,27 +13,27 @@ import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { ArrowDownSIcon, ArrowUpSIcon } from "../icons";
 
-export default function EmbeddedNote({ note }: { note: NostrEvent }) {
+export default function EmbeddedNote({ event }: { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
   const expand = useDisclosure();
 
   return (
-    <TrustProvider event={note}>
+    <TrustProvider event={event}>
       <Card variant="outline">
         <CardHeader padding="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
-          <UserAvatarLink pubkey={note.pubkey} size="sm" />
-          <UserLink pubkey={note.pubkey} fontWeight="bold" isTruncated fontSize="lg" />
-          <UserDnsIdentityIcon pubkey={note.pubkey} onlyIcon />
+          <UserAvatarLink pubkey={event.pubkey} size="sm" />
+          <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated fontSize="lg" />
+          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
           <Button size="sm" onClick={expand.onToggle} leftIcon={expand.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}>
             Expand
           </Button>
           <Spacer />
-          {showSignatureVerification && <EventVerificationIcon event={note} />}
-          <NoteLink noteId={note.id} color="current" whiteSpace="nowrap">
-            {dayjs.unix(note.created_at).fromNow()}
+          {showSignatureVerification && <EventVerificationIcon event={event} />}
+          <NoteLink noteId={event.id} color="current" whiteSpace="nowrap">
+            {dayjs.unix(event.created_at).fromNow()}
           </NoteLink>
         </CardHeader>
-        <CardBody p="0">{expand.isOpen && <NoteContents px="2" event={note} />}</CardBody>
+        <CardBody p="0">{expand.isOpen && <NoteContents px="2" event={event} />}</CardBody>
       </Card>
     </TrustProvider>
   );
