@@ -2,15 +2,16 @@ import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { UserLink } from "../../components/user-link";
-import { Button, Flex, Heading } from "@chakra-ui/react";
-import { UserCard } from "../user/components/user-card";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { Button, Flex, Heading, IconButton, useDisclosure } from "@chakra-ui/react";
+import { ArrowLeftSIcon, CodeIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
 import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
+import UserCard from "./components/user-card";
+import NoteDebugModal from "../../components/debug-modals/note-debug-modal";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -28,6 +29,7 @@ function useListCoordinate() {
 
 export default function ListView() {
   const navigate = useNavigate();
+  const debug = useDisclosure();
   const coordinate = useListCoordinate();
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
@@ -62,10 +64,13 @@ export default function ListView() {
             Delete
           </Button>
         )}
+        <IconButton icon={<CodeIcon />} aria-label="Show raw" onClick={debug.onOpen} />
       </Flex>
       {people.map(({ pubkey, relay }) => (
-        <UserCard pubkey={pubkey} relay={relay} />
+        <UserCard pubkey={pubkey} relay={relay} list={event} />
       ))}
+
+      {debug.isOpen && <NoteDebugModal event={event} isOpen onClose={debug.onClose} size="4xl" />}
     </Flex>
   );
 }

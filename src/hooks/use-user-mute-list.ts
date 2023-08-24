@@ -1,15 +1,6 @@
-import { useMemo } from "react";
-import { useReadRelayUrls } from "./use-client-relays";
-import useSubject from "./use-subject";
-import userMuteListService from "../services/user-mute-list";
+import useReplaceableEvent from "./use-replaceable-event";
+import { MUTE_LIST_KIND } from "../helpers/nostr/lists";
 
-export default function useUserMuteList(pubkey?: string, additionalRelays?: string[], alwaysRequest = false) {
-  const relays = useReadRelayUrls(additionalRelays);
-
-  const sub = useMemo(() => {
-    if (!pubkey) return;
-    return userMuteListService.requestMuteList(relays, pubkey, alwaysRequest);
-  }, [pubkey]);
-
-  return useSubject(sub);
+export default function useUserMuteList(pubkey?: string, additionalRelays: string[] = [], alwaysRequest = true) {
+  return useReplaceableEvent(pubkey && { kind: MUTE_LIST_KIND, pubkey }, additionalRelays, alwaysRequest);
 }

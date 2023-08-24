@@ -1,5 +1,23 @@
-import { Select, SelectProps, useDisclosure } from "@chakra-ui/react";
+import { Select, SelectProps } from "@chakra-ui/react";
 import { usePeopleListContext } from "./people-list-provider";
+import useUserLists from "../../hooks/use-user-lists";
+import { useCurrentAccount } from "../../hooks/use-current-account";
+import { getListName } from "../../helpers/nostr/lists";
+import { getEventCoordinate } from "../../helpers/nostr/events";
+import { Kind } from "nostr-tools";
+
+function UserListOptions() {
+  const account = useCurrentAccount()!;
+  const lists = useUserLists(account?.pubkey);
+
+  return (
+    <>
+      {lists.map((list) => (
+        <option value={getEventCoordinate(list)}>{getListName(list)}</option>
+      ))}
+    </>
+  );
+}
 
 export default function PeopleListSelection({
   hideGlobalOption = false,
@@ -7,8 +25,8 @@ export default function PeopleListSelection({
 }: {
   hideGlobalOption?: boolean;
 } & Omit<SelectProps, "value" | "onChange" | "children">) {
-  const { people, list, setList } = usePeopleListContext();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const account = useCurrentAccount()!;
+  const { list, setList } = usePeopleListContext();
 
   return (
     <Select
@@ -18,8 +36,9 @@ export default function PeopleListSelection({
       }}
       {...props}
     >
-      <option value="following">Following</option>
+      {account && <option value={`${Kind.Contacts}:${account.pubkey}`}>Following</option>}
       {!hideGlobalOption && <option value="global">Global</option>}
+      {account && <UserListOptions />}
     </Select>
   );
 }

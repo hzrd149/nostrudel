@@ -1,4 +1,3 @@
-import React from "react";
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 import {
@@ -23,12 +22,15 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useAsync } from "react-use";
+import { nip19 } from "nostr-tools";
 
 import { readablizeSats } from "../../helpers/bolt11";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { getLudEndpoint } from "../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { truncatedId } from "../../helpers/nostr/events";
+import userTrustedStatsService from "../../services/user-trusted-stats";
+import { parseAddress } from "../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
@@ -36,16 +38,12 @@ import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, Lightn
 import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import { useUserContacts } from "../../hooks/use-user-contacts";
-import userTrustedStatsService from "../../services/user-trusted-stats";
 import { UserAvatar } from "../../components/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../components/user-follow-button";
-import { UserTipButton } from "../../components/user-tip-button";
+import UserZapButton from "./components/user-zap-button";
 import { UserProfileMenu } from "./components/user-profile-menu";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
-import { parseAddress } from "../../services/dns-identity";
-import { nip19 } from "nostr-tools";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
@@ -113,7 +111,7 @@ export default function UserAboutTab() {
           </Box>
 
           <Flex gap="2" ml="auto">
-            <UserTipButton pubkey={pubkey} size="sm" variant="link" />
+            <UserZapButton pubkey={pubkey} size="sm" variant="link" />
 
             <IconButton
               as={RouterLink}

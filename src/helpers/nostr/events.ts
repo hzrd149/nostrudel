@@ -15,14 +15,14 @@ export function truncatedId(str: string, keep = 6) {
   return str.substring(0, keep) + "..." + str.substring(str.length - keep);
 }
 
+// based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
+export function isReplaceable(kind: number) {
+  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || (kind >= 10000 && kind < 20000);
+}
+
 // used to get a unique Id for each event, should take into account replaceable events
 export function getEventUID(event: NostrEvent) {
-  if (
-    (event.kind >= 30000 && event.kind < 40000) ||
-    event.kind === 0 ||
-    event.kind === 3 ||
-    (event.kind >= 10000 && event.kind < 20000)
-  ) {
+  if (isReplaceable(event.kind)) {
     return getEventCoordinate(event);
   }
   return event.id;
@@ -193,15 +193,6 @@ export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
     kind: Kind.Text,
     tags: [],
     content: "nostr:" + nevent,
-    created_at: dayjs().unix(),
-  };
-}
-
-export function buildDeleteEvent(eventIds: string[], reason = ""): DraftNostrEvent {
-  return {
-    kind: Kind.EventDeletion,
-    tags: eventIds.map((id) => ["e", id]),
-    content: reason,
     created_at: dayjs().unix(),
   };
 }

@@ -76,6 +76,7 @@ class UserContactsService {
   }
 }
 
+/** @deprecated */
 const userContactsService = new UserContactsService();
 
 if (import.meta.env.DEV) {

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Flex, Select, SimpleGrid } from "@chakra-ui/react";
+import { Code, Flex, Select, SimpleGrid } from "@chakra-ui/react";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -30,14 +30,16 @@ function StreamsPage() {
     [filterStatus],
   );
 
-  const { people } = usePeopleListContext();
+  const { people, list } = usePeopleListContext();
   const query =
     people.length > 0
       ? [
-          { authors: people, kinds: [STREAM_KIND] },
-          { "#p": people, kinds: [STREAM_KIND] },
+          { authors: people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
+          { "#p": people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
         ]
       : { kinds: [STREAM_KIND] };
+
+  // TODO: put the list id into the timeline key so it refreshes (probably have to hash the list id since its >64)
   const timeline = useTimelineLoader(`streams`, relays, query, { eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());

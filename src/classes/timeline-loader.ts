@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { utils } from "nostr-tools";
 import { Debugger } from "debug";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
@@ -8,6 +7,8 @@ import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
+import { isReplaceable } from "../helpers/nostr/events";
+import replaceableEventLoaderService from "../services/replaceable-event-requester";
 
 function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {
@@ -56,9 +57,6 @@ class RelayTimelineLoader {
 
     let gotEvents = 0;
     request.onEvent.subscribe((e) => {
-      // if(oldestEvent && e.created_at<oldestEvent.created_at){
-      //   this.log('Got event older than oldest')
-      // }
       if (this.handleEvent(e)) {
         gotEvents++;
       }
@@ -120,6 +118,10 @@ export class TimelineLoader {
     } else this.timeline.next(this.events.getSortedEvents());
   }
   private handleEvent(event: NostrEvent) {
+    // if this is a replaceable event, mirror it over to the replaceable event service
+    if (isReplaceable(event.kind)) {
+      replaceableEventLoaderService.handleEvent(event);
+    }
     this.events.addEvent(event);
   }
 

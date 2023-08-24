@@ -5,18 +5,18 @@ import { Kind } from "nostr-tools";
 
 import { isReply, truncatedId } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useUserContacts } from "../../hooks/use-user-contacts";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
+import useUserContactList from "../../hooks/use-user-contact-list";
+import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
 function FollowingTabBody() {
   const account = useCurrentAccount()!;
-  const readRelays = useReadRelayUrls();
-  const contacts = useUserContacts(account.pubkey, readRelays);
+  const contacts = useUserContactList(account.pubkey);
   const [search, setSearch] = useSearchParams();
   const showReplies = search.has("replies");
   const onToggle = () => {
@@ -32,7 +32,8 @@ function FollowingTabBody() {
     [showReplies, timelinePageEventFilter],
   );
 
-  const following = contacts?.contacts || [];
+  const following = contacts ? getPubkeysFromList(contacts).map((p) => p.pubkey) : [];
+  const readRelays = useReadRelayUrls();
   const timeline = useTimelineLoader(
     `${truncatedId(account.pubkey)}-following`,
     readRelays,

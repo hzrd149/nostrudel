@@ -7,10 +7,10 @@ import {
   MenuList,
   MenuItem,
   MenuItemOption,
-  MenuGroup,
   MenuOptionGroup,
   MenuDivider,
   useToast,
+  useDisclosure,
 } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
@@ -30,12 +30,15 @@ import NostrPublishAction from "../classes/nostr-publish-action";
 import clientRelaysService from "../services/client-relays";
 import useUserContactList from "../hooks/use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import useAsyncErrorHandler from "../hooks/use-async-error-handler";
+import NewListModal from "../views/lists/components/new-list-modal";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
+  const newListModal = useDisclosure();
 
   const lists = useUserLists(pubkey);
 
@@ -93,6 +96,12 @@ function UsersLists({ pubkey }: { pubkey: string }) {
           ))}
         </MenuOptionGroup>
       )}
+      <MenuDivider />
+      <MenuItem icon={<PlusCircleIcon />} onClick={newListModal.onOpen}>
+        New list
+      </MenuItem>
+
+      {newListModal.isOpen && <NewListModal onClose={newListModal.onClose} isOpen onCreated={newListModal.onClose} />}
     </>
   );
 }
@@ -103,34 +112,25 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 >;
 
 export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButtonProps) => {
-  const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const contacts = useUserContactList(account?.pubkey);
+  const contacts = useUserContactList(account?.pubkey, [], true);
 
   const isFollowing = isPubkeyInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
 
-  const handleFollow = async () => {
-    try {
-      const draft = draftAddPerson(contacts || createEmptyContactList(), pubkey);
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  };
-  const handleUnfollow = async () => {
-    try {
-      const draft = draftRemovePerson(contacts || createEmptyContactList(), pubkey);
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  };
+  const handleFollow = useAsyncErrorHandler(async () => {
+    const draft = draftAddPerson(contacts || createEmptyContactList(), pubkey);
+    const signed = await requestSignature(draft);
+    const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
+    replaceableEventLoaderService.handleEvent(signed);
+  });
+  const handleUnfollow = useAsyncErrorHandler(async () => {
+    const draft = draftRemovePerson(contacts || createEmptyContactList(), pubkey);
+    const signed = await requestSignature(draft);
+    const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
+    replaceableEventLoaderService.handleEvent(signed);
+  });
 
   if (showLists) {
     return (
@@ -152,10 +152,6 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
             <>
               <MenuDivider />
               <UsersLists pubkey={pubkey} />
-              <MenuDivider />
-              <MenuItem icon={<PlusCircleIcon />} isDisabled={true}>
-                New list
-              </MenuItem>
             </>
           )}
         </MenuList>

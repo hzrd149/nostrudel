@@ -22,6 +22,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Event, Kind, nip19 } from "nostr-tools";
+import dayjs from "dayjs";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
 import signingService from "../services/signing";
@@ -31,8 +32,9 @@ import useEventRelays from "../hooks/use-event-relays";
 import { useWriteRelayUrls } from "../hooks/use-client-relays";
 import { RelayFavicon } from "../components/relay-favicon";
 import { ExternalLinkIcon } from "../components/icons";
-import { buildDeleteEvent } from "../helpers/nostr/events";
+import { getEventCoordinate, isReplaceable } from "../helpers/nostr/events";
 import NostrPublishAction from "../classes/nostr-publish-action";
+import { Tag } from "../types/nostr-event";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -79,9 +81,18 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       if (!event) throw new Error("no event");
       if (!account) throw new Error("not logged in");
       setLoading(true);
-      const deleteEvent = buildDeleteEvent([event.id], reason);
-      const signed = await signingService.requestSignature(deleteEvent, account);
+      const tags: Tag[] = [["e", event.id]];
+      if (isReplaceable(event.kind)) {
+        tags.push(["a", getEventCoordinate(event)]);
+      }
 
+      const draft = {
+        kind: Kind.EventDeletion,
+        tags,
+        content: reason,
+        created_at: dayjs().unix(),
+      };
+      const signed = await signingService.requestSignature(draft, account);
       const pub = new NostrPublishAction("Delete", writeRelays, signed);
       await pub.onComplete;
       defer?.resolve();
