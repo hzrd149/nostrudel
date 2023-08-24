@@ -46,6 +46,15 @@ export default function ToolsHomeView() {
         </Button>
         <Button
           as={Link}
+          href="https://metadata.nostr.com/"
+          isExternal
+          target="_blank"
+          leftIcon={<Image src="https://metadata.nostr.com/img/git.png" h="1.5em" />}
+        >
+          Nostr Profile Manager
+        </Button>
+        <Button
+          as={Link}
           href="https://www.nostrapps.com/"
           isExternal
           target="_blank"

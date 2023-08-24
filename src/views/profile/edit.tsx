@@ -236,9 +236,9 @@ export const ProfileEditView = () => {
         tags: [],
       };
 
-      const event = await signingService.requestSignature(draft, account);
-      const pub = new NostrPublishAction("Update Profile", writeRelays, event);
-      userMetadataService.receiveEvent(event);
+      const signed = await signingService.requestSignature(draft, account);
+      const pub = new NostrPublishAction("Update Profile", writeRelays, signed);
+      userMetadataService.receiveEvent(signed);
 
       await pub.onComplete;
     } catch (e) {

@@ -76,14 +76,17 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   };
 
   const handleSubmit = async () => {
-    setWaiting(true);
-    const updatedDraft = finalizeNote(draft);
-    const signed = await requestSignature(updatedDraft);
-    setWaiting(false);
-    if (!signed) return;
+    try {
+      setWaiting(true);
+      const updatedDraft = finalizeNote(draft);
+      const signed = await requestSignature(updatedDraft);
+      setWaiting(false);
 
-    const pub = new NostrPublishAction("Post", writeRelays, signed);
-    setPublishAction(pub);
+      const pub = new NostrPublishAction("Post", writeRelays, signed);
+      setPublishAction(pub);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
   };
 
   const refs = getReferences(draft);

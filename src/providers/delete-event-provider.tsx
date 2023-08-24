@@ -86,12 +86,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       await pub.onComplete;
       defer?.resolve();
     } catch (e) {
-      if (e instanceof Error) {
-        toast({
-          status: "error",
-          description: e.message,
-        });
-      }
+      if (e instanceof Error) toast({ status: "error", description: e.message });
       defer?.reject();
     } finally {
       setLoading(false);

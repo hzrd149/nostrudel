@@ -77,15 +77,15 @@ async function savePending() {
   savingDraft.next(true);
   const current = accountService.current.value;
   if (!current) throw new Error("no account");
-  const event = await signingService.requestSignature(draft, current);
+  const signed = await signingService.requestSignature(draft, current);
 
-  const pub = new NostrPublishAction("Update Following", clientRelaysService.getWriteUrls(), event);
+  const pub = new NostrPublishAction("Update Following", clientRelaysService.getWriteUrls(), signed);
   await pub.onComplete;
 
   savingDraft.next(false);
 
   // pass new event to contact list service
-  userContactsService.receiveEvent(event);
+  userContactsService.receiveEvent(signed);
 }
 
 function addContact(pubkey: string, relay?: string) {

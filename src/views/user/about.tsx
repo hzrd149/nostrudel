@@ -46,6 +46,8 @@ import { UserProfileMenu } from "./components/user-profile-menu";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 import { parseAddress } from "../../services/dns-identity";
 import { nip19 } from "nostr-tools";
+import useUserContactList from "../../hooks/use-user-contact-list";
+import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -62,7 +64,7 @@ export default function UserAboutTab() {
   const contextRelays = useAdditionalRelayContext();
 
   const metadata = useUserMetadata(pubkey, contextRelays);
-  const contacts = useUserContacts(pubkey, contextRelays);
+  const contacts = useUserContactList(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
 
@@ -120,7 +122,7 @@ export default function UserAboutTab() {
               aria-label="Message"
               to={`/dm/${npub ?? pubkey}`}
             />
-            <UserFollowButton pubkey={pubkey} size="sm" />
+            <UserFollowButton pubkey={pubkey} size="sm" showLists />
             <UserProfileMenu pubkey={pubkey} aria-label="More Options" size="sm" />
           </Flex>
         </Flex>
@@ -189,7 +191,7 @@ export default function UserAboutTab() {
             <StatGroup gap="4" whiteSpace="pre">
               <Stat>
                 <StatLabel>Following</StatLabel>
-                <StatNumber>{contacts ? readablizeSats(contacts.contacts.length) : "Unknown"}</StatNumber>
+                <StatNumber>{contacts ? readablizeSats(getPubkeysFromList(contacts).length) : "Unknown"}</StatNumber>
                 {contacts && <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>}
               </Stat>
 

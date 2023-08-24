@@ -108,7 +108,6 @@ export default function StreamChat({
     try {
       const draft = buildChatMessage(stream, values.content);
       const signed = await requestSignature(draft);
-      if (!signed) throw new Error("Failed to sign");
       new NostrPublishAction("Send Chat", relays, signed);
       reset();
     } catch (e) {

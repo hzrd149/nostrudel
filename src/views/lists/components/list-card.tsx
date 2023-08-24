@@ -10,6 +10,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { Kind } from "nostr-tools";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
+import { EventRelays } from "../../../components/note/note-relays";
 
 export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
@@ -37,13 +38,14 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
         {people.length > 0 && (
           <>
             <Text>{people.length} people</Text>
-            <AvatarGroup overflow="hidden">
+            <AvatarGroup overflow="hidden" mb="2">
               {people.map(({ pubkey, relay }) => (
                 <UserAvatarLink pubkey={pubkey} relay={relay} />
               ))}
             </AvatarGroup>
           </>
         )}
+        <EventRelays event={event} />
       </CardBody>
     </Card>
   );

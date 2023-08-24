@@ -165,8 +165,6 @@ export function RelayShareButton({
       };
 
       const signed = await requestSignature(draft);
-      if (!signed) return;
-
       const post = new NostrPublishAction("Share Relay", writeRelays, signed);
       await post.onComplete;
     } catch (e) {

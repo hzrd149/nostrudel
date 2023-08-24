@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Textarea } from "@chakra-ui/react";
+import { Button, Flex, Heading, Textarea, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
@@ -10,6 +10,7 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 export default function RelayReviewForm({ onClose, relay }: { onClose: () => void; relay: string }) {
+  const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
   const { register, getValues, watch, handleSubmit, setValue } = useForm({
@@ -22,21 +23,24 @@ export default function RelayReviewForm({ onClose, relay }: { onClose: () => voi
   watch("quality");
 
   const onSubmit = handleSubmit(async (values) => {
-    const draft: DraftNostrEvent = {
-      kind: REVIEW_KIND,
-      content: values.content,
-      tags: [
-        ["l", RELAY_REVIEW_LABEL, new URL(relay).host, JSON.stringify({ quality: values.quality })],
-        ["L", RELAY_REVIEW_LABEL_NAMESPACE],
-        ["r", relay],
-      ],
-      created_at: dayjs().unix(),
-    };
+    try {
+      const draft: DraftNostrEvent = {
+        kind: REVIEW_KIND,
+        content: values.content,
+        tags: [
+          ["l", RELAY_REVIEW_LABEL, new URL(relay).host, JSON.stringify({ quality: values.quality })],
+          ["L", RELAY_REVIEW_LABEL_NAMESPACE],
+          ["r", relay],
+        ],
+        created_at: dayjs().unix(),
+      };
 
-    const signed = await requestSignature(draft);
-    if (!signed) return;
-    const pub = new NostrPublishAction("Review Relay", writeRelays, signed);
-    onClose();
+      const signed = await requestSignature(draft);
+      const pub = new NostrPublishAction("Review Relay", writeRelays, signed);
+      onClose();
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
   });
 
   return (

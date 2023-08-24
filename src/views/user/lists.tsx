@@ -4,7 +4,7 @@ import { Flex } from "@chakra-ui/react";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import { NOTE_LIST, PEOPLE_LIST } from "../../helpers/nostr/lists";
+import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import { getEventUID, truncatedId } from "../../helpers/nostr/events";
 import ListCard from "../lists/components/list-card";
 
@@ -14,7 +14,7 @@ export default function UserListsTab() {
 
   const timeline = useTimelineLoader(truncatedId(pubkey) + "-lists", readRelays, {
     authors: [pubkey],
-    kinds: [PEOPLE_LIST, NOTE_LIST],
+    kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
   });
 
   const events = useSubject(timeline.timeline);

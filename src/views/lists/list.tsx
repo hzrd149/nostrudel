@@ -1,5 +1,6 @@
 import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { nip19 } from "nostr-tools";
+
 import { UserLink } from "../../components/user-link";
 import { Button, Flex, Heading } from "@chakra-ui/react";
 import { UserCard } from "../user/components/user-card";
@@ -7,23 +8,12 @@ import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
-import accountService from "../../services/account";
-import { MUTE_LIST, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { EventRelays } from "../../components/note/note-relays";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
-
-  const current = accountService.current.value;
-
-  if (addr === "following") {
-    if (!current) throw new Error("No account");
-    return { kind: Kind.Contacts, pubkey: current.pubkey };
-  }
-  if (addr === "mute") {
-    if (!current) throw new Error("No account");
-    return { kind: MUTE_LIST, pubkey: current.pubkey };
-  }
 
   if (addr.includes(":")) {
     const parsed = parseCoordinate(addr);
@@ -64,6 +54,8 @@ export default function ListView() {
         <Heading size="md" flex={1} isTruncated>
           {getListName(event)}
         </Heading>
+
+        <EventRelays event={event} />
 
         {isAuthor && (
           <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>

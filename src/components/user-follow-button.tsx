@@ -12,63 +12,83 @@ import {
   MenuDivider,
   useToast,
 } from "@chakra-ui/react";
+
 import { useCurrentAccount } from "../hooks/use-current-account";
-import useSubject from "../hooks/use-subject";
-import clientFollowingService from "../services/client-following";
-import { useUserContacts } from "../hooks/use-user-contacts";
-import "../services/lists";
 import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, UnfollowIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
-import { useReadRelayUrls } from "../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../providers/additional-relay-context";
+import {
+  createEmptyContactList,
+  draftAddPerson,
+  draftRemovePerson,
+  getListName,
+  getPubkeysFromList,
+  isPubkeyInList,
+} from "../helpers/nostr/lists";
+import { getEventCoordinate } from "../helpers/nostr/events";
+import { useSigningContext } from "../providers/signing-provider";
+import NostrPublishAction from "../classes/nostr-publish-action";
+import clientRelaysService from "../services/client-relays";
+import useUserContactList from "../hooks/use-user-contact-list";
+import replaceableEventLoaderService from "../services/replaceable-event-requester";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();
   const account = useCurrentAccount()!;
+  const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
 
-  const readRelays = useReadRelayUrls(useAdditionalRelayContext());
-  const lists = useUserLists(account.pubkey, readRelays);
+  const lists = useUserLists(pubkey);
 
-  const listsArray = Array.from(Object.values(lists));
-  const inLists = listsArray.filter((list) => list.people.value.some((p) => p.pubkey === pubkey));
+  const inLists = lists.filter((list) => getPubkeysFromList(list).some((p) => p.pubkey === pubkey));
 
-  const handleChange = useCallback(async (names: string | string[]) => {
-    if (!Array.isArray(names)) return;
+  const handleChange = useCallback(
+    async (cords: string | string[]) => {
+      if (!Array.isArray(cords)) return;
 
-    setLoading(true);
-    try {
-      const addToList = listsArray.find((list) => !inLists.includes(list) && names.includes(list.name));
-      const removeFromList = listsArray.find((list) => inLists.includes(list) && !names.includes(list.name));
+      const writeRelays = clientRelaysService.getWriteUrls();
 
-      if (addToList) {
-        const draft = addToList.draftAddPerson(pubkey);
-        console.log(draft);
-      } else if (removeFromList) {
-        const draft = removeFromList.draftRemovePerson(pubkey);
-        console.log(draft);
+      setLoading(true);
+      try {
+        const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getEventCoordinate(list)));
+        const removeFromList = lists.find(
+          (list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)),
+        );
+
+        if (addToList) {
+          const draft = draftAddPerson(addToList, pubkey);
+          const signed = await requestSignature(draft);
+          const pub = new NostrPublishAction("Add to list", writeRelays, signed);
+        } else if (removeFromList) {
+          const draft = draftRemovePerson(removeFromList, pubkey);
+          const signed = await requestSignature(draft);
+          const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
+        }
+      } catch (e) {
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
-    } catch (e) {
-      if (e instanceof Error) {
-        toast({ description: e.message });
-      }
-    }
-    setLoading(false);
-  }, []);
+      setLoading(false);
+    },
+    [lists],
+  );
 
   return (
     <>
-      {listsArray.length > 0 && (
-        <MenuOptionGroup title="Lists" type="checkbox" value={inLists.map((l) => l.name)} onChange={handleChange}>
-          {listsArray.map((list) => (
+      {lists.length > 0 && (
+        <MenuOptionGroup
+          title="Lists"
+          type="checkbox"
+          value={inLists.map((list) => getEventCoordinate(list))}
+          onChange={handleChange}
+        >
+          {lists.map((list) => (
             <MenuItemOption
-              key={list.event.id}
-              value={list.name}
+              key={getEventCoordinate(list)}
+              value={getEventCoordinate(list)}
               isDisabled={account.readonly && isLoading}
               isTruncated
               maxW="90vw"
             >
-              {list.name}
+              {getListName(list)}
             </MenuItemOption>
           ))}
         </MenuOptionGroup>
@@ -77,61 +97,81 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   );
 }
 
-export const UserFollowButton = ({
-  pubkey,
-  ...props
-}: { pubkey: string } & Omit<ButtonProps, "onClick" | "isLoading" | "isDisabled">) => {
-  const account = useCurrentAccount();
-  const following = useSubject(clientFollowingService.following) ?? [];
+export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Omit<
+  ButtonProps,
+  "onClick" | "isLoading" | "isDisabled"
+>;
 
-  const readRelays = useReadRelayUrls(useAdditionalRelayContext());
-  const userContacts = useUserContacts(pubkey, readRelays);
+export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButtonProps) => {
+  const toast = useToast();
+  const account = useCurrentAccount()!;
+  const { requestSignature } = useSigningContext();
+  const contacts = useUserContactList(account?.pubkey);
 
-  const isFollowing = following.some((t) => t[1] === pubkey);
-  const isFollowingMe = account && userContacts?.contacts.includes(account.pubkey);
+  const isFollowing = isPubkeyInList(contacts, pubkey);
+  const isDisabled = account?.readonly ?? true;
 
-  const followLabel = account && isFollowingMe ? "Follow Back" : "Follow";
+  const handleFollow = async () => {
+    try {
+      const draft = draftAddPerson(contacts || createEmptyContactList(), pubkey);
+      const signed = await requestSignature(draft);
+      const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
+  const handleUnfollow = async () => {
+    try {
+      const draft = draftRemovePerson(contacts || createEmptyContactList(), pubkey);
+      const signed = await requestSignature(draft);
+      const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
 
-  return (
-    <Menu closeOnSelect={false}>
-      <MenuButton
-        as={Button}
-        colorScheme="brand"
-        {...props}
-        rightIcon={<ArrowDownSIcon />}
-        isDisabled={account?.readonly ?? true}
-      >
-        {isFollowing ? "Unfollow" : followLabel}
-      </MenuButton>
-      <MenuList>
-        {isFollowing ? (
-          <MenuItem
-            onClick={() => clientFollowingService.removeContact(pubkey)}
-            icon={<UnfollowIcon />}
-            isDisabled={account?.readonly}
-          >
-            Unfollow
-          </MenuItem>
-        ) : (
-          <MenuItem
-            onClick={() => clientFollowingService.addContact(pubkey)}
-            icon={<FollowIcon />}
-            isDisabled={account?.readonly}
-          >
-            {followLabel}
-          </MenuItem>
-        )}
-        {account && (
-          <>
-            <MenuDivider />
-            <UsersLists pubkey={pubkey} />
-            {/* <MenuDivider />
-            <MenuItem icon={<PlusCircleIcon />} isDisabled={account.readonly}>
-              New list
-            </MenuItem> */}
-          </>
-        )}
-      </MenuList>
-    </Menu>
-  );
+  if (showLists) {
+    return (
+      <Menu closeOnSelect={false}>
+        <MenuButton as={Button} colorScheme="brand" {...props} rightIcon={<ArrowDownSIcon />} isDisabled={isDisabled}>
+          {isFollowing ? "Unfollow" : "Follow"}
+        </MenuButton>
+        <MenuList>
+          {isFollowing ? (
+            <MenuItem onClick={handleUnfollow} icon={<UnfollowIcon />} isDisabled={isDisabled}>
+              Unfollow
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled}>
+              Follow
+            </MenuItem>
+          )}
+          {account && (
+            <>
+              <MenuDivider />
+              <UsersLists pubkey={pubkey} />
+              <MenuDivider />
+              <MenuItem icon={<PlusCircleIcon />} isDisabled={true}>
+                New list
+              </MenuItem>
+            </>
+          )}
+        </MenuList>
+      </Menu>
+    );
+  } else if (isFollowing) {
+    return (
+      <Button onClick={handleUnfollow} colorScheme="brand" icon={<UnfollowIcon />} isDisabled={isDisabled} {...props}>
+        Unfollow
+      </Button>
+    );
+  } else {
+    return (
+      <Button onClick={handleFollow} colorScheme="brand" icon={<FollowIcon />} isDisabled={isDisabled} {...props}>
+        Follow
+      </Button>
+    );
+  }
 };
