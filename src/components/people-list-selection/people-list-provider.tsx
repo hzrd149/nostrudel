@@ -1,40 +1,14 @@
 import { PropsWithChildren, createContext, useContext, useMemo, useState } from "react";
-import { nip19 } from "nostr-tools";
+import { Kind } from "nostr-tools";
+
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 
-export type ListIdentifier = "following" | "global" | string;
-
-export function useParsedNaddr(naddr?: string) {
-  if (!naddr) return;
-  try {
-    const parsed = nip19.decode(naddr);
-
-    if (parsed.type === "naddr") {
-      return parsed.data;
-    }
-  } catch (e) {}
-}
-
-export function useListPeople(list: ListIdentifier) {
-  const account = useCurrentAccount();
-  const contacts = useUserContactList(account?.pubkey);
-
-  const listEvent = useReplaceableEvent(list.includes(":") ? list : undefined);
-
-  if (list === "following") return contacts ? getPubkeysFromList(contacts) : [];
-  if (listEvent) {
-    return getPubkeysFromList(listEvent);
-  }
-  return [];
-}
-
 export type PeopleListContextType = {
-  list: string;
-  people: { pubkey: string; relay?: string }[];
-  setList: (list: string) => void;
+  list?: string;
+  people: { pubkey: string; relay?: string }[] | undefined;
+  setList: (list: string | undefined) => void;
 };
 const PeopleListContext = createContext<PeopleListContextType>({ list: "following", setList: () => {}, people: [] });
 
@@ -44,16 +18,17 @@ export function usePeopleListContext() {
 
 export default function PeopleListProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
-  const [list, setList] = useState(account ? "following" : "global");
+  const [listCord, setList] = useState(account ? `${Kind.Contacts}:${account.pubkey}` : undefined);
+  const listEvent = useReplaceableEvent(listCord);
 
-  const people = useListPeople(list);
+  const people = listEvent && getPubkeysFromList(listEvent);
   const context = useMemo(
     () => ({
       people,
-      list,
+      list: listCord,
       setList,
     }),
-    [list, setList],
+    [listCord, setList, people],
   );
 
   return <PeopleListContext.Provider value={context}>{children}</PeopleListContext.Provider>;

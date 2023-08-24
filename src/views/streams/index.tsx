@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Code, Flex, Select, SimpleGrid } from "@chakra-ui/react";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
-import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../helpers/nostr/stream";
+import { STREAM_KIND, parseStreamEvent } from "../../helpers/nostr/stream";
 import { NostrEvent } from "../../types/nostr-event";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
@@ -32,15 +32,14 @@ function StreamsPage() {
 
   const { people, list } = usePeopleListContext();
   const query =
-    people.length > 0
+    people && people.length > 0
       ? [
           { authors: people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
           { "#p": people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
         ]
       : { kinds: [STREAM_KIND] };
 
-  // TODO: put the list id into the timeline key so it refreshes (probably have to hash the list id since its >64)
-  const timeline = useTimelineLoader(`streams`, relays, query, { eventFilter });
+  const timeline = useTimelineLoader(`${list}-streams`, relays, query, { eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());
 

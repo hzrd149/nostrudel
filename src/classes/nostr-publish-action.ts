@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { isReplaceable } from "../helpers/nostr/events";
 import { addToLog } from "../services/publish-log";
 import relayPoolService from "../services/relay-pool";
@@ -7,10 +8,8 @@ import createDefer from "./deferred";
 import { IncomingCommandResult, Relay } from "./relay";
 import Subject, { PersistentSubject } from "./subject";
 
-let lastId = 0;
-
 export default class NostrPublishAction {
-  id = lastId++;
+  id = nanoid();
   label: string;
   relays: string[];
   event: NostrEvent;

@@ -1,11 +1,10 @@
+import { nanoid } from "nanoid";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequestFilter } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
 import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
 import Subject from "./subject";
 import createDefer from "./deferred";
-
-let lastId = 0;
 
 const REQUEST_DEFAULT_TIMEOUT = 1000 * 5;
 export class NostrRequest {
@@ -21,8 +20,8 @@ export class NostrRequest {
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
-  constructor(relayUrls: string[], timeout?: number, name?: string) {
-    this.id = name || `request-${lastId++}`;
+  constructor(relayUrls: string[], timeout?: number) {
+    this.id = nanoid();
     this.relays = new Set(relayUrls.map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {

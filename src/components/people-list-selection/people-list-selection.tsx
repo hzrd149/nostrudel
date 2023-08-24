@@ -13,7 +13,9 @@ function UserListOptions() {
   return (
     <>
       {lists.map((list) => (
-        <option value={getEventCoordinate(list)}>{getListName(list)}</option>
+        <option key={getEventCoordinate(list)} value={getEventCoordinate(list)}>
+          {getListName(list)}
+        </option>
       ))}
     </>
   );
@@ -32,7 +34,7 @@ export default function PeopleListSelection({
     <Select
       value={list}
       onChange={(e) => {
-        setList(e.target.value);
+        setList(e.target.value === "global" ? undefined : e.target.value);
       }}
       {...props}
     >

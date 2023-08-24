@@ -26,7 +26,6 @@ class RelayTimelineLoader {
   query: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
   private name?: string;
-  private requestId = 0;
   private log: Debugger;
 
   loading = false;
@@ -41,7 +40,7 @@ class RelayTimelineLoader {
     this.query = query;
     this.name = name;
 
-    this.log = log || logger.extend(name);
+    this.log = log || logger.extend(this.name);
     this.events = new EventStore(relay);
   }
 
@@ -53,7 +52,7 @@ class RelayTimelineLoader {
       query = addToQuery(query, { until: oldestEvent.created_at - 1 });
     }
 
-    const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
+    const request = new NostrRequest([this.relay], 20 * 1000);
 
     let gotEvents = 0;
     request.onEvent.subscribe((e) => {
@@ -93,7 +92,7 @@ export class TimelineLoader {
   loadNextBlockBuffer = 2;
   eventFilter?: (event: NostrEvent) => boolean;
 
-  private name: string;
+  name: string;
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
@@ -166,6 +165,7 @@ export class TimelineLoader {
 
     this.removeLoaders();
 
+    this.log("set query", query);
     this.query = query;
     this.events.clear();
     this.timeline.next([]);
