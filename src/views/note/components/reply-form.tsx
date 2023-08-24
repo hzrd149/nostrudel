@@ -8,11 +8,13 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { UserAvatarStack } from "../../../components/user-avatar-stack";
 import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
 import { NoteContents } from "../../../components/note/note-contents";
-import { addReplyTags, ensureNotifyUsers, finalizeNote } from "../../../helpers/nostr/post";
+import { addReplyTags, ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../../helpers/nostr/post";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { getContentTagRefs } from "../../../helpers/nostr/event";
+import { unique } from "../../../helpers/array";
 
 function NoteContentPreview({ content }: { content: string }) {
   const draft = useMemo(
@@ -32,6 +34,7 @@ export type ReplyFormProps = {
 export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProps) {
   const toast = useToast();
   const account = useCurrentAccount();
+  const showPreview = useDisclosure();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
 
@@ -41,8 +44,8 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
       content: "",
     },
   });
-
-  const showPreview = useDisclosure();
+  const contentMentions = getContentMentions(getValues().content);
+  const notifyPubkeys = unique([...threadMembers, ...contentMentions]);
 
   watch("content");
 
@@ -50,13 +53,12 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
     try {
       let draft = finalizeNote({ kind: Kind.Text, content: values.content, created_at: dayjs().unix(), tags: [] });
       draft = addReplyTags(draft, item.event);
-      draft = ensureNotifyUsers(draft, threadMembers);
+      draft = ensureNotifyPubkeys(draft, notifyPubkeys);
 
       const signed = await requestSignature(draft);
       if (!signed) return;
       // TODO: write to other users inbox relays
       const pub = new NostrPublishAction("Reply", writeRelays, signed);
-      await pub.onComplete;
 
       if (onSubmitted) onSubmitted(signed);
     } catch (e) {
@@ -78,7 +80,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="submit">Submit</Button>
         </ButtonGroup>
-        <UserAvatarStack label="Notify" users={threadMembers} />
+        <UserAvatarStack label="Notify" users={notifyPubkeys} />
         {getValues().content.length > 0 && (
           <Button size="sm" ml="auto" onClick={showPreview.onToggle}>
             Preview

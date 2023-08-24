@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 import { getAddr } from "../../services/replaceable-event-requester";
+import { ensureNotifyContentMentions } from "./post";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;
@@ -83,12 +84,14 @@ export function getATag(stream: ParsedStream) {
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {
-  const template: DraftNostrEvent = {
+  let draft: DraftNostrEvent = {
     tags: [["a", getATag(stream), "", "root"]],
     content,
     created_at: dayjs().unix(),
     kind: STREAM_CHAT_MESSAGE_KIND,
   };
 
-  return template;
+  draft = ensureNotifyContentMentions(draft);
+
+  return draft;
 }
