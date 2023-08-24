@@ -1,16 +1,28 @@
 import { useContext } from "react";
 import { IconButton } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import dayjs from "dayjs";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import { QuoteRepostIcon } from "../../icons";
 import { PostModalContext } from "../../../providers/post-modal-provider";
-import { buildQuoteRepost } from "../../../helpers/nostr/events";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
+import { getSharableNoteId } from "../../../helpers/nip19";
 
 export function QuoteRepostButton({ event }: { event: NostrEvent }) {
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
 
-  const handleClick = () => openModal(buildQuoteRepost(event));
+  const handleClick = () => {
+    const nevent = getSharableNoteId(event.id);
+    const draft = {
+      kind: Kind.Text,
+      tags: [],
+      content: "nostr:" + nevent,
+      created_at: dayjs().unix(),
+    };
+    openModal(draft);
+  };
 
   return (
     <IconButton

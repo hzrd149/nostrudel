@@ -14,6 +14,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { getReferences } from "../../helpers/nostr/events";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
@@ -24,7 +25,8 @@ import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
-import { finalizeNote } from "../../helpers/nostr/post";
+import { ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
+import { UserAvatarStack } from "../user-avatar-stack";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -78,7 +80,9 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const handleSubmit = async () => {
     try {
       setWaiting(true);
-      const updatedDraft = finalizeNote(draft);
+    let updatedDraft = finalizeNote(draft);
+    const contentMentions = getContentMentions(draft.content);
+    updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
       const signed = await requestSignature(updatedDraft);
       setWaiting(false);
 
@@ -147,6 +151,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
               isLoading={uploading}
             />
           </Flex>
+          <UserAvatarStack label="Mentions" users={getContentMentions(draft.content)} />
           {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
           <Button onClick={onClose}>Cancel</Button>
           <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>

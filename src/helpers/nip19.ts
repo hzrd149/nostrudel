@@ -1,5 +1,5 @@
 import { bech32 } from "bech32";
-import { nip19 } from "nostr-tools";
+import { getPublicKey, nip19 } from "nostr-tools";
 import { getEventRelays } from "../services/event-relays";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { NostrEvent, isDTag } from "../types/nostr-event";
@@ -46,7 +46,18 @@ export function safeDecode(str: string) {
   } catch (e) {}
 }
 
-/** @deprecated */
+export function getPubkey(result: nip19.DecodeResult){
+  switch(result.type){
+    case 'naddr':
+    case 'nprofile':
+      return result.data.pubkey
+    case 'npub':
+      return result.data;
+    case 'nsec':
+      return getPublicKey(result.data)
+  }
+}
+
 export function normalizeToHex(hex: string) {
   if (isHex(hex)) return hex;
   if (isBech32Key(hex)) return bech32ToHex(hex);

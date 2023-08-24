@@ -4,9 +4,7 @@ import { Kind, nip19 } from "nostr-tools";
 import { getEventRelays } from "../../services/event-relays";
 import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
-import accountService from "../../services/account";
 import { getMatchNostrLink } from "../regexp";
-import { getSharableNoteId } from "../nip19";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { AddressPointer } from "nostr-tools/lib/nip19";
 
@@ -140,37 +138,6 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export function buildReply(event: NostrEvent, account = accountService.current.value): DraftNostrEvent {
-  const refs = getReferences(event);
-  const relay = getEventRelays(event.id).value?.[0] ?? "";
-
-  const tags: NostrEvent["tags"] = [];
-
-  const rootId = refs.rootId ?? event.id;
-  const replyId = event.id;
-
-  tags.push(["e", rootId, relay, "root"]);
-  if (replyId !== rootId) {
-    tags.push(["e", replyId, relay, "reply"]);
-  }
-  // add all ptags
-  // TODO: omit my own pubkey
-  const ptags = event.tags.filter(isPTag).filter((t) => !account || t[1] !== account.pubkey);
-  tags.push(...ptags);
-  // add the original authors pubkey if its not already there
-  if (!ptags.some((t) => t[1] === event.pubkey)) {
-    tags.push(["p", event.pubkey]);
-  }
-
-  return {
-    kind: Kind.Text,
-    // TODO: be smarter about picking relay
-    tags,
-    content: "",
-    created_at: dayjs().unix(),
-  };
-}
-
 export function buildRepost(event: NostrEvent): DraftNostrEvent {
   const relays = getEventRelays(event.id).value;
   const topRelay = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
@@ -182,17 +149,6 @@ export function buildRepost(event: NostrEvent): DraftNostrEvent {
     kind: Kind.Repost,
     tags,
     content: "",
-    created_at: dayjs().unix(),
-  };
-}
-
-export function buildQuoteRepost(event: NostrEvent): DraftNostrEvent {
-  const nevent = getSharableNoteId(event.id);
-
-  return {
-    kind: Kind.Text,
-    tags: [],
-    content: "nostr:" + nevent,
     created_at: dayjs().unix(),
   };
 }
