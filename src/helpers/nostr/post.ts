@@ -1,9 +1,9 @@
 import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
-import { getMatchHashtag, getMentionNpubOrNote } from "../regexp";
-import { normalizeToHex } from "../nip19";
+import { getMatchHashtag } from "../regexp";
 import { getReferences } from "./event";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
+import { getPubkey, safeDecode } from "../nip19";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -50,7 +50,7 @@ export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
 }
 
 /** ensure a list of pubkeys are present on an event */
-export function ensureNotifyUsers(draft: DraftNostrEvent, pubkeys: string[]) {
+export function ensureNotifyPubkeys(draft: DraftNostrEvent, pubkeys: string[]) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
   for (const pubkey of pubkeys) {
@@ -60,30 +60,19 @@ export function ensureNotifyUsers(draft: DraftNostrEvent, pubkeys: string[]) {
   return updated;
 }
 
-export function replaceAtMentions(draft: DraftNostrEvent) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function getContentMentions(content: string) {
+  const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
+  return Array.from(matched)
+    .map((m) => {
+      const parsed = safeDecode(m[1]);
+      return parsed && getPubkey(parsed);
+    })
+    .filter(Boolean) as string[];
+}
 
-  // replace all occurrences of @npub and @note
-  while (true) {
-    const match = getMentionNpubOrNote().exec(updatedDraft.content);
-    if (!match || match.index === undefined) break;
-
-    const hex = normalizeToHex(match[1]);
-    if (!hex) continue;
-    const mentionType = match[2] === "npub1" ? "p" : "e";
-
-    // TODO: find the best relay for this user or note
-    const existingMention = updatedDraft.tags.find((t) => t[0] === mentionType && t[1] === hex);
-    const index = existingMention
-      ? updatedDraft.tags.indexOf(existingMention)
-      : updatedDraft.tags.push([mentionType, hex, "", "mention"]) - 1;
-
-    // replace the npub1 or note1 with a mention tag #[0]
-    const c = updatedDraft.content;
-    updatedDraft.content = c.slice(0, match.index) + `#[${index}]` + c.slice(match.index + match[0].length);
-  }
-
-  return updatedDraft;
+export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
+  const mentions = getContentMentions(draft.content);
+  return mentions.length > 0 ? ensureNotifyPubkeys(draft, mentions) : draft;
 }
 
 export function createHashtagTags(draft: DraftNostrEvent) {
@@ -103,7 +92,6 @@ export function createHashtagTags(draft: DraftNostrEvent) {
 
 export function finalizeNote(draft: DraftNostrEvent) {
   let updated = draft;
-  updated = replaceAtMentions(updated);
   updated = createHashtagTags(updated);
   return updated;
 }

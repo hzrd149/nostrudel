@@ -1,6 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "react-use";
-import { Box, Button, ButtonGroup, Flex, Heading, Spacer, Spinner, Text, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  Spacer,
+  Spinner,
+  Tag,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
@@ -21,6 +32,7 @@ import replaceableEventLoaderService from "../../../services/replaceable-event-r
 import useSubject from "../../../hooks/use-subject";
 import RelaySelectionButton from "../../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider from "../../../providers/relay-selection-provider";
+import StreamerCards from "../components/streamer-cards";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   const vertical = useBreakpointValue({ base: true, lg: false });
@@ -92,7 +104,7 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
         />
       )}
       {!displayMode && (
-        <Flex gap={vertical ? "2" : "4"} direction="column" flexGrow={vertical ? 0 : 1}>
+        <Flex gap={vertical ? "2" : "4"} direction="column" flexGrow={vertical ? 0 : 1} pb="4">
           <LiveVideoPlayer
             stream={stream.streaming || stream.recording}
             autoPlay={!!stream.streaming}
@@ -113,6 +125,14 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
             <Button onClick={() => navigate(-1)}>Back</Button>
           </Flex>
           <StreamSummaryContent stream={stream} px={vertical ? "2" : 0} />
+          {stream.tags.length > 0 && (
+            <Flex gap="2" wrap="wrap">
+              {stream.tags.map((tag) => (
+                <Tag key={tag}>{tag}</Tag>
+              ))}
+            </Flex>
+          )}
+          {!vertical && <StreamerCards pubkey={stream.host} />}
         </Flex>
       )}
       <StreamChat

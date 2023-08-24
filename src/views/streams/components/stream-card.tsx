@@ -13,6 +13,7 @@ import {
   LinkBox,
   LinkOverlay,
   Spacer,
+  Tag,
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
@@ -52,7 +53,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
         {stream.tags.length > 0 && (
           <Flex gap="2" wrap="wrap">
             {stream.tags.map((tag) => (
-              <Badge key={tag}>{tag}</Badge>
+              <Tag key={tag}>{tag}</Tag>
             ))}
           </Flex>
         )}

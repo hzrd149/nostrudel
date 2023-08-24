@@ -41,6 +41,7 @@ import useUserMuteList from "../../../../hooks/use-user-mute-list";
 import { NostrEvent, isPTag } from "../../../../types/nostr-event";
 import { useCurrentAccount } from "../../../../hooks/use-current-account";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
+import { ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
 
 const hideScrollbar = css`
   scrollbar-width: 0;

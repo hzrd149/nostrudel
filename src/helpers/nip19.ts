@@ -1,5 +1,5 @@
 import { bech32 } from "bech32";
-import { nip19 } from "nostr-tools";
+import { getPublicKey, nip19 } from "nostr-tools";
 import { getEventRelays } from "../services/event-relays";
 import relayScoreboardService from "../services/relay-scoreboard";
 
@@ -67,6 +67,18 @@ export function safeDecode(str: string) {
   try {
     return nip19.decode(str);
   } catch (e) {}
+}
+
+export function getPubkey(result: nip19.DecodeResult){
+  switch(result.type){
+    case 'naddr':
+    case 'nprofile':
+      return result.data.pubkey
+    case 'npub':
+      return result.data;
+    case 'nsec':
+      return getPublicKey(result.data)
+  }
 }
 
 export function normalizeToBech32(key: string, prefix: Bech32Prefix = Bech32Prefix.Pubkey) {
