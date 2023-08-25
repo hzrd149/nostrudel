@@ -1,33 +1,51 @@
 import { Link as RouterLink } from "react-router-dom";
-import { AvatarGroup, Card, CardBody, CardHeader, Heading, Link, Spacer, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Box,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Link,
+  Spacer,
+  Text,
+} from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import EventVerificationIcon from "../../../components/event-verification-icon";
-import { getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
+import { getEventsFromList, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
 import { getSharableEventNaddr } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { Kind } from "nostr-tools";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
 import { EventRelays } from "../../../components/note/note-relays";
+import { NoteLink } from "../../../components/note-link";
 
 export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
   if (!event) return null;
 
   const people = getPubkeysFromList(event);
+  const notes = getEventsFromList(event);
   const link =
     event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventNaddr(event);
 
   return (
     <Card>
-      <CardHeader display="flex" p="2" flex="1" gap="2" alignItems="center">
-        <Heading size="md">
-          <Link as={RouterLink} to={`/lists/${link}`}>
-            {getListName(event)}
-          </Link>
-        </Heading>
+      <CardHeader display="flex" p="2" flex="1" gap="2">
+        <Box>
+          <Heading size="md">
+            <Link as={RouterLink} to={`/lists/${link}`}>
+              {getListName(event)}
+            </Link>
+          </Heading>
+          <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
+        </Box>
         <Spacer />
         <Text>Created by:</Text>
         <UserAvatarLink pubkey={event.pubkey} size="xs" />
@@ -38,15 +56,27 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
         {people.length > 0 && (
           <>
             <Text>{people.length} people</Text>
-            <AvatarGroup overflow="hidden" mb="2">
+            <AvatarGroup overflow="hidden" mb="2" max={16} size="sm">
               {people.map(({ pubkey, relay }) => (
                 <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
               ))}
             </AvatarGroup>
           </>
         )}
-        <EventRelays event={event} />
+        {notes.length > 0 && (
+          <>
+            <Text>{notes.length} notes</Text>
+            <Flex gap="2" wrap="wrap">
+              {notes.map(({ id, relay }) => (
+                <NoteLink key={id} noteId={id} />
+              ))}
+            </Flex>
+          </>
+        )}
       </CardBody>
+      <CardFooter p="2" display="flex">
+        <EventRelays event={event} ml="auto" />
+      </CardFooter>
     </Card>
   );
 }

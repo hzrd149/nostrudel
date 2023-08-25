@@ -11,9 +11,11 @@ export type NoteRelaysProps = {
   event: NostrEvent;
 };
 
-export const EventRelays = memo(({ event }: NoteRelaysProps & Omit<RelayIconStackProps, "relays" | "maxRelays">) => {
-  const maxRelays = useBreakpointValue({ base: 3, md: undefined });
-  const eventRelays = useSubject(getEventRelays(getEventUID(event)));
+export const EventRelays = memo(
+  ({ event, ...props }: NoteRelaysProps & Omit<RelayIconStackProps, "relays" | "maxRelays">) => {
+    const maxRelays = useBreakpointValue({ base: 3, md: undefined });
+    const eventRelays = useSubject(getEventRelays(getEventUID(event)));
 
-  return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={maxRelays} />;
-});
+    return <RelayIconStack relays={eventRelays} direction="row-reverse" maxRelays={maxRelays} {...props} />;
+  },
+);

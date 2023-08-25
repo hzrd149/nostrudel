@@ -79,7 +79,7 @@ export default function UserAboutTab() {
       gap="2"
       pt={metadata?.banner ? 0 : "2"}
       pb="8"
-      h="full"
+      minH="90vh"
     >
       <Box
         pt={!expanded.isOpen ? "20vh" : 0}

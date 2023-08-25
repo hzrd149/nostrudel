@@ -23,14 +23,17 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 
-export type NewListModalProps = { onCreated?: (list: NostrEvent) => void } & Omit<ModalProps, "children">;
+export type NewListModalProps = { onCreated?: (list: NostrEvent) => void; initKind?: number } & Omit<
+  ModalProps,
+  "children"
+>;
 
-export default function NewListModal({ onClose, onCreated, ...props }: NewListModalProps) {
+export default function NewListModal({ onClose, onCreated, initKind, ...props }: NewListModalProps) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
-      kind: PEOPLE_LIST_KIND,
+      kind: initKind || PEOPLE_LIST_KIND,
       name: "",
     },
   });

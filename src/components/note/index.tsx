@@ -32,6 +32,7 @@ import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import BookmarkButton from "./buttons/bookmark-button";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -86,6 +87,7 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
               />
             )}
             <EventRelays event={event} />
+            <BookmarkButton event={event} aria-label="Bookmark note" size="sm" variant="link" />
             <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
           </CardFooter>
         </Card>

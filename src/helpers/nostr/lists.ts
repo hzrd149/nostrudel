@@ -1,18 +1,22 @@
 import dayjs from "dayjs";
-import { DraftNostrEvent, NostrEvent, isDTag, isPTag } from "../../types/nostr-event";
 import { Kind } from "nostr-tools";
+import { DraftNostrEvent, NostrEvent, isDTag, isETag, isPTag } from "../../types/nostr-event";
 
 export const PEOPLE_LIST_KIND = 30000;
 export const NOTE_LIST_KIND = 30001;
+export const PIN_LIST_KIND = 10001;
 export const MUTE_LIST_KIND = 10000;
 
 export function getListName(event: NostrEvent) {
   if (event.kind === 3) return "Following";
-  return event.tags.find(isDTag)?.[1];
+  return event.tags.find((t) => t[0] === "title")?.[1] || event.tags.find(isDTag)?.[1];
 }
 
 export function getPubkeysFromList(event: NostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2] }));
+}
+export function getEventsFromList(event: NostrEvent) {
+  return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
 }
 
 export function isPubkeyInList(event?: NostrEvent, pubkey?: string) {
@@ -37,25 +41,49 @@ export function createEmptyMuteList(): DraftNostrEvent {
   };
 }
 
-export function draftAddPerson(event: NostrEvent | DraftNostrEvent, pubkey: string, relay?: string) {
-  if (event.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
+export function draftAddPerson(list: NostrEvent | DraftNostrEvent, pubkey: string, relay?: string) {
+  if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
 
   const draft: DraftNostrEvent = {
     created_at: dayjs().unix(),
-    kind: event.kind,
-    content: event.content,
-    tags: [...event.tags, relay ? ["p", pubkey, relay] : ["p", pubkey]],
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, relay ? ["p", pubkey, relay] : ["p", pubkey]],
   };
 
   return draft;
 }
 
-export function draftRemovePerson(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+export function draftRemovePerson(list: NostrEvent | DraftNostrEvent, pubkey: string) {
   const draft: DraftNostrEvent = {
     created_at: dayjs().unix(),
-    kind: event.kind,
-    content: event.content,
-    tags: event.tags.filter((t) => t[0] !== "p" || t[1] !== pubkey),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "p" && t[1] === pubkey)),
+  };
+
+  return draft;
+}
+
+export function draftAddEvent(list: NostrEvent | DraftNostrEvent, event: string, relay?: string) {
+  if (list.tags.some((t) => t[0] === "e" && t[1] === event)) throw new Error("event already in list");
+
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, relay ? ["e", event, relay] : ["e", event]],
+  };
+
+  return draft;
+}
+
+export function draftRemoveEvent(list: NostrEvent | DraftNostrEvent, event: string) {
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "e" && t[1] === event)),
   };
 
   return draft;

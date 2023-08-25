@@ -41,7 +41,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
           <UserDnsIdentityIcon pubkey={pubkey} />
         </Flex>
         {account?.pubkey === list.pubkey ? (
-          <Button variant="outline" colorScheme="orange" onClick={handleRemoveFromList}>
+          <Button variant="outline" colorScheme="orange" onClick={handleRemoveFromList} size="sm">
             Remove
           </Button>
         ) : (
