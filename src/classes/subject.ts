@@ -37,13 +37,15 @@ export class Subject<Value> implements Connectable<Value> {
     });
   }
 
-  subscribe(listener: ListenerFn<Value>, ctx?: Object) {
+  subscribe(listener: ListenerFn<Value>, ctx?: Object, initCall = true) {
     if (!this.findListener(listener, ctx)) {
       this.listeners.push([listener, ctx]);
 
-      if (this.value !== undefined) {
-        if (ctx) listener.call(ctx, this.value);
-        else listener(this.value);
+      if (initCall) {
+        if (this.value !== undefined) {
+          if (ctx) listener.call(ctx, this.value);
+          else listener(this.value);
+        }
       }
     }
     return this;

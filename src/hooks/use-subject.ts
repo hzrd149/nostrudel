@@ -7,12 +7,9 @@ function useSubject<Value extends unknown>(subject?: Subject<Value>): Value | un
 function useSubject<Value extends unknown>(subject?: Subject<Value>) {
   const [_, setValue] = useState(subject?.value);
   useEffect(() => {
-    const handler = (value: Value) => setValue(value);
-    setValue(subject?.value);
-    subject?.subscribe(handler);
-
+    subject?.subscribe(setValue, undefined, false);
     return () => {
-      subject?.unsubscribe(handler);
+      subject?.unsubscribe(setValue, undefined);
     };
   }, [subject, setValue]);
 

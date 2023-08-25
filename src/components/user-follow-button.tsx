@@ -40,7 +40,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const [isLoading, setLoading] = useState(false);
   const newListModal = useDisclosure();
 
-  const lists = useUserLists(pubkey);
+  const lists = useUserLists(account.pubkey);
 
   const inLists = lists.filter((list) => getPubkeysFromList(list).some((p) => p.pubkey === pubkey));
 

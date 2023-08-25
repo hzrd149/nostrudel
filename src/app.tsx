@@ -4,12 +4,10 @@ import { Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
 
-import HomeView from "./views/home";
+import HomeView from "./views/home/index";
 import SettingsView from "./views/settings";
 import LoginView from "./views/login";
 import ProfileView from "./views/profile";
-import FollowingTab from "./views/home/following-tab";
-import GlobalTab from "./views/home/global-tab";
 import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
@@ -137,11 +135,6 @@ const router = createHashRouter([
       {
         path: "",
         element: <HomeView />,
-        children: [
-          { path: "", element: <FollowingTab /> },
-          { path: "following", element: <FollowingTab /> },
-          { path: "global", element: <GlobalTab /> },
-        ],
       },
     ],
   },

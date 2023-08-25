@@ -1,46 +1,57 @@
-import { Select, SelectProps } from "@chakra-ui/react";
-import { usePeopleListContext } from "./people-list-provider";
-import useUserLists from "../../hooks/use-user-lists";
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import { getListName } from "../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import {
+  Button,
+  ButtonProps,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
+} from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
-function UserListOptions() {
-  const account = useCurrentAccount()!;
-  const lists = useUserLists(account?.pubkey);
-
-  return (
-    <>
-      {lists.map((list) => (
-        <option key={getEventCoordinate(list)} value={getEventCoordinate(list)}>
-          {getListName(list)}
-        </option>
-      ))}
-    </>
-  );
-}
+import { usePeopleListContext } from "../../providers/people-list-provider";
+import useUserLists from "../../hooks/use-user-lists";
+import { useCurrentAccount } from "../../hooks/use-current-account";
+import { PEOPLE_LIST_KIND, getListName } from "../../helpers/nostr/lists";
+import { getEventCoordinate } from "../../helpers/nostr/events";
 
 export default function PeopleListSelection({
   hideGlobalOption = false,
   ...props
 }: {
   hideGlobalOption?: boolean;
-} & Omit<SelectProps, "value" | "onChange" | "children">) {
-  const account = useCurrentAccount()!;
-  const { list, setList } = usePeopleListContext();
+} & Omit<ButtonProps, "children">) {
+  const account = useCurrentAccount();
+  const lists = useUserLists(account?.pubkey);
+  const { list, setList, listEvent } = usePeopleListContext();
+
+  const handleSelect = (value: string | string[]) => {
+    console.log(value);
+    if (typeof value === "string") {
+      setList(value);
+    }
+  };
 
   return (
-    <Select
-      value={list}
-      onChange={(e) => {
-        setList(e.target.value === "global" ? undefined : e.target.value);
-      }}
-      {...props}
-    >
-      {account && <option value={`${Kind.Contacts}:${account.pubkey}`}>Following</option>}
-      {!hideGlobalOption && <option value="global">Global</option>}
-      {account && <UserListOptions />}
-    </Select>
+    <Menu>
+      <MenuButton as={Button} {...props}>
+        {listEvent ? getListName(listEvent) : list === "global" ? "Global" : "Following"}
+      </MenuButton>
+      <MenuList zIndex={100}>
+        <MenuOptionGroup value={list} onChange={handleSelect} type="radio">
+          {account && <MenuItemOption value={`${Kind.Contacts}:${account.pubkey}`}>Following</MenuItemOption>}
+          {!hideGlobalOption && <MenuItemOption value="global">Global</MenuItemOption>}
+          {account && <MenuDivider />}
+          {lists
+            .filter((l) => l.kind === PEOPLE_LIST_KIND)
+            .map((list) => (
+              <MenuItemOption key={getEventCoordinate(list)} value={getEventCoordinate(list)} isTruncated maxW="90vw">
+                {getListName(list)}
+              </MenuItemOption>
+            ))}
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
   );
 }

@@ -1,12 +1,14 @@
 import { PropsWithChildren, createContext, useContext, useMemo, useState } from "react";
 import { Kind } from "nostr-tools";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
-import { getPubkeysFromList } from "../../helpers/nostr/lists";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { useCurrentAccount } from "../hooks/use-current-account";
+import { getPubkeysFromList } from "../helpers/nostr/lists";
+import useReplaceableEvent from "../hooks/use-replaceable-event";
+import { NostrEvent } from "../types/nostr-event";
 
 export type PeopleListContextType = {
   list?: string;
+  listEvent?: NostrEvent;
   people: { pubkey: string; relay?: string }[] | undefined;
   setList: (list: string | undefined) => void;
 };
@@ -26,9 +28,10 @@ export default function PeopleListProvider({ children }: PropsWithChildren) {
     () => ({
       people,
       list: listCord,
+      listEvent,
       setList,
     }),
-    [listCord, setList, people],
+    [listCord, setList, people, listEvent],
   );
 
   return <PeopleListContext.Provider value={context}>{children}</PeopleListContext.Provider>;

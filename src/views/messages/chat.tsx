@@ -15,7 +15,6 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { Message } from "./message";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr/events";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
@@ -31,7 +30,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   const readRelays = useReadRelayUrls();
 
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-${truncatedId(account.pubkey)}-messages`, readRelays, [
+  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, readRelays, [
     {
       kinds: [Kind.EncryptedDirectMessage],
       "#p": [account.pubkey],

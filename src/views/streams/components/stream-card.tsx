@@ -1,32 +1,16 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
+import dayjs from "dayjs";
+import { Box, Card, CardBody, CardProps, Flex, Heading, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
+
 import { ParsedStream } from "../../../helpers/nostr/stream";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardFooter,
-  CardProps,
-  Divider,
-  Flex,
-  Heading,
-  Image,
-  LinkBox,
-  LinkOverlay,
-  Spacer,
-  Tag,
-  Text,
-} from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
-import dayjs from "dayjs";
 import StreamStatusBadge from "./status-badge";
-import { EventRelays } from "../../../components/note/note-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
-import StreamDebugButton from "./stream-debug-button";
 
-export default function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
+function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, image } = stream;
 
   // if there is a parent intersection observer, register this card
@@ -36,9 +20,17 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
   const naddr = useEventNaddr(stream.event, stream.relays);
 
   return (
-    <Card {...props} ref={ref}>
+    <Card {...props} ref={ref} position="relative">
       <LinkBox as={CardBody} p="2" display="flex" flexDirection="column" gap="2">
-        {image && <Image src={image} alt={title} borderRadius="lg" />}
+        <StreamStatusBadge stream={stream} position="absolute" top="4" left="4" />
+        <Box
+          backgroundImage={image}
+          backgroundPosition="center"
+          backgroundRepeat="no-repeat"
+          backgroundSize="cover"
+          aspectRatio={16 / 9}
+          borderRadius="lg"
+        />
         <Flex gap="2" alignItems="center">
           <UserAvatar pubkey={stream.host} size="sm" noProxy />
           <Heading size="sm">
@@ -59,13 +51,7 @@ export default function StreamCard({ stream, ...props }: CardProps & { stream: P
         )}
         {stream.starts && <Text>Started: {dayjs.unix(stream.starts).fromNow()}</Text>}
       </LinkBox>
-      <Divider />
-      <CardFooter p="2" display="flex" gap="2" alignItems="center">
-        <StreamStatusBadge stream={stream} />
-        <Spacer />
-        <EventRelays event={stream.event} />
-        <StreamDebugButton stream={stream} variant="ghost" size="sm" />
-      </CardFooter>
     </Card>
   );
 }
+export default memo(StreamCard);

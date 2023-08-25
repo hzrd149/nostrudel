@@ -40,7 +40,7 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
             <Text>{people.length} people</Text>
             <AvatarGroup overflow="hidden" mb="2">
               {people.map(({ pubkey, relay }) => (
-                <UserAvatarLink pubkey={pubkey} relay={relay} />
+                <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
               ))}
             </AvatarGroup>
           </>

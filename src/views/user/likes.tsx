@@ -56,7 +56,7 @@ export default function UserLikesTab() {
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
 
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
+  const timeline = useTimelineLoader(`${pubkey}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
 
   const likes = useSubject(timeline.timeline);
 

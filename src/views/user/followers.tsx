@@ -29,7 +29,7 @@ export default function UserFollowersTab() {
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
 
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-followers`, readRelays, {
+  const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],
     kinds: [Kind.Contacts],
   });

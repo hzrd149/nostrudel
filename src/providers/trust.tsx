@@ -18,8 +18,8 @@ export function TrustProvider({
   const parentTrust = useContext(TrustContext);
 
   const account = useCurrentAccount();
-  const contacts = useUserContactList(account?.pubkey)
-  const following = contacts ? getPubkeysFromList(contacts).map(p => p.pubkey) : []
+  const contactList = useUserContactList(account?.pubkey);
+  const following = contactList ? getPubkeysFromList(contactList).map((p) => p.pubkey) : [];
 
   const isEventTrusted = trust || (!!event && (event.pubkey === account?.pubkey || following.includes(event.pubkey)));
 

@@ -56,7 +56,7 @@ const UserRelaysTab = () => {
   const userRelays = useUserRelays(pubkey);
 
   const readRelays = useReadRelayUrls(userRelays.map((r) => r.url));
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-relay-reviews`, readRelays, {
+  const timeline = useTimelineLoader(`${pubkey}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
     "#l": ["review/relay"],

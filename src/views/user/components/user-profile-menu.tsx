@@ -1,6 +1,7 @@
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { useCopyToClipboard } from "react-use";
 
 import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import { ChatIcon, ClipboardIcon, CodeIcon, ExternalLinkIcon, RelayIcon, SpyIcon } from "../../../components/icons";
@@ -10,7 +11,6 @@ import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useUserRelays } from "../../../hooks/use-user-relays";
 import { RelayMode } from "../../../classes/relay";
 import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
-import { useCopyToClipboard } from "react-use";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { truncatedId } from "../../../helpers/nostr/events";
