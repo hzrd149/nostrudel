@@ -1,3 +1,4 @@
+import { Button } from "@getalby/bitcoin-connect-react";
 import {
   Flex,
   FormControl,
@@ -9,7 +10,6 @@ import {
   AccordionIcon,
   FormHelperText,
   Input,
-  Select,
   Switch,
   FormErrorMessage,
 } from "@chakra-ui/react";
@@ -32,6 +32,7 @@ export default function LightningSettings() {
       </h2>
       <AccordionPanel>
         <Flex direction="column" gap="4">
+          <Button />
           <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="autoPayWithWebLN" mb="0">
