@@ -1,10 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Flex } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
-import { isReply, truncatedId } from "../../helpers/nostr/events";
+import { isReply } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useCurrentAccount } from "../../hooks/use-current-account";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
@@ -12,6 +11,7 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import { NostrRequestFilter } from "../../types/nostr-query";
 
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
@@ -24,12 +24,16 @@ function HomePage() {
   );
 
   const { relays } = useRelaySelectionContext();
-  const { people, list } = usePeopleListContext();
+  const { list, filter } = usePeopleListContext();
 
   const kinds = [Kind.Text, Kind.Repost, 2];
-  const query = people && people.length > 0 ? { authors: people.map((p) => p.pubkey), kinds } : { kinds };
+  const query = useMemo<NostrRequestFilter>(() => {
+    if (filter === undefined) return { kinds };
+    return { ...filter, kinds };
+  }, [filter]);
+
   const timeline = useTimelineLoader(`${list}-home-feed`, relays, query, {
-    enabled: !!people && people.length > 0,
+    enabled: !!filter,
     eventFilter,
   });
 

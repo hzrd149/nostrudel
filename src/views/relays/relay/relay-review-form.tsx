@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Flex, FlexProps, Heading, Textarea, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
@@ -9,7 +9,11 @@ import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from ".
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 
-export default function RelayReviewForm({ onClose, relay }: { onClose: () => void; relay: string }) {
+export default function RelayReviewForm({
+  onClose,
+  relay,
+  ...props
+}: { onClose: () => void; relay: string } & Omit<FlexProps, "children">) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
@@ -44,7 +48,7 @@ export default function RelayReviewForm({ onClose, relay }: { onClose: () => voi
   });
 
   return (
-    <Flex as="form" direction="column" onSubmit={onSubmit} gap="2" mb="2">
+    <Flex as="form" direction="column" onSubmit={onSubmit} gap="2" mb="2" {...props}>
       <Flex gap="2">
         <Heading size="md">Write review</Heading>
         <StarRating quality={getValues().quality} fontSize="1.5rem" onChange={(q) => setValue("quality", q)} />

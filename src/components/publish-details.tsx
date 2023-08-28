@@ -1,6 +1,8 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Flex, FlexProps, Progress } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Flex, FlexProps, Link, Progress } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import NostrPublishAction from "../classes/nostr-publish-action";
 import useSubject from "../hooks/use-subject";
+import { RelayPaidTag } from "../views/relays/components/relay-card";
 
 export type PostResultsProps = {
   pub: NostrPublishAction;
@@ -16,7 +18,12 @@ export const PublishDetails = ({ pub }: PostResultsProps & Omit<FlexProps, "chil
         <Alert key={result.relay.url} status={result.status ? "success" : "warning"}>
           <AlertIcon />
           <Box>
-            <AlertTitle>{result.relay.url}</AlertTitle>
+            <AlertTitle>
+              <Link as={RouterLink} to={`/r/${encodeURIComponent(result.relay.url)}`}>
+                {result.relay.url}
+              </Link>
+              <RelayPaidTag url={result.relay.url} />
+            </AlertTitle>
             {result.message && <AlertDescription>{result.message}</AlertDescription>}
           </Box>
         </Alert>

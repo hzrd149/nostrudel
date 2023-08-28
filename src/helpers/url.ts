@@ -1,3 +1,5 @@
+import type { URLSearchParamsInit } from "react-router-dom";
+
 export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
 
 export const IMAGE_EXT = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
@@ -51,4 +53,14 @@ export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
   if (replacementUrl.username) newUrl.username = replacementUrl.username;
   if (replacementUrl.password) newUrl.password = replacementUrl.password;
   return newUrl;
+}
+
+export function searchParamsToJson(params: URLSearchParams) {
+  const json: URLSearchParamsInit = {};
+
+  for (const [key, value] of params.entries()) {
+    json[key] = value;
+  }
+
+  return json;
 }

@@ -1,4 +1,5 @@
-import { Divider, Flex, Heading, Select, SimpleGrid } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -12,20 +13,23 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useParsedStreams from "../../hooks/use-parsed-streams";
+import { NostrRequestFilter } from "../../types/nostr-query";
+import { useAppTitle } from "../../hooks/use-app-title";
 
 function StreamsPage() {
+  useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
 
-  const { people, list } = usePeopleListContext();
-  const query =
-    people && people.length > 0
-      ? [
-          { authors: people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
-          { "#p": people.map((p) => p.pubkey), kinds: [STREAM_KIND] },
-        ]
-      : { kinds: [STREAM_KIND] };
+  const { filter, list } = usePeopleListContext();
+  const query = useMemo<NostrRequestFilter>(() => {
+    if (list === "global" || !filter) return { kinds: [STREAM_KIND] };
+    return [
+      { authors: filter.authors, kinds: [STREAM_KIND] },
+      { "#p": filter.authors, kinds: [STREAM_KIND] },
+    ];
+  }, [filter, list]);
 
-  const timeline = useTimelineLoader(`${list}-streams`, relays, query);
+  const timeline = useTimelineLoader(`${list}-streams`, relays, query, { enabled: !!filter });
 
   useRelaysChanged(relays, () => timeline.reset());
 
@@ -40,7 +44,7 @@ function StreamsPage() {
   return (
     <Flex p="2" gap="2" overflow="hidden" direction="column">
       <Flex gap="2" wrap="wrap">
-        <PeopleListSelection w={["full", "xs"]} />
+        <PeopleListSelection />
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>

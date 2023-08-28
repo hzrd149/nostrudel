@@ -1,23 +1,10 @@
 import { Link as RouterLink } from "react-router-dom";
-import {
-  AvatarGroup,
-  Box,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Flex,
-  Heading,
-  Link,
-  Spacer,
-  Text,
-} from "@chakra-ui/react";
+import { AvatarGroup, Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import EventVerificationIcon from "../../../components/event-verification-icon";
 import { getEventsFromList, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
 import { getSharableEventNaddr } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -44,13 +31,13 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
               {getListName(event)}
             </Link>
           </Heading>
+          <Flex gap="2">
+            <Text>Created by:</Text>
+            <UserAvatarLink pubkey={event.pubkey} size="xs" />
+            <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+          </Flex>
           <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
         </Box>
-        <Spacer />
-        <Text>Created by:</Text>
-        <UserAvatarLink pubkey={event.pubkey} size="xs" />
-        <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        <EventVerificationIcon event={event} />
       </CardHeader>
       <CardBody p="2">
         {people.length > 0 && (

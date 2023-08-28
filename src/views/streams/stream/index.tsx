@@ -33,8 +33,10 @@ import useSubject from "../../../hooks/use-subject";
 import RelaySelectionButton from "../../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider from "../../../providers/relay-selection-provider";
 import StreamerCards from "../components/streamer-cards";
+import { useAppTitle } from "../../../hooks/use-app-title";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
+  useAppTitle(stream.title);
   const vertical = useBreakpointValue({ base: true, lg: false });
   const scrollBox = useRef<HTMLDivElement | null>(null);
   const scrollState = useScroll(scrollBox);

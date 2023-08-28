@@ -27,7 +27,6 @@ export default function PeopleListSelection({
   const { list, setList, listEvent } = usePeopleListContext();
 
   const handleSelect = (value: string | string[]) => {
-    console.log(value);
     if (typeof value === "string") {
       setList(value);
     }
@@ -36,7 +35,7 @@ export default function PeopleListSelection({
   return (
     <Menu>
       <MenuButton as={Button} {...props}>
-        {listEvent ? getListName(listEvent) : list === "global" ? "Global" : "Following"}
+        {listEvent ? getListName(listEvent) : list === "global" ? "Global" : "Loading..."}
       </MenuButton>
       <MenuList zIndex={100}>
         <MenuOptionGroup value={list} onChange={handleSelect} type="radio">
