@@ -14,13 +14,15 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import dayjs from "dayjs";
+import { Kind } from "nostr-tools";
 import { useForm } from "react-hook-form";
+
+import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { UserAvatar } from "./user-avatar";
 import { UserLink } from "./user-link";
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { LightningIcon } from "./icons";
-import { Kind } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
 import { useSigningContext } from "../providers/signing-provider";
@@ -30,7 +32,6 @@ import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
 import { requestZapInvoice } from "../helpers/zaps";
 import { ParsedStream, getATag } from "../helpers/nostr/stream";
 import EmbeddedNote from "./note/embedded-note";
-import dayjs from "dayjs";
 import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";

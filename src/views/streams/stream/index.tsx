@@ -34,6 +34,7 @@ import RelaySelectionButton from "../../../components/relay-selection/relay-sele
 import RelaySelectionProvider from "../../../providers/relay-selection-provider";
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
+import StreamSatsPerMinute from "../components/stream-sats-per-minute";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   useAppTitle(stream.title);
@@ -122,6 +123,7 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
               <Text>{stream.title}</Text>
             </Box>
             <Spacer />
+            {!!window.webln && <StreamSatsPerMinute pubkey={stream.host} />}
             <StreamDebugButton stream={stream} variant="ghost" />
             <RelaySelectionButton />
             <Button onClick={() => navigate(-1)}>Back</Button>
