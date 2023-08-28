@@ -30,7 +30,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
       <ButtonGroup variant="link" size="sm" alignSelf="flex-start">
         {!showReplyForm.isOpen && (
           <Button onClick={showReplyForm.onOpen} leftIcon={<ReplyIcon />}>
-            Write relay
+            Write reply
           </Button>
         )}
 
