@@ -72,42 +72,49 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
   );
 
   return (
-    <Menu closeOnSelect={false}>
-      <MenuButton as={IconButton} icon={inLists.length > 0 ? <BookmarkedIcon /> : <BookmarkIcon />} {...props} />
-      <MenuList minWidth="240px">
-        {lists.length > 0 && (
-          <MenuOptionGroup
-            type="checkbox"
-            value={inLists.map((list) => getEventCoordinate(list))}
-            onChange={handleChange}
-          >
-            {lists.map((list) => (
-              <MenuItemOption
-                key={getEventCoordinate(list)}
-                value={getEventCoordinate(list)}
-                isDisabled={account?.readonly && isLoading}
-                isTruncated
-                maxW="90vw"
-              >
-                {getListName(list)}
-              </MenuItemOption>
-            ))}
-          </MenuOptionGroup>
-        )}
-        <MenuDivider />
-        <MenuItem icon={<PlusCircleIcon />} onClick={newListModal.onOpen}>
-          New list
-        </MenuItem>
-
-        {newListModal.isOpen && (
-          <NewListModal
-            onClose={newListModal.onClose}
-            isOpen
-            onCreated={newListModal.onClose}
-            initKind={NOTE_LIST_KIND}
-          />
-        )}
-      </MenuList>
-    </Menu>
+    <>
+      <Menu closeOnSelect={false}>
+        <MenuButton
+          as={IconButton}
+          icon={inLists.length > 0 ? <BookmarkedIcon /> : <BookmarkIcon />}
+          isDisabled={account?.readonly ?? true}
+          {...props}
+        />
+        <MenuList minWidth="240px">
+          {lists.length > 0 && (
+            <MenuOptionGroup
+              type="checkbox"
+              value={inLists.map((list) => getEventCoordinate(list))}
+              onChange={handleChange}
+            >
+              {lists.map((list) => (
+                <MenuItemOption
+                  key={getEventCoordinate(list)}
+                  value={getEventCoordinate(list)}
+                  isDisabled={account?.readonly && isLoading}
+                  isTruncated
+                  maxW="90vw"
+                >
+                  {getListName(list)}
+                </MenuItemOption>
+              ))}
+            </MenuOptionGroup>
+          )}
+          <MenuDivider />
+          <MenuItem icon={<PlusCircleIcon />} onClick={newListModal.onOpen}>
+            New list
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      {newListModal.isOpen && (
+        <NewListModal
+          onClose={newListModal.onClose}
+          isOpen
+          onCreated={newListModal.onClose}
+          initKind={NOTE_LIST_KIND}
+          allowSelectKind={false}
+        />
+      )}
+    </>
   );
 }

@@ -26,7 +26,7 @@ import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
 import { ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
-import { UserAvatarStack } from "../user-avatar-stack";
+import { UserAvatarStack } from "../compact-user-stack";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -151,7 +151,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
               isLoading={uploading}
             />
           </Flex>
-          <UserAvatarStack label="Mentions" users={getContentMentions(draft.content)} />
+          <UserAvatarStack label="Mentions" pubkeys={getContentMentions(draft.content)} />
           {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
           <Button onClick={onClose}>Cancel</Button>
           <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>

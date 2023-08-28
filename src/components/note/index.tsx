@@ -19,26 +19,29 @@ import { NoteMenu } from "./note-menu";
 import { EventRelays } from "./note-relays";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import ReactionButton from "./buttons/reaction-button";
+import ReactionButton from "./components/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
-import { RepostButton } from "./buttons/repost-button";
-import { QuoteRepostButton } from "./buttons/quote-repost-button";
+import { RepostButton } from "./components/repost-button";
+import { QuoteRepostButton } from "./components/quote-repost-button";
 import { ExternalLinkIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
-import BookmarkButton from "./buttons/bookmark-button";
+import BookmarkButton from "./components/bookmark-button";
+import EventReactions from "../event-reactions";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 
 export type NoteProps = {
   event: NostrEvent;
   variant?: CardProps["variant"];
 };
 export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
+  const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
 
   // if there is a parent intersection observer, register this card
@@ -68,11 +71,12 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2">
-            <ButtonGroup size="sm" variant="link">
+            <ButtonGroup size="sm" variant="link" isDisabled={account?.readonly ?? true}>
               <RepostButton event={event} />
               <QuoteRepostButton event={event} />
               <NoteZapButton event={event} size="sm" />
-              {showReactions && <ReactionButton event={event} size="sm" />}
+              {showReactions && <EventReactions event={event} />}
+              <ReactionButton event={event} size="sm" />
             </ButtonGroup>
             <Box flexGrow={1} />
             {externalLink && (

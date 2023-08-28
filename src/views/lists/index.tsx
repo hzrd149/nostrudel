@@ -34,7 +34,7 @@ function ListsPage() {
         >
           Listr
         </Button>
-        <Button leftIcon={<PlusCircleIcon />} onClick={newList.onOpen}>
+        <Button leftIcon={<PlusCircleIcon />} onClick={newList.onOpen} colorScheme="brand">
           New List
         </Button>
       </Flex>

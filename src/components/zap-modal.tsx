@@ -131,8 +131,6 @@ export default function ZapModal({
             ],
           };
 
-          console.log(zapRequest);
-
           if (event) zapRequest.tags.push(["e", event.id]);
           if (stream) zapRequest.tags.push(["a", getATag(stream)]);
 

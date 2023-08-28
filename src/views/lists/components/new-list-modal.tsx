@@ -23,12 +23,19 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 
-export type NewListModalProps = { onCreated?: (list: NostrEvent) => void; initKind?: number } & Omit<
-  ModalProps,
-  "children"
->;
+export type NewListModalProps = Omit<ModalProps, "children"> & {
+  onCreated?: (list: NostrEvent) => void;
+  initKind?: number;
+  allowSelectKind?: boolean;
+};
 
-export default function NewListModal({ onClose, onCreated, initKind, ...props }: NewListModalProps) {
+export default function NewListModal({
+  onClose,
+  onCreated,
+  initKind,
+  allowSelectKind = true,
+  ...props
+}: NewListModalProps) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const { handleSubmit, register, formState } = useForm({
@@ -59,19 +66,29 @@ export default function NewListModal({ onClose, onCreated, initKind, ...props }:
     <Modal onClose={onClose} {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader p="4">New List</ModalHeader>
+        <ModalHeader px="4" pb="0">
+          New List
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody as="form" p="4" display="flex" gap="2" flexDirection="column" onSubmit={submit}>
-          <FormControl isRequired>
-            <FormLabel>List kind</FormLabel>
-            <Select {...register("kind", { valueAsNumber: true, required: true })}>
-              <option value={PEOPLE_LIST_KIND}>People List</option>
-              <option value={NOTE_LIST_KIND}>Note List</option>
-            </Select>
-          </FormControl>
+        <ModalBody as="form" px="4" pt="0" display="flex" gap="2" flexDirection="column" onSubmit={submit}>
+          {allowSelectKind && (
+            <FormControl isRequired>
+              <FormLabel>List kind</FormLabel>
+              <Select {...register("kind", { valueAsNumber: true, required: true })}>
+                <option value={PEOPLE_LIST_KIND}>People List</option>
+                <option value={NOTE_LIST_KIND}>Note List</option>
+              </Select>
+            </FormControl>
+          )}
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>
-            <Input type="text" {...register("name", { required: true })} autoComplete="off" />
+            <Input
+              type="text"
+              {...register("name", { required: true })}
+              autoComplete="off"
+              placeholder="List name"
+              autoFocus
+            />
           </FormControl>
           <ButtonGroup ml="auto">
             <Button onClick={onClose}>Cancel</Button>

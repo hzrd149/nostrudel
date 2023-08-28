@@ -1,4 +1,5 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
+
 import { readablizeSats } from "../../helpers/bolt11";
 import { totalZaps } from "../../helpers/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -11,12 +12,13 @@ import ZapModal from "../zap-modal";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 
-export default function NoteZapButton({
-  event,
-  allowComment,
-  showEventPreview,
-  ...props
-}: { event: NostrEvent; allowComment?: boolean; showEventPreview?: boolean } & Omit<ButtonProps, "children">) {
+export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
+  event: NostrEvent;
+  allowComment?: boolean;
+  showEventPreview?: boolean;
+};
+
+export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
   const { requestPay } = useInvoiceModalContext();

@@ -24,25 +24,23 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
 
   return (
     <Card>
-      <CardHeader display="flex" p="2" flex="1" gap="2">
-        <Box>
-          <Heading size="md">
-            <Link as={RouterLink} to={`/lists/${link}`}>
-              {getListName(event)}
-            </Link>
-          </Heading>
-          <Flex gap="2">
-            <Text>Created by:</Text>
-            <UserAvatarLink pubkey={event.pubkey} size="xs" />
-            <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-          </Flex>
-          <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
-        </Box>
+      <CardHeader p="2" pb="0" flex="1">
+        <Heading size="md">
+          <Link as={RouterLink} to={`/lists/${link}`}>
+            {getListName(event)}
+          </Link>
+        </Heading>
       </CardHeader>
       <CardBody p="2">
+        <Flex gap="2">
+          <Text>Created by:</Text>
+          <UserAvatarLink pubkey={event.pubkey} size="xs" />
+          <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+        </Flex>
+        <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
         {people.length > 0 && (
           <>
-            <Text>{people.length} people</Text>
+            <Text>People ({people.length}):</Text>
             <AvatarGroup overflow="hidden" mb="2" max={16} size="sm">
               {people.map(({ pubkey, relay }) => (
                 <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
@@ -52,7 +50,7 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
         )}
         {notes.length > 0 && (
           <>
-            <Text>{notes.length} notes</Text>
+            <Text>Notes ({notes.length}):</Text>
             <Flex gap="2" wrap="wrap">
               {notes.map(({ id, relay }) => (
                 <NoteLink key={id} noteId={id} />
@@ -61,7 +59,7 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
           </>
         )}
       </CardBody>
-      <CardFooter p="2" display="flex">
+      <CardFooter p="2" display="flex" pt="0">
         <EventRelays event={event} ml="auto" />
       </CardFooter>
     </Card>

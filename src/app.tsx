@@ -38,6 +38,8 @@ import ListsView from "./views/lists";
 import ListView from "./views/lists/list";
 import UserListsTab from "./views/user/lists";
 
+import "./services/emoji-packs";
+
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));

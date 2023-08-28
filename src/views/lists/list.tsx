@@ -2,8 +2,8 @@ import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { UserLink } from "../../components/user-link";
-import { Button, Divider, Flex, Heading, IconButton, SimpleGrid, useDisclosure } from "@chakra-ui/react";
-import { ArrowLeftSIcon, CodeIcon } from "../../components/icons";
+import { Button, Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
@@ -11,10 +11,9 @@ import { getEventsFromList, getListName, getPubkeysFromList } from "../../helper
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
 import UserCard from "./components/user-card";
-import NoteDebugModal from "../../components/debug-modals/note-debug-modal";
-import { Note } from "../../components/note";
 import NoteCard from "./components/note-card";
 import { TrustProvider } from "../../providers/trust";
+import ListMenu from "./components/list-menu";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -32,7 +31,6 @@ function useListCoordinate() {
 
 export default function ListView() {
   const navigate = useNavigate();
-  const debug = useDisclosure();
   const coordinate = useListCoordinate();
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
@@ -68,7 +66,7 @@ export default function ListView() {
             Delete
           </Button>
         )}
-        <IconButton icon={<CodeIcon />} aria-label="Show raw" onClick={debug.onOpen} />
+        <ListMenu aria-label="More options" list={event} />
       </Flex>
 
       {people.length > 0 && (
@@ -96,8 +94,6 @@ export default function ListView() {
           </TrustProvider>
         </>
       )}
-
-      {debug.isOpen && <NoteDebugModal event={event} isOpen onClose={debug.onClose} size="4xl" />}
     </Flex>
   );
 }

@@ -12,27 +12,26 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
 import { buildRepost } from "../../../helpers/nostr/events";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
 import clientRelaysService from "../../../services/client-relays";
-import signingService from "../../../services/signing";
 import QuoteNote from "../quote-note";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { useSigningContext } from "../../../providers/signing-provider";
 
 export function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const account = useCurrentAccount();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { requestSignature } = useSigningContext();
 
   const handleClick = async () => {
     try {
-      if (!account) throw new Error("not logged in");
       setLoading(true);
       const draftRepost = buildRepost(event);
-      const signed = await signingService.requestSignature(draftRepost, account);
+      const signed = await requestSignature(draftRepost);
       const pub = new NostrPublishAction("Repost", clientRelaysService.getWriteUrls(), signed);
       await pub.onComplete;
       onClose();
@@ -49,7 +48,6 @@ export function RepostButton({ event }: { event: NostrEvent }) {
         onClick={onOpen}
         aria-label="Repost Note"
         title="Repost Note"
-        isDisabled={account?.readonly ?? true}
         isLoading={loading}
       />
       {isOpen && (
