@@ -9,7 +9,8 @@
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
     "e2e": "cypress open",
-    "test": "cypress run --e2e --browser=chrome"
+    "test": "cypress run --e2e --browser=chrome",
+    "analyze": "npx vite-bundle-visualizer -o ./stats.html"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.0",

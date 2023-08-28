@@ -80,9 +80,9 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const handleSubmit = async () => {
     try {
       setWaiting(true);
-    let updatedDraft = finalizeNote(draft);
-    const contentMentions = getContentMentions(draft.content);
-    updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
+      let updatedDraft = finalizeNote(draft);
+      const contentMentions = getContentMentions(draft.content);
+      updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
       const signed = await requestSignature(updatedDraft);
       setWaiting(false);
 

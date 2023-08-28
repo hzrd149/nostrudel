@@ -17,7 +17,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
 
-export type RelayIconStackProps = { relays: string[]; maxRelays?: number } & Omit<FlexProps, 'children'>
+export type RelayIconStackProps = { relays: string[]; maxRelays?: number } & Omit<FlexProps, "children">;
 
 export function RelayIconStack({ relays, maxRelays, ...props }: RelayIconStackProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();

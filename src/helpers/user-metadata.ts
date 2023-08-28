@@ -31,9 +31,7 @@ export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
 }
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
-  return (
-    metadata?.display_name || metadata?.name || truncatedId(nip19.npubEncode(pubkey))
-  );
+  return metadata?.display_name || metadata?.name || truncatedId(nip19.npubEncode(pubkey));
 }
 
 export function fixWebsiteUrl(website: string) {

@@ -46,15 +46,15 @@ export function safeDecode(str: string) {
   } catch (e) {}
 }
 
-export function getPubkey(result: nip19.DecodeResult){
-  switch(result.type){
-    case 'naddr':
-    case 'nprofile':
-      return result.data.pubkey
-    case 'npub':
+export function getPubkey(result: nip19.DecodeResult) {
+  switch (result.type) {
+    case "naddr":
+    case "nprofile":
+      return result.data.pubkey;
+    case "npub":
       return result.data;
-    case 'nsec':
-      return getPublicKey(result.data)
+    case "nsec":
+      return getPublicKey(result.data);
   }
 }
 
