@@ -17,6 +17,7 @@
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@getalby/bitcoin-connect-react": "^1.0.0",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
     "dayjs": "^1.11.9",
