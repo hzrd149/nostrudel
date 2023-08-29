@@ -27,7 +27,7 @@ import { PlayIcon, StopIcon } from "../../../components/icons";
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);
   const [paying, setPaying] = useState(false);
-  const [amountStr, setAmountStr] = useState("21");
+  const [amountStr, setAmountStr] = useState("4");
 
   const { metadata } = useUserLNURLMetadata(pubkey);
 
