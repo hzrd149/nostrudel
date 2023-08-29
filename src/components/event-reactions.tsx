@@ -34,7 +34,7 @@ function ReactionGroupButton({
   );
 }
 
-export default function EventReactionButtons({ event, ...props }: { event: NostrEvent }) {
+export default function EventReactionButtons({ event, max }: { event: NostrEvent; max?: number }) {
   const account = useCurrentAccount();
   const detailsModal = useDisclosure();
   const reactions = useEventReactions(event.id) ?? [];
@@ -54,9 +54,12 @@ export default function EventReactionButtons({ event, ...props }: { event: Nostr
 
   if (grouped.length === 0) return null;
 
+  const clamped = Array.from(grouped);
+  if (max !== undefined) clamped.length = max;
+
   return (
     <>
-      {grouped.map((group) => (
+      {clamped.map((group) => (
         <ReactionGroupButton
           key={group.emoji}
           emoji={group.emoji}
