@@ -43,7 +43,10 @@ function EventRow({
   const [broadcasting, setBroadcasting] = useState(false);
   const broadcast = () => {
     setBroadcasting(true);
-    const pub = new NostrPublishAction("Broadcast", relays, event);
+    const missingRelays = relays.filter((r) => !seenRelays.includes(r));
+    if (missingRelays.length === 0) return;
+
+    const pub = new NostrPublishAction("Broadcast", missingRelays, event);
 
     pub.onResult.subscribe((result) => {
       if (result.status) {
