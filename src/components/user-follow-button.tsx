@@ -17,6 +17,7 @@ import { useCurrentAccount } from "../hooks/use-current-account";
 import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, UnfollowIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import {
+  PEOPLE_LIST_KIND,
   createEmptyContactList,
   draftAddPerson,
   draftRemovePerson,
@@ -40,7 +41,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const [isLoading, setLoading] = useState(false);
   const newListModal = useDisclosure();
 
-  const lists = useUserLists(account.pubkey);
+  const lists = useUserLists(account.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
 
   const inLists = lists.filter((list) => getPubkeysFromList(list).some((p) => p.pubkey === pubkey));
 
