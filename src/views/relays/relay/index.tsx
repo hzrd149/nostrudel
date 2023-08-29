@@ -23,6 +23,7 @@ import RelayReviews from "./relay-reviews";
 import RelayNotes from "./relay-notes";
 import PeopleListProvider from "../../../providers/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
+import { RelayFavicon } from "../../../components/relay-favicon";
 
 function RelayPage({ relay }: { relay: string }) {
   const { info } = useRelayInfo(relay);
@@ -30,8 +31,9 @@ function RelayPage({ relay }: { relay: string }) {
 
   return (
     <Flex direction="column" alignItems="stretch" gap="2" p="2">
-      <Flex gap="2" alignItems="center" wrap="wrap" justifyContent="space-between">
-        <Heading isTruncated size={{ base: "md", sm: "lg" }}>
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <RelayFavicon relay={relay} />
+        <Heading isTruncated size={{ base: "md", sm: "lg" }} mr="auto">
           {relay}
           {info?.payments_url && (
             <Tag

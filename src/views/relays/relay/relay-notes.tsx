@@ -25,7 +25,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
   const timelineEventFilter = useTimelinePageEventFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
-      if (!isReply(event)) return false;
+      if (isReply(event)) return false;
       return timelineEventFilter(event);
     },
     [timelineEventFilter],

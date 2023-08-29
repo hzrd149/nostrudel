@@ -1,13 +1,6 @@
-import { useMemo, useState } from "react";
 import {
-  Box,
-  Button,
   ButtonProps,
-  Flex,
-  HStack,
   IconButton,
-  IconButtonProps,
-  Image,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -26,29 +19,16 @@ import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { AddReactionIcon } from "../../icons";
 import ReactionPicker from "../../reaction-picker";
+import { draftEventReaction } from "../../../helpers/nostr/reactions";
 
-export default function ReactionButton({
-  event: note,
-  ...props
-}: { event: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function ReactionButton({ event, ...props }: { event: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
-  const account = useCurrentAccount();
-  const reactions = useEventReactions(note.id) ?? [];
+  const reactions = useEventReactions(event.id) ?? [];
 
   const addReaction = async (emoji = "+", url?: string) => {
-    const event: DraftNostrEvent = {
-      kind: Kind.Reaction,
-      content: url ? ":" + emoji + ":" : emoji,
-      tags: [
-        ["e", note.id],
-        ["p", note.pubkey], // TODO: pick a relay for the user
-      ],
-      created_at: dayjs().unix(),
-    };
+    const draft = draftEventReaction(event, emoji, url);
 
-    if (url) event.tags.push(["emoji", emoji, url]);
-
-    const signed = await requestSignature(event);
+    const signed = await requestSignature(draft);
     if (signed) {
       const writeRelays = clientRelaysService.getWriteUrls();
       new NostrPublishAction("Reaction", writeRelays, signed);

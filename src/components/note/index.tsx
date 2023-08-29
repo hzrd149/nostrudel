@@ -8,9 +8,11 @@ import {
   CardFooter,
   CardHeader,
   CardProps,
+  Divider,
   Flex,
   IconButton,
   Link,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
@@ -51,6 +53,8 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   // find mostr external link
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
 
+  const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
@@ -70,29 +74,39 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
           <CardBody p="0">
             <NoteContentWithWarning event={event} />
           </CardBody>
-          <CardFooter padding="2" display="flex" gap="2">
-            <ButtonGroup size="sm" variant="link" isDisabled={account?.readonly ?? true}>
-              <RepostButton event={event} />
-              <QuoteRepostButton event={event} />
-              <NoteZapButton event={event} size="sm" />
-              {showReactions && <EventReactions event={event} />}
-              <ReactionButton event={event} size="sm" />
-            </ButtonGroup>
-            <Box flexGrow={1} />
-            {externalLink && (
-              <IconButton
-                as={Link}
-                icon={<ExternalLinkIcon />}
-                aria-label="Open External"
-                href={externalLink}
-                size="sm"
-                variant="link"
-                target="_blank"
-              />
+          <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
+            {showReactions && showReactionsOnNewLine && (
+              <EventReactions event={event} variant="ghost" size="xs" spacing="1" />
             )}
-            <EventRelays event={event} />
-            <BookmarkButton event={event} aria-label="Bookmark note" size="sm" variant="link" />
-            <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
+            <Flex gap="2" w="full" alignItems="center">
+              <ButtonGroup size="xs" variant="ghost" isDisabled={account?.readonly ?? true}>
+                <RepostButton event={event} />
+                <QuoteRepostButton event={event} />
+                <NoteZapButton event={event} />
+                <ReactionButton event={event} />
+              </ButtonGroup>
+              {showReactions && !showReactionsOnNewLine && (
+                <>
+                  <Divider orientation="vertical" h="1.5rem" />
+                  <EventReactions event={event} variant="ghost" size="xs" spacing="1" />
+                </>
+              )}
+              <Box flexGrow={1} />
+              {externalLink && (
+                <IconButton
+                  as={Link}
+                  icon={<ExternalLinkIcon />}
+                  aria-label="Open External"
+                  href={externalLink}
+                  size="sm"
+                  variant="link"
+                  target="_blank"
+                />
+              )}
+              <EventRelays event={event} />
+              <BookmarkButton event={event} aria-label="Bookmark note" size="sm" variant="link" />
+              <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
+            </Flex>
           </CardFooter>
         </Card>
       </ExpandProvider>
