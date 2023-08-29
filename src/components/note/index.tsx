@@ -8,7 +8,6 @@ import {
   CardFooter,
   CardHeader,
   CardProps,
-  Divider,
   Flex,
   IconButton,
   Link,
@@ -21,7 +20,6 @@ import { NoteMenu } from "./note-menu";
 import { EventRelays } from "./note-relays";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import ReactionButton from "./components/reaction-button";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "./expanded";
 import useSubject from "../../hooks/use-subject";
@@ -35,8 +33,9 @@ import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import BookmarkButton from "./components/bookmark-button";
-import EventReactions from "../event-reactions";
+import EventReactionButtons from "../event-reactions";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import NoteReactions from "./components/note-reactions";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -54,6 +53,8 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+
+  const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="xs" />;
 
   return (
     <TrustProvider event={event}>
@@ -75,22 +76,14 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
-            {showReactions && showReactionsOnNewLine && (
-              <EventReactions event={event} variant="ghost" size="xs" spacing="1" />
-            )}
+            {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
               <ButtonGroup size="xs" variant="ghost" isDisabled={account?.readonly ?? true}>
                 <RepostButton event={event} />
                 <QuoteRepostButton event={event} />
                 <NoteZapButton event={event} />
-                <ReactionButton event={event} />
               </ButtonGroup>
-              {showReactions && !showReactionsOnNewLine && (
-                <>
-                  <Divider orientation="vertical" h="1.5rem" />
-                  <EventReactions event={event} variant="ghost" size="xs" spacing="1" />
-                </>
-              )}
+              {!showReactionsOnNewLine && reactionButtons}
               <Box flexGrow={1} />
               {externalLink && (
                 <IconButton
