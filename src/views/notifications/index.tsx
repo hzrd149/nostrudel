@@ -1,6 +1,8 @@
 import { memo, useCallback, useMemo, useRef } from "react";
 import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { Kind } from "nostr-tools";
+
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -12,10 +14,9 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotificationTimeline } from "../../providers/notification-timeline";
-import { Kind, getEventHash } from "nostr-tools";
 import { parseZapEvent } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getReferences } from "../../helpers/nostr/events";
+import { getEventUID, getReferences } from "../../helpers/nostr/events";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">
@@ -89,7 +90,7 @@ const ZapNotification = ({ event }: { event: NostrEvent }) => {
 
 const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   let content = <Text>Unknown event type {event.kind}</Text>;
   switch (event.kind) {

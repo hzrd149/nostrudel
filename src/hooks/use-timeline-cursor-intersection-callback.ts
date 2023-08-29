@@ -1,6 +1,7 @@
 import { useInterval } from "react-use";
 import { TimelineLoader } from "../classes/timeline-loader";
 import { useIntersectionMapCallback } from "../providers/intersection-observer";
+import { getEventUID } from "../helpers/nostr/events";
 
 export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) {
   // if the cursor is set too far ahead and the last block did not overlap with the cursor
@@ -15,7 +16,7 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
       for (let i = timeline.timeline.value.length - 1; i >= 0; i--) {
         const event = timeline.timeline.value[i];
 
-        if (map.get(event.id)?.isIntersecting) {
+        if (map.get(getEventUID(event))?.isIntersecting) {
           timeline.setCursor(event.created_at);
           timeline.loadNextBlocks();
           return;

@@ -9,13 +9,14 @@ import { UserLink } from "../../../components/user-link";
 import StreamStatusBadge from "./status-badge";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, image } = stream;
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, stream.event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(stream.event));
 
   const naddr = useEventNaddr(stream.event, stream.relays);
 

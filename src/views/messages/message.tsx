@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
+import { getEventUID } from "../../helpers/nostr/events";
 
 export function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
   let content: EmbedableContent = [text];
@@ -25,7 +26,7 @@ export function Message({ event }: { event: NostrEvent } & Omit<CardProps, "chil
   const isOwnMessage = account.pubkey === event.pubkey;
 
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
     <Flex direction="column" ref={ref}>

@@ -15,6 +15,7 @@ import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { useRef } from "react";
 import ListFavoriteButton from "./list-favorite-button";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 function ListCardRender({ event }: { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
@@ -24,7 +25,7 @@ function ListCardRender({ event }: { event: NostrEvent }) {
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
     <Card ref={ref}>
