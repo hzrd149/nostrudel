@@ -36,7 +36,7 @@ export default function ReactionDetailsModal({ reactions, onClose, ...props }: R
         <ModalBody display="flex" gap="2" px="4" pt="0" flexWrap="wrap">
           {groups.map((group) => (
             <Box key={group.emoji}>
-              <ReactionIcon emoji={group.emoji} count={group.count} url={group.url} />
+              <ReactionIcon emoji={group.emoji} url={group.url} />
               <AvatarGroup size="sm" flexWrap="wrap">
                 {group.pubkeys.map((pubkey) => (
                   <UserAvatarLink key={pubkey} pubkey={pubkey} />
