@@ -3,7 +3,7 @@ import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { UserLink } from "../../components/user-link";
-import { Button, Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, SimpleGrid, Spacer } from "@chakra-ui/react";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
@@ -15,6 +15,7 @@ import UserCard from "./components/user-card";
 import NoteCard from "./components/note-card";
 import { TrustProvider } from "../../providers/trust";
 import ListMenu from "./components/list-menu";
+import ListFavoriteButton from "./components/list-favorite-button";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -56,9 +57,12 @@ export default function ListView() {
           Back
         </Button>
 
-        <Heading size="md" flex={1} isTruncated>
+        <Heading size="md" isTruncated>
           {getListName(event)}
         </Heading>
+        <ListFavoriteButton list={event} size="sm" />
+
+        <Spacer />
 
         <EventRelays event={event} />
 

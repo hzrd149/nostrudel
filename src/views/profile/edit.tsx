@@ -191,7 +191,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const writeRelays = useWriteRelayUrls();
+  const writeRelays = useWriteRelayUrls(["wss://purplepag.es"]); // always write profile info to wss://purplepag.es
   const readRelays = useReadRelayUrls();
   const toast = useToast();
   const account = useCurrentAccount()!;

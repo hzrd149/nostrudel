@@ -58,13 +58,17 @@ function ListsPage() {
           <ListCard key={getEventUID(event)} event={event} />
         ))}
       </SimpleGrid>
-      <Heading size="md">Bookmark lists</Heading>
-      <Divider />
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        {noteLists.map((event) => (
-          <ListCard key={getEventUID(event)} event={event} />
-        ))}
-      </SimpleGrid>
+      {noteLists.length > 0 && (
+        <>
+          <Heading size="md">Bookmark lists</Heading>
+          <Divider />
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {noteLists.map((event) => (
+              <ListCard key={getEventUID(event)} event={event} />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
       {favoriteLists.length > 0 && (
         <>
           <Heading size="md">Favorite lists</Heading>
