@@ -12,6 +12,8 @@ import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
 import { EventRelays } from "../../../components/note/note-relays";
 import { NoteLink } from "../../../components/note-link";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRef } from "react";
 
 export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
@@ -22,9 +24,13 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
   const link =
     event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventNaddr(event);
 
+  // if there is a parent intersection observer, register this card
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
+
   return (
-    <Card>
-      <CardHeader p="2" pb="0" flex="1">
+    <Card ref={ref}>
+      <CardHeader p="2" pb="0">
         <Heading size="md">
           <Link as={RouterLink} to={`/lists/${link}`}>
             {getListName(event)}
@@ -51,7 +57,7 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
         {notes.length > 0 && (
           <>
             <Text>Notes ({notes.length}):</Text>
-            <Flex gap="2" wrap="wrap">
+            <Flex gap="2" overflow="hidden">
               {notes.map(({ id, relay }) => (
                 <NoteLink key={id} noteId={id} />
               ))}

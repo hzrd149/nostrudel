@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -24,6 +24,9 @@ function ListsPage() {
   return (
     <Flex direction="column" p="2" gap="2">
       <Flex gap="2">
+        <Button as={RouterLink} to="/lists/browse">
+          Browse Lists
+        </Button>
         <Spacer />
         <Button
           as={Link}

@@ -39,6 +39,7 @@ import ListView from "./views/lists/list";
 import UserListsTab from "./views/user/lists";
 
 import "./services/emoji-packs";
+import BrowseListView from "./views/lists/browse";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -125,6 +126,7 @@ const router = createHashRouter([
         path: "lists",
         children: [
           { path: "", element: <ListsView /> },
+          { path: "browse", element: <BrowseListView /> },
           { path: ":addr", element: <ListView /> },
         ],
       },

@@ -92,13 +92,13 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
                   aria-label="Open External"
                   href={externalLink}
                   size="sm"
-                  variant="link"
+                  variant="ghost"
                   target="_blank"
                 />
               )}
               <EventRelays event={event} />
-              <BookmarkButton event={event} aria-label="Bookmark note" size="sm" variant="link" />
-              <NoteMenu event={event} size="sm" variant="link" aria-label="More Options" />
+              <BookmarkButton event={event} aria-label="Bookmark note" size="xs" variant="ghost" />
+              <NoteMenu event={event} size="xs" variant="ghost" aria-label="More Options" />
             </Flex>
           </CardFooter>
         </Card>

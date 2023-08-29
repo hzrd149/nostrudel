@@ -1,12 +1,13 @@
 import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
 import { UserLink } from "../../components/user-link";
 import { Button, Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
-import { parseCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate, parseCoordinate } from "../../helpers/nostr/events";
 import { getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
@@ -61,6 +62,12 @@ export default function ListView() {
 
         <EventRelays event={event} />
 
+        <Button
+          as={RouterLink}
+          to={{ pathname: "/", search: new URLSearchParams({ people: getEventCoordinate(event) }).toString() }}
+        >
+          View Feed
+        </Button>
         {isAuthor && (
           <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>
             Delete
