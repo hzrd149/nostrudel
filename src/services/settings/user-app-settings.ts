@@ -7,7 +7,7 @@ import { PersistentSubject } from "../../classes/subject";
 import { AppSettings, defaultSettings, parseAppSettings } from "./migrations";
 import replaceableEventLoaderService from "../replaceable-event-requester";
 
-const DTAG = "nostrudel-settings";
+const SETTING_EVENT_IDENTIFIER = "nostrudel-settings";
 
 class UserAppSettings {
   private parsedSubjects = new SuperMap<string, PersistentSubject<AppSettings>>(
@@ -18,7 +18,13 @@ class UserAppSettings {
   }
   requestAppSettings(pubkey: string, relays: string[], alwaysRequest = false) {
     const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, 30078, pubkey, DTAG, alwaysRequest);
+    const requestSub = replaceableEventLoaderService.requestEvent(
+      relays,
+      30078,
+      pubkey,
+      SETTING_EVENT_IDENTIFIER,
+      alwaysRequest,
+    );
     sub.connectWithHandler(requestSub, (event, next) => next(parseAppSettings(event)));
     return sub;
   }
@@ -30,7 +36,7 @@ class UserAppSettings {
   buildAppSettingsEvent(settings: AppSettings): DraftNostrEvent {
     return {
       kind: 30078,
-      tags: [["d", DTAG]],
+      tags: [["d", SETTING_EVENT_IDENTIFIER]],
       content: JSON.stringify(settings),
       created_at: dayjs().unix(),
     };

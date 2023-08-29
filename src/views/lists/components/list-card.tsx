@@ -1,5 +1,5 @@
 import { Link as RouterLink } from "react-router-dom";
-import { AvatarGroup, Box, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
@@ -14,11 +14,9 @@ import { EventRelays } from "../../../components/note/note-relays";
 import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { useRef } from "react";
+import ListFavoriteButton from "./list-favorite-button";
 
-export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
-  const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
-  if (!event) return null;
-
+function ListCardRender({ event }: { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
   const link =
@@ -66,8 +64,15 @@ export default function ListCard({ cord, event: maybeEvent }: { cord?: string; e
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
+        <ListFavoriteButton list={event} size="sm" />
         <EventRelays event={event} ml="auto" />
       </CardFooter>
     </Card>
   );
+}
+
+export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
+  const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
+  if (!event) return null;
+  else return <ListCardRender event={event} />;
 }

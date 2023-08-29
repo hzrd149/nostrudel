@@ -2,4 +2,4 @@
 "nostrudel": minor
 ---
 
-Show note lists
+Show note lists on lists view

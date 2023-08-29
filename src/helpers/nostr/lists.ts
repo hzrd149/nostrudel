@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
-import { DraftNostrEvent, NostrEvent, isDTag, isETag, isPTag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
 
 export const PEOPLE_LIST_KIND = 30000;
 export const NOTE_LIST_KIND = 30001;
@@ -17,6 +17,9 @@ export function getPubkeysFromList(event: NostrEvent) {
 }
 export function getEventsFromList(event: NostrEvent) {
   return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
+}
+export function getCoordinatesFromList(event: NostrEvent) {
+  return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
 
 export function isPubkeyInList(event?: NostrEvent, pubkey?: string) {
@@ -84,6 +87,30 @@ export function draftRemoveEvent(list: NostrEvent | DraftNostrEvent, event: stri
     kind: list.kind,
     content: list.content,
     tags: list.tags.filter((t) => !(t[0] === "e" && t[1] === event)),
+  };
+
+  return draft;
+}
+
+export function draftAddCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string, relay?: string) {
+  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("event already in list");
+
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, relay ? ["a", coordinate, relay] : ["a", coordinate]],
+  };
+
+  return draft;
+}
+
+export function draftRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string) {
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "a" && t[1] === coordinate)),
   };
 
   return draft;

@@ -15,6 +15,7 @@ import useUserLists from "../../hooks/use-user-lists";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PEOPLE_LIST_KIND, getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/events";
+import useFavoriteLists from "../../hooks/use-favorite-lists";
 
 export default function PeopleListSelection({
   hideGlobalOption = false,
@@ -24,6 +25,7 @@ export default function PeopleListSelection({
 } & Omit<ButtonProps, "children">) {
   const account = useCurrentAccount();
   const lists = useUserLists(account?.pubkey);
+  const { lists: favoriteLists } = useFavoriteLists();
   const { list, setList, listEvent } = usePeopleListContext();
 
   const handleSelect = (value: string | string[]) => {
@@ -41,7 +43,7 @@ export default function PeopleListSelection({
         <MenuOptionGroup value={list} onChange={handleSelect} type="radio">
           {account && <MenuItemOption value={`${Kind.Contacts}:${account.pubkey}`}>Following</MenuItemOption>}
           {!hideGlobalOption && <MenuItemOption value="global">Global</MenuItemOption>}
-          {account && <MenuDivider />}
+          {lists.length > 0 && <MenuDivider />}
           {lists
             .filter((l) => l.kind === PEOPLE_LIST_KIND)
             .map((list) => (
@@ -50,6 +52,25 @@ export default function PeopleListSelection({
               </MenuItemOption>
             ))}
         </MenuOptionGroup>
+        {favoriteLists.length > 0 && (
+          <>
+            <MenuDivider />
+            <MenuOptionGroup value={list} onChange={handleSelect} type="radio" title="Favorites">
+              {favoriteLists
+                .filter((l) => l.kind === PEOPLE_LIST_KIND)
+                .map((list) => (
+                  <MenuItemOption
+                    key={getEventCoordinate(list)}
+                    value={getEventCoordinate(list)}
+                    isTruncated
+                    maxW="90vw"
+                  >
+                    {getListName(list)}
+                  </MenuItemOption>
+                ))}
+            </MenuOptionGroup>
+          </>
+        )}
       </MenuList>
     </Menu>
   );

@@ -11,15 +11,17 @@ import useUserLists from "../../hooks/use-user-lists";
 import NewListModal from "./components/new-list-modal";
 import { getSharableEventNaddr } from "../../helpers/nip19";
 import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
+import useFavoriteLists from "../../hooks/use-favorite-lists";
 
 function ListsPage() {
   const account = useCurrentAccount()!;
-  const events = useUserLists(account.pubkey);
+  const lists = useUserLists(account.pubkey);
+  const { lists: favoriteLists } = useFavoriteLists();
   const newList = useDisclosure();
   const navigate = useNavigate();
 
-  const peopleLists = events.filter((event) => event.kind === PEOPLE_LIST_KIND);
-  const noteLists = events.filter((event) => event.kind === NOTE_LIST_KIND);
+  const peopleLists = lists.filter((event) => event.kind === PEOPLE_LIST_KIND);
+  const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
 
   return (
     <Flex direction="column" p="2" gap="2">
@@ -63,6 +65,17 @@ function ListsPage() {
           <ListCard key={getEventUID(event)} event={event} />
         ))}
       </SimpleGrid>
+      {favoriteLists.length > 0 && (
+        <>
+          <Heading size="md">Favorite lists</Heading>
+          <Divider />
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {favoriteLists.map((event) => (
+              <ListCard key={getEventUID(event)} event={event} />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
 
       {newList.isOpen && (
         <NewListModal
