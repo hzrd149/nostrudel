@@ -25,6 +25,9 @@ export default class EventStore {
       this.onEvent.next(event);
     }
   }
+  getEvent(id:string){
+    return this.events.get(id)
+  }
 
   clear() {
     this.events.clear();

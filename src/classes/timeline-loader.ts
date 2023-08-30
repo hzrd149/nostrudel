@@ -17,15 +17,12 @@ function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   return { ...filter, ...query };
 }
 
-const BLOCK_SIZE = 20;
+const BLOCK_SIZE = 30;
 
-type EventFilter = (event: NostrEvent) => boolean;
-
-class RelayTimelineLoader {
+export class RelayTimelineLoader {
   relay: string;
   query: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
-  private name?: string;
   private log: Debugger;
 
   loading = false;
@@ -35,12 +32,11 @@ class RelayTimelineLoader {
 
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrRequestFilter, name: string, log?: Debugger) {
+  constructor(relay: string, query: NostrRequestFilter, log?: Debugger) {
     this.relay = relay;
     this.query = query;
-    this.name = name;
 
-    this.log = log || logger.extend(this.name);
+    this.log = log || logger.extend(relay);
     this.events = new EventStore(relay);
   }
 
@@ -76,6 +72,9 @@ class RelayTimelineLoader {
     return this.events.addEvent(event);
   }
 
+  getFirstEvent(nth = 0) {
+    return this.events.getFirstEvent(nth);
+  }
   getLastEvent(nth = 0) {
     return this.events.getLastEvent(nth);
   }
@@ -98,7 +97,7 @@ export class TimelineLoader {
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
-  private relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
+  relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
 
   constructor(name: string) {
     this.name = name;
@@ -131,7 +130,7 @@ export class TimelineLoader {
 
     for (const relay of this.relays) {
       if (!this.relayTimelineLoaders.has(relay)) {
-        const loader = new RelayTimelineLoader(relay, this.query, this.name, this.log.extend(relay));
+        const loader = new RelayTimelineLoader(relay, this.query, this.log.extend(relay));
         this.relayTimelineLoaders.set(relay, loader);
         this.events.connect(loader.events);
         loader.onBlockFinish.subscribe(this.updateLoading, this);

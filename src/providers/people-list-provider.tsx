@@ -45,11 +45,9 @@ export type PeopleListProviderProps = PropsWithChildren & {
   initList?: ListId;
 };
 export default function PeopleListProvider({ children, initList = "following" }: PeopleListProviderProps) {
-  const [params, setParams] = useSearchParams({
-    people: initList,
-  });
+  const [params, setParams] = useSearchParams();
 
-  const selected = params.get("people") as ListId;
+  const selected = params.get("people") || (initList as ListId);
   const setSelected = useCallback(
     (value: ListId) => {
       setParams((p) => ({ ...searchParamsToJson(p), people: value }));
