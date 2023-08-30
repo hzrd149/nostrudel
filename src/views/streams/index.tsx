@@ -20,16 +20,16 @@ function StreamsPage() {
   useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
 
-  const { filter, list } = usePeopleListContext();
+  const { filter, listId } = usePeopleListContext();
   const query = useMemo<NostrRequestFilter>(() => {
-    if (list === "global" || !filter) return { kinds: [STREAM_KIND] };
+    if (!listId || !filter) return { kinds: [STREAM_KIND] };
     return [
       { authors: filter.authors, kinds: [STREAM_KIND] },
       { "#p": filter.authors, kinds: [STREAM_KIND] },
     ];
-  }, [filter, list]);
+  }, [filter, listId]);
 
-  const timeline = useTimelineLoader(`${list}-streams`, relays, query, { enabled: !!filter });
+  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter });
 
   useRelaysChanged(relays, () => timeline.reset());
 

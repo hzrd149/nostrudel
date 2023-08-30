@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   Heading,
   Image,
@@ -189,11 +190,10 @@ export default function ZapModal({
                   placeholder="Comment"
                   {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
                   autoComplete="off"
-                  autoFocus={!initialComment}
                 />
               )}
 
-              <Flex gap="2" alignItems="center" flexWrap="wrap">
+              <ButtonGroup size="sm" alignItems="center" flexWrap="wrap">
                 {customZapAmounts
                   .split(",")
                   .map((v) => parseInt(v))
@@ -209,7 +209,7 @@ export default function ZapModal({
                       {amount}
                     </Button>
                   ))}
-              </Flex>
+              </ButtonGroup>
 
               <Flex gap="2">
                 <Input

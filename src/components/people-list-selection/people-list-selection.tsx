@@ -8,7 +8,6 @@ import {
   MenuList,
   MenuOptionGroup,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
 
 import { usePeopleListContext } from "../../providers/people-list-provider";
 import useUserLists from "../../hooks/use-user-lists";
@@ -26,22 +25,22 @@ export default function PeopleListSelection({
   const account = useCurrentAccount();
   const lists = useUserLists(account?.pubkey);
   const { lists: favoriteLists } = useFavoriteLists();
-  const { list, setList, listEvent } = usePeopleListContext();
+  const { selected, setSelected, listEvent } = usePeopleListContext();
 
   const handleSelect = (value: string | string[]) => {
     if (typeof value === "string") {
-      setList(value);
+      setSelected(value);
     }
   };
 
   return (
     <Menu>
       <MenuButton as={Button} {...props}>
-        {listEvent ? getListName(listEvent) : list === "global" ? "Global" : "Loading..."}
+        {listEvent ? getListName(listEvent) : selected === "global" ? "Global" : "Loading..."}
       </MenuButton>
       <MenuList zIndex={100}>
-        <MenuOptionGroup value={list} onChange={handleSelect} type="radio">
-          {account && <MenuItemOption value={`${Kind.Contacts}:${account.pubkey}`}>Following</MenuItemOption>}
+        <MenuOptionGroup value={selected} onChange={handleSelect} type="radio">
+          {account && <MenuItemOption value="following">Following</MenuItemOption>}
           {!hideGlobalOption && <MenuItemOption value="global">Global</MenuItemOption>}
           {lists.length > 0 && <MenuDivider />}
           {lists
@@ -55,7 +54,7 @@ export default function PeopleListSelection({
         {favoriteLists.length > 0 && (
           <>
             <MenuDivider />
-            <MenuOptionGroup value={list} onChange={handleSelect} type="radio" title="Favorites">
+            <MenuOptionGroup value={selected} onChange={handleSelect} type="radio" title="Favorites">
               {favoriteLists
                 .filter((l) => l.kind === PEOPLE_LIST_KIND)
                 .map((list) => (

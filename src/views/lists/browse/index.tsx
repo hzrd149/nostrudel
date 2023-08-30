@@ -20,7 +20,7 @@ import ListCard from "../components/list-card";
 import { getEventUID } from "../../../helpers/nostr/events";
 
 function BrowseListPage() {
-  const { filter, list } = usePeopleListContext();
+  const { filter, listId } = usePeopleListContext();
   const showEmpty = useDisclosure();
   const showMute = useDisclosure();
   const [listKind, setListKind] = useState(PEOPLE_LIST_KIND);
@@ -42,7 +42,7 @@ function BrowseListPage() {
   );
   const readRelays = useReadRelayUrls();
   const timeline = useTimelineLoader(
-    `${list}-lists`,
+    `${listId}-lists`,
     readRelays,
     { ...filter, kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND] },
     { enabled: !!filter, eventFilter },

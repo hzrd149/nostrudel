@@ -84,6 +84,7 @@ export default function PublishLog({ ...props }: Omit<FlexProps, "children">) {
 
   return (
     <Flex overflow="hidden" direction="column" gap="1" {...props}>
+      {log.length > 0 && <Text>Activity log:</Text>}
       {log.map((pub) => (
         <PublishAction key={pub.id} pub={pub} />
       ))}

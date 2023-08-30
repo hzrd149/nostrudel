@@ -24,7 +24,7 @@ function HomePage() {
   );
 
   const { relays } = useRelaySelectionContext();
-  const { list, filter } = usePeopleListContext();
+  const { listId, filter } = usePeopleListContext();
 
   const kinds = [Kind.Text, Kind.Repost, 2];
   const query = useMemo<NostrRequestFilter>(() => {
@@ -32,7 +32,7 @@ function HomePage() {
     return { ...filter, kinds };
   }, [filter]);
 
-  const timeline = useTimelineLoader(`${list}-home-feed`, relays, query, {
+  const timeline = useTimelineLoader(`${listId}-home-feed`, relays, query, {
     enabled: !!filter,
     eventFilter,
   });
