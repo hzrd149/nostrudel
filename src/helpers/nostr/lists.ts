@@ -8,7 +8,9 @@ export const PIN_LIST_KIND = 10001;
 export const MUTE_LIST_KIND = 10000;
 
 export function getListName(event: NostrEvent) {
-  if (event.kind === 3) return "Following";
+  if (event.kind === Kind.Contacts) return "Following";
+  if (event.kind === PIN_LIST_KIND) return "Pins";
+  if (event.kind === MUTE_LIST_KIND) return "Mute";
   return event.tags.find((t) => t[0] === "title")?.[1] || event.tags.find(isDTag)?.[1];
 }
 

@@ -56,14 +56,16 @@ class RelayTimelineLoader {
 
     let gotEvents = 0;
     request.onEvent.subscribe((e) => {
-      if (this.handleEvent(e)) {
-        gotEvents++;
-      }
+      this.handleEvent(e);
+      gotEvents++;
     });
     request.onComplete.then(() => {
       this.loading = false;
-      if (gotEvents === 0) this.complete = true;
       this.log(`Got ${gotEvents} events`);
+      if (gotEvents === 0) {
+        this.complete = true;
+        this.log("Complete");
+      }
       this.onBlockFinish.next();
     });
 
@@ -74,8 +76,8 @@ class RelayTimelineLoader {
     return this.events.addEvent(event);
   }
 
-  getLastEvent(nth = 0, filter?: EventFilter) {
-    return this.events.getLastEvent(nth, filter);
+  getLastEvent(nth = 0) {
+    return this.events.getLastEvent(nth);
   }
 }
 
@@ -191,7 +193,7 @@ export class TimelineLoader {
     let triggeredLoad = false;
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (loader.complete || loader.loading) continue;
-      const event = loader.getLastEvent(this.loadNextBlockBuffer, this.eventFilter);
+      const event = loader.getLastEvent(this.loadNextBlockBuffer);
       if (!event || event.created_at >= this.cursor) {
         loader.loadNextBlock();
         triggeredLoad = true;

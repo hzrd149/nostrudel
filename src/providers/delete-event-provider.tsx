@@ -32,7 +32,7 @@ import useEventRelays from "../hooks/use-event-relays";
 import { useWriteRelayUrls } from "../hooks/use-client-relays";
 import { RelayFavicon } from "../components/relay-favicon";
 import { ExternalLinkIcon } from "../components/icons";
-import { getEventCoordinate, isReplaceable } from "../helpers/nostr/events";
+import { getEventCoordinate, getEventUID, isReplaceable } from "../helpers/nostr/events";
 import NostrPublishAction from "../classes/nostr-publish-action";
 import { Tag } from "../types/nostr-event";
 
@@ -65,7 +65,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const [defer, setDefer] = useState<Deferred<void>>();
   const [reason, setReason] = useState("");
 
-  const eventRelays = useEventRelays(event?.id);
+  const eventRelays = useEventRelays(event && getEventUID(event));
   const writeRelays = useWriteRelayUrls(eventRelays);
 
   const deleteEvent = useCallback((event: Event) => {
@@ -94,7 +94,6 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       };
       const signed = await signingService.requestSignature(draft, account);
       const pub = new NostrPublishAction("Delete", writeRelays, signed);
-      await pub.onComplete;
       defer?.resolve();
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

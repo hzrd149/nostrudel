@@ -24,7 +24,7 @@ function ListsPage() {
   const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
 
   return (
-    <Flex direction="column" p="2" gap="2">
+    <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
       <Flex gap="2">
         <Button as={RouterLink} to="/lists/browse">
           Browse Lists
@@ -51,13 +51,17 @@ function ListsPage() {
         <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} />
         <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} />
       </SimpleGrid>
-      <Heading size="md">People lists</Heading>
-      <Divider />
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        {peopleLists.map((event) => (
-          <ListCard key={getEventUID(event)} event={event} />
-        ))}
-      </SimpleGrid>
+      {peopleLists.length > 0 && (
+        <>
+          <Heading size="md">People lists</Heading>
+          <Divider />
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {peopleLists.map((event) => (
+              <ListCard key={getEventUID(event)} event={event} />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
       {noteLists.length > 0 && (
         <>
           <Heading size="md">Bookmark lists</Heading>
