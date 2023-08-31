@@ -1,5 +1,26 @@
 # nostrudel
 
+## 0.25.0
+
+### Minor Changes
+
+- f83d1ad: Show streamer cards in stream view on desktop
+- c79c292: Show emoji reactions on notes
+- 0af6c2c: Add bookmark button to notes
+- 8ea8c88: Add more details to publish details modal
+- d53a34c: Add browse lists view
+- 343a23c: Add sats per minute button on stream view on desktop
+- 6bb4589: Add option to favorite lists
+- 8ea8c88: Filter relay reviews by list
+- f6f4656: Allow user to select people list for home feed
+- 0af6c2c: Show note lists on lists view
+- 63474a7: Add delete button for lists
+
+### Patch Changes
+
+- 954ec50: Fix reactions showing on wrong notes
+- fbc1ea4: Fix mentioning npub would freeze app
+
 ## 0.24.0
 
 ### Minor Changes
