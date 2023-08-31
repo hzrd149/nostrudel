@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Button, ButtonGroup, Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
@@ -22,6 +22,7 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { unique } from "../../../helpers/array";
 import MagicTextArea from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/emoji-provider";
+import UserDirectoryProvider from "../../../providers/user-directory-provider";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -67,30 +68,32 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
   });
 
   return (
-    <form onSubmit={submit}>
-      <MagicTextArea
-        placeholder="Reply"
-        autoFocus
-        mb="2"
-        rows={5}
-        isRequired
-        value={getValues().content}
-        onChange={(e) => setValue("content", e.target.value)}
-      />
-      {getValues().content.length > 0 && (
-        <Box p="2" borderWidth={1} borderRadius="md" mb="2">
-          <NoteContents event={draft} />
-        </Box>
-      )}
-      <Flex gap="2" alignItems="center">
-        <ButtonGroup size="sm">
-          <Button onClick={onCancel}>Cancel</Button>
-        </ButtonGroup>
-        <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
-        <Button type="submit" colorScheme="brand" size="sm" ml="auto">
-          Submit
-        </Button>
-      </Flex>
-    </form>
+    <UserDirectoryProvider getDirectory={() => threadMembers}>
+      <form onSubmit={submit}>
+        <MagicTextArea
+          placeholder="Reply"
+          autoFocus
+          mb="2"
+          rows={5}
+          isRequired
+          value={getValues().content}
+          onChange={(e) => setValue("content", e.target.value)}
+        />
+        {getValues().content.length > 0 && (
+          <Box p="2" borderWidth={1} borderRadius="md" mb="2">
+            <NoteContents event={draft} />
+          </Box>
+        )}
+        <Flex gap="2" alignItems="center">
+          <ButtonGroup size="sm">
+            <Button onClick={onCancel}>Cancel</Button>
+          </ButtonGroup>
+          <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
+          <Button type="submit" colorScheme="brand" size="sm" ml="auto">
+            Submit
+          </Button>
+        </Flex>
+      </form>
+    </UserDirectoryProvider>
   );
 }

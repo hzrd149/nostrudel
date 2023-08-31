@@ -1,4 +1,5 @@
 import { Box, Flex, FlexProps, Text } from "@chakra-ui/react";
+
 import { ParsedZap } from "../../../../helpers/zaps";
 import { UserAvatar } from "../../../../components/user-avatar";
 import { UserLink } from "../../../../components/user-link";

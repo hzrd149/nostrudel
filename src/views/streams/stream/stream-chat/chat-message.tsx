@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Box, Text } from "@chakra-ui/react";
+
 import { ParsedStream } from "../../../../helpers/nostr/stream";
 import { UserAvatar } from "../../../../components/user-avatar";
 import { UserLink } from "../../../../components/user-link";

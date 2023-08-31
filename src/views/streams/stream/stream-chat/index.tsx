@@ -19,6 +19,7 @@ import useUserMuteList from "../../../../hooks/use-user-mute-list";
 import { NostrEvent, isPTag } from "../../../../types/nostr-event";
 import { useCurrentAccount } from "../../../../hooks/use-current-account";
 import ChatMessageForm from "./chat-message-form";
+import UserDirectoryProvider from "../../../../providers/user-directory-provider";
 
 const hideScrollbar = css`
   scrollbar-width: 0;
@@ -58,6 +59,13 @@ export default function StreamChat({
   );
 
   const events = useSubject(timeline.timeline).sort((a, b) => b.created_at - a.created_at);
+  const pubkeysInChat = useMemo(() => {
+    const set = new Set<string>();
+    for (const event of events) {
+      set.add(event.pubkey);
+    }
+    return Array.from(set);
+  }, [events]);
 
   const zaps = useMemo(() => {
     const parsed = [];
@@ -77,40 +85,42 @@ export default function StreamChat({
 
   return (
     <IntersectionObserverProvider callback={callback} root={scrollBox}>
-      <LightboxProvider>
-        <Card {...props} overflow="hidden" background={isChatLog ? "transparent" : undefined}>
-          {!isPopup && (
-            <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
-              <Heading size="md">Stream Chat</Heading>
-              {actions}
-            </CardHeader>
-          )}
-          <CardBody display="flex" flexDirection="column" overflow="hidden" p={0}>
-            <TopZappers zaps={zaps} pt={!isPopup ? 0 : undefined} />
-            <Flex
-              overflowY="scroll"
-              overflowX="hidden"
-              ref={scrollBox}
-              direction="column-reverse"
-              flex={1}
-              px="4"
-              py="2"
-              mb="2"
-              gap="2"
-              css={isChatLog && hideScrollbar}
-            >
-              {events.map((event) =>
-                event.kind === STREAM_CHAT_MESSAGE_KIND ? (
-                  <ChatMessage key={event.id} event={event} stream={stream} />
-                ) : (
-                  <ZapMessage key={event.id} zap={event} stream={stream} />
-                ),
-              )}
-            </Flex>
-            {!isChatLog && <ChatMessageForm stream={stream} />}
-          </CardBody>
-        </Card>
-      </LightboxProvider>
+      <UserDirectoryProvider getDirectory={() => pubkeysInChat}>
+        <LightboxProvider>
+          <Card {...props} overflow="hidden" background={isChatLog ? "transparent" : undefined}>
+            {!isPopup && (
+              <CardHeader py="3" display="flex" justifyContent="space-between" alignItems="center">
+                <Heading size="md">Stream Chat</Heading>
+                {actions}
+              </CardHeader>
+            )}
+            <CardBody display="flex" flexDirection="column" overflow="hidden" p={0}>
+              <TopZappers zaps={zaps} pt={!isPopup ? 0 : undefined} />
+              <Flex
+                overflowY="scroll"
+                overflowX="hidden"
+                ref={scrollBox}
+                direction="column-reverse"
+                flex={1}
+                px="4"
+                py="2"
+                mb="2"
+                gap="2"
+                css={isChatLog && hideScrollbar}
+              >
+                {events.map((event) =>
+                  event.kind === STREAM_CHAT_MESSAGE_KIND ? (
+                    <ChatMessage key={event.id} event={event} stream={stream} />
+                  ) : (
+                    <ZapMessage key={event.id} zap={event} stream={stream} />
+                  ),
+                )}
+              </Flex>
+              {!isChatLog && <ChatMessageForm stream={stream} />}
+            </CardBody>
+          </Card>
+        </LightboxProvider>
+      </UserDirectoryProvider>
     </IntersectionObserverProvider>
   );
 }
