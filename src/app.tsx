@@ -40,17 +40,44 @@ import UserListsTab from "./views/user/lists";
 
 import "./services/emoji-packs";
 import BrowseListView from "./views/lists/browse";
+import { css, Global } from "@emotion/react";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 const MapView = React.lazy(() => import("./views/map"));
 
+const overrideReactTextareaAutocompleteStyles = css`
+  .rta__autocomplete {
+    z-index: var(--chakra-zIndices-popover);
+    font-size: var(--chakra-fontSizes-md);
+  }
+  .rta__list {
+    background: var(--chakra-colors-chakra-subtle-bg);
+    color: var(--chakra-colors-chakra-body-text);
+    border: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
+    border-radius: var(--chakra-sizes-1);
+    overflow: hidden;
+  }
+  .rta__entity {
+    background: none;
+    color: inherit;
+    padding: var(--chakra-sizes-1) var(--chakra-sizes-2);
+  }
+  .rta__entity--selected {
+    background: var(--chakra-ring-color);
+  }
+  .rta__item:not(:last-child) {
+    border-bottom: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
+  }
+`;
+
 const RootPage = () => {
   useSetColorMode();
 
   return (
     <PageProviders>
+      <Global styles={overrideReactTextareaAutocompleteStyles} />
       <Layout>
         <ScrollRestoration />
         <Suspense fallback={<Spinner />}>

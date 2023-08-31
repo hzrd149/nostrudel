@@ -25,6 +25,7 @@ function EmojiPack({ addr, onSelect }: { addr: string; onSelect: ReactionPickerP
             key={emoji.name}
             icon={<Image src={emoji.url} height="1.2rem" />}
             aria-label={emoji.name}
+            title={emoji.name}
             variant="outline"
             size="sm"
             onClick={() => onSelect(emoji.name, emoji.url)}
