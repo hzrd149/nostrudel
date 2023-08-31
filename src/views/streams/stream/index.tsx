@@ -35,6 +35,7 @@ import RelaySelectionProvider from "../../../providers/relay-selection-provider"
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import StreamSatsPerMinute from "../components/stream-sats-per-minute";
+import { UserEmojiProvider } from "../../../providers/emoji-provider";
 
 function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
   useAppTitle(stream.title);
@@ -194,7 +195,9 @@ export default function StreamView() {
   return (
     // add snort and damus relays so zap.stream will always see zaps
     <RelaySelectionProvider additionalDefaults={streamRelays}>
-      <StreamPage stream={stream} displayMode={(params.get("displayMode") as ChatDisplayMode) ?? undefined} />
+      <UserEmojiProvider pubkey={stream.host}>
+        <StreamPage stream={stream} displayMode={(params.get("displayMode") as ChatDisplayMode) ?? undefined} />
+      </UserEmojiProvider>
     </RelaySelectionProvider>
   );
 }

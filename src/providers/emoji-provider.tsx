@@ -23,9 +23,9 @@ export function DefaultEmojiProvider({ children }: PropsWithChildren) {
   return <EmojiProvider emojis={defaultEmojis}>{children}</EmojiProvider>;
 }
 
-export function UserEmojiProvider({ children }: PropsWithChildren) {
+export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useCurrentAccount();
-  const userPacks = useUserEmojiPacks(account?.pubkey);
+  const userPacks = useUserEmojiPacks(pubkey || account?.pubkey);
   const events = useReplaceableEvents(userPacks?.packs);
 
   const emojis = events
@@ -33,8 +33,6 @@ export function UserEmojiProvider({ children }: PropsWithChildren) {
       event.tags.filter(isEmojiTag).map((t) => ({ name: t[1], url: t[2], keywords: [t[1]], char: `:${t[1]}:` })),
     )
     .flat();
-
-  console.log(userPacks, emojis);
 
   return <EmojiProvider emojis={emojis}>{children}</EmojiProvider>;
 }
