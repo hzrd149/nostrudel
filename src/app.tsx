@@ -27,7 +27,7 @@ import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import ToolsHomeView from "./views/tools";
 import UserAboutTab from "./views/user/about";
-import UserLikesTab from "./views/user/likes";
+import UserReactionsTab from "./views/user/reactions";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
@@ -97,7 +97,7 @@ const router = createHashRouter([
           { path: "notes", element: <UserNotesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
-          { path: "likes", element: <UserLikesTab /> },
+          { path: "likes", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },

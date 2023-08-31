@@ -20,14 +20,14 @@ export function groupReactions(reactions: NostrEvent[]) {
   return Array.from(Object.values(groups)).sort((a, b) => b.count - a.count);
 }
 
-export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string) {
+export function draftEventReaction(reacted: NostrEvent, emoji = "+", url?: string) {
+  // only keep the e, and p tags on the parent event
+  const inheritedTags = reacted.tags.filter((tag) => tag.length >= 2 && (tag[0] === "e" || tag[0] === "p"));
+
   const draft: DraftNostrEvent = {
     kind: Kind.Reaction,
     content: url ? ":" + emoji + ":" : emoji,
-    tags: [
-      ["e", event.id],
-      ["p", event.pubkey], // TODO: pick a relay for the user
-    ],
+    tags: [...inheritedTags, ["e", reacted.id], ["p", reacted.pubkey]],
     created_at: dayjs().unix(),
   };
 

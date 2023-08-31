@@ -10,12 +10,12 @@ import AddCustomRelayModal from "./components/add-custom-modal";
 import RelayCard from "./components/relay-card";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
   const deboundedSearch = useDeferredValue(search);
   const isSearching = deboundedSearch.length > 2;
-  const showAll = useDisclosure();
   const addRelayModal = useDisclosure();
 
   const clientRelays = useClientRelays().map((r) => r.url);
@@ -33,16 +33,13 @@ export default function RelaysView() {
       return onlineRelays.filter((url) => url.includes(deboundedSearch));
     }
 
-    return showAll.isOpen ? onlineRelays : clientRelays;
-  }, [isSearching, deboundedSearch, onlineRelays, clientRelays, showAll.isOpen]);
+    return clientRelays;
+  }, [isSearching, deboundedSearch, onlineRelays, clientRelays]);
 
   return (
     <Flex direction="column" gap="2" p="2">
       <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
-        <Switch isChecked={showAll.isOpen} onChange={showAll.onToggle}>
-          Show All
-        </Switch>
         <Spacer />
         <Button as={RouterLink} to="/relays/reviews">
           Browse Reviews
@@ -53,7 +50,9 @@ export default function RelaysView() {
       </Flex>
       <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
         {filteredRelays.map((url) => (
-          <RelayCard key={url} url={url} variant="outline" />
+          <ErrorBoundary>
+            <RelayCard key={url} url={url} variant="outline" />
+          </ErrorBoundary>
         ))}
       </SimpleGrid>
 
@@ -63,7 +62,9 @@ export default function RelaysView() {
           <Heading size="lg">Discovered Relays</Heading>
           <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
             {discoveredRelays.map((url) => (
-              <RelayCard key={url} url={url} variant="outline" />
+              <ErrorBoundary>
+                <RelayCard key={url} url={url} variant="outline" />
+              </ErrorBoundary>
             ))}
           </SimpleGrid>
         </>

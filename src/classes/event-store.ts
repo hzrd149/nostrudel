@@ -2,6 +2,8 @@ import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 
+export type EventFilter = (event: NostrEvent) => boolean;
+
 export default class EventStore {
   name?: string;
   events = new Map<string, NostrEvent>();
@@ -25,8 +27,8 @@ export default class EventStore {
       this.onEvent.next(event);
     }
   }
-  getEvent(id:string){
-    return this.events.get(id)
+  getEvent(id: string) {
+    return this.events.get(id);
   }
 
   clear() {
@@ -41,18 +43,28 @@ export default class EventStore {
     other.onEvent.unsubscribe(this.addEvent, this);
   }
 
-  getFirstEvent(nth = 0) {
+  getFirstEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    for (let i = 0; i <= nth; i++) {
-      const event = events[i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.shift();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
-  getLastEvent(nth = 0) {
+  getLastEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    for (let i = nth; i >= 0; i--) {
-      const event = events[events.length - 1 - i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.pop();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
 }

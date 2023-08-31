@@ -197,7 +197,6 @@ export function RelayPaidTag({ url }: { url: string }) {
 }
 
 export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
-  const { info } = useRelayInfo(url);
   return (
     <>
       <Card variant="outline" {...props}>

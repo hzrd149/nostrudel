@@ -27,7 +27,7 @@ import {
 import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { isHex } from "../../helpers/nip19";
+import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { Suspense, useState } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -56,7 +56,7 @@ const tabs = [
 
 function useUserPointer() {
   const { pubkey } = useParams() as { pubkey: string };
-  if (isHex(pubkey)) return { pubkey, relays: [] };
+  if (isHexKey(pubkey)) return { pubkey, relays: [] };
   const pointer = nip19.decode(pubkey);
 
   switch (pointer.type) {

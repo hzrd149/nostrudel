@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Box, Flex, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
-import { getReferences, truncatedId } from "../../helpers/nostr/events";
+import { nip25 } from "nostr-tools";
+
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
@@ -18,16 +19,15 @@ import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { NoteMenu } from "../../components/note/note-menu";
 
-const Like = ({ event }: { event: NostrEvent }) => {
+const Reaction = ({ event }: { event: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
 
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
 
-  const refs = getReferences(event);
-  const eventId: string | undefined = refs.events[0];
-  const { event: note } = useSingleEvent(eventId, readRelays);
+  const pointer = nip25.getReactedEventPointer(event);
+  const { event: note } = useSingleEvent(pointer?.id, readRelays);
 
   var content = <></>;
   if (!note) return <SkeletonText />;
@@ -51,7 +51,7 @@ const Like = ({ event }: { event: NostrEvent }) => {
   return <Box ref={ref}>{content}</Box>;
 };
 
-export default function UserLikesTab() {
+export default function UserReactionsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
@@ -67,7 +67,7 @@ export default function UserLikesTab() {
       <TrustProvider trust>
         <Flex direction="column" gap="2" p="2" pb="8">
           {likes.map((event) => (
-            <Like event={event} />
+            <Reaction event={event} />
           ))}
 
           <TimelineActionAndStatus timeline={timeline} />

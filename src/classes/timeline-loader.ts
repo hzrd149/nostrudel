@@ -19,6 +19,8 @@ function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
 
 const BLOCK_SIZE = 30;
 
+export type EventFilter = (event: NostrEvent) => boolean;
+
 export class RelayTimelineLoader {
   relay: string;
   query: NostrRequestFilter;
@@ -72,11 +74,11 @@ export class RelayTimelineLoader {
     return this.events.addEvent(event);
   }
 
-  getFirstEvent(nth = 0) {
-    return this.events.getFirstEvent(nth);
+  getFirstEvent(nth = 0, filter?: EventFilter) {
+    return this.events.getFirstEvent(nth, filter);
   }
-  getLastEvent(nth = 0) {
-    return this.events.getLastEvent(nth);
+  getLastEvent(nth = 0, filter?: EventFilter) {
+    return this.events.getLastEvent(nth, filter);
   }
 }
 
@@ -91,7 +93,7 @@ export class TimelineLoader {
   complete = new PersistentSubject(false);
 
   loadNextBlockBuffer = 2;
-  eventFilter?: (event: NostrEvent) => boolean;
+  eventFilter?: EventFilter;
 
   name: string;
   private log: Debugger;
@@ -192,7 +194,7 @@ export class TimelineLoader {
     let triggeredLoad = false;
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (loader.complete || loader.loading) continue;
-      const event = loader.getLastEvent(this.loadNextBlockBuffer);
+      const event = loader.getLastEvent(this.loadNextBlockBuffer, this.eventFilter);
       if (!event || event.created_at >= this.cursor) {
         loader.loadNextBlock();
         triggeredLoad = true;

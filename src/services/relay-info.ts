@@ -1,6 +1,6 @@
 import db from "./db";
 import { fetchWithCorsFallback } from "../helpers/cors";
-import { isHex } from "../helpers/nip19";
+import { isHexKey } from "../helpers/nip19";
 
 export type RelayInformationDocument = {
   name: string;
@@ -15,7 +15,7 @@ export type RelayInformationDocument = {
 };
 
 function sanitizeInfo(info: RelayInformationDocument) {
-  if (info.pubkey && !isHex(info.pubkey)) {
+  if (info.pubkey && !isHexKey(info.pubkey)) {
     delete info.pubkey;
   }
   return info;

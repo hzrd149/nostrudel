@@ -5,7 +5,7 @@ import relayScoreboardService from "../services/relay-scoreboard";
 import { NostrEvent, isDTag } from "../types/nostr-event";
 import { getEventUID } from "./nostr/events";
 
-export function isHex(key?: string) {
+export function isHexKey(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
   return false;
 }
@@ -15,7 +15,7 @@ export function isBech32Key(bech32String: string) {
   try {
     const { prefix } = bech32.decode(bech32String.toLowerCase());
     if (!prefix) return false;
-    if (!isHex(bech32ToHex(bech32String))) return false;
+    if (!isHexKey(bech32ToHex(bech32String))) return false;
   } catch (error) {
     return false;
   }
@@ -59,7 +59,7 @@ export function getPubkey(result: nip19.DecodeResult) {
 }
 
 export function normalizeToHex(hex: string) {
-  if (isHex(hex)) return hex;
+  if (isHexKey(hex)) return hex;
   if (isBech32Key(hex)) return bech32ToHex(hex);
   return null;
 }
