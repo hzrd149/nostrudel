@@ -9,7 +9,8 @@
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
     "e2e": "cypress open",
-    "test": "cypress run --e2e --browser=chrome"
+    "test": "cypress run --e2e --browser=chrome",
+    "analyze": "npx vite-bundle-visualizer -o ./stats.html"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.0",
@@ -28,6 +29,7 @@
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.79.0",
     "light-bolt11-decoder": "^3.0.0",
+    "nanoid": "^4.0.2",
     "ngeohash": "^0.6.3",
     "noble-secp256k1": "^1.2.14",
     "nostr-tools": "^1.14.0",

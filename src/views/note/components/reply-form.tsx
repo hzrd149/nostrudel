@@ -5,7 +5,7 @@ import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { UserAvatarStack } from "../../../components/user-avatar-stack";
+import { UserAvatarStack } from "../../../components/compact-user-stack";
 import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
 import { NoteContents } from "../../../components/note/note-contents";
 import { addReplyTags, ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../../helpers/nostr/post";
@@ -13,7 +13,6 @@ import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { unique } from "../../../helpers/array";
 
 function NoteContentPreview({ content }: { content: string }) {
@@ -80,7 +79,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="submit">Submit</Button>
         </ButtonGroup>
-        <UserAvatarStack label="Notify" users={notifyPubkeys} />
+        <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
         {getValues().content.length > 0 && (
           <Button size="sm" ml="auto" onClick={showPreview.onToggle}>
             Preview

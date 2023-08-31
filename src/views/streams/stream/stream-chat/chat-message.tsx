@@ -15,14 +15,22 @@ function ChatMessage({ event, stream }: { event: NostrEvent; stream: ParsedStrea
 
   return (
     <TrustProvider event={event}>
-      <Box ref={ref}>
-        <NoteZapButton note={event} size="xs" variant="ghost" float="right" ml="2" allowComment={false} />
-        <Box overflow="hidden" maxH="lg">
+      <Box>
+        <Box overflow="hidden" maxH="lg" ref={ref}>
           <UserAvatar pubkey={event.pubkey} size="xs" display="inline-block" mr="2" />
           <Text as="span" fontWeight="bold" color={event.pubkey === stream.host ? "rgb(248, 56, 217)" : "cyan"}>
             <UserLink pubkey={event.pubkey} />
             {": "}
           </Text>
+          <NoteZapButton
+            display="inline-block"
+            event={event}
+            size="xs"
+            variant="ghost"
+            float="right"
+            ml="2"
+            allowComment={false}
+          />
           <ChatMessageContent event={event} />
         </Box>
       </Box>

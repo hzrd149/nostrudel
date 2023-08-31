@@ -2,13 +2,13 @@ import { Flex, Spinner } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useParams } from "react-router-dom";
 import { Note } from "../../components/note";
-import { isHex } from "../../helpers/nip19";
+import { isHexKey } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./components/thread-post";
 
 function useNotePointer() {
   const { id } = useParams() as { id: string };
-  if (isHex(id)) return { id, relays: [] };
+  if (isHexKey(id)) return { id, relays: [] };
   const pointer = nip19.decode(id);
 
   switch (pointer.type) {

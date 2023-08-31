@@ -1,8 +1,9 @@
-import { getEventUID } from "../helpers/nostr/event";
+import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 
-type EventFilter = (event: NostrEvent) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
+
 export default class EventStore {
   name?: string;
   events = new Map<string, NostrEvent>();
@@ -24,9 +25,10 @@ export default class EventStore {
     if (!existing || event.created_at > existing.created_at) {
       this.events.set(id, event);
       this.onEvent.next(event);
-      return true;
     }
-    return false;
+  }
+  getEvent(id: string) {
+    return this.events.get(id);
   }
 
   clear() {
@@ -43,18 +45,26 @@ export default class EventStore {
 
   getFirstEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    const filteredEvents = filter ? events.filter(filter) : events;
-    for (let i = 0; i <= nth; i++) {
-      const event = filteredEvents[i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.shift();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
   getLastEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    const filteredEvents = filter ? events.filter(filter) : events;
-    for (let i = nth; i >= 0; i--) {
-      const event = filteredEvents[filteredEvents.length - 1 - i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.pop();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
 }

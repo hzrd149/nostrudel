@@ -3,7 +3,7 @@ import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakr
 
 import { useUserRelays } from "../../hooks/use-user-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr/event";
+import { truncatedId } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
@@ -13,6 +13,7 @@ import { RelayDebugButton, RelayJoinAction, RelayMetadata, RelayShareButton } fr
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useRelayInfo } from "../../hooks/use-relay-info";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
   const { info } = useRelayInfo(url);
@@ -56,7 +57,7 @@ const UserRelaysTab = () => {
   const userRelays = useUserRelays(pubkey);
 
   const readRelays = useReadRelayUrls(userRelays.map((r) => r.url));
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-relay-reviews`, readRelays, {
+  const timeline = useTimelineLoader(`${pubkey}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
     "#l": ["review/relay"],
@@ -75,7 +76,9 @@ const UserRelaysTab = () => {
     <IntersectionObserverProvider<string> callback={callback}>
       <VStack divider={<StackDivider />} py="2" align="stretch">
         {userRelays.map((relayConfig) => (
-          <Relay url={relayConfig.url} reviews={getRelayReviews(relayConfig.url, reviews)} />
+          <ErrorBoundary>
+            <Relay key={relayConfig.url} url={relayConfig.url} reviews={getRelayReviews(relayConfig.url, reviews)} />
+          </ErrorBoundary>
         ))}
       </VStack>
       {otherReviews.length > 0 && (

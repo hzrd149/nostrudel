@@ -3,6 +3,7 @@ import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 import { SigningProvider } from "./signing-provider";
 import createTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
+import DeleteEventProvider from "./delete-event-provider";
 import { InvoiceModalProvider } from "./invoice-modal";
 import NotificationTimelineProvider from "./notification-timeline";
 import PostModalProvider from "./post-modal-provider";
@@ -23,11 +24,13 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
 export function PageProviders({ children }: { children: React.ReactNode }) {
   return (
     <SigningProvider>
-      <InvoiceModalProvider>
-        <NotificationTimelineProvider>
-          <PostModalProvider>{children}</PostModalProvider>
-        </NotificationTimelineProvider>
-      </InvoiceModalProvider>
+      <DeleteEventProvider>
+        <InvoiceModalProvider>
+          <NotificationTimelineProvider>
+            <PostModalProvider>{children}</PostModalProvider>
+          </NotificationTimelineProvider>
+        </InvoiceModalProvider>
+      </DeleteEventProvider>
     </SigningProvider>
   );
 }

@@ -8,14 +8,15 @@ import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
+import { getEventCoordinate } from "../helpers/nostr/events";
 
 type Pubkey = string;
 type Relay = string;
 
-export function getReadableAddr(kind: number, pubkey: string, d?: string) {
+export function getReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
 }
-export function getAddr(kind: number, pubkey: string, d?: string) {
+export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
@@ -38,13 +39,12 @@ class ReplaceableEventRelayLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    const d = event.tags.find((t) => t[0] === "d" && t[1])?.[1];
-    const addr = getAddr(event.kind, event.pubkey, d);
+    const cord = getEventCoordinate(event);
 
     // remove the pubkey from the waiting list
-    this.requested.delete(addr);
+    this.requested.delete(cord);
 
-    const sub = this.events.get(addr);
+    const sub = this.events.get(cord);
 
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
@@ -57,15 +57,15 @@ class ReplaceableEventRelayLoader {
   }
 
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(getAddr(kind, pubkey, d));
+    return this.events.get(createCoordinate(kind, pubkey, d));
   }
 
   requestEvent(kind: number, pubkey: string, d?: string) {
-    const addr = getAddr(kind, pubkey, d);
-    const event = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const event = this.events.get(cord);
 
     if (!event.value) {
-      this.requestNext.add(addr);
+      this.requestNext.add(cord);
     }
 
     return event;
@@ -73,9 +73,9 @@ class ReplaceableEventRelayLoader {
 
   update() {
     let needsUpdate = false;
-    for (const addr of this.requestNext) {
-      if (!this.requested.has(addr)) {
-        this.requested.set(addr, new Date());
+    for (const cord of this.requestNext) {
+      if (!this.requested.has(cord)) {
+        this.requested.set(cord, new Date());
         needsUpdate = true;
       }
     }
@@ -83,9 +83,9 @@ class ReplaceableEventRelayLoader {
 
     // prune requests
     const timeout = dayjs().subtract(1, "minute");
-    for (const [addr, date] of this.requested) {
+    for (const [cord, date] of this.requested) {
       if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(addr);
+        this.requested.delete(cord);
         needsUpdate = true;
       }
     }
@@ -95,8 +95,8 @@ class ReplaceableEventRelayLoader {
       if (this.requested.size > 0) {
         const filters: Record<number, NostrQuery> = {};
 
-        for (const [addr] of this.requested) {
-          const [kindStr, pubkey, d] = addr.split(":") as [string, string] | [string, string, string];
+        for (const [cord] of this.requested) {
+          const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
           const kind = parseInt(kindStr);
           filters[kind] = filters[kind] || { kinds: [kind] };
 
@@ -139,28 +139,27 @@ class ReplaceableEventLoaderService {
   log = logger.extend("ReplaceableEventLoader");
 
   handleEvent(event: NostrEvent) {
-    const d = event.tags.find((t) => t[0] === "d" && t[1])?.[1];
-    const addr = getAddr(event.kind, event.pubkey, d);
+    const cord = getEventCoordinate(event);
 
-    const sub = this.events.get(addr);
+    const sub = this.events.get(cord);
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      this.saveToCache(addr, event);
+      this.saveToCache(cord, event);
     }
   }
 
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(getAddr(kind, pubkey, d));
+    return this.events.get(createCoordinate(kind, pubkey, d));
   }
 
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
-  private loadFromCache(addr: string) {
-    const dedupe = this.loadCacheDedupe.get(addr);
+  private loadFromCache(cord: string) {
+    const dedupe = this.loadCacheDedupe.get(cord);
     if (dedupe) return dedupe;
 
-    const promise = db.get("replaceableEvents", addr).then((cached) => {
-      this.loadCacheDedupe.delete(addr);
+    const promise = db.get("replaceableEvents", cord).then((cached) => {
+      this.loadCacheDedupe.delete(cord);
       if (cached?.event) {
         this.handleEvent(cached.event);
         return true;
@@ -168,12 +167,12 @@ class ReplaceableEventLoaderService {
       return false;
     });
 
-    this.loadCacheDedupe.set(addr, promise);
+    this.loadCacheDedupe.set(cord, promise);
 
     return promise;
   }
-  private async saveToCache(addr: string, event: NostrEvent) {
-    await db.put("replaceableEvents", { addr, event, created: dayjs().unix() });
+  private async saveToCache(cord: string, event: NostrEvent) {
+    await db.put("replaceableEvents", { addr: cord, event, created: dayjs().unix() });
   }
 
   async pruneCache() {
@@ -193,8 +192,8 @@ class ReplaceableEventLoaderService {
   }
 
   private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
-    const addr = getAddr(kind, pubkey, d);
-    const sub = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const sub = this.events.get(cord);
 
     for (const relay of relays) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
@@ -202,7 +201,7 @@ class ReplaceableEventLoaderService {
       sub.connectWithHandler(request, (event, next, current) => {
         if (!current || event.created_at > current.created_at) {
           next(event);
-          this.saveToCache(addr, event);
+          this.saveToCache(cord, event);
         }
       });
     }
@@ -211,11 +210,11 @@ class ReplaceableEventLoaderService {
   }
 
   requestEvent(relays: string[], kind: number, pubkey: string, d?: string, alwaysRequest = false) {
-    const addr = getAddr(kind, pubkey, d);
-    const sub = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const sub = this.events.get(cord);
 
     if (!sub.value) {
-      this.loadFromCache(addr).then((loaded) => {
+      this.loadFromCache(cord).then((loaded) => {
         if (!loaded) {
           this.requestEventFromRelays(relays, kind, pubkey, d);
         }

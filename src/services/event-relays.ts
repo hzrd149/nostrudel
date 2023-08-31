@@ -1,6 +1,6 @@
 import { Relay } from "../classes/relay";
 import { PersistentSubject } from "../classes/subject";
-import { getEventUID } from "../helpers/nostr/event";
+import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "./relay-pool";
 

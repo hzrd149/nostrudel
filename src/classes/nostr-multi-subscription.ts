@@ -1,10 +1,9 @@
+import { nanoid } from "nanoid";
 import { Subject } from "./subject";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import { IncomingEvent, Relay } from "./relay";
 import relayPoolService from "../services/relay-pool";
-
-let lastId = 0;
 
 export class NostrMultiSubscription {
   static INIT = "initial";
@@ -21,7 +20,7 @@ export class NostrMultiSubscription {
   seenEvents = new Set<string>();
 
   constructor(relayUrls: string[], query?: NostrRequestFilter, name?: string) {
-    this.id = String(name || lastId++);
+    this.id = nanoid();
     this.query = query;
     this.name = name;
     this.relayUrls = relayUrls;

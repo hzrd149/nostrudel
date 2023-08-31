@@ -1,14 +1,15 @@
+import { nanoid } from "nanoid";
+import { isReplaceable } from "../helpers/nostr/events";
 import { addToLog } from "../services/publish-log";
 import relayPoolService from "../services/relay-pool";
+import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import { NostrEvent } from "../types/nostr-event";
 import createDefer from "./deferred";
 import { IncomingCommandResult, Relay } from "./relay";
 import Subject, { PersistentSubject } from "./subject";
 
-let lastId = 0;
-
 export default class NostrPublishAction {
-  id = lastId++;
+  id = nanoid();
   label: string;
   relays: string[];
   event: NostrEvent;
@@ -36,6 +37,11 @@ export default class NostrPublishAction {
     setTimeout(this.handleTimeout.bind(this), timeout);
 
     addToLog(this);
+
+    // if this is replaceable, mirror it over to the replaceable event service
+    if (isReplaceable(event.kind)) {
+      replaceableEventLoaderService.handleEvent(event);
+    }
   }
 
   private handleResult(result: IncomingCommandResult) {

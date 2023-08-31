@@ -1,6 +1,7 @@
 import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
 import { getMatchHashtag } from "../regexp";
-import { getReferences } from "./event";
+import { normalizeToHex } from "../nip19";
+import { getReferences } from "./events";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getPubkey, safeDecode } from "../nip19";

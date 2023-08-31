@@ -27,7 +27,7 @@ import {
 import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { Bech32Prefix, isHex, normalizeToBech32 } from "../../helpers/nip19";
+import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { Suspense, useState } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -39,12 +39,14 @@ import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";
 import Header from "./components/header";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 const tabs = [
   { label: "About", path: "about" },
   { label: "Notes", path: "notes" },
   { label: "Streams", path: "streams" },
   { label: "Zaps", path: "zaps" },
+  { label: "Lists", path: "lists" },
   { label: "Following", path: "following" },
   { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
@@ -54,7 +56,7 @@ const tabs = [
 
 function useUserPointer() {
   const { pubkey } = useParams() as { pubkey: string };
-  if (isHex(pubkey)) return { pubkey, relays: [] };
+  if (isHexKey(pubkey)) return { pubkey, relays: [] };
   const pointer = nip19.decode(pubkey);
 
   switch (pointer.type) {
@@ -94,9 +96,8 @@ const UserView = () => {
   const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
 
   const metadata = useUserMetadata(pubkey, userTopRelays, true);
-  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
-  useAppTitle(getUserDisplayName(metadata, npub ?? pubkey));
+  useAppTitle(getUserDisplayName(metadata, pubkey));
 
   return (
     <>
@@ -111,6 +112,7 @@ const UserView = () => {
             index={activeTab}
             onChange={(v) => navigate(tabs[v].path, { replace: true })}
             colorScheme="brand"
+            h="full"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
               {tabs.map(({ label }) => (
@@ -121,9 +123,11 @@ const UserView = () => {
             <TabPanels>
               {tabs.map(({ label }) => (
                 <TabPanel key={label} p={0}>
-                  <Suspense fallback={<Spinner />}>
-                    <Outlet context={{ pubkey, setRelayCount }} />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<Spinner />}>
+                      <Outlet context={{ pubkey, setRelayCount }} />
+                    </Suspense>
+                  </ErrorBoundary>
                 </TabPanel>
               ))}
             </TabPanels>

@@ -12,10 +12,11 @@ import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { Photo } from "react-photo-album";
 import { NostrEvent } from "../../../types/nostr-event";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 function GalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useRef<HTMLImageElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return <EmbeddedImage {...props} event={event} ref={ref} />;
 }

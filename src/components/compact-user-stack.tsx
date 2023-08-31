@@ -34,13 +34,13 @@ function UserTag({ pubkey, ...props }: { pubkey: string } & Omit<TagProps, "chil
 }
 
 export function UserAvatarStack({
-  users,
+  pubkeys,
   maxUsers,
   label = "Users",
   ...props
-}: { users: string[]; maxUsers?: number; label?: string } & FlexProps) {
+}: { pubkeys: string[]; maxUsers?: number; label?: string } & FlexProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const clamped = maxUsers ? users.slice(0, maxUsers) : users;
+  const clamped = maxUsers ? pubkeys.slice(0, maxUsers) : pubkeys;
 
   return (
     <>
@@ -49,9 +49,9 @@ export function UserAvatarStack({
         {clamped.map((pubkey) => (
           <UserAvatar key={pubkey} pubkey={pubkey} size="2xs" />
         ))}
-        {clamped.length !== users.length && (
+        {clamped.length !== pubkeys.length && (
           <Text mx="1" fontSize="sm" lineHeight={0}>
-            +{users.length - clamped.length}
+            +{pubkeys.length - clamped.length}
           </Text>
         )}
       </Flex>
@@ -64,7 +64,7 @@ export function UserAvatarStack({
           <ModalCloseButton />
           <ModalBody px="4" pb="4" pt="0">
             <Flex gap="2" wrap="wrap">
-              {users.map((pubkey) => (
+              {pubkeys.map((pubkey) => (
                 <UserTag key={pubkey} pubkey={pubkey} p="2" fontWeight="bold" fontSize="md" />
               ))}
             </Flex>

@@ -4,12 +4,10 @@ import { Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
 
-import HomeView from "./views/home";
+import HomeView from "./views/home/index";
 import SettingsView from "./views/settings";
 import LoginView from "./views/login";
 import ProfileView from "./views/profile";
-import FollowingTab from "./views/home/following-tab";
-import GlobalTab from "./views/home/global-tab";
 import HashTagView from "./views/hashtag";
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
@@ -29,13 +27,19 @@ import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
 import ToolsHomeView from "./views/tools";
 import UserAboutTab from "./views/user/about";
-import UserLikesTab from "./views/user/likes";
+import UserReactionsTab from "./views/user/reactions";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import UserStreamsTab from "./views/user/streams";
 import { PageProviders } from "./providers";
 import RelaysView from "./views/relays";
-import RelayReviewsView from "./views/relays/reviews";
 import RelayView from "./views/relays/relay";
+import RelayReviewsView from "./views/relays/reviews";
+import ListsView from "./views/lists";
+import ListView from "./views/lists/list";
+import UserListsTab from "./views/user/lists";
+
+import "./services/emoji-packs";
+import BrowseListView from "./views/lists/browse";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -93,7 +97,8 @@ const router = createHashRouter([
           { path: "notes", element: <UserNotesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
-          { path: "likes", element: <UserLikesTab /> },
+          { path: "likes", element: <UserReactionsTab /> },
+          { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
           { path: "relays", element: <UserRelaysTab /> },
@@ -118,6 +123,14 @@ const router = createHashRouter([
         children: [{ path: "", element: <ToolsHomeView /> }],
       },
       {
+        path: "lists",
+        children: [
+          { path: "", element: <ListsView /> },
+          { path: "browse", element: <BrowseListView /> },
+          { path: ":addr", element: <ListView /> },
+        ],
+      },
+      {
         path: "streams",
         element: <StreamsView />,
       },
@@ -126,11 +139,6 @@ const router = createHashRouter([
       {
         path: "",
         element: <HomeView />,
-        children: [
-          { path: "", element: <FollowingTab /> },
-          { path: "following", element: <FollowingTab /> },
-          { path: "global", element: <GlobalTab /> },
-        ],
       },
     ],
   },

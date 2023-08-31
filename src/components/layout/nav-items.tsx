@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   ChatIcon,
   FeedIcon,
+  ListIcon,
   LiveStreamIcon,
   MapIcon,
   NotificationIcon,
-  ProfileIcon,
   RelayIcon,
   SearchIcon,
   SettingsIcon,
@@ -44,6 +44,9 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       </Box>
       <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />} justifyContent="flex-start">
         Streams
+      </Button>
+      <Button onClick={() => navigate("/lists")} leftIcon={<ListIcon />} justifyContent="flex-start">
+        Lists
       </Button>
       <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />} justifyContent="flex-start">
         Map

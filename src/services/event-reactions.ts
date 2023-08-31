@@ -1,8 +1,8 @@
-import { Kind } from "nostr-tools";
+import { Kind, nip25 } from "nostr-tools";
+
 import { NostrRequest } from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import { SuperMap } from "../classes/super-map";
-import { getReferences } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
 
 type eventId = string;
@@ -26,11 +26,10 @@ class EventReactionsService {
 
   handleEvent(event: NostrEvent) {
     if (event.kind !== Kind.Reaction) return;
-    const refs = getReferences(event);
-    const id = refs.events[0];
-    if (!id) return;
+    const pointer = nip25.getReactedEventPointer(event);
+    if (!pointer?.id) return;
 
-    const subject = this.subjects.get(id);
+    const subject = this.subjects.get(pointer.id);
     if (!subject.value) {
       subject.next([event]);
     } else if (!subject.value.some((e) => e.id === event.id)) {

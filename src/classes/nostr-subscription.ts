@@ -3,8 +3,7 @@ import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import { IncomingEOSE, Relay } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import { Subject } from "./subject";
-
-let lastId = 10000;
+import { nanoid } from "nanoid";
 
 export class NostrSubscription {
   static INIT = "initial";
@@ -20,7 +19,7 @@ export class NostrSubscription {
   onEOSE = new Subject<IncomingEOSE>();
 
   constructor(relayUrl: string, query?: NostrRequestFilter, name?: string) {
-    this.id = String(name || lastId++);
+    this.id = nanoid();
     this.query = query;
     this.name = name;
 

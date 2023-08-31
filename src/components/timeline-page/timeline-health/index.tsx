@@ -24,6 +24,7 @@ import { NoteLink } from "../../note-link";
 import dayjs from "dayjs";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { RelayIcon } from "../../icons";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 function EventRow({
   event,
@@ -34,7 +35,7 @@ function EventRow({
   const seenRelays = useSubject(sub);
 
   const ref = useRef<HTMLTableRowElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   const { colorMode } = useColorMode();
   const yes = colorMode === "light" ? "green.200" : "green.800";
@@ -43,7 +44,10 @@ function EventRow({
   const [broadcasting, setBroadcasting] = useState(false);
   const broadcast = () => {
     setBroadcasting(true);
-    const pub = new NostrPublishAction("Broadcast", relays, event);
+    const missingRelays = relays.filter((r) => !seenRelays.includes(r));
+    if (missingRelays.length === 0) return;
+
+    const pub = new NostrPublishAction("Broadcast", missingRelays, event);
 
     pub.onResult.subscribe((result) => {
       if (result.status) {

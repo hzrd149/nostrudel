@@ -21,6 +21,9 @@ import { ExternalLinkIcon } from "../../../components/icons";
 import RelayReviewForm from "./relay-review-form";
 import RelayReviews from "./relay-reviews";
 import RelayNotes from "./relay-notes";
+import PeopleListProvider from "../../../providers/people-list-provider";
+import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
+import { RelayFavicon } from "../../../components/relay-favicon";
 
 function RelayPage({ relay }: { relay: string }) {
   const { info } = useRelayInfo(relay);
@@ -28,8 +31,9 @@ function RelayPage({ relay }: { relay: string }) {
 
   return (
     <Flex direction="column" alignItems="stretch" gap="2" p="2">
-      <Flex gap="2" alignItems="center" wrap="wrap" justifyContent="space-between">
-        <Heading isTruncated size={{ base: "md", sm: "lg" }}>
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <RelayFavicon relay={relay} />
+        <Heading isTruncated size={{ base: "md", sm: "lg" }} mr="auto">
           {relay}
           {info?.payments_url && (
             <Tag
@@ -68,13 +72,15 @@ function RelayPage({ relay }: { relay: string }) {
 
         <TabPanels>
           <TabPanel py="2" px="0">
-            {showReviewForm.isOpen ? (
-              <RelayReviewForm onClose={showReviewForm.onClose} relay={relay} />
-            ) : (
-              <Button colorScheme="brand" ml="aut" mb="2" onClick={showReviewForm.onOpen}>
-                Write review
-              </Button>
-            )}
+            <Flex gap="2">
+              <PeopleListSelection />
+              {!showReviewForm.isOpen && (
+                <Button colorScheme="brand" ml="auto" mb="2" onClick={showReviewForm.onOpen}>
+                  Write review
+                </Button>
+              )}
+            </Flex>
+            {showReviewForm.isOpen && <RelayReviewForm onClose={showReviewForm.onClose} relay={relay} my="4" />}
             <RelayReviews relay={relay} />
           </TabPanel>
           <TabPanel py="2" px="0">
@@ -94,5 +100,9 @@ export default function RelayView() {
 
   if (!safeUrl) return <>Bad relay url</>;
 
-  return <RelayPage relay={safeUrl} />;
+  return (
+    <PeopleListProvider initList="global">
+      <RelayPage relay={safeUrl} />
+    </PeopleListProvider>
+  );
 }

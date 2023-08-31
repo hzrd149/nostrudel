@@ -165,8 +165,6 @@ export function RelayShareButton({
       };
 
       const signed = await requestSignature(draft);
-      if (!signed) return;
-
       const post = new NostrPublishAction("Share Relay", writeRelays, signed);
       await post.onComplete;
     } catch (e) {
@@ -186,8 +184,19 @@ export function RelayShareButton({
   );
 }
 
-export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
+export function RelayPaidTag({ url }: { url: string }) {
   const { info } = useRelayInfo(url);
+
+  return (
+    info?.payments_url && (
+      <Tag as="a" variant="solid" colorScheme="green" size="sm" ml="2" target="_blank" href={info.payments_url}>
+        Paid relay
+      </Tag>
+    )
+  );
+}
+
+export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
   return (
     <>
       <Card variant="outline" {...props}>
@@ -195,11 +204,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           <RelayFavicon relay={url} size="xs" />
           <Heading size="md" isTruncated>
             <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
-            {info?.payments_url && (
-              <Tag as="a" variant="solid" colorScheme="green" size="sm" ml="2" target="_blank" href={info.payments_url}>
-                Paid
-              </Tag>
-            )}
+            <RelayPaidTag url={url} />
           </Heading>
         </CardHeader>
         <CardBody px="2" py="0" display="flex" flexDirection="column" gap="2">

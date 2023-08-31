@@ -5,18 +5,15 @@ function useSubject<Value extends unknown>(subject: PersistentSubject<Value>): V
 function useSubject<Value extends unknown>(subject?: PersistentSubject<Value>): Value | undefined;
 function useSubject<Value extends unknown>(subject?: Subject<Value>): Value | undefined;
 function useSubject<Value extends unknown>(subject?: Subject<Value>) {
-  const [value, setValue] = useState(subject?.value);
+  const [_, setValue] = useState(subject?.value);
   useEffect(() => {
-    const handler = (value: Value) => setValue(value);
-    setValue(subject?.value);
-    subject?.subscribe(handler);
-
+    subject?.subscribe(setValue, undefined, false);
     return () => {
-      subject?.unsubscribe(handler);
+      subject?.unsubscribe(setValue, undefined);
     };
   }, [subject, setValue]);
 
-  return value;
+  return subject?.value;
 }
 
 export default useSubject;

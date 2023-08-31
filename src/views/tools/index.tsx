@@ -1,7 +1,5 @@
-import { Avatar, Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { ToolsIcon } from "../../components/icons";
-import OpenGraphCard from "../../components/open-graph-card";
+import { Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { ExternalLinkIcon, ToolsIcon } from "../../components/icons";
 
 export default function ToolsHomeView() {
   return (
@@ -30,12 +28,30 @@ export default function ToolsHomeView() {
         </Button>
         <Button
           as={Link}
+          href="https://nostr-delete.vercel.app/"
+          isExternal
+          target="_blank"
+          leftIcon={<ExternalLinkIcon />}
+        >
+          Nostr Event Deletion
+        </Button>
+        <Button
+          as={Link}
           href="https://nostrdebug.com/"
           isExternal
           target="_blank"
           leftIcon={<Image src="https://nostrdebug.com/favicon.ico" h="1.5em" />}
         >
           Nostr Debug
+        </Button>
+        <Button
+          as={Link}
+          href="https://metadata.nostr.com/"
+          isExternal
+          target="_blank"
+          leftIcon={<Image src="https://metadata.nostr.com/img/git.png" h="1.5em" />}
+        >
+          Nostr Profile Manager
         </Button>
         <Button
           as={Link}

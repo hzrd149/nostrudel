@@ -16,7 +16,7 @@ import {
 import dayjs from "dayjs";
 
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { getReferences } from "../../helpers/nostr/event";
+import { getReferences } from "../../helpers/nostr/events";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
@@ -26,7 +26,7 @@ import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
 import { ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
-import { UserAvatarStack } from "../user-avatar-stack";
+import { UserAvatarStack } from "../compact-user-stack";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -78,16 +78,19 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   };
 
   const handleSubmit = async () => {
-    setWaiting(true);
-    let updatedDraft = finalizeNote(draft);
-    const contentMentions = getContentMentions(draft.content);
-    updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
-    const signed = await requestSignature(updatedDraft);
-    setWaiting(false);
-    if (!signed) return;
+    try {
+      setWaiting(true);
+      let updatedDraft = finalizeNote(draft);
+      const contentMentions = getContentMentions(draft.content);
+      updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
+      const signed = await requestSignature(updatedDraft);
+      setWaiting(false);
 
-    const pub = new NostrPublishAction("Post", writeRelays, signed);
-    setPublishAction(pub);
+      const pub = new NostrPublishAction("Post", writeRelays, signed);
+      setPublishAction(pub);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
   };
 
   const refs = getReferences(draft);
@@ -148,7 +151,7 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
               isLoading={uploading}
             />
           </Flex>
-          <UserAvatarStack label="Mentions" users={getContentMentions(draft.content)} />
+          <UserAvatarStack label="Mentions" pubkeys={getContentMentions(draft.content)} />
           {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
           <Button onClick={onClose}>Cancel</Button>
           <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>

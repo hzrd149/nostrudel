@@ -6,16 +6,16 @@ import { UserCard, UserCardProps } from "./components/user-card";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr/event";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useMemo, useRef } from "react";
+import { getEventUID } from "../../helpers/nostr/events";
 
 function FollowerItem({ event, ...props }: { event: Event } & Omit<UserCardProps, "pubkey">) {
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
     <div ref={ref}>
@@ -29,7 +29,7 @@ export default function UserFollowersTab() {
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelayUrls(contextRelays);
 
-  const timeline = useTimelineLoader(`${truncatedId(pubkey)}-followers`, readRelays, {
+  const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],
     kinds: [Kind.Contacts],
   });
