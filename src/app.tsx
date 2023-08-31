@@ -77,7 +77,6 @@ const RootPage = () => {
 
   return (
     <PageProviders>
-      <Global styles={overrideReactTextareaAutocompleteStyles} />
       <Layout>
         <ScrollRestoration />
         <Suspense fallback={<Spinner />}>
@@ -173,6 +172,7 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
+    <Global styles={overrideReactTextareaAutocompleteStyles} />
     <Suspense fallback={<Spinner />}>
       <RouterProvider router={router} />
     </Suspense>

@@ -38,9 +38,15 @@ class EmojiPacksService {
     return sub;
   }
 
-  requestUserEmojiList(pubkey: string, relays: string[]) {
+  requestUserEmojiList(pubkey: string, relays: string[], alwaysFetch = false) {
     const sub = this.userEmojiPacks.get(pubkey);
-    const request = replaceableEventLoaderService.requestEvent(relays, USER_EMOJI_LIST_KIND, pubkey);
+    const request = replaceableEventLoaderService.requestEvent(
+      relays,
+      USER_EMOJI_LIST_KIND,
+      pubkey,
+      undefined,
+      alwaysFetch,
+    );
 
     if (!sub.value) {
       sub.connectWithHandler(request, (event, next) => {

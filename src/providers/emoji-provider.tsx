@@ -25,7 +25,7 @@ export function DefaultEmojiProvider({ children }: PropsWithChildren) {
 
 export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useCurrentAccount();
-  const userPacks = useUserEmojiPacks(pubkey || account?.pubkey);
+  const userPacks = useUserEmojiPacks(pubkey || account?.pubkey, [], true);
   const events = useReplaceableEvents(userPacks?.packs);
 
   const emojis = events
