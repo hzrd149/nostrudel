@@ -25,5 +25,7 @@ export function getLudEndpoint(addressOrLNURL: string) {
   if (addressOrLNURL.includes("@")) {
     return parseLub16Address(addressOrLNURL);
   }
-  return parseLNURL(addressOrLNURL);
+  try {
+    return parseLNURL(addressOrLNURL);
+  } catch (e) {}
 }
