@@ -13,7 +13,7 @@ import { getEventCoordinate } from "../helpers/nostr/events";
 type Pubkey = string;
 type Relay = string;
 
-export function getReadableCoordinate(kind: number, pubkey: string, d?: string) {
+export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
 }
 export function createCoordinate(kind: number, pubkey: string, d?: string) {

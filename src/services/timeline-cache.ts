@@ -1,6 +1,6 @@
 import { TimelineLoader } from "../classes/timeline-loader";
 
-const MAX_CACHE = 4;
+const MAX_CACHE = 10;
 
 class TimelineCacheService {
   private timelines = new Map<string, TimelineLoader>();
@@ -13,9 +13,18 @@ class TimelineCacheService {
       this.timelines.set(key, timeline);
     }
 
+    // add or move the timelines key to the top of the queue
     this.cacheQueue = this.cacheQueue.filter((p) => p !== key).concat(key);
+
+    // remove any timelines at the end of the queue
     while (this.cacheQueue.length > MAX_CACHE) {
-      this.cacheQueue.shift();
+      const deleteKey = this.cacheQueue.shift();
+      if (!deleteKey) break;
+      const deadTimeline = this.timelines.get(deleteKey);
+      if (deadTimeline) {
+        this.timelines.delete(deleteKey);
+        deadTimeline.cleanup();
+      }
     }
 
     return timeline;

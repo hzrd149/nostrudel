@@ -16,8 +16,9 @@ export default class EventStore {
     return Array.from(this.events.values()).sort((a, b) => b.created_at - a.created_at);
   }
 
-  onEvent = new Subject<NostrEvent>();
-  onClear = new Subject();
+  onEvent = new Subject<NostrEvent>(undefined, false);
+  onDelete = new Subject<string>(undefined, false);
+  onClear = new Subject(undefined, false);
 
   addEvent(event: NostrEvent) {
     const id = getEventUID(event);
@@ -30,17 +31,25 @@ export default class EventStore {
   getEvent(id: string) {
     return this.events.get(id);
   }
+  deleteEvent(id: string) {
+    if (this.events.has(id)) {
+      this.events.delete(id);
+      this.onDelete.next(id);
+    }
+  }
 
   clear() {
     this.events.clear();
-    this.onClear.next(null);
+    this.onClear.next(undefined);
   }
 
   connect(other: EventStore) {
     other.onEvent.subscribe(this.addEvent, this);
+    other.onDelete.subscribe(this.deleteEvent, this);
   }
   disconnect(other: EventStore) {
     other.onEvent.unsubscribe(this.addEvent, this);
+    other.onDelete.unsubscribe(this.deleteEvent, this);
   }
 
   getFirstEvent(nth = 0, filter?: EventFilter) {
