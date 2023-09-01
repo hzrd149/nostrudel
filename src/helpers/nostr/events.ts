@@ -187,3 +187,27 @@ export function parseCoordinate(a: string): CustomEventPointer | null {
     identifier: d,
   };
 }
+
+export function draftAddCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string, relay?: string) {
+  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("event already in list");
+
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, relay ? ["a", coordinate, relay] : ["a", coordinate]],
+  };
+
+  return draft;
+}
+
+export function draftRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string) {
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "a" && t[1] === coordinate)),
+  };
+
+  return draft;
+}

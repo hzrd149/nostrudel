@@ -50,6 +50,7 @@ const tabs = [
   { label: "Following", path: "following" },
   { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
+  { label: "Emoji Packs", path: "emojis" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },
 ];
@@ -116,7 +117,9 @@ const UserView = () => {
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
               {tabs.map(({ label }) => (
-                <Tab key={label}>{label}</Tab>
+                <Tab key={label} whiteSpace="pre">
+                  {label}
+                </Tab>
               ))}
             </TabList>
 

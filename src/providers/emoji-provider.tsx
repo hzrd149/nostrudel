@@ -1,9 +1,10 @@
 import { PropsWithChildren, createContext, useContext } from "react";
 import { lib } from "emojilib";
-import useUserEmojiPacks from "../hooks/use-users-emoji-packs";
 import useReplaceableEvents from "../hooks/use-replaceable-events";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { isEmojiTag } from "../types/nostr-event";
+import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
+import { getPackCordsFromFavorites } from "../helpers/nostr/emoji-packs";
 
 const defaultEmojis = Object.entries(lib).map(([name, emojiObject]) => ({
   ...emojiObject,
@@ -25,8 +26,8 @@ export function DefaultEmojiProvider({ children }: PropsWithChildren) {
 
 export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useCurrentAccount();
-  const userPacks = useUserEmojiPacks(pubkey || account?.pubkey, [], true);
-  const events = useReplaceableEvents(userPacks?.packs);
+  const favoritePacks = useFavoriteEmojiPacks(pubkey || account?.pubkey, [], true);
+  const events = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
 
   const emojis = events
     .map((event) =>

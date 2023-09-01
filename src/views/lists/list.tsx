@@ -54,7 +54,7 @@ export default function ListView() {
   return (
     <Flex direction="column" px="2" pt="2" pb="8" overflowY="auto" overflowX="hidden" h="full" gap="2">
       <Flex gap="2" alignItems="center">
-        <Button as={RouterList} to="/lists" leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
         </Button>
 

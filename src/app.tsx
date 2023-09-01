@@ -1,6 +1,8 @@
 import React, { Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
+import { css, Global } from "@emotion/react";
+
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
 
@@ -38,9 +40,11 @@ import ListsView from "./views/lists";
 import ListView from "./views/lists/list";
 import UserListsTab from "./views/user/lists";
 
-import "./services/emoji-packs";
 import BrowseListView from "./views/lists/browse";
-import { css, Global } from "@emotion/react";
+import EmojiPacksBrowseView from "./views/emoji-packs/browse";
+import EmojiPackView from "./views/emoji-packs/pack";
+import UserEmojiPacksTab from "./views/user/emoji-packs";
+import EmojiPacksView from "./views/emoji-packs";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -127,6 +131,7 @@ const router = createHashRouter([
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
+          { path: "emojis", element: <UserEmojiPacksTab /> },
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
         ],
@@ -154,6 +159,14 @@ const router = createHashRouter([
           { path: "", element: <ListsView /> },
           { path: "browse", element: <BrowseListView /> },
           { path: ":addr", element: <ListView /> },
+        ],
+      },
+      {
+        path: "emojis",
+        children: [
+          { path: "", element: <EmojiPacksView /> },
+          { path: "browse", element: <EmojiPacksBrowseView /> },
+          { path: ":addr", element: <EmojiPackView /> },
         ],
       },
       {

@@ -1,5 +1,16 @@
 import { Link as RouterLink } from "react-router-dom";
-import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
@@ -16,6 +27,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { useRef } from "react";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
+import ListMenu from "./list-menu";
 
 function ListCardRender({ event }: { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
@@ -29,12 +41,16 @@ function ListCardRender({ event }: { event: NostrEvent }) {
 
   return (
     <Card ref={ref}>
-      <CardHeader p="2" pb="0">
+      <CardHeader display="flex" alignItems="center" p="2" pb="0">
         <Heading size="md">
           <Link as={RouterLink} to={`/lists/${link}`}>
             {getListName(event)}
           </Link>
         </Heading>
+        <ButtonGroup size="sm" ml="auto">
+          <ListFavoriteButton list={event} />
+          <ListMenu list={event} aria-label="list menu" />
+        </ButtonGroup>
       </CardHeader>
       <CardBody p="2">
         <Flex gap="2">
@@ -65,7 +81,6 @@ function ListCardRender({ event }: { event: NostrEvent }) {
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
-        <ListFavoriteButton list={event} size="sm" />
         <EventRelays event={event} ml="auto" />
       </CardFooter>
     </Card>

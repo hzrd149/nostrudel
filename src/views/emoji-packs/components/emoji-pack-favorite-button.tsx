@@ -9,32 +9,37 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
-import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
+import { USER_EMOJI_LIST_KIND } from "../../../helpers/nostr/emoji-packs";
+import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
 
-export default function ListFavoriteButton({
-  list,
+export default function EmojiPackFavoriteButton({
+  pack,
   ...props
-}: { list: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
+}: { pack: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
-  const { list: favoriteList } = useFavoriteLists();
-  const coordinate = getEventCoordinate(list);
-  const isFavorite = favoriteList?.tags.some((t) => t[1] === coordinate);
+  const favoritePacks = useFavoriteEmojiPacks();
+  const coordinate = getEventCoordinate(pack);
+  const isFavorite = favoritePacks?.tags.some((t) => t[1] === coordinate);
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
-    const prev: DraftNostrEvent = favoriteList || {
-      kind: 30078,
+    const prev: DraftNostrEvent = favoritePacks || {
+      kind: USER_EMOJI_LIST_KIND,
       created_at: dayjs().unix(),
       content: "",
-      tags: [["d", FAVORITE_LISTS_IDENTIFIER]],
+      tags: [],
     };
 
     try {
       setLoading(true);
       const draft = isFavorite ? draftRemoveCoordinate(prev, coordinate) : draftAddCoordinate(prev, coordinate);
       const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Favorite list", clientRelaysService.getWriteUrls(), signed);
+      const pub = new NostrPublishAction(
+        isFavorite ? "Unfavorite Emoji pack" : "Favorite emoji pack",
+        clientRelaysService.getWriteUrls(),
+        signed,
+      );
       replaceableEventLoaderService.handleEvent(signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -45,7 +50,8 @@ export default function ListFavoriteButton({
   return (
     <IconButton
       icon={isFavorite ? <StarFullIcon /> : <StarEmptyIcon />}
-      aria-label={isFavorite ? "Favorite list" : "Unfavorite list"}
+      aria-label={isFavorite ? "Unfavorite" : "Favorite"}
+      title={isFavorite ? "Unfavorite" : "Favorite"}
       onClick={handleClick}
       isLoading={loading}
       color={isFavorite ? "yellow.400" : undefined}

@@ -1,26 +1,26 @@
 import { Button, Divider, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import { DislikeIcon, LikeIcon } from "./icons";
 import { useCurrentAccount } from "../hooks/use-current-account";
-import useUserEmojiPacks from "../hooks/use-users-emoji-packs";
-import useEmojiPack from "../hooks/use-emoji-pack";
+import useReplaceableEvent from "../hooks/use-replaceable-event";
+import { getEmojisFromPack, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
+import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
 
 export type ReactionPickerProps = {
   onSelect: (emoji: string, url?: string) => void;
 };
 
-function EmojiPack({ addr, onSelect }: { addr: string; onSelect: ReactionPickerProps["onSelect"] }) {
-  const pack = useEmojiPack(addr);
-
+function EmojiPack({ cord, onSelect }: { cord: string; onSelect: ReactionPickerProps["onSelect"] }) {
+  const pack = useReplaceableEvent(cord);
   if (!pack) return null;
 
   return (
     <>
       <Flex gap="2" alignItems="center">
-        <Text whiteSpace="pre">{pack.name}</Text>
+        <Text whiteSpace="pre">{getPackName(pack)}</Text>
         <Divider />
       </Flex>
       <Flex wrap="wrap" gap="2">
-        {pack.emojis.map((emoji) => (
+        {getEmojisFromPack(pack).map((emoji) => (
           <IconButton
             key={emoji.name}
             icon={<Image src={emoji.url} height="1.2rem" />}
@@ -38,7 +38,7 @@ function EmojiPack({ addr, onSelect }: { addr: string; onSelect: ReactionPickerP
 
 export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
   const account = useCurrentAccount();
-  const { packs = [] } = useUserEmojiPacks(account?.pubkey) ?? {};
+  const favoritePacks = useFavoriteEmojiPacks(account?.pubkey);
 
   return (
     <Flex direction="column" gap="2">
@@ -72,9 +72,10 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
           </Button>
         </Flex>
       </Flex>
-      {packs.map((addr) => (
-        <EmojiPack key={addr} addr={addr} onSelect={onSelect} />
-      ))}
+      {favoritePacks &&
+        getPackCordsFromFavorites(favoritePacks).map((cord) => (
+          <EmojiPack key={cord} cord={cord} onSelect={onSelect} />
+        ))}
     </Flex>
   );
 }
