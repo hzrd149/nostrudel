@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import {
   Box,
   Button,
@@ -21,9 +22,10 @@ import {
   ModalOverlay,
   Tag,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
+import styled from "@emotion/styled";
 import { Link as RouterLink } from "react-router-dom";
+
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import { CodeIcon, RepostIcon } from "../../../components/icons";
@@ -34,13 +36,8 @@ import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
-import styled from "@emotion/styled";
-import { PropsWithChildren, useCallback } from "react";
 import RawJson from "../../../components/debug-modals/raw-json";
-import { DraftNostrEvent } from "../../../types/nostr-event";
-import dayjs from "dayjs";
-import { useSigningContext } from "../../../providers/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { RelayShareButton } from "./relay-share-button";
 
 const B = styled.span`
   font-weight: bold;
@@ -143,44 +140,6 @@ export function RelayDebugButton({ url, ...props }: { url: string } & Omit<IconB
         </Modal>
       )}
     </>
-  );
-}
-
-export function RelayShareButton({
-  relay,
-  ...props
-}: { relay: string } & Omit<IconButtonProps, "icon" | "aria-label">) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
-
-  const recommendRelay = useCallback(async () => {
-    try {
-      const writeRelays = clientRelaysService.getWriteUrls();
-
-      const draft: DraftNostrEvent = {
-        kind: 2,
-        content: relay,
-        tags: [],
-        created_at: dayjs().unix(),
-      };
-
-      const signed = await requestSignature(draft);
-      const post = new NostrPublishAction("Share Relay", writeRelays, signed);
-      await post.onComplete;
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  }, []);
-
-  return (
-    <IconButton
-      icon={<RepostIcon />}
-      aria-label="Recommend Relay"
-      title="Recommend Relay"
-      onClick={recommendRelay}
-      variant="ghost"
-      {...props}
-    />
   );
 }
 

@@ -9,7 +9,7 @@ import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import useUserLists from "../../hooks/use-user-lists";
 import NewListModal from "./components/new-list-modal";
-import { getSharableEventNaddr } from "../../helpers/nip19";
+import { getSharableEventAddress } from "../../helpers/nip19";
 import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 
@@ -89,7 +89,7 @@ function ListsPage() {
         <NewListModal
           isOpen
           onClose={newList.onClose}
-          onCreated={(list) => navigate(`/lists/${getSharableEventNaddr(list)}`)}
+          onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}
         />
       )}
     </Flex>

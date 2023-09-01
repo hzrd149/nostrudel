@@ -9,11 +9,12 @@ import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { RelayDebugButton, RelayJoinAction, RelayMetadata, RelayShareButton } from "../relays/components/relay-card";
+import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../relays/components/relay-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useRelayInfo } from "../../hooks/use-relay-info";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { RelayShareButton } from "../relays/components/relay-share-button";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
   const { info } = useRelayInfo(url);

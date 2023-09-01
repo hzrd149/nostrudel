@@ -34,7 +34,7 @@ function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string 
   const link = card.tags.find((t) => t[0] === "r")?.[1];
 
   return (
-    <Card as={LinkBox} {...props}>
+    <Card as={LinkBox} variant="outline" {...props}>
       {image && <Image src={image} />}
       {title && (
         <CardHeader p="2">
@@ -42,10 +42,10 @@ function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string 
         </CardHeader>
       )}
       <CardBody p="2">
-        <NoteContents event={card} noOpenGraphLinks />
+        <NoteContents event={card} />
         {link && (
           <LinkOverlay isExternal href={link} color="blue.500">
-            {link}
+            {!image && link}
           </LinkOverlay>
         )}
       </CardBody>

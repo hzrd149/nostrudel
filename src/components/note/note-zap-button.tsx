@@ -11,6 +11,7 @@ import { LightningIcon } from "../icons";
 import ZapModal from "../zap-modal";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
+import { getEventUID } from "../../helpers/nostr/events";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;
@@ -30,7 +31,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
   const handleInvoice = async (invoice: string) => {
     onClose();
     await requestPay(invoice);
-    eventZapsService.requestZaps(event.id, clientRelaysService.getReadUrls(), true);
+    eventZapsService.requestZaps(getEventUID(event), clientRelaysService.getReadUrls(), true);
   };
 
   const total = totalZaps(zaps);

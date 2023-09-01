@@ -1,17 +1,17 @@
 import dayjs from "dayjs";
 import { Button, Card, CardBody, CardHeader, Spacer, useDisclosure } from "@chakra-ui/react";
 
-import { NoteContents } from "./note-contents";
-import { NostrEvent } from "../../types/nostr-event";
-import { UserAvatarLink } from "../user-avatar-link";
-import { UserLink } from "../user-link";
-import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
-import useSubject from "../../hooks/use-subject";
-import appSettings from "../../services/settings/app-settings";
-import EventVerificationIcon from "../event-verification-icon";
-import { TrustProvider } from "../../providers/trust";
-import { NoteLink } from "../note-link";
-import { ArrowDownSIcon, ArrowUpSIcon } from "../icons";
+import { NoteContents } from "../../note/note-contents";
+import { NostrEvent } from "../../../types/nostr-event";
+import { UserAvatarLink } from "../../user-avatar-link";
+import { UserLink } from "../../user-link";
+import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
+import useSubject from "../../../hooks/use-subject";
+import appSettings from "../../../services/settings/app-settings";
+import EventVerificationIcon from "../../event-verification-icon";
+import { TrustProvider } from "../../../providers/trust";
+import { NoteLink } from "../../note-link";
+import { ArrowDownSIcon, ArrowUpSIcon } from "../../icons";
 
 export default function EmbeddedNote({ event }: { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);

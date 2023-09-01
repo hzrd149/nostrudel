@@ -50,6 +50,7 @@ const tabs = [
   { label: "Following", path: "following" },
   { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
+  { label: "Goals", path: "goals" },
   { label: "Emoji Packs", path: "emojis" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },

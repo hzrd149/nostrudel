@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { truncatedId } from "../helpers/nostr/events";
 import { nip19 } from "nostr-tools";
 import { getSharableNoteId } from "../helpers/nip19";
 
@@ -14,7 +13,7 @@ export const NoteLink = ({ children, noteId, color = "blue.500", ...props }: Not
 
   return (
     <Link as={RouterLink} to={`/n/${encoded}`} color={color} {...props}>
-      {children || truncatedId(nip19.noteEncode(noteId))}
+      {children || nip19.noteEncode(noteId)}
     </Link>
   );
 };

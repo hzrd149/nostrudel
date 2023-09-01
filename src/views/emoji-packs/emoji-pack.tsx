@@ -92,7 +92,6 @@ export default function EmojiPackView() {
           <Divider />
           <Card variant="elevated">
             <CardBody p="2">
-              {/* <Flex gap="2" wrap="wrap"> */}
               <SimpleGrid columns={{ base: 2, sm: 3, md: 2, lg: 4, xl: 6 }} gap="2">
                 {emojis.map(({ name, url }) => (
                   <Flex gap="2" alignItems="center">
@@ -101,7 +100,6 @@ export default function EmojiPackView() {
                   </Flex>
                 ))}
               </SimpleGrid>
-              {/* </Flex> */}
             </CardBody>
           </Card>
         </>

@@ -3,7 +3,7 @@ import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 import { nip19 } from "nostr-tools";
 
-import { getSharableNoteId } from "../../helpers/nip19";
+import { getSharableEventAddress } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
@@ -39,19 +39,20 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
     });
   }, []);
 
+  const address = getSharableEventAddress(event);
+
   return (
     <>
       <MenuIconButton {...props}>
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
         </MenuItem>
-        <MenuItem
-          onClick={() => window.open(buildAppSelectUrl(getSharableNoteId(event.id)), "_blank")}
-          icon={<ExternalLinkIcon />}
-        >
-          View in app...
-        </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + getSharableNoteId(event.id))} icon={<RepostIcon />}>
+        {address && (
+          <MenuItem onClick={() => window.open(buildAppSelectUrl(address), "_blank")} icon={<ExternalLinkIcon />}>
+            View in app...
+          </MenuItem>
+        )}
+        <MenuItem onClick={() => copyToClipboard("nostr:" + address)} icon={<RepostIcon />}>
           Copy Share Link
         </MenuItem>
         {noteId && (

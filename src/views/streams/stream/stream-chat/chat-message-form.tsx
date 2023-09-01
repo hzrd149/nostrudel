@@ -78,7 +78,7 @@ export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
       {zapModal.isOpen && (
         <ZapModal
           isOpen
-          stream={stream}
+          event={stream.event}
           pubkey={stream.host}
           onInvoice={async (invoice) => {
             reset();

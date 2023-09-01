@@ -37,14 +37,18 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import ListsView from "./views/lists";
-import ListView from "./views/lists/list";
+import ListDetailsView from "./views/lists/list-details";
 import UserListsTab from "./views/user/lists";
 
 import BrowseListView from "./views/lists/browse";
 import EmojiPacksBrowseView from "./views/emoji-packs/browse";
-import EmojiPackView from "./views/emoji-packs/pack";
+import EmojiPackView from "./views/emoji-packs/emoji-pack";
 import UserEmojiPacksTab from "./views/user/emoji-packs";
 import EmojiPacksView from "./views/emoji-packs";
+import GoalsView from "./views/goals";
+import GoalsBrowseView from "./views/goals/browse";
+import GoalDetailsView from "./views/goals/goal-details";
+import UserGoalsTab from "./views/user/goals";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -131,6 +135,7 @@ const router = createHashRouter([
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
+          { path: "goals", element: <UserGoalsTab /> },
           { path: "emojis", element: <UserEmojiPacksTab /> },
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
@@ -158,7 +163,15 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ListsView /> },
           { path: "browse", element: <BrowseListView /> },
-          { path: ":addr", element: <ListView /> },
+          { path: ":addr", element: <ListDetailsView /> },
+        ],
+      },
+      {
+        path: "goals",
+        children: [
+          { path: "", element: <GoalsView /> },
+          { path: "browse", element: <GoalsBrowseView /> },
+          { path: ":id", element: <GoalDetailsView /> },
         ],
       },
       {

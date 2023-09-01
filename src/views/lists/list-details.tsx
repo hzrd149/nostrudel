@@ -31,7 +31,7 @@ function useListCoordinate() {
   return parsed.data;
 }
 
-export default function ListView() {
+export default function ListDetailsView() {
   const navigate = useNavigate();
   const coordinate = useListCoordinate();
   const { deleteEvent } = useDeleteEventContext();

@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, isDTag } from "../types/nostr-event";
 import { UserAvatar } from "./user-avatar";
 import { UserLink } from "./user-link";
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
@@ -32,12 +32,14 @@ import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
 import { requestZapInvoice } from "../helpers/zaps";
 import { ParsedStream, getATag } from "../helpers/nostr/stream";
-import EmbeddedNote from "./note/embedded-note";
+import EmbeddedNote from "./embed-event/event-types/embedded-note";
 import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { useAdditionalRelayContext } from "../providers/additional-relay-context";
+import { getEventCoordinate, isReplaceable } from "../helpers/nostr/events";
+import { EmbedEvent } from "./embed-event";
 
 type FormValues = {
   amount: number;
@@ -47,7 +49,7 @@ type FormValues = {
 export type ZapModalProps = Omit<ModalProps, "children"> & {
   pubkey: string;
   event?: NostrEvent;
-  stream?: ParsedStream;
+  relays?: string[];
   initialComment?: string;
   initialAmount?: number;
   onInvoice: (invoice: string) => void;
@@ -59,7 +61,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
 export default function ZapModal({
   event,
   pubkey,
-  stream,
+  relays,
   onClose,
   initialComment,
   initialAmount,
@@ -132,8 +134,11 @@ export default function ZapModal({
             ],
           };
 
-          if (event) zapRequest.tags.push(["e", event.id]);
-          if (stream) zapRequest.tags.push(["a", getATag(stream)]);
+          if (event) {
+            if (isReplaceable(event.kind) && event.tags.some(isDTag)) {
+              zapRequest.tags.push(["a", getEventCoordinate(event)]);
+            } else zapRequest.tags.push(["e", event.id]);
+          }
 
           const signed = await requestSignature(zapRequest);
           if (signed) {
@@ -175,15 +180,7 @@ export default function ZapModal({
                 </Box>
               </Flex>
 
-              {showEventPreview && stream && (
-                <Box>
-                  <Heading size="sm" mb="2">
-                    Stream: {stream.title}
-                  </Heading>
-                  {stream.image && <Image src={stream.image} />}
-                </Box>
-              )}
-              {showEventPreview && event && <EmbeddedNote event={event} />}
+              {showEventPreview && event && <EmbedEvent event={event} />}
 
               {allowComment && (canZap || lnurlMetadata?.commentAllowed) && (
                 <Input

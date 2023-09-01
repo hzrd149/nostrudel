@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
   ButtonGroup,
   Card,
@@ -13,28 +11,23 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 
-import { UserAvatarLink } from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
-import { getEventUID } from "../../../helpers/nostr/events";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
-import EmojiPackMenu from "./emoji-pack-menu";
+import { UserAvatarLink } from "../../user-avatar-link";
+import { UserLink } from "../../user-link";
+import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
+import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
+import { NostrEvent } from "../../../types/nostr-event";
 
-export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
+export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojisFromPack(pack);
   const naddr = getSharableEventAddress(pack);
 
-  // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(pack));
-
   return (
-    <Card ref={ref} variant="outline" {...props}>
+    <Card {...props}>
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
           <Link as={RouterLink} to={`/emojis/${naddr}`}>
