@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Heading, Link, SimpleGrid, Spacer } from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -11,6 +11,7 @@ import useSubject from "../../hooks/use-subject";
 import EmojiPackCard from "./components/emoji-pack-card";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
+import EmojiPackCreateModal from "./create-modal";
 
 function UserEmojiPackMangerPage() {
   const account = useCurrentAccount()!;
@@ -67,6 +68,7 @@ function UserEmojiPackMangerPage() {
 
 export default function EmojiPacksView() {
   const account = useCurrentAccount();
+  const createModal = useDisclosure();
 
   return (
     <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
@@ -78,9 +80,15 @@ export default function EmojiPacksView() {
         <Button as={Link} href="https://emojis-iota.vercel.app/" isExternal rightIcon={<ExternalLinkIcon />}>
           Emoji pack manager
         </Button>
+        {account && (
+          <Button colorScheme="brand" onClick={createModal.onOpen}>
+            Create Emoji pack
+          </Button>
+        )}
       </Flex>
 
       {account && <UserEmojiPackMangerPage />}
+      {createModal.isOpen && <EmojiPackCreateModal isOpen={createModal.isOpen} onClose={createModal.onClose} />}
     </Flex>
   );
 }

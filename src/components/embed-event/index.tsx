@@ -1,5 +1,4 @@
 import type { DecodeResult } from "nostr-tools/lib/nip19";
-import { Link } from "@chakra-ui/react";
 
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -10,13 +9,12 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import RelayCard from "../../views/relays/components/relay-card";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
-import GoalCard from "../../views/goals/components/goal-card";
-import { getSharableEventAddress, safeDecode } from "../../helpers/nip19";
+import { safeDecode } from "../../helpers/nip19";
 import EmbeddedStream from "./event-types/embedded-stream";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import EmbeddedEmojiPack from "./event-types/embedded-emoji-pack";
-import { buildAppSelectUrl } from "../../helpers/nostr/apps";
 import EmbeddedGoal from "./event-types/embedded-goal";
+import EmbeddedUnknown from "./event-types/embedded-unknown";
 
 export function EmbedEvent({ event }: { event: NostrEvent }) {
   switch (event.kind) {
@@ -30,12 +28,7 @@ export function EmbedEvent({ event }: { event: NostrEvent }) {
       return <EmbeddedEmojiPack pack={event} />;
   }
 
-  const address = getSharableEventAddress(event);
-  return (
-    <Link href={address ? buildAppSelectUrl(address) : ""} isExternal color="blue.500">
-      {address}
-    </Link>
-  );
+  return <EmbeddedUnknown event={event} />;
 }
 
 export function EmbedEventPointer({ pointer }: { pointer: DecodeResult }) {

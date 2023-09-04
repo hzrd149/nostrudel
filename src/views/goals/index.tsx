@@ -28,7 +28,7 @@ function UserGoalsManagerPage() {
 
   if (goals.length === 0) {
     return (
-      <Center p="10" fontSize="lg" whiteSpace="pre-wrap">
+      <Center p="10" fontSize="lg" whiteSpace="pre">
         You don't have any goals,{" "}
         <Link as={RouterLink} to="/goals/browse" color="blue.500">
           Find a goal
