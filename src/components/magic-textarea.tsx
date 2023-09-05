@@ -1,8 +1,9 @@
-import React from "react";
-import { Image, Textarea, TextareaProps } from "@chakra-ui/react";
+import React, { TextareaHTMLAttributes } from "react";
+import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
   TextareaProps as ReactTextareaAutocompleteProps,
+  TriggerType,
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
@@ -70,35 +71,59 @@ const Loading: ReactTextareaAutocompleteProps<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>
 >["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
-export default function MagicTextArea({ ...props }: TextareaProps) {
+function useAutocompleteTriggers() {
   const emojis = useContextEmojis();
   const getDirectory = useUserDirectoryContext();
 
+  const triggers: TriggerType<Token> = {
+    ":": {
+      dataProvider: (token: string) => {
+        return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
+      },
+      component: Item,
+      output,
+    },
+    "@": {
+      dataProvider: async (token: string) => {
+        const dir = getUsersFromDirectory(await getDirectory());
+        return matchSorter(dir, token.trim(), { keys: ["names"] }).slice(0, 10);
+      },
+      component: Item,
+      output,
+    },
+  };
+
+  return triggers;
+}
+
+export function MagicInput({ ...props }: InputProps) {
+  const triggers = useAutocompleteTriggers();
+
   return (
-    <Textarea
+    // @ts-ignore
+    <ReactTextareaAutocomplete<Token, InputProps>
+      textAreaComponent={Input}
       {...props}
-      as={ReactTextareaAutocomplete<Token>}
       loadingComponent={Loading}
       renderToBody
       minChar={0}
-      trigger={{
-        ":": {
-          dataProvider: (token: string) => {
-            return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
-          },
-          component: Item,
-          output,
-        },
-        "@": {
-          dataProvider: async (token: string) => {
-            console.log("Getting user directory");
-            const dir = getUsersFromDirectory(await getDirectory());
-            return matchSorter(dir, token.trim(), { keys: ["names"] }).slice(0, 10);
-          },
-          component: Item,
-          output,
-        },
-      }}
+      trigger={triggers}
+    />
+  );
+}
+
+export default function MagicTextArea({ ...props }: TextareaProps) {
+  const triggers = useAutocompleteTriggers();
+
+  return (
+    // @ts-ignore
+    <ReactTextareaAutocomplete<Token, TextareaProps>
+      {...props}
+      textAreaComponent={Textarea}
+      loadingComponent={Loading}
+      renderToBody
+      minChar={0}
+      trigger={triggers}
     />
   );
 }

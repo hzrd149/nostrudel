@@ -4,13 +4,20 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Divider,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   Heading,
   Spacer,
   Spinner,
   Tag,
-  Text,
   useBreakpointValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
@@ -24,7 +31,7 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
-import { ArrowDownSIcon, ArrowUpSIcon, ExternalLinkIcon } from "../../../components/icons";
+import { ArrowLeftSIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import StreamDebugButton from "../components/stream-debug-button";
@@ -36,41 +43,31 @@ import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import StreamSatsPerMinute from "../components/stream-sats-per-minute";
 import { UserEmojiProvider } from "../../../providers/emoji-provider";
+import StreamStatusBadge from "../components/status-badge";
+import ChatMessageForm from "./stream-chat/stream-chat-form";
+import useStreamChatTimeline from "./stream-chat/use-stream-chat-timeline";
+import UserDirectoryProvider from "../../../providers/user-directory-provider";
+import StreamChatLog from "./stream-chat/chat-log";
+import TopZappers from "../components/top-zappers";
+import StreamHashtags from "../components/stream-hashtags";
+import StreamZapButton from "../components/stream-zap-button";
+import StreamGoal from "../components/stream-goal";
 
-function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode?: ChatDisplayMode }) {
+function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
-  const vertical = useBreakpointValue({ base: true, lg: false });
-  const scrollBox = useRef<HTMLDivElement | null>(null);
-  const scrollState = useScroll(scrollBox);
   const navigate = useNavigate();
 
-  const renderActions = () => {
-    const toggleButton =
-      scrollState.y === 0 ? (
-        <Button
-          size="sm"
-          onClick={() => scrollBox.current?.scroll(0, scrollBox.current.scrollHeight)}
-          leftIcon={<ArrowDownSIcon />}
-        >
-          View Chat
-        </Button>
-      ) : (
-        <Button size="sm" onClick={() => scrollBox.current?.scroll(0, 0)} leftIcon={<ArrowUpSIcon />}>
-          View Stream
-        </Button>
-      );
+  const [showChat, setShowChat] = useState(true);
 
+  const renderActions = () => {
     return (
       <ButtonGroup>
-        {vertical && toggleButton}
-        {!vertical && (
-          <CopyIconButton
-            text={location.href + "?displayMode=log&colorMode=dark"}
-            aria-label="Copy chat log URL"
-            title="Copy chat log URL"
-            size="sm"
-          />
-        )}
+        <CopyIconButton
+          text={location.href + "?displayMode=log&colorMode=dark"}
+          aria-label="Copy chat log URL"
+          title="Copy chat log URL"
+          size="sm"
+        />
         <Button
           rightIcon={<ExternalLinkIcon />}
           size="sm"
@@ -89,68 +86,151 @@ function StreamPage({ stream, displayMode }: { stream: ParsedStream; displayMode
   };
 
   return (
-    <Flex
-      h="full"
-      overflowX="hidden"
-      overflowY="auto"
-      direction={vertical ? "column" : "row"}
-      p={vertical || !!displayMode ? 0 : "2"}
-      gap={vertical ? 0 : "4"}
-      ref={scrollBox}
-    >
-      {displayMode && (
-        <Global
-          styles={css`
-            body {
-              background: transparent;
-            }
-          `}
+    <Flex direction="column" gap="2" p="2" pb="10">
+      <Flex gap="2" alignItems="center">
+        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+          Back
+        </Button>
+        <UserAvatarLink pubkey={stream.host} size="sm" display={{ base: "none", md: "block" }} />
+        <Heading size="md" isTruncated display={{ base: "none", md: "initial" }}>
+          {stream.title}
+        </Heading>
+        <StreamStatusBadge stream={stream} fontSize="lg" />
+        <Spacer />
+        <RelaySelectionButton display={{ base: "none", md: "block" }} />
+        <StreamDebugButton stream={stream} variant="ghost" />
+        <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
+      </Flex>
+      <Flex gap="2" maxH="calc(100vh - 4rem)">
+        <LiveVideoPlayer
+          stream={stream.streaming || stream.recording}
+          autoPlay={!!stream.streaming}
+          poster={stream.image}
+          flexGrow={1}
+          mx="auto"
         />
-      )}
-      {!displayMode && (
-        <Flex gap={vertical ? "2" : "4"} direction="column" flexGrow={vertical ? 0 : 1} pb="4">
-          <LiveVideoPlayer
-            stream={stream.streaming || stream.recording}
-            autoPlay={!!stream.streaming}
-            poster={stream.image}
-            maxH="100vh"
-          />
-          <Flex gap={vertical ? "2" : "4"} alignItems="center" p={vertical ? "2" : 0}>
-            <UserAvatarLink pubkey={stream.host} noProxy />
-            <Box>
-              <Heading size="md">
-                <UserLink pubkey={stream.host} />
-              </Heading>
-              <Text>{stream.title}</Text>
-            </Box>
-            <Spacer />
-            {!!window.webln && <StreamSatsPerMinute pubkey={stream.host} />}
-            <StreamDebugButton stream={stream} variant="ghost" />
-            <RelaySelectionButton />
-            <Button onClick={() => navigate(-1)}>Back</Button>
+        {showChat && (
+          <Flex direction="column" gap="2" flexGrow={1} maxW="lg" flexShrink={0}>
+            <StreamGoal stream={stream} />
+            <StreamChat stream={stream} actions={renderActions()} flex={1} />
           </Flex>
-          <StreamSummaryContent stream={stream} px={vertical ? "2" : 0} />
-          {stream.tags.length > 0 && (
-            <Flex gap="2" wrap="wrap">
-              {stream.tags.map((tag) => (
-                <Tag key={tag}>{tag}</Tag>
-              ))}
-            </Flex>
-          )}
-          {!vertical && <StreamerCards pubkey={stream.host} />}
+        )}
+      </Flex>
+      <Flex gap="2" alignItems="center">
+        <UserAvatarLink pubkey={stream.host} noProxy />
+        <Box>
+          <Heading size="md">{stream.title}</Heading>
+          <UserLink pubkey={stream.host} />
+        </Box>
+        <Spacer />
+        {!!window.webln && <StreamSatsPerMinute pubkey={stream.host} />}
+      </Flex>
+      <StreamSummaryContent stream={stream} />
+      {stream.tags.length > 0 && (
+        <Flex gap="2" wrap="wrap">
+          <StreamHashtags stream={stream} />
         </Flex>
       )}
-      <StreamChat
-        stream={stream}
-        flexGrow={1}
-        maxW={vertical || !!displayMode ? undefined : "lg"}
-        maxH="100vh"
-        minH={vertical ? "100vh" : undefined}
-        flexShrink={0}
-        actions={renderActions()}
-        displayMode={displayMode}
-      />
+
+      <Flex gap="2" wrap="wrap">
+        <StreamerCards pubkey={stream.host} maxW="lg" minW="md" />
+      </Flex>
     </Flex>
+  );
+}
+
+function MobileStreamPage({ stream }: { stream: ParsedStream }) {
+  useAppTitle(stream.title);
+  const navigate = useNavigate();
+  const showChat = useDisclosure();
+
+  return (
+    <Flex direction="column" gap="2" overflow="hidden" py="2">
+      <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />} size="sm">
+          Back
+        </Button>
+        <Spacer />
+        <Button onClick={showChat.onOpen} size="sm">
+          Show Chat
+        </Button>
+      </Flex>
+      <LiveVideoPlayer
+        stream={stream.streaming || stream.recording}
+        autoPlay={!!stream.streaming}
+        poster={stream.image}
+      />
+      <Flex direction="column" gap="2" overflow="hidden" px="2">
+        <Flex gap="2">
+          <UserAvatarLink pubkey={stream.host} noProxy />
+          <Box>
+            <Heading size="md">{stream.title}</Heading>
+            <UserLink pubkey={stream.host} />
+          </Box>
+        </Flex>
+        <StreamSummaryContent stream={stream} />
+        {stream.tags.length > 0 && (
+          <Flex gap="2" wrap="wrap">
+            <StreamHashtags stream={stream} />
+          </Flex>
+        )}
+        <StreamZapButton stream={stream} label="Zap Stream" />
+        <Heading size="sm">Stream goal</Heading>
+        <Divider />
+        <StreamGoal stream={stream} />
+        <StreamerCards pubkey={stream.host} />
+      </Flex>
+      <Drawer onClose={showChat.onClose} isOpen={showChat.isOpen} size="full" isFullHeight>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader px="4" pb="0">
+            Stream Chat
+          </DrawerHeader>
+          <DrawerBody p={0} overflow="hidden" display="flex" gap="2" flexDirection="column">
+            <TopZappers stream={stream} px="2" />
+            <StreamChatLog stream={stream} flex={1} px="2" />
+            <ChatMessageForm stream={stream} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </Flex>
+  );
+}
+
+function StreamPage({ stream }: { stream: ParsedStream }) {
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
+
+  const chatTimeline = useStreamChatTimeline(stream);
+  const chatLog = useSubject(chatTimeline.timeline);
+  const pubkeysInChat = useMemo(() => {
+    const set = new Set<string>();
+    for (const event of chatLog) {
+      set.add(event.pubkey);
+    }
+    return Array.from(set);
+  }, [chatLog]);
+
+  return (
+    <UserDirectoryProvider getDirectory={() => pubkeysInChat}>
+      <Layout stream={stream} />
+    </UserDirectoryProvider>
+  );
+}
+
+function ChatWidget({ stream, displayMode }: { stream: ParsedStream; displayMode: ChatDisplayMode }) {
+  return (
+    <>
+      <Global
+        styles={css`
+          body {
+            background: transparent;
+          }
+        `}
+      />
+      <StreamChat stream={stream} flexGrow={1} h="100vh" w="100vw" displayMode={displayMode} />
+    </>
   );
 }
 
@@ -191,12 +271,14 @@ export default function StreamView() {
     if (stream?.relays) setStreamRelays(stream.relays);
   }, [stream?.relays]);
 
+  const displayMode = (params.get("displayMode") as ChatDisplayMode) ?? undefined;
+
   if (!stream) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
     <RelaySelectionProvider additionalDefaults={streamRelays}>
       <UserEmojiProvider pubkey={stream.host}>
-        <StreamPage stream={stream} displayMode={(params.get("displayMode") as ChatDisplayMode) ?? undefined} />
+        {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
       </UserEmojiProvider>
     </RelaySelectionProvider>
   );

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Button, IconButton, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Button, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
@@ -7,15 +7,12 @@ import { useRelaySelectionRelays } from "../../../../providers/relay-selection-p
 import { useUserRelays } from "../../../../hooks/use-user-relays";
 import { RelayMode } from "../../../../classes/relay";
 import { unique } from "../../../../helpers/array";
-import { LightningIcon } from "../../../../components/icons";
-import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
-import ZapModal from "../../../../components/zap-modal";
-import { useInvoiceModalContext } from "../../../../providers/invoice-modal";
 import { useSigningContext } from "../../../../providers/signing-provider";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../../providers/emoji-provider";
-import MagicTextArea from "../../../../components/magic-textarea";
+import { MagicInput } from "../../../../components/magic-textarea";
+import StreamZapButton from "../../components/stream-zap-button";
 
 export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
   const toast = useToast();
@@ -44,52 +41,23 @@ export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
     }
   });
 
-  const { requestPay } = useInvoiceModalContext();
-  const zapModal = useDisclosure();
-  const zapMetadata = useUserLNURLMetadata(stream.host);
-
   watch("content");
 
   return (
     <>
       <Box as="form" borderRadius="md" flexShrink={0} display="flex" gap="2" px="2" pb="2" onSubmit={sendMessage}>
-        <MagicTextArea
+        <MagicInput
           placeholder="Message"
           autoComplete="off"
           isRequired
           value={getValues().content}
           onChange={(e) => setValue("content", e.target.value)}
-          rows={1}
         />
         <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
           Send
         </Button>
-        {zapMetadata.metadata?.allowsNostr && (
-          <IconButton
-            icon={<LightningIcon color="yellow.400" />}
-            aria-label="Zap stream"
-            borderColor="yellow.400"
-            variant="outline"
-            onClick={zapModal.onOpen}
-          />
-        )}
+        <StreamZapButton stream={stream} onZap={reset} initComment={getValues().content} />
       </Box>
-
-      {zapModal.isOpen && (
-        <ZapModal
-          isOpen
-          event={stream.event}
-          pubkey={stream.host}
-          onInvoice={async (invoice) => {
-            reset();
-            zapModal.onClose();
-            await requestPay(invoice);
-          }}
-          onClose={zapModal.onClose}
-          initialComment={getValues().content}
-          additionalRelays={relays}
-        />
-      )}
     </>
   );
 }

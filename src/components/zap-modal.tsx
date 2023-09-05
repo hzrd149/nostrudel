@@ -190,7 +190,7 @@ export default function ZapModal({
                 />
               )}
 
-              <ButtonGroup size="sm" alignItems="center" flexWrap="wrap">
+              <Flex gap="2" alignItems="center" wrap="wrap">
                 {customZapAmounts
                   .split(",")
                   .map((v) => parseInt(v))
@@ -202,11 +202,12 @@ export default function ZapModal({
                       }}
                       leftIcon={<LightningIcon color="yellow.400" />}
                       variant="solid"
+                      size="sm"
                     >
                       {amount}
                     </Button>
                   ))}
-              </ButtonGroup>
+              </Flex>
 
               <Flex gap="2">
                 <Input

@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 
 export default function GoalZapList({ goal }: { goal: NostrEvent }) {
   const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
-
   const sorted = Array.from(zaps).sort((a, b) => b.event.created_at - a.event.created_at);
 
   return (
