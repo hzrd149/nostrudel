@@ -1,5 +1,23 @@
 # nostrudel
 
+## 0.26.0
+
+### Minor Changes
+
+- 8fd08ed: Add reply button to note feed
+- 1b5ee34: Add emoji edit view
+- 7a5a4b1: Add emoji pack views
+- 2a490dd: Add goal views
+- 27abb20: Show host emojis when writing stream chat message
+- 3a2745e: Add @ user autocomplete when writing notes
+- 2a490dd: Improve event embed card
+- c10a17e: Add emoji autocomplete when writing notes
+- 6dd6196: Rebuild stream view layout
+
+### Patch Changes
+
+- 8bf5d82: Optimize caching time for user metadata events
+
 ## 0.25.0
 
 ### Minor Changes
