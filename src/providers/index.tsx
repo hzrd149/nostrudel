@@ -7,6 +7,8 @@ import DeleteEventProvider from "./delete-event-provider";
 import { InvoiceModalProvider } from "./invoice-modal";
 import NotificationTimelineProvider from "./notification-timeline";
 import PostModalProvider from "./post-modal-provider";
+import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
+import { UserContactsUserDirectoryProvider } from "./user-directory-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -27,7 +29,13 @@ export function PageProviders({ children }: { children: React.ReactNode }) {
       <DeleteEventProvider>
         <InvoiceModalProvider>
           <NotificationTimelineProvider>
-            <PostModalProvider>{children}</PostModalProvider>
+            <DefaultEmojiProvider>
+              <UserEmojiProvider>
+                <UserContactsUserDirectoryProvider>
+                  <PostModalProvider>{children}</PostModalProvider>
+                </UserContactsUserDirectoryProvider>
+              </UserEmojiProvider>
+            </DefaultEmojiProvider>
           </NotificationTimelineProvider>
         </InvoiceModalProvider>
       </DeleteEventProvider>

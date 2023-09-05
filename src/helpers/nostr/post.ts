@@ -1,10 +1,11 @@
 import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
-import { getMatchHashtag } from "../regexp";
+import { getMatchEmoji, getMatchHashtag } from "../regexp";
 import { normalizeToHex } from "../nip19";
 import { getReferences } from "./events";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getPubkey, safeDecode } from "../nip19";
+import { Emoji } from "../../providers/emoji-provider";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -85,6 +86,21 @@ export function createHashtagTags(draft: DraftNostrEvent) {
     const lower = hashtag.toLocaleLowerCase();
     if (!updatedDraft.tags.find((t) => t[0] === "t" && t[1] === lower)) {
       updatedDraft.tags.push(["t", lower]);
+    }
+  }
+
+  return updatedDraft;
+}
+
+export function createEmojiTags(draft: DraftNostrEvent, emojis: Emoji[]) {
+  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+
+  // create tags for all occurrences of #hashtag
+  const matches = updatedDraft.content.matchAll(getMatchEmoji());
+  for (const [_, name] of matches) {
+    const emoji = emojis.find((e) => e.name === name);
+    if (emoji?.url) {
+      updatedDraft.tags = addTag(updatedDraft.tags, ["emoji", emoji.name, emoji.url]);
     }
   }
 

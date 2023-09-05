@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
@@ -9,6 +9,7 @@ import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import deleteEventService from "../services/delete-events";
 
 function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {
@@ -40,6 +41,8 @@ export class RelayTimelineLoader {
 
     this.log = log || logger.extend(relay);
     this.events = new EventStore(relay);
+
+    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
   loadNextBlock() {
@@ -70,8 +73,20 @@ export class RelayTimelineLoader {
     request.start(query);
   }
 
+  private handleDeleteEvent(deleteEvent: NostrEvent) {
+    const cord = deleteEvent.tags.find(isATag)?.[1];
+    const eventId = deleteEvent.tags.find(isETag)?.[1];
+
+    if (cord) this.events.deleteEvent(cord);
+    if (eventId) this.events.deleteEvent(eventId);
+  }
+
   private handleEvent(event: NostrEvent) {
     return this.events.addEvent(event);
+  }
+
+  cleanup() {
+    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 
   getFirstEvent(nth = 0, filter?: EventFilter) {
@@ -111,7 +126,10 @@ export class TimelineLoader {
 
     // update the timeline when there are new events
     this.events.onEvent.subscribe(this.updateTimeline, this);
+    this.events.onDelete.subscribe(this.updateTimeline, this);
     this.events.onClear.subscribe(this.updateTimeline, this);
+
+    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
   private updateTimeline() {
@@ -125,6 +143,13 @@ export class TimelineLoader {
       replaceableEventLoaderService.handleEvent(event);
     }
     this.events.addEvent(event);
+  }
+  private handleDeleteEvent(deleteEvent: NostrEvent) {
+    const cord = deleteEvent.tags.find(isATag)?.[1];
+    const eventId = deleteEvent.tags.find(isETag)?.[1];
+
+    if (cord) this.events.deleteEvent(cord);
+    if (eventId) this.events.deleteEvent(eventId);
   }
 
   private createLoaders() {
@@ -143,6 +168,7 @@ export class TimelineLoader {
   private removeLoaders(filter?: (loader: RelayTimelineLoader) => boolean) {
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (!filter || filter(loader)) {
+        loader.cleanup();
         this.events.disconnect(loader.events);
         loader.onBlockFinish.unsubscribe(this.updateLoading, this);
         loader.onBlockFinish.unsubscribe(this.updateComplete, this);
@@ -166,18 +192,19 @@ export class TimelineLoader {
   setQuery(query: NostrRequestFilter) {
     if (JSON.stringify(this.query) === JSON.stringify(query)) return;
 
+    // remove all loaders
     this.removeLoaders();
 
     this.log("set query", query);
     this.query = query;
-    this.events.clear();
-    this.timeline.next([]);
 
+    // forget all events
+    this.forgetEvents();
+    // create any missing loaders
     this.createLoaders();
+    // update the complete flag
     this.updateComplete();
-
-    // update the subscription
-    this.subscription.forgetEvents();
+    // update the subscription with the new query
     this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
   }
   setFilter(filter?: (event: NostrEvent) => boolean) {
@@ -242,8 +269,15 @@ export class TimelineLoader {
 
   reset() {
     this.cursor = dayjs().unix();
-    this.relayTimelineLoaders.clear();
+    this.removeLoaders();
     this.forgetEvents();
+  }
+
+  /** close the subscription and remove any event listeners for this timeline */
+  cleanup() {
+    this.close();
+    this.removeLoaders();
+    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 
   // TODO: this is only needed because the current logic dose not remove events when the relay they where fetched from is removed

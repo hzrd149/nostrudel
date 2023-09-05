@@ -1,4 +1,17 @@
-import { Box, CardProps, Heading, Image, Link, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  CardBody,
+  CardProps,
+  Flex,
+  Heading,
+  Image,
+  Link,
+  LinkBox,
+  LinkOverlay,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import useOpenGraphData from "../hooks/use-open-graph-data";
 
 export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<CardProps, "children">) {
@@ -10,23 +23,40 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
     </Link>
   );
 
+  const isVertical = useBreakpointValue({ base: true, md: false });
+
   if (!data) return link;
 
   return (
-    <LinkBox borderRadius="lg" borderWidth={1} overflow="hidden" {...props}>
-      {data.ogImage?.length === 1 && (
-        <Image key={data.ogImage[0].url} src={new URL(data.ogImage[0].url, url).toString()} mx="auto" maxH="3in" />
-      )}
-
-      <Box m="2" mt="4">
-        <Heading size="sm" my="2">
-          <LinkOverlay href={url.toString()} isExternal>
-            {data.ogTitle?.trim() ?? data.dcTitle?.trim()}
-          </LinkOverlay>
-        </Heading>
-        <Text isTruncated>{data.ogDescription || data.dcDescription}</Text>
-        {link}
-      </Box>
-    </LinkBox>
+    <Card {...props}>
+      <LinkBox
+        as={CardBody}
+        display="flex"
+        gap="2"
+        p="0"
+        overflow="hidden"
+        flexDirection={{ base: "column", md: "row" }}
+      >
+        {data.ogImage?.length === 1 && (
+          <Image
+            key={data.ogImage[0].url}
+            src={new URL(data.ogImage[0].url, url).toString()}
+            borderRadius="md"
+            maxH="2in"
+            maxW={isVertical ? "none" : "30%"}
+            mx={isVertical ? "auto" : 0}
+          />
+        )}
+        <Box p="2">
+          <Heading size="sm">
+            <LinkOverlay href={url.toString()} isExternal>
+              {data.ogTitle?.trim() ?? data.dcTitle?.trim()}
+            </LinkOverlay>
+          </Heading>
+          <Text isTruncated>{data.ogDescription || data.dcDescription}</Text>
+          {link}
+        </Box>
+      </LinkBox>
+    </Card>
   );
 }

@@ -3,6 +3,7 @@ export type ATag = ["a", string] | ["a", string, string];
 export type PTag = ["p", string] | ["p", string, string] | ["p", string, string, string];
 export type RTag = ["r", string] | ["r", string, string];
 export type DTag = ["d"] | ["d", string];
+export type EmojiTag = ["emoji", string, string];
 export type Tag = string[] | ETag | PTag | RTag | DTag | ATag;
 
 export type NostrEvent = {
@@ -37,4 +38,7 @@ export function isDTag(tag: Tag): tag is DTag {
 }
 export function isATag(tag: Tag): tag is ATag {
   return tag[0] === "a" && tag[1] !== undefined;
+}
+export function isEmojiTag(tag: Tag): tag is EmojiTag {
+  return tag[0] === "emoji" && tag[1] !== undefined && tag[2] !== undefined;
 }

@@ -31,7 +31,7 @@ function useListCoordinate() {
   return parsed.data;
 }
 
-export default function ListView() {
+export default function ListDetailsView() {
   const navigate = useNavigate();
   const coordinate = useListCoordinate();
   const { deleteEvent } = useDeleteEventContext();
@@ -52,9 +52,9 @@ export default function ListView() {
   const notes = getEventsFromList(event);
 
   return (
-    <Flex direction="column" px="2" pt="2" pb="8" overflowY="auto" overflowX="hidden" h="full" gap="2">
+    <Flex direction="column" px="2" pt="2" pb="8" overflow="hidden" h="full" gap="2">
       <Flex gap="2" alignItems="center">
-        <Button as={RouterList} to="/lists" leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
         </Button>
 

@@ -18,5 +18,5 @@ export function renderGenericUrl(match: URL) {
 }
 
 export function renderOpenGraphUrl(match: URL) {
-  return <OpenGraphCard url={match} maxW="lg" />;
+  return <OpenGraphCard url={match} />;
 }

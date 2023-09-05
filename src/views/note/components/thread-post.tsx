@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 import { useState } from "react";
+
 import { ArrowDownSIcon, ArrowUpSIcon, ReplyIcon } from "../../../components/icons";
 import { Note } from "../../../components/note";
 import { countReplies, ThreadItem } from "../../../helpers/thread";

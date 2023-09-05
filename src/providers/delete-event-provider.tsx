@@ -35,6 +35,7 @@ import { ExternalLinkIcon } from "../components/icons";
 import { getEventCoordinate, getEventUID, isReplaceable } from "../helpers/nostr/events";
 import NostrPublishAction from "../classes/nostr-publish-action";
 import { Tag } from "../types/nostr-event";
+import deleteEventService from "../services/delete-events";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -94,6 +95,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       };
       const signed = await signingService.requestSignature(draft, account);
       const pub = new NostrPublishAction("Delete", writeRelays, signed);
+      deleteEventService.handleEvent(signed);
       defer?.resolve();
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

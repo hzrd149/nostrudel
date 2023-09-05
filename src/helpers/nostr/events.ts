@@ -2,11 +2,11 @@ import dayjs from "dayjs";
 import { Kind, nip19 } from "nostr-tools";
 
 import { getEventRelays } from "../../services/event-relays";
-import { DraftNostrEvent, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
+import { ATag, DraftNostrEvent, ETag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { AddressPointer } from "nostr-tools/lib/nip19";
+import type { AddressPointer, EventPointer } from "nostr-tools/lib/nip19";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -186,4 +186,28 @@ export function parseCoordinate(a: string): CustomEventPointer | null {
     pubkey,
     identifier: d,
   };
+}
+
+export function draftAddCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string, relay?: string) {
+  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("event already in list");
+
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, relay ? ["a", coordinate, relay] : ["a", coordinate]],
+  };
+
+  return draft;
+}
+
+export function draftRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string) {
+  const draft: DraftNostrEvent = {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "a" && t[1] === coordinate)),
+  };
+
+  return draft;
 }

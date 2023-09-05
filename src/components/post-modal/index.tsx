@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -6,12 +6,12 @@ import {
   ModalBody,
   Flex,
   Button,
-  Textarea,
   Text,
-  useDisclosure,
   VisuallyHiddenInput,
   IconButton,
   useToast,
+  Box,
+  Heading,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
@@ -25,8 +25,10 @@ import { NoteLink } from "../note-link";
 import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
-import { ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
+import { createEmojiTags, ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
+import MagicTextArea from "../magic-textarea";
+import { useContextEmojis } from "../../providers/emoji-provider";
 
 function emptyDraft(): DraftNostrEvent {
   return {
@@ -47,12 +49,12 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
-  const [waiting, setWaiting] = useState(false);
+  const [signing, setSigning] = useState(false);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
-  const { isOpen: showPreview, onToggle: togglePreview } = useDisclosure();
   const [draft, setDraft] = useState<DraftNostrEvent>(() => Object.assign(emptyDraft(), initialDraft));
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
+  const emojis = useContextEmojis();
 
   const uploadImage = async (imageFile: File) => {
     try {
@@ -77,14 +79,19 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
     setDraft((d) => ({ ...d, content: event.target.value }));
   };
 
+  const finalDraft = useMemo(() => {
+    let updatedDraft = finalizeNote(draft);
+    const contentMentions = getContentMentions(draft.content);
+    updatedDraft = createEmojiTags(updatedDraft, emojis);
+    updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
+    return updatedDraft;
+  }, [draft, emojis]);
+
   const handleSubmit = async () => {
     try {
-      setWaiting(true);
-      let updatedDraft = finalizeNote(draft);
-      const contentMentions = getContentMentions(draft.content);
-      updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
-      const signed = await requestSignature(updatedDraft);
-      setWaiting(false);
+      setSigning(true);
+      const signed = await requestSignature(finalDraft);
+      setSigning(false);
 
       const pub = new NostrPublishAction("Post", writeRelays, signed);
       setPublishAction(pub);
@@ -115,22 +122,26 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
             Replying to: <NoteLink noteId={refs.replyId} />
           </Text>
         )}
-        {showPreview ? (
-          <TrustProvider trust>
-            <NoteContents event={finalizeNote(draft)} />
-          </TrustProvider>
-        ) : (
-          <Textarea
-            autoFocus
-            mb="2"
-            value={draft.content}
-            onChange={handleContentChange}
-            rows={5}
-            onPaste={(e) => {
-              const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-              if (imageFile) uploadImage(imageFile);
-            }}
-          />
+        <MagicTextArea
+          autoFocus
+          mb="2"
+          value={draft.content}
+          onChange={handleContentChange}
+          rows={5}
+          onPaste={(e) => {
+            const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
+            if (imageFile) uploadImage(imageFile);
+          }}
+        />
+        {draft.content.length > 0 && (
+          <Box>
+            <Heading size="sm">Preview:</Heading>
+            <Box borderWidth={1} borderRadius="md" p="2">
+              <TrustProvider trust>
+                <NoteContents event={finalDraft} />
+              </TrustProvider>
+            </Box>
+          </Box>
         )}
         <Flex gap="2" alignItems="center" justifyContent="flex-end">
           <Flex mr="auto" gap="2">
@@ -152,9 +163,8 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
             />
           </Flex>
           <UserAvatarStack label="Mentions" pubkeys={getContentMentions(draft.content)} />
-          {draft.content.length > 0 && <Button onClick={togglePreview}>Preview</Button>}
           <Button onClick={onClose}>Cancel</Button>
-          <Button colorScheme="blue" type="submit" isLoading={waiting} onClick={handleSubmit} isDisabled={!canSubmit}>
+          <Button colorScheme="blue" type="submit" isLoading={signing} onClick={handleSubmit} isDisabled={!canSubmit}>
             Post
           </Button>
         </Flex>
@@ -166,7 +176,9 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" closeOnOverlayClick={!!publishAction}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding={["2", "2", "4"]}>{renderContent()}</ModalBody>
+        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+          {renderContent()}
+        </ModalBody>
       </ModalContent>
     </Modal>
   );

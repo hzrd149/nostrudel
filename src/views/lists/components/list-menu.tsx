@@ -6,7 +6,7 @@ import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-ic
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { CodeIcon, ExternalLinkIcon, RepostIcon, TrashIcon } from "../../../components/icons";
-import { getSharableEventNaddr } from "../../../helpers/nip19";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { useDeleteEventContext } from "../../../providers/delete-event-provider";
 
@@ -18,7 +18,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
 
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
 
-  const naddr = getSharableEventNaddr(list);
+  const naddr = getSharableEventAddress(list);
 
   return (
     <>

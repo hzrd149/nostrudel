@@ -1,6 +1,8 @@
 import React, { Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
+import { css, Global } from "@emotion/react";
+
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
 
@@ -35,16 +37,48 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import ListsView from "./views/lists";
-import ListView from "./views/lists/list";
+import ListDetailsView from "./views/lists/list-details";
 import UserListsTab from "./views/user/lists";
 
-import "./services/emoji-packs";
 import BrowseListView from "./views/lists/browse";
+import EmojiPacksBrowseView from "./views/emoji-packs/browse";
+import EmojiPackView from "./views/emoji-packs/emoji-pack";
+import UserEmojiPacksTab from "./views/user/emoji-packs";
+import EmojiPacksView from "./views/emoji-packs";
+import GoalsView from "./views/goals";
+import GoalsBrowseView from "./views/goals/browse";
+import GoalDetailsView from "./views/goals/goal-details";
+import UserGoalsTab from "./views/user/goals";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 const MapView = React.lazy(() => import("./views/map"));
+
+const overrideReactTextareaAutocompleteStyles = css`
+  .rta__autocomplete {
+    z-index: var(--chakra-zIndices-popover);
+    font-size: var(--chakra-fontSizes-md);
+  }
+  .rta__list {
+    background: var(--chakra-colors-chakra-subtle-bg);
+    color: var(--chakra-colors-chakra-body-text);
+    border: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
+    border-radius: var(--chakra-sizes-1);
+    overflow: hidden;
+  }
+  .rta__entity {
+    background: none;
+    color: inherit;
+    padding: var(--chakra-sizes-1) var(--chakra-sizes-2);
+  }
+  .rta__entity--selected {
+    background: var(--chakra-ring-color);
+  }
+  .rta__item:not(:last-child) {
+    border-bottom: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
+  }
+`;
 
 const RootPage = () => {
   useSetColorMode();
@@ -101,6 +135,8 @@ const router = createHashRouter([
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
+          { path: "goals", element: <UserGoalsTab /> },
+          { path: "emojis", element: <UserEmojiPacksTab /> },
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
         ],
@@ -127,7 +163,23 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ListsView /> },
           { path: "browse", element: <BrowseListView /> },
-          { path: ":addr", element: <ListView /> },
+          { path: ":addr", element: <ListDetailsView /> },
+        ],
+      },
+      {
+        path: "goals",
+        children: [
+          { path: "", element: <GoalsView /> },
+          { path: "browse", element: <GoalsBrowseView /> },
+          { path: ":id", element: <GoalDetailsView /> },
+        ],
+      },
+      {
+        path: "emojis",
+        children: [
+          { path: "", element: <EmojiPacksView /> },
+          { path: "browse", element: <EmojiPacksBrowseView /> },
+          { path: ":addr", element: <EmojiPackView /> },
         ],
       },
       {
@@ -146,6 +198,7 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
+    <Global styles={overrideReactTextareaAutocompleteStyles} />
     <Suspense fallback={<Spinner />}>
       <RouterProvider router={router} />
     </Suspense>

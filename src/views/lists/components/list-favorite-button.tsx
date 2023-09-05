@@ -4,8 +4,7 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { draftAddCoordinate, draftRemoveCoordinate } from "../../../helpers/nostr/lists";
+import { draftAddCoordinate, draftRemoveCoordinate, getEventCoordinate } from "../../../helpers/nostr/events";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";

@@ -5,18 +5,17 @@ import { useAdditionalRelayContext } from "../../providers/additional-relay-cont
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
-import { getEventUID, truncatedId } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/events";
 import ListCard from "../lists/components/list-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { Kind } from "nostr-tools";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(truncatedId(pubkey) + "-lists", readRelays, {
+  const timeline = useTimelineLoader(pubkey + "-lists", readRelays, {
     authors: [pubkey],
     kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
   });

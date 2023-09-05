@@ -1,12 +1,24 @@
 import { Link as RouterLink } from "react-router-dom";
-import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardProps,
+  Flex,
+  Heading,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { getEventsFromList, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
-import { getSharableEventNaddr } from "../../../helpers/nip19";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
@@ -16,25 +28,30 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { useRef } from "react";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
+import ListMenu from "./list-menu";
 
-function ListCardRender({ event }: { event: NostrEvent }) {
+function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
   const link =
-    event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventNaddr(event);
+    event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventAddress(event);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
-    <Card ref={ref}>
-      <CardHeader p="2" pb="0">
+    <Card ref={ref} variant="outline" {...props}>
+      <CardHeader display="flex" alignItems="center" p="2" pb="0">
         <Heading size="md">
           <Link as={RouterLink} to={`/lists/${link}`}>
             {getListName(event)}
           </Link>
         </Heading>
+        <ButtonGroup size="sm" ml="auto">
+          <ListFavoriteButton list={event} />
+          <ListMenu list={event} aria-label="list menu" />
+        </ButtonGroup>
       </CardHeader>
       <CardBody p="2">
         <Flex gap="2">
@@ -65,7 +82,6 @@ function ListCardRender({ event }: { event: NostrEvent }) {
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
-        <ListFavoriteButton list={event} size="sm" />
         <EventRelays event={event} ml="auto" />
       </CardFooter>
     </Card>

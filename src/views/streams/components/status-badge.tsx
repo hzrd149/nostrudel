@@ -8,13 +8,13 @@ export default function StreamStatusBadge({
   switch (stream.status) {
     case "live":
       return (
-        <Badge colorScheme="green" {...props}>
+        <Badge colorScheme="green" variant="solid" {...props}>
           live
         </Badge>
       );
     case "ended":
       return (
-        <Badge colorScheme="red" {...props}>
+        <Badge colorScheme="red" variant="solid" {...props}>
           ended
         </Badge>
       );

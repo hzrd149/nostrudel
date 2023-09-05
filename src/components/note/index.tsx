@@ -12,6 +12,7 @@ import {
   IconButton,
   Link,
   useBreakpointValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
@@ -27,23 +28,26 @@ import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { RepostButton } from "./components/repost-button";
 import { QuoteRepostButton } from "./components/quote-repost-button";
-import { ExternalLinkIcon } from "../icons";
+import { ExternalLinkIcon, ReplyIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
 import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import BookmarkButton from "./components/bookmark-button";
-import EventReactionButtons from "../event-reactions";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
+import ReplyForm from "../../views/note/components/reply-form";
+import { getReferences } from "../../helpers/nostr/events";
 
 export type NoteProps = {
   event: NostrEvent;
   variant?: CardProps["variant"];
+  showReplyButton?: boolean;
 };
-export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
+export const Note = React.memo(({ event, variant = "outline", showReplyButton }: NoteProps) => {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
+  const replyForm = useDisclosure();
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
@@ -79,6 +83,9 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
               <ButtonGroup size="xs" variant="ghost" isDisabled={account?.readonly ?? true}>
+                {showReplyButton && (
+                  <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
+                )}
                 <RepostButton event={event} />
                 <QuoteRepostButton event={event} />
                 <NoteZapButton event={event} />
@@ -103,6 +110,15 @@ export const Note = React.memo(({ event, variant = "outline" }: NoteProps) => {
           </CardFooter>
         </Card>
       </ExpandProvider>
+      {replyForm.isOpen && (
+        <ReplyForm
+          item={{ event, replies: [], refs: getReferences(event) }}
+          onCancel={replyForm.onClose}
+          onSubmitted={replyForm.onClose}
+        />
+      )}
     </TrustProvider>
   );
 });
+
+export default Note;

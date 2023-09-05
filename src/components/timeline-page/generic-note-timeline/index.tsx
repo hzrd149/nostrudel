@@ -15,7 +15,7 @@ import { safeRelayUrl } from "../../../helpers/url";
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
     case Kind.Text:
-      return <Note event={event} />;
+      return <Note event={event} showReplyButton />;
     case Kind.Repost:
       return <RepostNote event={event} />;
     case STREAM_KIND:
