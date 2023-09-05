@@ -63,7 +63,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
           </Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
         </Flex>
-        {loading ? <SkeletonText /> : note ? <Note event={note} /> : <ErrorFallback error={error} />}
+        {loading ? <SkeletonText /> : note ? <Note event={note} showReplyButton /> : <ErrorFallback error={error} />}
       </Flex>
     </TrustProvider>
   );

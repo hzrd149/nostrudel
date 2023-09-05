@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Button, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
@@ -45,17 +45,19 @@ export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
 
   return (
     <>
-      <Box as="form" borderRadius="md" flexShrink={0} display="flex" gap="2" px="2" pb="2" onSubmit={sendMessage}>
-        <MagicInput
-          placeholder="Message"
-          autoComplete="off"
-          isRequired
-          value={getValues().content}
-          onChange={(e) => setValue("content", e.target.value)}
-        />
-        <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
-          Send
-        </Button>
+      <Box borderRadius="md" flexShrink={0} display="flex" gap="2" px="2" pb="2">
+        <Flex as="form" onSubmit={sendMessage} gap="2" flex={1}>
+          <MagicInput
+            placeholder="Message"
+            autoComplete="off"
+            isRequired
+            value={getValues().content}
+            onChange={(e) => setValue("content", e.target.value)}
+          />
+          <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
+            Send
+          </Button>
+        </Flex>
         <StreamZapButton stream={stream} onZap={reset} initComment={getValues().content} />
       </Box>
     </>

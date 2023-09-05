@@ -2,7 +2,7 @@ import { Flex, Spinner } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useParams } from "react-router-dom";
 
-import { Note } from "../../components/note";
+import Note from "../../components/note";
 import { isHexKey } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./components/thread-post";
