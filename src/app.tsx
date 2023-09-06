@@ -50,6 +50,7 @@ import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
 import NetworkView from "./views/tools/network";
+import MutedByView from "./views/user/muted-by";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -140,6 +141,7 @@ const router = createHashRouter([
           { path: "emojis", element: <UserEmojiPacksTab /> },
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
+          { path: "muted-by", element: <MutedByView /> },
         ],
       },
       {

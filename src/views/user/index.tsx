@@ -54,6 +54,7 @@ const tabs = [
   { label: "Emoji Packs", path: "emojis" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },
+  { label: "Muted by", path: "muted-by" },
 ];
 
 function useUserPointer() {

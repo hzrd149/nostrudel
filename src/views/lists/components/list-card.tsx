@@ -1,3 +1,4 @@
+import { memo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   AvatarGroup,
@@ -25,7 +26,6 @@ import { createCoordinate } from "../../../services/replaceable-event-requester"
 import { EventRelays } from "../../../components/note/note-relays";
 import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { useRef } from "react";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
@@ -88,8 +88,10 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
   );
 }
 
-export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
+function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
   if (!event) return null;
   else return <ListCardRender event={event} />;
 }
+
+export default memo(ListCard);

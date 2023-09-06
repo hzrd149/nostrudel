@@ -1,4 +1,4 @@
-import { Box, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { memo, useMemo, useState } from "react";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -6,6 +6,8 @@ import RequireCurrentAccount from "../../providers/require-current-account";
 import useUserNetwork from "../../hooks/use-user-network";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
+import { ArrowLeftSIcon } from "../../components/icons";
+import { useNavigate } from "react-router-dom";
 
 const User = memo(({ pubkey, count }: { pubkey: string; count: number }) => (
   <Flex gap="2" overflow="hidden">
@@ -16,6 +18,7 @@ const User = memo(({ pubkey, count }: { pubkey: string; count: number }) => (
 ));
 
 function NetworkPage() {
+  const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const [range, setRange] = useState("50-100");
 
@@ -31,7 +34,10 @@ function NetworkPage() {
 
   return (
     <Flex gap="2" direction="column" p="2">
-      <Flex>
+      <Flex gap="2">
+        <Button leftIcon={<ArrowLeftSIcon />} onClick={() => navigate(-1)}>
+          Back
+        </Button>
         <Select value={range} onChange={(e) => setRange(e.target.value)}>
           <option value="0-1">0-1 ({network.filter((p) => p.count <= 1).length})</option>
           <option value="1-10">1-10 ({network.filter((p) => p.count > 1 && p.count < 10).length})</option>

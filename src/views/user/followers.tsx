@@ -2,8 +2,6 @@ import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Event, Kind } from "nostr-tools";
 
-import { UserCard, UserCardProps } from "./components/user-card";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
@@ -12,28 +10,31 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useMemo, useRef } from "react";
 import { getEventUID } from "../../helpers/nostr/events";
+import { UserLink } from "../../components/user-link";
+import { UserAvatarLink } from "../../components/user-avatar-link";
 
-function FollowerItem({ event, ...props }: { event: Event } & Omit<UserCardProps, "pubkey">) {
+function FollowerItem({ event }: { event: Event }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
-    <div ref={ref}>
-      <UserCard pubkey={event.pubkey} {...props} />
-    </div>
+    <Flex gap="2" overflow="hidden" ref={ref}>
+      <UserAvatarLink pubkey={event.pubkey} noProxy size="sm" />
+      <UserLink pubkey={event.pubkey} isTruncated />
+    </Flex>
   );
 }
 
 export default function UserFollowersTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const contextRelays = useAdditionalRelayContext();
-  const readRelays = useReadRelayUrls(contextRelays);
+  const readRelays = useReadRelayUrls();
 
   const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],
     kinds: [Kind.Contacts],
   });
 
+  const lists = useSubject(timeline.timeline);
   const followerEvents = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
@@ -47,7 +48,7 @@ export default function UserFollowersTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" py="2">
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2" py="2">
         {followers.map((event) => (
           <FollowerItem key={event.pubkey} event={event} />
         ))}
