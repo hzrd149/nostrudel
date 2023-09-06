@@ -49,6 +49,7 @@ import GoalsView from "./views/goals";
 import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
+import NetworkView from "./views/tools/network";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -156,7 +157,10 @@ const router = createHashRouter([
       { path: "profile", element: <ProfileView /> },
       {
         path: "tools",
-        children: [{ path: "", element: <ToolsHomeView /> }],
+        children: [
+          { path: "", element: <ToolsHomeView /> },
+          { path: "network", element: <NetworkView /> },
+        ],
       },
       {
         path: "lists",

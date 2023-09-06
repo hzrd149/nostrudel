@@ -1,4 +1,5 @@
 import { Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { ExternalLinkIcon, ToolsIcon } from "../../components/icons";
 
 export default function ToolsHomeView() {
@@ -8,6 +9,9 @@ export default function ToolsHomeView() {
         <ToolsIcon /> Tools
       </Heading>
       <Flex wrap="wrap" gap="4">
+        <Button as={RouterLink} to="/tools/network">
+          Contact network
+        </Button>
         <Button
           as={Link}
           href="https://w3.do/"
