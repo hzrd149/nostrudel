@@ -11,18 +11,25 @@ import GoalProgress from "../../goals/components/goal-progress";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import GoalTopZappers from "../../goals/components/goal-top-zappers";
 import GoalZapButton from "../../goals/components/goal-zap-button";
+import singleEventService from "../../../services/single-event";
 
 export default function StreamGoal({ stream, ...props }: Omit<CardProps, "children"> & { stream: ParsedStream }) {
   const [goal, setGoal] = useState<NostrEvent>();
   const relays = useReadRelayUrls(stream.relays);
 
   useEffect(() => {
-    const request = new NostrRequest(relays);
-    request.onEvent.subscribe((event) => {
-      setGoal(event);
-    });
-    request.start({ "#a": [getATag(stream)], kinds: [GOAL_KIND] });
-  }, [stream.identifier, relays.join("|")]);
+    if (stream.goal) {
+      singleEventService.requestEvent(stream.goal, relays).then((event) => {
+        setGoal(event);
+      });
+    } else {
+      const request = new NostrRequest(relays);
+      request.onEvent.subscribe((event) => {
+        setGoal(event);
+      });
+      request.start({ "#a": [getATag(stream)], kinds: [GOAL_KIND] });
+    }
+  }, [stream.identifier, stream.goal, relays.join("|")]);
 
   if (!goal) return null;
   const nevent = getSharableEventAddress(goal);
