@@ -48,6 +48,9 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       <Button onClick={() => navigate("/streams")} leftIcon={<LiveStreamIcon />} justifyContent="flex-start">
         Streams
       </Button>
+      <Button onClick={() => navigate("/files")} leftIcon={<FileIcon />} justifyContent="flex-start">
+        Files
+      </Button>
       <Button onClick={() => navigate("/lists")} leftIcon={<ListIcon />} justifyContent="flex-start">
         Lists
       </Button>
@@ -56,9 +59,6 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       </Button>
       <Button onClick={() => navigate("/emojis")} leftIcon={<EmojiIcon />} justifyContent="flex-start">
         Emojis
-      </Button>
-      <Button onClick={() => navigate("/files")} leftIcon={<FileIcon />} justifyContent="flex-start">
-        Files
       </Button>
       <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />} justifyContent="flex-start">
         Map

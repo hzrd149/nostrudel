@@ -12,8 +12,14 @@ export type ParsedImageFile = {
   blurhash?: string;
 };
 
-export function parseImageFile(event: NostrEvent): ParsedImageFile {
+export function getFileUrl(event: NostrEvent) {
   const url = event.tags.find((t) => t[0] === "url" && t[1])?.[1];
+  if (!url) throw new Error("Missing url");
+  return url;
+}
+
+export function parseImageFile(event: NostrEvent): ParsedImageFile {
+  const url = getFileUrl(event);
   const mimeType = event.tags.find((t) => t[0] === "m" && t[1])?.[1];
   const magnet = event.tags.find((t) => t[0] === "magnet" && t[1])?.[1];
   const infoHash = event.tags.find((t) => t[0] === "i" && t[1])?.[1];
@@ -24,7 +30,6 @@ export function parseImageFile(event: NostrEvent): ParsedImageFile {
   const dimensions = event.tags.find((t) => t[0] === "dim" && t[1])?.[1];
   const [width, height] = dimensions?.split("x").map((v) => parseInt(v)) ?? [];
 
-  if (!url) throw new Error("missing url");
   if (!mimeType) throw new Error("missing MIME Type");
   if (width !== undefined && height !== undefined) {
     if (!Number.isFinite(width) || !Number.isFinite(height)) throw new Error("bad dimensions");
