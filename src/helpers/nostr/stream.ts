@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
-import { getAddr } from "../../services/replaceable-event-requester";
+import { ensureNotifyContentMentions } from "./post";
+import { createCoordinate } from "../../services/replaceable-event-requester";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;
@@ -15,6 +16,7 @@ export type ParsedStream = {
   image?: string;
   updated: number;
   status: "live" | "ended" | string;
+  goal?: string;
   starts?: number;
   ends?: number;
   identifier: string;
@@ -32,6 +34,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const endsTag = stream.tags.find((t) => t[0] === "ends")?.[1];
   const streaming = stream.tags.find((t) => t[0] === "streaming")?.[1];
   const recording = stream.tags.find((t) => t[0] === "recording")?.[1];
+  const goal = stream.tags.find((t) => t[0] === "goal")?.[1];
   const identifier = stream.tags.find((t) => t[0] === "d")?.[1];
 
   let relays = stream.tags.find((t) => t[0] === "relays");
@@ -73,22 +76,25 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     status,
     starts: startTime,
     ends: endTime,
+    goal,
     identifier,
     relays,
   };
 }
 
 export function getATag(stream: ParsedStream) {
-  return getAddr(stream.event.kind, stream.author, stream.identifier);
+  return createCoordinate(stream.event.kind, stream.author, stream.identifier);
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {
-  const template: DraftNostrEvent = {
+  let draft: DraftNostrEvent = {
     tags: [["a", getATag(stream), "", "root"]],
     content,
     created_at: dayjs().unix(),
     kind: STREAM_CHAT_MESSAGE_KIND,
   };
 
-  return template;
+  draft = ensureNotifyContentMentions(draft);
+
+  return draft;
 }

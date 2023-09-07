@@ -18,7 +18,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { isReply } from "../../helpers/nostr/event";
+import { isReply } from "../../helpers/nostr/events";
 import { CheckIcon, EditIcon } from "../../components/icons";
 import { NostrEvent } from "../../types/nostr-event";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
@@ -57,13 +57,13 @@ function HashTagPage() {
       if (!showReplies && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [showReplies]
+    [showReplies],
   );
   const timeline = useTimelineLoader(
     `${hashtag}-hashtag`,
     readRelays,
     { kinds: [1], "#t": [hashtag] },
-    { eventFilter }
+    { eventFilter },
   );
 
   useRelaysChanged(readRelays, () => timeline.reset());
@@ -100,7 +100,7 @@ function HashTagPage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} />;
+  return <TimelinePage timeline={timeline} header={header} pt="4" pb="8" />;
 }
 
 export default function HashTagView() {

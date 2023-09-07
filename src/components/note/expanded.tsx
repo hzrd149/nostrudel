@@ -1,5 +1,5 @@
 import { useDisclosure } from "@chakra-ui/react";
-import React, { PropsWithChildren, useContext, useMemo } from "react";
+import React, { PropsWithChildren, useContext } from "react";
 
 type ContextType = { expanded: boolean; onExpand: () => void; onCollapse: () => void; onToggle: () => void };
 

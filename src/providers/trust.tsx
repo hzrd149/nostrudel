@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext } from "react";
 import { NostrEvent } from "../types/nostr-event";
 import { useCurrentAccount } from "../hooks/use-current-account";
-import clientFollowingService from "../services/client-following";
-import useSubject from "../hooks/use-subject";
+import useUserContactList from "../hooks/use-user-contact-list";
+import { getPubkeysFromList } from "../helpers/nostr/lists";
 
 const TrustContext = React.createContext<boolean>(false);
 
@@ -18,7 +18,8 @@ export function TrustProvider({
   const parentTrust = useContext(TrustContext);
 
   const account = useCurrentAccount();
-  const following = useSubject(clientFollowingService.following).map((p) => p[1]);
+  const contactList = useUserContactList(account?.pubkey);
+  const following = contactList ? getPubkeysFromList(contactList).map((p) => p.pubkey) : [];
 
   const isEventTrusted = trust || (!!event && (event.pubkey === account?.pubkey || following.includes(event.pubkey)));
 

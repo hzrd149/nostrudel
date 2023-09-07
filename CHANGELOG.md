@@ -1,5 +1,66 @@
 # nostrudel
 
+## 0.26.0
+
+### Minor Changes
+
+- 8fd08ed: Add reply button to note feed
+- 1b5ee34: Add emoji edit view
+- 7a5a4b1: Add emoji pack views
+- 2a490dd: Add goal views
+- 27abb20: Show host emojis when writing stream chat message
+- 3a2745e: Add @ user autocomplete when writing notes
+- 2a490dd: Improve event embed card
+- c10a17e: Add emoji autocomplete when writing notes
+- 6dd6196: Rebuild stream view layout
+
+### Patch Changes
+
+- 8bf5d82: Optimize caching time for user metadata events
+
+## 0.25.0
+
+### Minor Changes
+
+- f83d1ad: Show streamer cards in stream view on desktop
+- c79c292: Show emoji reactions on notes
+- 0af6c2c: Add bookmark button to notes
+- 8ea8c88: Add more details to publish details modal
+- d53a34c: Add browse lists view
+- 343a23c: Add sats per minute button on stream view on desktop
+- 6bb4589: Add option to favorite lists
+- 8ea8c88: Filter relay reviews by list
+- f6f4656: Allow user to select people list for home feed
+- 0af6c2c: Show note lists on lists view
+- 63474a7: Add delete button for lists
+
+### Patch Changes
+
+- 954ec50: Fix reactions showing on wrong notes
+- fbc1ea4: Fix mentioning npub would freeze app
+
+## 0.24.0
+
+### Minor Changes
+
+- 03d84eb: Show notes in relay view
+- 1e75dbd: Improve layout of image galleries
+- 07f67cc: Show all images in lightbox
+- d2948e7: Rebuild event publish details
+- 1148093: Render multiple images as image gallery
+- d8b29b4: Add relay review form
+- 9b6c653: Add simple timeline health view
+- b7deb16: Clean up navigation menu
+- 018c917: Add mobile friendly lightbox
+- ce550f5: Show label for paid relays
+- e052991: Add inline reply form
+- 70bada5: Add <url> and <encoded_url> options to CORS proxy url
+- 70bada5: Use corsproxy.io as default service for CORS proxy
+
+### Patch Changes
+
+- 1bc4500: Fix non-english characters breaking links
+
 ## 0.23.0
 
 ### Minor Changes

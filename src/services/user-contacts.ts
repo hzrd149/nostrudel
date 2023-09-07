@@ -31,12 +31,15 @@ function parseContacts(event: NostrEvent): UserContacts {
   const relays = normalizeRelayConfigs(relayJsonToRelayConfig(relayJson));
 
   const pubkeys = event.tags.filter(isPTag).map((tag) => tag[1]);
-  const contactRelay = event.tags.filter(isPTag).reduce((dir, tag) => {
-    if (tag[2]) {
-      dir[tag[1]] = tag[2];
-    }
-    return dir;
-  }, {} as Record<string, string>);
+  const contactRelay = event.tags.filter(isPTag).reduce(
+    (dir, tag) => {
+      if (tag[2]) {
+        dir[tag[1]] = tag[2];
+      }
+      return dir;
+    },
+    {} as Record<string, string>,
+  );
 
   return {
     pubkey: event.pubkey,
@@ -60,7 +63,7 @@ class UserContactsService {
       Kind.Contacts,
       pubkey,
       undefined,
-      alwaysRequest
+      alwaysRequest,
     );
 
     sub.connectWithHandler(requestSub, (event, next) => next(parseContacts(event)));
@@ -73,6 +76,7 @@ class UserContactsService {
   }
 }
 
+/** @deprecated */
 const userContactsService = new UserContactsService();
 
 if (import.meta.env.DEV) {

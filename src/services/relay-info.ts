@@ -1,24 +1,35 @@
 import db from "./db";
 import { fetchWithCorsFallback } from "../helpers/cors";
+import { isHexKey } from "../helpers/nip19";
 
 export type RelayInformationDocument = {
   name: string;
   description: string;
   icon?: string;
-  pubkey: string;
+  pubkey?: string;
   contact: string;
   supported_nips?: number[];
   software: string;
   version: string;
+  payments_url?: string;
 };
+
+function sanitizeInfo(info: RelayInformationDocument) {
+  if (info.pubkey && !isHexKey(info.pubkey)) {
+    delete info.pubkey;
+  }
+  return info;
+}
 
 async function fetchInfo(relay: string) {
   const url = new URL(relay);
   url.protocol = url.protocol === "ws:" ? "http" : "https";
 
   const infoDoc = await fetchWithCorsFallback(url, { headers: { Accept: "application/nostr+json" } }).then(
-    (res) => res.json() as Promise<RelayInformationDocument>
+    (res) => res.json() as Promise<RelayInformationDocument>,
   );
+
+  sanitizeInfo(infoDoc);
 
   memoryCache.set(relay, infoDoc);
   await db.put("relayInfo", infoDoc, relay);

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { ChatIcon } from "@chakra-ui/icons";
 import {
   Alert,
@@ -14,22 +15,20 @@ import {
   Text,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { UserAvatar } from "../../components/user-avatar";
-import { Bech32Prefix, normalizeToBech32 } from "../../helpers/nip19";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import directMessagesService from "../../services/direct-messages";
 import { ExternalLinkIcon } from "../../components/icons";
 import RequireCurrentAccount from "../../providers/require-current-account";
+import { nip19 } from "nostr-tools";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
   const messages = useSubject(subject);
   const metadata = useUserMetadata(pubkey);
-  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey);
 
   return (
     <LinkBox as={Card} size="sm">
@@ -40,7 +39,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
           {messages[0] && <Text flexShrink={0}>{dayjs.unix(messages[0].created_at).fromNow()}</Text>}
         </Flex>
       </CardBody>
-      <LinkOverlay as={RouterLink} to={`/dm/${npub ?? pubkey}`} />
+      <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`} />
     </LinkBox>
   );
 }

@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
+import _throttle from "lodash/throttle";
+
 import { NostrSubscription } from "../classes/nostr-subscription";
 import { SuperMap } from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
@@ -8,14 +10,16 @@ import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
+import { getEventCoordinate } from "../helpers/nostr/events";
+import createDefer, { Deferred } from "../classes/deferred";
 
 type Pubkey = string;
 type Relay = string;
 
-export function getReadableAddr(kind: number, pubkey: string, d?: string) {
+export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
 }
-export function getAddr(kind: number, pubkey: string, d?: string) {
+export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
@@ -38,13 +42,12 @@ class ReplaceableEventRelayLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    const d = event.tags.find((t) => t[0] === "d" && t[1])?.[1];
-    const addr = getAddr(event.kind, event.pubkey, d);
+    const cord = getEventCoordinate(event);
 
     // remove the pubkey from the waiting list
-    this.requested.delete(addr);
+    this.requested.delete(cord);
 
-    const sub = this.events.get(addr);
+    const sub = this.events.get(cord);
 
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
@@ -57,25 +60,27 @@ class ReplaceableEventRelayLoader {
   }
 
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(getAddr(kind, pubkey, d));
+    return this.events.get(createCoordinate(kind, pubkey, d));
   }
 
   requestEvent(kind: number, pubkey: string, d?: string) {
-    const addr = getAddr(kind, pubkey, d);
-    const event = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const event = this.events.get(cord);
 
     if (!event.value) {
-      this.requestNext.add(addr);
+      this.requestNext.add(cord);
+      this.updateThrottle();
     }
 
     return event;
   }
 
+  updateThrottle = _throttle(this.update, 1000);
   update() {
     let needsUpdate = false;
-    for (const addr of this.requestNext) {
-      if (!this.requested.has(addr)) {
-        this.requested.set(addr, new Date());
+    for (const cord of this.requestNext) {
+      if (!this.requested.has(cord)) {
+        this.requested.set(cord, new Date());
         needsUpdate = true;
       }
     }
@@ -83,9 +88,9 @@ class ReplaceableEventRelayLoader {
 
     // prune requests
     const timeout = dayjs().subtract(1, "minute");
-    for (const [addr, date] of this.requested) {
+    for (const [cord, date] of this.requested) {
       if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(addr);
+        this.requested.delete(cord);
         needsUpdate = true;
       }
     }
@@ -95,8 +100,8 @@ class ReplaceableEventRelayLoader {
       if (this.requested.size > 0) {
         const filters: Record<number, NostrQuery> = {};
 
-        for (const [addr] of this.requested) {
-          const [kindStr, pubkey, d] = addr.split(":") as [string, string] | [string, string, string];
+        for (const [cord] of this.requested) {
+          const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
           const kind = parseInt(kindStr);
           filters[kind] = filters[kind] || { kinds: [kind] };
 
@@ -115,7 +120,7 @@ class ReplaceableEventRelayLoader {
           `Updating query`,
           Array.from(Object.keys(filters))
             .map((kind: string) => `kind ${kind}: ${filters[parseInt(kind)].authors?.length}`)
-            .join(", ")
+            .join(", "),
         );
         this.subscription.setQuery(query);
 
@@ -133,58 +138,92 @@ class ReplaceableEventLoaderService {
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private loaders = new SuperMap<Relay, ReplaceableEventRelayLoader>(
-    (relay) => new ReplaceableEventRelayLoader(relay, this.log.extend(relay))
+    (relay) => new ReplaceableEventRelayLoader(relay, this.log.extend(relay)),
   );
 
   log = logger.extend("ReplaceableEventLoader");
+  dbLog = this.log.extend("database");
 
-  handleEvent(event: NostrEvent) {
-    const d = event.tags.find((t) => t[0] === "d" && t[1])?.[1];
-    const addr = getAddr(event.kind, event.pubkey, d);
+  handleEvent(event: NostrEvent, saveToCache = true) {
+    const cord = getEventCoordinate(event);
 
-    const sub = this.events.get(addr);
+    const sub = this.events.get(cord);
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      this.saveToCache(addr, event);
+      if (saveToCache) this.saveToCache(cord, event);
     }
   }
 
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(getAddr(kind, pubkey, d));
+    return this.events.get(createCoordinate(kind, pubkey, d));
   }
 
+  private readFromCachePromises = new Map<string, Deferred<boolean>>();
+  private readFromCacheThrottle = _throttle(this.readFromCache, 1000);
+  private async readFromCache() {
+    if (this.readFromCachePromises.size === 0) return;
+
+    this.dbLog(`Reading ${this.readFromCachePromises.size} events from database`);
+    const transaction = db.transaction("replaceableEvents", "readonly");
+    for (const [cord, promise] of this.readFromCachePromises) {
+      transaction
+        .objectStore("replaceableEvents")
+        .get(cord)
+        .then((cached) => {
+          if (cached?.event) {
+            this.handleEvent(cached.event, false);
+            promise.resolve(true);
+          }
+          promise.resolve(false);
+        });
+    }
+    this.readFromCachePromises.clear();
+    transaction.commit();
+    await transaction.done;
+  }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
-  private loadFromCache(addr: string) {
-    const dedupe = this.loadCacheDedupe.get(addr);
+  private loadFromCache(cord: string) {
+    const dedupe = this.loadCacheDedupe.get(cord);
     if (dedupe) return dedupe;
 
-    const promise = db.get("replaceableEvents", addr).then((cached) => {
-      this.loadCacheDedupe.delete(addr);
-      if (cached?.event) {
-        this.handleEvent(cached.event);
-        return true;
-      }
-      return false;
-    });
+    // add to read queue
+    const promise = createDefer<boolean>();
+    this.readFromCachePromises.set(cord, promise);
 
-    this.loadCacheDedupe.set(addr, promise);
+    this.loadCacheDedupe.set(cord, promise);
+    this.readFromCacheThrottle();
 
     return promise;
   }
-  private async saveToCache(addr: string, event: NostrEvent) {
-    await db.put("replaceableEvents", { addr, event, created: dayjs().unix() });
+
+  private writeCacheQueue = new Map<string, NostrEvent>();
+  private writeToCacheThrottle = _throttle(this.writeToCache, 1000);
+  private async writeToCache() {
+    if (this.writeCacheQueue.size === 0) return;
+
+    this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
+    const transaction = db.transaction("replaceableEvents", "readwrite");
+    for (const [cord, event] of this.writeCacheQueue) {
+      transaction.objectStore("replaceableEvents").put({ addr: cord, event, created: dayjs().unix() });
+    }
+    this.writeCacheQueue.clear();
+    transaction.commit();
+    await transaction.done;
+  }
+  private async saveToCache(cord: string, event: NostrEvent) {
+    this.writeCacheQueue.set(cord, event);
+    this.writeToCacheThrottle();
   }
 
-  async pruneCache() {
+  async pruneDatabaseCache() {
     const keys = await db.getAllKeysFromIndex(
       "replaceableEvents",
       "created",
-      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix())
+      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
     );
 
-    this.log(`Pruning ${keys.length} events`);
-
+    this.dbLog(`Pruning ${keys.length} expired events from database`);
     const transaction = db.transaction("replaceableEvents", "readwrite");
     for (const key of keys) {
       transaction.store.delete(key);
@@ -193,8 +232,8 @@ class ReplaceableEventLoaderService {
   }
 
   private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
-    const addr = getAddr(kind, pubkey, d);
-    const sub = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const sub = this.events.get(cord);
 
     for (const relay of relays) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
@@ -202,7 +241,7 @@ class ReplaceableEventLoaderService {
       sub.connectWithHandler(request, (event, next, current) => {
         if (!current || event.created_at > current.created_at) {
           next(event);
-          this.saveToCache(addr, event);
+          this.saveToCache(cord, event);
         }
       });
     }
@@ -211,14 +250,12 @@ class ReplaceableEventLoaderService {
   }
 
   requestEvent(relays: string[], kind: number, pubkey: string, d?: string, alwaysRequest = false) {
-    const addr = getAddr(kind, pubkey, d);
-    const sub = this.events.get(addr);
+    const cord = createCoordinate(kind, pubkey, d);
+    const sub = this.events.get(cord);
 
     if (!sub.value) {
-      this.loadFromCache(addr).then((loaded) => {
-        if (!loaded) {
-          this.requestEventFromRelays(relays, kind, pubkey, d);
-        }
+      this.loadFromCache(cord).then((loaded) => {
+        if (!loaded) this.requestEventFromRelays(relays, kind, pubkey, d);
       });
     }
 
@@ -228,24 +265,14 @@ class ReplaceableEventLoaderService {
 
     return sub;
   }
-
-  update() {
-    for (const [relay, loader] of this.loaders) {
-      loader.update();
-    }
-  }
 }
 
 const replaceableEventLoaderService = new ReplaceableEventLoaderService();
 
-replaceableEventLoaderService.pruneCache();
-
+replaceableEventLoaderService.pruneDatabaseCache();
 setInterval(() => {
-  replaceableEventLoaderService.update();
-}, 1000 * 2);
-setInterval(() => {
-  replaceableEventLoaderService.pruneCache();
-}, 1000 * 60 * 60);
+  replaceableEventLoaderService.pruneDatabaseCache();
+}, 1000 * 60);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

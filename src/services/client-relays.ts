@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { nostrPostAction } from "../classes/nostr-post-action";
 import { unique } from "../helpers/array";
 import { DraftNostrEvent, RTag } from "../types/nostr-event";
 import accountService from "./account";
@@ -8,6 +7,7 @@ import userRelaysService, { ParsedUserRelays } from "./user-relays";
 import { Connection, PersistentSubject, Subject } from "../classes/subject";
 import signingService from "./signing";
 import { logger } from "../helpers/debug";
+import NostrPublishAction from "../classes/nostr-publish-action";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -21,7 +21,7 @@ const DEFAULT_RELAYS = [
 
 const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], RelayConfig[] | undefined> = (
   userRelays,
-  next
+  next,
 ) => next(userRelays.relays);
 
 class ClientRelayService {
@@ -119,18 +119,19 @@ class ClientRelayService {
 
     const newRelayUrls = newRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
     const oldRelayUrls = this.relays.value.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    const writeUrls = unique([...oldRelayUrls, ...newRelayUrls]);
+    // always write relay lists to wss://purplepag.es
+    const writeUrls = unique([...oldRelayUrls, ...newRelayUrls, "wss://purplepag.es"]);
 
     const current = accountService.current.value;
     if (!current) throw new Error("no account");
-    const event = await signingService.requestSignature(draft, current);
+    const signed = await signingService.requestSignature(draft, current);
 
-    const results = nostrPostAction(writeUrls, event);
+    const pub = new NostrPublishAction("Update Relays", writeUrls, signed);
 
     // pass new event to the user relay service
-    userRelaysService.receiveEvent(event);
+    userRelaysService.receiveEvent(signed);
 
-    await results.onComplete;
+    await pub.onComplete;
   }
 
   getWriteUrls() {

@@ -1,13 +1,15 @@
 import dayjs from "dayjs";
-import { utils } from "nostr-tools";
 import { Debugger } from "debug";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
+import { isReplaceable } from "../helpers/nostr/events";
+import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import deleteEventService from "../services/delete-events";
 
 function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {
@@ -16,16 +18,14 @@ function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
   return { ...filter, ...query };
 }
 
-const BLOCK_SIZE = 20;
+const BLOCK_SIZE = 30;
 
-type EventFilter = (event: NostrEvent) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
 
-class RelayTimelineLoader {
+export class RelayTimelineLoader {
   relay: string;
   query: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
-  private name?: string;
-  private requestId = 0;
   private log: Debugger;
 
   loading = false;
@@ -35,13 +35,14 @@ class RelayTimelineLoader {
 
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrRequestFilter, name: string, log?: Debugger) {
+  constructor(relay: string, query: NostrRequestFilter, log?: Debugger) {
     this.relay = relay;
     this.query = query;
-    this.name = name;
 
-    this.log = log || logger.extend(name);
+    this.log = log || logger.extend(relay);
     this.events = new EventStore(relay);
+
+    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
   loadNextBlock() {
@@ -52,31 +53,45 @@ class RelayTimelineLoader {
       query = addToQuery(query, { until: oldestEvent.created_at - 1 });
     }
 
-    const request = new NostrRequest([this.relay], undefined, this.name + "-" + this.requestId++);
+    const request = new NostrRequest([this.relay], 20 * 1000);
 
     let gotEvents = 0;
     request.onEvent.subscribe((e) => {
-      // if(oldestEvent && e.created_at<oldestEvent.created_at){
-      //   this.log('Got event older than oldest')
-      // }
-      if (this.handleEvent(e)) {
-        gotEvents++;
-      }
+      this.handleEvent(e);
+      gotEvents++;
     });
     request.onComplete.then(() => {
       this.loading = false;
-      if (gotEvents === 0) this.complete = true;
       this.log(`Got ${gotEvents} events`);
+      if (gotEvents === 0) {
+        this.complete = true;
+        this.log("Complete");
+      }
       this.onBlockFinish.next();
     });
 
     request.start(query);
   }
 
+  private handleDeleteEvent(deleteEvent: NostrEvent) {
+    const cord = deleteEvent.tags.find(isATag)?.[1];
+    const eventId = deleteEvent.tags.find(isETag)?.[1];
+
+    if (cord) this.events.deleteEvent(cord);
+    if (eventId) this.events.deleteEvent(eventId);
+  }
+
   private handleEvent(event: NostrEvent) {
     return this.events.addEvent(event);
   }
 
+  cleanup() {
+    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
+  }
+
+  getFirstEvent(nth = 0, filter?: EventFilter) {
+    return this.events.getFirstEvent(nth, filter);
+  }
   getLastEvent(nth = 0, filter?: EventFilter) {
     return this.events.getLastEvent(nth, filter);
   }
@@ -93,13 +108,13 @@ export class TimelineLoader {
   complete = new PersistentSubject(false);
 
   loadNextBlockBuffer = 2;
-  eventFilter?: (event: NostrEvent) => boolean;
+  eventFilter?: EventFilter;
 
-  private name: string;
+  name: string;
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
-  private relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
+  relayTimelineLoaders = new Map<string, RelayTimelineLoader>();
 
   constructor(name: string) {
     this.name = name;
@@ -111,7 +126,10 @@ export class TimelineLoader {
 
     // update the timeline when there are new events
     this.events.onEvent.subscribe(this.updateTimeline, this);
+    this.events.onDelete.subscribe(this.updateTimeline, this);
     this.events.onClear.subscribe(this.updateTimeline, this);
+
+    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
   private updateTimeline() {
@@ -120,7 +138,18 @@ export class TimelineLoader {
     } else this.timeline.next(this.events.getSortedEvents());
   }
   private handleEvent(event: NostrEvent) {
+    // if this is a replaceable event, mirror it over to the replaceable event service
+    if (isReplaceable(event.kind)) {
+      replaceableEventLoaderService.handleEvent(event);
+    }
     this.events.addEvent(event);
+  }
+  private handleDeleteEvent(deleteEvent: NostrEvent) {
+    const cord = deleteEvent.tags.find(isATag)?.[1];
+    const eventId = deleteEvent.tags.find(isETag)?.[1];
+
+    if (cord) this.events.deleteEvent(cord);
+    if (eventId) this.events.deleteEvent(eventId);
   }
 
   private createLoaders() {
@@ -128,7 +157,7 @@ export class TimelineLoader {
 
     for (const relay of this.relays) {
       if (!this.relayTimelineLoaders.has(relay)) {
-        const loader = new RelayTimelineLoader(relay, this.query, this.name, this.log.extend(relay));
+        const loader = new RelayTimelineLoader(relay, this.query, this.log.extend(relay));
         this.relayTimelineLoaders.set(relay, loader);
         this.events.connect(loader.events);
         loader.onBlockFinish.subscribe(this.updateLoading, this);
@@ -139,6 +168,7 @@ export class TimelineLoader {
   private removeLoaders(filter?: (loader: RelayTimelineLoader) => boolean) {
     for (const [relay, loader] of this.relayTimelineLoaders) {
       if (!filter || filter(loader)) {
+        loader.cleanup();
         this.events.disconnect(loader.events);
         loader.onBlockFinish.unsubscribe(this.updateLoading, this);
         loader.onBlockFinish.unsubscribe(this.updateComplete, this);
@@ -162,17 +192,19 @@ export class TimelineLoader {
   setQuery(query: NostrRequestFilter) {
     if (JSON.stringify(this.query) === JSON.stringify(query)) return;
 
+    // remove all loaders
     this.removeLoaders();
 
+    this.log("set query", query);
     this.query = query;
-    this.events.clear();
-    this.timeline.next([]);
 
+    // forget all events
+    this.forgetEvents();
+    // create any missing loaders
     this.createLoaders();
+    // update the complete flag
     this.updateComplete();
-
-    // update the subscription
-    this.subscription.forgetEvents();
+    // update the subscription with the new query
     this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
   }
   setFilter(filter?: (event: NostrEvent) => boolean) {
@@ -237,8 +269,15 @@ export class TimelineLoader {
 
   reset() {
     this.cursor = dayjs().unix();
-    this.relayTimelineLoaders.clear();
+    this.removeLoaders();
     this.forgetEvents();
+  }
+
+  /** close the subscription and remove any event listeners for this timeline */
+  cleanup() {
+    this.close();
+    this.removeLoaders();
+    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 
   // TODO: this is only needed because the current logic dose not remove events when the relay they where fetched from is removed

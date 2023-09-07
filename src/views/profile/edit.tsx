@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import {
   Avatar,
   Button,
@@ -11,9 +12,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { nostrPostAction } from "../../classes/nostr-post-action";
+
+import NostrPublishAction from "../../classes/nostr-publish-action";
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
@@ -190,7 +191,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const writeRelays = useWriteRelayUrls();
+  const writeRelays = useWriteRelayUrls(["wss://purplepag.es"]); // always write profile info to wss://purplepag.es
   const readRelays = useReadRelayUrls();
   const toast = useToast();
   const account = useCurrentAccount()!;
@@ -206,7 +207,7 @@ export const ProfileEditView = () => {
       nip05: metadata?.nip05,
       lightningAddress: metadata?.lud16 || metadata?.lud06,
     }),
-    [metadata]
+    [metadata],
   );
 
   const handleSubmit = async (data: FormData) => {
@@ -235,11 +236,11 @@ export const ProfileEditView = () => {
         tags: [],
       };
 
-      const event = await signingService.requestSignature(draft, account);
-      const results = nostrPostAction(writeRelays, event);
-      userMetadataService.receiveEvent(event);
+      const signed = await signingService.requestSignature(draft, account);
+      const pub = new NostrPublishAction("Update Profile", writeRelays, signed);
+      userMetadataService.receiveEvent(signed);
 
-      await results.onComplete;
+      await pub.onComplete;
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

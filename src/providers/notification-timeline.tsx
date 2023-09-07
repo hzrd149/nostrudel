@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
-import { truncatedId } from "../helpers/nostr/event";
+import { truncatedId } from "../helpers/nostr/events";
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { TimelineLoader } from "../classes/timeline-loader";

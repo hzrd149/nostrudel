@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Bech32Prefix, normalizeToBech32 } from "../helpers/nip19";
+import { nip19 } from "nostr-tools";
+
 import { UserAvatar, UserAvatarProps } from "./user-avatar";
 
 export const UserAvatarLink = React.memo(({ pubkey, ...props }: UserAvatarProps) => (
-  <Link to={`/u/${normalizeToBech32(pubkey, Bech32Prefix.Pubkey)}`}>
+  <Link to={`/u/${nip19.npubEncode(pubkey)}`}>
     <UserAvatar pubkey={pubkey} {...props} />
   </Link>
 ));

@@ -1,20 +1,17 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { useReadRelayUrls } from "../hooks/use-client-relays";
-import { useDisclosure } from "@chakra-ui/react";
-import RelaySelectionModal from "../components/relay-selection/relay-selection-modal";
-import { unique } from "../helpers/array";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import { useReadRelayUrls } from "../hooks/use-client-relays";
+import { unique } from "../helpers/array";
 
 type RelaySelectionContextType = {
   relays: string[];
   setSelected: (relays: string[]) => void;
-  openModal: () => void;
 };
 
 export const RelaySelectionContext = createContext<RelaySelectionContextType>({
   relays: [],
   setSelected: () => {},
-  openModal: () => {},
 });
 
 export function useRelaySelectionContext() {
@@ -34,7 +31,6 @@ export default function RelaySelectionProvider({
   overrideDefault,
   additionalDefaults,
 }: RelaySelectionProviderProps) {
-  const relaysModal = useDisclosure();
   const { state } = useLocation();
   const navigate = useNavigate();
 
@@ -44,19 +40,22 @@ export default function RelaySelectionProvider({
     if (overrideDefault) return overrideDefault;
     if (additionalDefaults) return unique([...userReadRelays, ...additionalDefaults]);
     return userReadRelays;
-  }, [state?.relays, overrideDefault, userReadRelays, additionalDefaults]);
+  }, [state?.relays, overrideDefault, userReadRelays.join("|"), additionalDefaults]);
 
-  const setSelected = useCallback((relays: string[]) => {
-    navigate(".", { state: { relays }, replace: true });
-  }, []);
-
-  return (
-    <RelaySelectionContext.Provider value={{ relays, setSelected, openModal: relaysModal.onOpen }}>
-      {children}
-
-      {relaysModal.isOpen && (
-        <RelaySelectionModal selected={relays} onSubmit={setSelected} onClose={relaysModal.onClose} />
-      )}
-    </RelaySelectionContext.Provider>
+  const setSelected = useCallback(
+    (relays: string[]) => {
+      navigate(".", { state: { relays }, replace: true });
+    },
+    [navigate],
   );
+
+  const context = useMemo(
+    () => ({
+      relays,
+      setSelected,
+    }),
+    [relays.join("|"), setSelected],
+  );
+
+  return <RelaySelectionContext.Provider value={context}>{children}</RelaySelectionContext.Provider>;
 }

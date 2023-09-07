@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   Heading,
   Image,
@@ -14,13 +15,15 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import dayjs from "dayjs";
+import { Kind } from "nostr-tools";
 import { useForm } from "react-hook-form";
+
+import { DraftNostrEvent, NostrEvent, isDTag } from "../types/nostr-event";
 import { UserAvatar } from "./user-avatar";
 import { UserLink } from "./user-link";
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
 import { LightningIcon } from "./icons";
-import { Kind } from "nostr-tools";
 import clientRelaysService from "../services/client-relays";
 import { getEventRelays } from "../services/event-relays";
 import { useSigningContext } from "../providers/signing-provider";
@@ -29,13 +32,14 @@ import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
 import { requestZapInvoice } from "../helpers/zaps";
 import { ParsedStream, getATag } from "../helpers/nostr/stream";
-import EmbeddedNote from "./note/embedded-note";
-import dayjs from "dayjs";
+import EmbeddedNote from "./embed-event/event-types/embedded-note";
 import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { useAdditionalRelayContext } from "../providers/additional-relay-context";
+import { getEventCoordinate, isReplaceable } from "../helpers/nostr/events";
+import { EmbedEvent } from "./embed-event";
 
 type FormValues = {
   amount: number;
@@ -45,7 +49,7 @@ type FormValues = {
 export type ZapModalProps = Omit<ModalProps, "children"> & {
   pubkey: string;
   event?: NostrEvent;
-  stream?: ParsedStream;
+  relays?: string[];
   initialComment?: string;
   initialAmount?: number;
   onInvoice: (invoice: string) => void;
@@ -57,7 +61,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
 export default function ZapModal({
   event,
   pubkey,
-  stream,
+  relays,
   onClose,
   initialComment,
   initialAmount,
@@ -130,10 +134,11 @@ export default function ZapModal({
             ],
           };
 
-          console.log(zapRequest);
-
-          if (event) zapRequest.tags.push(["e", event.id]);
-          if (stream) zapRequest.tags.push(["a", getATag(stream)]);
+          if (event) {
+            if (isReplaceable(event.kind) && event.tags.some(isDTag)) {
+              zapRequest.tags.push(["a", getEventCoordinate(event)]);
+            } else zapRequest.tags.push(["e", event.id]);
+          }
 
           const signed = await requestSignature(zapRequest);
           if (signed) {
@@ -175,26 +180,17 @@ export default function ZapModal({
                 </Box>
               </Flex>
 
-              {showEventPreview && stream && (
-                <Box>
-                  <Heading size="sm" mb="2">
-                    Stream: {stream.title}
-                  </Heading>
-                  {stream.image && <Image src={stream.image} />}
-                </Box>
-              )}
-              {showEventPreview && event && <EmbeddedNote note={event} />}
+              {showEventPreview && event && <EmbedEvent event={event} />}
 
               {allowComment && (canZap || lnurlMetadata?.commentAllowed) && (
                 <Input
                   placeholder="Comment"
                   {...register("comment", { maxLength: lnurlMetadata?.commentAllowed ?? 150 })}
                   autoComplete="off"
-                  autoFocus={!initialComment}
                 />
               )}
 
-              <Flex gap="2" alignItems="center" flexWrap="wrap">
+              <Flex gap="2" alignItems="center" wrap="wrap">
                 {customZapAmounts
                   .split(",")
                   .map((v) => parseInt(v))
@@ -206,6 +202,7 @@ export default function ZapModal({
                       }}
                       leftIcon={<LightningIcon color="yellow.400" />}
                       variant="solid"
+                      size="sm"
                     >
                       {amount}
                     </Button>

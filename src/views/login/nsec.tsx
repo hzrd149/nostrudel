@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { Bech32Prefix, normalizeToBech32, normalizeToHex } from "../../helpers/nip19";
+import { normalizeToHex } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
-import { generatePrivateKey, getPublicKey } from "nostr-tools";
+import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import signingService from "../../services/signing";
 
 export default function LoginNsecView() {
@@ -31,7 +31,7 @@ export default function LoginNsecView() {
   const [inputValue, setInputValue] = useState("");
 
   const [hexKey, setHexKey] = useState("");
-  const [relayUrl, setRelayUrl] = useState("");
+  const [relayUrl, setRelayUrl] = useState("wss://purplepag.es");
 
   const [npub, setNpub] = useState("");
 
@@ -39,8 +39,8 @@ export default function LoginNsecView() {
     const hex = generatePrivateKey();
     const pubkey = getPublicKey(hex);
     setHexKey(hex);
-    setInputValue(normalizeToBech32(hex, Bech32Prefix.SecKey) ?? "");
-    setNpub(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? "");
+    setInputValue(nip19.nsecEncode(hex));
+    setNpub(nip19.npubEncode(pubkey));
     setShow(true);
   }, [setHexKey, setInputValue, setShow]);
 
@@ -53,7 +53,7 @@ export default function LoginNsecView() {
         if (hex) {
           const pubkey = getPublicKey(hex);
           setHexKey(hex);
-          setNpub(normalizeToBech32(pubkey, Bech32Prefix.Pubkey) ?? "");
+          setNpub(nip19.npubEncode(pubkey));
           setError(false);
         } else {
           setError(true);
@@ -62,7 +62,7 @@ export default function LoginNsecView() {
         setError(true);
       }
     },
-    [setInputValue, setHexKey, setNpub, setError]
+    [setInputValue, setHexKey, setNpub, setError],
   );
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = async (e) => {

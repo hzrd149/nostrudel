@@ -11,10 +11,12 @@ import {
   Input,
   Link,
   FormErrorMessage,
+  Code,
 } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
+import { createCorsUrl } from "../../helpers/cors";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -31,7 +33,7 @@ async function validateCorsProxy(url?: string) {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(new URL("/https://example.com", url), { signal: controller.signal });
+    const res = await fetch(createCorsUrl("https://example.com", url), { signal: controller.signal });
     return res.ok || "Cant reach instance";
   } catch (e) {
     return "Cant reach instance";
@@ -122,16 +124,26 @@ export default function PrivacySettings() {
             <FormLabel>CORS Proxy</FormLabel>
             <Input
               type="url"
-              placeholder="https://cors.example.com/"
-              {...register("corsProxy", { setValueAs: safeUrl, validate: validateCorsProxy })}
+              placeholder="https://corsproxy.io/?<encoded_url>"
+              {...register("corsProxy", { validate: validateCorsProxy })}
             />
             {formState.errors.corsProxy && <FormErrorMessage>{formState.errors.corsProxy.message}</FormErrorMessage>}
             <FormHelperText>
-              This is used as a fallback when verifying NIP-05 ids and fetching open-graph metadata. URL to an instance
-              of{" "}
+              This is used as a fallback ( to bypass CORS restrictions ) when verifying NIP-05 ids and fetching
+              open-graph metadata.
+              <br />
+              This can either point to an instance of{" "}
               <Link href="https://github.com/Rob--W/cors-anywhere" isExternal color="blue.500">
                 cors-anywhere
-              </Link>
+              </Link>{" "}
+              or{" "}
+              <Link href="https://corsproxy.io/" isExternal color="blue.500">
+                corsproxy.io
+              </Link>{" "}
+              <br />
+              <Code fontSize="0.9em">{`<url>`}</Code> or <Code fontSize="0.9em">{`<encoded_url>`}</Code> can be used to
+              inject the raw or the encoded url into the proxy url ( example:{" "}
+              <Code fontSize="0.9em">{`https://corsproxy.io/?<encoded_url>`}</Code> )
             </FormHelperText>
           </FormControl>
         </Flex>

@@ -1,14 +1,15 @@
 import { Flex, Spinner } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useParams } from "react-router-dom";
-import { Note } from "../../components/note";
-import { isHex } from "../../helpers/nip19";
+
+import Note from "../../components/note";
+import { isHexKey } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
-import { ThreadPost } from "./thread-post";
+import { ThreadPost } from "./components/thread-post";
 
 function useNotePointer() {
   const { id } = useParams() as { id: string };
-  if (isHex(id)) return { id, relays: [] };
+  if (isHexKey(id)) return { id, relays: [] };
   const pointer = nip19.decode(id);
 
   switch (pointer.type) {
@@ -61,7 +62,7 @@ export default function NoteView() {
   }
 
   return (
-    <Flex direction="column" gap="4" flex={1} pb="4" pt="4" pl="1" pr="1">
+    <Flex direction="column" gap="4" flex={1} pb="12" pt="4" pl="1" pr="1">
       {pageContent}
     </Flex>
   );

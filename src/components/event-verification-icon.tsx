@@ -1,13 +1,17 @@
-import { NostrEvent } from "../types/nostr-event";
+import { memo } from "react";
 import { verifySignature } from "nostr-tools";
-import { useMemo } from "react";
+
+import { NostrEvent } from "../types/nostr-event";
 import { CheckIcon, VerificationFailed } from "./icons";
+import useAppSettings from "../hooks/use-app-settings";
 
-export default function EventVerificationIcon({ event }: { event: NostrEvent }) {
-  const valid = useMemo(() => verifySignature(event), [event]);
+function EventVerificationIcon({ event }: { event: NostrEvent }) {
+  const { showSignatureVerification } = useAppSettings();
+  if (!showSignatureVerification) return null;
 
-  if (!valid) {
+  if (!verifySignature(event)) {
     return <VerificationFailed color="red.500" />;
   }
   return <CheckIcon color="green.500" />;
 }
+export default memo(EventVerificationIcon);

@@ -17,7 +17,7 @@ import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-d
 import { ClipboardIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
-import { matchHashtag } from "../../helpers/regexp";
+import { getMatchHashtag } from "../../helpers/regexp";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -56,27 +56,18 @@ function ProfileResult({ event }: { event: NostrEvent }) {
   }, [event.id]);
 
   return (
-    <Card overflow="hidden" variant="outline" size="sm">
-      <CardHeader display="flex" gap="4" alignItems="flex-start">
-        <UserAvatar pubkey={event.pubkey} noProxy />
-        <Flex alignItems="center" gap="2" overflow="hidden">
-          <Link as={RouterLink} to={`/u/${nprofile}`} whiteSpace="nowrap" fontWeight="bold" fontSize="xl" isTruncated>
-            {getUserDisplayName(metadata, event.pubkey)}
-          </Link>
-          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-        </Flex>
-      </CardHeader>
-      <CardBody py={0} overflow="hidden" maxH="20rem">
-        {aboutContent && (
-          <Box whiteSpace="pre" isTruncated>
-            {aboutContent}
-          </Box>
-        )}
-      </CardBody>
-      <CardFooter>
-        <EventRelays event={event} />
-      </CardFooter>
-    </Card>
+    <Box>
+      <UserAvatar pubkey={event.pubkey} noProxy mr="2" float="left" />
+      <Link as={RouterLink} to={`/u/${nprofile}`} whiteSpace="nowrap" fontWeight="bold" fontSize="xl" isTruncated>
+        {getUserDisplayName(metadata, event.pubkey)}
+      </Link>
+      <br />
+      <UserDnsIdentityIcon pubkey={event.pubkey} />
+      <br />
+      <Box whiteSpace="pre" overflow="hidden" maxH="xs">
+        {aboutContent}
+      </Box>
+    </Box>
   );
 }
 
@@ -84,10 +75,10 @@ function SearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();
 
   const timeline = useTimelineLoader(
-    `search`,
+    `${search}-search`,
     searchRelays,
     { search: search || "", kinds: [Kind.Metadata] },
-    { enabled: !!search }
+    { enabled: !!search },
   );
 
   const events = useSubject(timeline?.timeline) ?? [];
@@ -96,12 +87,9 @@ function SearchResults({ search }: { search: string }) {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
-        {events.map((event) => (
-          <ProfileResult key={event.id} event={event} />
-        ))}
-      </SimpleGrid>
-
+      {events.map((event) => (
+        <ProfileResult key={event.id} event={event} />
+      ))}
       <TimelineActionAndStatus timeline={timeline} />
     </IntersectionObserverProvider>
   );
@@ -128,7 +116,7 @@ export function SearchPage() {
       return;
     }
 
-    const hashTagMatch = cleanText.match(matchHashtag);
+    const hashTagMatch = getMatchHashtag().exec(cleanText);
     if (hashTagMatch) {
       navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() });
       return;
@@ -165,19 +153,22 @@ export function SearchPage() {
         </Flex>
       </form>
 
-      {search && <SearchResults search={search} />}
+      <Flex direction="column" gap="8">
+        {search ? (
+          <SearchResults search={search} />
+        ) : (
+          <Link isExternal href="https://nostr.band" color="blue.500" mx="auto">
+            Advanced Search
+          </Link>
+        )}
+      </Flex>
     </Flex>
   );
 }
 
 // TODO: remove this when there is a good way to allow the user to select from a list of filtered relays that support NIP-50
-const searchRelays = ["wss://relay.nostr.band", "wss://search.nos.today"];
+const searchRelays = ["wss://relay.nostr.band", "wss://search.nos.today", "wss://relay.noswhere.com"];
 export default function SearchView() {
-  // const { value: searchRelays = ["wss://relay.nostr.band"] } = useAsync(async () => {
-  //   const relays: string[] = await fetch("https://api.nostr.watch/v1/nip/50").then((res) => res.json());
-  //   return relays;
-  // });
-
   return (
     <RelaySelectionProvider overrideDefault={searchRelays}>
       <SearchPage />

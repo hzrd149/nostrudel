@@ -1,6 +1,7 @@
 import { useInterval } from "react-use";
 import { TimelineLoader } from "../classes/timeline-loader";
 import { useIntersectionMapCallback } from "../providers/intersection-observer";
+import { NostrEvent } from "../types/nostr-event";
 
 export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) {
   // if the cursor is set too far ahead and the last block did not overlap with the cursor
@@ -12,16 +13,21 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
   return useIntersectionMapCallback<string>(
     (map) => {
       // find oldest event that is visible
-      for (let i = timeline.timeline.value.length - 1; i >= 0; i--) {
-        const event = timeline.timeline.value[i];
-
-        if (map.get(event.id)?.isIntersecting) {
-          timeline.setCursor(event.created_at);
-          timeline.loadNextBlocks();
-          return;
+      let oldestEvent: NostrEvent | undefined = undefined;
+      for (const [id, intersection] of map) {
+        if (!intersection.isIntersecting) continue;
+        const event = timeline.events.getEvent(id);
+        if (!event) continue;
+        if (!oldestEvent || event.created_at < oldestEvent.created_at) {
+          oldestEvent = event;
         }
       }
+
+      if (oldestEvent) {
+        timeline.setCursor(oldestEvent.created_at);
+        timeline.loadNextBlocks();
+      }
     },
-    [timeline]
+    [timeline],
   );
 }

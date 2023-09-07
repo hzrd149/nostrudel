@@ -12,6 +12,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { NoteContents } from "../../../components/note/note-contents";
 import { Metadata } from "./relay-card";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {
   const ratingJson = event.tags.find((t) => t[0] === "l" && t[3])?.[3];
@@ -20,7 +21,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
   const url = event.tags.find((t) => t[0] === "r")?.[1];
 
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
     <Card variant="outline" ref={ref}>

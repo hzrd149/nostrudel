@@ -1,8 +1,9 @@
-import { getEventUID } from "../helpers/nostr/event";
+import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 
-type EventFilter = (event: NostrEvent) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
+
 export default class EventStore {
   name?: string;
   events = new Map<string, NostrEvent>();
@@ -15,8 +16,9 @@ export default class EventStore {
     return Array.from(this.events.values()).sort((a, b) => b.created_at - a.created_at);
   }
 
-  onEvent = new Subject<NostrEvent>();
-  onClear = new Subject();
+  onEvent = new Subject<NostrEvent>(undefined, false);
+  onDelete = new Subject<string>(undefined, false);
+  onClear = new Subject(undefined, false);
 
   addEvent(event: NostrEvent) {
     const id = getEventUID(event);
@@ -24,37 +26,54 @@ export default class EventStore {
     if (!existing || event.created_at > existing.created_at) {
       this.events.set(id, event);
       this.onEvent.next(event);
-      return true;
     }
-    return false;
+  }
+  getEvent(id: string) {
+    return this.events.get(id);
+  }
+  deleteEvent(id: string) {
+    if (this.events.has(id)) {
+      this.events.delete(id);
+      this.onDelete.next(id);
+    }
   }
 
   clear() {
     this.events.clear();
-    this.onClear.next(null);
+    this.onClear.next(undefined);
   }
 
   connect(other: EventStore) {
     other.onEvent.subscribe(this.addEvent, this);
+    other.onDelete.subscribe(this.deleteEvent, this);
   }
   disconnect(other: EventStore) {
     other.onEvent.unsubscribe(this.addEvent, this);
+    other.onDelete.unsubscribe(this.deleteEvent, this);
   }
 
   getFirstEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    const filteredEvents = filter ? events.filter(filter) : events;
-    for (let i = 0; i <= nth; i++) {
-      const event = filteredEvents[i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.shift();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
   getLastEvent(nth = 0, filter?: EventFilter) {
     const events = this.getSortedEvents();
-    const filteredEvents = filter ? events.filter(filter) : events;
-    for (let i = nth; i >= 0; i--) {
-      const event = filteredEvents[filteredEvents.length - 1 - i];
-      if (event) return event;
+
+    let i = 0;
+    while (true) {
+      const event = events.pop();
+      if (!event) return;
+      if (filter && !filter(event)) continue;
+      if (i === nth) return event;
+      i++;
     }
   }
 }

@@ -25,13 +25,14 @@ import { UserLink } from "../../user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { EventRelays } from "../../note/note-relays";
 import { useAsync } from "react-use";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
   const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   const naddr = useEventNaddr(event);
 

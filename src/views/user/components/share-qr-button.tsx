@@ -15,16 +15,17 @@ import {
   Input,
   Flex,
 } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
+
 import { QrCodeIcon } from "../../../components/icons";
 import QrCodeSvg from "../../../components/qr-code-svg";
-import { Bech32Prefix, normalizeToBech32 } from "../../../helpers/nip19";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 
 export const QrIconButton = ({ pubkey, ...props }: { pubkey: string } & Omit<IconButtonProps, "icon">) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const npub = normalizeToBech32(pubkey, Bech32Prefix.Pubkey) || pubkey;
+  const npub = nip19.npubEncode(pubkey);
   const npubLink = "nostr:" + npub;
   const nprofile = useSharableProfileId(pubkey);
   const nprofileLink = "nostr:" + nprofile;
