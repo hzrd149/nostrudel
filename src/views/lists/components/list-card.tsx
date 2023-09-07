@@ -13,12 +13,11 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import { getEventsFromList, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
+import { getEventsFromList, getListName, getPubkeysFromList, isSpecialListKind } from "../../../helpers/nostr/lists";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
@@ -33,8 +32,9 @@ import ListMenu from "./list-menu";
 function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
-  const link =
-    event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventAddress(event);
+  const link = isSpecialListKind(event.kind)
+    ? createCoordinate(event.kind, event.pubkey)
+    : getSharableEventAddress(event);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
