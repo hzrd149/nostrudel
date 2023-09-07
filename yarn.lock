@@ -2343,28 +2343,29 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.18.12.tgz#1da26735ce5954bf914f8f2117b5096c548bbba2"
   integrity sha512-O0UYQVkvfM/jO8a4OwoV0mAKSJw+mjWTAd1MJd/1FCX6uiMdLmMRPK/w6e9OQ0ob2WGxzIm9va/KG0Ja4zIOgg==
 
-"@getalby/bitcoin-connect-react@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-1.0.0.tgz#c8124cc0d92c04a53d0b6e599dec7daf142c7cf0"
-  integrity sha512-64CYGkzy+7fazJbb7A+Y3tNTyUDH9yvVHlTfCL9g1gO1EMuASLIdSG6snToGZpbtkY+6sSOmD7scz0bSIUKtAw==
+"@getalby/bitcoin-connect-react@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-1.1.0.tgz#d6b97b793b5ae128783e1adafaf7a87f983a6d78"
+  integrity sha512-oX43GwUffdS2DYCPS7a6hECVWgbw1HZr0zHmR3uX16f7ov9vGjNHj8mSg4aWgYnatrxoNt12gklr1MRf6nYYKg==
   dependencies:
-    "@getalby/lightning-wallet-connect" "^1.0.14"
+    "@getalby/bitcoin-connect" "^1.1.0"
 
-"@getalby/lightning-wallet-connect@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@getalby/lightning-wallet-connect/-/lightning-wallet-connect-1.0.14.tgz#9e9641a596bb478126a63acf55aca306465070af"
-  integrity sha512-9Xlk7L0qsZOSc6yXWn86QWbfVRV36dXIP+LWgIae4YA545WRlUwHe5z3dtOY+jEPkXBcF/70Kr4au9tk9jpcvQ==
+"@getalby/bitcoin-connect@^1.1.0":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-1.1.2.tgz#bd613ed2ae135d3537105740da816de9a0889a2d"
+  integrity sha512-SPYJyXri4QKxekdLluNypb0jWDTAuvY7FF/Zjmx/C4RVynxHpW1LIdQJ1p9XDXCnkgxKhuLKE1bxfAzwLEEKXA==
   dependencies:
-    "@getalby/sdk" "^2.2.3"
+    "@getalby/sdk" "^2.4.0"
     lit "^2.2.4"
     zustand "^4.4.1"
 
-"@getalby/sdk@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@getalby/sdk/-/sdk-2.2.3.tgz#fda6de0bc241b59e7ed813204067c4d14b794668"
-  integrity sha512-8NvzGtpyne8EmRlCcg/sF3kUZWeHRXqZwS1HNuP1ytNNfmKFUZpo3GOauwzEpFFmaD+Fht5bjT3Y/XLk0QtFSw==
+"@getalby/sdk@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@getalby/sdk/-/sdk-2.4.0.tgz#fd3a6b24585e3dc32462da97c4b13a70294c7dee"
+  integrity sha512-aIGNwLRF9coj6koxfq7P4GtFZbFjQbnIheix39x9176PwFw4dXOdGXHPXnqioJTmeq80y+vX1yd+u/f03YGoeg==
   dependencies:
     crypto-js "^4.1.1"
+    events "^3.3.0"
     nostr-tools "1.13.1"
 
 "@jridgewell/gen-mapping@^0.3.0", "@jridgewell/gen-mapping@^0.3.2":
@@ -3884,6 +3885,11 @@ eventemitter2@6.4.7:
   version "6.4.7"
   resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-6.4.7.tgz#a7f6c4d7abf28a14c1ef3442f21cb306a054271d"
   integrity sha512-tYUSVOGeQPKt/eC1ABfhHy5Xd96N3oIijJvN3O9+TsC28T5V9yX9oEfEK5faP0EFSNVOG97qtAS68GBrQB2hDg==
+
+events@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
+  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 execa@4.1.0:
   version "4.1.0"
