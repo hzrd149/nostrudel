@@ -2,6 +2,7 @@ import { Box, Flex, Select, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
 import { NoteLink } from "../../components/note-link";
@@ -19,6 +20,7 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
+import Timestamp from "../../components/timestamp";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -55,7 +57,7 @@ const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
               <Text>{readablizeSats(payment.amount / 1000)} sats</Text>
             </Flex>
           )}
-          <Text ml="auto">{dayjs.unix(request.created_at).fromNow()}</Text>
+          <Timestamp ml="auto" timestamp={request.created_at} />
         </Flex>
         {embedContent && <Box>{embedContent}</Box>}
       </Box>

@@ -1,5 +1,4 @@
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import dayjs from "dayjs";
 import {
   Accordion,
   AccordionButton,
@@ -46,6 +45,7 @@ import { UserProfileMenu } from "./components/user-profile-menu";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
+import Timestamp from "../../components/timestamp";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -190,7 +190,11 @@ export default function UserAboutTab() {
               <Stat>
                 <StatLabel>Following</StatLabel>
                 <StatNumber>{contacts ? readablizeSats(getPubkeysFromList(contacts).length) : "Unknown"}</StatNumber>
-                {contacts && <StatHelpText>Updated {dayjs.unix(contacts.created_at).fromNow()}</StatHelpText>}
+                {contacts && (
+                  <StatHelpText>
+                    Updated <Timestamp timestamp={contacts.created_at} />
+                  </StatHelpText>
+                )}
               </Stat>
 
               {stats && (

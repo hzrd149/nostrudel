@@ -7,6 +7,8 @@ import { GlobalProviders } from "./providers";
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTimePlugin);
+import localizedFormat from "dayjs/plugin/localizedFormat";
+dayjs.extend(localizedFormat);
 
 // register nostr: protocol handler
 if (import.meta.env.PROD) {

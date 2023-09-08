@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { Card, CardProps, Flex, Image, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
 import {
   getArticleImage,
@@ -15,6 +14,7 @@ import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { UserAvatarLink } from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
+import Timestamp from "../../timestamp";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
   const title = getArticleTitle(article);
@@ -37,7 +37,9 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
           </LinkOverlay>
           <Text>by:</Text>
           <UserLink pubkey={article.pubkey} />
-          <Text>| {dayjs.unix(getArticlePublishDate(article) ?? article.created_at).fromNow()}</Text>
+          <Text>
+            | <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
+          </Text>
         </Flex>
         <Text flex={1}>{summary}</Text>
         <Flex gap="2" alignItems="center">

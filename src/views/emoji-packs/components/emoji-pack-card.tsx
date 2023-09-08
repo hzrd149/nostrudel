@@ -13,7 +13,6 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
@@ -24,6 +23,7 @@ import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
 import EmojiPackMenu from "./emoji-pack-menu";
+import Timestamp from "../../../components/timestamp";
 
 export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojisFromPack(pack);
@@ -59,7 +59,9 @@ export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "child
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
-        <Text>Updated: {dayjs.unix(pack.created_at).fromNow()}</Text>
+        <Text>
+          Updated: <Timestamp timestamp={pack.created_at} />
+        </Text>
       </CardFooter>
     </Card>
   );

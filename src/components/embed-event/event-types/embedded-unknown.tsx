@@ -1,5 +1,4 @@
-import { Box, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
+import { Box, Card, CardBody, CardHeader, CardProps, Flex, Link, Text } from "@chakra-ui/react";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -11,6 +10,7 @@ import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import { useMemo } from "react";
 import { embedEmoji, embedNostrHashtags, embedNostrLinks, embedNostrMentions } from "../../embed-types";
 import { EmbedableContent } from "../../../helpers/embeds";
+import Timestamp from "../../timestamp";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = getSharableEventAddress(event);
@@ -32,7 +32,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
         <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="md" />
         <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
         <Link ml="auto" href={address ? buildAppSelectUrl(address) : ""} isExternal>
-          {dayjs.unix(event.created_at).fromNow()}
+          <Timestamp timestamp={event.created_at} />
         </Link>
       </CardHeader>
       <CardBody p="2">

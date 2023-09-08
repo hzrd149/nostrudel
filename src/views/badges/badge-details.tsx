@@ -10,7 +10,6 @@ import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/
 import BadgeMenu from "./components/badge-menu";
 import BadgeAwardCard from "./components/award-card";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { createCoordinate } from "../../services/replaceable-event-requester";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -20,8 +19,8 @@ import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import dayjs from "dayjs";
 import { ErrorBoundary } from "../../components/error-boundary";
+import Timestamp from "../../components/timestamp";
 
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const navigate = useNavigate();
@@ -77,7 +76,9 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
               Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
               <UserLink fontWeight="bold" pubkey={badge.pubkey} />
             </Text>
-            <Text>Last Updated: {dayjs.unix(badge.created_at).fromNow()}</Text>
+            <Text>
+              Last Updated: <Timestamp timestamp={badge.created_at} />
+            </Text>
             {description && <Text pb="2">{description}</Text>}
           </Flex>
         </Flex>

@@ -1,5 +1,4 @@
 import React, { useMemo, useRef } from "react";
-import dayjs from "dayjs";
 import {
   Box,
   ButtonGroup,
@@ -38,6 +37,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
+import Timestamp from "../timestamp";
 
 export type NoteProps = {
   event: NostrEvent;
@@ -72,7 +72,7 @@ export const Note = React.memo(({ event, variant = "outline", showReplyButton }:
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
-                {dayjs.unix(event.created_at).fromNow()}
+                <Timestamp timestamp={event.created_at} />
               </NoteLink>
             </Flex>
           </CardHeader>

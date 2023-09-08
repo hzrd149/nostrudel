@@ -1,7 +1,6 @@
 import { memo, useRef } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
@@ -11,6 +10,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { getEventUID } from "../../../helpers/nostr/events";
 import BadgeMenu from "./badge-menu";
 import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
+import Timestamp from "../../../components/timestamp";
 
 function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);
@@ -40,7 +40,9 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
           <UserAvatarLink pubkey={badge.pubkey} size="xs" />
           <UserLink pubkey={badge.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
         </Flex>
-        <Text>Updated: {dayjs.unix(badge.created_at).fromNow()}</Text>
+        <Text>
+          Updated: <Timestamp timestamp={badge.created_at} />
+        </Text>
       </CardBody>
     </Card>
   );

@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Button, Card, CardBody, CardHeader, Spacer, useDisclosure } from "@chakra-ui/react";
 
 import { NoteContents } from "../../note/note-contents";
@@ -12,6 +11,7 @@ import EventVerificationIcon from "../../event-verification-icon";
 import { TrustProvider } from "../../../providers/trust";
 import { NoteLink } from "../../note-link";
 import { ArrowDownSIcon, ArrowUpSIcon } from "../../icons";
+import Timestamp from "../../timestamp";
 
 export default function EmbeddedNote({ event }: { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
@@ -30,7 +30,7 @@ export default function EmbeddedNote({ event }: { event: NostrEvent }) {
           <Spacer />
           {showSignatureVerification && <EventVerificationIcon event={event} />}
           <NoteLink noteId={event.id} color="current" whiteSpace="nowrap">
-            {dayjs.unix(event.created_at).fromNow()}
+            <Timestamp timestamp={event.created_at} />
           </NoteLink>
         </CardHeader>
         <CardBody p="0">{expand.isOpen && <NoteContents px="2" event={event} />}</CardBody>

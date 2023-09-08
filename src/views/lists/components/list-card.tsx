@@ -13,7 +13,6 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
@@ -28,6 +27,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
+import Timestamp from "../../../components/timestamp";
 
 function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
@@ -59,7 +59,9 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
           <UserAvatarLink pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
         </Flex>
-        <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
+        <Text>
+          Updated: <Timestamp timestamp={event.created_at} />
+        </Text>
         {people.length > 0 && (
           <>
             <Text>People ({people.length}):</Text>

@@ -15,7 +15,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import dayjs from "dayjs";
 import { NostrEvent } from "../../../types/nostr-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
@@ -26,6 +25,7 @@ import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { EventRelays } from "../../note/note-relays";
 import { useAsync } from "react-use";
 import { getEventUID } from "../../../helpers/nostr/events";
+import Timestamp from "../../timestamp";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
   const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);
@@ -64,7 +64,10 @@ export default function StreamNote({ event, ...props }: CardProps & { event: Nos
             ))}
           </Flex>
         )}
-        <Text>Updated: {dayjs.unix(stream.updated).fromNow()}</Text>
+        <Text>
+          Updated:
+          <Timestamp timestamp={stream.updated} />
+        </Text>
       </LinkBox>
       <Divider />
       <CardFooter p="2" display="flex" gap="2" alignItems="center">

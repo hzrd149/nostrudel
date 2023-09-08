@@ -1,6 +1,5 @@
 import { memo, useCallback, useMemo, useRef } from "react";
 import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 
 import { UserAvatar } from "../../components/user-avatar";
@@ -17,6 +16,7 @@ import { useNotificationTimeline } from "../../providers/notification-timeline";
 import { parseZapEvent } from "../../helpers/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import { getEventUID, getReferences } from "../../helpers/nostr/events";
+import Timestamp from "../../components/timestamp";
 
 const Kind1Notification = ({ event }: { event: NostrEvent }) => (
   <Card size="sm" variant="outline">
@@ -26,7 +26,7 @@ const Kind1Notification = ({ event }: { event: NostrEvent }) => (
         <UserLink pubkey={event.pubkey} />
         <Text>replied to your post</Text>
         <NoteLink noteId={event.id} color="current" ml="auto">
-          {dayjs.unix(event.created_at).fromNow()}
+          <Timestamp timestamp={event.created_at} />
         </NoteLink>
       </Flex>
     </CardHeader>
@@ -45,7 +45,7 @@ const ReactionNotification = ({ event }: { event: NostrEvent }) => {
       <UserLink pubkey={event.pubkey} />
       <Text>reacted {event.content} to your post</Text>
       <NoteLink noteId={refs.replyId || event.id} color="current" ml="auto">
-        {dayjs.unix(event.created_at).fromNow()}
+        <Timestamp timestamp={event.created_at} />
       </NoteLink>
     </Flex>
   );
@@ -81,9 +81,7 @@ const ZapNotification = ({ event }: { event: NostrEvent }) => {
           </span>
         )}
       </Text>
-      <Text color="current" ml="auto">
-        {dayjs.unix(zap.request.created_at).fromNow()}
-      </Text>
+      <Timestamp color="current" ml="auto" timestamp={zap.request.created_at} />
     </Flex>
   );
 };
