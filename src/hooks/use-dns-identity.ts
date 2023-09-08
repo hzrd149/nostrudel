@@ -1,15 +1,11 @@
-import { useAsync } from "react-use";
 import dnsIdentityService from "../services/dns-identity";
+import { useMemo } from "react";
+import useSubject from "./use-subject";
 
 export function useDnsIdentity(address: string | undefined) {
-  const { value, loading, error } = useAsync(async () => {
-    if (!address) return;
-    return dnsIdentityService.getIdentity(address);
+  const subject = useMemo(() => {
+    if (address) return dnsIdentityService.getIdentity(address);
   }, [address]);
 
-  return {
-    identity: value,
-    error,
-    loading,
-  };
+  return useSubject(subject);
 }

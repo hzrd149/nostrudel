@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
 import db from "./db";
+import _throttle from "lodash.throttle";
+
 import { fetchWithCorsFallback } from "../helpers/cors";
+import { SuperMap } from "../classes/super-map";
+import Subject from "../classes/subject";
 
 export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
@@ -26,106 +30,101 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
   return { name, domain, pubkey, relays };
 }
 
-async function fetchAllIdentities(domain: string) {
-  const json = await fetchWithCorsFallback(`//${domain}/.well-known/nostr.json`).then(
-    (res) => res.json() as Promise<IdentityJson>,
-  );
+class DnsIdentityService {
+  identities = new SuperMap<string, Subject<DnsIdentity | null>>(() => new Subject());
 
-  await addToCache(domain, json);
-}
+  async fetchIdentity(address: string) {
+    const { name, domain } = parseAddress(address);
+    if (!name || !domain) throw new Error("invalid address");
 
-async function fetchIdentity(address: string) {
-  const { name, domain } = parseAddress(address);
-  if (!name || !domain) throw new Error("invalid address");
-
-  const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
-    .then((res) => res.json() as Promise<IdentityJson>)
-    .then((json) => {
-      // convert all keys in names, and relays to lower case
-      if (json.names) {
-        for (const [name, pubkey] of Object.entries(json.names)) {
-          delete json.names[name];
-          json.names[name.toLowerCase()] = pubkey;
+    const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
+      .then((res) => res.json() as Promise<IdentityJson>)
+      .then((json) => {
+        // convert all keys in names, and relays to lower case
+        if (json.names) {
+          for (const [name, pubkey] of Object.entries(json.names)) {
+            delete json.names[name];
+            json.names[name.toLowerCase()] = pubkey;
+          }
         }
-      }
-      if (json.relays) {
-        for (const [name, pubkey] of Object.entries(json.relays)) {
-          delete json.relays[name];
-          json.relays[name.toLowerCase()] = pubkey;
+        if (json.relays) {
+          for (const [name, pubkey] of Object.entries(json.relays)) {
+            delete json.relays[name];
+            json.relays[name.toLowerCase()] = pubkey;
+          }
         }
-      }
-      return json;
-    });
+        return json;
+      });
 
-  await addToCache(domain, json);
+    await this.addToCache(domain, json);
 
-  return getIdentityFromJson(name, domain, json);
-}
+    return getIdentityFromJson(name, domain, json);
+  }
 
-const inMemoryCache = new Map<string, DnsIdentity>();
+  async addToCache(domain: string, json: IdentityJson) {
+    const now = dayjs().unix();
+    const transaction = db.transaction("dnsIdentifiers", "readwrite");
 
-async function addToCache(domain: string, json: IdentityJson) {
-  const now = dayjs().unix();
-  const transaction = db.transaction("dnsIdentifiers", "readwrite");
+    for (const name of Object.keys(json.names)) {
+      const identity = getIdentityFromJson(name, domain, json);
+      if (identity) {
+        const address = `${name}@${domain}`;
 
-  for (const name of Object.keys(json.names)) {
-    const identity = getIdentityFromJson(name, domain, json);
-    if (identity) {
-      const id = `${name}@${domain}`;
+        // add to memory cache
+        this.identities.get(address).next(identity);
 
-      // add to memory cache
-      inMemoryCache.set(id, identity);
-
-      // ad to db cache
-      if (transaction.store.put) {
-        await transaction.store.put({ ...identity, updated: now }, id);
+        // ad to db cache
+        if (transaction.store.put) {
+          await transaction.store.put({ ...identity, updated: now }, address);
+        }
       }
     }
-  }
-  await transaction.done;
-}
-
-async function getIdentity(address: string, alwaysFetch = false) {
-  if (!inMemoryCache.has(address)) {
-    const fromDb = await db.get("dnsIdentifiers", address);
-    if (fromDb) inMemoryCache.set(address, fromDb);
+    await transaction.done;
   }
 
-  const cached = inMemoryCache.get(address);
-  if (cached && !alwaysFetch) return cached;
+  loading = new Set<string>();
+  getIdentity(address: string, alwaysFetch = false) {
+    const sub = this.identities.get(address);
 
-  return fetchIdentity(address);
-}
+    if (this.loading.has(address)) return sub;
+    this.loading.add(address);
 
-async function pruneCache() {
-  const keys = await db.getAllKeysFromIndex(
-    "dnsIdentifiers",
-    "updated",
-    IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
-  );
+    db.get("dnsIdentifiers", address).then((fromDb) => {
+      if (fromDb) sub.next(fromDb);
+      this.loading.delete(address);
+    });
 
-  for (const pubkey of keys) {
-    db.delete("dnsIdentifiers", pubkey);
+    if (!sub.value || alwaysFetch) {
+      this.fetchIdentity(address)
+        .then((identity) => {
+          sub.next(identity ?? null);
+        })
+        .finally(() => {
+          this.loading.delete(address);
+        });
+    }
+
+    return sub;
+  }
+
+  async pruneCache() {
+    const keys = await db.getAllKeysFromIndex(
+      "dnsIdentifiers",
+      "updated",
+      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
+    );
+
+    for (const pubkey of keys) {
+      db.delete("dnsIdentifiers", pubkey);
+    }
   }
 }
 
-const pending: Record<string, ReturnType<typeof getIdentity> | undefined> = {};
-function dedupedGetIdentity(address: string, alwaysFetch = false) {
-  if (pending[address]) return pending[address];
-  return (pending[address] = getIdentity(address, alwaysFetch).then((v) => {
-    delete pending[address];
-    return v;
-  }));
-}
+export const dnsIdentityService = new DnsIdentityService();
 
-export const dnsIdentityService = {
-  fetchAllIdentities,
-  fetchIdentity,
-  getIdentity: dedupedGetIdentity,
-  pruneCache,
-};
-
-setTimeout(() => pruneCache(), 1000 * 60 * 20);
+setInterval(() => {
+  dnsIdentityService.pruneCache();
+}, 1000 * 60);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

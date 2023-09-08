@@ -43,7 +43,7 @@ export default function LoginNip05View() {
     async () => {
       if (nip05) {
         try {
-          const id = await dnsIdentityService.getIdentity(nip05, true);
+          const id = await dnsIdentityService.fetchIdentity(nip05);
           setPubkey(id?.pubkey);
           setRelays(id?.relays);
         } catch (e) {}

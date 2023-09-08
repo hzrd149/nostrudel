@@ -122,7 +122,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
                   if (!address) return true;
                   if (!address.includes("@")) return "Invalid address";
                   try {
-                    const id = await dnsIdentityService.getIdentity(address);
+                    const id = await dnsIdentityService.fetchIdentity(address);
                     if (!id) return "Cant find NIP-05 ID";
                     if (id.pubkey !== account.pubkey) return "Pubkey dose not match";
                   } catch (e) {
