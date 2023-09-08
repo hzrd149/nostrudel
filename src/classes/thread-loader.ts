@@ -2,7 +2,7 @@ import { getReferences } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequest } from "./nostr-request";
 import { NostrMultiSubscription } from "./nostr-multi-subscription";
-import Subject, { PersistentSubject } from "./subject";
+import { PersistentSubject } from "./subject";
 
 export class ThreadLoader {
   loading = new PersistentSubject(false);
@@ -64,6 +64,12 @@ export class ThreadLoader {
       });
       request.start({ ids: [this.rootId.value] });
     }
+  }
+
+  setRelays(relays: string[]) {
+    this.relays = relays;
+    this.subscription.setRelays(relays);
+    this.loadEvent();
   }
 
   private updateSubscription() {
