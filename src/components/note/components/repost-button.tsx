@@ -20,6 +20,7 @@ import clientRelaysService from "../../../services/client-relays";
 import QuoteNote from "../quote-note";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/signing-provider";
+import { EmbedEvent } from "../../embed-event";
 
 export function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -51,7 +52,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
         isLoading={loading}
       />
       {isOpen && (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} size="2xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader px="4" py="2">
@@ -59,7 +60,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody px="4" py="0">
-              <QuoteNote noteId={event.id} />
+              <EmbedEvent event={event} />
             </ModalBody>
 
             <ModalFooter px="4" py="4">

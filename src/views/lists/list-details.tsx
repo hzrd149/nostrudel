@@ -1,14 +1,13 @@
-import { Link as RouterList, useNavigate, useParams } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import { UserLink } from "../../components/user-link";
 import { Button, Divider, Flex, Heading, SimpleGrid, Spacer } from "@chakra-ui/react";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
-import { getEventCoordinate, parseCoordinate } from "../../helpers/nostr/events";
-import { PEOPLE_LIST_KIND, getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { parseCoordinate } from "../../helpers/nostr/events";
+import { getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
 import UserCard from "./components/user-card";
@@ -16,6 +15,7 @@ import NoteCard from "./components/note-card";
 import { TrustProvider } from "../../providers/trust";
 import ListMenu from "./components/list-menu";
 import ListFavoriteButton from "./components/list-favorite-button";
+import ListFeedButton from "./components/list-feed-button";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -47,7 +47,6 @@ export default function ListDetailsView() {
     );
 
   const isAuthor = account?.pubkey === event.pubkey;
-  const shouldShowFeedButton = event.kind === PEOPLE_LIST_KIND || event.kind === Kind.Contacts;
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
 
@@ -67,14 +66,7 @@ export default function ListDetailsView() {
 
         <EventRelays event={event} />
 
-        {shouldShowFeedButton && (
-          <Button
-            as={RouterLink}
-            to={{ pathname: "/", search: new URLSearchParams({ people: getEventCoordinate(event) }).toString() }}
-          >
-            View Feed
-          </Button>
-        )}
+        <ListFeedButton list={event} />
         {isAuthor && (
           <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>
             Delete

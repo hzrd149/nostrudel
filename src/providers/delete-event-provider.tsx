@@ -7,7 +7,6 @@ import {
   AccordionPanel,
   Box,
   Button,
-  Code,
   Flex,
   Input,
   Link,
@@ -21,12 +20,11 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Event, Kind, nip19 } from "nostr-tools";
+import { Event, Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
 import signingService from "../services/signing";
-import QuoteNote from "../components/note/quote-note";
 import createDefer, { Deferred } from "../classes/deferred";
 import useEventRelays from "../hooks/use-event-relays";
 import { useWriteRelayUrls } from "../hooks/use-client-relays";
@@ -36,6 +34,7 @@ import { getEventCoordinate, getEventUID, isReplaceable } from "../helpers/nostr
 import NostrPublishAction from "../classes/nostr-publish-action";
 import { Tag } from "../types/nostr-event";
 import deleteEventService from "../services/delete-events";
+import { EmbedEvent } from "../components/embed-event";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -49,13 +48,6 @@ const DeleteEventContext = createContext<DeleteEventContextType>({
 
 export function useDeleteEventContext() {
   return useContext(DeleteEventContext);
-}
-
-function EventPreview({ event }: { event: Event }) {
-  if (event.kind === Kind.Text) {
-    return <QuoteNote noteId={event.id} />;
-  }
-  return <Code>{nip19.noteEncode(event.id)}</Code>;
 }
 
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
@@ -124,11 +116,11 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader px="4" py="2">
-              Delete Note?
+              Delete Event?
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody px="4" py="0">
-              <EventPreview event={event} />
+              <EmbedEvent event={event} />
               <Input
                 name="reason"
                 value={reason}
