@@ -37,7 +37,7 @@ export default function GoalZapButton({
           pubkey={goal.pubkey}
           relays={getGoalRelays(goal)}
           allowComment
-          showEventPreview={false}
+          showEmbed={false}
         />
       )}
     </>

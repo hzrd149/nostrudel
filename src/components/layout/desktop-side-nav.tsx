@@ -45,6 +45,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
             fontSize="1.5rem"
             colorScheme="brand"
             onClick={() => openModal()}
+            flexShrink={0}
           />
         </Flex>
         <AccountSwitcher />

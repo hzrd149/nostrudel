@@ -13,17 +13,21 @@ import { safeDecode } from "../../helpers/nip19";
 import EmbeddedStream from "./event-types/embedded-stream";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import EmbeddedEmojiPack from "./event-types/embedded-emoji-pack";
-import EmbeddedGoal from "./event-types/embedded-goal";
+import EmbeddedGoal, { EmbeddedGoalOptions } from "./event-types/embedded-goal";
 import EmbeddedUnknown from "./event-types/embedded-unknown";
 
-export function EmbedEvent({ event }: { event: NostrEvent }) {
+export type EmbedProps = {
+  goalProps?: EmbeddedGoalOptions;
+};
+
+export function EmbedEvent({ event, goalProps }: { event: NostrEvent } & EmbedProps) {
   switch (event.kind) {
     case Kind.Text:
       return <EmbeddedNote event={event} />;
     case STREAM_KIND:
       return <EmbeddedStream event={event} />;
     case GOAL_KIND:
-      return <EmbeddedGoal goal={event} />;
+      return <EmbeddedGoal goal={event} {...goalProps} />;
     case EMOJI_PACK_KIND:
       return <EmbeddedEmojiPack pack={event} />;
   }
@@ -31,22 +35,22 @@ export function EmbedEvent({ event }: { event: NostrEvent }) {
   return <EmbeddedUnknown event={event} />;
 }
 
-export function EmbedEventPointer({ pointer }: { pointer: DecodeResult }) {
+export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {
   switch (pointer.type) {
     case "note": {
       const { event } = useSingleEvent(pointer.data);
       if (event === undefined) return <NoteLink noteId={pointer.data} />;
-      return <EmbedEvent event={event} />;
+      return <EmbedEvent event={event} {...props} />;
     }
     case "nevent": {
       const { event } = useSingleEvent(pointer.data.id, pointer.data.relays);
       if (event === undefined) return <NoteLink noteId={pointer.data.id} />;
-      return <EmbedEvent event={event} />;
+      return <EmbedEvent event={event} {...props} />;
     }
     case "naddr": {
       const event = useReplaceableEvent(pointer.data);
       if (!event) return <span>{nip19.naddrEncode(pointer.data)}</span>;
-      return <EmbedEvent event={event} />;
+      return <EmbedEvent event={event} {...props} />;
     }
     case "nrelay":
       return <RelayCard url={pointer.data} />;
@@ -54,8 +58,8 @@ export function EmbedEventPointer({ pointer }: { pointer: DecodeResult }) {
   return null;
 }
 
-export function EmbedEventNostrLink({ link }: { link: string }) {
+export function EmbedEventNostrLink({ link, ...props }: { link: string } & EmbedProps) {
   const pointer = safeDecode(link);
 
-  return pointer ? <EmbedEventPointer pointer={pointer} /> : <>{link}</>;
+  return pointer ? <EmbedEventPointer pointer={pointer} {...props} /> : <>{link}</>;
 }

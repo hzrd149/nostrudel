@@ -69,7 +69,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           onInvoice={handleInvoice}
           pubkey={event.pubkey}
           allowComment={allowComment}
-          showEventPreview={showEventPreview}
+          showEmbed={showEventPreview}
         />
       )}
     </>

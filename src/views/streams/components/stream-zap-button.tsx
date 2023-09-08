@@ -5,6 +5,7 @@ import { useInvoiceModalContext } from "../../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import ZapModal from "../../../components/zap-modal";
 import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
+import useStreamGoal from "../../../hooks/use-stream-goal";
 
 export default function StreamZapButton({
   stream,
@@ -21,6 +22,7 @@ export default function StreamZapButton({
   const { requestPay } = useInvoiceModalContext();
   const zapMetadata = useUserLNURLMetadata(stream.host);
   const relays = useRelaySelectionRelays();
+  const goal = useStreamGoal(stream);
 
   const commonProps = {
     "aria-label": "Zap stream",
@@ -43,7 +45,7 @@ export default function StreamZapButton({
       {zapModal.isOpen && (
         <ZapModal
           isOpen
-          event={stream.event}
+          event={goal || stream.event}
           pubkey={stream.host}
           onInvoice={async (invoice) => {
             if (onZap) onZap();
@@ -53,6 +55,8 @@ export default function StreamZapButton({
           onClose={zapModal.onClose}
           initialComment={initComment}
           additionalRelays={relays}
+          showEmbed
+          embedProps={{ goalProps: { showActions: false } }}
         />
       )}
     </>

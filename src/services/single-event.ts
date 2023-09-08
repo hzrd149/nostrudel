@@ -1,6 +1,6 @@
 import createDefer, { Deferred } from "../classes/deferred";
 import { NostrRequest } from "../classes/nostr-request";
-import { safeRelayUrl, safeRelayUrls } from "../helpers/url";
+import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 
 class SingleEventService {
