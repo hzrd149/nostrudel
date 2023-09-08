@@ -17,7 +17,6 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
 import { buildRepost } from "../../../helpers/nostr/events";
 import clientRelaysService from "../../../services/client-relays";
-import QuoteNote from "../quote-note";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { EmbedEvent } from "../../embed-event";

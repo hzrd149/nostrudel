@@ -1,9 +1,9 @@
-import { EmbedableContent, embedJSX } from "../../helpers/embeds";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import QuoteNote from "../note/quote-note";
-import { UserLink } from "../user-link";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+
+import { EmbedableContent, embedJSX } from "../../helpers/embeds";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { UserLink } from "../user-link";
 import { getMatchHashtag, getMatchNostrLink, stripInvisibleChar } from "../../helpers/regexp";
 import { safeDecode } from "../../helpers/nip19";
 import { EmbedEventPointer } from "../embed-event";
@@ -48,7 +48,11 @@ export function embedNostrMentions(content: EmbedableContent, event: NostrEvent 
           return <UserLink color="blue.500" pubkey={tag[1]} showAt />;
         }
         if (tag[0] === "e" && tag[1]) {
-          return <QuoteNote noteId={tag[1]} relays={tag[2] ? [tag[2]] : undefined} />;
+          return (
+            <EmbedEventPointer
+              pointer={{ type: "nevent", data: { id: tag[1], relays: tag[2] ? [tag[2]] : undefined } }}
+            />
+          );
         }
       }
 
