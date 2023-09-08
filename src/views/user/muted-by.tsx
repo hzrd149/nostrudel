@@ -1,5 +1,5 @@
-import { Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import { memo, useMemo, useRef } from "react";
+import { Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";

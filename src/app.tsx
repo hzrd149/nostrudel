@@ -51,6 +51,9 @@ import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
 import NetworkView from "./views/tools/network";
 import MutedByView from "./views/user/muted-by";
+import BadgesView from "./views/badges";
+import BadgesBrowseView from "./views/badges/browse";
+import BadgeDetailsView from "./views/badges/badge-details";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -178,6 +181,14 @@ const router = createHashRouter([
           { path: "", element: <GoalsView /> },
           { path: "browse", element: <GoalsBrowseView /> },
           { path: ":id", element: <GoalDetailsView /> },
+        ],
+      },
+      {
+        path: "badges",
+        children: [
+          { path: "", element: <BadgesView /> },
+          { path: "browse", element: <BadgesBrowseView /> },
+          { path: ":naddr", element: <BadgeDetailsView /> },
         ],
       },
       {

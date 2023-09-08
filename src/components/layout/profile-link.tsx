@@ -1,10 +1,10 @@
-import { Box, Button, LinkBox, LinkOverlay } from "@chakra-ui/react";
+import { Box, Button, ButtonProps, LinkBox, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { nip19 } from "nostr-tools";
+
 import { UserAvatar } from "../user-avatar";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
-import { nip19 } from "nostr-tools";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 
 function ProfileButton() {
@@ -12,7 +12,7 @@ function ProfileButton() {
   const metadata = useUserMetadata(account.pubkey);
 
   return (
-    <LinkBox borderRadius="lg" borderWidth={1} p="2" display="flex" gap="2" alignItems="center">
+    <LinkBox borderRadius="lg" borderWidth={1} p="2" display="flex" gap="2" alignItems="center" flexGrow={1}>
       <UserAvatar pubkey={account.pubkey} noProxy size="sm" />
       <Box>
         <LinkOverlay
@@ -21,6 +21,7 @@ function ProfileButton() {
           whiteSpace="nowrap"
           fontWeight="bold"
           fontSize="lg"
+          title="View profile"
         >
           {getUserDisplayName(metadata, account.pubkey)}
         </LinkOverlay>
@@ -34,10 +35,10 @@ export default function ProfileLink() {
   const location = useLocation();
 
   if (account) return <ProfileButton />;
-  else
-    return (
-      <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand">
-        Login
-      </Button>
-    );
+
+  return (
+    <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand">
+      Login
+    </Button>
+  );
 }

@@ -1,8 +1,8 @@
 import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
-import PeopleListProvider, { usePeopleListContext } from "../../../providers/people-list-provider";
-import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import {
   MUTE_LIST_KIND,
   NOTE_LIST_KIND,
@@ -10,14 +10,14 @@ import {
   getEventsFromList,
   getListName,
   getPubkeysFromList,
-} from "../../../helpers/nostr/lists";
+} from "../../helpers/nostr/lists";
 import { useCallback, useState } from "react";
-import { NostrEvent } from "../../../types/nostr-event";
-import IntersectionObserverProvider from "../../../providers/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../../hooks/use-subject";
-import ListCard from "../components/list-card";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { NostrEvent } from "../../types/nostr-event";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useSubject from "../../hooks/use-subject";
+import ListCard from "./components/list-card";
+import { getEventUID } from "../../helpers/nostr/events";
 
 function BrowseListPage() {
   const { filter, listId } = usePeopleListContext();
