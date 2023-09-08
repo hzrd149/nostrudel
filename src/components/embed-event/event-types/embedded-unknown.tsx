@@ -1,4 +1,5 @@
-import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -7,10 +8,22 @@ import { UserLink } from "../../user-link";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
-import dayjs from "dayjs";
+import { useMemo } from "react";
+import { embedEmoji, embedNostrHashtags, embedNostrLinks, embedNostrMentions } from "../../embed-types";
+import { EmbedableContent } from "../../../helpers/embeds";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = getSharableEventAddress(event);
+
+  const content = useMemo(() => {
+    let jsx: EmbedableContent = [event.content];
+    jsx = embedNostrLinks(jsx);
+    jsx = embedNostrMentions(jsx, event);
+    jsx = embedNostrHashtags(jsx, event);
+    jsx = embedEmoji(jsx, event);
+
+    return jsx;
+  }, [event.content]);
 
   return (
     <Card {...props}>
@@ -29,7 +42,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
             {address && truncatedId(address)}
           </Link>
         </Flex>
-        <Text whiteSpace="pre-wrap">{event.content}</Text>
+        <Box whiteSpace="pre-wrap">{content}</Box>
       </CardBody>
     </Card>
   );

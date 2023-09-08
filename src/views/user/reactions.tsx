@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Box, Flex, SkeletonText, Spacer, Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { nip25 } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -12,43 +11,36 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSingleEvent from "../../hooks/use-single-event";
-import { Note } from "../../components/note";
 import { TrustProvider } from "../../providers/trust";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { NoteMenu } from "../../components/note/note-menu";
+import { EmbedEventPointer } from "../../components/embed-event";
+import { embedEmoji } from "../../components/embed-types";
 
-const Reaction = ({ event }: { event: NostrEvent }) => {
+const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, reaction.id);
 
-  const contextRelays = useAdditionalRelayContext();
-  const readRelays = useReadRelayUrls(contextRelays);
+  const pointer = nip25.getReactedEventPointer(reaction);
+  if (!pointer) return null;
 
-  const pointer = nip25.getReactedEventPointer(event);
-  const { event: note } = useSingleEvent(pointer?.id, readRelays);
+  const decoded = { type: "nevent", data: pointer } as const;
 
-  var content = <></>;
-  if (!note) return <SkeletonText />;
-
-  if (note.kind === Kind.Text) {
-    content = (
-      <>
-        <Flex gap="2" mb="2">
-          <UserAvatar pubkey={event.pubkey} size="xs" />
-          <Text>
-            <UserLink pubkey={event.pubkey} /> {event.content === "+" ? "liked" : "reacted with " + event.content}
-          </Text>
-          <Spacer />
-          <NoteMenu event={event} aria-label="Note menu" variant="ghost" size="xs" />
-        </Flex>
-        <Note key={note.id} event={note} />
-      </>
-    );
-  } else content = <>Unknown note type {note.kind}</>;
-
-  return <Box ref={ref}>{content}</Box>;
+  return (
+    <Box ref={ref}>
+      <Flex gap="2" mb="2">
+        <UserAvatar pubkey={reaction.pubkey} size="xs" />
+        <Text>
+          <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked" : "reacted with "}
+          {embedEmoji([reaction.content], reaction)}
+        </Text>
+        <Spacer />
+        <NoteMenu event={reaction} aria-label="Note menu" variant="ghost" size="xs" />
+      </Flex>
+      <EmbedEventPointer pointer={decoded} />
+    </Box>
+  );
 };
 
 export default function UserReactionsTab() {
@@ -67,7 +59,7 @@ export default function UserReactionsTab() {
       <TrustProvider trust>
         <Flex direction="column" gap="2" p="2" pb="8">
           {likes.map((event) => (
-            <Reaction event={event} />
+            <Reaction reaction={event} />
           ))}
 
           <TimelineActionAndStatus timeline={timeline} />
