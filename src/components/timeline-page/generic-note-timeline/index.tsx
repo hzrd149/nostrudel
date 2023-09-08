@@ -11,6 +11,7 @@ import StreamNote from "./stream-note";
 import { ErrorBoundary } from "../../error-boundary";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { safeRelayUrl } from "../../../helpers/url";
+import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
 
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
@@ -18,6 +19,8 @@ const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
       return <Note event={event} showReplyButton />;
     case Kind.Repost:
       return <RepostNote event={event} />;
+    case Kind.Article:
+      return <EmbeddedArticle article={event} />;
     case STREAM_KIND:
       return <StreamNote event={event} />;
     case 2:

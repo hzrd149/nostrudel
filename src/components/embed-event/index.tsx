@@ -17,6 +17,7 @@ import EmbeddedGoal, { EmbeddedGoalOptions } from "./event-types/embedded-goal";
 import EmbeddedUnknown from "./event-types/embedded-unknown";
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import EmbeddedList from "./event-types/embedded-list";
+import EmbeddedArticle from "./event-types/embedded-article";
 
 export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
@@ -35,6 +36,8 @@ export function EmbedEvent({ event, goalProps }: { event: NostrEvent } & EmbedPr
     case PEOPLE_LIST_KIND:
     case NOTE_LIST_KIND:
       return <EmbeddedList list={event} />;
+    case Kind.Article:
+      return <EmbeddedArticle article={event} />;
   }
 
   return <EmbeddedUnknown event={event} />;

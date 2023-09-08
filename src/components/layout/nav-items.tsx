@@ -8,7 +8,6 @@ import {
   GoalIcon,
   ListIcon,
   LiveStreamIcon,
-  MapIcon,
   NotificationIcon,
   RelayIcon,
   SearchIcon,
@@ -59,9 +58,6 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       </Button>
       <Button onClick={() => navigate("/emojis")} leftIcon={<EmojiIcon />} justifyContent="flex-start">
         Emojis
-      </Button>
-      <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />} justifyContent="flex-start">
-        Map
       </Button>
       <Button onClick={() => navigate("/tools")} leftIcon={<ToolsIcon />} justifyContent="flex-start">
         Tools

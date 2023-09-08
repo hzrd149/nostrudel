@@ -44,6 +44,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 const tabs = [
   { label: "About", path: "about" },
   { label: "Notes", path: "notes" },
+  { label: "Articles", path: "articles" },
   { label: "Streams", path: "streams" },
   { label: "Zaps", path: "zaps" },
   { label: "Lists", path: "lists" },

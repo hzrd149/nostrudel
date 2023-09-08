@@ -54,6 +54,7 @@ import MutedByView from "./views/user/muted-by";
 import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
+import UserArticlesTab from "./views/user/articles";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -134,6 +135,7 @@ const router = createHashRouter([
           { path: "", element: <UserAboutTab /> },
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
+          { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },

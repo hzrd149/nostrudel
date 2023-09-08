@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ExternalLinkIcon, ToolsIcon } from "../../components/icons";
+import { ExternalLinkIcon, MapIcon, ToolsIcon } from "../../components/icons";
 
 export default function ToolsHomeView() {
   return (
@@ -11,6 +11,9 @@ export default function ToolsHomeView() {
       <Flex wrap="wrap" gap="4">
         <Button as={RouterLink} to="/tools/network">
           Contact network
+        </Button>
+        <Button as={RouterLink} to="/map" leftIcon={<MapIcon />}>
+          Map
         </Button>
         <Button
           as={Link}
