@@ -138,21 +138,6 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export function buildRepost(event: NostrEvent): DraftNostrEvent {
-  const relays = getEventRelays(event.id).value;
-  const topRelay = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
-
-  const tags: NostrEvent["tags"] = [];
-  tags.push(["e", event.id, topRelay]);
-
-  return {
-    kind: Kind.Repost,
-    tags,
-    content: "",
-    created_at: dayjs().unix(),
-  };
-}
-
 export function parseRTag(tag: RTag): RelayConfig {
   switch (tag[2]) {
     case "write":

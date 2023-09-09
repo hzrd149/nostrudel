@@ -12,14 +12,32 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import dayjs from "dayjs";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../icons";
-import { buildRepost } from "../../../helpers/nostr/events";
 import clientRelaysService from "../../../services/client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { EmbedEvent } from "../../embed-event";
+import relayScoreboardService from "../../../services/relay-scoreboard";
+import { getEventRelays } from "../../../services/event-relays";
+
+function buildRepost(event: NostrEvent): DraftNostrEvent {
+  const relays = getEventRelays(event.id).value;
+  const topRelay = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
+
+  const tags: NostrEvent["tags"] = [];
+  tags.push(["e", event.id, topRelay]);
+
+  return {
+    kind: Kind.Repost,
+    tags,
+    content: JSON.stringify(event),
+    created_at: dayjs().unix(),
+  };
+}
 
 export function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
