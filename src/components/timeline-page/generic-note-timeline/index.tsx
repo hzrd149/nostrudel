@@ -1,22 +1,25 @@
 import React from "react";
+import { Text } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+
 import useSubject from "../../../hooks/use-subject";
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import RepostNote from "./repost-note";
 import { Note } from "../../note";
 import { NostrEvent } from "../../../types/nostr-event";
-import { Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
 import { ErrorBoundary } from "../../error-boundary";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { safeRelayUrl } from "../../../helpers/url";
 import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
+import { isReply } from "../../../helpers/nostr/events";
+import ReplyNote from "./reply-note";
 
 const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
     case Kind.Text:
-      return <Note event={event} showReplyButton />;
+      return isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
     case Kind.Repost:
       return <RepostNote event={event} />;
     case Kind.Article:

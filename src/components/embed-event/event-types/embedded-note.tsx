@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardHeader, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardHeader, CardProps, Spacer, useDisclosure } from "@chakra-ui/react";
 
 import { NoteContents } from "../../note/note-contents";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -13,13 +13,13 @@ import { NoteLink } from "../../note-link";
 import { ArrowDownSIcon, ArrowUpSIcon } from "../../icons";
 import Timestamp from "../../timestamp";
 
-export default function EmbeddedNote({ event }: { event: NostrEvent }) {
+export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
   const expand = useDisclosure();
 
   return (
     <TrustProvider event={event}>
-      <Card variant="outline">
+      <Card {...props}>
         <CardHeader padding="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
           <UserAvatarLink pubkey={event.pubkey} size="sm" />
           <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated fontSize="lg" />

@@ -1,4 +1,5 @@
 import type { DecodeResult } from "nostr-tools/lib/nip19";
+import { CardProps } from "@chakra-ui/react";
 
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -24,26 +25,30 @@ export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
 };
 
-export function EmbedEvent({ event, goalProps }: { event: NostrEvent } & EmbedProps) {
+export function EmbedEvent({
+  event,
+  goalProps,
+  ...cardProps
+}: Omit<CardProps, "children"> & { event: NostrEvent } & EmbedProps) {
   switch (event.kind) {
     case Kind.Text:
-      return <EmbeddedNote event={event} />;
+      return <EmbeddedNote event={event} {...cardProps} />;
     case STREAM_KIND:
-      return <EmbeddedStream event={event} />;
+      return <EmbeddedStream event={event} {...cardProps} />;
     case GOAL_KIND:
-      return <EmbeddedGoal goal={event} {...goalProps} />;
+      return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
     case EMOJI_PACK_KIND:
-      return <EmbeddedEmojiPack pack={event} />;
+      return <EmbeddedEmojiPack pack={event} {...cardProps} />;
     case PEOPLE_LIST_KIND:
     case NOTE_LIST_KIND:
-      return <EmbeddedList list={event} />;
+      return <EmbeddedList list={event} {...cardProps} />;
     case Kind.Article:
-      return <EmbeddedArticle article={event} />;
+      return <EmbeddedArticle article={event} {...cardProps} />;
     case Kind.BadgeDefinition:
-      return <EmbeddedBadge badge={event} />;
+      return <EmbeddedBadge badge={event} {...cardProps} />;
   }
 
-  return <EmbeddedUnknown event={event} />;
+  return <EmbeddedUnknown event={event} {...cardProps} />;
 }
 
 export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {

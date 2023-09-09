@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Flex } from "@chakra-ui/react";
+import { Flex, Switch, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
 import { isReply } from "../../helpers/nostr/events";
@@ -15,12 +15,13 @@ import { NostrRequestFilter } from "../../types/nostr-query";
 
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
+  const showReplies = useDisclosure();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
-      if (isReply(event)) return false;
+      if (!showReplies.isOpen && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [timelinePageEventFilter],
+    [timelinePageEventFilter, showReplies.isOpen],
   );
 
   const { relays } = useRelaySelectionContext();
@@ -38,8 +39,11 @@ function HomePage() {
   });
 
   const header = (
-    <Flex gap="2" wrap="wrap" px={["2", 0]}>
+    <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
       <PeopleListSelection />
+      <Switch checked={showReplies.isOpen} onChange={showReplies.onToggle}>
+        Show Replies
+      </Switch>
       <RelaySelectionButton ml="auto" />
       <TimelineViewTypeButtons />
     </Flex>

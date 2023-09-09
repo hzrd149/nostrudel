@@ -39,12 +39,12 @@ import ReplyForm from "../../views/note/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 
-export type NoteProps = {
+export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
 };
-export const Note = React.memo(({ event, variant = "outline", showReplyButton }: NoteProps) => {
+export const Note = React.memo(({ event, variant = "outline", showReplyButton, ...props }: NoteProps) => {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
   const replyForm = useDisclosure();
@@ -63,7 +63,7 @@ export const Note = React.memo(({ event, variant = "outline", showReplyButton }:
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
-        <Card variant={variant} ref={ref} data-event-id={event.id}>
+        <Card variant={variant} ref={ref} data-event-id={event.id} {...props}>
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center">
               <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
