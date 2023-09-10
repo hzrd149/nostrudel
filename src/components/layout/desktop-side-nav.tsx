@@ -34,7 +34,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <Avatar src="/apple-touch-icon.png" size="sm" />
           <Heading size="md">noStrudel</Heading>
         </Flex>
-        <Flex gap="2">
+        <Flex gap="2" overflow="hidden">
           <ProfileLink />
           <IconButton
             icon={<EditIcon />}

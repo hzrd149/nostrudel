@@ -4,8 +4,9 @@ import { nip19 } from "nostr-tools";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
+import { ErrorBoundary } from "../../components/error-boundary";
 
-export default function NostrLinkView() {
+function NostrLinkPage() {
   const { link } = useParams() as { link?: string };
 
   if (!link)
@@ -38,5 +39,13 @@ export default function NostrLinkView() {
       <AlertIcon />
       <AlertTitle>Unknown type</AlertTitle>
     </Alert>
+  );
+}
+
+export default function NostrLinkView() {
+  return (
+    <ErrorBoundary>
+      <NostrLinkPage />
+    </ErrorBoundary>
   );
 }

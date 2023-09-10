@@ -1,7 +1,5 @@
 import { useContext } from "react";
 import { ButtonProps, IconButton } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
-import dayjs from "dayjs";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { QuoteRepostIcon } from "../../icons";
@@ -22,13 +20,7 @@ export function QuoteRepostButton({
 
   const handleClick = () => {
     const nevent = getSharableEventAddress(event);
-    const draft = {
-      kind: Kind.Text,
-      tags: [],
-      content: "\nnostr:" + nevent,
-      created_at: dayjs().unix(),
-    };
-    openModal(draft);
+    openModal("\nnostr:" + nevent);
   };
 
   return (

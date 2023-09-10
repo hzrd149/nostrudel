@@ -30,7 +30,7 @@ import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
 
-export default function PostModal({ isOpen, onClose }: Omit<ModalProps, "children">) {
+export default function PostModal({ isOpen, onClose, initContent = '' }: Omit<ModalProps, "children"> & {initContent?: string}) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
@@ -40,7 +40,7 @@ export default function PostModal({ isOpen, onClose }: Omit<ModalProps, "childre
 
   const { getValues, setValue, watch, register, handleSubmit, formState } = useForm({
     defaultValues: {
-      content: "",
+      content: initContent,
       nsfw: false,
       nsfwReason: "",
     },
