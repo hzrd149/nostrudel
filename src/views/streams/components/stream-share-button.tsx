@@ -23,13 +23,7 @@ export default function StreamShareButton({
 
   const handleClick = () => {
     const nevent = getSharableEventAddress(stream.event);
-    const draft: DraftNostrEvent = {
-      kind: Kind.Text,
-      tags: [],
-      content: "\nnostr:" + nevent,
-      created_at: dayjs().unix(),
-    };
-    openModal(draft);
+    openModal("\nnostr:" + nevent);
   };
 
   return (
