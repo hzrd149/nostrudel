@@ -24,6 +24,7 @@ import directMessagesService from "../../services/direct-messages";
 import { ExternalLinkIcon } from "../../components/icons";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { nip19 } from "nostr-tools";
+import Timestamp from "../../components/timestamp";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
@@ -36,7 +37,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
         <UserAvatar pubkey={pubkey} />
         <Flex direction="column" gap="1" overflow="hidden" flex={1}>
           <Text flex={1}>{getUserDisplayName(metadata, pubkey)}</Text>
-          {messages[0] && <Text flexShrink={0}>{dayjs.unix(messages[0].created_at).fromNow()}</Text>}
+          {messages[0] && <Timestamp flexShrink={0} timestamp={messages[0].created_at} />}
         </Flex>
       </CardBody>
       <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`} />

@@ -32,7 +32,7 @@ export default function UserNotesTab() {
     readRelays,
     {
       authors: [pubkey],
-      kinds: [Kind.Text, Kind.Repost, STREAM_KIND, 2],
+      kinds: [Kind.Text, Kind.Repost, Kind.Article, STREAM_KIND, 2],
     },
     { eventFilter },
   );

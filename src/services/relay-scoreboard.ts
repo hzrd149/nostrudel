@@ -72,20 +72,26 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   }
   addTime(time: number, date: Date = new Date()) {
     this.measures.unshift([time, date]);
+    this.averageCache = null;
   }
-  getCount(since?: Date) {
-    const points = since ? this.measures.filter((m) => m[1] > since) : this.measures;
-    return points.length;
+  getCount() {
+    return this.measures.length;
   }
-  getAverage(since?: Date, undef: number = Infinity) {
-    const points = since ? this.measures.filter((m) => m[1] > since) : this.measures;
-    if (points.length === 0) return undef;
-    const total = points.reduce((total, [time]) => total + time, 0);
-    return total / points.length;
+
+  /** cache the average since it gets called a lot */
+  private averageCache: number | null = null;
+  getAverage(undef: number = Infinity) {
+    if (this.measures.length === 0) return undef;
+    if (this.averageCache === null) {
+      const total = this.measures.reduce((total, [time]) => total + time, 0);
+      this.averageCache = total / this.measures.length;
+    }
+    return this.averageCache as number;
   }
 
   reset() {
     this.measures = [];
+    this.averageCache = null;
     return this;
   }
   prune(cutOff: Date): this {
@@ -94,6 +100,7 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
       if (!last) break;
       if (last[1] >= cutOff) {
         this.measures.push(last);
+        this.averageCache = null;
         break;
       }
     }
@@ -103,6 +110,7 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   load(data: any) {
     if (!Array.isArray(data)) return this;
     this.measures = data;
+    this.averageCache = null;
     return this;
   }
   save() {
@@ -128,25 +136,25 @@ class RelayScoreboardService {
     // for (const [relay, measure] of this.relayTimeouts) measure.prune(cutOff);
   }
 
-  getAverageResponseTime(relay: string, since?: Date) {
-    return this.relayResponseTimes.get(relay).getAverage(since);
+  getAverageResponseTime(relay: string) {
+    return this.relayResponseTimes.get(relay).getAverage();
   }
-  getAverageEjectTime(relay: string, since?: Date) {
-    return this.relayEjectTime.get(relay).getAverage(since);
+  getAverageEjectTime(relay: string) {
+    return this.relayEjectTime.get(relay).getAverage();
   }
-  getAverageConnectionTime(relay: string, since?: Date) {
-    return this.relayConnectionTime.get(relay).getAverage(since);
+  getAverageConnectionTime(relay: string) {
+    return this.relayConnectionTime.get(relay).getAverage();
   }
-  // getTimeoutCount(relay: string, since?: Date) {
-  //   return this.relayTimeouts.get(relay).getCount(since);
+  // getTimeoutCount(relay: string) {
+  //   return this.relayTimeouts.get(relay).getCount();
   // }
 
-  hasConnected(relay: string, since?: Date) {
-    return this.relayConnectionTime.get(relay).getCount(since) > 0;
+  hasConnected(relay: string) {
+    return this.relayConnectionTime.get(relay).getCount() > 0;
   }
-  getResponseTimeScore(relay: string, since?: Date) {
-    const responseTime = this.getAverageResponseTime(relay, since);
-    const connected = this.hasConnected(relay, since);
+  getResponseTimeScore(relay: string) {
+    const responseTime = this.getAverageResponseTime(relay);
+    const connected = this.hasConnected(relay);
 
     // no points if we have never connected
     if (!connected) return 0;
@@ -154,8 +162,8 @@ class RelayScoreboardService {
     // 1 point (max 10) for ever 10 ms under 1000. negative points for over 1000
     return clamp(Math.round(-(responseTime - 1000) / 100), -10, 10);
   }
-  getConnectionTimeScore(relay: string, since?: Date) {
-    const connectionTime = this.getAverageConnectionTime(relay, since);
+  getConnectionTimeScore(relay: string) {
+    const connectionTime = this.getAverageConnectionTime(relay);
 
     // no points if we have never connected
     if (connectionTime === Infinity) return 0;
@@ -163,9 +171,9 @@ class RelayScoreboardService {
     // 1 point (max 10) for ever 10 ms under 1000. negative points for over 1000
     return clamp(Math.round(-(connectionTime - 1000) / 100), -10, 10);
   }
-  getEjectTimeScore(relay: string, since?: Date) {
-    const ejectTime = this.getAverageEjectTime(relay, since);
-    const connected = this.hasConnected(relay, since);
+  getEjectTimeScore(relay: string) {
+    const ejectTime = this.getAverageEjectTime(relay);
+    const connected = this.hasConnected(relay);
 
     // no points if we have never connected
     if (!connected) return 0;
@@ -177,18 +185,18 @@ class RelayScoreboardService {
     if (ejectTime > 1000 * 200) score += 5;
     return score;
   }
-  // getTimeoutsScore(relay: string, since?: Date) {
-  //   const timeouts = this.getTimeoutCount(relay, since);
+  // getTimeoutsScore(relay: string) {
+  //   const timeouts = this.getTimeoutCount(relay);
   //   // subtract 5 points for ever time its timed out
   //   return -(timeouts * 5);
   // }
-  getRelayScore(relay: string, since?: Date) {
+  getRelayScore(relay: string) {
     let score = 0;
 
-    score += this.getResponseTimeScore(relay, since);
-    score += this.getConnectionTimeScore(relay, since);
-    score += this.getEjectTimeScore(relay, since);
-    // score += this.getTimeoutsScore(relay, since);
+    score += this.getResponseTimeScore(relay);
+    score += this.getConnectionTimeScore(relay);
+    score += this.getEjectTimeScore(relay);
+    // score += this.getTimeoutsScore(relay);
 
     return score;
   }

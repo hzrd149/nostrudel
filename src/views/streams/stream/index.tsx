@@ -52,6 +52,7 @@ import TopZappers from "../components/top-zappers";
 import StreamHashtags from "../components/stream-hashtags";
 import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
+import StreamShareButton from "../components/stream-share-button";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
@@ -97,6 +98,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
         </Heading>
         <StreamStatusBadge stream={stream} fontSize="lg" />
         <Spacer />
+        <StreamShareButton stream={stream} title="Share stream" />
         <RelaySelectionButton display={{ base: "none", md: "block" }} />
         <StreamDebugButton stream={stream} variant="ghost" />
         <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
@@ -151,6 +153,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
           Back
         </Button>
         <Spacer />
+        <StreamShareButton stream={stream} size="sm" />
         <Button onClick={showChat.onOpen} size="sm">
           Show Chat
         </Button>

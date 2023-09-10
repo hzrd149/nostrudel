@@ -29,7 +29,9 @@ export default function UserListsTab() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex gap="2" pt="2" pb="10" px={["2", "2", 0]} direction="column">
-        <Heading size="md">Special lists</Heading>
+        <Heading size="md" mt="2">
+          Special lists
+        </Heading>
         <Divider />
         <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
           <ListCard cord={`${Kind.Contacts}:${pubkey}`} />
@@ -39,7 +41,9 @@ export default function UserListsTab() {
 
         {peopleLists.length > 0 && (
           <>
-            <Heading size="md">People lists</Heading>
+            <Heading size="md" mt="2">
+              People lists
+            </Heading>
             <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {peopleLists.map((event) => (
@@ -51,7 +55,9 @@ export default function UserListsTab() {
 
         {noteLists.length > 0 && (
           <>
-            <Heading size="md">Bookmark lists</Heading>
+            <Heading size="md" mt="2">
+              Bookmark lists
+            </Heading>
             <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {noteLists.map((event) => (

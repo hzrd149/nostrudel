@@ -49,6 +49,12 @@ import GoalsView from "./views/goals";
 import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
+import NetworkView from "./views/tools/network";
+import MutedByView from "./views/user/muted-by";
+import BadgesView from "./views/badges";
+import BadgesBrowseView from "./views/badges/browse";
+import BadgeDetailsView from "./views/badges/badge-details";
+import UserArticlesTab from "./views/user/articles";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -129,6 +135,7 @@ const router = createHashRouter([
           { path: "", element: <UserAboutTab /> },
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
+          { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },
@@ -139,6 +146,7 @@ const router = createHashRouter([
           { path: "emojis", element: <UserEmojiPacksTab /> },
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
+          { path: "muted-by", element: <MutedByView /> },
         ],
       },
       {
@@ -156,7 +164,10 @@ const router = createHashRouter([
       { path: "profile", element: <ProfileView /> },
       {
         path: "tools",
-        children: [{ path: "", element: <ToolsHomeView /> }],
+        children: [
+          { path: "", element: <ToolsHomeView /> },
+          { path: "network", element: <NetworkView /> },
+        ],
       },
       {
         path: "lists",
@@ -172,6 +183,14 @@ const router = createHashRouter([
           { path: "", element: <GoalsView /> },
           { path: "browse", element: <GoalsBrowseView /> },
           { path: ":id", element: <GoalDetailsView /> },
+        ],
+      },
+      {
+        path: "badges",
+        children: [
+          { path: "", element: <BadgesView /> },
+          { path: "browse", element: <BadgesBrowseView /> },
+          { path: ":naddr", element: <BadgeDetailsView /> },
         ],
       },
       {

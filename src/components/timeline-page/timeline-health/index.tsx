@@ -14,6 +14,7 @@ import {
   Tr,
   useColorMode,
 } from "@chakra-ui/react";
+
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
@@ -21,10 +22,10 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
-import dayjs from "dayjs";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { RelayIcon } from "../../icons";
 import { getEventUID } from "../../../helpers/nostr/events";
+import Timestamp from "../../timestamp";
 
 function EventRow({
   event,
@@ -63,7 +64,7 @@ function EventRow({
   return (
     <Tr ref={ref} {...props}>
       <Td isTruncated p="2">
-        {dayjs.unix(event.created_at).fromNow()}
+        <Timestamp timestamp={event.created_at} />
       </Td>
       <Td isTruncated p="2">
         <NoteLink noteId={event.id} />

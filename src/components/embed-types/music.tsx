@@ -1,3 +1,5 @@
+import { Box, useColorMode } from "@chakra-ui/react";
+
 // nostr:nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0
 export function renderWavlakeUrl(match: URL) {
   if (match.hostname !== "wavlake.com") return null;
@@ -83,5 +85,23 @@ export function renderTidalUrl(match: URL) {
       height={isList ? 400 : 96}
       title={isList ? "Tidal List Embed" : "Tidal Embed"}
     ></iframe>
+  );
+}
+
+// nostr:nevent1qqsranya3ywngfvzz7kpfuz48kss3as5f5p76tcke38awwkfzqr27jqpr9mhxue69uhkummnw3ezuargv4ekzmt9vdshgtnfduhnes8e
+export function renderSongDotLinkUrl(match: URL) {
+  if (match.hostname !== "song.link" || match.pathname.length < 5) return null;
+  const { colorMode } = useColorMode();
+
+  return (
+    <Box
+      as="iframe"
+      w="full"
+      h="full"
+      maxW="xl"
+      aspectRatio={16 / 10}
+      src={`https://odesli.co/embed/?url=${encodeURIComponent(match.href)}&theme=${colorMode}`}
+      sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+    ></Box>
   );
 }

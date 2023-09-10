@@ -1,10 +1,7 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Flex,
-  Heading,
-  Image,
   Input,
   Modal,
   ModalBody,
@@ -30,16 +27,14 @@ import { useSigningContext } from "../providers/signing-provider";
 import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
-import { requestZapInvoice } from "../helpers/zaps";
-import { ParsedStream, getATag } from "../helpers/nostr/stream";
-import EmbeddedNote from "./embed-event/event-types/embedded-note";
+import { requestZapInvoice } from "../helpers/nostr/zaps";
 import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { useAdditionalRelayContext } from "../providers/additional-relay-context";
 import { getEventCoordinate, isReplaceable } from "../helpers/nostr/events";
-import { EmbedEvent } from "./embed-event";
+import { EmbedEvent, EmbedProps } from "./embed-event";
 
 type FormValues = {
   amount: number;
@@ -54,7 +49,8 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   initialAmount?: number;
   onInvoice: (invoice: string) => void;
   allowComment?: boolean;
-  showEventPreview?: boolean;
+  showEmbed?: boolean;
+  embedProps?: EmbedProps;
   additionalRelays?: string[];
 };
 
@@ -67,7 +63,8 @@ export default function ZapModal({
   initialAmount,
   onInvoice,
   allowComment = true,
-  showEventPreview = true,
+  showEmbed = true,
+  embedProps,
   additionalRelays = [],
   ...props
 }: ZapModalProps) {
@@ -180,7 +177,7 @@ export default function ZapModal({
                 </Box>
               </Flex>
 
-              {showEventPreview && event && <EmbedEvent event={event} />}
+              {showEmbed && event && <EmbedEvent event={event} {...embedProps} />}
 
               {allowComment && (canZap || lnurlMetadata?.commentAllowed) && (
                 <Input

@@ -12,7 +12,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import dayjs from "dayjs";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
@@ -21,6 +20,7 @@ import { UserLink } from "../../user-link";
 import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
+import Timestamp from "../../timestamp";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojisFromPack(pack);
@@ -52,7 +52,9 @@ export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "c
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
-        <Text>Updated: {dayjs.unix(pack.created_at).fromNow()}</Text>
+        <Text>
+          Updated: <Timestamp timestamp={pack.created_at} />
+        </Text>
       </CardFooter>
     </Card>
   );

@@ -1,45 +1,59 @@
-import React from "react";
+import { ReactNode, memo } from "react";
+import { Text } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+
 import useSubject from "../../../hooks/use-subject";
 import { TimelineLoader } from "../../../classes/timeline-loader";
 import RepostNote from "./repost-note";
 import { Note } from "../../note";
 import { NostrEvent } from "../../../types/nostr-event";
-import { Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
 import { ErrorBoundary } from "../../error-boundary";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { safeRelayUrl } from "../../../helpers/url";
+import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
+import { isReply } from "../../../helpers/nostr/events";
+import ReplyNote from "./reply-note";
 
-const RenderEvent = React.memo(({ event }: { event: NostrEvent }) => {
+function RenderEvent({ event }: { event: NostrEvent }) {
+  let content: ReactNode | null = null;
   switch (event.kind) {
     case Kind.Text:
-      return <Note event={event} showReplyButton />;
+      content = isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
+      break;
     case Kind.Repost:
-      return <RepostNote event={event} />;
+      content = <RepostNote event={event} />;
+      break;
+    case Kind.Article:
+      content = <EmbeddedArticle article={event} />;
+      break;
     case STREAM_KIND:
-      return <StreamNote event={event} />;
+      content = <StreamNote event={event} />;
+      break;
     case 2:
       const safeUrl = safeRelayUrl(event.content);
-      return safeUrl ? <RelayCard url={safeUrl} /> : null;
+      content = safeUrl ? <RelayCard url={safeUrl} /> : null;
+      break;
     default:
-      return <Text>Unknown event kind: {event.kind}</Text>;
+      content = <Text>Unknown event kind: {event.kind}</Text>;
+      break;
   }
-});
 
-const GenericNoteTimeline = React.memo(({ timeline }: { timeline: TimelineLoader }) => {
+  return content && <ErrorBoundary>{content}</ErrorBoundary>;
+}
+const RenderEventMemo = memo(RenderEvent);
+
+function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
   const notes = useSubject(timeline.timeline);
 
   return (
     <>
       {notes.map((note) => (
-        <ErrorBoundary key={note.id}>
-          <RenderEvent event={note} />
-        </ErrorBoundary>
+        <RenderEventMemo key={note.id} event={note} />
       ))}
     </>
   );
-});
+}
 
-export default GenericNoteTimeline;
+export default memo(GenericNoteTimeline);

@@ -1,11 +1,10 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { ErrorBoundary } from "../components/error-boundary";
-import { PostModal } from "../components/post-modal";
-import { DraftNostrEvent } from "../types/nostr-event";
+import PostModal from "../components/post-modal";
 
 export type PostModalContextType = {
-  openModal: (draft?: Partial<DraftNostrEvent>) => void;
+  openModal: (content?: string) => void;
 };
 
 export const PostModalContext = React.createContext<PostModalContextType>({
@@ -14,20 +13,20 @@ export const PostModalContext = React.createContext<PostModalContextType>({
 
 export default function PostModalProvider({ children }: PropsWithChildren) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [draft, setDraft] = useState<Partial<DraftNostrEvent> | undefined>(undefined);
+  const [initContent, setInitContent] = useState("");
   const openModal = useCallback(
-    (draft?: Partial<DraftNostrEvent>) => {
-      setDraft(draft);
+    (content?: string) => {
+      if (content) setInitContent(content);
       onOpen();
     },
-    [setDraft, onOpen],
+    [onOpen, setInitContent],
   );
   const context = useMemo(() => ({ openModal }), [openModal]);
 
   return (
     <PostModalContext.Provider value={context}>
       <ErrorBoundary>
-        {isOpen && <PostModal isOpen initialDraft={draft} onClose={onClose} />}
+        {isOpen && <PostModal isOpen onClose={onClose} initContent={initContent} />}
         {children}
       </ErrorBoundary>
     </PostModalContext.Provider>

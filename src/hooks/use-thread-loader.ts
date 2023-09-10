@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useUnmount } from "react-use";
+
 import { ThreadLoader } from "../classes/thread-loader";
 import { linkEvents } from "../helpers/thread";
 import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
+import useRelaysChanged from "./use-relays-changed";
 
 type Options = {
   enabled?: boolean;
@@ -24,6 +26,10 @@ export function useThreadLoader(eventId: string, additionalRelays: string[] = []
     if (enabled) loader.open();
     else loader.close();
   }, [enabled]);
+
+  useRelaysChanged(relays, () => {
+    loader.setRelays(relays);
+  });
 
   useUnmount(() => {
     loader.close();

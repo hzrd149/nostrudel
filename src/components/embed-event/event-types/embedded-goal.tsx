@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, CardProps, Heading, Link, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
@@ -8,8 +8,15 @@ import { UserAvatarLink } from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import GoalProgress from "../../../views/goals/components/goal-progress";
 import GoalZapButton from "../../../views/goals/components/goal-zap-button";
+import GoalTopZappers from "../../../views/goals/components/goal-top-zappers";
 
-export default function EmbeddedGoal({ goal, ...props }: Omit<CardProps, "children"> & { goal: NostrEvent }) {
+export type EmbeddedGoalOptions = {
+  showActions?: boolean;
+};
+
+export type EmbeddedGoalProps = Omit<CardProps, "children"> & { goal: NostrEvent } & EmbeddedGoalOptions;
+
+export default function EmbeddedGoal({ goal, showActions = true, ...props }: EmbeddedGoalProps) {
   const nevent = getSharableEventAddress(goal);
 
   return (
@@ -26,7 +33,10 @@ export default function EmbeddedGoal({ goal, ...props }: Omit<CardProps, "childr
       </CardHeader>
       <CardBody p="2">
         <GoalProgress goal={goal} />
-        <GoalZapButton goal={goal} mt="2" />
+        <Flex gap="2" alignItems="flex-end">
+          <GoalTopZappers goal={goal} overflow="hidden" />
+          {showActions && <GoalZapButton goal={goal} flexShrink={0} />}
+        </Flex>
       </CardBody>
     </Card>
   );

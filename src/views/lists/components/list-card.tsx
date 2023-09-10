@@ -1,3 +1,4 @@
+import { memo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   AvatarGroup,
@@ -12,12 +13,10 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
-import dayjs from "dayjs";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import { getEventsFromList, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
+import { getEventsFromList, getListName, getPubkeysFromList, isSpecialListKind } from "../../../helpers/nostr/lists";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
@@ -25,16 +24,17 @@ import { createCoordinate } from "../../../services/replaceable-event-requester"
 import { EventRelays } from "../../../components/note/note-relays";
 import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { useRef } from "react";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
+import Timestamp from "../../../components/timestamp";
 
 function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
-  const link =
-    event.kind === Kind.Contacts ? createCoordinate(Kind.Contacts, event.pubkey) : getSharableEventAddress(event);
+  const link = isSpecialListKind(event.kind)
+    ? createCoordinate(event.kind, event.pubkey)
+    : getSharableEventAddress(event);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
@@ -59,7 +59,9 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
           <UserAvatarLink pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
         </Flex>
-        <Text>Updated: {dayjs.unix(event.created_at).fromNow()}</Text>
+        <Text>
+          Updated: <Timestamp timestamp={event.created_at} />
+        </Text>
         {people.length > 0 && (
           <>
             <Text>People ({people.length}):</Text>
@@ -88,8 +90,10 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
   );
 }
 
-export default function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
+function ListCard({ cord, event: maybeEvent }: { cord?: string; event?: NostrEvent }) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
   if (!event) return null;
   else return <ListCardRender event={event} />;
 }
+
+export default memo(ListCard);

@@ -1,5 +1,4 @@
 import React, { useMemo, useRef } from "react";
-import dayjs from "dayjs";
 import {
   Box,
   ButtonGroup,
@@ -22,7 +21,7 @@ import { EventRelays } from "./note-relays";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import NoteZapButton from "./note-zap-button";
-import { ExpandProvider } from "./expanded";
+import { ExpandProvider } from "../../providers/expanded";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
@@ -38,13 +37,14 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
+import Timestamp from "../timestamp";
 
-export type NoteProps = {
+export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
 };
-export const Note = React.memo(({ event, variant = "outline", showReplyButton }: NoteProps) => {
+export const Note = React.memo(({ event, variant = "outline", showReplyButton, ...props }: NoteProps) => {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
   const replyForm = useDisclosure();
@@ -63,7 +63,7 @@ export const Note = React.memo(({ event, variant = "outline", showReplyButton }:
   return (
     <TrustProvider event={event}>
       <ExpandProvider>
-        <Card variant={variant} ref={ref} data-event-id={event.id}>
+        <Card variant={variant} ref={ref} data-event-id={event.id} {...props}>
           <CardHeader padding="2">
             <Flex flex="1" gap="2" alignItems="center">
               <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
@@ -72,7 +72,7 @@ export const Note = React.memo(({ event, variant = "outline", showReplyButton }:
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
-                {dayjs.unix(event.created_at).fromNow()}
+                <Timestamp timestamp={event.created_at} />
               </NoteLink>
             </Flex>
           </CardHeader>

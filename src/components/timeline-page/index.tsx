@@ -1,13 +1,13 @@
 import { useCallback } from "react";
-import { Flex, FlexProps, SimpleGrid } from "@chakra-ui/react";
+import { Flex, FlexProps } from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
+
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
-import { LightboxProvider } from "../lightbox-provider";
 import MediaTimeline from "./media-timeline";
 import { TimelineLoader } from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "./timeline-action-and-status";
-import { useSearchParams } from "react-router-dom";
 import { NostrEvent } from "../../types/nostr-event";
 import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";

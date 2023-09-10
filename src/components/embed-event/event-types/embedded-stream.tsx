@@ -1,6 +1,5 @@
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text, useBreakpointValue } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -8,6 +7,7 @@ import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { UserLink } from "../../user-link";
 import { UserAvatar } from "../../user-avatar";
 import useEventNaddr from "../../../hooks/use-event-naddr";
+import Timestamp from "../../timestamp";
 
 export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const stream = parseStreamEvent(event);
@@ -54,7 +54,11 @@ export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "chi
           </Heading>
         </Flex>
 
-        {stream.starts && <Text>Started: {dayjs.unix(stream.starts).fromNow()}</Text>}
+        {stream.starts && (
+          <Text>
+            Started: <Timestamp timestamp={stream.starts} />
+          </Text>
+        )}
         {stream.tags.length > 0 && (
           <Flex gap="2" wrap="wrap">
             {stream.tags.map((tag) => (

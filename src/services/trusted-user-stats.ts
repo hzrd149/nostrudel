@@ -1,4 +1,4 @@
-export type NostrBandProfileStats = {
+export type NostrBandUserStats = {
   pubkey: string;
   pub_note_count: number;
   pub_post_count: number;
@@ -57,13 +57,13 @@ export type NostrBandProfileStats = {
   };
 };
 
-class UserTrustedStatsService {
-  private userStats = new Map<string, NostrBandProfileStats>();
+class TrustedUserStatsService {
+  private userStats = new Map<string, NostrBandUserStats>();
 
   async fetchUserStats(pubkey: string) {
     try {
       const stats = await fetch(`https://api.nostr.band/v0/stats/profile/${pubkey}`).then(
-        (res) => res.json() as Promise<{ stats: Record<string, NostrBandProfileStats> }>,
+        (res) => res.json() as Promise<{ stats: Record<string, NostrBandUserStats> }>,
       );
 
       if (stats?.stats[pubkey]) {
@@ -73,7 +73,7 @@ class UserTrustedStatsService {
     } catch (e) {}
   }
 
-  private dedupe = new Map<string, Promise<NostrBandProfileStats | undefined>>();
+  private dedupe = new Map<string, Promise<NostrBandUserStats | undefined>>();
   async getUserStats(pubkey: string, alwaysFetch = false) {
     if (this.userStats.has(pubkey) && !alwaysFetch) return this.userStats.get(pubkey)!;
 
@@ -85,6 +85,6 @@ class UserTrustedStatsService {
   }
 }
 
-const userTrustedStatsService = new UserTrustedStatsService();
+const trustedUserStatsService = new TrustedUserStatsService();
 
-export default userTrustedStatsService;
+export default trustedUserStatsService;

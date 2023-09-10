@@ -16,6 +16,7 @@ export type ParsedStream = {
   image?: string;
   updated: number;
   status: "live" | "ended" | string;
+  goal?: string;
   starts?: number;
   ends?: number;
   identifier: string;
@@ -33,6 +34,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const endsTag = stream.tags.find((t) => t[0] === "ends")?.[1];
   const streaming = stream.tags.find((t) => t[0] === "streaming")?.[1];
   const recording = stream.tags.find((t) => t[0] === "recording")?.[1];
+  const goal = stream.tags.find((t) => t[0] === "goal")?.[1];
   const identifier = stream.tags.find((t) => t[0] === "d")?.[1];
 
   let relays = stream.tags.find((t) => t[0] === "relays");
@@ -74,6 +76,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     status,
     starts: startTime,
     ends: endTime,
+    goal,
     identifier,
     relays,
   };

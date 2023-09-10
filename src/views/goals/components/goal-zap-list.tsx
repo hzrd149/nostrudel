@@ -7,7 +7,7 @@ import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { LightningIcon } from "../../../components/icons";
-import dayjs from "dayjs";
+import Timestamp from "../../../components/timestamp";
 
 export default function GoalZapList({ goal }: { goal: NostrEvent }) {
   const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
@@ -21,7 +21,7 @@ export default function GoalZapList({ goal }: { goal: NostrEvent }) {
           <Box>
             <Text>
               <UserLink fontSize="lg" fontWeight="bold" pubkey={zap.request.pubkey} mr="2" />
-              <Text as="span">{dayjs.unix(zap.event.created_at).fromNow()}</Text>
+              <Timestamp timestamp={zap.event.created_at} />
             </Text>
             {zap.request.content && <Text>{zap.request.content}</Text>}
           </Box>

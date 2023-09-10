@@ -1,16 +1,17 @@
+import { useRef } from "react";
 import { Box, Card, CardBody, CardHeader, CardProps, Flex, Heading, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
+
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { getMessageRecipient } from "../../services/direct-messages";
 import { NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl, renderImageUrl, renderVideoUrl } from "../../components/embed-types";
-import { useRef } from "react";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { getEventUID } from "../../helpers/nostr/events";
+import Timestamp from "../../components/timestamp";
 
 export function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
   let content: EmbedableContent = [text];
@@ -36,7 +37,7 @@ export function Message({ event }: { event: NostrEvent } & Omit<CardProps, "chil
           <Heading size="md">
             <UserLink pubkey={event.pubkey} />
           </Heading>
-          <Text ml="auto">{dayjs.unix(event.created_at).fromNow()}</Text>
+          <Timestamp ml="auto" timestamp={event.created_at} />
         </CardHeader>
         <CardBody position="relative">
           <DecryptPlaceholder

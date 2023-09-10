@@ -1,6 +1,5 @@
-import dayjs from "dayjs";
 import { useRef } from "react";
-import { Card, CardBody, CardHeader, Link, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
@@ -13,6 +12,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { NoteContents } from "../../../components/note/note-contents";
 import { Metadata } from "./relay-card";
 import { getEventUID } from "../../../helpers/nostr/events";
+import Timestamp from "../../../components/timestamp";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {
   const ratingJson = event.tags.find((t) => t[0] === "l" && t[3])?.[3];
@@ -29,7 +29,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
         <UserAvatarLink pubkey={event.pubkey} size="xs" />
         <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
         <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-        <Text ml="auto">{dayjs.unix(event.created_at).fromNow()}</Text>
+        <Timestamp ml="auto" timestamp={event.created_at} />
       </CardHeader>
       <CardBody p="2">
         {!hideUrl && url && (

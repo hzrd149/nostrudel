@@ -1,22 +1,20 @@
-import { Spinner, Text, Tooltip } from "@chakra-ui/react";
+import { Text, Tooltip } from "@chakra-ui/react";
 import { useDnsIdentity } from "../hooks/use-dns-identity";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "./icons";
 
 export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) => {
   const metadata = useUserMetadata(pubkey);
-  const { identity, loading, error } = useDnsIdentity(metadata?.nip05);
+  const identity = useDnsIdentity(metadata?.nip05);
 
   if (!metadata?.nip05) {
     return null;
   }
 
   const renderIcon = () => {
-    if (loading) {
-      return <Spinner size="xs" ml="1" title={metadata.nip05} />;
-    } else if (error) {
+    if (identity === undefined) {
       return <VerificationFailed color="yellow.500" />;
-    } else if (!identity) {
+    } else if (identity === null) {
       return <VerificationMissing color="red.500" />;
     } else if (pubkey === identity.pubkey) {
       return <VerifiedIcon color="purple.500" />;

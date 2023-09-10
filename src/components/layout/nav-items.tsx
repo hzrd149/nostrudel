@@ -1,13 +1,13 @@
 import { AbsoluteCenter, Box, Button, Divider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import {
+  BadgeIcon,
   ChatIcon,
   EmojiIcon,
   FeedIcon,
   GoalIcon,
   ListIcon,
   LiveStreamIcon,
-  MapIcon,
   NotificationIcon,
   RelayIcon,
   SearchIcon,
@@ -53,11 +53,11 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       <Button onClick={() => navigate("/goals")} leftIcon={<GoalIcon />} justifyContent="flex-start">
         Goals
       </Button>
+      <Button onClick={() => navigate("/badges")} leftIcon={<BadgeIcon />} justifyContent="flex-start">
+        Badges
+      </Button>
       <Button onClick={() => navigate("/emojis")} leftIcon={<EmojiIcon />} justifyContent="flex-start">
         Emojis
-      </Button>
-      <Button onClick={() => navigate("/map")} leftIcon={<MapIcon />} justifyContent="flex-start">
-        Map
       </Button>
       <Button onClick={() => navigate("/tools")} leftIcon={<ToolsIcon />} justifyContent="flex-start">
         Tools

@@ -14,6 +14,10 @@ export function getListName(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "title")?.[1] || event.tags.find(isDTag)?.[1];
 }
 
+export function isSpecialListKind(kind: number) {
+  return kind === Kind.Contacts || kind === PIN_LIST_KIND || kind === MUTE_LIST_KIND;
+}
+
 export function getPubkeysFromList(event: NostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2] }));
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -6,22 +6,22 @@ import {
   ModalBody,
   Flex,
   Button,
-  Text,
-  VisuallyHiddenInput,
-  IconButton,
   useToast,
   Box,
   Heading,
+  useDisclosure,
+  Input,
+  Switch,
+  ModalProps,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { useForm } from "react-hook-form";
+import { Kind } from "nostr-tools";
 
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { getReferences } from "../../helpers/nostr/events";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import { ImageIcon } from "../icons";
-import { NoteLink } from "../note-link";
+import { ArrowDownSIcon, ArrowUpSIcon } from "../icons";
 import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
@@ -30,79 +30,78 @@ import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
 
-function emptyDraft(): DraftNostrEvent {
-  return {
-    content: "",
-    kind: 1,
-    tags: [],
-    created_at: dayjs().unix(),
-  };
-}
-
-type PostModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  initialDraft?: Partial<DraftNostrEvent>;
-};
-
-export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => {
+export default function PostModal({ isOpen, onClose, initContent = '' }: Omit<ModalProps, "children"> & {initContent?: string}) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();
-  const [signing, setSigning] = useState(false);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
-  const [draft, setDraft] = useState<DraftNostrEvent>(() => Object.assign(emptyDraft(), initialDraft));
-  const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  const [uploading, setUploading] = useState(false);
   const emojis = useContextEmojis();
+  const moreOptions = useDisclosure();
 
-  const uploadImage = async (imageFile: File) => {
-    try {
-      if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
-      setUploading(true);
-      const payload = new FormData();
-      payload.append("fileToUpload", imageFile);
-      const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
-        res.text(),
-      );
-      const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
-      if (imageUrl) {
-        setDraft((d) => ({ ...d, content: (d.content += imageUrl) }));
-      }
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
+  const { getValues, setValue, watch, register, handleSubmit, formState } = useForm({
+    defaultValues: {
+      content: initContent,
+      nsfw: false,
+      nsfwReason: "",
+    },
+  });
+  watch("content");
+  watch("nsfw");
+  watch("nsfwReason");
+
+  // const imageUploadRef = useRef<HTMLInputElement | null>(null);
+  // const [uploading, setUploading] = useState(false);
+  // const uploadImage = async (imageFile: File) => {
+  //   try {
+  //     if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
+  //     setUploading(true);
+  //     const payload = new FormData();
+  //     payload.append("fileToUpload", imageFile);
+  //     const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
+  //       res.text(),
+  //     );
+  //     const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
+  //     if (imageUrl) {
+  //       setValue('content', getValues().content += imageUrl );
+  //     }
+  //   } catch (e) {
+  //     if (e instanceof Error) toast({ description: e.message, status: "error" });
+  //   }
+  //   setUploading(false);
+  // };
+
+  const getDraft = useCallback(() => {
+    const { content, nsfw, nsfwReason } = getValues();
+
+    let updatedDraft = finalizeNote({
+      content: content,
+      kind: Kind.Text,
+      tags: [],
+      created_at: dayjs().unix(),
+    });
+
+    if (nsfw) {
+      updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
     }
-    setUploading(false);
-  };
 
-  const handleContentChange: React.ChangeEventHandler<HTMLTextAreaElement> = (event) => {
-    setDraft((d) => ({ ...d, content: event.target.value }));
-  };
-
-  const finalDraft = useMemo(() => {
-    let updatedDraft = finalizeNote(draft);
-    const contentMentions = getContentMentions(draft.content);
+    const contentMentions = getContentMentions(updatedDraft.content);
     updatedDraft = createEmojiTags(updatedDraft, emojis);
     updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
     return updatedDraft;
-  }, [draft, emojis]);
+  }, [getValues, emojis]);
 
-  const handleSubmit = async () => {
+  const submit = handleSubmit(async () => {
     try {
-      setSigning(true);
-      const signed = await requestSignature(finalDraft);
-      setSigning(false);
-
+      const signed = await requestSignature(getDraft());
       const pub = new NostrPublishAction("Post", writeRelays, signed);
       setPublishAction(pub);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
-  };
+  });
 
-  const refs = getReferences(draft);
-
-  const canSubmit = draft.content.length > 0;
+  const canSubmit = getValues().content.length > 0;
+  const mentions = getContentMentions(getValues().content);
 
   const renderContent = () => {
     if (publishAction) {
@@ -117,35 +116,31 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
     }
     return (
       <>
-        {refs.replyId && (
-          <Text mb="2">
-            Replying to: <NoteLink noteId={refs.replyId} />
-          </Text>
-        )}
         <MagicTextArea
           autoFocus
           mb="2"
-          value={draft.content}
-          onChange={handleContentChange}
+          value={getValues().content}
+          onChange={(e) => setValue("content", e.target.value)}
           rows={5}
-          onPaste={(e) => {
-            const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-            if (imageFile) uploadImage(imageFile);
-          }}
+          isRequired
+          // onPaste={(e) => {
+          //   const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
+          //   if (imageFile) uploadImage(imageFile);
+          // }}
         />
-        {draft.content.length > 0 && (
+        {getValues().content.length > 0 && (
           <Box>
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
               <TrustProvider trust>
-                <NoteContents event={finalDraft} />
+                <NoteContents event={getDraft()} />
               </TrustProvider>
             </Box>
           </Box>
         )}
         <Flex gap="2" alignItems="center" justifyContent="flex-end">
           <Flex mr="auto" gap="2">
-            <VisuallyHiddenInput
+            {/* <VisuallyHiddenInput
               type="file"
               accept="image/*"
               ref={imageUploadRef}
@@ -160,14 +155,35 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}
               isLoading={uploading}
-            />
+            /> */}
+            <Button
+              variant="link"
+              rightIcon={moreOptions.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
+              onClick={moreOptions.onToggle}
+            >
+              More Options
+            </Button>
           </Flex>
-          <UserAvatarStack label="Mentions" pubkeys={getContentMentions(draft.content)} />
+          {mentions.length > 0 && <UserAvatarStack label="Mentions" pubkeys={mentions} />}
           <Button onClick={onClose}>Cancel</Button>
-          <Button colorScheme="blue" type="submit" isLoading={signing} onClick={handleSubmit} isDisabled={!canSubmit}>
+          <Button
+            colorScheme="blue"
+            type="submit"
+            isLoading={formState.isSubmitting}
+            onClick={submit}
+            isDisabled={!canSubmit}
+          >
             Post
           </Button>
         </Flex>
+        {moreOptions.isOpen && (
+          <>
+            <Flex gap="2" direction="column">
+              <Switch {...register("nsfw")}>NSFW</Switch>
+              {getValues().nsfw && <Input {...register("nsfwReason")} placeholder="Reason" maxW="50%" />}
+            </Flex>
+          </>
+        )}
       </>
     );
   };
@@ -182,4 +198,4 @@ export const PostModal = ({ isOpen, onClose, initialDraft }: PostModalProps) => 
       </ModalContent>
     </Modal>
   );
-};
+}

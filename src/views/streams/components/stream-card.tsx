@@ -1,5 +1,4 @@
 import { memo, useRef } from "react";
-import dayjs from "dayjs";
 import { Box, Card, CardBody, CardProps, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 
 import { ParsedStream } from "../../../helpers/nostr/stream";
@@ -11,6 +10,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import { getEventUID } from "../../../helpers/nostr/events";
 import StreamHashtags from "./stream-hashtags";
+import Timestamp from "../../../components/timestamp";
 
 function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, image } = stream;
@@ -49,7 +49,11 @@ function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) 
             <StreamHashtags stream={stream} />
           </Flex>
         )}
-        {stream.starts && <Text>Started: {dayjs.unix(stream.starts).fromNow()}</Text>}
+        {stream.starts && (
+          <Text>
+            Started: <Timestamp timestamp={stream.starts} />
+          </Text>
+        )}
       </LinkBox>
     </Card>
   );

@@ -34,7 +34,20 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <Avatar src="/apple-touch-icon.png" size="sm" />
           <Heading size="md">noStrudel</Heading>
         </Flex>
-        <ProfileLink />
+        <Flex gap="2" overflow="hidden">
+          <ProfileLink />
+          <IconButton
+            icon={<EditIcon />}
+            aria-label="New note"
+            title="New note"
+            w="3rem"
+            h="3rem"
+            fontSize="1.5rem"
+            colorScheme="brand"
+            onClick={() => openModal()}
+            flexShrink={0}
+          />
+        </Flex>
         <AccountSwitcher />
         <NavItems />
         {account && (
@@ -48,18 +61,6 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           </Text>
         )}
         <ConnectedRelays />
-        <Flex justifyContent="flex-end" py="8">
-          <IconButton
-            icon={<EditIcon />}
-            aria-label="New post"
-            w="4rem"
-            h="4rem"
-            fontSize="1.5rem"
-            borderRadius="50%"
-            colorScheme="brand"
-            onClick={() => openModal()}
-          />
-        </Flex>
       </Flex>
       <PublishLog overflowY="auto" minH="15rem" />
     </Flex>

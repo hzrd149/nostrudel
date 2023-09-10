@@ -7,7 +7,7 @@ import { UserLink } from "../../../../components/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../../providers/intersection-observer";
 import { LightningIcon } from "../../../../components/icons";
-import { parseZapEvent } from "../../../../helpers/zaps";
+import { parseZapEvent } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import { TrustProvider } from "../../../../providers/trust";
 import ChatMessageContent from "./chat-message-content";

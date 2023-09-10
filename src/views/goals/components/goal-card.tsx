@@ -15,6 +15,7 @@ import GoalContents from "./goal-contents";
 import dayjs from "dayjs";
 import GoalZapButton from "./goal-zap-button";
 import GoalTopZappers from "./goal-top-zappers";
+import Timestamp from "../../../components/timestamp";
 
 function GoalCard({ goal, ...props }: Omit<CardProps, "children"> & { goal: NostrEvent }) {
   const nevent = getSharableEventAddress(goal);
@@ -41,7 +42,11 @@ function GoalCard({ goal, ...props }: Omit<CardProps, "children"> & { goal: Nost
         </ButtonGroup>
       </CardHeader>
       <CardBody p="2" display="flex" gap="2" flexDirection="column">
-        {closed && <Text>Ends: {dayjs.unix(closed).fromNow()}</Text>}
+        {closed && (
+          <Text>
+            Ends: <Timestamp timestamp={closed} />
+          </Text>
+        )}
         <GoalProgress goal={goal} />
         <GoalContents goal={goal} />
         <Flex gap="2" alignItems="flex-end" flex={1}>
