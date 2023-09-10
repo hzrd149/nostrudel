@@ -37,7 +37,7 @@ const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ e
             <Timestamp timestamp={event.created_at} />
           </NoteLink>
         </Flex>
-        {refs.replyId && <EmbedEventPointer pointer={{ type: "note", data: refs.replyId }} />}
+        <EmbedEventPointer pointer={{ type: "note", data: refs.replyId }} />
         <NoteContents event={event} mt="2" />
       </Card>
     );

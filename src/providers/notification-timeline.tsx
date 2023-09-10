@@ -1,10 +1,10 @@
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
-import { truncatedId } from "../helpers/nostr/events";
+import { Kind } from "nostr-tools";
+
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { TimelineLoader } from "../classes/timeline-loader";
 import timelineCacheService from "../services/timeline-cache";
-import { Kind } from "nostr-tools";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -25,15 +25,15 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
 
   const timeline = useMemo(() => {
     return account?.pubkey
-      ? timelineCacheService.createTimeline(`${truncatedId(account?.pubkey ?? "anon")}-notification`)
+      ? timelineCacheService.createTimeline(`${account?.pubkey ?? "anon"}-notification`)
       : undefined;
   }, [account?.pubkey]);
 
   useEffect(() => {
-    if (timeline && account) {
+    if (timeline && account?.pubkey) {
       timeline.setQuery([{ "#p": [account?.pubkey], kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap] }]);
     }
-  }, [account, timeline]);
+  }, [account?.pubkey, timeline]);
 
   useEffect(() => {
     timeline?.setRelays(readRelays);

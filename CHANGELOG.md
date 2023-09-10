@@ -1,5 +1,23 @@
 # nostrudel
 
+## 0.27.0
+
+### Minor Changes
+
+- 94cd156: Add share button to stream view
+- 03fb661: Sort search results by follower count
+- cbb3aa5: Show embedded badges in stream cards and timelines
+- 3d5d234: Clean up user reactions view
+- 6b4fd8a: Show list embeds in notes
+- b561568: Rebuild notifications view
+- 409f219: Add content warning switch when writing note
+- 076b89e: Add articles tab to user view
+- 094a6fb: Show stream goal zaps in stream chat
+
+### Patch Changes
+
+- 81e86c9: Fix threads not loading when navigating directly to them
+
 ## 0.26.0
 
 ### Minor Changes
