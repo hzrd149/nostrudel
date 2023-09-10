@@ -8,7 +8,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { Kind, nip19 } from "nostr-tools";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import RelayCard from "../../views/relays/components/relay-card";
-import { STREAM_KIND } from "../../helpers/nostr/stream";
+import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import { safeDecode } from "../../helpers/nip19";
 import EmbeddedStream from "./event-types/embedded-stream";
@@ -20,6 +20,7 @@ import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import EmbeddedList from "./event-types/embedded-list";
 import EmbeddedArticle from "./event-types/embedded-article";
 import EmbeddedBadge from "./event-types/embedded-badge";
+import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
 
 export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
@@ -46,6 +47,8 @@ export function EmbedEvent({
       return <EmbeddedArticle article={event} {...cardProps} />;
     case Kind.BadgeDefinition:
       return <EmbeddedBadge badge={event} {...cardProps} />;
+    case STREAM_CHAT_MESSAGE_KIND:
+      return <EmbeddedStreamMessage message={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;

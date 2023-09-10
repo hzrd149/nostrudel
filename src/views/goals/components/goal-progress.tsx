@@ -4,7 +4,7 @@ import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
 import { LightningIcon } from "../../../components/icons";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import { getEventUID } from "../../../helpers/nostr/events";
-import { totalZaps } from "../../../helpers/zaps";
+import { totalZaps } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
 
 export default function GoalProgress({ goal }: { goal: NostrEvent }) {

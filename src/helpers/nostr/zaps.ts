@@ -1,8 +1,8 @@
 import { bech32 } from "@scure/base";
-import { isETag, isPTag, NostrEvent } from "../types/nostr-event";
-import { ParsedInvoice, parsePaymentRequest } from "./bolt11";
+import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
+import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
-import { Kind0ParsedContent } from "./user-metadata";
+import { Kind0ParsedContent } from "../user-metadata";
 import { nip57, utils } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
@@ -67,13 +67,10 @@ export function parseZapEvent(event: NostrEvent): ParsedZap {
   const request = JSON.parse(zapRequestStr) as NostrEvent;
   const payment = parsePaymentRequest(bolt11);
 
-  const eventId = request.tags.find(isETag)?.[1];
-
   return {
     event,
     request,
     payment,
-    eventId,
   };
 }
 

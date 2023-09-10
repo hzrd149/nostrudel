@@ -27,7 +27,7 @@ import { useSigningContext } from "../providers/signing-provider";
 import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
 import useUserLNURLMetadata from "../hooks/use-user-lnurl-metadata";
-import { requestZapInvoice } from "../helpers/zaps";
+import { requestZapInvoice } from "../helpers/nostr/zaps";
 import { unique } from "../helpers/array";
 import { useUserRelays } from "../hooks/use-user-relays";
 import { RelayMode } from "../classes/relay";

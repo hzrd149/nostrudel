@@ -1,11 +1,11 @@
-import { memo, useCallback, useMemo, useRef } from "react";
-import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { ReactNode, forwardRef, memo, useCallback, useMemo, useRef } from "react";
+import { Box, Card, Flex, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { Kind, nip18, nip25 } from "nostr-tools";
 
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -13,45 +13,86 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotificationTimeline } from "../../providers/notification-timeline";
-import { parseZapEvent } from "../../helpers/zaps";
+import { parseZapEvent } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getEventUID, getReferences } from "../../helpers/nostr/events";
+import { getEventUID, getReferences, parseCoordinate } from "../../helpers/nostr/events";
 import Timestamp from "../../components/timestamp";
+import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
+import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
+import { NoteContents } from "../../components/note/note-contents";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 
-const Kind1Notification = ({ event }: { event: NostrEvent }) => (
-  <Card size="sm" variant="outline">
-    <CardHeader>
-      <Flex gap="2" alignItems="center">
+const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
+  const refs = getReferences(event);
+
+  if (refs.replyId) {
+    return (
+      <Card variant="outline" p="2" borderColor="blue.400" ref={ref}>
+        <Flex gap="2" alignItems="center" mb="2">
+          <UserAvatar pubkey={event.pubkey} size="xs" />
+          <UserLink pubkey={event.pubkey} />
+          {refs.replyId ? <Text>replied to post</Text> : <Text>mentioned you</Text>}
+          <NoteLink noteId={event.id} color="current" ml="auto">
+            <Timestamp timestamp={event.created_at} />
+          </NoteLink>
+        </Flex>
+        {refs.replyId && <EmbedEventPointer pointer={{ type: "note", data: refs.replyId }} />}
+        <NoteContents event={event} mt="2" />
+      </Card>
+    );
+  }
+  return (
+    <Box ref={ref}>
+      <Flex gap="2" alignItems="center" mb="1">
         <UserAvatar pubkey={event.pubkey} size="xs" />
         <UserLink pubkey={event.pubkey} />
-        <Text>replied to your post</Text>
+        <Text>mentioned you in</Text>
+      </Flex>
+      <EmbedEvent event={event} />
+    </Box>
+  );
+});
+
+const ShareNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
+  const account = useCurrentAccount()!;
+  const pointer = nip18.getRepostedEventPointer(event);
+  if (pointer?.author !== account.pubkey) return null;
+
+  return (
+    <Card variant="outline" p="2" ref={ref}>
+      <Flex gap="2" alignItems="center" mb="2">
+        <UserAvatar pubkey={event.pubkey} size="xs" />
+        <UserLink pubkey={event.pubkey} />
+        <Text>shared note</Text>
         <NoteLink noteId={event.id} color="current" ml="auto">
           <Timestamp timestamp={event.created_at} />
         </NoteLink>
       </Flex>
-    </CardHeader>
-    <CardBody pt={0}>
-      <Text>{event.content.replace("\n", " ").slice(0, 64)}</Text>
-    </CardBody>
-  </Card>
-);
+      {pointer && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    </Card>
+  );
+});
 
-const ReactionNotification = ({ event }: { event: NostrEvent }) => {
-  const refs = getReferences(event);
+const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
+  const account = useCurrentAccount();
+  const pointer = nip25.getReactedEventPointer(event);
+  if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 
   return (
-    <Flex gap="2" alignItems="center" px="2">
-      <UserAvatar pubkey={event.pubkey} size="xs" />
-      <UserLink pubkey={event.pubkey} />
-      <Text>reacted {event.content} to your post</Text>
-      <NoteLink noteId={refs.replyId || event.id} color="current" ml="auto">
-        <Timestamp timestamp={event.created_at} />
-      </NoteLink>
-    </Flex>
+    <Box ref={ref}>
+      <Flex gap="2" alignItems="center" mb="1">
+        <UserAvatar pubkey={event.pubkey} size="xs" />
+        <UserLink pubkey={event.pubkey} />
+        <Text>reacted {event.content} to your post</Text>
+        <Timestamp timestamp={event.created_at} ml="auto" />
+      </Flex>
+      <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />
+    </Box>
   );
-};
+});
 
-const ZapNotification = ({ event }: { event: NostrEvent }) => {
+const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const zap = useMemo(() => {
     try {
       return parseZapEvent(event);
@@ -60,65 +101,113 @@ const ZapNotification = ({ event }: { event: NostrEvent }) => {
 
   if (!zap || !zap.payment.amount) return null;
 
+  const eventId = zap?.request.tags.find(isETag)?.[1];
+  const coordinate = zap?.request.tags.find(isATag)?.[1];
+  const parsedCoordinate = coordinate ? parseCoordinate(coordinate) : null;
+
+  let eventJSX: ReactNode | null = null;
+  if (parsedCoordinate && parsedCoordinate.identifier) {
+    eventJSX = (
+      <EmbedEventPointer
+        pointer={{
+          type: "naddr",
+          data: {
+            pubkey: parsedCoordinate.pubkey,
+            identifier: parsedCoordinate.identifier,
+            kind: parsedCoordinate.kind,
+          },
+        }}
+      />
+    );
+  } else if (eventId) {
+    eventJSX = <EmbedEventPointer pointer={{ type: "note", data: eventId }} />;
+  }
+
   return (
-    <Flex
-      direction="row"
-      borderRadius="md"
-      borderColor="yellow.400"
-      borderWidth="1px"
-      p="2"
-      gap="2"
-      alignItems="center"
-    >
-      <UserAvatar pubkey={zap.request.pubkey} size="xs" />
-      <UserLink pubkey={zap.request.pubkey} />
-      <Text>
-        zapped {readablizeSats(zap.payment.amount / 1000)} sats
-        {zap.eventId && (
-          <span>
-            {" "}
-            on note: <NoteLink noteId={zap.eventId} />
-          </span>
-        )}
-      </Text>
-      <Timestamp color="current" ml="auto" timestamp={zap.request.created_at} />
-    </Flex>
+    <Card variant="outline" borderColor="yellow.400" p="2" ref={ref}>
+      <Flex direction="row" gap="2" alignItems="center" mb="2">
+        <UserAvatar pubkey={zap.request.pubkey} size="xs" />
+        <UserLink pubkey={zap.request.pubkey} />
+        <Text>zapped {readablizeSats(zap.payment.amount / 1000)} sats</Text>
+        <Timestamp color="current" ml="auto" timestamp={zap.request.created_at} />
+      </Flex>
+      {eventJSX}
+    </Card>
   );
-};
+});
 
 const NotificationItem = memo(({ event }: { event: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
-  let content = <Text>Unknown event type {event.kind}</Text>;
   switch (event.kind) {
     case Kind.Text:
-      content = <Kind1Notification event={event} />;
-      break;
+      return <Kind1Notification event={event} ref={ref} />;
     case Kind.Reaction:
-      content = <ReactionNotification event={event} />;
-      break;
+      return <ReactionNotification event={event} ref={ref} />;
+    case Kind.Repost:
+      return <ShareNotification event={event} ref={ref} />;
     case Kind.Zap:
-      content = <ZapNotification event={event} />;
-      break;
+      return <ZapNotification event={event} ref={ref} />;
+    default:
+      return <EmbeddedUnknown event={event} />;
   }
-
-  return <div ref={ref}>{content}</div>;
 });
 
 function NotificationsPage() {
-  const account = useCurrentAccount()!;
+  const hideReplies = useDisclosure();
+  const hideMentions = useDisclosure();
+  const hideZaps = useDisclosure();
+  const hideReactions = useDisclosure();
+  const hideShares = useDisclosure();
 
-  const eventFilter = useCallback((event: NostrEvent) => event.pubkey !== account.pubkey, [account]);
+  const { people } = usePeopleListContext();
+  const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
+
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (peoplePubkeys && event.kind !== Kind.Zap && !peoplePubkeys.includes(event.pubkey)) return false;
+
+      if (hideZaps.isOpen && event.kind === Kind.Zap) return false;
+      if (hideReactions.isOpen && event.kind === Kind.Reaction) return false;
+      if (hideShares.isOpen && event.kind === Kind.Repost) return false;
+      if (event.kind === Kind.Text) {
+        const refs = getReferences(event);
+        if (hideReplies.isOpen && refs.replyId) return false;
+        if (hideMentions.isOpen && !refs.replyId) return false;
+      }
+
+      return true;
+    },
+    [hideMentions.isOpen, hideReplies.isOpen, hideZaps.isOpen, hideReactions.isOpen, hideShares.isOpen, peoplePubkeys],
+  );
+
   const timeline = useNotificationTimeline();
-
-  const events = useSubject(timeline?.timeline) ?? [];
+  const events = useSubject(timeline?.timeline).filter(eventFilter) ?? [];
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2">
+      <Flex gap="2" alignItems="center" py="2" wrap="wrap">
+        <PeopleListSelection />
+        <Switch isChecked={!hideReplies.isOpen} onChange={hideReplies.onToggle}>
+          Replies
+        </Switch>
+        <Switch isChecked={!hideMentions.isOpen} onChange={hideMentions.onToggle}>
+          Mentions
+        </Switch>
+        <Switch isChecked={!hideReactions.isOpen} onChange={hideReactions.onToggle}>
+          Reactions
+        </Switch>
+        <Switch isChecked={!hideShares.isOpen} onChange={hideShares.onToggle}>
+          Shares
+        </Switch>
+        <Switch isChecked={!hideZaps.isOpen} onChange={hideZaps.onToggle}>
+          Zaps
+        </Switch>
+      </Flex>
+      <Flex direction="column" gap="4" pt="2" pb="12">
         {events.map((event) => (
           <NotificationItem key={event.id} event={event} />
         ))}
@@ -132,7 +221,9 @@ function NotificationsPage() {
 export default function NotificationsView() {
   return (
     <RequireCurrentAccount>
-      <NotificationsPage />
+      <PeopleListProvider initList="global">
+        <NotificationsPage />
+      </PeopleListProvider>
     </RequireCurrentAccount>
   );
 }

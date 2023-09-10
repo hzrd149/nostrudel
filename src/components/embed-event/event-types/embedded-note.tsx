@@ -21,7 +21,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
     <TrustProvider event={event}>
       <Card {...props}>
         <CardHeader padding="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
-          <UserAvatarLink pubkey={event.pubkey} size="sm" />
+          <UserAvatarLink pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated fontSize="lg" />
           <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
           <Button size="sm" onClick={expand.onToggle} leftIcon={expand.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}>

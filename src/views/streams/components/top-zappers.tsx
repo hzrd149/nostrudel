@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Flex, FlexProps, Text } from "@chakra-ui/react";
 
-import { parseZapEvent } from "../../../helpers/zaps";
+import { parseZapEvent } from "../../../helpers/nostr/zaps";
 import { UserLink } from "../../../components/user-link";
 import { LightningIcon } from "../../../components/icons";
 import { readablizeSats } from "../../../helpers/bolt11";

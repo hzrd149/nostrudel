@@ -16,7 +16,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { UserLink } from "../user-link";
 import { DislikeIcon, LightningIcon, LikeIcon } from "../icons";
-import { ParsedZap } from "../../helpers/zaps";
+import { ParsedZap } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import useEventReactions from "../../hooks/use-event-reactions";
 import useEventZaps from "../../hooks/use-event-zaps";
