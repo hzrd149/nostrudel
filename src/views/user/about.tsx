@@ -28,7 +28,7 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import { getLudEndpoint } from "../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { truncatedId } from "../../helpers/nostr/events";
-import userTrustedStatsService from "../../services/user-trusted-stats";
+import trustedUserStatsService from "../../services/trusted-user-stats";
 import { parseAddress } from "../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -66,7 +66,7 @@ export default function UserAboutTab() {
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
 
-  const { value: stats } = useAsync(() => userTrustedStatsService.getUserStats(pubkey), [pubkey]);
+  const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;

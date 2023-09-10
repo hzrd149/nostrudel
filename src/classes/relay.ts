@@ -1,5 +1,5 @@
 import relayScoreboardService from "../services/relay-scoreboard";
-import { RawIncomingNostrEvent, NostrEvent } from "../types/nostr-event";
+import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
 import { Subject } from "./subject";
 
@@ -14,6 +14,10 @@ export type IncomingNotice = {
   message: string;
   relay: Relay;
 };
+export type IncomingCount = {
+  type: "COUNT";
+  relay: Relay;
+} & CountResponse;
 export type IncomingEOSE = {
   type: "EOSE";
   subId: string;
@@ -44,6 +48,7 @@ export class Relay {
   onClose = new Subject<Relay>(undefined, false);
   onEvent = new Subject<IncomingEvent>(undefined, false);
   onNotice = new Subject<IncomingNotice>(undefined, false);
+  onCount = new Subject<IncomingCount>(undefined, false);
   onEOSE = new Subject<IncomingEOSE>(undefined, false);
   onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
   ws?: WebSocket;
@@ -179,6 +184,9 @@ export class Relay {
           break;
         case "NOTICE":
           this.onNotice.next({ relay: this, type, message: data[1] });
+          break;
+        case "COUNT":
+          this.onCount.next({ relay: this, type, ...data[2] });
           break;
         case "EOSE":
           this.onEOSE.next({ relay: this, type, subId: data[1] });

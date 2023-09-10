@@ -1,19 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Flex,
-  IconButton,
-  Input,
-  Link,
-  SimpleGrid,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { useSearchParams, Link as RouterLink, useNavigate } from "react-router-dom";
+import { Box, Button, Flex, IconButton, Input, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useAsync } from "react-use";
+
 import { ClipboardIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
@@ -21,52 +11,46 @@ import { getMatchHashtag } from "../../helpers/regexp";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { Kind, nip19 } from "nostr-tools";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { NostrEvent } from "../../types/nostr-event";
-import { getUserDisplayName, parseKind0Event } from "../../helpers/user-metadata";
+import { parseKind0Event } from "../../helpers/user-metadata";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { EventRelays } from "../../components/note/note-relays";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
-import { getEventRelays } from "../../services/event-relays";
-import relayScoreboardService from "../../services/relay-scoreboard";
+import { UserLink } from "../../components/user-link";
+import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
+import { readablizeSats } from "../../helpers/bolt11";
 
-function buildDescriptionContent(description: string) {
-  let content: EmbedableContent = [description.trim()];
+function ProfileResult({ profile }: { profile: NostrEvent }) {
+  const metadata = parseKind0Event(profile);
 
-  content = embedNostrLinks(content);
-  content = embedUrls(content, [renderGenericUrl]);
+  const aboutContent = useMemo(() => {
+    if (!metadata.about) return null;
+    let content: EmbedableContent = [metadata.about.trim()];
+    content = embedNostrLinks(content);
+    content = embedUrls(content, [renderGenericUrl]);
+    return content;
+  }, [metadata.about]);
 
-  return content;
-}
-
-function ProfileResult({ event }: { event: NostrEvent }) {
-  const metadata = parseKind0Event(event);
-
-  const aboutContent = metadata.about && buildDescriptionContent(metadata.about);
-  const nprofile = useMemo(() => {
-    const relays = getEventRelays(event.id).value;
-    const ranked = relayScoreboardService.getRankedRelays(relays).slice(2);
-    return nip19.nprofileEncode({ pubkey: event.pubkey, relays: ranked });
-  }, [event.id]);
+  const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(profile.pubkey), [profile.pubkey]);
 
   return (
     <Box>
-      <UserAvatar pubkey={event.pubkey} noProxy mr="2" float="left" />
-      <Link as={RouterLink} to={`/u/${nprofile}`} whiteSpace="nowrap" fontWeight="bold" fontSize="xl" isTruncated>
-        {getUserDisplayName(metadata, event.pubkey)}
-      </Link>
+      <UserAvatar pubkey={profile.pubkey} noProxy mr="2" float="left" />
+      <UserLink pubkey={profile.pubkey} fontWeight="bold" fontSize="xl" isTruncated />
       <br />
-      <UserDnsIdentityIcon pubkey={event.pubkey} />
+      <UserDnsIdentityIcon pubkey={profile.pubkey} />
       <br />
-      <Box whiteSpace="pre" overflow="hidden" maxH="xs">
+      <Box whiteSpace="pre" overflow="hidden" maxH="xs" isTruncated>
         {aboutContent}
       </Box>
+      {stats && (
+        <>{stats.followers_pubkey_count && <Text>Followers: {readablizeSats(stats.followers_pubkey_count)}</Text>}</>
+      )}
     </Box>
   );
 }
@@ -81,14 +65,31 @@ function SearchResults({ search }: { search: string }) {
     { enabled: !!search },
   );
 
-  const events = useSubject(timeline?.timeline) ?? [];
+  const profiles = useSubject(timeline?.timeline) ?? [];
+
+  const [profileStats, setProfileStats] = useState<Record<string, NostrBandUserStats>>({});
+  useEffect(() => {
+    for (const profile of profiles) {
+      trustedUserStatsService.getUserStats(profile.pubkey).then((stats) => {
+        if (!stats) return;
+        setProfileStats((dir) => ({ ...dir, [stats.pubkey]: stats }));
+      });
+    }
+  }, [profiles]);
+
+  const sortedProfiles = useMemo(() => {
+    return profiles.sort(
+      (a, b) =>
+        (profileStats[b.pubkey]?.followers_pubkey_count ?? 0) - (profileStats[a.pubkey]?.followers_pubkey_count ?? 0),
+    );
+  }, [profileStats, profiles]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      {events.map((event) => (
-        <ProfileResult key={event.id} event={event} />
+      {sortedProfiles.map((event) => (
+        <ProfileResult key={event.id} profile={event} />
       ))}
       <TimelineActionAndStatus timeline={timeline} />
     </IntersectionObserverProvider>
@@ -166,7 +167,6 @@ export function SearchPage() {
   );
 }
 
-// TODO: remove this when there is a good way to allow the user to select from a list of filtered relays that support NIP-50
 const searchRelays = ["wss://relay.nostr.band", "wss://search.nos.today", "wss://relay.noswhere.com"];
 export default function SearchView() {
   return (
