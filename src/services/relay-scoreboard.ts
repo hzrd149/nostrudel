@@ -82,7 +82,7 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   private averageCache: number | null = null;
   getAverage(undef: number = Infinity) {
     if (this.measures.length === 0) return undef;
-    if (this.averageCache !== null) {
+    if (this.averageCache === null) {
       const total = this.measures.reduce((total, [time]) => total + time, 0);
       this.averageCache = total / this.measures.length;
     }
