@@ -1,9 +1,8 @@
 import { useRef } from "react";
 import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
-import { useAsync } from "react-use";
-import singleEventService from "../../../services/single-event";
+import { validateEvent } from "nostr-tools";
+
 import { isETag, NostrEvent } from "../../../types/nostr-event";
-import { ErrorFallback } from "../../error-boundary";
 import { Note } from "../../note";
 import { NoteMenu } from "../../note/note-menu";
 import { UserAvatar } from "../../user-avatar";
@@ -13,7 +12,7 @@ import { TrustProvider } from "../../../providers/trust";
 import { safeJson } from "../../../helpers/parse";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { validateEvent } from "nostr-tools";
+import useSingleEvent from "../../../hooks/use-single-event";
 
 function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
@@ -36,16 +35,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
   const readRelays = useReadRelayUrls(relay ? [relay] : []);
 
-  const {
-    value: loadedNote,
-    loading,
-    error,
-  } = useAsync(async () => {
-    if (eventId) {
-      return singleEventService.requestEvent(eventId, readRelays);
-    }
-    return null;
-  }, [event]);
+  const loadedNote = useSingleEvent(eventId, readRelays);
 
   const note = hardCodedNote || loadedNote;
 
@@ -63,7 +53,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
           </Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
         </Flex>
-        {loading ? <SkeletonText /> : note ? <Note event={note} showReplyButton /> : <ErrorFallback error={error} />}
+        {!note ? <SkeletonText /> : <Note event={note} showReplyButton />}
       </Flex>
     </TrustProvider>
   );

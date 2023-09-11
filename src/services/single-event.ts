@@ -1,31 +1,30 @@
-import createDefer, { Deferred } from "../classes/deferred";
+import _throttle from "lodash.throttle";
+
 import { NostrRequest } from "../classes/nostr-request";
+import Subject from "../classes/subject";
+import { SuperMap } from "../classes/super-map";
 import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 
 class SingleEventService {
-  eventCache = new Map<string, NostrEvent>();
+  private cache = new SuperMap<string, Subject<NostrEvent>>(() => new Subject());
   pending = new Map<string, string[]>();
-  pendingPromises = new Map<string, Deferred<NostrEvent>>();
 
-  async requestEvent(id: string, relays: string[]) {
-    const event = this.eventCache.get(id);
-    if (event) return event;
+  requestEvent(id: string, relays: string[]) {
+    const subject = this.cache.get(id);
+    if (subject.value) return subject;
 
     this.pending.set(id, this.pending.get(id)?.concat(safeRelayUrls(relays)) ?? safeRelayUrls(relays));
-    const deferred = createDefer<NostrEvent>();
-    this.pendingPromises.set(id, deferred);
-    return deferred;
+    this.batchRequestsThrottle();
+
+    return subject;
   }
 
   handleEvent(event: NostrEvent) {
-    this.eventCache.set(event.id, event);
-    if (this.pendingPromises.has(event.id)) {
-      this.pendingPromises.get(event.id)?.resolve(event);
-      this.pendingPromises.delete(event.id);
-    }
+    this.cache.get(event.id).next(event);
   }
 
+  private batchRequestsThrottle = _throttle(this.batchRequests, 1000 * 2);
   batchRequests() {
     if (this.pending.size === 0) return;
 
@@ -47,9 +46,5 @@ class SingleEventService {
 }
 
 const singleEventService = new SingleEventService();
-
-setInterval(() => {
-  singleEventService.batchRequests();
-}, 1000);
 
 export default singleEventService;

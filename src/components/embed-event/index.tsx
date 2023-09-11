@@ -57,12 +57,12 @@ export function EmbedEvent({
 export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {
   switch (pointer.type) {
     case "note": {
-      const { event } = useSingleEvent(pointer.data);
+      const event = useSingleEvent(pointer.data);
       if (event === undefined) return <NoteLink noteId={pointer.data} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nevent": {
-      const { event } = useSingleEvent(pointer.data.id, pointer.data.relays);
+      const event = useSingleEvent(pointer.data.id, pointer.data.relays);
       if (event === undefined) return <NoteLink noteId={pointer.data.id} />;
       return <EmbedEvent event={event} {...props} />;
     }

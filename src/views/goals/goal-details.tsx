@@ -29,8 +29,7 @@ export default function GoalDetailsView() {
   const navigate = useNavigate();
   const pointer = useGoalPointerFromParams();
 
-  const { event: goal } = useSingleEvent(pointer.id, pointer.relays);
-
+  const goal = useSingleEvent(pointer.id, pointer.relays);
   if (!goal) return <Spinner />;
 
   return (

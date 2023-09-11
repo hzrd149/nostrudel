@@ -12,7 +12,7 @@ import { UserLink } from "../../user-link";
 
 function ReplyNote({ event }: { event: NostrEvent }) {
   const refs = getReferences(event);
-  const { event: parent } = useSingleEvent(refs.replyId);
+  const parent = useSingleEvent(refs.replyId);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);

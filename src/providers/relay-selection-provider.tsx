@@ -31,22 +31,22 @@ export default function RelaySelectionProvider({
   overrideDefault,
   additionalDefaults,
 }: RelaySelectionProviderProps) {
-  const { state } = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const userReadRelays = useReadRelayUrls();
   const relays = useMemo(() => {
-    if (state?.relays) return state.relays;
+    if (location.state?.relays) return location.state.relays;
     if (overrideDefault) return overrideDefault;
     if (additionalDefaults) return unique([...userReadRelays, ...additionalDefaults]);
     return userReadRelays;
-  }, [state?.relays, overrideDefault, userReadRelays.join("|"), additionalDefaults]);
+  }, [location.state?.relays, overrideDefault, userReadRelays.join("|"), additionalDefaults]);
 
   const setSelected = useCallback(
     (relays: string[]) => {
-      navigate(".", { state: { relays }, replace: true });
+      navigate(location.pathname + location.search, { state: { relays }, replace: true });
     },
-    [navigate],
+    [navigate, location],
   );
 
   const context = useMemo(

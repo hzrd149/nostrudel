@@ -6,7 +6,7 @@ import useSingleEvent from "../../../hooks/use-single-event";
 
 export default function NoteCard({ id, relay }: { id: string; relay?: string }) {
   const readRelays = useReadRelayUrls(relay ? [relay] : []);
-  const { event } = useSingleEvent(id, readRelays);
+  const event = useSingleEvent(id, readRelays);
 
   return event ? (
     <Note event={event} />
