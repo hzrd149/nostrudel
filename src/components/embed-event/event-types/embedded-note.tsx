@@ -12,6 +12,8 @@ import { TrustProvider } from "../../../providers/trust";
 import { NoteLink } from "../../note-link";
 import { ArrowDownSIcon, ArrowUpSIcon } from "../../icons";
 import Timestamp from "../../timestamp";
+import OpenInDrawerButton from "../../open-in-drawer-button";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
@@ -27,6 +29,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
           <Button size="sm" onClick={expand.onToggle} leftIcon={expand.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}>
             Expand
           </Button>
+          <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" />
           <Spacer />
           {showSignatureVerification && <EventVerificationIcon event={event} />}
           <NoteLink noteId={event.id} color="current" whiteSpace="nowrap">

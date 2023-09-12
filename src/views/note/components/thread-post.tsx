@@ -23,7 +23,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
   return (
     <Flex direction="column" gap="2">
       <TrustProvider trust={focusId === post.event.id ? true : undefined}>
-        <Note event={post.event} variant={focusId === post.event.id ? "filled" : "outline"} />
+        <Note event={post.event} borderColor={focusId === post.event.id ? "blue.500" : undefined} hideDrawerButton />
       </TrustProvider>
       {showReplyForm.isOpen && (
         <ReplyForm item={post} onCancel={showReplyForm.onClose} onSubmitted={showReplyForm.onClose} />

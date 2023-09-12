@@ -52,13 +52,13 @@ export default function NoteView() {
     pageContent = (
       <>
         {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} />
+          <Note key={parent.event.id + "-rely"} event={parent.event} hideDrawerButton />
         ))}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
     );
   } else if (events[focusId]) {
-    pageContent = <Note event={events[focusId]} variant="filled" />;
+    pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton />;
   }
 
   return (

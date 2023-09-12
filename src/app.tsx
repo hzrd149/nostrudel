@@ -55,6 +55,7 @@ import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
 import UserArticlesTab from "./views/user/articles";
+import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -217,9 +218,11 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
-    <Global styles={overrideReactTextareaAutocompleteStyles} />
-    <Suspense fallback={<Spinner />}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <DrawerSubViewProvider parentRouter={router}>
+      <Global styles={overrideReactTextareaAutocompleteStyles} />
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </DrawerSubViewProvider>
   </ErrorBoundary>
 );
