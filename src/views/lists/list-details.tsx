@@ -64,8 +64,6 @@ export default function ListDetailsView() {
 
         <Spacer />
 
-        <EventRelays event={event} />
-
         <ListFeedButton list={event} />
         {isAuthor && (
           <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>
