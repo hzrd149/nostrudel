@@ -92,3 +92,34 @@ export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[
     },
   });
 }
+
+export function truncateEmbedableContent(content: EmbedableContent, maxLength = 256) {
+  let length = 0;
+  for (let i = 0; i < content.length; i++) {
+    const chunk = content[i];
+    length += typeof chunk === "string" ? chunk.length : 8;
+
+    if (length > maxLength) {
+      if (typeof chunk === "string") {
+        const newContent = i > 0 ? content.slice(0, i) : [];
+        const chunkLength = chunk.length - (length - maxLength);
+
+        // find the nearest newline
+        const newLines = chunk.matchAll(/\n/g);
+        for (const match of newLines) {
+          console.log(match.index, chunkLength, chunk.length);
+
+          if (match.index && match.index > chunkLength) {
+            newContent.push(chunk.slice(0, match.index));
+            return newContent;
+          }
+        }
+
+        // just cut the string
+        newContent.push(chunk.slice(0, maxLength - length));
+        return newContent;
+      } else return content.slice(0, i);
+    }
+  }
+  return content;
+}

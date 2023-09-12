@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
 import {
   embedLightningInvoice,
   embedNostrLinks,
@@ -60,11 +60,16 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
 export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
   noOpenGraphLinks?: boolean;
+  maxLength?: number;
 };
 
 export const NoteContents = React.memo(
-  ({ event, noOpenGraphLinks, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
-    const content = buildContents(event, noOpenGraphLinks);
+  ({ event, noOpenGraphLinks, maxLength, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
+    let content = buildContents(event, noOpenGraphLinks);
+
+    if (maxLength !== undefined) {
+      content = truncateEmbedableContent(content, maxLength);
+    }
 
     return (
       <LightboxProvider>
