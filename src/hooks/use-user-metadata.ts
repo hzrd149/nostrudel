@@ -4,7 +4,7 @@ import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
 
 export function useUserMetadata(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
-  const relays = useReadRelayUrls(additionalRelays);
+  const relays = useReadRelayUrls([...additionalRelays, "wss://purplepag.es"]);
 
   const subject = useMemo(
     () => userMetadataService.requestMetadata(pubkey, relays, alwaysRequest),
