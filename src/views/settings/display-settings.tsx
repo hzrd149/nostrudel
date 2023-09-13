@@ -11,10 +11,10 @@ import {
   AccordionIcon,
   FormHelperText,
   Input,
-  Stack,
   Select,
 } from "@chakra-ui/react";
 import { AppSettings } from "../../services/settings/migrations";
+import { AppearanceIcon } from "../../components/icons";
 
 export default function DisplaySettings() {
   const { register } = useFormContext<AppSettings>();
@@ -22,7 +22,8 @@ export default function DisplaySettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <AppearanceIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
             Display
           </Box>

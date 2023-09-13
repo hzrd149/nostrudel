@@ -7,7 +7,17 @@ import { getSharableEventAddress } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
 import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
-import { ClipboardIcon, CodeIcon, ExternalLinkIcon, LikeIcon, RelayIcon, RepostIcon, TrashIcon } from "../icons";
+import {
+  ClipboardIcon,
+  CodeIcon,
+  ExternalLinkIcon,
+  LikeIcon,
+  MuteIcon,
+  RelayIcon,
+  RepostIcon,
+  TrashIcon,
+  UnmuteIcon,
+} from "../icons";
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -16,11 +26,13 @@ import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
 import NostrPublishAction from "../../classes/nostr-publish-action";
+import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
   const infoModal = useDisclosure();
   const reactionsModal = useDisclosure();
+  const { isMuted, mute, unmute } = useUserMuteFunctions(event.pubkey);
 
   const { deleteEvent } = useDeleteEventContext();
 
@@ -29,13 +41,9 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
 
   const broadcast = useCallback(() => {
     const missingRelays = clientRelaysService.getWriteUrls();
-
     const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
-
     pub.onResult.subscribe((result) => {
-      if (result.status) {
-        handleEventFromRelay(result.relay, event);
-      }
+      if (result.status) handleEventFromRelay(result.relay, event);
     });
   }, []);
 
@@ -44,12 +52,14 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
   return (
     <>
       <MenuIconButton {...props}>
-        <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
-          Zaps/Reactions
-        </MenuItem>
         {address && (
           <MenuItem onClick={() => window.open(buildAppSelectUrl(address), "_blank")} icon={<ExternalLinkIcon />}>
             View in app...
+          </MenuItem>
+        )}
+        {account?.pubkey !== event.pubkey && (
+          <MenuItem onClick={isMuted ? unmute : mute} icon={isMuted ? <UnmuteIcon /> : <MuteIcon />} color="red.500">
+            {isMuted ? "Unmute User" : "Mute User"}
           </MenuItem>
         )}
         <MenuItem onClick={() => copyToClipboard("nostr:" + address)} icon={<RepostIcon />}>
@@ -70,6 +80,9 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
+        </MenuItem>
+        <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
+          Zaps/Reactions
         </MenuItem>
       </MenuIconButton>
 

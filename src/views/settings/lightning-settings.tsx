@@ -23,9 +23,10 @@ export default function LightningSettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <LightningIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
-            Lightning <LightningIcon color="yellow.400" />
+            Lightning
           </Box>
           <AccordionIcon />
         </AccordionButton>

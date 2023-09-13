@@ -1,11 +1,12 @@
-import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 import { useState } from "react";
+import { Alert, AlertIcon, Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 
 import { ArrowDownSIcon, ArrowUpSIcon, ReplyIcon } from "../../../components/icons";
 import { Note } from "../../../components/note";
 import { countReplies, ThreadItem } from "../../../helpers/thread";
 import { TrustProvider } from "../../../providers/trust";
 import ReplyForm from "./reply-form";
+import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -18,13 +19,27 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
   const toggle = () => setShowReplies((v) => !v);
   const showReplyForm = useDisclosure();
 
+  const muteFilter = useUserMuteFilter();
+  const [alwaysShow, setAlwaysShow] = useState(false);
+
   const numberOfReplies = countReplies(post);
+  const isMuted = muteFilter(post.event);
 
   return (
     <Flex direction="column" gap="2">
-      <TrustProvider trust={focusId === post.event.id ? true : undefined}>
-        <Note event={post.event} borderColor={focusId === post.event.id ? "blue.500" : undefined} hideDrawerButton />
-      </TrustProvider>
+      {isMuted && !alwaysShow ? (
+        <Alert status="warning">
+          <AlertIcon />
+          Muted user
+          <Button size="xs" ml="auto" onClick={() => setAlwaysShow(true)}>
+            Show anyway
+          </Button>
+        </Alert>
+      ) : (
+        <TrustProvider trust={focusId === post.event.id ? true : undefined}>
+          <Note event={post.event} borderColor={focusId === post.event.id ? "blue.500" : undefined} hideDrawerButton />
+        </TrustProvider>
+      )}
       {showReplyForm.isOpen && (
         <ReplyForm item={post} onCancel={showReplyForm.onClose} onSubmitted={showReplyForm.onClose} />
       )}

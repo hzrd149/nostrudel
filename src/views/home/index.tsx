@@ -12,16 +12,19 @@ import RelaySelectionButton from "../../components/relay-selection/relay-selecti
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
 import { NostrRequestFilter } from "../../types/nostr-query";
+import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
   const showReplies = useDisclosure();
+  const muteFilter = useUserMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
+      if (muteFilter(event)) return false;
       if (!showReplies.isOpen && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [timelinePageEventFilter, showReplies.isOpen],
+    [timelinePageEventFilter, showReplies.isOpen, muteFilter],
   );
 
   const { relays } = useRelaySelectionContext();

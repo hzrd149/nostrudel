@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
@@ -15,10 +15,21 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import { NostrRequestFilter } from "../../types/nostr-query";
 import { useAppTitle } from "../../hooks/use-app-title";
+import useUserMuteFilter from "../../hooks/use-user-mute-filter";
+import { NostrEvent } from "../../types/nostr-event";
 
 function StreamsPage() {
   useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
+  const userMuteFilter = useUserMuteFilter();
+
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (userMuteFilter(event)) return false;
+      return true;
+    },
+    [userMuteFilter],
+  );
 
   const { filter, listId } = usePeopleListContext();
   const query = useMemo<NostrRequestFilter>(() => {
@@ -29,7 +40,7 @@ function StreamsPage() {
     ];
   }, [filter, listId]);
 
-  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter });
+  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter, eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());
 

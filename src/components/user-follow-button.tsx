@@ -14,11 +14,12 @@ import {
 } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
-import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, UnfollowIcon } from "./icons";
+import { ArrowDownSIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import {
   PEOPLE_LIST_KIND,
   createEmptyContactList,
+  createEmptyMuteList,
   draftAddPerson,
   draftRemovePerson,
   getListName,
@@ -33,6 +34,8 @@ import useUserContactList from "../hooks/use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
+import useUserMuteList from "../hooks/use-user-mute-list";
+import useUserMuteFunctions from "../hooks/use-user-mute-functions";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();
@@ -116,6 +119,7 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const contacts = useUserContactList(account?.pubkey, [], true);
+  const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
 
   const isFollowing = isPubkeyInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
@@ -147,6 +151,16 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
           ) : (
             <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled}>
               Follow
+            </MenuItem>
+          )}
+          {account?.pubkey !== pubkey && (
+            <MenuItem
+              onClick={isMuted ? unmute : mute}
+              icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
+              color="red.500"
+              isDisabled={isDisabled}
+            >
+              {isMuted ? "Unmute" : "Mute"}
             </MenuItem>
           )}
           {account && (

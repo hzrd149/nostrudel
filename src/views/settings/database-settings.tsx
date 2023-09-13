@@ -9,6 +9,7 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { clearCacheData, deleteDatabase } from "../../services/db";
+import { DatabaseIcon } from "../../components/icons";
 
 export default function DatabaseSettings() {
   const [clearing, setClearing] = useState(false);
@@ -28,7 +29,8 @@ export default function DatabaseSettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <DatabaseIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
             Database
           </Box>

@@ -26,6 +26,10 @@ export type ParsedStream = {
   relays?: string[];
 };
 
+export function getStreamHost(stream: NostrEvent) {
+  return stream.tags.filter(isPTag)[0]?.[1] ?? stream.pubkey;
+}
+
 export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const title = stream.tags.find((t) => t[0] === "title")?.[1];
   const summary = stream.tags.find((t) => t[0] === "summary")?.[1];
@@ -59,12 +63,11 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     status = "ended";
   }
 
-  const host = stream.tags.filter(isPTag)[0]?.[1] ?? stream.pubkey;
   const tags = unique(stream.tags.filter((t) => t[0] === "t" && t[1]).map((t) => t[1] as string));
 
   return {
     author: stream.pubkey,
-    host,
+    host: getStreamHost(stream),
     event: stream,
     updated: stream.created_at,
     streaming,

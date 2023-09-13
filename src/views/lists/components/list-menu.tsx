@@ -9,6 +9,7 @@ import { CodeIcon, ExternalLinkIcon, RepostIcon, TrashIcon } from "../../../comp
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { useDeleteEventContext } from "../../../providers/delete-event-provider";
+import { isSpecialListKind } from "../../../helpers/nostr/lists";
 
 export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
@@ -33,7 +34,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
             </MenuItem>
           </>
         )}
-        {account?.pubkey === list.pubkey && (
+        {account?.pubkey === list.pubkey && !isSpecialListKind(list.kind) && (
           <MenuItem icon={<TrashIcon />} color="red.500" onClick={() => deleteEvent(list)}>
             Delete List
           </MenuItem>
