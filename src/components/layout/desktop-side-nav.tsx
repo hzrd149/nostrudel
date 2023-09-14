@@ -21,7 +21,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       gap="2"
       direction="column"
       width="15rem"
-      pt="2"
+      p="2"
       alignItems="stretch"
       flexShrink={0}
       h="100vh"

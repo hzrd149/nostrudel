@@ -40,11 +40,14 @@ function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
         <RelayJoinAction url={url} size="sm" />
       </Flex>
       <RelayMetadata url={url} />
-      <Flex py="0" direction="column" gap="2">
+      {reviews.length>0&&(
+
+        <Flex py="0" direction="column" gap="2">
         {reviews.map((event) => (
           <RelayReviewNote key={event.id} event={event} />
-        ))}
+          ))}
       </Flex>
+          )}
     </Flex>
   );
 }

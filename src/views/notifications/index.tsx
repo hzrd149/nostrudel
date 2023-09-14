@@ -22,6 +22,7 @@ import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-u
 import { NoteContents } from "../../components/note/note-contents";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const refs = getReferences(event);
@@ -189,31 +190,31 @@ function NotificationsPage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" alignItems="center" py="2" wrap="wrap">
-        <PeopleListSelection />
-        <Switch isChecked={!hideReplies.isOpen} onChange={hideReplies.onToggle}>
-          Replies
-        </Switch>
-        <Switch isChecked={!hideMentions.isOpen} onChange={hideMentions.onToggle}>
-          Mentions
-        </Switch>
-        <Switch isChecked={!hideReactions.isOpen} onChange={hideReactions.onToggle}>
-          Reactions
-        </Switch>
-        <Switch isChecked={!hideShares.isOpen} onChange={hideShares.onToggle}>
-          Shares
-        </Switch>
-        <Switch isChecked={!hideZaps.isOpen} onChange={hideZaps.onToggle}>
-          Zaps
-        </Switch>
-      </Flex>
-      <Flex direction="column" gap="4" pt="2" pb="12">
+      <VerticalPageLayout>
+        <Flex gap="2" alignItems="center" wrap="wrap">
+          <PeopleListSelection />
+          <Switch isChecked={!hideReplies.isOpen} onChange={hideReplies.onToggle}>
+            Replies
+          </Switch>
+          <Switch isChecked={!hideMentions.isOpen} onChange={hideMentions.onToggle}>
+            Mentions
+          </Switch>
+          <Switch isChecked={!hideReactions.isOpen} onChange={hideReactions.onToggle}>
+            Reactions
+          </Switch>
+          <Switch isChecked={!hideShares.isOpen} onChange={hideShares.onToggle}>
+            Shares
+          </Switch>
+          <Switch isChecked={!hideZaps.isOpen} onChange={hideZaps.onToggle}>
+            Zaps
+          </Switch>
+        </Flex>
         {events.map((event) => (
           <NotificationItem key={event.id} event={event} />
         ))}
 
         <TimelineActionAndStatus timeline={timeline} />
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

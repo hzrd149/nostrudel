@@ -9,6 +9,8 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { ArrowLeftSIcon } from "../../components/icons";
 
 function RelayReviewsPage() {
   const navigate = useNavigate();
@@ -32,15 +34,15 @@ function RelayReviewsPage() {
 
   return (
     <IntersectionObserverProvider<string> callback={callback}>
-      <Flex direction="column" gap="2" py="2">
+      <VerticalPageLayout>
         <Flex gap="2">
-          <Button onClick={() => navigate(-1)}>Back</Button>
+          <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon/>}>Back</Button>
           <PeopleListSelection />
         </Flex>
         {reviews.map((event) => (
           <RelayReviewNote key={event.id} event={event} />
         ))}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

@@ -17,6 +17,7 @@ import { NostrRequestFilter } from "../../types/nostr-query";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { NostrEvent } from "../../types/nostr-event";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function StreamsPage() {
   useAppTitle("Streams");
@@ -53,7 +54,7 @@ function StreamsPage() {
   const endedStreams = streams.filter((stream) => stream.status === "ended");
 
   return (
-    <Flex p="2" gap="2" overflow="hidden" direction="column">
+    <VerticalPageLayout>
       <Flex gap="2" wrap="wrap">
         <PeopleListSelection />
         <RelaySelectionButton ml="auto" />
@@ -73,7 +74,7 @@ function StreamsPage() {
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />
       </IntersectionObserverProvider>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 export default function StreamsView() {

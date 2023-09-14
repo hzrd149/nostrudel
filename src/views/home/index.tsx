@@ -52,7 +52,7 @@ function HomePage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} pt="2" pb="8" />;
+  return <TimelinePage timeline={timeline} header={header} pt="2" pb="12" px="2" />;
 }
 
 export default function HomeView() {

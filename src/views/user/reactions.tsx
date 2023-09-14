@@ -17,6 +17,7 @@ import { UserLink } from "../../components/user-link";
 import { NoteMenu } from "../../components/note/note-menu";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { embedEmoji } from "../../components/embed-types";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -57,13 +58,13 @@ export default function UserReactionsTab() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
-        <Flex direction="column" gap="2" p="2" pb="8">
+        <VerticalPageLayout>
           {likes.map((event) => (
             <Reaction reaction={event} />
           ))}
 
           <TimelineActionAndStatus timeline={timeline} />
-        </Flex>
+        </VerticalPageLayout>
       </TrustProvider>
     </IntersectionObserverProvider>
   );

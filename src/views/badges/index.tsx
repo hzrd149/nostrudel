@@ -6,13 +6,14 @@ import { ExternalLinkIcon } from "../../components/icons";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import BadgeCard from "./components/badge-card";
 import { getEventUID } from "../../helpers/nostr/events";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BadgesPage() {
   const account = useCurrentAccount()!;
 
   return (
-    <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
-      <Flex gap="2">
+    <VerticalPageLayout>
+      <Flex gap="2" wrap="wrap">
         <Button as={RouterLink} to="/badges/browse">
           Browse Badges
         </Button>
@@ -27,19 +28,7 @@ function BadgesPage() {
           Badges
         </Button>
       </Flex>
-
-      {/* {peopleLists.length > 0 && (
-        <>
-          <Heading size="md">People lists</Heading>
-          <Divider />
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-            {peopleLists.map((event) => (
-              <BadgeCard key={getEventUID(event)} badge={event} />
-            ))}
-          </SimpleGrid>
-        </>
-      )} */}
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

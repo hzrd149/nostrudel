@@ -25,6 +25,7 @@ import { ExternalLinkIcon } from "../../components/icons";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { nip19 } from "nostr-tools";
 import Timestamp from "../../components/timestamp";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
@@ -92,7 +93,7 @@ function DirectMessagesPage() {
   }
 
   return (
-    <Flex direction="column" gap="2" overflowX="hidden" overflowY="auto" height="100%" pt="2" pb="8">
+    <VerticalPageLayout>
       <Alert status="info" flexShrink={0}>
         <AlertIcon />
         <Flex direction={{ base: "column", lg: "row" }}>
@@ -113,7 +114,7 @@ function DirectMessagesPage() {
       <Button onClick={loadMore} isLoading={loading} flexShrink={0}>
         Load More
       </Button>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

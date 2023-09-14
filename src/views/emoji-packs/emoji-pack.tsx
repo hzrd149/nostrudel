@@ -33,6 +33,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -114,7 +115,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   };
 
   return (
-    <Flex direction="column" px="2" pt="2" pb="8" overflowY="auto" overflowX="hidden" h="full" gap="2">
+    <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
         <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
@@ -188,7 +189,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
           </Button>
         </Flex>
       )}
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

@@ -21,6 +21,7 @@ import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { ErrorBoundary } from "../../components/error-boundary";
 import Timestamp from "../../components/timestamp";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const navigate = useNavigate();
@@ -45,8 +46,8 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const isAuthor = account?.pubkey === badge.pubkey;
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" px="2" pt="2" pb="8" overflow="hidden" h="full" gap="2">
-        <Flex gap="2" alignItems="center">
+      <VerticalPageLayout>
+        <Flex gap="2" alignItems="center" wrap="wrap">
           <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
             Back
           </Button>
@@ -96,7 +97,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
             </SimpleGrid>
           </>
         )}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

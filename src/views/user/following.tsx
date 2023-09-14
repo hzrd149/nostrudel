@@ -16,7 +16,7 @@ export default function UserFollowingTab() {
   if (!contactsList) return <Spinner />;
 
   return (
-    <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" py="2">
+    <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" p="2">
       {people.map(({ pubkey, relay }) => (
         <UserCard key={pubkey} pubkey={pubkey} relay={relay} />
       ))}

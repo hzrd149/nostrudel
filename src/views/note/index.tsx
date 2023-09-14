@@ -6,6 +6,7 @@ import Note from "../../components/note";
 import { isHexKey } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./components/thread-post";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function useNotePointer() {
   const { id } = useParams() as { id: string };
@@ -61,9 +62,5 @@ export default function NoteView() {
     pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton />;
   }
 
-  return (
-    <Flex direction="column" gap="4" flex={1} pb="12" pt="4" pl="1" pr="1">
-      {pageContent}
-    </Flex>
-  );
+  return <VerticalPageLayout>{pageContent}</VerticalPageLayout>;
 }

@@ -43,7 +43,7 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
   return (
     <Card ref={ref} variant="outline" {...props}>
       <CardHeader display="flex" alignItems="center" p="2" pb="0">
-        <Heading size="md">
+        <Heading size="md" isTruncated>
           <Link as={RouterLink} to={`/lists/${link}`}>
             {getListName(event)}
           </Link>

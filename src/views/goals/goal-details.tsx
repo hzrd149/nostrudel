@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-
 import { Button, ButtonGroup, Divider, Flex, Heading, Spacer, Spinner } from "@chakra-ui/react";
+
 import { ArrowLeftSIcon } from "../../components/icons";
 import GoalMenu from "./components/goal-menu";
 import { getGoalAmount, getGoalName } from "../../helpers/nostr/goal";
@@ -15,6 +15,7 @@ import GoalContents from "./components/goal-contents";
 import GoalZapList from "./components/goal-zap-list";
 import { readablizeSats } from "../../helpers/bolt11";
 import GoalZapButton from "./components/goal-zap-button";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function useGoalPointerFromParams(): EventPointer {
   const { id } = useParams() as { id: string };
@@ -33,7 +34,7 @@ export default function GoalDetailsView() {
   if (!goal) return <Spinner />;
 
   return (
-    <Flex direction="column" px="2" pt="2" pb="8" overflow="hidden" h="full" gap="2">
+    <VerticalPageLayout overflow="hidden" h="full">
       <Flex gap="2" alignItems="center">
         <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
@@ -65,6 +66,6 @@ export default function GoalDetailsView() {
       </Heading>
       <Divider />
       <GoalZapList goal={goal} />
-    </Flex>
+    </VerticalPageLayout>
   );
 }

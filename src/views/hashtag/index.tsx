@@ -69,7 +69,7 @@ function HashTagPage() {
   useRelaysChanged(readRelays, () => timeline.reset());
 
   const header = (
-    <Flex gap="4" alignItems="center" wrap="wrap" pr="2">
+    <Flex gap="4" alignItems="center" wrap="wrap">
       <Editable
         value={editableHashtag}
         onChange={(v) => setEditableHashtag(v)}
@@ -100,7 +100,7 @@ function HashTagPage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} pt="4" pb="8" />;
+  return <TimelinePage timeline={timeline} header={header} pt="2" pb="12" px="2" />;
 }
 
 export default function HashTagView() {

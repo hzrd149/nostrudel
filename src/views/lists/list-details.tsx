@@ -9,13 +9,13 @@ import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
 import { getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { EventRelays } from "../../components/note/note-relays";
 import UserCard from "./components/user-card";
 import NoteCard from "./components/note-card";
 import { TrustProvider } from "../../providers/trust";
 import ListMenu from "./components/list-menu";
 import ListFavoriteButton from "./components/list-favorite-button";
 import ListFeedButton from "./components/list-feed-button";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -51,7 +51,7 @@ export default function ListDetailsView() {
   const notes = getEventsFromList(event);
 
   return (
-    <Flex direction="column" px="2" pt="2" pb="8" overflow="hidden" h="full" gap="2">
+    <VerticalPageLayout overflow="hidden" h="full">
       <Flex gap="2" alignItems="center">
         <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
@@ -98,6 +98,6 @@ export default function ListDetailsView() {
           </TrustProvider>
         </>
       )}
-    </Flex>
+    </VerticalPageLayout>
   );
 }

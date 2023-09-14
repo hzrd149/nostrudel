@@ -1,5 +1,6 @@
 import { memo, useMemo, useRef } from "react";
 import { Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
 
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
@@ -10,7 +11,7 @@ import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { getEventUID } from "../../helpers/nostr/events";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const User = memo(({ pubkey, listId }: { pubkey: string; listId: string }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -25,7 +26,6 @@ const User = memo(({ pubkey, listId }: { pubkey: string; listId: string }) => {
 });
 
 export default function UserMutedByTab() {
-  const navigate = useNavigate();
   const { pubkey } = useOutletContext() as { pubkey: string };
 
   const readRelays = useReadRelayUrls();
@@ -48,7 +48,7 @@ export default function UserMutedByTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" direction="column" p="2">
+      <VerticalPageLayout>
         <SimpleGrid spacing="2" columns={{ base: 1, md: 2, lg: 3, xl: 4 }}>
           {pubkeys.map(({ pubkey, listId }) => (
             <User key={pubkey} pubkey={pubkey} listId={listId} />
@@ -59,7 +59,7 @@ export default function UserMutedByTab() {
             Looks like no one has muted this user yet
           </Heading>
         )}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

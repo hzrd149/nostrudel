@@ -12,6 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import EmojiPackCard from "./components/emoji-pack-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import { EMOJI_PACK_KIND, getEmojisFromPack } from "../../helpers/nostr/emoji-packs";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function EmojiPacksBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -37,7 +38,7 @@ function EmojiPacksBrowsePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2" pb="10">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
           <Switch checked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
@@ -50,7 +51,7 @@ function EmojiPacksBrowsePage() {
             <EmojiPackCard key={getEventUID(event)} pack={event} />
           ))}
         </SimpleGrid>
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

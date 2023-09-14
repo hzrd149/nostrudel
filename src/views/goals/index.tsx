@@ -9,6 +9,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function UserGoalsManagerPage() {
   const account = useCurrentAccount()!;
@@ -64,7 +65,7 @@ export default function GoalsView() {
   const account = useCurrentAccount();
 
   return (
-    <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
+    <VerticalPageLayout>
       <Flex gap="2">
         <Button as={RouterLink} to="/goals/browse">
           Explore goals
@@ -76,6 +77,6 @@ export default function GoalsView() {
       </Flex>
 
       {account ? <UserGoalsManagerPage /> : <Navigate to="/goals/browse" />}
-    </Flex>
+    </VerticalPageLayout>
   );
 }

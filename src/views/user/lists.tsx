@@ -10,6 +10,7 @@ import ListCard from "../lists/components/list-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { Kind } from "nostr-tools";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -28,7 +29,7 @@ export default function UserListsTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" pt="2" pb="10" px={["2", "2", 0]} direction="column">
+      <VerticalPageLayout>
         <Heading size="md" mt="2">
           Special lists
         </Heading>
@@ -66,7 +67,7 @@ export default function UserListsTab() {
             </SimpleGrid>
           </>
         )}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

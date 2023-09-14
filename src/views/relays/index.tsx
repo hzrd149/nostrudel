@@ -11,6 +11,7 @@ import RelayCard from "./components/relay-card";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
 import { ErrorBoundary } from "../../components/error-boundary";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
@@ -37,7 +38,7 @@ export default function RelaysView() {
   }, [isSearching, deboundedSearch, onlineRelays, clientRelays]);
 
   return (
-    <Flex direction="column" gap="2" p="2">
+    <VerticalPageLayout>
       <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
         <Spacer />
@@ -81,6 +82,6 @@ export default function RelaysView() {
           }}
         />
       )}
-    </Flex>
+    </VerticalPageLayout>
   );
 }

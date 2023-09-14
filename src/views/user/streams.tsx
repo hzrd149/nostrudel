@@ -10,6 +10,7 @@ import { STREAM_KIND } from "../../helpers/nostr/stream";
 import useSubject from "../../hooks/use-subject";
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import StreamCard from "../streams/components/stream-card";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 export default function UserStreamsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -29,15 +30,15 @@ export default function UserStreamsTab() {
   const streams = useParsedStreams(events);
 
   return (
-    <Flex p="2" gap="2" overflow="hidden" direction="column">
       <IntersectionObserverProvider<string> callback={callback}>
+    <VerticalPageLayout>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {streams.map((stream) => (
             <StreamCard key={stream.event.id} stream={stream} />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />
+    </VerticalPageLayout>
       </IntersectionObserverProvider>
-    </Flex>
   );
 }

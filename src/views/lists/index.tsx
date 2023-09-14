@@ -12,6 +12,7 @@ import NewListModal from "./components/new-list-modal";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ListsPage() {
   const account = useCurrentAccount()!;
@@ -24,7 +25,7 @@ function ListsPage() {
   const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
 
   return (
-    <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
+    <VerticalPageLayout>
       <Flex gap="2">
         <Button as={RouterLink} to="/lists/browse">
           Browse Lists
@@ -92,7 +93,7 @@ function ListsPage() {
           onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}
         />
       )}
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

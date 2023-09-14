@@ -14,6 +14,7 @@ import { SwipeState } from "yet-another-react-lightbox";
 import { useCallback } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import dayjs from "dayjs";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -40,7 +41,7 @@ function GoalsBrowsePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2" pb="10">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
           <Switch isChecked={showClosed.isOpen} onChange={showClosed.onToggle}>
@@ -53,7 +54,7 @@ function GoalsBrowsePage() {
             <GoalCard key={getEventUID(event)} goal={event} />
           ))}
         </SimpleGrid>
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }
