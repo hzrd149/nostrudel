@@ -56,6 +56,9 @@ import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
 import UserArticlesTab from "./views/user/articles";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
+import CommunitiesHomeView from "./views/communities";
+import CommunityFindByNameView from "./views/community/find-by-name";
+import CommunityView from "./views/community/index";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -176,6 +179,17 @@ const router = createHashRouter([
           { path: "", element: <ListsView /> },
           { path: "browse", element: <BrowseListView /> },
           { path: ":addr", element: <ListDetailsView /> },
+        ],
+      },
+      {
+        path: "communities",
+        element: <CommunitiesHomeView />,
+      },
+      {
+        path: "c/:community",
+        children: [
+          { path: "", element: <CommunityFindByNameView /> },
+          { path: ":pubkey", element: <CommunityView /> },
         ],
       },
       {

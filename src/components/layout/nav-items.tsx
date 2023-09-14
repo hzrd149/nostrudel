@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BadgeIcon,
   ChatIcon,
+  CommunityIcon,
   EmojiIcon,
   FeedIcon,
   GoalIcon,
@@ -49,6 +50,9 @@ export default function NavItems({ isInDrawer = false }: { isInDrawer?: boolean 
       </Button>
       <Button onClick={() => navigate("/lists")} leftIcon={<ListIcon />} justifyContent="flex-start">
         Lists
+      </Button>
+      <Button onClick={() => navigate("/communities")} leftIcon={<CommunityIcon />} justifyContent="flex-start">
+        Communities
       </Button>
       <Button onClick={() => navigate("/goals")} leftIcon={<GoalIcon />} justifyContent="flex-start">
         Goals

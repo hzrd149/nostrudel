@@ -47,7 +47,8 @@ export function safeDecode(str: string) {
   } catch (e) {}
 }
 
-export function getPubkey(result: nip19.DecodeResult) {
+export function getPubkey(result?: nip19.DecodeResult) {
+  if (!result) return;
   switch (result.type) {
     case "naddr":
     case "nprofile":
