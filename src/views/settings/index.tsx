@@ -33,29 +33,29 @@ export default function SettingsView() {
 
   return (
     <VerticalPageLayout as="form" onSubmit={saveSettings}>
-        <FormProvider {...form}>
-          <Accordion defaultIndex={[0]} allowMultiple>
-            <DisplaySettings />
-            <PerformanceSettings />
-            <PrivacySettings />
-            <LightningSettings />
-            <DatabaseSettings />
-          </Accordion>
-        </FormProvider>
-        <Flex gap="4" padding="4" alignItems="center">
-          <Link isExternal href="https://github.com/hzrd149/nostrudel">
-            <GithubIcon /> Github
-          </Link>
-          <Button
-            ml="auto"
-            isLoading={form.formState.isLoading || form.formState.isValidating || form.formState.isSubmitting}
-            isDisabled={!form.formState.isDirty}
-            colorScheme="brand"
-            type="submit"
-          >
-            Save Settings
-          </Button>
-        </Flex>
+      <FormProvider {...form}>
+        <Accordion defaultIndex={[0]} allowMultiple>
+          <DisplaySettings />
+          <PerformanceSettings />
+          <PrivacySettings />
+          <LightningSettings />
+          <DatabaseSettings />
+        </Accordion>
+      </FormProvider>
+      <Flex gap="4" padding="4" alignItems="center">
+        <Link isExternal href="https://github.com/hzrd149/nostrudel">
+          <GithubIcon /> Github
+        </Link>
+        <Button
+          ml="auto"
+          isLoading={form.formState.isLoading || form.formState.isValidating || form.formState.isSubmitting}
+          isDisabled={!form.formState.isDirty}
+          colorScheme="brand"
+          type="submit"
+        >
+          Save Settings
+        </Button>
+      </Flex>
     </VerticalPageLayout>
   );
 }

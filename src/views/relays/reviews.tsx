@@ -36,7 +36,9 @@ function RelayReviewsPage() {
     <IntersectionObserverProvider<string> callback={callback}>
       <VerticalPageLayout>
         <Flex gap="2">
-          <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon/>}>Back</Button>
+          <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+            Back
+          </Button>
           <PeopleListSelection />
         </Flex>
         {reviews.map((event) => (
