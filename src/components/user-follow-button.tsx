@@ -20,8 +20,8 @@ import {
   PEOPLE_LIST_KIND,
   createEmptyContactList,
   createEmptyMuteList,
-  draftAddPerson,
-  draftRemovePerson,
+  listAddPerson,
+  listRemovePerson,
   getListName,
   getPubkeysFromList,
   isPubkeyInList,
@@ -62,11 +62,11 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         );
 
         if (addToList) {
-          const draft = draftAddPerson(addToList, pubkey);
+          const draft = listAddPerson(addToList, pubkey);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Add to list", writeRelays, signed);
         } else if (removeFromList) {
-          const draft = draftRemovePerson(removeFromList, pubkey);
+          const draft = listRemovePerson(removeFromList, pubkey);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
         }
@@ -125,13 +125,13 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const isDisabled = account?.readonly ?? true;
 
   const handleFollow = useAsyncErrorHandler(async () => {
-    const draft = draftAddPerson(contacts || createEmptyContactList(), pubkey);
+    const draft = listAddPerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
   });
   const handleUnfollow = useAsyncErrorHandler(async () => {
-    const draft = draftRemovePerson(contacts || createEmptyContactList(), pubkey);
+    const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);

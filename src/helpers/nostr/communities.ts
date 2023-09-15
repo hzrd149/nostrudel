@@ -1,5 +1,6 @@
 import { NostrEvent, isDTag, isPTag } from "../../types/nostr-event";
 
+export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
 export const COMMUNITY_DEFINITION_KIND = 34550;
 export const COMMUNITY_APPROVAL_KIND = 4550;
 

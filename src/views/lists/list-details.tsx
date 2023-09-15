@@ -7,7 +7,7 @@ import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
-import { getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getEventsFromList, getListName, getParsedCordsFromList, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import UserCard from "./components/user-card";
 import NoteCard from "./components/note-card";
@@ -16,6 +16,8 @@ import ListMenu from "./components/list-menu";
 import ListFavoriteButton from "./components/list-favorite-button";
 import ListFeedButton from "./components/list-feed-button";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
+import { EmbedEventPointer } from "../../components/embed-event";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };
@@ -37,18 +39,20 @@ export default function ListDetailsView() {
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
 
-  const event = useReplaceableEvent(coordinate);
+  const list = useReplaceableEvent(coordinate);
 
-  if (!event)
+  if (!list)
     return (
       <>
         Looking for list "{coordinate.identifier}" created by <UserLink pubkey={coordinate.pubkey} />
       </>
     );
 
-  const isAuthor = account?.pubkey === event.pubkey;
-  const people = getPubkeysFromList(event);
-  const notes = getEventsFromList(event);
+  const isAuthor = account?.pubkey === list.pubkey;
+  const people = getPubkeysFromList(list);
+  const notes = getEventsFromList(list);
+  const coordinates = getParsedCordsFromList(list);
+  const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
 
   return (
     <VerticalPageLayout overflow="hidden" h="full">
@@ -58,19 +62,19 @@ export default function ListDetailsView() {
         </Button>
 
         <Heading size="md" isTruncated>
-          {getListName(event)}
+          {getListName(list)}
         </Heading>
-        <ListFavoriteButton list={event} size="sm" />
+        <ListFavoriteButton list={list} size="sm" />
 
         <Spacer />
 
-        <ListFeedButton list={event} />
+        <ListFeedButton list={list} />
         {isAuthor && (
-          <Button colorScheme="red" onClick={() => deleteEvent(event).then(() => navigate("/lists"))}>
+          <Button colorScheme="red" onClick={() => deleteEvent(list).then(() => navigate("/lists"))}>
             Delete
           </Button>
         )}
-        <ListMenu aria-label="More options" list={event} />
+        <ListMenu aria-label="More options" list={list} />
       </Flex>
 
       {people.length > 0 && (
@@ -79,7 +83,7 @@ export default function ListDetailsView() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {people.map(({ pubkey, relay }) => (
-              <UserCard pubkey={pubkey} relay={relay} list={event} />
+              <UserCard pubkey={pubkey} relay={relay} list={list} />
             ))}
           </SimpleGrid>
         </>
@@ -96,6 +100,18 @@ export default function ListDetailsView() {
               ))}
             </Flex>
           </TrustProvider>
+        </>
+      )}
+
+      {communities.length > 0 && (
+        <>
+          <Heading size="md">Communities</Heading>
+          <Divider />
+          <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
+            {communities.map((pointer) => (
+              <EmbedEventPointer key={nip19.naddrEncode(pointer)} pointer={{ type: "naddr", data: pointer }} />
+            ))}
+          </SimpleGrid>
         </>
       )}
     </VerticalPageLayout>

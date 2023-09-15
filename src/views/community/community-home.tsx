@@ -20,6 +20,7 @@ import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import Note from "../../components/note";
+import CommunityJoinButton from "../communities/components/community-subscribe-button";
 
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
   const mods = getCommunityMods(community);
@@ -52,6 +53,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
         <Flex gap="2">
           <UserAvatarLink pubkey={community.pubkey} size="xs" /> <UserLink pubkey={community.pubkey} />
         </Flex>
+        <CommunityJoinButton community={community} ml="auto" />
       </Flex>
       <CommunityDescription community={community} />
       <Flex wrap="wrap" gap="2">

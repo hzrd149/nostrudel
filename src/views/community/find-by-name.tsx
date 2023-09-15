@@ -11,7 +11,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import CommunityCard from "../communities/components/community-card";
 import { getEventUID } from "../../helpers/nostr/events";
-import { Divider, Heading } from "@chakra-ui/react";
+import { Divider, Heading, SimpleGrid } from "@chakra-ui/react";
 
 export default function CommunityFindByNameView() {
   const { community } = useParams() as { community: string };
@@ -35,9 +35,11 @@ export default function CommunityFindByNameView() {
       <VerticalPageLayout>
         <Heading>Select Community:</Heading>
         <Divider />
-        {communities.map((event) => (
-          <CommunityCard key={getEventUID(event)} community={event} />
-        ))}
+        <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
+          {communities.map((event) => (
+            <CommunityCard key={getEventUID(event)} community={event} />
+          ))}
+        </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

@@ -45,7 +45,7 @@ function CommunitiesHomePage() {
           <PeopleListSelection />
           <RelaySelectionButton />
         </Flex>
-        <SimpleGrid columns={[1, 1, 1, 2]} spacing="2">
+        <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
           {communities.map((event) => (
             <CommunityCard key={getEventUID(event)} community={event} />
           ))}

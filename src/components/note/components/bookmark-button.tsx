@@ -18,8 +18,8 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import useUserLists from "../../../hooks/use-user-lists";
 import {
   NOTE_LIST_KIND,
-  draftAddEvent,
-  draftRemoveEvent,
+  listAddEvent,
+  listRemoveEvent,
   getEventsFromList,
   getListName,
 } from "../../../helpers/nostr/lists";
@@ -55,11 +55,11 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
         );
 
         if (addToList) {
-          const draft = draftAddEvent(addToList, event.id);
+          const draft = listAddEvent(addToList, event.id);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Add to list", writeRelays, signed);
         } else if (removeFromList) {
-          const draft = draftRemoveEvent(removeFromList, event.id);
+          const draft = listRemoveEvent(removeFromList, event.id);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
         }
