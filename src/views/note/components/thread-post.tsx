@@ -6,7 +6,7 @@ import { Note } from "../../../components/note";
 import { countReplies, ThreadItem } from "../../../helpers/thread";
 import { TrustProvider } from "../../../providers/trust";
 import ReplyForm from "./reply-form";
-import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
+import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -19,18 +19,20 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
   const toggle = () => setShowReplies((v) => !v);
   const showReplyForm = useDisclosure();
 
-  const muteFilter = useUserMuteFilter();
+  const muteFilter = useClientSideMuteFilter();
   const [alwaysShow, setAlwaysShow] = useState(false);
 
   const numberOfReplies = countReplies(post);
   const isMuted = muteFilter(post.event);
+
+  if (isMuted && numberOfReplies === 0) return null;
 
   return (
     <Flex direction="column" gap="2">
       {isMuted && !alwaysShow ? (
         <Alert status="warning">
           <AlertIcon />
-          Muted user
+          Muted user or note
           <Button size="xs" ml="auto" onClick={() => setAlwaysShow(true)}>
             Show anyway
           </Button>
