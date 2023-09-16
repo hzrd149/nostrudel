@@ -7,7 +7,7 @@ import { ArrowLeftSIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
-import { getEventsFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getEventsFromList, getListName, getPubkeysFromList, getReferencesFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
 import UserCard from "./components/user-card";
@@ -49,6 +49,7 @@ export default function ListDetailsView() {
   const isAuthor = account?.pubkey === event.pubkey;
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
+  const references = getReferencesFromList(event);
 
   return (
     <Flex direction="column" px="2" pt="2" pb="8" overflow="hidden" h="full" gap="2">
@@ -95,6 +96,22 @@ export default function ListDetailsView() {
             <Flex gap="2" direction="column">
               {notes.map(({ id, relay }) => (
                 <NoteCard id={id} relay={relay} />
+              ))}
+            </Flex>
+          </TrustProvider>
+        </>
+      )}
+
+      {references.length > 0 && (
+        <>
+          <Heading size="md">References</Heading>
+          <Divider />
+          <TrustProvider trust>
+            <Flex gap="2" direction="column">
+              {references.map(({ url, petname }) => (
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  <Button>{petname}</Button>
+                </a>
               ))}
             </Flex>
           </TrustProvider>
