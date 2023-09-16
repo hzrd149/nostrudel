@@ -5,8 +5,8 @@ import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { TimelineLoader } from "../classes/timeline-loader";
 import timelineCacheService from "../services/timeline-cache";
-import useUserMuteFilter from "../hooks/use-user-mute-filter";
 import { NostrEvent } from "../types/nostr-event";
+import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -31,7 +31,7 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
       : undefined;
   }, [account?.pubkey]);
 
-  const userMuteFilter = useUserMuteFilter(account?.pubkey);
+  const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (userMuteFilter(event)) return false;

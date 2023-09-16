@@ -6,21 +6,20 @@ import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../hel
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
-import { useCurrentAccount } from "../../../../hooks/use-current-account";
 import useStreamGoal from "../../../../hooks/use-stream-goal";
 import { NostrQuery } from "../../../../types/nostr-query";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
+import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 
 export default function useStreamChatTimeline(stream: ParsedStream) {
-  const account = useCurrentAccount();
   const streamRelays = useRelaySelectionRelays();
 
   const hostMuteFilter = useUserMuteFilter(stream.host);
-  const userMuteFilter = useUserMuteFilter(account?.pubkey);
+  const muteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(
-    (event: NostrEvent) => !(hostMuteFilter(event) || userMuteFilter(event)),
-    [hostMuteFilter, userMuteFilter],
+    (event: NostrEvent) => !(hostMuteFilter(event) || muteFilter(event)),
+    [hostMuteFilter, muteFilter],
   );
 
   const goal = useStreamGoal(stream);

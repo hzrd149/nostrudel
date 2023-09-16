@@ -12,6 +12,7 @@ import {
   FormHelperText,
   Input,
   Select,
+  Textarea,
 } from "@chakra-ui/react";
 import { AppSettings } from "../../services/settings/migrations";
 import { AppearanceIcon } from "../../components/icons";
@@ -73,6 +74,19 @@ export default function DisplaySettings() {
             </Flex>
             <FormHelperText>
               <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="muted-words" mb="0">
+              Muted words
+            </FormLabel>
+            <Textarea id="muted-words" {...register("mutedWords")} placeholder="Broccoli, Spinach, Artichoke..." />
+            <FormHelperText>
+              <span>
+                Comma separated list of words, phrases or hashtags you never want to see in notes. (case insensitive)
+              </span>
+              <br />
+              <span>Be careful its easy to hide all notes if you add common words.</span>
             </FormHelperText>
           </FormControl>
         </Flex>

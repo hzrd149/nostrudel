@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -15,14 +16,14 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import { NostrRequestFilter } from "../../types/nostr-query";
 import { useAppTitle } from "../../hooks/use-app-title";
-import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function StreamsPage() {
   useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
-  const userMuteFilter = useUserMuteFilter();
+  const userMuteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
