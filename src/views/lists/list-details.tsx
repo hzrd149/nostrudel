@@ -11,6 +11,7 @@ import { getEventsFromList, getListName, getPubkeysFromList, getReferencesFromLi
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
 import UserCard from "./components/user-card";
+import OpenGraphCard from "../../components/open-graph-card";
 import NoteCard from "./components/note-card";
 import { TrustProvider } from "../../providers/trust";
 import ListMenu from "./components/list-menu";
