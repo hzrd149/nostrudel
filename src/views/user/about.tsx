@@ -302,6 +302,15 @@ export default function UserAboutTab() {
         >
           Slidestr Slideshow
         </Button>
+        <Button
+          as={Link}
+          href={`https://nostree.me/${npub}`}
+          leftIcon={<Image src="https://nostree.me/favicon.svg" w="1.2em" />}
+          rightIcon={<ExternalLinkIcon />}
+          isExternal
+        >
+          Nostree page
+        </Button>
       </Flex>
     </Flex>
   );

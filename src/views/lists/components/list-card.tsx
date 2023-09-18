@@ -16,7 +16,13 @@ import {
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import { getEventsFromList, getListName, getPubkeysFromList, isSpecialListKind } from "../../../helpers/nostr/lists";
+import {
+  getEventsFromList,
+  getListName,
+  getPubkeysFromList,
+  getReferencesFromList,
+  isSpecialListKind,
+} from "../../../helpers/nostr/lists";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
@@ -32,6 +38,7 @@ import Timestamp from "../../../components/timestamp";
 function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const people = getPubkeysFromList(event);
   const notes = getEventsFromList(event);
+  const references = getReferencesFromList(event);
   const link = isSpecialListKind(event.kind)
     ? createCoordinate(event.kind, event.pubkey)
     : getSharableEventAddress(event);
@@ -80,6 +87,11 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
                 <NoteLink key={id} noteId={id} />
               ))}
             </Flex>
+          </>
+        )}
+        {references.length > 0 && (
+          <>
+            <Text>References ({references.length})</Text>
           </>
         )}
       </CardBody>
