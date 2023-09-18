@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import { Kind, nip19 } from "nostr-tools";
+import { Kind } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/lib/nip19";
 
-import { DraftNostrEvent, NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
 
 export const PEOPLE_LIST_KIND = 30000;
@@ -30,6 +30,9 @@ export function getPubkeysFromList(event: NostrEvent) {
 }
 export function getEventsFromList(event: NostrEvent) {
   return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
+}
+export function getReferencesFromList(event: NostrEvent) {
+  return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
 export function getCoordinatesFromList(event: NostrEvent) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));

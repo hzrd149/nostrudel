@@ -22,6 +22,7 @@ import {
   getListName,
   getParsedCordsFromList,
   getPubkeysFromList,
+  getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
 import { getSharableEventAddress } from "../../../helpers/nip19";
@@ -42,6 +43,7 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
   const notes = getEventsFromList(list);
   const coordinates = getParsedCordsFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
+  const references = getReferencesFromList(list);
   const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
 
   // if there is a parent intersection observer, register this card
@@ -88,6 +90,11 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
                 <NoteLink key={id} noteId={id} />
               ))}
             </Flex>
+          </>
+        )}
+        {references.length > 0 && (
+          <>
+            <Text>References ({references.length})</Text>
           </>
         )}
         {communities.length > 0 && (
