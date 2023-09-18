@@ -110,9 +110,10 @@ export default function ListDetailsView() {
           <TrustProvider trust>
             <Flex gap="2" direction="column">
               {references.map(({ url, petname }) => (
-                <a href={url} target="_blank" rel="noopener noreferrer">
-                  <Button>{petname}</Button>
-                </a>
+                <>
+                  {petname && <Heading size="md">{petname}</Heading>}
+                  <OpenGraphCard url={new URL(url)} />
+                </>
               ))}
             </Flex>
           </TrustProvider>
