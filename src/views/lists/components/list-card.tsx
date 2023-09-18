@@ -91,7 +91,7 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
         )}
         {references.length > 0 && (
           <>
-            <Text>References ({references.length}):</Text>
+            <Text>References ({references.length})</Text>
           </>
         )}
       </CardBody>
