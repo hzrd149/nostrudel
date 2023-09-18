@@ -55,20 +55,11 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
             {getListName(event)}
           </Link>
         </Heading>
-        <ButtonGroup size="sm" ml="auto">
-          <ListFavoriteButton list={event} />
-          <ListMenu list={event} aria-label="list menu" />
-        </ButtonGroup>
+        <Link as={RouterLink} to={`/lists/${link}`} ml="auto">
+          <Timestamp timestamp={event.created_at} />
+        </Link>
       </CardHeader>
-      <CardBody p="2">
-        <Flex gap="2">
-          <Text>Created by:</Text>
-          <UserAvatarLink pubkey={event.pubkey} size="xs" />
-          <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        </Flex>
-        <Text>
-          Updated: <Timestamp timestamp={event.created_at} />
-        </Text>
+      <CardBody py="0" px="2">
         {people.length > 0 && (
           <>
             <Text>People ({people.length}):</Text>
@@ -83,7 +74,7 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
           <>
             <Text>Notes ({notes.length}):</Text>
             <Flex gap="2" overflow="hidden">
-              {notes.map(({ id, relay }) => (
+              {notes.slice(0, 4).map(({ id, relay }) => (
                 <NoteLink key={id} noteId={id} />
               ))}
             </Flex>
@@ -92,11 +83,24 @@ function ListCardRender({ event, ...props }: Omit<CardProps, "children"> & { eve
         {references.length > 0 && (
           <>
             <Text>References ({references.length})</Text>
+            <Flex gap="2" overflow="hidden">
+              {references.slice(0, 3).map(({ url, petname }) => (
+                <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
+                  {petname || url}
+                </Link>
+              ))}
+            </Flex>
           </>
         )}
       </CardBody>
-      <CardFooter p="2" display="flex" pt="0">
-        <EventRelays event={event} ml="auto" />
+      <CardFooter p="2" display="flex" alignItems="center" whiteSpace="pre" gap="2">
+        <Text>Created by:</Text>
+        <UserAvatarLink pubkey={event.pubkey} size="xs" />
+        <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+        <ButtonGroup size="xs" variant="ghost" ml="auto">
+          <ListFavoriteButton list={event} />
+          <ListMenu list={event} aria-label="list menu" />
+        </ButtonGroup>
       </CardFooter>
     </Card>
   );

@@ -9,6 +9,8 @@ export default function useFavoriteLists() {
   const account = useCurrentAccount();
   const favoriteList = useReplaceableEvent(
     account ? { kind: 30078, pubkey: account.pubkey, identifier: FAVORITE_LISTS_IDENTIFIER } : undefined,
+    [],
+    true,
   );
 
   const lists = useReplaceableEvents(favoriteList ? getCoordinatesFromList(favoriteList).map((a) => a.coordinate) : []);

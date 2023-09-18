@@ -10,6 +10,7 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
+import { NOTE_LIST_KIND, isSpecialListKind } from "../../../helpers/nostr/lists";
 
 export default function ListFavoriteButton({
   list,
@@ -21,6 +22,11 @@ export default function ListFavoriteButton({
   const coordinate = getEventCoordinate(list);
   const isFavorite = favoriteList?.tags.some((t) => t[1] === coordinate);
   const [loading, setLoading] = useState(false);
+
+  if (isSpecialListKind(list.kind)) return null;
+
+  // NOTE: dont show favorite button for note lists
+  if (list.kind === NOTE_LIST_KIND) return null;
 
   const handleClick = async () => {
     const prev: DraftNostrEvent = favoriteList || {
