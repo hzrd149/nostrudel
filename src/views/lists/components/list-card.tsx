@@ -29,7 +29,6 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
-import { EventRelays } from "../../../components/note/note-relays";
 import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import ListFavoriteButton from "./list-favorite-button";
@@ -58,20 +57,11 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
             {getListName(list)}
           </Link>
         </Heading>
-        <ButtonGroup size="sm" ml="auto">
-          <ListFavoriteButton list={list} />
-          <ListMenu list={list} aria-label="list menu" />
-        </ButtonGroup>
+        <Link as={RouterLink} to={`/lists/${link}`} ml="auto">
+          <Timestamp timestamp={list.created_at} />
+        </Link>
       </CardHeader>
-      <CardBody p="2">
-        <Flex gap="2">
-          <Text>Created by:</Text>
-          <UserAvatarLink pubkey={list.pubkey} size="xs" />
-          <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        </Flex>
-        <Text>
-          Updated: <Timestamp timestamp={list.created_at} />
-        </Text>
+      <CardBody py="0" px="2">
         {people.length > 0 && (
           <>
             <Text>People ({people.length}):</Text>
@@ -86,7 +76,7 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
           <>
             <Text>Notes ({notes.length}):</Text>
             <Flex gap="2" overflow="hidden">
-              {notes.map(({ id, relay }) => (
+              {notes.slice(0, 4).map(({ id, relay }) => (
                 <NoteLink key={id} noteId={id} />
               ))}
             </Flex>
@@ -95,6 +85,13 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
         {references.length > 0 && (
           <>
             <Text>References ({references.length})</Text>
+            <Flex gap="2" overflow="hidden">
+              {references.slice(0, 3).map(({ url, petname }) => (
+                <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
+                  {petname || url}
+                </Link>
+              ))}
+            </Flex>
           </>
         )}
         {communities.length > 0 && (
@@ -114,8 +111,14 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
           </>
         )}
       </CardBody>
-      <CardFooter p="2" display="flex" pt="0">
-        <EventRelays event={list} ml="auto" />
+      <CardFooter p="2" display="flex" alignItems="center" whiteSpace="pre" gap="2">
+        <Text>Created by:</Text>
+        <UserAvatarLink pubkey={list.pubkey} size="xs" />
+        <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+        <ButtonGroup size="xs" variant="ghost" ml="auto">
+          <ListFavoriteButton list={list} />
+          <ListMenu list={list} aria-label="list menu" />
+        </ButtonGroup>
       </CardFooter>
     </Card>
   );

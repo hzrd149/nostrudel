@@ -21,6 +21,12 @@ export function getListName(event: NostrEvent) {
   );
 }
 
+export function isJunkList(event: NostrEvent) {
+  const name = event.tags.find(isDTag)?.[1];
+  if (!name) return false;
+  if (event.kind !== PEOPLE_LIST_KIND) return false;
+  return /^(chats\/([0-9a-f]{64}|null)|notifications)\/lastOpened$/.test(name);
+}
 export function isSpecialListKind(kind: number) {
   return kind === Kind.Contacts || kind === PIN_LIST_KIND || kind === MUTE_LIST_KIND;
 }
