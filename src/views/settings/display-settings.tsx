@@ -55,6 +55,20 @@ export default function DisplaySettings() {
             </FormHelperText>
           </FormControl>
           <FormControl>
+            <FormLabel htmlFor="maxPageWidth" mb="0">
+              Max Page width
+            </FormLabel>
+            <Select id="maxPageWidth" {...register("maxPageWidth")}>
+              <option value="none">None</option>
+              <option value="md">Medium (~768px)</option>
+              <option value="lg">Large (~992px)</option>
+              <option value="xl">Extra Large (~1280px)</option>
+            </Select>
+            <FormHelperText>
+              <span>Setting this will restrict the width of app on desktop</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="blurImages" mb="0">
                 Blur images from strangers

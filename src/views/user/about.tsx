@@ -283,7 +283,7 @@ export default function UserAboutTab() {
           </AccordionItem>
         )}
       </Accordion>
-      <Flex gap="2">
+      <Flex gap="2" wrap="wrap">
         <Button
           as={Link}
           href={`https://nosta.me/${nprofile}`}
