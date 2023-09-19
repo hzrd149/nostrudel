@@ -26,6 +26,7 @@ import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -52,12 +53,14 @@ function HashTagPage() {
   const { isOpen: showReplies, onToggle } = useDisclosure();
 
   const timelinePageEventFilter = useTimelinePageEventFilter();
+  const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
+      if (muteFilter(event)) return false;
       if (!showReplies && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [showReplies],
+    [showReplies, muteFilter, timelinePageEventFilter],
   );
   const timeline = useTimelineLoader(
     `${hashtag}-hashtag`,
