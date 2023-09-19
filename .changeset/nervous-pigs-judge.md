@@ -1,0 +1,5 @@
+---
+"nostrudel": minor
+---
+
+Cleanup sidenav

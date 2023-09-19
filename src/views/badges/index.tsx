@@ -1,11 +1,8 @@
-import { Button, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Button, Flex, Image, Link, Spacer } from "@chakra-ui/react";
+import { Navigate, Link as RouterLink } from "react-router-dom";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
-import RequireCurrentAccount from "../../providers/require-current-account";
-import BadgeCard from "./components/badge-card";
-import { getEventUID } from "../../helpers/nostr/events";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BadgesPage() {
@@ -33,9 +30,6 @@ function BadgesPage() {
 }
 
 export default function BadgesView() {
-  return (
-    <RequireCurrentAccount>
-      <BadgesPage />
-    </RequireCurrentAccount>
-  );
+  const account = useCurrentAccount();
+  return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
 }

@@ -1,12 +1,12 @@
+import { useContext } from "react";
 import { Avatar, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
-import { ConnectedRelays } from "../connected-relays";
 import { EditIcon, LogoutIcon } from "../icons";
-import ProfileLink from "./profile-link";
+import ProfileButton from "./profile-button";
 import AccountSwitcher from "./account-switcher";
-import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
@@ -35,23 +35,38 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <Heading size="md">noStrudel</Heading>
         </Flex>
         <Flex gap="2" overflow="hidden">
-          <ProfileLink />
-          <IconButton
-            icon={<EditIcon />}
-            aria-label="New note"
-            title="New note"
-            w="3rem"
-            h="3rem"
-            fontSize="1.5rem"
-            colorScheme="brand"
-            onClick={() => openModal()}
-            flexShrink={0}
-          />
+          {account ? (
+            <>
+              <ProfileButton />
+              <IconButton
+                icon={<EditIcon />}
+                aria-label="New note"
+                title="New note"
+                w="3rem"
+                h="3rem"
+                fontSize="1.5rem"
+                colorScheme="brand"
+                onClick={() => openModal()}
+                flexShrink={0}
+              />
+            </>
+          ) : (
+            <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">
+              Login
+            </Button>
+          )}
         </Flex>
         <AccountSwitcher />
         <NavItems />
         {account && (
-          <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} justifyContent="flex-start">
+          <Button
+            onClick={() => accountService.logout()}
+            leftIcon={<LogoutIcon />}
+            variant="link"
+            justifyContent="flex-start"
+            pl="2"
+            py="2"
+          >
             Logout
           </Button>
         )}
@@ -60,9 +75,8 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
             Readonly Mode
           </Text>
         )}
-        <ConnectedRelays />
       </Flex>
-      <PublishLog overflowY="auto" minH="15rem" />
+      <PublishLog overflowY="auto" minH="15rem" my="4" />
     </Flex>
   );
 }

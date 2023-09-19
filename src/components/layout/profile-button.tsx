@@ -1,5 +1,5 @@
-import { Box, Button, ButtonProps, LinkBox, LinkOverlay } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { LinkBox, LinkOverlay } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { UserAvatar } from "../user-avatar";
@@ -7,7 +7,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 
-function ProfileButton() {
+export default function ProfileButton() {
   const account = useCurrentAccount()!;
   const metadata = useUserMetadata(account.pubkey);
 
@@ -35,18 +35,5 @@ function ProfileButton() {
         {getUserDisplayName(metadata, account.pubkey)}
       </LinkOverlay>
     </LinkBox>
-  );
-}
-
-export default function ProfileLink() {
-  const account = useCurrentAccount();
-  const location = useLocation();
-
-  if (account) return <ProfileButton />;
-
-  return (
-    <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" isTruncated>
-      Login
-    </Button>
   );
 }
