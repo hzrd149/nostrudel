@@ -34,7 +34,6 @@ import useUserContactList from "../hooks/use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
-import useUserMuteList from "../hooks/use-user-mute-list";
 import useUserMuteFunctions from "../hooks/use-user-mute-functions";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
@@ -129,13 +128,13 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [contacts, requestSignature]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [contacts, requestSignature]);
 
   if (showLists) {
     return (

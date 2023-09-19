@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { ConnectedRelays } from "../connected-relays";
 import { LogoutIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import { UserLink } from "../user-link";
@@ -44,19 +43,26 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
           )}
         </DrawerHeader>
         <DrawerBody padding={0} overflowY="auto" overflowX="hidden">
-          <AccountSwitcher />
+          {account && <AccountSwitcher />}
           <Flex direction="column" gap="2" padding="2">
-            <NavItems isInDrawer />
-            {account ? (
-              <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} justifyContent="flex-start">
-                Logout
-              </Button>
-            ) : (
+            {!account && (
               <Button as={RouterLink} to="/login" colorScheme="brand">
                 Login
               </Button>
             )}
-            <ConnectedRelays />
+            <NavItems />
+            {account && (
+              <Button
+                onClick={() => accountService.logout()}
+                leftIcon={<LogoutIcon />}
+                justifyContent="flex-start"
+                variant="link"
+                pl="2"
+                py="2"
+              >
+                Logout
+              </Button>
+            )}
           </Flex>
         </DrawerBody>
       </DrawerContent>

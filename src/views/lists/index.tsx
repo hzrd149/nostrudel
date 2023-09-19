@@ -1,10 +1,9 @@
 import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
-import RequireCurrentAccount from "../../providers/require-current-account";
 import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import useUserLists from "../../hooks/use-user-lists";
@@ -98,9 +97,6 @@ function ListsPage() {
 }
 
 export default function ListsView() {
-  return (
-    <RequireCurrentAccount>
-      <ListsPage />
-    </RequireCurrentAccount>
-  );
+  const account = useCurrentAccount();
+  return account ? <ListsPage /> : <Navigate to="/lists/browse" />;
 }

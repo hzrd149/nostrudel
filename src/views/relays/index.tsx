@@ -49,7 +49,7 @@ export default function RelaysView() {
           Add Custom
         </Button>
       </Flex>
-      <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
         {filteredRelays.map((url) => (
           <ErrorBoundary>
             <RelayCard key={url} url={url} variant="outline" />
@@ -61,7 +61,7 @@ export default function RelaysView() {
         <>
           <Divider />
           <Heading size="lg">Discovered Relays</Heading>
-          <SimpleGrid columns={[1, 1, 1, 2, 3]} spacing="2">
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {discoveredRelays.map((url) => (
               <ErrorBoundary>
                 <RelayCard key={url} url={url} variant="outline" />

@@ -29,6 +29,7 @@ import clientRelaysService from "../../../services/client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../../icons";
 import NewListModal from "../../../views/lists/components/new-list-modal";
+import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 
 export default function BookmarkButton({ event, ...props }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
   const toast = useToast();
@@ -58,17 +59,19 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
           const draft = listAddEvent(addToList, event.id);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Add to list", writeRelays, signed);
+          replaceableEventLoaderService.handleEvent(signed);
         } else if (removeFromList) {
           const draft = listRemoveEvent(removeFromList, event.id);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
+          replaceableEventLoaderService.handleEvent(signed);
         }
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
       setLoading(false);
     },
-    [lists, event.id],
+    [lists, event.id, requestSignature],
   );
 
   return (

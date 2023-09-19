@@ -1,4 +1,4 @@
-import { Flex, SimpleGrid } from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { truncatedId } from "../../helpers/nostr/events";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";

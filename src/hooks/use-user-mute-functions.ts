@@ -19,13 +19,13 @@ export default function useUserMuteFunctions(pubkey: string) {
     const signed = await requestSignature(draft);
     new NostrPublishAction("Mute", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [requestSignature, muteList]);
   const unmute = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(muteList || createEmptyMuteList(), pubkey);
     const signed = await requestSignature(draft);
     new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [requestSignature, muteList]);
 
   return { isMuted, mute, unmute };
 }

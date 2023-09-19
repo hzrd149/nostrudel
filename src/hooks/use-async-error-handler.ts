@@ -3,7 +3,7 @@ import { DependencyList, useCallback } from "react";
 
 export default function useAsyncErrorHandler<T = any>(
   fn: () => Promise<T>,
-  deps: DependencyList = [],
+  deps: DependencyList,
 ): () => Promise<T | undefined> {
   const toast = useToast();
 

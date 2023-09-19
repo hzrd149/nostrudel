@@ -26,7 +26,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
     const draft = listRemovePerson(list, pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Remove from list", clientRelaysService.getWriteUrls(), signed);
-  }, [list]);
+  }, [list, requestSignature]);
 
   return (
     <Card>
