@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND, isJunkList } from "../helpers/nostr/lists";
 import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
