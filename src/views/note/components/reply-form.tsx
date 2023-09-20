@@ -70,7 +70,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
 
   return (
     <UserDirectoryProvider getDirectory={() => threadMembers}>
-      <form onSubmit={submit}>
+      <Flex as="form" direction="column" gap="2" onSubmit={submit}>
         <MagicTextArea
           placeholder="Reply"
           autoFocus
@@ -96,7 +96,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
             Submit
           </Button>
         </Flex>
-      </form>
+      </Flex>
     </UserDirectoryProvider>
   );
 }
