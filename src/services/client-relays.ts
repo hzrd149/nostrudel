@@ -61,7 +61,7 @@ class ClientRelayService {
       setTimeout(() => {
         // double check for new relay notes
         this.log("Requesting latest relays from the write relays");
-        userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), true);
+        userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), { alwaysRequest: true });
       }, 1000);
 
       this.relays.connectWithHandler(lastSubject, userRelaysToRelayConfig);

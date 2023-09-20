@@ -192,7 +192,7 @@ export const ProfileEditView = () => {
   const readRelays = useReadRelayUrls();
   const toast = useToast();
   const account = useCurrentAccount()!;
-  const metadata = useUserMetadata(account.pubkey, readRelays, true);
+  const metadata = useUserMetadata(account.pubkey, readRelays, { alwaysRequest: true });
 
   const defaultValues = useMemo<FormData>(
     () => ({

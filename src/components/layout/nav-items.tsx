@@ -109,14 +109,14 @@ export default function NavItems() {
       >
         Lists
       </Button>
-      <Button
+      {/* <Button
         onClick={() => navigate("/communities")}
         leftIcon={<CommunityIcon />}
         colorScheme={active === "communities" ? "brand" : undefined}
         {...buttonProps}
       >
         Communities
-      </Button>
+      </Button> */}
       <Button
         onClick={() => navigate("/goals")}
         leftIcon={<GoalIcon />}

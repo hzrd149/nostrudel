@@ -78,8 +78,6 @@ export default function NoteReactionsModal({
   const reactions = useEventReactions(noteId, [], true) ?? [];
   const [selected, setSelected] = useState("zaps");
 
-  console.log(reactions);
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />

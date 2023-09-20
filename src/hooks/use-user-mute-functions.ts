@@ -10,7 +10,7 @@ import useUserMuteList from "./use-user-mute-list";
 export default function useUserMuteFunctions(pubkey: string) {
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const muteList = useUserMuteList(account?.pubkey, [], true);
+  const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
 
   const isMuted = isPubkeyInList(muteList, pubkey);
 

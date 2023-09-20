@@ -3,7 +3,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
 import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
-import replaceableEventLoaderService from "./replaceable-event-requester";
+import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
 import { Kind } from "nostr-tools";
 
 class UserMetadataService {
@@ -25,15 +25,9 @@ class UserMetadataService {
   getSubject(pubkey: string) {
     return this.parsedSubjects.get(pubkey);
   }
-  requestMetadata(pubkey: string, relays: string[], alwaysRequest = false) {
+  requestMetadata(pubkey: string, relays: string[], opts: RequestOptions = {}) {
     const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(
-      relays,
-      Kind.Metadata,
-      pubkey,
-      undefined,
-      alwaysRequest,
-    );
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;
   }

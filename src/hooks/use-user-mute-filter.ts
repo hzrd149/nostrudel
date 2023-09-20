@@ -8,7 +8,7 @@ import { STREAM_KIND, getStreamHost } from "../helpers/nostr/stream";
 
 export default function useUserMuteFilter(pubkey?: string) {
   const account = useCurrentAccount();
-  const muteList = useUserMuteList(pubkey || account?.pubkey);
+  const muteList = useUserMuteList(pubkey || account?.pubkey, [], { ignoreCache: true });
   const pubkeys = useMemo(() => (muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : []), [muteList]);
 
   return useCallback(

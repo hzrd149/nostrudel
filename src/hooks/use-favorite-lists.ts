@@ -10,7 +10,7 @@ export default function useFavoriteLists() {
   const favoriteList = useReplaceableEvent(
     account ? { kind: 30078, pubkey: account.pubkey, identifier: FAVORITE_LISTS_IDENTIFIER } : undefined,
     [],
-    true,
+    { ignoreCache: true },
   );
 
   const lists = useReplaceableEvents(favoriteList ? getCoordinatesFromList(favoriteList).map((a) => a.coordinate) : []);

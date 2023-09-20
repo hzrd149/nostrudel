@@ -42,7 +42,6 @@ export default function CommunityJoinButton({
       }
 
       const signed = await requestSignature(draft);
-      console.log(signed);
 
       new NostrPublishAction(isSubscribed ? "Unsubscribe" : "Subscribe", clientRelaysService.getWriteUrls(), signed);
     } catch (e) {

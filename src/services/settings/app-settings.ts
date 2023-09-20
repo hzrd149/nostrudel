@@ -44,7 +44,9 @@ accountService.current.subscribe(() => {
     log("Loaded user settings from local storage");
   }
 
-  const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), true);
+  const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), {
+    alwaysRequest: true,
+  });
   appSettings.next(defaultSettings);
   appSettings.connect(subject);
 });
@@ -54,7 +56,7 @@ clientRelaysService.relays.subscribe(() => {
   const account = accountService.current.value;
 
   if (account) {
-    userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), true);
+    userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), { alwaysRequest: true });
   }
 });
 

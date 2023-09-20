@@ -19,7 +19,6 @@ import useUserLists from "../hooks/use-user-lists";
 import {
   PEOPLE_LIST_KIND,
   createEmptyContactList,
-  createEmptyMuteList,
   listAddPerson,
   listRemovePerson,
   getListName,
@@ -117,7 +116,7 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButtonProps) => {
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const contacts = useUserContactList(account?.pubkey, [], true);
+  const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
   const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
 
   const isFollowing = isPubkeyInList(contacts, pubkey);

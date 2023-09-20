@@ -9,7 +9,7 @@ import { getPubkeysFromList } from "../../helpers/nostr/lists";
 export default function UserFollowingTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
-  const contactsList = useUserContactList(pubkey, contextRelays, true);
+  const contactsList = useUserContactList(pubkey, contextRelays, { alwaysRequest: true });
 
   const people = contactsList ? getPubkeysFromList(contactsList) : [];
 

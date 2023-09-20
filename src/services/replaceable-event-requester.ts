@@ -16,6 +16,15 @@ import createDefer, { Deferred } from "../classes/deferred";
 type Pubkey = string;
 type Relay = string;
 
+export type RequestOptions = {
+  /** Always request the event from the relays */
+  alwaysRequest?: boolean;
+  /** ignore the cache on initial load */
+  ignoreCache?: boolean;
+  // TODO: figure out a clean way for useReplaceableEvent hook to "unset" or "unsubscribe"
+  // keepAlive?: boolean;
+};
+
 export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
 }
@@ -249,17 +258,17 @@ class ReplaceableEventLoaderService {
     return sub;
   }
 
-  requestEvent(relays: string[], kind: number, pubkey: string, d?: string, alwaysRequest = false) {
+  requestEvent(relays: string[], kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
     if (!sub.value) {
       this.loadFromCache(cord).then((loaded) => {
-        if (!loaded) this.requestEventFromRelays(relays, kind, pubkey, d);
+        if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
       });
     }
 
-    if (alwaysRequest) {
+    if (opts?.alwaysRequest || (!sub.value && opts.ignoreCache)) {
       this.requestEventFromRelays(relays, kind, pubkey, d);
     }
 

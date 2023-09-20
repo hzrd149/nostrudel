@@ -59,7 +59,7 @@ export default function PeopleListProvider({ children, initList = "following" }:
   );
 
   const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId, [], true);
+  const listEvent = useReplaceableEvent(listId, [], { alwaysRequest: true });
 
   const people = listEvent && getPubkeysFromList(listEvent);
 
