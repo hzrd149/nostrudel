@@ -10,11 +10,10 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
 import { ErrorBoundary } from "../../error-boundary";
-import RelayCard from "../../../views/relays/components/relay-card";
-import { safeRelayUrl } from "../../../helpers/url";
 import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
 import { isReply } from "../../../helpers/nostr/events";
 import ReplyNote from "./reply-note";
+import RelayRecommendation from "./relay-recommendation";
 
 function RenderEvent({ event }: { event: NostrEvent }) {
   let content: ReactNode | null = null;
@@ -31,9 +30,8 @@ function RenderEvent({ event }: { event: NostrEvent }) {
     case STREAM_KIND:
       content = <StreamNote event={event} />;
       break;
-    case 2:
-      const safeUrl = safeRelayUrl(event.content);
-      content = safeUrl ? <RelayCard url={safeUrl} /> : null;
+    case Kind.RecommendRelay:
+      content = <RelayRecommendation event={event} />;
       break;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;

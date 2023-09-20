@@ -57,7 +57,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {peopleLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>
@@ -68,7 +68,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {noteLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>
@@ -79,7 +79,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {favoriteLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>

@@ -71,7 +71,7 @@ function BrowseListPage() {
 
         <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
           {lists.map((event) => (
-            <ListCard key={getEventUID(event)} event={event} />
+            <ListCard key={getEventUID(event)} list={event} />
           ))}
         </SimpleGrid>
       </VerticalPageLayout>

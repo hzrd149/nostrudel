@@ -1,4 +1,6 @@
+import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -10,10 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import { GOAL_KIND, getGoalClosedDate } from "../../helpers/nostr/goal";
-import { SwipeState } from "yet-another-react-lightbox";
-import { useCallback } from "react";
 import { NostrEvent } from "../../types/nostr-event";
-import dayjs from "dayjs";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function GoalsBrowsePage() {

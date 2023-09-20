@@ -21,6 +21,8 @@ import EmbeddedList from "./event-types/embedded-list";
 import EmbeddedArticle from "./event-types/embedded-article";
 import EmbeddedBadge from "./event-types/embedded-badge";
 import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
+import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
+import EmbeddedCommunity from "./event-types/embedded-community";
 
 export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
@@ -49,6 +51,8 @@ export function EmbedEvent({
       return <EmbeddedBadge badge={event} {...cardProps} />;
     case STREAM_CHAT_MESSAGE_KIND:
       return <EmbeddedStreamMessage message={event} {...cardProps} />;
+    case COMMUNITY_DEFINITION_KIND:
+      return <EmbeddedCommunity community={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;

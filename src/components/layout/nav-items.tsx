@@ -3,6 +3,7 @@ import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import {
   BadgeIcon,
   ChatIcon,
+  CommunityIcon,
   EmojiIcon,
   FeedIcon,
   GoalIcon,
@@ -34,6 +35,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
   else if (location.pathname.startsWith("/lists")) active = "lists";
+  else if (location.pathname.startsWith("/communities")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
@@ -106,6 +108,14 @@ export default function NavItems() {
         {...buttonProps}
       >
         Lists
+      </Button>
+      <Button
+        onClick={() => navigate("/communities")}
+        leftIcon={<CommunityIcon />}
+        colorScheme={active === "communities" ? "brand" : undefined}
+        {...buttonProps}
+      >
+        Communities
       </Button>
       <Button
         onClick={() => navigate("/goals")}
