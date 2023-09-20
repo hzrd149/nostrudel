@@ -48,7 +48,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     relays.shift();
   }
 
-  const startTime = starts ? parseInt(starts) : stream.created_at;
+  const startTime = starts ? parseInt(starts) : undefined;
   const endTime = endsTag ? parseInt(endsTag) : undefined;
 
   if (!identifier) throw new Error("missing identifier");
