@@ -107,8 +107,6 @@ export function truncateEmbedableContent(content: EmbedableContent, maxLength = 
         // find the nearest newline
         const newLines = chunk.matchAll(/\n/g);
         for (const match of newLines) {
-          console.log(match.index, chunkLength, chunk.length);
-
           if (match.index && match.index > chunkLength) {
             newContent.push(chunk.slice(0, match.index));
             return newContent;
