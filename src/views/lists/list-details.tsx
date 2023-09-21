@@ -46,7 +46,7 @@ export default function ListDetailsView() {
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
 
-  const list = useReplaceableEvent(coordinate);
+  const list = useReplaceableEvent(coordinate, [], { alwaysRequest: true });
 
   if (!list)
     return (
