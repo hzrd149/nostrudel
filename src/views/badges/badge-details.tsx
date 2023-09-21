@@ -6,7 +6,7 @@ import { ArrowLeftSIcon } from "../../components/icons";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
-import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
+import { getBadgeAwardPubkey, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import BadgeMenu from "./components/badge-menu";
 import BadgeAwardCard from "./components/award-card";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -45,60 +45,62 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
   const isAuthor = account?.pubkey === badge.pubkey;
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
-        <Flex gap="2" alignItems="center" wrap="wrap">
-          <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
-            Back
+    <VerticalPageLayout>
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+          Back
+        </Button>
+
+        <UserAvatarLink pubkey={badge.pubkey} size="sm" />
+        <UserLink fontWeight="bold" pubkey={badge.pubkey} />
+        <Text>|</Text>
+        <Heading size="md">{getBadgeName(badge)}</Heading>
+
+        <Spacer />
+
+        <EventRelays event={badge} />
+
+        {isAuthor && (
+          <Button colorScheme="red" onClick={() => deleteEvent(badge).then(() => navigate("/lists"))}>
+            Delete
           </Button>
+        )}
+        <BadgeMenu aria-label="More options" badge={badge} />
+      </Flex>
 
-          <UserAvatarLink pubkey={badge.pubkey} size="sm" />
-          <UserLink fontWeight="bold" pubkey={badge.pubkey} />
-          <Text>|</Text>
+      <Flex direction={{ base: "column", lg: "row" }} gap="2">
+        {image && <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} />}
+        <Flex direction="column" gap="2">
           <Heading size="md">{getBadgeName(badge)}</Heading>
-
-          <Spacer />
-
-          <EventRelays event={badge} />
-
-          {isAuthor && (
-            <Button colorScheme="red" onClick={() => deleteEvent(badge).then(() => navigate("/lists"))}>
-              Delete
-            </Button>
-          )}
-          <BadgeMenu aria-label="More options" badge={badge} />
+          <Text>
+            Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
+            <UserLink fontWeight="bold" pubkey={badge.pubkey} />
+          </Text>
+          <Text>
+            Last Updated: <Timestamp timestamp={badge.created_at} />
+          </Text>
+          {description && <Text pb="2">{description}</Text>}
         </Flex>
+      </Flex>
 
-        <Flex direction={{ base: "column", lg: "row" }} gap="2">
-          {image && <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} />}
-          <Flex direction="column" gap="2">
-            <Heading size="md">{getBadgeName(badge)}</Heading>
-            <Text>
-              Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
-              <UserLink fontWeight="bold" pubkey={badge.pubkey} />
-            </Text>
-            <Text>
-              Last Updated: <Timestamp timestamp={badge.created_at} />
-            </Text>
-            {description && <Text pb="2">{description}</Text>}
-          </Flex>
-        </Flex>
-
-        {awards.length > 0 && (
-          <>
+      {awards.length > 0 && (
+        <>
+          <IntersectionObserverProvider callback={callback}>
             <Heading size="md">Awarded to</Heading>
             <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {awards.map((award) => (
-                <ErrorBoundary>
-                  <BadgeAwardCard award={award} />
-                </ErrorBoundary>
+                <>
+                  {getBadgeAwardPubkey(award).map(({ pubkey }) => (
+                    <BadgeAwardCard award={award} pubkey={pubkey} />
+                  ))}
+                </>
               ))}
             </SimpleGrid>
-          </>
-        )}
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+          </IntersectionObserverProvider>
+        </>
+      )}
+    </VerticalPageLayout>
   );
 }
 
