@@ -18,7 +18,11 @@ export default function useStreamChatTimeline(stream: ParsedStream) {
   const muteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(
-    (event: NostrEvent) => !(hostMuteFilter(event) || muteFilter(event)),
+    (event: NostrEvent) => {
+      if (stream.starts && event.created_at < stream.starts) return false;
+      if (stream.ends && event.created_at > stream.ends) return false;
+      return !(hostMuteFilter(event) || muteFilter(event));
+    },
     [hostMuteFilter, muteFilter],
   );
 
@@ -38,5 +42,6 @@ export default function useStreamChatTimeline(stream: ParsedStream) {
     }
     return streamQuery;
   }, [stream, goal]);
+
   return useTimelineLoader(`${getEventUID(stream.event)}-chat`, streamRelays, query, { eventFilter });
 }
