@@ -8,7 +8,7 @@ import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { draftRemovePerson } from "../../../helpers/nostr/lists";
+import { listRemovePerson } from "../../../helpers/nostr/lists";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
@@ -23,10 +23,10 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
   const { requestSignature } = useSigningContext();
 
   const handleRemoveFromList = useAsyncErrorHandler(async () => {
-    const draft = draftRemovePerson(list, pubkey);
+    const draft = listRemovePerson(list, pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Remove from list", clientRelaysService.getWriteUrls(), signed);
-  }, [list]);
+  }, [list, requestSignature]);
 
   return (
     <Card>

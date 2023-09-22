@@ -30,7 +30,11 @@ import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
 
-export default function PostModal({ isOpen, onClose, initContent = '' }: Omit<ModalProps, "children"> & {initContent?: string}) {
+export default function PostModal({
+  isOpen,
+  onClose,
+  initContent = "",
+}: Omit<ModalProps, "children"> & { initContent?: string }) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const writeRelays = useWriteRelayUrls();

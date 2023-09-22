@@ -1,14 +1,16 @@
+import { useMemo } from "react";
+
 import useReplaceableEvent from "./use-replaceable-event";
 import { PEOPLE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserMuteList from "./use-user-mute-list";
-import { useMemo } from "react";
+import { RequestOptions } from "../services/replaceable-event-requester";
 
-export default function useUserMuteLists(pubkey?: string, additionalRelays: string[] = [], alwaysRequest = true) {
-  const muteList = useUserMuteList(pubkey, additionalRelays, alwaysRequest);
+export default function useUserMuteLists(pubkey?: string, additionalRelays: string[] = [], opts: RequestOptions = {}) {
+  const muteList = useUserMuteList(pubkey, additionalRelays, opts);
   const altMuteList = useReplaceableEvent(
     pubkey && { kind: PEOPLE_LIST_KIND, pubkey, identifier: "mute" },
     additionalRelays,
-    alwaysRequest,
+    opts,
   );
 
   const pubkeys = useMemo(() => {

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
+
 import { SigningProvider } from "./signing-provider";
 import createTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
@@ -12,8 +13,11 @@ import { UserContactsUserDirectoryProvider } from "./user-directory-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
-  const { primaryColor } = useAppSettings();
-  const theme = useMemo(() => createTheme(primaryColor), [primaryColor]);
+  const { primaryColor, maxPageWidth } = useAppSettings();
+  const theme = useMemo(
+    () => createTheme(primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
+    [primaryColor, maxPageWidth],
+  );
 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>

@@ -4,7 +4,7 @@ import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";
-import replaceableEventLoaderService from "./replaceable-event-requester";
+import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
 import { Kind } from "nostr-tools";
 
 export type UserContacts = {
@@ -55,16 +55,10 @@ class UserContactsService {
   getSubject(pubkey: string) {
     return this.subjects.get(pubkey);
   }
-  requestContacts(pubkey: string, relays: string[], alwaysRequest = false) {
+  requestContacts(pubkey: string, relays: string[], opts?: RequestOptions) {
     const sub = this.subjects.get(pubkey);
 
-    const requestSub = replaceableEventLoaderService.requestEvent(
-      relays,
-      Kind.Contacts,
-      pubkey,
-      undefined,
-      alwaysRequest,
-    );
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.Contacts, pubkey, undefined, opts);
 
     sub.connectWithHandler(requestSub, (event, next) => next(parseContacts(event)));
 

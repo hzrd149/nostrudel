@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link as RouterLink, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import ngeohash from "ngeohash";
@@ -82,6 +82,7 @@ function useEventMarkers(events: NostrEvent[], map?: L.Map, onClick?: (event: No
 }
 
 export default function MapView() {
+  const navigate = useNavigate();
   const ref = useRef<HTMLDivElement | null>(null);
   const [map, setMap] = useState<L.Map>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -152,7 +153,7 @@ export default function MapView() {
     <Flex overflow={{ lg: "hidden" }} h={{ lg: "full" }} direction={{ base: "column-reverse", lg: "row" }}>
       <Flex w={{ base: "full", lg: "xl" }} direction="column" p="2" gap="2">
         <Flex gap="2">
-          <Button as={RouterLink} to="/" flexShrink={0}>
+          <Button flexShrink={0} onClick={() => navigate(-1)}>
             Back
           </Button>
           <Button colorScheme="brand" onClick={setCellsFromMap} flex={1}>

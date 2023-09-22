@@ -1,10 +1,12 @@
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { Kind } from "nostr-tools";
 
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { TimelineLoader } from "../classes/timeline-loader";
 import timelineCacheService from "../services/timeline-cache";
+import { NostrEvent } from "../types/nostr-event";
+import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -28,6 +30,18 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
       ? timelineCacheService.createTimeline(`${account?.pubkey ?? "anon"}-notification`)
       : undefined;
   }, [account?.pubkey]);
+
+  const userMuteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (userMuteFilter(event)) return false;
+      return true;
+    },
+    [userMuteFilter],
+  );
+  useEffect(() => {
+    timeline?.setFilter(eventFilter);
+  }, [timeline, eventFilter]);
 
   useEffect(() => {
     if (timeline && account?.pubkey) {

@@ -18,6 +18,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useSubject from "../../hooks/use-subject";
 import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/events";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BrowseListPage() {
   const { filter, listId } = usePeopleListContext();
@@ -53,7 +54,7 @@ function BrowseListPage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
           <Select w="sm" value={listKind} onChange={(e) => setListKind(parseInt(e.target.value))}>
@@ -70,10 +71,10 @@ function BrowseListPage() {
 
         <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
           {lists.map((event) => (
-            <ListCard key={getEventUID(event)} event={event} />
+            <ListCard key={getEventUID(event)} list={event} />
           ))}
         </SimpleGrid>
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

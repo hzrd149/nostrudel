@@ -17,6 +17,7 @@ import {
   Tr,
   Th,
   Flex,
+  ButtonProps,
 } from "@chakra-ui/react";
 import relayPoolService from "../services/relay-pool";
 import { useInterval } from "react-use";
@@ -27,7 +28,7 @@ import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayScoreBreakdown } from "./relay-score-breakdown";
 
-export const ConnectedRelays = () => {
+export const ConnectedRelays = ({ ...props }: Omit<ButtonProps, "children">) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [relays, setRelays] = useState<Relay[]>(relayPoolService.getRelays());
   const sortedRelays = useMemo(() => relayScoreboardService.getRankedRelays(relays.map((r) => r.url)), [relays]);
@@ -40,8 +41,8 @@ export const ConnectedRelays = () => {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen} leftIcon={<RelayIcon />}>
-        {connected.length} relays connected
+      <Button onClick={onOpen} leftIcon={<RelayIcon />} {...props}>
+        connected to {connected.length} relays
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl">
         <ModalOverlay />

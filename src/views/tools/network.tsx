@@ -8,6 +8,7 @@ import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { useNavigate } from "react-router-dom";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const User = memo(({ pubkey, count }: { pubkey: string; count: number }) => (
   <Flex gap="2" overflow="hidden">
@@ -33,7 +34,7 @@ function NetworkPage() {
   }, [range, network]);
 
   return (
-    <Flex gap="2" direction="column" p="2">
+    <VerticalPageLayout>
       <Flex gap="2">
         <Button leftIcon={<ArrowLeftSIcon />} onClick={() => navigate(-1)}>
           Back
@@ -52,7 +53,7 @@ function NetworkPage() {
           <User key={pubkey} pubkey={pubkey} count={count} />
         ))}
       </SimpleGrid>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

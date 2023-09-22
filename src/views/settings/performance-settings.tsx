@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
+import { PerformanceIcon } from "../../components/icons";
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();
@@ -23,7 +24,8 @@ export default function PerformanceSettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <PerformanceIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
             Performance
           </Box>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Flex, useBreakpointValue } from "@chakra-ui/react";
+import { Container, Flex, Spacer, useBreakpointValue } from "@chakra-ui/react";
 import { ErrorBoundary } from "../error-boundary";
 
 import { ReloadPrompt } from "../reload-prompt";
@@ -12,11 +12,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <ReloadPrompt mb="2" />
-      <Container size="lg" display="flex" padding="0" gap="4" alignItems="flex-start">
-        {!isMobile && <DesktopSideNav position="sticky" top="0" />}
-        <Flex flexGrow={1} direction="column" w="full" overflow="hidden" pb={isMobile ? "14" : 0} minH="50vh">
+      <Flex direction={{ base: "column", md: "row" }}>
+        <Spacer display={["none", null, "block"]} />
+        {!isMobile && <DesktopSideNav position="sticky" top="0" flexShrink={0} />}
+        <Container
+          // set base to "md" so that when layout switches to column it is full width
+          size={{ base: "md", md: "md", lg: "lg", xl: "xl", "2xl": "2xl" }}
+          display="flex"
+          flexGrow={1}
+          padding="0"
+          flexDirection="column"
+          mx="0"
+          pb={isMobile ? "14" : 0}
+          minH="50vh"
+          overflow="hidden"
+        >
           <ErrorBoundary>{children}</ErrorBoundary>
-        </Flex>
+        </Container>
         {isMobile && (
           <MobileBottomNav
             position="fixed"
@@ -27,7 +39,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             zIndex={10}
           />
         )}
-      </Container>
+        <Spacer display={["none", null, "block"]} />
+      </Flex>
     </>
   );
 }

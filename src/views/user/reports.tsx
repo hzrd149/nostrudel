@@ -12,6 +12,7 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];
@@ -56,13 +57,13 @@ export default function UserReportsTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" pr="2" pl="2">
+      <VerticalPageLayout>
         {events.map((report) => (
           <ReportEvent key={report.id} report={report} />
         ))}
 
         <TimelineActionAndStatus timeline={timeline} />
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

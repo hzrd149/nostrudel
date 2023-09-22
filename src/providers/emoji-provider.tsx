@@ -26,7 +26,10 @@ export function DefaultEmojiProvider({ children }: PropsWithChildren) {
 
 export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useCurrentAccount();
-  const favoritePacks = useFavoriteEmojiPacks(pubkey || account?.pubkey, [], true);
+  const favoritePacks = useFavoriteEmojiPacks(pubkey || account?.pubkey, [], {
+    ignoreCache: true,
+    alwaysRequest: true,
+  });
   const events = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
 
   const emojis = events

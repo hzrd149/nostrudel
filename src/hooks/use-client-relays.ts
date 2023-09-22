@@ -10,9 +10,8 @@ export function useClientRelays(mode: RelayMode = RelayMode.ALL) {
 }
 export function useReadRelayUrls(additional: string[] = []) {
   const relays = useClientRelays(RelayMode.READ);
-
   const urls = relays.map((r) => r.url);
-  if (additional) {
+  if (additional.length > 0) {
     return unique([...urls, ...additional]);
   }
   return urls;

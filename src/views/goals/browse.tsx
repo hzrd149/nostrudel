@@ -1,4 +1,6 @@
+import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -10,10 +12,8 @@ import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import { GOAL_KIND, getGoalClosedDate } from "../../helpers/nostr/goal";
-import { SwipeState } from "yet-another-react-lightbox";
-import { useCallback } from "react";
 import { NostrEvent } from "../../types/nostr-event";
-import dayjs from "dayjs";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -40,7 +40,7 @@ function GoalsBrowsePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2" pb="10">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
           <Switch isChecked={showClosed.isOpen} onChange={showClosed.onToggle}>
@@ -53,7 +53,7 @@ function GoalsBrowsePage() {
             <GoalCard key={getEventUID(event)} goal={event} />
           ))}
         </SimpleGrid>
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

@@ -1,13 +1,13 @@
 import { useReadRelayUrls } from "./use-client-relays";
 import { useMemo } from "react";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
 import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
 import useSubject from "./use-subject";
 
 export default function useReplaceableEvent(
   cord: string | CustomEventPointer | undefined,
   additionalRelays: string[] = [],
-  alwaysRequest = false,
+  opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const sub = useMemo(() => {
@@ -18,9 +18,9 @@ export default function useReplaceableEvent(
       parsed.kind,
       parsed.pubkey,
       parsed.identifier,
-      alwaysRequest,
+      opts,
     );
-  }, [cord, readRelays.join("|")]);
+  }, [cord, readRelays.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
   return useSubject(sub);
 }

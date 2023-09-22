@@ -1,13 +1,12 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Kind } from "nostr-tools";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
-import { searchParamsToJson } from "../helpers/url";
 
 export type ListId = "following" | "global" | string;
 export type Person = { pubkey: string; relay?: string };
@@ -46,17 +45,21 @@ export type PeopleListProviderProps = PropsWithChildren & {
 };
 export default function PeopleListProvider({ children, initList = "following" }: PeopleListProviderProps) {
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const selected = params.get("people") || (initList as ListId);
   const setSelected = useCallback(
     (value: ListId) => {
-      setParams((p) => ({ ...searchParamsToJson(p), people: value }));
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("people", value);
+      navigate(location.pathname + "?" + newParams.toString(), { state: location.state });
     },
-    [setParams],
+    [navigate, location],
   );
 
   const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId, [], true);
+  const listEvent = useReplaceableEvent(listId, [], { alwaysRequest: true });
 
   const people = listEvent && getPubkeysFromList(listEvent);
 

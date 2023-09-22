@@ -17,6 +17,7 @@ import { useFormContext } from "react-hook-form";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
 import { createCorsUrl } from "../../helpers/cors";
+import { SpyIcon } from "../../components/icons";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -46,7 +47,8 @@ export default function PrivacySettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <SpyIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
             Privacy
           </Box>

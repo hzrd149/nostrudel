@@ -1,16 +1,23 @@
+import { useRef } from "react";
 import { Card, CardBody, CardProps, Flex, Heading } from "@chakra-ui/react";
 
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getBadgeAwardPubkey } from "../../../helpers/nostr/badges";
 import { UserLink } from "../../../components/user-link";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { getEventUID } from "../../../helpers/nostr/events";
 
-export default function BadgeAwardCard({ award, ...props }: Omit<CardProps, "children"> & { award: NostrEvent }) {
-  const pubkey = getBadgeAwardPubkey(award);
+export default function BadgeAwardCard({
+  pubkey,
+  award,
+  ...props
+}: Omit<CardProps, "children"> & { award: NostrEvent; pubkey: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, getEventUID(award));
 
   return (
-    <Card {...props}>
+    <Card {...props} ref={ref}>
       <CardBody p="2" display="flex" alignItems="center" overflow="hidden" gap="2">
         <UserAvatar pubkey={pubkey} />
         <Flex direction="column" flex={1} overflow="hidden">

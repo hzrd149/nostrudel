@@ -55,6 +55,10 @@ import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
 import UserArticlesTab from "./views/user/articles";
+import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
+import CommunitiesHomeView from "./views/communities";
+import CommunityFindByNameView from "./views/community/find-by-name";
+import CommunityView from "./views/community/index";
 
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
@@ -178,6 +182,17 @@ const router = createHashRouter([
         ],
       },
       {
+        path: "communities",
+        element: <CommunitiesHomeView />,
+      },
+      {
+        path: "c/:community",
+        children: [
+          { path: "", element: <CommunityFindByNameView /> },
+          { path: ":pubkey", element: <CommunityView /> },
+        ],
+      },
+      {
         path: "goals",
         children: [
           { path: "", element: <GoalsView /> },
@@ -217,9 +232,11 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
-    <Global styles={overrideReactTextareaAutocompleteStyles} />
-    <Suspense fallback={<Spinner />}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <DrawerSubViewProvider parentRouter={router}>
+      <Global styles={overrideReactTextareaAutocompleteStyles} />
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </DrawerSubViewProvider>
   </ErrorBoundary>
 );

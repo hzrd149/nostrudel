@@ -1,4 +1,5 @@
 import { NostrEvent, isATag, isPTag } from "../../types/nostr-event";
+import { getPubkeysFromList } from "./lists";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
 
@@ -30,9 +31,7 @@ export function getBadgeThumbnails(event: NostrEvent) {
 }
 
 export function getBadgeAwardPubkey(event: NostrEvent) {
-  const pubkey = event.tags.find(isPTag)?.[1];
-  if (!pubkey) throw new Error("Missing pubkey");
-  return pubkey;
+  return getPubkeysFromList(event);
 }
 export function getBadgeAwardBadge(event: NostrEvent) {
   const badgeCord = event.tags.find(isATag)?.[1];

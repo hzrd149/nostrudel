@@ -25,6 +25,7 @@ import { ExternalLinkIcon } from "../../components/icons";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { nip19 } from "nostr-tools";
 import Timestamp from "../../components/timestamp";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
@@ -69,30 +70,8 @@ function DirectMessagesPage() {
     });
   }, [conversations]);
 
-  if (conversations.length === 0) {
-    return (
-      <Alert
-        status="info"
-        variant="subtle"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        textAlign="center"
-        height="200px"
-      >
-        <AlertIcon boxSize="40px" mr={0} />
-        <AlertTitle mt={4} mb={1} fontSize="lg">
-          No direct messages yet :(
-        </AlertTitle>
-        <AlertDescription maxWidth="sm">
-          Click <ChatIcon /> on another users profile to start a conversation.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
   return (
-    <Flex direction="column" gap="2" overflowX="hidden" overflowY="auto" height="100%" pt="2" pb="8">
+    <VerticalPageLayout>
       <Alert status="info" flexShrink={0}>
         <AlertIcon />
         <Flex direction={{ base: "column", lg: "row" }}>
@@ -100,20 +79,43 @@ function DirectMessagesPage() {
           <AlertDescription>
             <Text>
               Its a much better chat app than what I can build inside of noStrudel.{" "}
-              <Link href="https://blowater.deno.dev/" isExternal>
-                blowater.deno.dev <ExternalLinkIcon />
+              <Link href="https://blowater.app/" isExternal>
+                blowater.app <ExternalLinkIcon />
               </Link>
             </Text>
           </AlertDescription>
         </Flex>
       </Alert>
-      {sortedConversations.map((pubkey) => (
-        <ContactCard key={pubkey} pubkey={pubkey} />
-      ))}
-      <Button onClick={loadMore} isLoading={loading} flexShrink={0}>
-        Load More
-      </Button>
-    </Flex>
+
+      {conversations.length === 0 ? (
+        <Alert
+          status="info"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          height="200px"
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            No direct messages yet :(
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">
+            Click <ChatIcon /> on another users profile to start a conversation.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <>
+          {sortedConversations.map((pubkey) => (
+            <ContactCard key={pubkey} pubkey={pubkey} />
+          ))}
+          <Button onClick={loadMore} isLoading={loading} flexShrink={0}>
+            Load More
+          </Button>
+        </>
+      )}
+    </VerticalPageLayout>
   );
 }
 

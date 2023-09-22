@@ -9,6 +9,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import EmbeddedArticle from "../../components/embed-event/event-types/embedded-article";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 export default function UserArticlesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -24,12 +25,12 @@ export default function UserArticlesTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" pt="2" pb="10" px={["2", "2", 0]} direction="column">
+      <VerticalPageLayout>
         {articles.map((article) => (
           <EmbeddedArticle article={article} />
         ))}
         <TimelineActionAndStatus timeline={timeline} />
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

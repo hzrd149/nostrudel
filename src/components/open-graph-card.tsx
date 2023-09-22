@@ -47,13 +47,13 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
             mx={isVertical ? "auto" : 0}
           />
         )}
-        <Box p="2">
-          <Heading size="sm">
+        <Box p="2" overflow="hidden">
+          <Heading size="sm" isTruncated>
             <LinkOverlay href={url.toString()} isExternal>
               {data.ogTitle?.trim() ?? data.dcTitle?.trim()}
             </LinkOverlay>
           </Heading>
-          <Text isTruncated>{data.ogDescription || data.dcDescription}</Text>
+          <Text noOfLines={5}>{data.ogDescription || data.dcDescription}</Text>
           {link}
         </Box>
       </LinkBox>

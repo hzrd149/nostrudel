@@ -1,10 +1,9 @@
 import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
-import RequireCurrentAccount from "../../providers/require-current-account";
 import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import useUserLists from "../../hooks/use-user-lists";
@@ -12,6 +11,7 @@ import NewListModal from "./components/new-list-modal";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ListsPage() {
   const account = useCurrentAccount()!;
@@ -24,7 +24,7 @@ function ListsPage() {
   const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
 
   return (
-    <Flex direction="column" pt="2" pb="10" gap="2" px={["2", "2", 0]}>
+    <VerticalPageLayout>
       <Flex gap="2">
         <Button as={RouterLink} to="/lists/browse">
           Browse Lists
@@ -57,7 +57,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {peopleLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>
@@ -68,7 +68,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {noteLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>
@@ -79,7 +79,7 @@ function ListsPage() {
           <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {favoriteLists.map((event) => (
-              <ListCard key={getEventUID(event)} event={event} />
+              <ListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>
@@ -92,14 +92,11 @@ function ListsPage() {
           onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}
         />
       )}
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 
 export default function ListsView() {
-  return (
-    <RequireCurrentAccount>
-      <ListsPage />
-    </RequireCurrentAccount>
-  );
+  const account = useCurrentAccount();
+  return account ? <ListsPage /> : <Navigate to="/lists/browse" />;
 }

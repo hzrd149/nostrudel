@@ -14,13 +14,13 @@ import {
 } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
-import { ArrowDownSIcon, FollowIcon, PlusCircleIcon, UnfollowIcon } from "./icons";
+import { ArrowDownSIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import {
   PEOPLE_LIST_KIND,
   createEmptyContactList,
-  draftAddPerson,
-  draftRemovePerson,
+  listAddPerson,
+  listRemovePerson,
   getListName,
   getPubkeysFromList,
   isPubkeyInList,
@@ -33,6 +33,7 @@ import useUserContactList from "../hooks/use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
+import useUserMuteFunctions from "../hooks/use-user-mute-functions";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();
@@ -59,11 +60,11 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         );
 
         if (addToList) {
-          const draft = draftAddPerson(addToList, pubkey);
+          const draft = listAddPerson(addToList, pubkey);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Add to list", writeRelays, signed);
         } else if (removeFromList) {
-          const draft = draftRemovePerson(removeFromList, pubkey);
+          const draft = listRemovePerson(removeFromList, pubkey);
           const signed = await requestSignature(draft);
           const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
         }
@@ -115,23 +116,24 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButtonProps) => {
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const contacts = useUserContactList(account?.pubkey, [], true);
+  const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
+  const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
 
   const isFollowing = isPubkeyInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
 
   const handleFollow = useAsyncErrorHandler(async () => {
-    const draft = draftAddPerson(contacts || createEmptyContactList(), pubkey);
+    const draft = listAddPerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [contacts, requestSignature]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
-    const draft = draftRemovePerson(contacts || createEmptyContactList(), pubkey);
+    const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
     replaceableEventLoaderService.handleEvent(signed);
-  });
+  }, [contacts, requestSignature]);
 
   if (showLists) {
     return (
@@ -147,6 +149,16 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
           ) : (
             <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled}>
               Follow
+            </MenuItem>
+          )}
+          {account?.pubkey !== pubkey && (
+            <MenuItem
+              onClick={isMuted ? unmute : mute}
+              icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
+              color="red.500"
+              isDisabled={isDisabled}
+            >
+              {isMuted ? "Unmute" : "Mute"}
             </MenuItem>
           )}
           {account && (

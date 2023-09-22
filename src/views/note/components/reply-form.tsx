@@ -23,6 +23,7 @@ import { unique } from "../../../helpers/array";
 import MagicTextArea from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/emoji-provider";
 import UserDirectoryProvider from "../../../providers/user-directory-provider";
+import { TrustProvider } from "../../../providers/trust";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -69,7 +70,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
 
   return (
     <UserDirectoryProvider getDirectory={() => threadMembers}>
-      <form onSubmit={submit}>
+      <Flex as="form" direction="column" gap="2" onSubmit={submit}>
         <MagicTextArea
           placeholder="Reply"
           autoFocus
@@ -81,7 +82,9 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
         />
         {getValues().content.length > 0 && (
           <Box p="2" borderWidth={1} borderRadius="md" mb="2">
-            <NoteContents event={draft} />
+            <TrustProvider trust>
+              <NoteContents event={draft} />
+            </TrustProvider>
           </Box>
         )}
         <Flex gap="2" alignItems="center">
@@ -93,7 +96,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
             Submit
           </Button>
         </Flex>
-      </form>
+      </Flex>
     </UserDirectoryProvider>
   );
 }

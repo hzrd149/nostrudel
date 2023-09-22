@@ -2,12 +2,13 @@ import { useMemo } from "react";
 import userRelaysService from "../services/user-relays";
 import useSubject from "./use-subject";
 import { useReadRelayUrls } from "./use-client-relays";
+import { RequestOptions } from "../services/replaceable-event-requester";
 
-export function useUserRelays(pubkey: string, additionalRelays: string[] = [], alwaysRequest = false) {
-  const relays = useReadRelayUrls(additionalRelays);
+export function useUserRelays(pubkey: string, additionalRelays: string[] = [], opts: RequestOptions = {}) {
+  const readRelays = useReadRelayUrls([...additionalRelays, "wss://purplepag.es"]);
   const subject = useMemo(
-    () => userRelaysService.requestRelays(pubkey, relays, alwaysRequest),
-    [pubkey, relays.join("|"), alwaysRequest],
+    () => userRelaysService.requestRelays(pubkey, readRelays, opts),
+    [pubkey, readRelays.join("|")],
   );
   const userRelays = useSubject(subject);
 

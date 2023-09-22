@@ -21,6 +21,8 @@ import EmbeddedList from "./event-types/embedded-list";
 import EmbeddedArticle from "./event-types/embedded-article";
 import EmbeddedBadge from "./event-types/embedded-badge";
 import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
+import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
+import EmbeddedCommunity from "./event-types/embedded-community";
 
 export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
@@ -49,6 +51,8 @@ export function EmbedEvent({
       return <EmbeddedBadge badge={event} {...cardProps} />;
     case STREAM_CHAT_MESSAGE_KIND:
       return <EmbeddedStreamMessage message={event} {...cardProps} />;
+    case COMMUNITY_DEFINITION_KIND:
+      return <EmbeddedCommunity community={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;
@@ -57,12 +61,12 @@ export function EmbedEvent({
 export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {
   switch (pointer.type) {
     case "note": {
-      const { event } = useSingleEvent(pointer.data);
+      const event = useSingleEvent(pointer.data);
       if (event === undefined) return <NoteLink noteId={pointer.data} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nevent": {
-      const { event } = useSingleEvent(pointer.data.id, pointer.data.relays);
+      const event = useSingleEvent(pointer.data.id, pointer.data.relays);
       if (event === undefined) return <NoteLink noteId={pointer.data.id} />;
       return <EmbedEvent event={event} {...props} />;
     }

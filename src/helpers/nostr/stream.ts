@@ -26,16 +26,22 @@ export type ParsedStream = {
   relays?: string[];
 };
 
+export function getStreamHost(stream: NostrEvent) {
+  return stream.tags.filter(isPTag)[0]?.[1] ?? stream.pubkey;
+}
+
 export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const title = stream.tags.find((t) => t[0] === "title")?.[1];
   const summary = stream.tags.find((t) => t[0] === "summary")?.[1];
   const image = stream.tags.find((t) => t[0] === "image")?.[1];
   const starts = stream.tags.find((t) => t[0] === "starts")?.[1];
-  const endsTag = stream.tags.find((t) => t[0] === "ends")?.[1];
+  const ends = stream.tags.find((t) => t[0] === "ends")?.[1];
   const streaming = stream.tags.find((t) => t[0] === "streaming")?.[1];
   const recording = stream.tags.find((t) => t[0] === "recording")?.[1];
   const goal = stream.tags.find((t) => t[0] === "goal")?.[1];
   const identifier = stream.tags.find((t) => t[0] === "d")?.[1];
+
+  if (!identifier) throw new Error("missing identifier");
 
   let relays = stream.tags.find((t) => t[0] === "relays");
   // remove the first "relays" element
@@ -44,12 +50,11 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     relays.shift();
   }
 
-  const startTime = starts ? parseInt(starts) : stream.created_at;
-  const endTime = endsTag ? parseInt(endsTag) : undefined;
-
-  if (!identifier) throw new Error("missing identifier");
+  const startTime = starts ? parseInt(starts) : undefined;
+  let endTime = ends ? parseInt(ends) : undefined;
 
   let status = stream.tags.find((t) => t[0] === "status")?.[1] || "ended";
+  if (status === "ended" && endTime === undefined) endTime = stream.created_at;
   if (endTime && endTime > dayjs().unix()) {
     status = "ended";
   }
@@ -59,12 +64,11 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
     status = "ended";
   }
 
-  const host = stream.tags.filter(isPTag)[0]?.[1] ?? stream.pubkey;
   const tags = unique(stream.tags.filter((t) => t[0] === "t" && t[1]).map((t) => t[1] as string));
 
   return {
     author: stream.pubkey,
-    host,
+    host: getStreamHost(stream),
     event: stream,
     updated: stream.created_at,
     streaming,

@@ -11,6 +11,7 @@ import EmojiPackCard from "../emoji-packs/components/emoji-pack-card";
 import { EMOJI_PACK_KIND, getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 export default function UserEmojiPacksTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -29,7 +30,7 @@ export default function UserEmojiPacksTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" pt="2" pb="10" px={["2", "2", 0]} direction="column">
+      <VerticalPageLayout>
         {packs.length > 0 && (
           <>
             <Heading size="md" mt="2">
@@ -56,7 +57,7 @@ export default function UserEmojiPacksTab() {
             </SimpleGrid>
           </>
         )}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

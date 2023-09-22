@@ -23,6 +23,7 @@ import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types"
 import Timestamp from "../../components/timestamp";
 import { EmbedEventNostrLink, EmbedEventPointer } from "../../components/embed-event";
 import { parseCoordinate } from "../../helpers/nostr/events";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -112,7 +113,7 @@ const UserZapsTab = () => {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2" pb="8">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
             <option value="both">Note & Profile Zaps</option>
@@ -136,7 +137,7 @@ const UserZapsTab = () => {
         ))}
 
         <TimelineActionAndStatus timeline={timeline} />
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 };

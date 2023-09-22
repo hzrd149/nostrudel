@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -15,10 +16,22 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import { NostrRequestFilter } from "../../types/nostr-query";
 import { useAppTitle } from "../../hooks/use-app-title";
+import { NostrEvent } from "../../types/nostr-event";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function StreamsPage() {
   useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
+  const userMuteFilter = useClientSideMuteFilter();
+
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (userMuteFilter(event)) return false;
+      return true;
+    },
+    [userMuteFilter],
+  );
 
   const { filter, listId } = usePeopleListContext();
   const query = useMemo<NostrRequestFilter>(() => {
@@ -29,7 +42,7 @@ function StreamsPage() {
     ];
   }, [filter, listId]);
 
-  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter });
+  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter, eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());
 
@@ -42,7 +55,7 @@ function StreamsPage() {
   const endedStreams = streams.filter((stream) => stream.status === "ended");
 
   return (
-    <Flex p="2" gap="2" overflow="hidden" direction="column">
+    <VerticalPageLayout>
       <Flex gap="2" wrap="wrap">
         <PeopleListSelection />
         <RelaySelectionButton ml="auto" />
@@ -62,7 +75,7 @@ function StreamsPage() {
         </SimpleGrid>
         <TimelineActionAndStatus timeline={timeline} />
       </IntersectionObserverProvider>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 export default function StreamsView() {

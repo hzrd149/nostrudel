@@ -1,24 +1,35 @@
+import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Divider, Heading, SimpleGrid } from "@chakra-ui/react";
 
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
+import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND, isJunkList } from "../../helpers/nostr/lists";
 import { getEventUID } from "../../helpers/nostr/events";
 import ListCard from "../lists/components/list-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { Kind } from "nostr-tools";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { NostrEvent } from "../../types/nostr-event";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(pubkey + "-lists", readRelays, {
-    authors: [pubkey],
-    kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
-  });
+  const eventFilter = useCallback((event: NostrEvent) => {
+    return !isJunkList(event);
+  }, []);
+  const timeline = useTimelineLoader(
+    pubkey + "-lists",
+    readRelays,
+    {
+      authors: [pubkey],
+      kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
+    },
+    { eventFilter },
+  );
 
   const lists = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -28,7 +39,7 @@ export default function UserListsTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex gap="2" pt="2" pb="10" px={["2", "2", 0]} direction="column">
+      <VerticalPageLayout>
         <Heading size="md" mt="2">
           Special lists
         </Heading>
@@ -47,7 +58,7 @@ export default function UserListsTab() {
             <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {peopleLists.map((event) => (
-                <ListCard key={getEventUID(event)} event={event} />
+                <ListCard key={getEventUID(event)} list={event} />
               ))}
             </SimpleGrid>
           </>
@@ -61,12 +72,12 @@ export default function UserListsTab() {
             <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {noteLists.map((event) => (
-                <ListCard key={getEventUID(event)} event={event} />
+                <ListCard key={getEventUID(event)} list={event} />
               ))}
             </SimpleGrid>
           </>
         )}
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

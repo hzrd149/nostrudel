@@ -53,6 +53,7 @@ import StreamHashtags from "../components/stream-hashtags";
 import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
 import StreamShareButton from "../components/stream-share-button";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
@@ -87,7 +88,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   };
 
   return (
-    <Flex direction="column" gap="2" p="2" pb="10">
+    <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
         <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
           Back
@@ -137,7 +138,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
       <Flex gap="2" wrap="wrap">
         <StreamerCards pubkey={stream.host} maxW="lg" minW="md" />
       </Flex>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 
@@ -147,7 +148,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
   const showChat = useDisclosure();
 
   return (
-    <Flex direction="column" gap="2" overflow="hidden" py="2">
+    <VerticalPageLayout px={0}>
       <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
         <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />} size="sm">
           Back
@@ -197,7 +198,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 
@@ -259,7 +260,7 @@ export default function StreamView() {
         parsed.data.kind,
         parsed.data.pubkey,
         parsed.data.identifier,
-        true,
+        { alwaysRequest: true },
       );
     } catch (e) {
       console.log(e);

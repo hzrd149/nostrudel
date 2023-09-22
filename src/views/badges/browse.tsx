@@ -10,6 +10,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useSubject from "../../hooks/use-subject";
 import { getEventUID } from "../../helpers/nostr/events";
 import BadgeCard from "./components/badge-card";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BadgesBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -27,7 +28,7 @@ function BadgesBrowsePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" p="2">
+      <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
         </Flex>
@@ -37,7 +38,7 @@ function BadgesBrowsePage() {
             <BadgeCard key={getEventUID(badge)} badge={badge} />
           ))}
         </SimpleGrid>
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

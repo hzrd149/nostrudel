@@ -24,6 +24,7 @@ import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types"
 import { UserLink } from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import { readablizeSats } from "../../helpers/bolt11";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);
@@ -137,7 +138,7 @@ export function SearchPage() {
   };
 
   return (
-    <Flex direction="column" py="2" px={["2", "2", 0]} gap="2">
+    <VerticalPageLayout>
       <QrScannerModal isOpen={qrScannerModal.isOpen} onClose={qrScannerModal.onClose} onData={handleSearchText} />
 
       <form onSubmit={handleSubmit}>
@@ -163,7 +164,7 @@ export function SearchPage() {
           </Link>
         )}
       </Flex>
-    </Flex>
+    </VerticalPageLayout>
   );
 }
 

@@ -12,16 +12,19 @@ import RelaySelectionButton from "../../components/relay-selection/relay-selecti
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
 import { NostrRequestFilter } from "../../types/nostr-query";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
   const showReplies = useDisclosure();
+  const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
+      if (muteFilter(event)) return false;
       if (!showReplies.isOpen && isReply(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [timelinePageEventFilter, showReplies.isOpen],
+    [timelinePageEventFilter, showReplies.isOpen, muteFilter],
   );
 
   const { relays } = useRelaySelectionContext();
@@ -49,7 +52,7 @@ function HomePage() {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} pt="2" pb="8" />;
+  return <TimelinePage timeline={timeline} header={header} pt="2" pb="12" px="2" />;
 }
 
 export default function HomeView() {

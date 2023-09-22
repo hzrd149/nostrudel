@@ -1,3 +1,5 @@
+import { Kind } from "nostr-tools";
+
 import { isRTag, NostrEvent } from "../types/nostr-event";
 import { RelayConfig } from "../classes/relay";
 import { parseRTag } from "../helpers/nostr/events";
@@ -5,8 +7,7 @@ import { SuperMap } from "../classes/super-map";
 import Subject from "../classes/subject";
 import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";
-import replaceableEventLoaderService from "./replaceable-event-requester";
-import { Kind } from "nostr-tools";
+import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
 
 export type ParsedUserRelays = {
   pubkey: string;
@@ -27,19 +28,13 @@ class UserRelaysService {
   getRelays(pubkey: string) {
     return this.subjects.get(pubkey);
   }
-  requestRelays(pubkey: string, relays: string[], alwaysRequest = false) {
+  requestRelays(pubkey: string, relays: string[], opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(
-      relays,
-      Kind.RelayList,
-      pubkey,
-      undefined,
-      alwaysRequest,
-    );
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.RelayList, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
 
     // also fetch the relays from the users contacts
-    const contactsSub = userContactsService.requestContacts(pubkey, relays, alwaysRequest);
+    const contactsSub = userContactsService.requestContacts(pubkey, relays, opts);
     sub.connectWithHandler(contactsSub, (contacts, next, value) => {
       if (contacts.relays.length > 0 && (!value || contacts.created_at > value.created_at)) {
         next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });

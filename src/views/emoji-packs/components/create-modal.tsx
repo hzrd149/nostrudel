@@ -17,13 +17,13 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
-import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import { useSigningContext } from "../../providers/signing-provider";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
-import { getSharableEventAddress } from "../../helpers/nip19";
+import { EMOJI_PACK_KIND } from "../../../helpers/nostr/emoji-packs";
+import { DraftNostrEvent } from "../../../types/nostr-event";
+import { useSigningContext } from "../../../providers/signing-provider";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
+import clientRelaysService from "../../../services/client-relays";
+import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 
 export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalProps, "children">) {
   const toast = useToast();

@@ -1,6 +1,6 @@
 import { TimelineLoader } from "../classes/timeline-loader";
 
-const MAX_CACHE = 10;
+const MAX_CACHE = 20;
 
 class TimelineCacheService {
   private timelines = new Map<string, TimelineLoader>();

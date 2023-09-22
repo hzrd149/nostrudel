@@ -11,10 +11,11 @@ import {
   AccordionIcon,
   FormHelperText,
   Input,
-  Stack,
   Select,
+  Textarea,
 } from "@chakra-ui/react";
 import { AppSettings } from "../../services/settings/migrations";
+import { AppearanceIcon } from "../../components/icons";
 
 export default function DisplaySettings() {
   const { register } = useFormContext<AppSettings>();
@@ -22,7 +23,8 @@ export default function DisplaySettings() {
   return (
     <AccordionItem>
       <h2>
-        <AccordionButton>
+        <AccordionButton fontSize="xl">
+          <AppearanceIcon mr="2" />
           <Box as="span" flex="1" textAlign="left">
             Display
           </Box>
@@ -53,6 +55,20 @@ export default function DisplaySettings() {
             </FormHelperText>
           </FormControl>
           <FormControl>
+            <FormLabel htmlFor="maxPageWidth" mb="0">
+              Max Page width
+            </FormLabel>
+            <Select id="maxPageWidth" {...register("maxPageWidth")}>
+              <option value="none">None</option>
+              <option value="md">Medium (~768px)</option>
+              <option value="lg">Large (~992px)</option>
+              <option value="xl">Extra Large (~1280px)</option>
+            </Select>
+            <FormHelperText>
+              <span>Setting this will restrict the width of app on desktop</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="blurImages" mb="0">
                 Blur images from strangers
@@ -72,6 +88,19 @@ export default function DisplaySettings() {
             </Flex>
             <FormHelperText>
               <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="muted-words" mb="0">
+              Muted words
+            </FormLabel>
+            <Textarea id="muted-words" {...register("mutedWords")} placeholder="Broccoli, Spinach, Artichoke..." />
+            <FormHelperText>
+              <span>
+                Comma separated list of words, phrases or hashtags you never want to see in notes. (case insensitive)
+              </span>
+              <br />
+              <span>Be careful its easy to hide all notes if you add common words.</span>
             </FormHelperText>
           </FormControl>
         </Flex>

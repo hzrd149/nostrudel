@@ -38,7 +38,7 @@ export default function UserNotesTab() {
   );
 
   const header = (
-    <Flex gap="2" px="2" alignItems="center">
+    <Flex gap="2" alignItems="center">
       <Switch id="replies" mr="2" isChecked={showReplies} onChange={toggleReplies} size="sm">
         Replies
       </Switch>
@@ -51,5 +51,5 @@ export default function UserNotesTab() {
     </Flex>
   );
 
-  return <TimelinePage header={header} timeline={timeline} pt="2" pb="8" />;
+  return <TimelinePage header={header} timeline={timeline} pt="2" pb="12" px="2" />;
 }
