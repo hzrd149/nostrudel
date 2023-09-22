@@ -1,5 +1,27 @@
 # nostrudel
 
+## 0.28.0
+
+### Minor Changes
+
+- 6021318: Add community browse view
+- e04aa5c: Hide muted users in stream views
+- e04aa5c: Add option to add user to k 10000 mute list
+- b961ee1: Add side drawer for viewing threads
+- f440e81: Redesign side navigation
+- 269acae: Add Max Page width option to display settings
+- e04aa5c: Filter out muted users in home feed
+- dfce72d: Clean up embedded note component
+- e04aa5c: Hide muted users in threads
+- 4b5445a: Add tabs to notification view
+- cde3174: Add Muted words option in display settings
+
+### Patch Changes
+
+- 03ed574: Small fix for url RegExp
+- 054e3f2: Show multiple pubkeys on badge award event
+- d5a50d0: Fix follow and mute button not updating when switching accounts
+
 ## 0.27.0
 
 ### Minor Changes

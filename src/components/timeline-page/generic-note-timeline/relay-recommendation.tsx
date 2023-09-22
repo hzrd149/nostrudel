@@ -9,7 +9,7 @@ import { safeRelayUrl } from "../../../helpers/url";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 
 export default function RelayRecommendation({ event }: { event: NostrEvent }) {
-	const safeUrl = safeRelayUrl(event.content);
+  const safeUrl = safeRelayUrl(event.content);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
