@@ -57,27 +57,29 @@ export default function PostModal({
   watch("nsfwReason");
 
   const textAreaRef = useRef<RefType | null>(null);
-
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
-  const uploadImage = async (imageFile: File) => {
-    try {
-      if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
-      setUploading(true);
+  const uploadImage = useCallback(
+    async (imageFile: File) => {
+      try {
+        if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
+        setUploading(true);
 
-      const response = await nostrBuildUploadImage(imageFile, requestSignature);
-      const imageUrl = response.url;
+        const response = await nostrBuildUploadImage(imageFile, requestSignature);
+        const imageUrl = response.url;
 
-      const content = getValues().content;
-      const position = textAreaRef.current?.getCaretPosition();
-      if (position !== undefined) {
-        setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
-      } else setValue("content", content + imageUrl);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-    setUploading(false);
-  };
+        const content = getValues().content;
+        const position = textAreaRef.current?.getCaretPosition();
+        if (position !== undefined) {
+          setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
+        } else setValue("content", content + imageUrl);
+      } catch (e) {
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      }
+      setUploading(false);
+    },
+    [setValue, getValues],
+  );
 
   const getDraft = useCallback(() => {
     const { content, nsfw, nsfwReason } = getValues();
