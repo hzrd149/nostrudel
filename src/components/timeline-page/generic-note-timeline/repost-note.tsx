@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
-import { validateEvent } from "nostr-tools";
+import { Kind, validateEvent } from "nostr-tools";
 
 import { isETag, NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
@@ -13,6 +13,7 @@ import { safeJson } from "../../../helpers/parse";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
+import { EmbedEvent } from "../../embed-event";
 
 function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
@@ -53,7 +54,13 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
           </Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
         </Flex>
-        {!note ? <SkeletonText /> : <Note event={note} showReplyButton />}
+        {!note ? (
+          <SkeletonText />
+        ) : note.kind === Kind.Text ? (
+          <Note event={note} showReplyButton />
+        ) : (
+          <EmbedEvent event={note} />
+        )}
       </Flex>
     </TrustProvider>
   );
