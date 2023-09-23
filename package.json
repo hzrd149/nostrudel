@@ -36,7 +36,7 @@
     "nanoid": "^4.0.2",
     "ngeohash": "^0.6.3",
     "noble-secp256k1": "^1.2.14",
-    "nostr-tools": "^1.14.0",
+    "nostr-tools": "^1.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",

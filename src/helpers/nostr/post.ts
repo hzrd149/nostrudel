@@ -1,6 +1,5 @@
-import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag } from "../regexp";
-import { normalizeToHex } from "../nip19";
 import { getReferences } from "./events";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";

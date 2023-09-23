@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -13,6 +13,8 @@ import {
   Input,
   Switch,
   ModalProps,
+  VisuallyHiddenInput,
+  IconButton,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -21,14 +23,15 @@ import { Kind } from "nostr-tools";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
-import { ArrowDownSIcon, ArrowUpSIcon } from "../icons";
+import { ArrowDownSIcon, ArrowUpSIcon, ImageIcon } from "../icons";
 import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
 import { createEmojiTags, ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
-import MagicTextArea from "../magic-textarea";
+import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
+import { nostrBuildUploadImage } from "../../helpers/nostr-build";
 
 export default function PostModal({
   isOpen,
@@ -53,26 +56,28 @@ export default function PostModal({
   watch("nsfw");
   watch("nsfwReason");
 
-  // const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  // const [uploading, setUploading] = useState(false);
-  // const uploadImage = async (imageFile: File) => {
-  //   try {
-  //     if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
-  //     setUploading(true);
-  //     const payload = new FormData();
-  //     payload.append("fileToUpload", imageFile);
-  //     const response = await fetch("https://nostr.build/upload.php", { body: payload, method: "POST" }).then((res) =>
-  //       res.text(),
-  //     );
-  //     const imageUrl = response.match(/https:\/\/nostr\.build\/i\/[\w.]+/)?.[0];
-  //     if (imageUrl) {
-  //       setValue('content', getValues().content += imageUrl );
-  //     }
-  //   } catch (e) {
-  //     if (e instanceof Error) toast({ description: e.message, status: "error" });
-  //   }
-  //   setUploading(false);
-  // };
+  const textAreaRef = useRef<RefType | null>(null);
+
+  const imageUploadRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const uploadImage = async (imageFile: File) => {
+    try {
+      if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
+      setUploading(true);
+
+      const response = await nostrBuildUploadImage(imageFile, requestSignature);
+      const imageUrl = response.url;
+
+      const content = getValues().content;
+      const position = textAreaRef.current?.getCaretPosition();
+      if (position !== undefined) {
+        setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
+      } else setValue("content", content + imageUrl);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+    setUploading(false);
+  };
 
   const getDraft = useCallback(() => {
     const { content, nsfw, nsfwReason } = getValues();
@@ -127,10 +132,11 @@ export default function PostModal({
           onChange={(e) => setValue("content", e.target.value)}
           rows={5}
           isRequired
-          // onPaste={(e) => {
-          //   const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-          //   if (imageFile) uploadImage(imageFile);
-          // }}
+          instanceRef={(inst) => (textAreaRef.current = inst)}
+          onPaste={(e) => {
+            const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
+            if (imageFile) uploadImage(imageFile);
+          }}
         />
         {getValues().content.length > 0 && (
           <Box>
@@ -144,7 +150,7 @@ export default function PostModal({
         )}
         <Flex gap="2" alignItems="center" justifyContent="flex-end">
           <Flex mr="auto" gap="2">
-            {/* <VisuallyHiddenInput
+            <VisuallyHiddenInput
               type="file"
               accept="image/*"
               ref={imageUploadRef}
@@ -159,7 +165,7 @@ export default function PostModal({
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}
               isLoading={uploading}
-            /> */}
+            />
             <Button
               variant="link"
               rightIcon={moreOptions.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}

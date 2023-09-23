@@ -20,23 +20,28 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
   const showReplyForm = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
-  const [alwaysShow, setAlwaysShow] = useState(false);
 
-  const numberOfReplies = countReplies(post);
+  const replies = post.replies.filter((r) => !muteFilter(r.event));
+  const numberOfReplies = countReplies(replies);
   const isMuted = muteFilter(post.event);
 
-  if (isMuted && numberOfReplies === 0) return null;
+  const [alwaysShow, setAlwaysShow] = useState(false);
+  const muteAlert = (
+    <Alert status="warning">
+      <AlertIcon />
+      Muted user or note
+      <Button size="xs" ml="auto" onClick={() => setAlwaysShow(true)}>
+        Show anyway
+      </Button>
+    </Alert>
+  );
+
+  if (isMuted && replies.length === 0) return null;
 
   return (
     <Flex direction="column" gap="2">
       {isMuted && !alwaysShow ? (
-        <Alert status="warning">
-          <AlertIcon />
-          Muted user or note
-          <Button size="xs" ml="auto" onClick={() => setAlwaysShow(true)}>
-            Show anyway
-          </Button>
-        </Alert>
+        muteAlert
       ) : (
         <TrustProvider trust={focusId === post.event.id ? true : undefined}>
           <Note event={post.event} borderColor={focusId === post.event.id ? "blue.500" : undefined} hideDrawerButton />
@@ -52,7 +57,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
           </Button>
         )}
 
-        {post.replies.length > 0 && (
+        {replies.length > 0 && (
           <Button onClick={toggle}>
             {numberOfReplies} {numberOfReplies > 1 ? "Replies" : "Reply"}
             {showReplies ? <ArrowDownSIcon /> : <ArrowUpSIcon />}
