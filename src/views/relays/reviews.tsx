@@ -33,7 +33,7 @@ function RelayReviewsPage() {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider<string> callback={callback}>
+    <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Flex gap="2">
           <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
