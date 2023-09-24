@@ -14,6 +14,9 @@ export default function ToolsHomeView() {
         <Button as={RouterLink} to="/tools/network">
           Contact network
         </Button>
+        <Button as={RouterLink} to="/tools/network-graph">
+          Contacts Mute Graph
+        </Button>
         <Button as={RouterLink} to="/map" leftIcon={<MapIcon />}>
           Map
         </Button>

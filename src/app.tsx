@@ -49,7 +49,6 @@ import GoalsView from "./views/goals";
 import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
-import NetworkView from "./views/tools/network";
 import MutedByView from "./views/user/muted-by";
 import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
@@ -60,6 +59,8 @@ import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
 
+const NetworkView = React.lazy(() => import("./views/tools/network"));
+const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
@@ -171,6 +172,7 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
+          { path: "network-graph", element: <NetworkGraphView /> },
         ],
       },
       {

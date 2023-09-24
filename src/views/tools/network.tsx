@@ -3,7 +3,7 @@ import { memo, useMemo, useState } from "react";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import useUserNetwork from "../../hooks/use-user-network";
+import { useNetworkConnectionCount } from "../../hooks/use-user-network";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { ArrowLeftSIcon } from "../../components/icons";
@@ -23,7 +23,7 @@ function NetworkPage() {
   const account = useCurrentAccount()!;
   const [range, setRange] = useState("50-100");
 
-  const network = useUserNetwork(account.pubkey);
+  const network = useNetworkConnectionCount(account.pubkey);
   const filteredPubkeys = useMemo(() => {
     if (range.endsWith("+")) {
       const min = parseInt(range.replace("+", ""));
