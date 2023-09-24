@@ -10,7 +10,7 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
     timeline.loadNextBlocks();
   }, 1000);
 
-  return useIntersectionMapCallback<string>(
+  return useIntersectionMapCallback(
     (map) => {
       // find oldest event that is visible
       let oldestEvent: NostrEvent | undefined = undefined;

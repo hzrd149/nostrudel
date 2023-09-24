@@ -11,22 +11,26 @@ import {
 } from "react";
 import { useMount, useUnmount } from "react-use";
 
+import Subject from "../classes/subject";
+
+export type ExtendedIntersectionObserverEntry = { entry: IntersectionObserverEntry; id: string | undefined };
+export type ExtendedIntersectionObserverCallback = (
+  entries: ExtendedIntersectionObserverEntry[],
+  observer: IntersectionObserver,
+) => void;
+
 const IntersectionObserverContext = createContext<{
   observer?: IntersectionObserver;
   setElementId: (element: Element, id: any) => void;
-}>({ setElementId: () => {} });
-
-export type ExtendedIntersectionObserverEntry<T> = { entry: IntersectionObserverEntry; id: T | undefined };
-export type ExtendedIntersectionObserverCallback<T> = (
-  entries: ExtendedIntersectionObserverEntry<T>[],
-  observer: IntersectionObserver,
-) => void;
+  // NOTE: hard codded string type
+  subject: Subject<ExtendedIntersectionObserverEntry[]>;
+}>({ setElementId: () => {}, subject: new Subject() });
 
 export function useIntersectionObserver() {
   return useContext(IntersectionObserverContext);
 }
 
-export function useRegisterIntersectionEntity<T>(ref: MutableRefObject<Element | null>, id?: T) {
+export function useRegisterIntersectionEntity(ref: MutableRefObject<Element | null>, id?: string) {
   const { observer, setElementId } = useIntersectionObserver();
 
   useEffect(() => {
@@ -40,24 +44,22 @@ export function useRegisterIntersectionEntity<T>(ref: MutableRefObject<Element |
   });
 }
 
-export function useIntersectionMapCallback<T>(
-  callback: (map: Map<T, IntersectionObserverEntry>) => void,
+/** @deprecated */
+export function useIntersectionMapCallback(
+  callback: (map: Map<string, IntersectionObserverEntry>) => void,
   watch: DependencyList,
 ) {
-  const map = useMemo(() => new Map<T, IntersectionObserverEntry>(), []);
-  return useCallback<ExtendedIntersectionObserverCallback<T>>(
+  const map = useMemo(() => new Map<string, IntersectionObserverEntry>(), []);
+  return useCallback<ExtendedIntersectionObserverCallback>(
     (entries) => {
-      for (const { id, entry } of entries) {
-        if (id) map.set(id, entry);
-      }
-
+      for (const { id, entry } of entries) id && map.set(id, entry);
       callback(map);
     },
     [callback, ...watch],
   );
 }
 
-export default function IntersectionObserverProvider<T = undefined>({
+export default function IntersectionObserverProvider({
   children,
   root,
   rootMargin,
@@ -67,18 +69,23 @@ export default function IntersectionObserverProvider<T = undefined>({
   root?: MutableRefObject<HTMLElement | null>;
   rootMargin?: IntersectionObserverInit["rootMargin"];
   threshold?: IntersectionObserverInit["threshold"];
-  callback: ExtendedIntersectionObserverCallback<T>;
+  callback: ExtendedIntersectionObserverCallback;
 }) {
-  const elementIds = useMemo(() => new WeakMap<Element, T>(), []);
+  const elementIds = useMemo(() => new WeakMap<Element, string>(), []);
+  const [subject] = useState(() => new Subject<ExtendedIntersectionObserverEntry[]>([], false));
 
-  const handleIntersection = useCallback<IntersectionObserverCallback>((entries, observer) => {
-    callback(
-      entries.map((entry) => {
+  const handleIntersection = useCallback<IntersectionObserverCallback>(
+    (entries, observer) => {
+      const extendedEntries = entries.map((entry) => {
         return { entry, id: elementIds.get(entry.target) };
-      }),
-      observer,
-    );
-  }, []);
+      });
+      callback(extendedEntries, observer);
+
+      subject.next(extendedEntries);
+    },
+    [subject],
+  );
+
   const [observer, setObserver] = useState<IntersectionObserver>(
     () => new IntersectionObserver(handleIntersection, { rootMargin, threshold }),
   );
@@ -94,7 +101,7 @@ export default function IntersectionObserverProvider<T = undefined>({
   });
 
   const setElementId = useCallback(
-    (element: Element, id: T) => {
+    (element: Element, id: string) => {
       elementIds.set(element, id);
     },
     [elementIds],
@@ -104,8 +111,9 @@ export default function IntersectionObserverProvider<T = undefined>({
     () => ({
       observer,
       setElementId,
+      subject,
     }),
-    [observer, setElementId],
+    [observer, setElementId, subject],
   );
 
   return <IntersectionObserverContext.Provider value={context}>{children}</IntersectionObserverContext.Provider>;

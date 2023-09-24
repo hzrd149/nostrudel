@@ -46,9 +46,17 @@ export type NoteProps = Omit<CardProps, "children"> & {
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   hideDrawerButton?: boolean;
+  registerIntersectionEntity?: boolean;
 };
 export const Note = React.memo(
-  ({ event, variant = "outline", showReplyButton, hideDrawerButton, ...props }: NoteProps) => {
+  ({
+    event,
+    variant = "outline",
+    showReplyButton,
+    hideDrawerButton,
+    registerIntersectionEntity = true,
+    ...props
+  }: NoteProps) => {
     const account = useCurrentAccount();
     const { showReactions, showSignatureVerification } = useSubject(appSettings);
     const replyForm = useDisclosure();
@@ -67,7 +75,12 @@ export const Note = React.memo(
     return (
       <TrustProvider event={event}>
         <ExpandProvider>
-          <Card variant={variant} ref={ref} data-event-id={event.id} {...props}>
+          <Card
+            variant={variant}
+            ref={registerIntersectionEntity ? ref : undefined}
+            data-event-id={event.id}
+            {...props}
+          >
             <CardHeader padding="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />

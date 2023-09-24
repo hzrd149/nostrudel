@@ -95,7 +95,7 @@ function NetworkGraphPage() {
             linkCurvature={0.25}
             nodeThreeObject={(node: NodeType) => {
               if (!node.image) {
-                return new Mesh(new SphereGeometry(10, 12, 6), new MeshBasicMaterial({ color: 0xaa0f0f }));
+                return new Mesh(new SphereGeometry(5, 12, 6), new MeshBasicMaterial({ color: 0xaa0f0f }));
               }
 
               const group = new Group();

@@ -57,7 +57,8 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
         {!note ? (
           <SkeletonText />
         ) : note.kind === Kind.Text ? (
-          <Note event={note} showReplyButton />
+          // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
+          <Note event={note} showReplyButton registerIntersectionEntity={false} />
         ) : (
           <EmbedEvent event={note} />
         )}
