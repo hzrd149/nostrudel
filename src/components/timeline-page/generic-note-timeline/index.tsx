@@ -52,6 +52,12 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
 
   const [minDate, setMinDate] = useState(timeline.timeline.value[PRELOAD_NOTES]?.created_at ?? 0);
 
+  // reset the latest and minDate when timeline changes
+  useEffect(() => {
+    setLatest(dayjs().unix());
+    setMinDate(timeline.timeline.value[PRELOAD_NOTES]?.created_at ?? 0);
+  }, [timeline, setMinDate, setLatest]);
+
   const newNotes: NostrEvent[] = [];
   const notes: NostrEvent[] = [];
   for (const note of notesArray) {
@@ -92,7 +98,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
     return () => {
       subject.unsubscribe(listener);
     };
-  }, [setMinDate, intersectionEntryCache, latest]);
+  }, [setMinDate, intersectionEntryCache, latest, timeline]);
 
   return (
     <>
