@@ -1,3 +1,4 @@
+import { validateEvent } from "nostr-tools";
 import { NostrEvent, isDTag, isPTag } from "../../types/nostr-event";
 
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
@@ -23,6 +24,16 @@ export function getCommunityImage(community: NostrEvent) {
 }
 export function getCommunityDescription(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "description")?.[1];
+}
+
+export function getApprovedEmbeddedNote(approval: NostrEvent) {
+  if (!approval.content) return null;
+  try {
+    const json = JSON.parse(approval.content);
+    validateEvent(json);
+    return (json as NostrEvent) ?? null;
+  } catch (e) {}
+  return null;
 }
 
 export function validateCommunity(community: NostrEvent) {

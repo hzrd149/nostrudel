@@ -153,11 +153,20 @@ export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find((t) => t[0] === "d")?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
+export function pointerToATag(pointer: AddressPointer): ATag {
+  const relay = pointer.relays?.[0];
+  const coordinate = `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
+  return relay ? ["a", coordinate, relay] : ["a", coordinate];
+}
 
 export type CustomEventPointer = Omit<AddressPointer, "identifier"> & {
   identifier?: string;
 };
-export function parseCoordinate(a: string): CustomEventPointer | null {
+
+export function parseCoordinate(a: string): CustomEventPointer | null;
+export function parseCoordinate(a: string, requireD: false): CustomEventPointer | null;
+export function parseCoordinate(a: string, requireD: true): AddressPointer;
+export function parseCoordinate(a: string, requireD = false): CustomEventPointer | null {
   const parts = a.split(":") as (string | undefined)[];
   const kind = parts[0] && parseInt(parts[0]);
   const pubkey = parts[1];
@@ -165,6 +174,7 @@ export function parseCoordinate(a: string): CustomEventPointer | null {
 
   if (!kind) return null;
   if (!pubkey) return null;
+  if (requireD && !d) return null;
 
   return {
     kind,

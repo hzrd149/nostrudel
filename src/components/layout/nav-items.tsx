@@ -102,6 +102,14 @@ export default function NavItems() {
         Streams
       </Button>
       <Button
+        onClick={() => navigate("/communities")}
+        leftIcon={<CommunityIcon />}
+        colorScheme={active === "communities" ? "brand" : undefined}
+        {...buttonProps}
+      >
+        Communities
+      </Button>
+      <Button
         onClick={() => navigate("/lists")}
         leftIcon={<ListIcon />}
         colorScheme={active === "lists" ? "brand" : undefined}
@@ -109,14 +117,6 @@ export default function NavItems() {
       >
         Lists
       </Button>
-      {/* <Button
-        onClick={() => navigate("/communities")}
-        leftIcon={<CommunityIcon />}
-        colorScheme={active === "communities" ? "brand" : undefined}
-        {...buttonProps}
-      >
-        Communities
-      </Button> */}
       <Button
         onClick={() => navigate("/goals")}
         leftIcon={<GoalIcon />}

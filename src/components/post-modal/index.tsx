@@ -15,6 +15,8 @@ import {
   ModalProps,
   VisuallyHiddenInput,
   IconButton,
+  FormLabel,
+  FormControl,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -32,6 +34,7 @@ import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
 import { nostrBuildUploadImage } from "../../helpers/nostr-build";
+import CommunitySelect from "./community-select";
 
 export default function PostModal({
   isOpen,
@@ -50,6 +53,7 @@ export default function PostModal({
       content: initContent,
       nsfw: false,
       nsfwReason: "",
+      community: "",
     },
   });
   watch("content");
@@ -82,7 +86,7 @@ export default function PostModal({
   );
 
   const getDraft = useCallback(() => {
-    const { content, nsfw, nsfwReason } = getValues();
+    const { content, nsfw, nsfwReason, community } = getValues();
 
     let updatedDraft = finalizeNote({
       content: content,
@@ -93,6 +97,9 @@ export default function PostModal({
 
     if (nsfw) {
       updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
+    }
+    if (community) {
+      updatedDraft.tags.push(["a", community]);
     }
 
     const contentMentions = getContentMentions(updatedDraft.content);
@@ -190,6 +197,10 @@ export default function PostModal({
         </Flex>
         {moreOptions.isOpen && (
           <>
+            <FormControl>
+              <FormLabel>Post to community</FormLabel>
+              <CommunitySelect w="sm" {...register("community")} />
+            </FormControl>
             <Flex gap="2" direction="column">
               <Switch {...register("nsfw")}>NSFW</Switch>
               {getValues().nsfw && <Input {...register("nsfwReason")} placeholder="Reason" maxW="50%" />}
