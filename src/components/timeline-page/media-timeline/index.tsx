@@ -13,6 +13,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { Photo } from "react-photo-album";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventUID } from "../../../helpers/nostr/events";
+import { Kind } from "nostr-tools";
 
 function GalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useRef<HTMLImageElement | null>(null);
@@ -42,6 +43,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: PhotoWithEvent[] = [];
 
     for (const event of events) {
+      if (event.kind === Kind.Repost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;

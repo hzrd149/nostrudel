@@ -14,6 +14,7 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
+import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 
 function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
@@ -31,14 +32,16 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
 
+  const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
   const readRelays = useReadRelayUrls(relay ? [relay] : []);
 
   const loadedNote = useSingleEvent(eventId, readRelays);
-
   const note = hardCodedNote || loadedNote;
+
+  if (note && muteFilter(note)) return;
 
   return (
     <TrustProvider event={event}>
