@@ -1,4 +1,4 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -35,11 +35,12 @@ function RelayReviewsPage() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        <Flex gap="2">
+        <Flex gap="2" alignItems="center">
           <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
             Back
           </Button>
           <PeopleListSelection />
+          <Heading size="md">Relay Reviews</Heading>
         </Flex>
         {reviews.map((event) => (
           <RelayReviewNote key={event.id} event={event} />

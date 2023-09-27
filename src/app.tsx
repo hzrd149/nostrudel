@@ -59,6 +59,7 @@ import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
 import StreamModerationView from "./views/tools/stream-moderation";
+import PopularRelaysView from "./views/relays/popular";
 
 const NetworkView = React.lazy(() => import("./views/tools/network"));
 const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
@@ -160,8 +161,14 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
-      { path: "relays/reviews", element: <RelayReviewsView /> },
-      { path: "relays", element: <RelaysView /> },
+      {
+        path: "relays",
+        children: [
+          { path: "", element: <RelaysView /> },
+          { path: "popular", element: <PopularRelaysView /> },
+          { path: "reviews", element: <RelayReviewsView /> },
+        ],
+      },
       { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
