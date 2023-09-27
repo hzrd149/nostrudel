@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import { Button, Divider, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { ExternalLinkIcon, MapIcon, ToolsIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -10,6 +10,7 @@ export default function ToolsHomeView() {
       <Heading>
         <ToolsIcon /> Tools
       </Heading>
+      <Divider />
       <Flex wrap="wrap" gap="4">
         <Button as={RouterLink} to="/tools/network">
           Contact network
@@ -21,6 +22,13 @@ export default function ToolsHomeView() {
           Map
         </Button>
         <ConnectedRelays />
+      </Flex>
+
+      <Heading size="lg" mt="4">
+        Third party tools
+      </Heading>
+      <Divider />
+      <Flex wrap="wrap" gap="4">
         <Button
           as={Link}
           href="https://w3.do/"
