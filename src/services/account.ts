@@ -16,6 +16,7 @@ class AccountService {
   loading = new PersistentSubject(true);
   accounts = new PersistentSubject<Account[]>([]);
   current = new PersistentSubject<Account | null>(null);
+  isGhost = new PersistentSubject(false);
 
   constructor() {
     db.getAll("accounts").then((accounts) => {
@@ -30,8 +31,26 @@ class AccountService {
     });
   }
 
+  startGhost(pubkey: string) {
+    const ghostAccount: Account = {
+      pubkey,
+      readonly: true,
+    };
+
+    const lastPubkey = this.current.value?.pubkey;
+    if (lastPubkey && this.hasAccount(lastPubkey)) localStorage.setItem("lastAccount", lastPubkey);
+    this.current.next(ghostAccount);
+    this.isGhost.next(true);
+  }
+  stopGhost() {
+    const lastAccount = localStorage.getItem("lastAccount");
+    if (lastAccount && this.hasAccount(lastAccount)) {
+      this.switchAccount(lastAccount);
+    } else this.logout();
+  }
+
   hasAccount(pubkey: string) {
-    return this.accounts.value.some((acc) => acc.pubkey === pubkey);
+    return this.accounts.value.some((account) => account.pubkey === pubkey);
   }
   addAccount(account: Account) {
     if (this.hasAccount(account.pubkey)) {
@@ -41,6 +60,7 @@ class AccountService {
       // if this is the current account. update it
       if (this.current.value?.pubkey === account.pubkey) {
         this.current.next(account);
+        this.isGhost.next(false);
       }
     } else {
       // add account
@@ -69,15 +89,14 @@ class AccountService {
     const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
     if (account) {
       this.current.next(account);
+      this.isGhost.next(false);
       localStorage.setItem("lastAccount", pubkey);
     }
-  }
-  switchToTemporary(account: Account) {
-    this.current.next(account);
   }
 
   logout() {
     this.current.next(null);
+    this.isGhost.next(false);
     localStorage.removeItem("lastAccount");
   }
 }

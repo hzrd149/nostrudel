@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { useCopyToClipboard } from "react-use";
 
-import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import {
   ChatIcon,
   ClipboardIcon,
@@ -54,7 +54,7 @@ export const UserProfileMenu = ({
 
   return (
     <>
-      <MenuIconButton {...props}>
+      <CustomMenuIconButton {...props}>
         <MenuItem onClick={() => window.open(buildAppSelectUrl(sharableId), "_blank")} icon={<ExternalLinkIcon />}>
           View in app...
         </MenuItem>
@@ -80,7 +80,7 @@ export const UserProfileMenu = ({
             Relay selection
           </MenuItem>
         )}
-      </MenuIconButton>
+      </CustomMenuIconButton>
       {infoModal.isOpen && (
         <UserDebugModal pubkey={pubkey} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
       )}

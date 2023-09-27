@@ -5,9 +5,13 @@ import { ErrorBoundary } from "../error-boundary";
 import { ReloadPrompt } from "../reload-prompt";
 import DesktopSideNav from "./desktop-side-nav";
 import MobileBottomNav from "./mobile-bottom-nav";
+import useSubject from "../../hooks/use-subject";
+import accountService from "../../services/account";
+import GhostToolbar from "./ghost-toolbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const isGhost = useSubject(accountService.isGhost);
 
   return (
     <>
@@ -41,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
         <Spacer display={["none", null, "block"]} />
       </Flex>
+      {isGhost && <GhostToolbar />}
     </>
   );
 }

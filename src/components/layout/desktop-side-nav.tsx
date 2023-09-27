@@ -48,17 +48,19 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           {account ? (
             <>
               <ProfileButton />
-              <IconButton
-                icon={<EditIcon />}
-                aria-label="New note"
-                title="New note"
-                w="3rem"
-                h="3rem"
-                fontSize="1.5rem"
-                colorScheme="brand"
-                onClick={() => openModal()}
-                flexShrink={0}
-              />
+              {!account.readonly && (
+                <IconButton
+                  icon={<EditIcon />}
+                  aria-label="New note"
+                  title="New note"
+                  w="3rem"
+                  h="3rem"
+                  fontSize="1.5rem"
+                  colorScheme="brand"
+                  onClick={() => openModal()}
+                  flexShrink={0}
+                />
+              )}
             </>
           ) : (
             <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">
