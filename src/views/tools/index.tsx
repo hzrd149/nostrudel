@@ -1,6 +1,6 @@
 import { Button, Divider, Flex, Heading, Image, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ExternalLinkIcon, MapIcon, ToolsIcon } from "../../components/icons";
+import { ExternalLinkIcon, LiveStreamIcon, MapIcon, ToolsIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ConnectedRelays } from "../../components/connected-relays";
 
@@ -20,6 +20,9 @@ export default function ToolsHomeView() {
         </Button>
         <Button as={RouterLink} to="/map" leftIcon={<MapIcon />}>
           Map
+        </Button>
+        <Button as={RouterLink} to="/tools/stream-moderation" leftIcon={<LiveStreamIcon />}>
+          Stream Moderation
         </Button>
         <ConnectedRelays />
       </Flex>

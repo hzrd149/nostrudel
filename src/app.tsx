@@ -58,6 +58,7 @@ import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
+import StreamModerationView from "./views/tools/stream-moderation";
 
 const NetworkView = React.lazy(() => import("./views/tools/network"));
 const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
@@ -173,6 +174,7 @@ const router = createHashRouter([
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
           { path: "network-graph", element: <NetworkGraphView /> },
+          { path: "stream-moderation", element: <StreamModerationView /> },
         ],
       },
       {

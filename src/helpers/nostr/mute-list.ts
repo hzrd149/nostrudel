@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
-import { MUTE_LIST_KIND, getPubkeysFromList, listAddPerson, listRemovePerson } from "./lists";
+import { MUTE_LIST_KIND, getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
 
 export function getPubkeysFromMuteList(muteList: NostrEvent | DraftNostrEvent) {
   const expirations = getPubkeysExpiration(muteList);
@@ -19,6 +19,17 @@ export function getPubkeysExpiration(muteList: NostrEvent | DraftNostrEvent) {
     }
     return dir;
   }, {});
+}
+export function getPubkeyExpiration(muteList: NostrEvent, pubkey: string) {
+  const tag = muteList.tags.find((tag) => {
+    return tag[0] === "mute_expiration" && tag[1] === pubkey && tag[2];
+  }, {});
+
+  if (tag && tag[1] && tag[2]) {
+    const date = parseInt(tag[2]);
+    if (dayjs.unix(date).isValid()) return date;
+  }
+  return isPubkeyInList(muteList, pubkey) ? Infinity : 0;
 }
 
 export function createEmptyMuteList(): DraftNostrEvent {
