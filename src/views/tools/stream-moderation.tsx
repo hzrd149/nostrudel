@@ -1,3 +1,4 @@
+import { ReactNode, useMemo, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -14,12 +15,10 @@ import dayjs from "dayjs";
 
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import useSubject from "../../hooks/use-subject";
-import { ParsedStream, STREAM_KIND, getATag, parseStreamEvent } from "../../helpers/nostr/stream";
+import { ParsedStream, STREAM_KIND, getATag } from "../../helpers/nostr/stream";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { NostrEvent } from "../../types/nostr-event";
 import { getEventUID } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useStreamChatTimeline from "../streams/stream/stream-chat/use-stream-chat-timeline";
@@ -111,25 +110,13 @@ function StreamModerationPage() {
   const account = useCurrentAccount()!;
   const readRelays = useReadRelayUrls();
 
-  const eventFilter = useCallback((event: NostrEvent) => {
-    try {
-      const parsed = parseStreamEvent(event);
-      return parsed.status === "live";
-    } catch (e) {}
-    return false;
-  }, []);
-  const timeline = useTimelineLoader(
-    account.pubkey + "-streams",
-    readRelays,
-    [
-      {
-        authors: [account.pubkey],
-        kinds: [STREAM_KIND],
-      },
-      { "#p": [account.pubkey], kinds: [STREAM_KIND] },
-    ],
-    { eventFilter },
-  );
+  const timeline = useTimelineLoader(account.pubkey + "-streams", readRelays, [
+    {
+      authors: [account.pubkey],
+      kinds: [STREAM_KIND],
+    },
+    { "#p": [account.pubkey], kinds: [STREAM_KIND] },
+  ]);
 
   const streamEvents = useSubject(timeline.timeline);
   const streams = useParsedStreams(streamEvents);
@@ -146,7 +133,7 @@ function StreamModerationPage() {
         >
           {streams.map((stream) => (
             <option key={getEventUID(stream.event)} value={getATag(stream)}>
-              {stream.title}
+              {stream.title} ({stream.status})
             </option>
           ))}
         </Select>
