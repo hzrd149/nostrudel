@@ -29,7 +29,13 @@ import { ArrowDownSIcon, ArrowUpSIcon, ImageIcon } from "../icons";
 import { NoteContents } from "../note/note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
-import { createEmojiTags, ensureNotifyPubkeys, finalizeNote, getContentMentions } from "../../helpers/nostr/post";
+import {
+  correctContentMentions,
+  createEmojiTags,
+  ensureNotifyPubkeys,
+  finalizeNote,
+  getContentMentions,
+} from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
@@ -95,6 +101,8 @@ export default function PostModal({
       created_at: dayjs().unix(),
     });
 
+    updatedDraft.content = correctContentMentions(updatedDraft.content);
+
     if (nsfw) {
       updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
     }
@@ -119,7 +127,7 @@ export default function PostModal({
   });
 
   const canSubmit = getValues().content.length > 0;
-  const mentions = getContentMentions(getValues().content);
+  const mentions = getContentMentions(correctContentMentions(getValues().content));
 
   const renderContent = () => {
     if (publishAction) {
