@@ -5,13 +5,14 @@ import {
   Card,
   CardBody,
   CardHeader,
+  CardProps,
   Divider,
   Flex,
   Heading,
   Select,
-  Spacer,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { Kind } from "nostr-tools";
 
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import useSubject from "../../hooks/use-subject";
@@ -30,6 +31,7 @@ import { useMuteModalContext } from "../../providers/mute-modal-provider";
 import RelaySelectionProvider from "../../providers/relay-selection-provider";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../helpers/nostr/lists";
+import ZapMessageMemo from "../streams/stream/stream-chat/zap-message";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   const { isMuted, mute, unmute, expiration } = useUserMuteFunctions(pubkey);
@@ -62,10 +64,13 @@ function UserCard({ pubkey }: { pubkey: string }) {
   );
 }
 
-function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
+function UserMuteCard({ stream, ...props }: Omit<CardProps, "children"> & { stream: ParsedStream }) {
   const account = useCurrentAccount()!;
-  const streamChatTimeline = useStreamChatTimeline(stream, false);
-  const chatEvents = useSubject(streamChatTimeline.timeline);
+  const streamChatTimeline = useStreamChatTimeline(stream);
+
+  // refresh when a new event
+  useSubject(streamChatTimeline.events.onEvent);
+  const chatEvents = streamChatTimeline.events.getSortedEvents();
 
   const muteList = useUserMuteList(account.pubkey);
   const pubkeysInChat = useMemo(() => {
@@ -80,28 +85,55 @@ function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
   const mutedPubkeys = pubkeysInChat.filter((pubkey) => isPubkeyInList(muteList, pubkey));
 
   return (
+    <Card {...props}>
+      <CardHeader pt="2" px="2" pb="0">
+        <Heading size="md">Users in chat</Heading>
+      </CardHeader>
+      <CardBody p="2" gap="2" display="flex" overflowY="auto" overflowX="hidden" flexDirection="column">
+        {peopleInChat.map((pubkey) => (
+          <UserCard key={pubkey} pubkey={pubkey} />
+        ))}
+        {mutedPubkeys.length > 0 && (
+          <>
+            <Heading size="sm">Muted</Heading>
+            <Divider />
+            {mutedPubkeys.map((pubkey) => (
+              <UserCard key={pubkey} pubkey={pubkey} />
+            ))}
+          </>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+function ZapMessagesCard({ stream, ...props }: Omit<CardProps, "children"> & { stream: ParsedStream }) {
+  const streamChatTimeline = useStreamChatTimeline(stream);
+
+  // refresh when a new event
+  useSubject(streamChatTimeline.events.onEvent);
+  const zapMessages = streamChatTimeline.events.getSortedEvents().filter((event) => event.kind === Kind.Zap);
+
+  return (
+    <Card {...props}>
+      <CardHeader pt="2" px="2" pb="0">
+        <Heading size="md">Zap messages</Heading>
+      </CardHeader>
+      <CardBody p="2" gap="2" display="flex" overflowY="auto" overflowX="hidden" flexDirection="column">
+        {zapMessages.map((event) => (
+          <ZapMessageMemo key={event.id} zap={event} stream={stream} />
+        ))}
+      </CardBody>
+    </Card>
+  );
+}
+
+function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
+  return (
     <Flex gap="2" overflow="hidden">
-      <Card w="md">
-        <CardHeader pt="2" px="2" pb="0">
-          <Heading size="md">Users in chat</Heading>
-        </CardHeader>
-        <CardBody p="2" gap="2" display="flex" overflowY="auto" overflowX="hidden" flexDirection="column">
-          {peopleInChat.map((pubkey) => (
-            <UserCard key={pubkey} pubkey={pubkey} />
-          ))}
-          {mutedPubkeys.length > 0 && (
-            <>
-              <Heading size="sm">Muted</Heading>
-              <Divider />
-              {mutedPubkeys.map((pubkey) => (
-                <UserCard key={pubkey} pubkey={pubkey} />
-              ))}
-            </>
-          )}
-        </CardBody>
-      </Card>
-      <Spacer />
-      <StreamChat stream={stream} w="lg" />
+      <UserMuteCard stream={stream} flex={1} />
+      <ZapMessagesCard stream={stream} flex={1} />
+      <StreamChat stream={stream} flex={1} />
     </Flex>
   );
 }

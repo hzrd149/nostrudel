@@ -11,18 +11,17 @@ import { NostrQuery } from "../../../../types/nostr-query";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 
-export default function useStreamChatTimeline(stream: ParsedStream, filterMuted = true) {
+export default function useStreamChatTimeline(stream: ParsedStream) {
   const streamRelays = useRelaySelectionRelays();
 
-  const hostMuteFilter = useUserMuteFilter(stream.host);
+  const hostMuteFilter = useUserMuteFilter(stream.host, [], { alwaysRequest: true });
   const muteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (stream.starts && event.created_at < stream.starts) return false;
       if (stream.ends && event.created_at > stream.ends) return false;
-      if (filterMuted) return !(hostMuteFilter(event) || muteFilter(event));
-      return true;
+      return !(hostMuteFilter(event) || muteFilter(event));
     },
     [hostMuteFilter, muteFilter],
   );
