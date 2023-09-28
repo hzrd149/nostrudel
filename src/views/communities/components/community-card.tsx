@@ -26,7 +26,7 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
         <Box
           backgroundImage={getCommunityImage(community)}
           backgroundRepeat="no-repeat"
-          backgroundSize="contain"
+          backgroundSize="cover"
           backgroundPosition="center"
           aspectRatio={3 / 1}
         />

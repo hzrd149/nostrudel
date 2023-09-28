@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 
 import {
   COMMUNITY_APPROVAL_KIND,
@@ -8,6 +8,7 @@ import {
   getCommunityImage,
   getCommunityMods,
   getCommunityName,
+  getCommunityDescription,
 } from "../../helpers/nostr/communities";
 import { NostrEvent, isETag } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -48,6 +49,44 @@ function ApprovedEvent({ approval }: { approval: NostrEvent }) {
   );
 }
 
+function CommunityDetails({ community }: { community: NostrEvent }) {
+  const communityRelays = getCommunityRelays(community);
+  const mods = getCommunityMods(community);
+  const description = getCommunityDescription(community);
+
+  return (
+    <Card p="2" w="xs" flexShrink={0}>
+      {description && (
+        <>
+          <Heading size="sm">Description:</Heading>
+          <CommunityDescription community={community} maxLength={256} showExpand />
+        </>
+      )}
+      <Heading size="sm" mt="2">
+        Moderators:
+      </Heading>
+      <Flex direction="column" gap="2">
+        {mods.map((pubkey) => (
+          <Flex gap="2">
+            <UserAvatarLink pubkey={pubkey} size="xs" />
+            <UserLink pubkey={pubkey} />
+          </Flex>
+        ))}
+      </Flex>
+      {communityRelays.length > 0 && (
+        <>
+          <Heading size="sm" mt="2">
+            Relays:
+          </Heading>
+          <Flex direction="column" gap="2">
+            <RelayIconStack relays={communityRelays} />
+          </Flex>
+        </>
+      )}
+    </Card>
+  );
+}
+
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
   const mods = getCommunityMods(community);
   const image = getCommunityImage(community);
@@ -70,9 +109,9 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
           <Box
             backgroundImage={getCommunityImage(community)}
             backgroundRepeat="no-repeat"
-            backgroundSize="contain"
+            backgroundSize="cover"
             backgroundPosition="center"
-            aspectRatio={4 / 1}
+            aspectRatio={3 / 1}
             backgroundColor="rgba(0,0,0,0.2)"
           />
         )}
@@ -84,28 +123,18 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
           </Flex>
           <CommunityJoinButton community={community} ml="auto" />
         </Flex>
-        <CommunityDescription community={community} />
-        <Flex wrap="wrap" gap="2">
-          <Text>Moderators:</Text>
-          {mods.map((pubkey) => (
-            <Flex gap="2">
-              <UserAvatarLink pubkey={pubkey} size="xs" />
-              <UserLink pubkey={pubkey} />
-            </Flex>
-          ))}
-        </Flex>
-        {communityRelays.length > 0 && (
-          <Flex wrap="wrap" gap="2">
-            <Text>Relays:</Text>
-            <RelayIconStack relays={communityRelays} />
-          </Flex>
-        )}
 
-        <IntersectionObserverProvider callback={callback}>
-          {approvals.map((approval) => (
-            <ApprovedEvent key={getEventUID(approval)} approval={approval} />
-          ))}
-        </IntersectionObserverProvider>
+        <Flex gap="2" alignItems="flex-start">
+          <Flex direction="column" gap="2" flex={1}>
+            <IntersectionObserverProvider callback={callback}>
+              {approvals.map((approval) => (
+                <ApprovedEvent key={getEventUID(approval)} approval={approval} />
+              ))}
+            </IntersectionObserverProvider>
+          </Flex>
+
+          <CommunityDetails community={community} />
+        </Flex>
       </VerticalPageLayout>
     </AdditionalRelayProvider>
   );
