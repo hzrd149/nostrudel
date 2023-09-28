@@ -26,7 +26,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
-import { RelayMetadata } from "./components/relay-card";
+import { RelayMetadata, RelayPaidTag } from "./components/relay-card";
 
 function usePopularContactsRelays(list?: NostrEvent) {
   const readRelays = useReadRelayUrls();
@@ -56,6 +56,7 @@ const RelayCard = memo(({ url, pubkeys }: { url: string; pubkeys: string[] }) =>
             {url}
           </LinkOverlay>
         </Heading>
+        <RelayPaidTag url={url} />
       </CardHeader>
       <CardBody p="2">
         <RelayMetadata url={url} />
