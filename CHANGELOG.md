@@ -1,5 +1,23 @@
 # nostrudel
 
+## 0.29.0
+
+### Minor Changes
+
+- 9fd16ea: Add time durations for muting users
+- cff1e8b: Add simple stream moderation tool
+- a1a0e33: Add popular relays view
+- 02ea06a: Add nostr.build image uploads
+- 0f87642: Add simple community views
+- d0e58de: Add image upload button to reply form
+- 9fd16ea: Add ghost mode
+
+### Patch Changes
+
+- 20fb8fb: Fix freezing when navigating back to main timeline
+- 4ce9897: Fix broken links in side drawer
+- 4ce9897: Fix bug when clicking on shared long form note
+
 ## 0.28.0
 
 ### Minor Changes
