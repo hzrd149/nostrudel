@@ -109,7 +109,6 @@ export function MagicInput({ instanceRef, ...props }: InputProps & { instanceRef
       textAreaComponent={Input}
       ref={instanceRef}
       loadingComponent={Loading}
-      renderToBody
       minChar={0}
       trigger={triggers}
     />
@@ -126,7 +125,6 @@ export default function MagicTextArea({ instanceRef, ...props }: TextareaProps &
       ref={instanceRef}
       textAreaComponent={Textarea}
       loadingComponent={Loading}
-      renderToBody
       minChar={0}
       trigger={triggers}
     />
