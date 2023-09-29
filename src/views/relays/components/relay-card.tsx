@@ -28,7 +28,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";
-import { CodeIcon, RepostIcon } from "../../../components/icons";
+import { CodeIcon } from "../../../components/icons";
 import { UserLink } from "../../../components/user-link";
 import { UserAvatar } from "../../../components/user-avatar";
 import { useClientRelays } from "../../../hooks/use-client-relays";
@@ -160,7 +160,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
     <>
       <Card variant="outline" {...props}>
         <CardHeader display="flex" gap="2" alignItems="center" p="2">
-          <RelayFavicon relay={url} size="xs" />
+          <RelayFavicon relay={url} size="sm" />
           <Heading size="md" isTruncated>
             <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
             <RelayPaidTag url={url} />

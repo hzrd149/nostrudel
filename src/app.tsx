@@ -49,7 +49,6 @@ import GoalsView from "./views/goals";
 import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
 import UserGoalsTab from "./views/user/goals";
-import NetworkView from "./views/tools/network";
 import MutedByView from "./views/user/muted-by";
 import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
@@ -59,7 +58,11 @@ import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
+import StreamModerationView from "./views/tools/stream-moderation";
+import PopularRelaysView from "./views/relays/popular";
 
+const NetworkView = React.lazy(() => import("./views/tools/network"));
+const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
 const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
@@ -158,8 +161,14 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
-      { path: "relays/reviews", element: <RelayReviewsView /> },
-      { path: "relays", element: <RelaysView /> },
+      {
+        path: "relays",
+        children: [
+          { path: "", element: <RelaysView /> },
+          { path: "popular", element: <PopularRelaysView /> },
+          { path: "reviews", element: <RelayReviewsView /> },
+        ],
+      },
       { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
@@ -171,6 +180,8 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
+          { path: "network-graph", element: <NetworkGraphView /> },
+          { path: "stream-moderation", element: <StreamModerationView /> },
         ],
       },
       {

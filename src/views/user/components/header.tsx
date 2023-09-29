@@ -1,6 +1,6 @@
 import { Flex, Heading, IconButton, Spacer, useBreakpointValue } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { EditIcon } from "../../../components/icons";
+import { EditIcon, GhostIcon } from "../../../components/icons";
 import { UserAvatar } from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
@@ -8,6 +8,7 @@ import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user-follow-button";
+import accountService from "../../../services/account";
 
 export default function Header({
   pubkey,
@@ -22,7 +23,7 @@ export default function Header({
   const account = useCurrentAccount();
   const isSelf = pubkey === account?.pubkey;
 
-  const showFollowButton = useBreakpointValue({ base: false, sm: true });
+  const showExtraButtons = useBreakpointValue({ base: false, sm: true });
 
   const showFullNip05 = useBreakpointValue({ base: false, md: true });
 
@@ -35,7 +36,7 @@ export default function Header({
         </Heading>
         <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={showFullNip05} />
         <Spacer />
-        {isSelf && (
+        {isSelf && !account.readonly && (
           <IconButton
             icon={<EditIcon />}
             aria-label="Edit profile"
@@ -45,7 +46,16 @@ export default function Header({
             onClick={() => navigate("/profile")}
           />
         )}
-        {showFollowButton && !isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}
+        {showExtraButtons && !isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}
+        {showExtraButtons && !isSelf && (
+          <IconButton
+            icon={<GhostIcon />}
+            size="sm"
+            aria-label="ghost user"
+            title="ghost user"
+            onClick={() => accountService.startGhost(pubkey)}
+          />
+        )}
         <UserProfileMenu
           pubkey={pubkey}
           aria-label="More Options"

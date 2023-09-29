@@ -10,11 +10,13 @@ import {
   Flex,
   IconButton,
   Link,
+  Text,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent, isATag } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
+import { Link as RouterLink } from "react-router-dom";
 
 import { NoteMenu } from "./note-menu";
 import { EventRelays } from "./note-relays";
@@ -36,19 +38,29 @@ import BookmarkButton from "./components/bookmark-button";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
-import { getReferences } from "../../helpers/nostr/events";
+import { getEventCoordinate, getReferences, parseCoordinate } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
+import { COMMUNITY_DEFINITION_KIND, getCommunityName } from "../../helpers/nostr/communities";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   hideDrawerButton?: boolean;
+  registerIntersectionEntity?: boolean;
 };
 export const Note = React.memo(
-  ({ event, variant = "outline", showReplyButton, hideDrawerButton, ...props }: NoteProps) => {
+  ({
+    event,
+    variant = "outline",
+    showReplyButton,
+    hideDrawerButton,
+    registerIntersectionEntity = true,
+    ...props
+  }: NoteProps) => {
     const account = useCurrentAccount();
     const { showReactions, showSignatureVerification } = useSubject(appSettings);
     const replyForm = useDisclosure();
@@ -59,6 +71,11 @@ export const Note = React.memo(
 
     // find mostr external link
     const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
+    const communityPointer = useMemo(() => {
+      const tag = event.tags.find((t) => isATag(t) && t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
+      return tag?.[1] ? parseCoordinate(tag[1], true) : undefined;
+    }, [event]);
+    const community = useReplaceableEvent(communityPointer);
 
     const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
 
@@ -67,8 +84,13 @@ export const Note = React.memo(
     return (
       <TrustProvider event={event}>
         <ExpandProvider>
-          <Card variant={variant} ref={ref} data-event-id={event.id} {...props}>
-            <CardHeader padding="2">
+          <Card
+            variant={variant}
+            ref={registerIntersectionEntity ? ref : undefined}
+            data-event-id={event.id}
+            {...props}
+          >
+            <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
                 <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
@@ -82,6 +104,15 @@ export const Note = React.memo(
                   <Timestamp timestamp={event.created_at} />
                 </NoteLink>
               </Flex>
+              {community && (
+                <Text fontStyle="italic">
+                  Posted in{" "}
+                  <Link as={RouterLink} to={`/c/${getCommunityName(community)}/${community.pubkey}`} color="blue.500">
+                    {getCommunityName(community)}
+                  </Link>{" "}
+                  community
+                </Text>
+              )}
             </CardHeader>
             <CardBody p="0">
               <NoteContentWithWarning event={event} />

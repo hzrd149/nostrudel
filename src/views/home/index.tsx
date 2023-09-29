@@ -30,7 +30,7 @@ function HomePage() {
   const { relays } = useRelaySelectionContext();
   const { listId, filter } = usePeopleListContext();
 
-  const kinds = [Kind.Text, Kind.Repost, Kind.Article, 2];
+  const kinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay];
   const query = useMemo<NostrRequestFilter>(() => {
     if (filter === undefined) return { kinds };
     return { ...filter, kinds };

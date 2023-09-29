@@ -76,7 +76,7 @@ const UserRelaysTab = () => {
   });
 
   return (
-    <IntersectionObserverProvider<string> callback={callback}>
+    <IntersectionObserverProvider callback={callback}>
       <VStack divider={<StackDivider />} py="2" align="stretch">
         {userRelays.map((relayConfig) => (
           <ErrorBoundary>

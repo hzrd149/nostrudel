@@ -13,6 +13,7 @@ export default function EmbeddedCommunity({
   ...props
 }: Omit<CardProps, "children"> & { community: NostrEvent }) {
   const image = getCommunityImage(community);
+  const name = getCommunityName(community);
 
   return (
     <Card as={LinkBox} variant="outline" gap="2" overflow="hidden" {...props}>
@@ -20,23 +21,20 @@ export default function EmbeddedCommunity({
         <Box
           backgroundImage={getCommunityImage(community)}
           backgroundRepeat="no-repeat"
-          backgroundSize="cover"
+          backgroundSize="contain"
           backgroundPosition="center"
           aspectRatio={3 / 1}
         />
       ) : (
         <Center aspectRatio={4 / 1} fontWeight="bold" fontSize="2xl">
-          {getCommunityName(community)}
+          {name}
         </Center>
       )}
       <Flex direction="column" flex={1} px="2" pb="2">
         <Flex wrap="wrap" gap="2" alignItems="center">
           <Heading size="lg">
-            <LinkOverlay
-              as={RouterLink}
-              to={`/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`}
-            >
-              {getCommunityName(community)}
+            <LinkOverlay as={RouterLink} to={`/c/${encodeURIComponent(name)}/${nip19.npubEncode(community.pubkey)}`}>
+              {name}
             </LinkOverlay>
           </Heading>
           <Text>Created by:</Text>

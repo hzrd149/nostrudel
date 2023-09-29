@@ -5,7 +5,7 @@ import { nip19 } from "nostr-tools";
 
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { NostrEvent } from "../../types/nostr-event";
-import { MenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
+import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
 import {
   ClipboardIcon,
@@ -27,12 +27,14 @@ import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
+import { useMuteModalContext } from "../../providers/mute-modal-provider";
 
 export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
   const account = useCurrentAccount();
   const infoModal = useDisclosure();
   const reactionsModal = useDisclosure();
   const { isMuted, mute, unmute } = useUserMuteFunctions(event.pubkey);
+  const { openModal } = useMuteModalContext();
 
   const { deleteEvent } = useDeleteEventContext();
 
@@ -51,14 +53,18 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
 
   return (
     <>
-      <MenuIconButton {...props}>
+      <CustomMenuIconButton {...props}>
         {address && (
           <MenuItem onClick={() => window.open(buildAppSelectUrl(address), "_blank")} icon={<ExternalLinkIcon />}>
             View in app...
           </MenuItem>
         )}
         {account?.pubkey !== event.pubkey && (
-          <MenuItem onClick={isMuted ? unmute : mute} icon={isMuted ? <UnmuteIcon /> : <MuteIcon />} color="red.500">
+          <MenuItem
+            onClick={isMuted ? unmute : () => openModal(event.pubkey)}
+            icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
+            color="red.500"
+          >
             {isMuted ? "Unmute User" : "Mute User"}
           </MenuItem>
         )}
@@ -84,7 +90,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
         <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
           Zaps/Reactions
         </MenuItem>
-      </MenuIconButton>
+      </CustomMenuIconButton>
 
       {infoModal.isOpen && (
         <NoteDebugModal event={event} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />

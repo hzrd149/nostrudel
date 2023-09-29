@@ -25,6 +25,7 @@ export default function RelaysView() {
     .filter((r) => !clientRelays.includes(r.url))
     .map((r) => r.url)
     .filter(safeRelayUrl);
+
   const { value: onlineRelays = [] } = useAsync(async () =>
     fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
   );
@@ -42,6 +43,9 @@ export default function RelaysView() {
       <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
         <Spacer />
+        <Button as={RouterLink} to="/relays/popular">
+          Popular Relays
+        </Button>
         <Button as={RouterLink} to="/relays/reviews">
           Browse Reviews
         </Button>
@@ -57,7 +61,7 @@ export default function RelaysView() {
         ))}
       </SimpleGrid>
 
-      {discoveredRelays && !isSearching && (
+      {discoveredRelays.length > 0 && !isSearching && (
         <>
           <Divider />
           <Heading size="lg">Discovered Relays</Heading>

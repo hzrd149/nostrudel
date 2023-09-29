@@ -104,6 +104,10 @@ export default function DrawerSubViewProvider({
           openInParent(e.location);
         }
       });
+
+      // use the parent routers createHref method so that users can open links in new tabs
+      newRouter.createHref = parentRouter.createHref;
+
       setRouter(newRouter);
     },
     [setRouter, openInParent],

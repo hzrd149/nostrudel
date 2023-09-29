@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/lib/nip19";
 
-import { DraftNostrEvent, NostrEvent, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
 
 export const PEOPLE_LIST_KIND = 30000;
@@ -31,19 +31,28 @@ export function isSpecialListKind(kind: number) {
   return kind === Kind.Contacts || kind === PIN_LIST_KIND || kind === MUTE_LIST_KIND;
 }
 
-export function getPubkeysFromList(event: NostrEvent) {
-  return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2] }));
+export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEvent {
+  return {
+    kind: list.kind,
+    content: list.content,
+    tags: Array.from(list.tags),
+    created_at: keepCreatedAt ? list.created_at : dayjs().unix(),
+  };
 }
-export function getEventsFromList(event: NostrEvent) {
+
+export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
+  return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
+}
+export function getEventsFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
 }
-export function getReferencesFromList(event: NostrEvent) {
+export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
-export function getCoordinatesFromList(event: NostrEvent) {
+export function getCoordinatesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
-export function getParsedCordsFromList(event: NostrEvent) {
+export function getParsedCordsFromList(event: NostrEvent | DraftNostrEvent) {
   const pointers: AddressPointer[] = [];
 
   for (const tag of event.tags) {
@@ -58,9 +67,9 @@ export function getParsedCordsFromList(event: NostrEvent) {
   return pointers;
 }
 
-export function isPubkeyInList(event?: NostrEvent, pubkey?: string) {
-  if (!pubkey || !event) return false;
-  return event.tags.some((t) => t[0] === "p" && t[1] === pubkey);
+export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
+  if (!pubkey || !list) return false;
+  return list.tags.some((t) => t[0] === "p" && t[1] === pubkey);
 }
 
 export function createEmptyContactList(): DraftNostrEvent {
@@ -71,22 +80,22 @@ export function createEmptyContactList(): DraftNostrEvent {
     kind: Kind.Contacts,
   };
 }
-export function createEmptyMuteList(): DraftNostrEvent {
-  return {
-    created_at: dayjs().unix(),
-    content: "",
-    tags: [],
-    kind: MUTE_LIST_KIND,
-  };
-}
 
-export function listAddPerson(list: NostrEvent | DraftNostrEvent, pubkey: string, relay?: string): DraftNostrEvent {
+export function listAddPerson(
+  list: NostrEvent | DraftNostrEvent,
+  pubkey: string,
+  relay?: string,
+  petname?: string,
+): DraftNostrEvent {
   if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
+  const pTag: PTag = ["p", pubkey, relay ?? "", petname ?? ""];
+  while (pTag[pTag.length - 1] === "") pTag.pop();
+
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
     content: list.content,
-    tags: [...list.tags, relay ? ["p", pubkey, relay] : ["p", pubkey]],
+    tags: [...list.tags, pTag],
   };
 }
 

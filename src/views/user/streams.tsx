@@ -30,7 +30,7 @@ export default function UserStreamsTab() {
   const streams = useParsedStreams(events);
 
   return (
-    <IntersectionObserverProvider<string> callback={callback}>
+    <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {streams.map((stream) => (

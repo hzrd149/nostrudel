@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
-import { validateEvent } from "nostr-tools";
+import { Kind, validateEvent } from "nostr-tools";
 
 import { isETag, NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
@@ -13,6 +13,8 @@ import { safeJson } from "../../../helpers/parse";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
+import { EmbedEvent } from "../../embed-event";
+import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 
 function parseHardcodedNoteContent(event: NostrEvent) {
   const json = safeJson(event.content, null);
@@ -30,14 +32,16 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
 
+  const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
   const readRelays = useReadRelayUrls(relay ? [relay] : []);
 
   const loadedNote = useSingleEvent(eventId, readRelays);
-
   const note = hardCodedNote || loadedNote;
+
+  if (note && muteFilter(note)) return;
 
   return (
     <TrustProvider event={event}>
@@ -53,7 +57,14 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
           </Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
         </Flex>
-        {!note ? <SkeletonText /> : <Note event={note} showReplyButton />}
+        {!note ? (
+          <SkeletonText />
+        ) : note.kind === Kind.Text ? (
+          // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
+          <Note event={note} showReplyButton registerIntersectionEntity={false} />
+        ) : (
+          <EmbedEvent event={note} />
+        )}
       </Flex>
     </TrustProvider>
   );

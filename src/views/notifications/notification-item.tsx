@@ -15,6 +15,7 @@ import Timestamp from "../../components/timestamp";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { NoteContents } from "../../components/note/note-contents";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const refs = getReferences(event);
@@ -133,18 +134,25 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
+  let content: ReactNode | null = null;
   switch (event.kind) {
     case Kind.Text:
-      return <Kind1Notification event={event} ref={ref} />;
+      content = <Kind1Notification event={event} ref={ref} />;
+      break;
     case Kind.Reaction:
-      return <ReactionNotification event={event} ref={ref} />;
+      content = <ReactionNotification event={event} ref={ref} />;
+      break;
     case Kind.Repost:
-      return <ShareNotification event={event} ref={ref} />;
+      content = <ShareNotification event={event} ref={ref} />;
+      break;
     case Kind.Zap:
-      return <ZapNotification event={event} ref={ref} />;
+      content = <ZapNotification event={event} ref={ref} />;
+      break;
     default:
-      return <EmbeddedUnknown event={event} />;
+      content = <EmbeddedUnknown event={event} />;
+      break;
   }
+  return content && <ErrorBoundary>{content}</ErrorBoundary>;
 };
 
 export default memo(NotificationItem);

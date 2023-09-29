@@ -35,6 +35,7 @@ export function embedNostrLinks(content: EmbedableContent) {
   });
 }
 
+/** @deprecated */
 export function embedNostrMentions(content: EmbedableContent, event: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
     name: "nostr-mention",

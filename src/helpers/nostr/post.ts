@@ -1,6 +1,5 @@
-import { DraftNostrEvent, NostrEvent, PTag, Tag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag } from "../regexp";
-import { normalizeToHex } from "../nip19";
 import { getReferences } from "./events";
 import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -62,6 +61,10 @@ export function ensureNotifyPubkeys(draft: DraftNostrEvent, pubkeys: string[]) {
   return updated;
 }
 
+export function correctContentMentions(content: string) {
+  return content.replace(/(\s|^)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "$1nostr:$2");
+}
+
 export function getContentMentions(content: string) {
   const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
   return Array.from(matched)
@@ -108,7 +111,8 @@ export function createEmojiTags(draft: DraftNostrEvent, emojis: Emoji[]) {
 }
 
 export function finalizeNote(draft: DraftNostrEvent) {
-  let updated = draft;
+  let updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+  updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
   return updated;
 }

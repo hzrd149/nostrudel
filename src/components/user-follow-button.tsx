@@ -34,6 +34,7 @@ import replaceableEventLoaderService from "../services/replaceable-event-request
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
 import useUserMuteFunctions from "../hooks/use-user-mute-functions";
+import { useMuteModalContext } from "../providers/mute-modal-provider";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();
@@ -117,7 +118,8 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
-  const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
+  const { isMuted, unmute } = useUserMuteFunctions(pubkey);
+  const { openModal } = useMuteModalContext();
 
   const isFollowing = isPubkeyInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
@@ -153,7 +155,7 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
           )}
           {account?.pubkey !== pubkey && (
             <MenuItem
-              onClick={isMuted ? unmute : mute}
+              onClick={isMuted ? unmute : () => openModal(pubkey)}
               icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
               color="red.500"
               isDisabled={isDisabled}

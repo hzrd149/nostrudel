@@ -18,6 +18,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@getalby/bitcoin-connect-react": "^1.1.0",
+    "@types/three": "^0.156.0",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
@@ -36,16 +37,21 @@
     "nanoid": "^4.0.2",
     "ngeohash": "^0.6.3",
     "noble-secp256k1": "^1.2.14",
-    "nostr-tools": "^1.14.0",
+    "nostr-tools": "^1.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
+    "react-force-graph-2d": "^1.25.1",
+    "react-force-graph-3d": "^1.23.1",
     "react-hook-form": "^7.45.4",
     "react-photo-album": "^2.3.0",
     "react-qr-barcode-scanner": "^1.0.6",
     "react-router-dom": "^6.15.0",
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",
+    "react-virtualized-auto-sizer": "^1.0.20",
+    "three": "^0.156.1",
+    "three-spritetext": "^1.8.1",
     "webln": "^0.3.2",
     "yet-another-react-lightbox": "^3.12.1"
   },
@@ -58,7 +64,7 @@
     "@types/leaflet.locatecontrol": "^0.74.1",
     "@types/lodash.throttle": "^4.1.7",
     "@types/ngeohash": "^0.6.4",
-    "@types/react": "^18.2.20",
+    "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.2",
     "@vitejs/plugin-react": "^4.0.4",
@@ -69,7 +75,7 @@
     "vite-plugin-pwa": "^0.16.4"
   },
   "resolutions": {
-    "@types/react": "^18.2.20",
+    "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7"
   }
 }

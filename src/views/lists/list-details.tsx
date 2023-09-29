@@ -13,6 +13,7 @@ import {
   getParsedCordsFromList,
   getPubkeysFromList,
   getReferencesFromList,
+  isSpecialListKind,
 } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import UserCard from "./components/user-card";
@@ -77,7 +78,7 @@ export default function ListDetailsView() {
         <Spacer />
 
         <ListFeedButton list={list} />
-        {isAuthor && (
+        {isAuthor && !isSpecialListKind(list.kind) && (
           <Button colorScheme="red" onClick={() => deleteEvent(list).then(() => navigate("/lists"))}>
             Delete
           </Button>

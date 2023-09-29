@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Card, CardBody, Flex, IconButton, Textarea, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { ArrowLeftSIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
@@ -21,9 +21,11 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import NostrPublishAction from "../../classes/nostr-publish-action";
+import { LightboxProvider } from "../../components/lightbox-provider";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const toast = useToast();
+  const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const { requestEncrypt, requestSignature } = useSigningContext();
   const [content, setContent] = useState<string>("");
@@ -67,36 +69,31 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <Flex height="100%" overflow="hidden" direction="column">
-        <Card size="sm" flexShrink={0}>
-          <CardBody display="flex" gap="2" alignItems="center">
-            <IconButton
-              as={Link}
-              variant="ghost"
-              icon={<ArrowLeftSIcon />}
-              aria-label="Back"
-              to="/dm"
-              size={["sm", "md"]}
-            />
-            <UserAvatar pubkey={pubkey} size={["sm", "md"]} />
-            <UserLink pubkey={pubkey} />
-          </CardBody>
-        </Card>
-        <Flex flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="4" py="4">
-          {[...messages].map((event) => (
-            <Message key={event.id} event={event} />
-          ))}
-          <TimelineActionAndStatus timeline={timeline} />
+    <LightboxProvider>
+      <IntersectionObserverProvider callback={callback}>
+        <Flex height="100%" overflow="hidden" direction="column">
+          <Card size="sm" flexShrink={0}>
+            <CardBody display="flex" gap="2" alignItems="center">
+              <IconButton variant="ghost" icon={<ArrowLeftSIcon />} aria-label="Back" onClick={() => navigate(-1)} />
+              <UserAvatar pubkey={pubkey} size="sm" />
+              <UserLink pubkey={pubkey} />
+            </CardBody>
+          </Card>
+          <Flex flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
+            {[...messages].map((event) => (
+              <Message key={event.id} event={event} />
+            ))}
+            <TimelineActionAndStatus timeline={timeline} />
+          </Flex>
+          <Flex shrink={0}>
+            <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
+            <Button isDisabled={!content} onClick={sendMessage}>
+              Send
+            </Button>
+          </Flex>
         </Flex>
-        <Flex shrink={0}>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
-          <Button isDisabled={!content} onClick={sendMessage}>
-            Send
-          </Button>
-        </Flex>
-      </Flex>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </LightboxProvider>
   );
 }
 export default function DirectMessageChatView() {

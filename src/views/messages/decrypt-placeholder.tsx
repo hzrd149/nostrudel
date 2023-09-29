@@ -27,7 +27,7 @@ export default function DecryptPlaceholder({
     return children(decrypted);
   }
   return (
-    <Button variant="text" onClick={decrypt} isLoading={loading} leftIcon={<UnlockIcon />} width="100%">
+    <Button onClick={decrypt} isLoading={loading} leftIcon={<UnlockIcon />} width="full">
       Decrypt
     </Button>
   );

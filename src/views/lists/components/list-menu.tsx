@@ -2,7 +2,7 @@ import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { MenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { CodeIcon, ExternalLinkIcon, RepostIcon, TrashIcon } from "../../../components/icons";
@@ -23,7 +23,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
 
   return (
     <>
-      <MenuIconButton {...props}>
+      <CustomMenuIconButton {...props}>
         {naddr && (
           <>
             <MenuItem onClick={() => window.open(buildAppSelectUrl(naddr), "_blank")} icon={<ExternalLinkIcon />}>
@@ -42,7 +42,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>
-      </MenuIconButton>
+      </CustomMenuIconButton>
 
       {infoModal.isOpen && (
         <NoteDebugModal event={list} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />

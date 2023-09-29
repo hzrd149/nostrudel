@@ -10,6 +10,15 @@ import AccountSwitcher from "./account-switcher";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
+import { css } from "@emotion/react";
+
+const hideScrollbar = css`
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
   const account = useCurrentAccount();
@@ -27,6 +36,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       h="100vh"
       overflowY="auto"
       overflowX="hidden"
+      css={hideScrollbar}
     >
       <Flex direction="column" flexShrink={0} gap="2">
         <Flex gap="2" alignItems="center" position="relative">
@@ -38,17 +48,19 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           {account ? (
             <>
               <ProfileButton />
-              <IconButton
-                icon={<EditIcon />}
-                aria-label="New note"
-                title="New note"
-                w="3rem"
-                h="3rem"
-                fontSize="1.5rem"
-                colorScheme="brand"
-                onClick={() => openModal()}
-                flexShrink={0}
-              />
+              {!account.readonly && (
+                <IconButton
+                  icon={<EditIcon />}
+                  aria-label="New note"
+                  title="New note"
+                  w="3rem"
+                  h="3rem"
+                  fontSize="1.5rem"
+                  colorScheme="brand"
+                  onClick={() => openModal()}
+                  flexShrink={0}
+                />
+              )}
             </>
           ) : (
             <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">

@@ -30,24 +30,15 @@ export function Message({ event }: { event: NostrEvent } & Omit<CardProps, "chil
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
-    <Flex direction="column" ref={ref}>
-      <Card size="sm">
-        <CardHeader display="flex" gap="2" alignItems="center" pb="0">
-          <UserAvatar pubkey={event.pubkey} size="xs" />
-          <Heading size="md">
-            <UserLink pubkey={event.pubkey} />
-          </Heading>
-          <Timestamp ml="auto" timestamp={event.created_at} />
-        </CardHeader>
-        <CardBody position="relative">
-          <DecryptPlaceholder
-            data={event.content}
-            pubkey={isOwnMessage ? getMessageRecipient(event) ?? "" : event.pubkey}
-          >
-            {(text) => <MessageContent event={event} text={text} />}
-          </DecryptPlaceholder>
-        </CardBody>
-      </Card>
+    <Flex direction="column" gap="2" ref={ref}>
+      <Flex gap="2" mr="2">
+        <UserAvatar pubkey={event.pubkey} size="xs" />
+        <UserLink pubkey={event.pubkey} fontWeight="bold" />
+        <Timestamp ml="auto" timestamp={event.created_at} />
+      </Flex>
+      <DecryptPlaceholder data={event.content} pubkey={isOwnMessage ? getMessageRecipient(event) ?? "" : event.pubkey}>
+        {(text) => <MessageContent event={event} text={text} />}
+      </DecryptPlaceholder>
     </Flex>
   );
 }

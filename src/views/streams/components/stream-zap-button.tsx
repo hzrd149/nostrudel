@@ -32,6 +32,9 @@ export default function StreamZapButton({
     isDisabled: !zapMetadata.metadata?.allowsNostr,
   };
 
+  // const zapEvent = goal || stream.event
+  const zapEvent = stream.event;
+
   return (
     <>
       {label ? (
@@ -45,7 +48,7 @@ export default function StreamZapButton({
       {zapModal.isOpen && (
         <ZapModal
           isOpen
-          event={goal || stream.event}
+          event={zapEvent}
           pubkey={stream.host}
           onInvoice={async (invoice) => {
             if (onZap) onZap();

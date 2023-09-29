@@ -52,7 +52,7 @@ export default function TimelinePage({
     }
   };
   return (
-    <IntersectionObserverProvider<string> callback={callback}>
+    <IntersectionObserverProvider callback={callback}>
       <Flex direction="column" gap="2" {...props}>
         {header}
         {renderTimeline()}

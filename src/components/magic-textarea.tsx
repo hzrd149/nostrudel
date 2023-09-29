@@ -1,5 +1,5 @@
-import React, { TextareaHTMLAttributes } from "react";
-import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/react";
+import React, { LegacyRef } from "react";
+import { Image, InputProps, Textarea, TextareaProps, Input } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
   TextareaProps as ReactTextareaAutocompleteProps,
@@ -96,32 +96,35 @@ function useAutocompleteTriggers() {
   return triggers;
 }
 
-export function MagicInput({ ...props }: InputProps) {
+// @ts-ignore
+export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
+
+export function MagicInput({ instanceRef, ...props }: InputProps & { instanceRef?: LegacyRef<RefType> }) {
   const triggers = useAutocompleteTriggers();
 
   return (
     // @ts-ignore
     <ReactTextareaAutocomplete<Token, InputProps>
-      textAreaComponent={Input}
       {...props}
+      textAreaComponent={Input}
+      ref={instanceRef}
       loadingComponent={Loading}
-      renderToBody
       minChar={0}
       trigger={triggers}
     />
   );
 }
 
-export default function MagicTextArea({ ...props }: TextareaProps) {
+export default function MagicTextArea({ instanceRef, ...props }: TextareaProps & { instanceRef?: LegacyRef<RefType> }) {
   const triggers = useAutocompleteTriggers();
 
   return (
     // @ts-ignore
     <ReactTextareaAutocomplete<Token, TextareaProps>
       {...props}
+      ref={instanceRef}
       textAreaComponent={Textarea}
       loadingComponent={Loading}
-      renderToBody
       minChar={0}
       trigger={triggers}
     />

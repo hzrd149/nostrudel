@@ -14,7 +14,7 @@ import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filt
 export default function useStreamChatTimeline(stream: ParsedStream) {
   const streamRelays = useRelaySelectionRelays();
 
-  const hostMuteFilter = useUserMuteFilter(stream.host);
+  const hostMuteFilter = useUserMuteFilter(stream.host, [], { alwaysRequest: true });
   const muteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(
@@ -23,7 +23,7 @@ export default function useStreamChatTimeline(stream: ParsedStream) {
       if (stream.ends && event.created_at > stream.ends) return false;
       return !(hostMuteFilter(event) || muteFilter(event));
     },
-    [hostMuteFilter, muteFilter],
+    [stream, hostMuteFilter, muteFilter],
   );
 
   const goal = useStreamGoal(stream);
