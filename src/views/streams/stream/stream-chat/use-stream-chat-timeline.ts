@@ -23,7 +23,7 @@ export default function useStreamChatTimeline(stream: ParsedStream) {
       if (stream.ends && event.created_at > stream.ends) return false;
       return !(hostMuteFilter(event) || muteFilter(event));
     },
-    [hostMuteFilter, muteFilter],
+    [stream, hostMuteFilter, muteFilter],
   );
 
   const goal = useStreamGoal(stream);

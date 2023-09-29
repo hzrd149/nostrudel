@@ -130,7 +130,7 @@ function ZapMessagesCard({ stream, ...props }: Omit<CardProps, "children"> & { s
 
 function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
   return (
-    <Flex gap="2" overflow="hidden">
+    <Flex gap="2" overflow="hidden" height="100%">
       <UserMuteCard stream={stream} flex={1} />
       <ZapMessagesCard stream={stream} flex={1} />
       <StreamChat stream={stream} flex={1} />
