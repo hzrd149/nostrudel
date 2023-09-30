@@ -26,14 +26,15 @@ const defaultLayout: MosaicNode<string> = {
   first: {
     direction: "column",
     first: "video",
-    second: {
-      direction: "row",
-      first: "users",
-      second: "zaps",
-    },
+    second: "users",
+    splitPercentage: 40,
   },
-  second: "chat",
-  splitPercentage: 60,
+  second: {
+    direction: "row",
+    first: "zaps",
+    second: "chat",
+  },
+  splitPercentage: 33,
 };
 
 function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
