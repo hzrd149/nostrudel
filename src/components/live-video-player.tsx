@@ -1,6 +1,6 @@
+import { HTMLProps, useEffect, useRef, useState } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import Hls from "hls.js";
-import { useEffect, useRef, useState } from "react";
 
 export enum VideoStatus {
   Online = "online",
@@ -12,8 +12,14 @@ export function LiveVideoPlayer({
   stream,
   autoPlay,
   poster,
+  muted,
   ...props
-}: Omit<BoxProps, "children"> & { stream?: string; autoPlay?: boolean; poster?: string }) {
+}: Omit<BoxProps, "children"> & {
+  stream?: string;
+  autoPlay?: boolean;
+  poster?: string;
+  muted?: HTMLProps<HTMLVideoElement>["muted"];
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<VideoStatus>();
 
@@ -50,6 +56,7 @@ export function LiveVideoPlayer({
       controls={status === VideoStatus.Online}
       autoPlay={autoPlay}
       poster={poster}
+      muted={muted}
       style={{ maxHeight: "100%", maxWidth: "100%", width: "100%" }}
       {...props}
     />

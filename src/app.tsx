@@ -127,7 +127,14 @@ const router = createHashRouter([
       </PageProviders>
     ),
   },
-  { path: "tools/stream-moderation", element: <StreamModerationView /> },
+  {
+    path: "tools/stream-moderation",
+    element: (
+      <PageProviders>
+        <StreamModerationView />
+      </PageProviders>
+    ),
+  },
   {
     path: "map",
     element: <MapView />,

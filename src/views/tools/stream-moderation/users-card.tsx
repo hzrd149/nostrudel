@@ -1,4 +1,4 @@
-import { ReactNode, memo, useMemo } from "react";
+import { ReactNode, memo, useMemo, useState } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
@@ -11,9 +11,17 @@ import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
 import { useMuteModalContext } from "../../../providers/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../../helpers/nostr/lists";
-import { DashboardCardProps } from "./common";
+import { ParsedStream } from "../../../helpers/nostr/stream";
+import { useInterval } from "react-use";
 
-const UserCard = ({ pubkey }: { pubkey: string }) => {
+function Countdown({ time }: { time: number }) {
+  const [now, setNow] = useState(dayjs().unix());
+  useInterval(() => setNow(dayjs().unix()), 1000);
+
+  return <span>{time - now + "s"}</span>;
+}
+
+function UserCard({ pubkey }: { pubkey: string }) {
   const { isMuted, mute, unmute, expiration } = useUserMuteFunctions(pubkey);
   const { openModal } = useMuteModalContext();
 
@@ -22,7 +30,11 @@ const UserCard = ({ pubkey }: { pubkey: string }) => {
     if (expiration === Infinity) {
       buttons = <Button onClick={unmute}>Unban</Button>;
     } else {
-      buttons = <Button onClick={unmute}>Unmute ({dayjs.unix(expiration).fromNow()})</Button>;
+      buttons = (
+        <Button onClick={unmute}>
+          Unmute (<Countdown time={expiration} />)
+        </Button>
+      );
     }
   } else {
     buttons = (
@@ -42,9 +54,9 @@ const UserCard = ({ pubkey }: { pubkey: string }) => {
       </ButtonGroup>
     </Flex>
   );
-};
+}
 
-function UsersCard({ stream, ...props }: DashboardCardProps) {
+function UsersCard({ stream }: { stream: ParsedStream }) {
   const account = useCurrentAccount()!;
   const streamChatTimeline = useStreamChatTimeline(stream);
 

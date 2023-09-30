@@ -1,14 +1,14 @@
-import { forwardRef, memo, useRef } from "react";
+import { memo, useRef } from "react";
 import { Flex } from "@chakra-ui/react";
 
-import { DashboardCardProps } from "./common";
 import useStreamChatTimeline from "../../streams/stream/stream-chat/use-stream-chat-timeline";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/intersection-observer";
 import StreamChatLog from "../../streams/stream/stream-chat/chat-log";
 import ChatMessageForm from "../../streams/stream/stream-chat/stream-chat-form";
+import { ParsedStream } from "../../../helpers/nostr/stream";
 
-const ChatCard = forwardRef<HTMLDivElement, DashboardCardProps>(({ stream, children, ...props }, ref) => {
+function ChatCard({ stream }: { stream: ParsedStream }) {
   const timeline = useStreamChatTimeline(stream);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
@@ -22,6 +22,6 @@ const ChatCard = forwardRef<HTMLDivElement, DashboardCardProps>(({ stream, child
       </IntersectionObserverProvider>
     </Flex>
   );
-});
+}
 
 export default memo(ChatCard);

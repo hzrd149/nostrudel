@@ -1,11 +1,17 @@
 import { memo } from "react";
 
-import { DashboardCardProps } from "./common";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
+import { ParsedStream } from "../../../helpers/nostr/stream";
 
-function LiveVideoCard({ stream, children, ...props }: DashboardCardProps) {
+function LiveVideoCard({ stream }: { stream: ParsedStream }) {
   return (
-    <LiveVideoPlayer stream={stream.streaming || stream.recording} autoPlay={false} poster={stream.image} maxH="50vh" />
+    <LiveVideoPlayer
+      stream={stream.streaming || stream.recording}
+      autoPlay={stream.streaming ? true : undefined}
+      poster={stream.image}
+      maxH="50vh"
+      muted
+    />
   );
 }
 

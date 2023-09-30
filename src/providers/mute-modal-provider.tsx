@@ -1,6 +1,10 @@
 import {
   Button,
   Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { useInterval } from "react-use";
 
 import { getUserDisplayName } from "../helpers/user-metadata";
 import { useUserMetadata } from "../hooks/use-user-metadata";
@@ -23,6 +28,7 @@ import {
   createEmptyMuteList,
   getPubkeysExpiration,
   muteListAddPubkey,
+  muteListRemovePubkey,
   pruneExpiredPubkeys,
 } from "../helpers/nostr/mute-list";
 import { cloneList } from "../helpers/nostr/lists";
@@ -31,10 +37,10 @@ import NostrPublishAction from "../classes/nostr-publish-action";
 import clientRelaysService from "../services/client-relays";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useUserMuteList from "../hooks/use-user-mute-list";
-import { useInterval } from "react-use";
 import { DraftNostrEvent } from "../types/nostr-event";
 import { UserAvatar } from "../components/user-avatar";
 import { UserLink } from "../components/user-link";
+import { ArrowDownSIcon } from "../components/icons";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;
@@ -119,63 +125,163 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
   );
 }
 
-function UnmuteModal({}) {
+function UnmuteHandler() {
+  const toast = useToast();
+  const account = useCurrentAccount()!;
+  const { requestSignature } = useSigningContext();
+  const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
+  const modal = useDisclosure();
+
+  const unmuteAll = async () => {
+    if (!muteList) return;
+    try {
+      let draft: DraftNostrEvent = cloneList(muteList);
+      draft = pruneExpiredPubkeys(draft);
+
+      const signed = await requestSignature(draft);
+      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+      return true;
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+    return false;
+  };
+
+  const check = async () => {
+    if (!muteList) return;
+    const now = dayjs().unix();
+    const expirations = getPubkeysExpiration(muteList);
+    const expired = Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
+
+    if (expired.length > 0) {
+      const accepted = await unmuteAll();
+      if (!accepted) modal.onOpen();
+    } else if (modal.isOpen) modal.onClose();
+  };
+
+  useInterval(check, 10 * 1000);
+
+  return modal.isOpen ? <UnmuteModal onClose={modal.onClose} isOpen={modal.isOpen} /> : null;
+}
+
+function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
 
-  const modal = useDisclosure();
-  const removeExpiredMutes = async () => {
+  const getExpiredPubkeys = useCallback(() => {
+    if (!muteList) return [];
+    const now = dayjs().unix();
+    const expirations = getPubkeysExpiration(muteList);
+
+    return Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
+  }, [muteList]);
+
+  const unmuteAll = async () => {
     if (!muteList) return;
     try {
-      // unmute users
       let draft: DraftNostrEvent = cloneList(muteList);
-      draft = pruneExpiredPubkeys(muteList);
+      draft = pruneExpiredPubkeys(draft);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute Users", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
       replaceableEventLoaderService.handleEvent(signed);
-      modal.onClose();
+      onClose();
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
+  const extendAll = async (expiration: number) => {
+    if (!muteList) return;
+    try {
+      const expired = getExpiredPubkeys();
+      let draft: DraftNostrEvent = cloneList(muteList);
+      draft = pruneExpiredPubkeys(draft);
+      for (const [pubkey] of expired) {
+        draft = muteListAddPubkey(draft, pubkey, expiration);
+      }
+
+      const signed = await requestSignature(draft);
+      new NostrPublishAction("Extend mute", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+      onClose();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
   };
 
-  const getExpiredPubkeys = () => {
-    if (!muteList) return [];
-    const now = dayjs().unix();
-    const expirations = getPubkeysExpiration(muteList);
-    return Object.entries(expirations)
-      .filter(([pubkey, ex]) => ex < now)
-      .map(([pubkey]) => pubkey);
-  };
-  useInterval(() => {
+  const unmuteUser = async (pubkey: string) => {
     if (!muteList) return;
-    if (!modal.isOpen && getExpiredPubkeys().length > 0) {
-      modal.onOpen();
-    }
-  }, 30 * 1000);
+    try {
+      let draft: DraftNostrEvent = cloneList(muteList);
+      draft = muteListRemovePubkey(draft, pubkey);
 
+      const signed = await requestSignature(draft);
+      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
+  const extendUser = async (pubkey: string, expiration: number) => {
+    if (!muteList) return;
+    try {
+      let draft: DraftNostrEvent = cloneList(muteList);
+      draft = muteListRemovePubkey(draft, pubkey);
+      draft = muteListAddPubkey(draft, pubkey, expiration);
+
+      const signed = await requestSignature(draft);
+      new NostrPublishAction("Extend mute", clientRelaysService.getWriteUrls(), signed);
+      replaceableEventLoaderService.handleEvent(signed);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
+
+  const expiredPubkeys = getExpiredPubkeys().map(([pubkey]) => pubkey);
   return (
-    <Modal onClose={modal.onClose} size="lg" isOpen={modal.isOpen}>
+    <Modal onClose={onClose} isOpen size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader p="4">Unmute temporary muted users</ModalHeader>
         <ModalCloseButton />
-        <ModalBody display="flex" flexWrap="wrap" gap="2" px="4" py="0">
-          {getExpiredPubkeys().map((pubkey) => (
+        <ModalBody display="flex" flexDirection="column" gap="2" px="4" py="0">
+          {expiredPubkeys.map((pubkey) => (
             <Flex gap="2" key={pubkey} alignItems="center">
               <UserAvatar pubkey={pubkey} size="sm" />
               <UserLink pubkey={pubkey} fontWeight="bold" />
+              <Menu>
+                <MenuButton as={Button} size="sm" ml="auto" rightIcon={<ArrowDownSIcon />}>
+                  Extend
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => extendUser(pubkey, Infinity)}>Forever</MenuItem>
+                  <MenuItem onClick={() => extendUser(pubkey, dayjs().add(30, "minutes").unix())}>30 Minutes</MenuItem>
+                  <MenuItem onClick={() => extendUser(pubkey, dayjs().add(1, "day").unix())}>1 Day</MenuItem>
+                  <MenuItem onClick={() => extendUser(pubkey, dayjs().add(1, "week").unix())}>1 Week</MenuItem>
+                </MenuList>
+              </Menu>
+              <Button onClick={() => unmuteUser(pubkey)} size="sm">
+                Unmute
+              </Button>
             </Flex>
           ))}
         </ModalBody>
         <ModalFooter p="4">
-          <Button onClick={modal.onClose} mr="3">
-            Cancel
-          </Button>
-          <Button colorScheme="brand" onClick={removeExpiredMutes}>
+          <Menu>
+            <MenuButton as={Button} mr="2" rightIcon={<ArrowDownSIcon />}>
+              Extend
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={() => extendAll(Infinity)}>Forever</MenuItem>
+              <MenuItem onClick={() => extendAll(dayjs().add(30, "minutes").unix())}>30 Minutes</MenuItem>
+              <MenuItem onClick={() => extendAll(dayjs().add(1, "day").unix())}>1 Day</MenuItem>
+              <MenuItem onClick={() => extendAll(dayjs().add(1, "week").unix())}>1 Week</MenuItem>
+            </MenuList>
+          </Menu>
+          <Button colorScheme="brand" onClick={unmuteAll}>
             Unmute all
           </Button>
         </ModalFooter>
@@ -199,8 +305,8 @@ export default function MuteModalProvider({ children }: PropsWithChildren) {
   return (
     <MuteModalContext.Provider value={context}>
       {children}
-      <UnmuteModal />
       {muteUser && <MuteModal isOpen onClose={() => setMuteUser("")} pubkey={muteUser} />}
+      <UnmuteHandler />
     </MuteModalContext.Provider>
   );
 }
