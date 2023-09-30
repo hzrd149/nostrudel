@@ -81,8 +81,8 @@ export default function PostModal({
         const content = getValues().content;
         const position = textAreaRef.current?.getCaretPosition();
         if (position !== undefined) {
-          setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
-        } else setValue("content", content + imageUrl);
+          setValue("content", content.slice(0, position) + imageUrl + " " + content.slice(position));
+        } else setValue("content", content + imageUrl + " ");
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }

@@ -42,7 +42,7 @@ export async function nostrBuildUploadImage(image: File, sign?: (draft: DraftNos
   const headers: HeadersInit = {};
   if (sign) {
     // @ts-ignore
-    const token = await nip98.getToken(url, "post", sign, true);
+    const token = await nip98.getToken(url, "POST", sign, true);
     headers.Authorization = token;
   }
 
