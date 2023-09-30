@@ -15,7 +15,7 @@ import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
 
-export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
+export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
   const emojis = useContextEmojis();
   const streamRelays = useRelaySelectionRelays();
@@ -85,7 +85,7 @@ export default function ChatMessageForm({ stream }: { stream: ParsedStream }) {
             Send
           </Button>
         </Flex>
-        <StreamZapButton stream={stream} onZap={reset} initComment={getValues().content} />
+        {!hideZapButton && <StreamZapButton stream={stream} onZap={reset} initComment={getValues().content} />}
       </Box>
     </>
   );

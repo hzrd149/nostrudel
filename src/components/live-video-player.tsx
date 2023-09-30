@@ -1,4 +1,4 @@
-import { Badge, Flex, FlexProps } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,14 +13,14 @@ export function LiveVideoPlayer({
   autoPlay,
   poster,
   ...props
-}: FlexProps & { stream?: string; autoPlay?: boolean; poster?: string }) {
+}: Omit<BoxProps, "children"> & { stream?: string; autoPlay?: boolean; poster?: string }) {
   const video = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<VideoStatus>();
 
   useEffect(() => {
     if (stream && video.current && !video.current.src && Hls.isSupported()) {
       try {
-        const hls = new Hls();
+        const hls = new Hls({ capLevelToPlayerSize: true });
         hls.loadSource(stream);
         hls.attachMedia(video.current);
         hls.on(Hls.Events.ERROR, (event, data) => {
@@ -43,15 +43,15 @@ export function LiveVideoPlayer({
   }, [video, stream]);
 
   return (
-    <Flex justifyContent="center" alignItems="center" {...props} position="relative">
-      <video
-        ref={video}
-        playsInline={true}
-        controls={status === VideoStatus.Online}
-        autoPlay={autoPlay}
-        poster={poster}
-        style={{ maxHeight: "100%", maxWidth: "100%", width: "100%" }}
-      />
-    </Flex>
+    <Box
+      as="video"
+      ref={video}
+      playsInline={true}
+      controls={status === VideoStatus.Online}
+      autoPlay={autoPlay}
+      poster={poster}
+      style={{ maxHeight: "100%", maxWidth: "100%", width: "100%" }}
+      {...props}
+    />
   );
 }

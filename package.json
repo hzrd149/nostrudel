@@ -44,6 +44,7 @@
     "react-force-graph-2d": "^1.25.1",
     "react-force-graph-3d": "^1.23.1",
     "react-hook-form": "^7.45.4",
+    "react-mosaic-component": "^6.1.0",
     "react-photo-album": "^2.3.0",
     "react-qr-barcode-scanner": "^1.0.6",
     "react-router-dom": "^6.15.0",

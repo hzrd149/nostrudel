@@ -58,7 +58,6 @@ import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
-import StreamModerationView from "./views/tools/stream-moderation";
 import PopularRelaysView from "./views/relays/popular";
 
 const NetworkView = React.lazy(() => import("./views/tools/network"));
@@ -67,6 +66,7 @@ const StreamsView = React.lazy(() => import("./views/streams"));
 const StreamView = React.lazy(() => import("./views/streams/stream"));
 const SearchView = React.lazy(() => import("./views/search"));
 const MapView = React.lazy(() => import("./views/map"));
+const StreamModerationView = React.lazy(() => import("./views/tools/stream-moderation"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -127,6 +127,7 @@ const router = createHashRouter([
       </PageProviders>
     ),
   },
+  { path: "tools/stream-moderation", element: <StreamModerationView /> },
   {
     path: "map",
     element: <MapView />,
@@ -181,7 +182,6 @@ const router = createHashRouter([
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
           { path: "network-graph", element: <NetworkGraphView /> },
-          { path: "stream-moderation", element: <StreamModerationView /> },
         ],
       },
       {
