@@ -1,43 +1,34 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Flex,
-  IconButton,
-  Text,
-  useAccordionContext,
-} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService, { Account } from "../../services/account";
-import { AddIcon } from "../icons";
+import { AddIcon, ArrowDownSIcon, ArrowUpSIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
-import { useLocation, useNavigate } from "react-router-dom";
 import AccountInfoBadge from "../account-info-badge";
+import { useCurrentAccount } from "../../hooks/use-current-account";
 
-function AccountItem({ account }: { account: Account }) {
+function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;
   const metadata = useUserMetadata(pubkey, []);
-  const accord = useAccordionContext();
 
   const handleClick = () => {
-    if (accord) accord.setIndex(-1);
     accountService.switchAccount(pubkey);
+    if (onClick) onClick();
   };
 
   return (
-    <Box display="flex" gap="2" alignItems="center" cursor="pointer" onClick={handleClick}>
-      <UserAvatar pubkey={pubkey} size="sm" />
-      <Box flex={1} overflow="hidden">
-        <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
-        <AccountInfoBadge fontSize="0.7em" account={account} />
-      </Box>
+    <Box display="flex" gap="2" alignItems="center" cursor="pointer">
+      <Flex as="button" onClick={handleClick} flex={1} gap="2">
+        <UserAvatar pubkey={pubkey} size="md" />
+        <Flex overflow="hidden" direction="column" alignItems="flex-start">
+          <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
+          <AccountInfoBadge fontSize="0.7em" account={account} />
+        </Flex>
+      </Flex>
       <IconButton
         icon={<CloseIcon />}
         aria-label="Remove Account"
@@ -52,49 +43,53 @@ function AccountItem({ account }: { account: Account }) {
   );
 }
 
-export function AccountSwitcherList() {
-  const navigate = useNavigate();
-  const accounts = useSubject(accountService.accounts);
-  const current = useSubject(accountService.current);
-  const location = useLocation();
-
-  const otherAccounts = accounts.filter((acc) => acc.pubkey !== current?.pubkey);
-
-  return (
-    <Flex gap="2" direction="column" padding="2">
-      {otherAccounts.map((account) => (
-        <AccountItem key={account.pubkey} account={account} />
-      ))}
-      <Button
-        size="sm"
-        leftIcon={<AddIcon />}
-        onClick={() => {
-          accountService.logout();
-          navigate("/login", { state: { from: location.pathname } });
-        }}
-      >
-        Add Account
-      </Button>
-    </Flex>
-  );
-}
-
 export default function AccountSwitcher() {
+  const navigate = useNavigate();
+  const account = useCurrentAccount()!;
+  const { isOpen, onToggle, onClose } = useDisclosure();
+  const metadata = useUserMetadata(account.pubkey);
+  const accounts = useSubject(accountService.accounts);
+
+  const otherAccounts = accounts.filter((acc) => acc.pubkey !== account?.pubkey);
+
   return (
-    <Accordion allowToggle>
-      <AccordionItem>
-        <h2>
-          <AccordionButton>
-            <Box as="span" flex="1" textAlign="left">
-              Accounts
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-        </h2>
-        <AccordionPanel padding={0}>
-          <AccountSwitcherList />
-        </AccordionPanel>
-      </AccordionItem>
-    </Accordion>
+    <Flex direction="column" gap="2">
+      <Box
+        as="button"
+        borderRadius="30"
+        borderWidth={1}
+        display="flex"
+        gap="2"
+        mb="2"
+        alignItems="center"
+        flexGrow={1}
+        overflow="hidden"
+        onClick={onToggle}
+      >
+        <UserAvatar pubkey={account.pubkey} noProxy size="md" />
+        <Text whiteSpace="nowrap" fontWeight="bold" fontSize="lg" isTruncated>
+          {getUserDisplayName(metadata, account.pubkey)}
+        </Text>
+        <Flex ml="auto" alignItems="center" justifyContent="center" aspectRatio={1} h="3rem">
+          {isOpen ? <ArrowUpSIcon fontSize="1.5rem" /> : <ArrowDownSIcon fontSize="1.5rem" />}
+        </Flex>
+      </Box>
+      {isOpen && (
+        <>
+          {otherAccounts.map((account) => (
+            <AccountItem key={account.pubkey} account={account} onClick={onClose} />
+          ))}
+          <Button
+            leftIcon={<AddIcon />}
+            onClick={() => {
+              accountService.logout();
+              navigate("/login", { state: { from: location.pathname } });
+            }}
+          >
+            Add Account
+          </Button>
+        </>
+      )}
+    </Flex>
   );
 }

@@ -2,7 +2,7 @@ import { AbsoluteCenter, Box, Button, ButtonProps, Divider, Text } from "@chakra
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import {
   BadgeIcon,
-  ChatIcon,
+  MessagesIcon,
   CommunityIcon,
   EmojiIcon,
   FeedIcon,
@@ -10,12 +10,16 @@ import {
   ListIcon,
   LiveStreamIcon,
   NotificationIcon,
+  ProfileIcon,
   RelayIcon,
   SearchIcon,
   SettingsIcon,
   ToolsIcon,
+  LogoutIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
+import { nip19 } from "nostr-tools";
+import accountService from "../../services/account";
 
 export default function NavItems() {
   const navigate = useNavigate();
@@ -24,7 +28,6 @@ export default function NavItems() {
 
   const buttonProps: ButtonProps = {
     py: "2",
-    pl: "2",
     justifyContent: "flex-start",
     variant: "link",
   };
@@ -66,7 +69,7 @@ export default function NavItems() {
           </Button>
           <Button
             onClick={() => navigate("/dm")}
-            leftIcon={<ChatIcon />}
+            leftIcon={<MessagesIcon />}
             colorScheme={active === "dm" ? "brand" : undefined}
             {...buttonProps}
           >
@@ -82,6 +85,15 @@ export default function NavItems() {
       >
         Search
       </Button>
+      {account?.pubkey && (
+        <Button
+          onClick={() => navigate("/u/" + nip19.npubEncode(account.pubkey))}
+          leftIcon={<ProfileIcon />}
+          {...buttonProps}
+        >
+          Profile
+        </Button>
+      )}
       <Button
         onClick={() => navigate("/relays")}
         leftIcon={<RelayIcon />}
@@ -149,7 +161,7 @@ export default function NavItems() {
       >
         Tools
       </Button>
-      <Divider my="2" />
+      <Box h="4" />
       <Button
         onClick={() => navigate("/settings")}
         leftIcon={<SettingsIcon />}
@@ -158,6 +170,11 @@ export default function NavItems() {
       >
         Settings
       </Button>
+      {account && (
+        <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} {...buttonProps}>
+          Logout
+        </Button>
+      )}
     </>
   );
 }

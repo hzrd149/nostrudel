@@ -38,7 +38,7 @@ import BookmarkButton from "./components/bookmark-button";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
-import { getEventCoordinate, getReferences, parseCoordinate } from "../../helpers/nostr/events";
+import { getReferences, parseCoordinate } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";

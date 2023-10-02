@@ -1,16 +1,14 @@
-import { useContext } from "react";
-import { Avatar, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay, Text } from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, FlexProps, Heading, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import accountService from "../../services/account";
-import { EditIcon, LogoutIcon } from "../icons";
-import ProfileButton from "./profile-button";
 import AccountSwitcher from "./account-switcher";
-import { PostModalContext } from "../../providers/post-modal-provider";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
 import { css } from "@emotion/react";
+import { useContext } from "react";
+import { PostModalContext } from "../../providers/post-modal-provider";
+import { WritingIcon } from "../icons";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -39,53 +37,36 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
       css={hideScrollbar}
     >
       <Flex direction="column" flexShrink={0} gap="2">
-        <Flex gap="2" alignItems="center" position="relative">
-          <LinkOverlay as={RouterLink} to="/" />
-          <Avatar src="/apple-touch-icon.png" size="sm" />
-          <Heading size="md">noStrudel</Heading>
+        <Flex gap="2" alignItems="center" position="relative" my="2">
+          <Avatar src="/apple-touch-icon.png" size="md" />
+          <Heading size="md">
+            <LinkOverlay as={RouterLink} to="/">
+              noStrudel
+            </LinkOverlay>
+          </Heading>
         </Flex>
-        <Flex gap="2" overflow="hidden">
-          {account ? (
-            <>
-              <ProfileButton />
-              {!account.readonly && (
-                <IconButton
-                  icon={<EditIcon />}
-                  aria-label="New note"
-                  title="New note"
-                  w="3rem"
-                  h="3rem"
-                  fontSize="1.5rem"
-                  colorScheme="brand"
-                  onClick={() => openModal()}
-                  flexShrink={0}
-                />
-              )}
-            </>
-          ) : (
-            <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">
-              Login
-            </Button>
-          )}
-        </Flex>
-        <AccountSwitcher />
         <NavItems />
+        <Box h="4" />
         {account && (
-          <Button
-            onClick={() => accountService.logout()}
-            leftIcon={<LogoutIcon />}
-            variant="link"
-            justifyContent="flex-start"
-            pl="2"
-            py="2"
-          >
-            Logout
-          </Button>
+          <>
+            <AccountSwitcher />
+            <Button
+              leftIcon={<WritingIcon />}
+              aria-label="Write Note"
+              title="Write Note"
+              onClick={() => openModal()}
+              colorScheme="brand"
+              size="lg"
+              isDisabled={account.readonly}
+            >
+              Write Note
+            </Button>
+          </>
         )}
-        {account?.readonly && (
-          <Text color="red.200" textAlign="center">
-            Readonly Mode
-          </Text>
+        {!account && (
+          <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">
+            Login
+          </Button>
         )}
       </Flex>
       <PublishLog overflowY="auto" minH="15rem" my="4" />

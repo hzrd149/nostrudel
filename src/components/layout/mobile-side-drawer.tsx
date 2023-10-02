@@ -1,9 +1,9 @@
 import {
   Avatar,
+  Box,
   Button,
   Drawer,
   DrawerBody,
-  DrawerCloseButton,
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
@@ -13,12 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { LogoutIcon } from "../icons";
-import { UserAvatar } from "../user-avatar";
-import { UserLink } from "../user-link";
 import AccountSwitcher from "./account-switcher";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import accountService from "../../services/account";
 import NavItems from "./nav-items";
 
 export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "children">) {
@@ -28,42 +24,31 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
     <Drawer placement="left" {...props}>
       <DrawerOverlay />
       <DrawerContent>
-        <DrawerCloseButton />
-        <DrawerHeader px="2" py="4">
+        <DrawerBody
+          display="flex"
+          flexDirection="column"
+          px="4"
+          pt="4"
+          pb="8"
+          overflowY="auto"
+          overflowX="hidden"
+          gap="2"
+        >
           {account ? (
-            <Flex gap="2">
-              <UserAvatar pubkey={account.pubkey} size="sm" noProxy />
-              <UserLink pubkey={account.pubkey} />
-            </Flex>
+            <AccountSwitcher />
           ) : (
-            <Flex gap="2">
-              <Avatar src="/apple-touch-icon.png" size="sm" />
+            <Flex gap="2" my="2" alignItems="center">
+              <Avatar src="/apple-touch-icon.png" size="md" />
               <Text m={0}>Nostrudel</Text>
             </Flex>
           )}
-        </DrawerHeader>
-        <DrawerBody padding={0} overflowY="auto" overflowX="hidden">
-          {account && <AccountSwitcher />}
-          <Flex direction="column" gap="2" padding="2">
-            {!account && (
-              <Button as={RouterLink} to="/login" colorScheme="brand">
-                Login
-              </Button>
-            )}
-            <NavItems />
-            {account && (
-              <Button
-                onClick={() => accountService.logout()}
-                leftIcon={<LogoutIcon />}
-                justifyContent="flex-start"
-                variant="link"
-                pl="2"
-                py="2"
-              >
-                Logout
-              </Button>
-            )}
-          </Flex>
+          <NavItems />
+          <Box h="2" />
+          {!account && (
+            <Button as={RouterLink} to="/login" colorScheme="brand">
+              Login
+            </Button>
+          )}
         </DrawerBody>
       </DrawerContent>
     </Drawer>
