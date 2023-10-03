@@ -3,10 +3,12 @@ name: Docker image
 on:
   push:
     branches:
-      - master
-      - next
+      - "**"
     tags:
-      - v**
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - "main"
 
 env:
   REGISTRY: ghcr.io
@@ -36,7 +38,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=schedule
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
