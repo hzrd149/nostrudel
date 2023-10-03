@@ -16,13 +16,14 @@ import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { NoteContents } from "../../components/note/note-contents";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { TrustProvider } from "../../providers/trust";
 
 const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const refs = getReferences(event);
 
   if (refs.replyId) {
     return (
-      <Card variant="outline" p="2" borderColor="blue.400" ref={ref}>
+      <Card variant="outline" p="2" ref={ref}>
         <Flex gap="2" alignItems="center" mb="2" wrap="wrap">
           <UserAvatar pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} />
@@ -118,7 +119,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
   }
 
   return (
-    <Card variant="outline" borderColor="yellow.400" p="2" ref={ref}>
+    <Card variant="outline" p="2" ref={ref}>
       <Flex direction="row" gap="2" alignItems="center" mb="2">
         <UserAvatar pubkey={zap.request.pubkey} size="xs" />
         <UserLink pubkey={zap.request.pubkey} />
@@ -152,7 +153,13 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
       content = <EmbeddedUnknown event={event} />;
       break;
   }
-  return content && <ErrorBoundary>{content}</ErrorBoundary>;
+  return (
+    content && (
+      <ErrorBoundary>
+        <TrustProvider event={event}>{content}</TrustProvider>
+      </ErrorBoundary>
+    )
+  );
 };
 
 export default memo(NotificationItem);

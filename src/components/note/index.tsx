@@ -136,7 +136,7 @@ export const Note = React.memo(
                     icon={<ExternalLinkIcon />}
                     aria-label="Open External"
                     href={externalLink}
-                    size="sm"
+                    size="xs"
                     variant="ghost"
                     target="_blank"
                   />

@@ -45,8 +45,6 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
             </LinkOverlay>
           </Heading>
         </Flex>
-        <NavItems />
-        <Box h="4" />
         {account && (
           <>
             <AccountSwitcher />
@@ -63,6 +61,8 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
             </Button>
           </>
         )}
+        <NavItems />
+        <Box h="4" />
         {!account && (
           <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="primary" w="full">
             Login
