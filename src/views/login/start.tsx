@@ -67,7 +67,7 @@ export default function LoginStartView() {
           <AlertDescription>There are bugs and things will break.</AlertDescription>
         </Box>
       </Alert>
-      <Button onClick={loginWithExtension} colorScheme="brand">
+      <Button onClick={loginWithExtension} colorScheme="primary">
         Use browser extension (NIP-07)
       </Button>
       <Button as={RouterLink} to="./nip05" state={location.state}>

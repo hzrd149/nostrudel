@@ -54,7 +54,7 @@ export default function LoginNpubView() {
         <Button variant="link" onClick={() => navigate("../")}>
           Back
         </Button>
-        <Button colorScheme="brand" ml="auto" type="submit">
+        <Button colorScheme="primary" ml="auto" type="submit">
           Login
         </Button>
       </Flex>

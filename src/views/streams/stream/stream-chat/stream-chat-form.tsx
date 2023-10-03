@@ -81,7 +81,7 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
               if (file) uploadImage(file);
             }}
           />
-          <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
+          <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
             Send
           </Button>
         </Flex>

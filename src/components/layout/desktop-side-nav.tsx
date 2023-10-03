@@ -55,7 +55,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
               aria-label="Write Note"
               title="Write Note"
               onClick={() => openModal()}
-              colorScheme="brand"
+              colorScheme="primary"
               size="lg"
               isDisabled={account.readonly}
             >
@@ -64,7 +64,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           </>
         )}
         {!account && (
-          <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="brand" w="full">
+          <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="primary" w="full">
             Login
           </Button>
         )}

@@ -70,7 +70,7 @@ export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalPr
           <Button mr="2" onClick={onClose}>
             Cancel
           </Button>
-          <Button colorScheme="brand" type="submit">
+          <Button colorScheme="primary" type="submit">
             Create
           </Button>
         </ModalFooter>

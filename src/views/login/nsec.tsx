@@ -146,7 +146,7 @@ export default function LoginNsecView() {
         <Button ml="auto" onClick={generateNewKey}>
           Generate New
         </Button>
-        <Button colorScheme="brand" type="submit">
+        <Button colorScheme="primary" type="submit">
           Login
         </Button>
       </Flex>

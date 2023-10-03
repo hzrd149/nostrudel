@@ -65,7 +65,7 @@ function RelayPage({ relay }: { relay: string }) {
       </Flex>
       <RelayMetadata url={relay} extended />
       {info?.supported_nips && <SupportedNIPs nips={info?.supported_nips} />}
-      <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="brand">
+      <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="primary">
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>
           <Tab>Notes</Tab>
@@ -76,7 +76,7 @@ function RelayPage({ relay }: { relay: string }) {
             <Flex gap="2">
               <PeopleListSelection />
               {!showReviewForm.isOpen && (
-                <Button colorScheme="brand" ml="auto" mb="2" onClick={showReviewForm.onOpen}>
+                <Button colorScheme="primary" ml="auto" mb="2" onClick={showReviewForm.onOpen}>
                   Write review
                 </Button>
               )}

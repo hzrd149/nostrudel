@@ -281,7 +281,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
               <MenuItem onClick={() => extendAll(dayjs().add(1, "week").unix())}>1 Week</MenuItem>
             </MenuList>
           </Menu>
-          <Button colorScheme="brand" onClick={unmuteAll}>
+          <Button colorScheme="primary" onClick={unmuteAll}>
             Unmute all
           </Button>
         </ModalFooter>

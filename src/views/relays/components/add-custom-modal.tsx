@@ -94,7 +94,7 @@ export default function AddCustomRelayModal({
             <Button variant="ghost" onClick={props.onClose}>
               Cancel
             </Button>
-            <Button colorScheme="brand" onClick={() => safeUrl && onSubmit(safeUrl)} isDisabled={!safeUrl}>
+            <Button colorScheme="primary" onClick={() => safeUrl && onSubmit(safeUrl)} isDisabled={!safeUrl}>
               Add
             </Button>
           </ButtonGroup>

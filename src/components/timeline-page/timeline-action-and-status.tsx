@@ -20,7 +20,7 @@ export default function TimelineActionAndStatus({ timeline }: { timeline: Timeli
   }
 
   return (
-    <Button onClick={() => timeline.loadMore()} flexShrink={0} size="lg" mx="auto" colorScheme="brand" my="4">
+    <Button onClick={() => timeline.loadMore()} flexShrink={0} size="lg" mx="auto" colorScheme="primary" my="4">
       Load More
     </Button>
   );

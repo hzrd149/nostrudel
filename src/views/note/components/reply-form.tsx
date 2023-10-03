@@ -133,7 +133,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
           <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
           <ButtonGroup size="sm" ml="auto">
             <Button onClick={onCancel}>Cancel</Button>
-            <Button type="submit" colorScheme="brand" size="sm">
+            <Button type="submit" colorScheme="primary" size="sm">
               Submit
             </Button>
           </ButtonGroup>

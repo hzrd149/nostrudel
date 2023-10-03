@@ -39,7 +39,7 @@ export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
             openModal();
           }}
           variant="solid"
-          colorScheme="brand"
+          colorScheme="primary"
           isDisabled={account?.readonly ?? true}
         />
         <IconButton

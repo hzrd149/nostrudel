@@ -133,7 +133,7 @@ export default function LoginNip05View() {
         <Button variant="link" onClick={() => navigate("../")}>
           Back
         </Button>
-        <Button colorScheme="brand" ml="auto" type="submit" isDisabled={!pubkey}>
+        <Button colorScheme="primary" ml="auto" type="submit" isDisabled={!pubkey}>
           Login
         </Button>
       </Flex>

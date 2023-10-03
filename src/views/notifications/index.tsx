@@ -113,7 +113,7 @@ function NotificationsPage() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        <Tabs isLazy colorScheme="brand">
+        <Tabs isLazy colorScheme="primary">
           <TabList overflowX="auto" overflowY="hidden">
             <Tab>Replies</Tab>
             <Tab>Mentions</Tab>

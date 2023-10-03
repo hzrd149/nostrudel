@@ -42,7 +42,7 @@ export default function Header({
             aria-label="Edit profile"
             title="Edit profile"
             size="sm"
-            colorScheme="brand"
+            colorScheme="primary"
             onClick={() => navigate("/profile")}
           />
         )}

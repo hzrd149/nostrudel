@@ -45,7 +45,7 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
           <NavItems />
           <Box h="2" />
           {!account && (
-            <Button as={RouterLink} to="/login" colorScheme="brand">
+            <Button as={RouterLink} to="/login" colorScheme="primary">
               Login
             </Button>
           )}
