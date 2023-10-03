@@ -52,7 +52,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/")}
         leftIcon={<FeedIcon />}
-        colorScheme={active === "notes" ? "brand" : undefined}
+        colorScheme={active === "notes" ? "primary" : undefined}
         {...buttonProps}
       >
         Notes
@@ -62,7 +62,7 @@ export default function NavItems() {
           <Button
             onClick={() => navigate("/notifications")}
             leftIcon={<NotificationIcon />}
-            colorScheme={active === "notifications" ? "brand" : undefined}
+            colorScheme={active === "notifications" ? "primary" : undefined}
             {...buttonProps}
           >
             Notifications
@@ -70,7 +70,7 @@ export default function NavItems() {
           <Button
             onClick={() => navigate("/dm")}
             leftIcon={<MessagesIcon />}
-            colorScheme={active === "dm" ? "brand" : undefined}
+            colorScheme={active === "dm" ? "primary" : undefined}
             {...buttonProps}
           >
             Messages
@@ -80,7 +80,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/search")}
         leftIcon={<SearchIcon />}
-        colorScheme={active === "search" ? "brand" : undefined}
+        colorScheme={active === "search" ? "primary" : undefined}
         {...buttonProps}
       >
         Search
@@ -97,7 +97,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/relays")}
         leftIcon={<RelayIcon />}
-        colorScheme={active === "relays" ? "brand" : undefined}
+        colorScheme={active === "relays" ? "primary" : undefined}
         {...buttonProps}
       >
         Relays
@@ -108,7 +108,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/streams")}
         leftIcon={<LiveStreamIcon />}
-        colorScheme={active === "streams" ? "brand" : undefined}
+        colorScheme={active === "streams" ? "primary" : undefined}
         {...buttonProps}
       >
         Streams
@@ -116,7 +116,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/communities")}
         leftIcon={<CommunityIcon />}
-        colorScheme={active === "communities" ? "brand" : undefined}
+        colorScheme={active === "communities" ? "primary" : undefined}
         {...buttonProps}
       >
         Communities
@@ -124,7 +124,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/lists")}
         leftIcon={<ListIcon />}
-        colorScheme={active === "lists" ? "brand" : undefined}
+        colorScheme={active === "lists" ? "primary" : undefined}
         {...buttonProps}
       >
         Lists
@@ -132,7 +132,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/goals")}
         leftIcon={<GoalIcon />}
-        colorScheme={active === "goals" ? "brand" : undefined}
+        colorScheme={active === "goals" ? "primary" : undefined}
         {...buttonProps}
       >
         Goals
@@ -140,7 +140,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/badges")}
         leftIcon={<BadgeIcon />}
-        colorScheme={active === "badges" ? "brand" : undefined}
+        colorScheme={active === "badges" ? "primary" : undefined}
         {...buttonProps}
       >
         Badges
@@ -148,7 +148,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/emojis")}
         leftIcon={<EmojiIcon />}
-        colorScheme={active === "emojis" ? "brand" : undefined}
+        colorScheme={active === "emojis" ? "primary" : undefined}
         {...buttonProps}
       >
         Emojis
@@ -156,7 +156,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/tools")}
         leftIcon={<ToolsIcon />}
-        colorScheme={active === "tools" ? "brand" : undefined}
+        colorScheme={active === "tools" ? "primary" : undefined}
         {...buttonProps}
       >
         Tools
@@ -165,7 +165,7 @@ export default function NavItems() {
       <Button
         onClick={() => navigate("/settings")}
         leftIcon={<SettingsIcon />}
-        colorScheme={active === "settings" ? "brand" : undefined}
+        colorScheme={active === "settings" ? "primary" : undefined}
         {...buttonProps}
       >
         Settings

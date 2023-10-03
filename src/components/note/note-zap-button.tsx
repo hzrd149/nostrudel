@@ -43,7 +43,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           leftIcon={<LightningIcon />}
           aria-label="Zap Note"
           title="Zap Note"
-          colorScheme={hasZapped ? "brand" : undefined}
+          colorScheme={hasZapped ? "primary" : undefined}
           {...props}
           onClick={onOpen}
           isDisabled={!metadata?.allowsNostr}
