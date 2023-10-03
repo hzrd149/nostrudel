@@ -36,5 +36,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Version
+        if: steps.changesets.outputs.publishedPackages
         run: |
           echo '${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}'
