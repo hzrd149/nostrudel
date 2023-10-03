@@ -1,7 +1,13 @@
 name: Create and publish a Docker image
 # copied from https://blog.pradumnasaraf.dev/publish-image-on-ghcr
 
-on: push
+on:
+  push:
+    branches:
+      - master
+      - "**"
+    tags:
+      - v**
 
 env:
   REGISTRY: ghcr.io
