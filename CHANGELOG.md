@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.30.0
+
+### Minor Changes
+
+- 979ddd3: test
+
 ## 0.29.0
 
 ### Minor Changes
