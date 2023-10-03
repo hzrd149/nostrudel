@@ -53,7 +53,13 @@ function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }
 
   return (
     <Flex as="form" gap="2" onSubmit={submit}>
-      <Input placeholder="name" {...register("name", { required: true })} autoComplete="off" />
+      <Input
+        placeholder="name"
+        {...register("name", { required: true })}
+        pattern="^[a-zA-Z0-9_-]+$"
+        autoComplete="off"
+        title="emoji name, can not contain spaces"
+      />
       <Input placeholder="https://example.com/emoji.png" {...register("url", { required: true })} autoComplete="off" />
       {previewURL && <Image aspectRatio={1} h="10" src={previewURL} />}
       <Button flexShrink={0} type="submit">
@@ -132,7 +138,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
           {isAuthor && (
             <>
               {!editing && (
-                <Button colorScheme="brand" onClick={startEdit}>
+                <Button colorScheme="primary" onClick={startEdit}>
                   Edit
                 </Button>
               )}
@@ -184,7 +190,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
           <Button ml="auto" onClick={cancelEdit}>
             Cancel
           </Button>
-          <Button colorScheme="brand" onClick={saveEdit}>
+          <Button colorScheme="primary" onClick={saveEdit}>
             Save
           </Button>
         </Flex>

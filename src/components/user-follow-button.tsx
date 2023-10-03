@@ -140,7 +140,7 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   if (showLists) {
     return (
       <Menu closeOnSelect={false}>
-        <MenuButton as={Button} colorScheme="brand" {...props} rightIcon={<ArrowDownSIcon />} isDisabled={isDisabled}>
+        <MenuButton as={Button} colorScheme="primary" {...props} rightIcon={<ArrowDownSIcon />} isDisabled={isDisabled}>
           {isFollowing ? "Unfollow" : "Follow"}
         </MenuButton>
         <MenuList>
@@ -174,13 +174,13 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
     );
   } else if (isFollowing) {
     return (
-      <Button onClick={handleUnfollow} colorScheme="brand" icon={<UnfollowIcon />} isDisabled={isDisabled} {...props}>
+      <Button onClick={handleUnfollow} colorScheme="primary" icon={<UnfollowIcon />} isDisabled={isDisabled} {...props}>
         Unfollow
       </Button>
     );
   } else {
     return (
-      <Button onClick={handleFollow} colorScheme="brand" icon={<FollowIcon />} isDisabled={isDisabled} {...props}>
+      <Button onClick={handleFollow} colorScheme="primary" icon={<FollowIcon />} isDisabled={isDisabled} {...props}>
         Follow
       </Button>
     );

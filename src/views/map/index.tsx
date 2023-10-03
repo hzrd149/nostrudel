@@ -156,7 +156,7 @@ export default function MapView() {
           <Button flexShrink={0} onClick={() => navigate(-1)}>
             Back
           </Button>
-          <Button colorScheme="brand" onClick={setCellsFromMap} flex={1}>
+          <Button colorScheme="primary" onClick={setCellsFromMap} flex={1}>
             Search this area
           </Button>
         </Flex>

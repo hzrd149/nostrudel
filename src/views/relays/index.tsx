@@ -49,7 +49,7 @@ export default function RelaysView() {
         <Button as={RouterLink} to="/relays/reviews">
           Browse Reviews
         </Button>
-        <Button colorScheme="brand" onClick={addRelayModal.onOpen}>
+        <Button colorScheme="primary" onClick={addRelayModal.onOpen}>
           Add Custom
         </Button>
       </Flex>

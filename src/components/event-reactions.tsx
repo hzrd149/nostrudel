@@ -66,7 +66,7 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
           url={group.url}
           count={group.count}
           onClick={() => addReaction(group.emoji, group.url)}
-          colorScheme={account && group.pubkeys.includes(account?.pubkey) ? "brand" : undefined}
+          colorScheme={account && group.pubkeys.includes(account?.pubkey) ? "primary" : undefined}
         />
       ))}
       <Button onClick={detailsModal.onOpen}>Show all</Button>

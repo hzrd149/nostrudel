@@ -102,7 +102,7 @@ export default function RelaySelectionModal({
             Cancel
           </Button>
           <Button
-            colorScheme="brand"
+            colorScheme="primary"
             onClick={() => {
               onSubmit(newSelected);
               onClose();

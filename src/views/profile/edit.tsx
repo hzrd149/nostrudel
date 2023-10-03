@@ -179,7 +179,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
           Download Backup
         </Button>
         <Button onClick={() => reset()}>Reset</Button>
-        <Button colorScheme="brand" isLoading={isSubmitting} type="submit">
+        <Button colorScheme="primary" isLoading={isSubmitting} type="submit">
           Update
         </Button>
       </Flex>

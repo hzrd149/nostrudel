@@ -50,7 +50,7 @@ export default function SettingsView() {
           ml="auto"
           isLoading={form.formState.isLoading || form.formState.isValidating || form.formState.isSubmitting}
           isDisabled={!form.formState.isDirty}
-          colorScheme="brand"
+          colorScheme="primary"
           type="submit"
         >
           Save Settings

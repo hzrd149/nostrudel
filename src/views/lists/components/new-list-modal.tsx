@@ -92,7 +92,7 @@ export default function NewListModal({
           </FormControl>
           <ButtonGroup ml="auto">
             <Button onClick={onClose}>Cancel</Button>
-            <Button colorScheme="brand" type="submit" isLoading={formState.isSubmitting}>
+            <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
               Create
             </Button>
           </ButtonGroup>

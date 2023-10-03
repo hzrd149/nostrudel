@@ -106,7 +106,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
         <Box h="0" overflow="visible" w="full" zIndex={100} display="flex" position="relative">
           <Button
             onClick={() => setLatest(timeline.timeline.value[0].created_at + 10)}
-            colorScheme="brand"
+            colorScheme="primary"
             size="lg"
             mx="auto"
             w={["50%", null, "30%"]}

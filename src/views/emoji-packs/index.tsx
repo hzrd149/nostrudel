@@ -81,7 +81,7 @@ export default function EmojiPacksView() {
           Emoji pack manager
         </Button>
         {account && (
-          <Button colorScheme="brand" onClick={createModal.onOpen}>
+          <Button colorScheme="primary" onClick={createModal.onOpen}>
             Create Emoji pack
           </Button>
         )}

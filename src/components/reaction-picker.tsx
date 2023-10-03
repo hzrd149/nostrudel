@@ -67,7 +67,7 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
         />
         <Flex>
           <Input placeholder="🔥" display="inline" size="sm" minW="2rem" w="5rem" />
-          <Button variant="solid" colorScheme="brand" size="sm">
+          <Button variant="solid" colorScheme="primary" size="sm">
             Add
           </Button>
         </Flex>

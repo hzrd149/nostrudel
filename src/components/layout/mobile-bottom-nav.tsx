@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PostModalContext } from "../../providers/post-modal-provider";
-import { ChatIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
+import { MessagesIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 
@@ -39,10 +39,16 @@ export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
             openModal();
           }}
           variant="solid"
-          colorScheme="brand"
+          colorScheme="primary"
           isDisabled={account?.readonly ?? true}
         />
-        <IconButton icon={<ChatIcon />} aria-label="Messages" onClick={() => navigate(`/dm`)} flexGrow="1" size="md" />
+        <IconButton
+          icon={<MessagesIcon />}
+          aria-label="Messages"
+          onClick={() => navigate(`/dm`)}
+          flexGrow="1"
+          size="md"
+        />
         <IconButton
           icon={<NotificationIcon />}
           aria-label="Notifications"

@@ -1,0 +1,26 @@
+.chakra-theme .mosaic {
+  background: none;
+}
+.chakra-theme .mosaic-window {
+  border: 1px solid var(--chakra-colors-chakra-border-color);
+  border-radius: var(--chakra-sizes-1);
+}
+.chakra-theme .mosaic-window .mosaic-window-toolbar {
+  height: auto;
+  box-shadow: none;
+  background: none;
+}
+.chakra-theme .mosaic-window .mosaic-window-title {
+  font-size: var(--chakra-fontSizes-lg);
+  color: var(--chakra-colors-chakra-body-text);
+  padding: var(--chakra-sizes-2);
+  background: var(--chakra-colors-chakra-body-bg);
+}
+.chakra-theme .mosaic-window .mosaic-window-body {
+  display: flex;
+  flex-direction: column;
+  background: var(--chakra-colors-chakra-body-bg);
+}
+.chakra-theme .mosaic-window .mosaic-window-controls {
+  display: none;
+}

@@ -32,7 +32,7 @@ export default function RequireCurrentAccount({ children }: { children: JSX.Elem
           as={Link}
           to="/login"
           state={{ from: location.pathname }}
-          colorScheme="brand"
+          colorScheme="primary"
           rightIcon={<ExternalLinkIcon />}
         >
           Login

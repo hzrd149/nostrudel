@@ -56,7 +56,7 @@ export default function RelayReviewForm({
       <Textarea {...register("content")} rows={5} placeholder="A short description of your experience with the relay" />
       <Flex gap="2" ml="auto">
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" colorScheme="brand">
+        <Button type="submit" colorScheme="primary">
           Submit
         </Button>
       </Flex>

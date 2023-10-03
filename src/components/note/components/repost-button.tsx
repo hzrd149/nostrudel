@@ -84,7 +84,7 @@ export function RepostButton({ event }: { event: NostrEvent }) {
               <Button variant="ghost" size="sm" mr={2} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="brand" variant="solid" onClick={handleClick} size="sm" isLoading={loading}>
+              <Button colorScheme="primary" variant="solid" onClick={handleClick} size="sm" isLoading={loading}>
                 Repost
               </Button>
             </ModalFooter>
