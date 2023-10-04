@@ -1,4 +1,5 @@
 import { memo, useRef } from "react";
+import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Card, CardProps, Center, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 
@@ -9,7 +10,6 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 import CommunityDescription from "./community-description";
-import { nip19 } from "nostr-tools";
 import CommunityModList from "./community-mod-list";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {
