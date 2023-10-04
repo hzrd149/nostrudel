@@ -9,6 +9,7 @@ import PrivacySettings from "./privacy-settings";
 import useAppSettings from "../../hooks/use-app-settings";
 import { FormProvider, useForm } from "react-hook-form";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import VersionButton from "../../components/version-button";
 
 export default function SettingsView() {
   const toast = useToast();
@@ -46,6 +47,7 @@ export default function SettingsView() {
         <Link isExternal href="https://github.com/hzrd149/nostrudel">
           <GithubIcon /> Github
         </Link>
+        <VersionButton />
         <Button
           ml="auto"
           isLoading={form.formState.isLoading || form.formState.isValidating || form.formState.isSubmitting}
