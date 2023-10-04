@@ -6,10 +6,9 @@ import { ParsedStream } from "../../../helpers/nostr/stream";
 function LiveVideoCard({ stream }: { stream: ParsedStream }) {
   return (
     <LiveVideoPlayer
-      stream={stream.streaming || stream.recording}
-      autoPlay={stream.streaming ? true : undefined}
+      stream={stream.recording || stream.streaming}
+      autoPlay={stream.status === "live" ? true : undefined}
       poster={stream.image}
-      maxH="50vh"
       muted
     />
   );

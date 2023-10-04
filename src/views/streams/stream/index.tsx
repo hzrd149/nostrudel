@@ -106,14 +106,13 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
       </Flex>
       <Flex gap="2" maxH="calc(100vh - 4rem)">
         <LiveVideoPlayer
-          stream={stream.streaming || stream.recording}
-          autoPlay={!!stream.streaming}
+          stream={stream.recording || stream.streaming}
+          autoPlay={stream.status === "live" ? true : undefined}
           poster={stream.image}
           flexGrow={1}
-          mx="auto"
         />
         {showChat && (
-          <Flex direction="column" gap="2" flexGrow={1} maxW="lg" flexShrink={0}>
+          <Flex direction="column" gap="2" flexGrow={1} maxW="md" flexShrink={0}>
             <StreamGoal stream={stream} />
             <StreamChat stream={stream} actions={renderActions()} flex={1} />
           </Flex>
@@ -160,8 +159,8 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
         </Button>
       </Flex>
       <LiveVideoPlayer
-        stream={stream.streaming || stream.recording}
-        autoPlay={!!stream.streaming}
+        stream={stream.recording || stream.streaming}
+        autoPlay={stream.status === "live" ? true : undefined}
         poster={stream.image}
       />
       <Flex direction="column" gap="2" overflow="hidden" px="2">
