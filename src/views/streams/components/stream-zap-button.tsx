@@ -3,7 +3,7 @@ import { ParsedStream } from "../../../helpers/nostr/stream";
 import { LightningIcon } from "../../../components/icons";
 import { useInvoiceModalContext } from "../../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
-import ZapModal from "../../../components/zap-modal";
+import ZapModal from "../../../components/event-zap-modal";
 import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
 import useStreamGoal from "../../../hooks/use-stream-goal";
 

@@ -1,6 +1,6 @@
 import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
-import ZapModal from "../../../components/zap-modal";
+import ZapModal from "../../../components/event-zap-modal";
 import eventZapsService from "../../../services/event-zaps";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useInvoiceModalContext } from "../../../providers/invoice-modal";

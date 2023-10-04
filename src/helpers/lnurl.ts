@@ -1,4 +1,5 @@
 import { decodeText } from "./bech32";
+import { parsePaymentRequest } from "./bolt11";
 
 export function isLNURL(lnurl: string) {
   try {
@@ -28,4 +29,18 @@ export function getLudEndpoint(addressOrLNURL: string) {
   try {
     return parseLNURL(addressOrLNURL);
   } catch (e) {}
+}
+
+export async function getInvoiceFromCallbackUrl(callback: URL) {
+  const amount = callback.searchParams.get("amount");
+  if (!amount) throw new Error("Missing amount");
+
+  const { pr: payRequest } = await fetch(callback).then((res) => res.json());
+
+  if (payRequest as string) {
+    const parsed = parsePaymentRequest(payRequest);
+    if (parsed.amount !== parseInt(amount)) throw new Error("Incorrect amount");
+
+    return payRequest as string;
+  } else throw new Error("Failed to get invoice");
 }

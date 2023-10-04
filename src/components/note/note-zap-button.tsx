@@ -8,7 +8,7 @@ import clientRelaysService from "../../services/client-relays";
 import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
-import ZapModal from "../zap-modal";
+import ZapModal from "../event-zap-modal";
 import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/events";
