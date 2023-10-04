@@ -71,7 +71,7 @@ export default function InputStep({
     },
   });
 
-  const splits = event ? getZapSplits(event) : [];
+  const splits = event ? getZapSplits(event, pubkey) : [];
 
   const { metadata: lnurlMetadata } = useUserLNURLMetadata(pubkey);
   const canZap = lnurlMetadata?.allowsNostr && lnurlMetadata?.nostrPubkey;

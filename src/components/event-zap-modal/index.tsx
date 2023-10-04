@@ -110,9 +110,10 @@ async function getPayRequestsForEvent(
   event: NostrEvent,
   amount: number,
   comment?: string,
+  fallbackPubkey?: string,
   additionalRelays?: string[],
 ) {
-  const splits = getZapSplits(event);
+  const splits = getZapSplits(event, fallbackPubkey);
 
   const draftZapRequests: PayRequest[] = [];
   for (const { pubkey, percent } of splits) {
@@ -134,11 +135,11 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   relays?: string[];
   initialComment?: string;
   initialAmount?: number;
-  onInvoice: (invoice: string) => void;
   allowComment?: boolean;
   showEmbed?: boolean;
   embedProps?: EmbedProps;
   additionalRelays?: string[];
+  onZapped: () => void;
 };
 
 export default function ZapModal({
@@ -148,18 +149,18 @@ export default function ZapModal({
   onClose,
   initialComment,
   initialAmount,
-  onInvoice,
   allowComment = true,
   showEmbed = true,
   embedProps,
   additionalRelays = [],
+  onZapped,
   ...props
 }: ZapModalProps) {
   const [callbacks, setCallbacks] = useState<PayRequest[]>();
 
   const renderContent = () => {
     if (callbacks && callbacks.length > 0) {
-      return <PayStep callbacks={callbacks} onComplete={onClose} />;
+      return <PayStep callbacks={callbacks} onComplete={onZapped} />;
     } else {
       return (
         <InputStep
@@ -173,7 +174,9 @@ export default function ZapModal({
           onSubmit={async (values) => {
             const amountInMSats = values.amount * 1000;
             if (event) {
-              setCallbacks(await getPayRequestsForEvent(event, amountInMSats, values.comment, additionalRelays));
+              setCallbacks(
+                await getPayRequestsForEvent(event, amountInMSats, values.comment, pubkey, additionalRelays),
+              );
             } else {
               const callback = await getPayRequestForPubkey(
                 pubkey,

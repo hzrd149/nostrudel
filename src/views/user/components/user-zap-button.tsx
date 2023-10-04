@@ -30,8 +30,7 @@ export default function UserZapButton({ pubkey, ...props }: { pubkey: string } &
           isOpen={isOpen}
           onClose={onClose}
           pubkey={pubkey}
-          onInvoice={async (invoice) => {
-            await requestPay(invoice);
+          onZapped={async () => {
             onClose();
           }}
         />

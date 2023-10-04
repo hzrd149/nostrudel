@@ -9,7 +9,6 @@ import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
-import { useInvoiceModalContext } from "../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/events";
 
@@ -22,15 +21,13 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const { requestPay } = useInvoiceModalContext();
   const zaps = useEventZaps(event.id);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const hasZapped = !!account && zaps.some((zap) => zap.request.pubkey === account.pubkey);
 
-  const handleInvoice = async (invoice: string) => {
+  const onZapped = () => {
     onClose();
-    await requestPay(invoice);
     eventZapsService.requestZaps(getEventUID(event), clientRelaysService.getReadUrls(), true);
   };
 
@@ -64,10 +61,10 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
       {isOpen && (
         <ZapModal
           isOpen={isOpen}
-          onClose={onClose}
-          event={event}
-          onInvoice={handleInvoice}
           pubkey={event.pubkey}
+          event={event}
+          onClose={onClose}
+          onZapped={onZapped}
           allowComment={allowComment}
           showEmbed={showEventPreview}
         />
