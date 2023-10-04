@@ -11,9 +11,10 @@ import {
   Flex,
   Heading,
   Link,
+  LinkProps,
   Text,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
@@ -36,13 +37,99 @@ import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
 import Timestamp from "../../../components/timestamp";
 import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
+import { getArticleTitle } from "../../../helpers/nostr/long-form";
+import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 
-function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
+function ArticleLinkLoader({ pointer, ...props }: { pointer: nip19.AddressPointer } & Omit<LinkProps, "children">) {
+  const article = useReplaceableEvent(pointer);
+  if (article) return <ArticleLink article={article} {...props} />;
+  return null;
+}
+function ArticleLink({ article, ...props }: { article: NostrEvent } & Omit<LinkProps, "children">) {
+  const title = getArticleTitle(article);
+  const naddr = getSharableEventAddress(article);
+
+  return (
+    <Link href={naddr ? buildAppSelectUrl(naddr, false) : undefined} isExternal color="blue.500" {...props}>
+      {title}
+    </Link>
+  );
+}
+
+export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);
   const notes = getEventsFromList(list);
   const coordinates = getParsedCordsFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
+  const articles = coordinates.filter((cord) => cord.kind === Kind.Article);
   const references = getReferencesFromList(list);
+
+  return (
+    <>
+      {people.length > 0 && (
+        <>
+          <Text>People ({people.length}):</Text>
+          <AvatarGroup overflow="hidden" mb="2" max={16} size="sm">
+            {people.map(({ pubkey, relay }) => (
+              <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
+            ))}
+          </AvatarGroup>
+        </>
+      )}
+      {notes.length > 0 && (
+        <>
+          <Text>Notes ({notes.length}):</Text>
+          <Flex gap="2" overflow="hidden">
+            {notes.slice(0, 4).map(({ id, relay }) => (
+              <NoteLink key={id} noteId={id} />
+            ))}
+          </Flex>
+        </>
+      )}
+      {references.length > 0 && (
+        <>
+          <Text>References ({references.length})</Text>
+          <Flex gap="2" overflow="hidden">
+            {references.slice(0, 3).map(({ url, petname }) => (
+              <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
+                {petname || url}
+              </Link>
+            ))}
+          </Flex>
+        </>
+      )}
+      {communities.length > 0 && (
+        <>
+          <Text>Communities ({communities.length}):</Text>
+          <Flex gap="2" overflow="hidden">
+            {communities.map((pointer) => (
+              <Link
+                key={JSON.stringify(pointer)}
+                as={RouterLink}
+                to={`/c/${pointer.identifier}/${nip19.npubEncode(pointer.pubkey)}`}
+                color="blue.500"
+              >
+                {pointer.identifier}
+              </Link>
+            ))}
+          </Flex>
+        </>
+      )}
+      {articles.length > 0 && (
+        <>
+          <Text>Articles ({articles.length}):</Text>
+          <Flex overflow="hidden" direction="column">
+            {articles.slice(0, 4).map((pointer) => (
+              <ArticleLinkLoader key={JSON.stringify(pointer)} pointer={pointer} isTruncated />
+            ))}
+          </Flex>
+        </>
+      )}
+    </>
+  );
+}
+
+function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
 
   // if there is a parent intersection observer, register this card
@@ -62,54 +149,7 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
         </Link>
       </CardHeader>
       <CardBody py="0" px="2">
-        {people.length > 0 && (
-          <>
-            <Text>People ({people.length}):</Text>
-            <AvatarGroup overflow="hidden" mb="2" max={16} size="sm">
-              {people.map(({ pubkey, relay }) => (
-                <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
-              ))}
-            </AvatarGroup>
-          </>
-        )}
-        {notes.length > 0 && (
-          <>
-            <Text>Notes ({notes.length}):</Text>
-            <Flex gap="2" overflow="hidden">
-              {notes.slice(0, 4).map(({ id, relay }) => (
-                <NoteLink key={id} noteId={id} />
-              ))}
-            </Flex>
-          </>
-        )}
-        {references.length > 0 && (
-          <>
-            <Text>References ({references.length})</Text>
-            <Flex gap="2" overflow="hidden">
-              {references.slice(0, 3).map(({ url, petname }) => (
-                <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
-                  {petname || url}
-                </Link>
-              ))}
-            </Flex>
-          </>
-        )}
-        {communities.length > 0 && (
-          <>
-            <Text>Communities ({communities.length}):</Text>
-            <Flex gap="2" overflow="hidden">
-              {communities.map((pointer) => (
-                <Link
-                  as={RouterLink}
-                  to={`/c/${pointer.identifier}/${nip19.npubEncode(pointer.pubkey)}`}
-                  color="blue.500"
-                >
-                  {pointer.identifier}
-                </Link>
-              ))}
-            </Flex>
-          </>
-        )}
+        <ListCardContent list={list} />
       </CardBody>
       <CardFooter p="2" display="flex" alignItems="center" whiteSpace="pre" gap="2">
         <Text>Created by:</Text>
