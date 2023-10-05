@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import db from "./db";
 
 function clamp(v: number, min: number, max: number) {

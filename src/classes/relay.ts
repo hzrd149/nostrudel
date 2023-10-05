@@ -42,7 +42,7 @@ export type RelayConfig = { url: string; mode: RelayMode };
 
 const CONNECTION_TIMEOUT = 1000 * 30;
 
-export class Relay {
+export default class Relay {
   url: string;
   onOpen = new Subject<Relay>(undefined, false);
   onClose = new Subject<Relay>(undefined, false);

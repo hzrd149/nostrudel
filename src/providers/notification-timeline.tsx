@@ -3,7 +3,7 @@ import { Kind } from "nostr-tools";
 
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import { useCurrentAccount } from "../hooks/use-current-account";
-import { TimelineLoader } from "../classes/timeline-loader";
+import TimelineLoader from "../classes/timeline-loader";
 import timelineCacheService from "../services/timeline-cache";
 import { NostrEvent } from "../types/nostr-event";
 import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";

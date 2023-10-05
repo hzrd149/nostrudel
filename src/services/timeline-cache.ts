@@ -1,4 +1,4 @@
-import { TimelineLoader } from "../classes/timeline-loader";
+import TimelineLoader from "../classes/timeline-loader";
 
 const MAX_CACHE = 20;
 

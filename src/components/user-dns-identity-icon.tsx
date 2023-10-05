@@ -1,4 +1,5 @@
 import { Text, Tooltip } from "@chakra-ui/react";
+
 import { useDnsIdentity } from "../hooks/use-dns-identity";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "./icons";

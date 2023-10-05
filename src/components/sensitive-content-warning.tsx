@@ -9,6 +9,7 @@ import {
   useBreakpointValue,
   useModal,
 } from "@chakra-ui/react";
+
 import { useExpand } from "../providers/expanded";
 
 export default function SensitiveContentWarning({ description }: { description: string } & AlertProps) {

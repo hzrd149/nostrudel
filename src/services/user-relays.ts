@@ -3,7 +3,7 @@ import { Kind } from "nostr-tools";
 import { isRTag, NostrEvent } from "../types/nostr-event";
 import { RelayConfig } from "../classes/relay";
 import { parseRTag } from "../helpers/nostr/events";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";

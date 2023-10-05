@@ -3,7 +3,7 @@ import db from "./db";
 import _throttle from "lodash.throttle";
 
 import { fetchWithCorsFallback } from "../helpers/cors";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 
 export function parseAddress(address: string): { name?: string; domain?: string } {

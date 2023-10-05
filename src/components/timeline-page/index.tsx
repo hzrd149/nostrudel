@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
-import { TimelineLoader } from "../../classes/timeline-loader";
+import TimelineLoader from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "./timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";

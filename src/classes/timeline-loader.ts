@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import { Debugger } from "debug";
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
-import { NostrRequest } from "./nostr-request";
-import { NostrMultiSubscription } from "./nostr-multi-subscription";
+import NostrRequest from "./nostr-request";
+import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
@@ -97,7 +97,7 @@ export class RelayTimelineLoader {
   }
 }
 
-export class TimelineLoader {
+export default class TimelineLoader {
   cursor = dayjs().unix();
   query?: NostrRequestFilter;
   relays: string[] = [];

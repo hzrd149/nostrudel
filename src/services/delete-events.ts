@@ -1,4 +1,5 @@
 import { Kind } from "nostr-tools";
+
 import Subject from "../classes/subject";
 import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";

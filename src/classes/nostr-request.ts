@@ -2,12 +2,12 @@ import { nanoid } from "nanoid";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequestFilter } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
-import { IncomingEOSE, IncomingEvent, Relay } from "./relay";
+import Relay, { IncomingEOSE, IncomingEvent } from "./relay";
 import Subject from "./subject";
 import createDefer from "./deferred";
 
 const REQUEST_DEFAULT_TIMEOUT = 1000 * 5;
-export class NostrRequest {
+export default class NostrRequest {
   static IDLE = "idle";
   static RUNNING = "running";
   static COMPLETE = "complete";

@@ -1,9 +1,10 @@
 import { Avatar, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PostModalContext } from "../../providers/post-modal-provider";
-import { MessagesIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
+import { MessagesIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 

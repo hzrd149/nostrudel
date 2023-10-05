@@ -5,7 +5,7 @@ import useSubject from "../../hooks/use-subject";
 import StreamNote from "../../components/timeline-page/generic-note-timeline/stream-note";
 import { Note } from "../../components/note";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
-import { TimelineLoader } from "../../classes/timeline-loader";
+import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 
 const RenderEvent = React.memo(({ event, focused }: { event: NostrEvent; focused?: boolean }) => {

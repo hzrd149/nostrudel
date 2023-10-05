@@ -1,6 +1,6 @@
 import { RelayMode } from "../classes/relay";
 import Subject, { PersistentSubject } from "../classes/subject";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import { unique } from "../helpers/array";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";

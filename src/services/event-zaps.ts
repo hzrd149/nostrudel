@@ -1,8 +1,8 @@
 import { Kind } from "nostr-tools";
 
-import { NostrRequest } from "../classes/nostr-request";
+import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import { getReferences } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrRequestFilter } from "../types/nostr-query";

@@ -1,6 +1,7 @@
 import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
-import { Relay } from "../classes/relay";
+
+import Relay from "../classes/relay";
 import relayPoolService from "../services/relay-pool";
 
 const getStatusText = (relay: Relay) => {

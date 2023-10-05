@@ -1,6 +1,6 @@
 import { isPTag, NostrEvent } from "../types/nostr-event";
 import { safeJson } from "../helpers/parse";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";

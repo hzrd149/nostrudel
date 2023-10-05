@@ -12,6 +12,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+
 import { ExternalLinkIcon, QrCodeIcon } from "./icons";
 import QrCodeSvg from "./qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";

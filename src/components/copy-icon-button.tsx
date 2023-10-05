@@ -1,5 +1,6 @@
-import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { useState } from "react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
+
 import { CheckIcon, ClipboardIcon } from "./icons";
 
 export const CopyIconButton = ({ text, ...props }: { text?: string } & Omit<IconButtonProps, "icon">) => {

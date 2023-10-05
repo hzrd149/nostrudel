@@ -1,8 +1,8 @@
 import { Kind, nip25 } from "nostr-tools";
 
-import { NostrRequest } from "../classes/nostr-request";
+import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 
 type eventId = string;

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
+
 import { getIdenticon } from "../helpers/identicon";
 import { safeUrl } from "../helpers/parse";
 import appSettings from "../services/settings/app-settings";

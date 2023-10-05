@@ -15,7 +15,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 
-import { TimelineLoader } from "../../../classes/timeline-loader";
+import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";

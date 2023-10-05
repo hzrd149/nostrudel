@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
-import { NostrMultiSubscription } from "../classes/nostr-multi-subscription";
+import { utils, Kind } from "nostr-tools";
+
+import NostrMultiSubscription from "../classes/nostr-multi-subscription";
 import { NostrEvent, isPTag } from "../types/nostr-event";
 import clientRelaysService from "./client-relays";
-import { utils } from "nostr-tools";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import { PersistentSubject } from "../classes/subject";
 import accountService from "./account";
 import { NostrQuery } from "../types/nostr-query";
-import { Kind } from "nostr-tools";
 
 export function getMessageRecipient(event: NostrEvent): string | undefined {
   return event.tags.filter(isPTag)[0][1];

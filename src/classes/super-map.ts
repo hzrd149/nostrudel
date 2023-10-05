@@ -1,4 +1,4 @@
-export class SuperMap<Key, Value> extends Map<Key, Value> {
+export default class SuperMap<Key, Value> extends Map<Key, Value> {
   newValue: (key: Key) => Value;
 
   constructor(newValue: (key: Key) => Value) {

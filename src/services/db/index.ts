@@ -1,6 +1,4 @@
-import { openDB, deleteDB } from "idb";
-
-import { IDBPDatabase } from "idb";
+import { openDB, deleteDB, IDBPDatabase } from "idb";
 import { SchemaV1, SchemaV2, SchemaV3 } from "./schema";
 
 const dbName = "storage";

@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
+
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
 import { embedNostrLinks, embedNostrMentions, embedNostrHashtags, embedEmoji, renderGenericUrl } from "../embed-types";

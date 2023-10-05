@@ -7,8 +7,8 @@ import ReactTextareaAutocomplete, {
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
-
 import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
+
 import { Emoji, useContextEmojis } from "../providers/emoji-provider";
 import { UserDirectory, useUserDirectoryContext } from "../providers/user-directory-provider";
 import { UserAvatar } from "./user-avatar";

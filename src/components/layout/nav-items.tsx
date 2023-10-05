@@ -1,5 +1,7 @@
-import { AbsoluteCenter, Box, Button, ButtonProps, Divider, Text } from "@chakra-ui/react";
-import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
+import { Box, Button, ButtonProps, Text } from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
+
 import {
   BadgeIcon,
   MessagesIcon,
@@ -18,7 +20,6 @@ import {
   LogoutIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { nip19 } from "nostr-tools";
 import accountService from "../../services/account";
 
 export default function NavItems() {
@@ -46,6 +47,13 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";
   else if (location.pathname.startsWith("/t/")) active = "search";
+  else if (
+    account &&
+    (location.pathname.startsWith("/u/" + nip19.npubEncode(account.pubkey)) ||
+      location.pathname.startsWith("/u/" + account.pubkey))
+  ) {
+    active = "profile";
+  }
 
   return (
     <>
@@ -89,6 +97,7 @@ export default function NavItems() {
         <Button
           onClick={() => navigate("/u/" + nip19.npubEncode(account.pubkey))}
           leftIcon={<ProfileIcon />}
+          colorScheme={active === "profile" ? "primary" : undefined}
           {...buttonProps}
         >
           Profile

@@ -1,10 +1,10 @@
 import { getReferences } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
-import { NostrRequest } from "./nostr-request";
-import { NostrMultiSubscription } from "./nostr-multi-subscription";
+import NostrRequest from "./nostr-request";
+import NostrMultiSubscription from "./nostr-multi-subscription";
 import { PersistentSubject } from "./subject";
 
-export class ThreadLoader {
+export default class ThreadLoader {
   loading = new PersistentSubject(false);
   focusId = new PersistentSubject<string>("");
   rootId = new PersistentSubject<string>("");

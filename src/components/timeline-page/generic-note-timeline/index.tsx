@@ -4,7 +4,7 @@ import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import useSubject from "../../../hooks/use-subject";
-import { TimelineLoader } from "../../../classes/timeline-loader";
+import TimelineLoader from "../../../classes/timeline-loader";
 import RepostNote from "./repost-note";
 import { Note } from "../../note";
 import { NostrEvent } from "../../../types/nostr-event";

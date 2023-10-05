@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import {
   Badge,
   Card,
@@ -15,6 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
