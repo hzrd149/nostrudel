@@ -14,10 +14,10 @@ import MuteModalProvider from "./mute-modal-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
-  const { primaryColor, maxPageWidth } = useAppSettings();
+  const { theme: themeName, primaryColor, maxPageWidth } = useAppSettings();
   const theme = useMemo(
-    () => createTheme(primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
-    [primaryColor, maxPageWidth],
+    () => createTheme(themeName, primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
+    [themeName, primaryColor, maxPageWidth],
   );
 
   return (

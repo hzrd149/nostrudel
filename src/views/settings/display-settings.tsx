@@ -34,6 +34,15 @@ export default function DisplaySettings() {
       <AccordionPanel>
         <Flex direction="column" gap="4">
           <FormControl>
+            <FormLabel htmlFor="theme" mb="0">
+              Theme
+            </FormLabel>
+            <Select id="theme" {...register("theme")}>
+              <option value="default">Default</option>
+              <option value="midnight">Midnight</option>
+            </Select>
+          </FormControl>
+          <FormControl>
             <FormLabel htmlFor="colorMode" mb="0">
               Color Mode
             </FormLabel>

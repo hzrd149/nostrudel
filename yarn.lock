@@ -998,7 +998,7 @@
     "@chakra-ui/shared-utils" "2.0.5"
     "@chakra-ui/spinner" "2.1.0"
 
-"@chakra-ui/anatomy@2.2.1":
+"@chakra-ui/anatomy@2.2.1", "@chakra-ui/anatomy@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@chakra-ui/anatomy/-/anatomy-2.2.1.tgz#f7ef088dcb8be4f1d075f37101830199fb93f763"
   integrity sha512-bbmyWTGwQo+aHYDMtLIj7k7hcWvwE7GFVDViLFArrrPhfUTDdQTNqhiDp1N7eh2HLyjNhc2MKXV8s2KTQqkmTg==
@@ -1640,7 +1640,7 @@
     "@chakra-ui/react-context" "2.1.0"
     "@chakra-ui/shared-utils" "2.0.5"
 
-"@chakra-ui/styled-system@2.9.1":
+"@chakra-ui/styled-system@2.9.1", "@chakra-ui/styled-system@^2.9.1":
   version "2.9.1"
   resolved "https://registry.yarnpkg.com/@chakra-ui/styled-system/-/styled-system-2.9.1.tgz#888a4901b2afa174461259a8875379adb0363934"
   integrity sha512-jhYKBLxwOPi9/bQt9kqV3ELa/4CjmNNruTyXlPp5M0v0+pDMUngPp48mVLoskm9RKZGE0h1qpvj/jZ3K7c7t8w==
@@ -2527,6 +2527,11 @@
   resolved "https://registry.yarnpkg.com/@types/aria-query/-/aria-query-5.0.2.tgz#6f1225829d89794fd9f891989c9ce667422d7f64"
   integrity sha512-PHKZuMN+K5qgKIWhBodXzQslTo5P+K/6LqeKXS6O/4liIDdZqaX5RXrCK++LAw+y/nptN48YmUMFiQHRSWYwtQ==
 
+"@types/chroma-js@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@types/chroma-js/-/chroma-js-2.4.1.tgz#f76bbd7c760c1db18734b9d8f473ced7275a374e"
+  integrity sha512-YIm3RLfWdDU0/3rsNnu/Hh4uKCLQ9p/w1NvnFfBOBL/BGqOvuLNuhXwkJMUKMscmFJdan25lYqv2+qh1l7tZLg==
+
 "@types/chrome@^0.0.74":
   version "0.0.74"
   resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.74.tgz#f69827c48fcf7fecc90c96089807661749a5a5e3"
@@ -3216,6 +3221,11 @@ cheerio@^1.0.0-rc.12:
     htmlparser2 "^8.0.1"
     parse5 "^7.0.0"
     parse5-htmlparser2-tree-adapter "^7.0.0"
+
+chroma-js@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-2.4.2.tgz#dffc214ed0c11fa8eefca2c36651d8e57cbfb2b0"
+  integrity sha512-U9eDw6+wt7V8z5NncY2jJfZa+hUH8XEj8FQHgFJTrUFnJfXYf4Ml4adI2vXZOjqRDpFWtYVWypDfZwnJ+HIR4A==
 
 ci-info@^3.1.0, ci-info@^3.2.0:
   version "3.8.0"

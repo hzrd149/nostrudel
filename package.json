@@ -13,8 +13,10 @@
     "analyze": "npx vite-bundle-visualizer -o ./stats.html"
   },
   "dependencies": {
+    "@chakra-ui/anatomy": "^2.2.1",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.1",
+    "@chakra-ui/styled-system": "^2.9.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@getalby/bitcoin-connect-react": "^1.1.0",
@@ -22,6 +24,7 @@
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
+    "chroma-js": "^2.4.2",
     "dayjs": "^1.11.9",
     "debug": "^4.3.4",
     "emojilib": "2",
@@ -59,6 +62,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
     "@testing-library/cypress": "^9.0.0",
+    "@types/chroma-js": "^2.4.1",
     "@types/debug": "^4.1.8",
     "@types/identicon.js": "^2.3.1",
     "@types/leaflet": "^1.9.3",
