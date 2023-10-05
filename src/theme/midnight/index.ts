@@ -5,6 +5,7 @@ import { cardTheme } from "./components/card";
 import { pallet } from "../helpers";
 import { buttonTheme } from "./components/button";
 import { drawerTheme } from "./components/drawer";
+import { modalTheme } from "./components/modal";
 
 const midnightTheme = extendTheme({
   colors: {
@@ -14,6 +15,7 @@ const midnightTheme = extendTheme({
     Card: cardTheme,
     Button: buttonTheme,
     Drawer: drawerTheme,
+    Modal: modalTheme,
   },
   semanticTokens: {
     colors: {
