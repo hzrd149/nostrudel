@@ -192,7 +192,7 @@ class ReplaceableEventLoaderService {
     await transaction.done;
   }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
-  private loadFromCache(cord: string) {
+  loadFromCache(cord: string) {
     const dedupe = this.loadCacheDedupe.get(cord);
     if (dedupe) return dedupe;
 

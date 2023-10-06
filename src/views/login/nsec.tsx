@@ -73,7 +73,6 @@ export default function LoginNsecView() {
 
     const encrypted = await signingService.encryptSecKey(hexKey);
     accountService.addAccount({ pubkey, relays: [relayUrl], ...encrypted, readonly: false });
-    clientRelaysService.bootstrapRelays.add(relayUrl);
     accountService.switchAccount(pubkey);
   };
 

@@ -24,8 +24,6 @@ export default function LoginNpubView() {
       accountService.addAccount({ pubkey, relays: [relayUrl], readonly: true });
     }
     accountService.switchAccount(pubkey);
-
-    clientRelaysService.bootstrapRelays.add(relayUrl);
   };
 
   return (

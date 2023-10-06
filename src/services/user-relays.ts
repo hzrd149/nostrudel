@@ -7,7 +7,7 @@ import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";
-import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
+import replaceableEventLoaderService, { createCoordinate, RequestOptions } from "./replaceable-event-requester";
 
 export type ParsedUserRelays = {
   pubkey: string;
@@ -42,6 +42,16 @@ class UserRelaysService {
     });
 
     return sub;
+  }
+
+  async loadFromCache(pubkey: string) {
+    const sub = this.subjects.get(pubkey);
+
+    // load from cache
+    await replaceableEventLoaderService.loadFromCache(createCoordinate(Kind.RelayList, pubkey));
+
+    const requestSub = replaceableEventLoaderService.getEvent(Kind.RelayList, pubkey);
+    sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
   }
 
   receiveEvent(event: NostrEvent) {

@@ -18,6 +18,7 @@ const DEFAULT_RELAYS = [
   { url: "wss://relay.snort.social", mode: RelayMode.READ },
   { url: "wss://eden.nostr.land", mode: RelayMode.READ },
   { url: "wss://nos.lol", mode: RelayMode.READ },
+  { url: "wss://purplerelay.com", mode: RelayMode.READ },
 ];
 
 const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], RelayConfig[] | undefined> = (
@@ -26,7 +27,7 @@ const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], Relay
 ) => next(userRelays.relays);
 
 class ClientRelayService {
-  bootstrapRelays = new Set<string>();
+  // bootstrapRelays = new Set<string>();
   relays = new PersistentSubject<RelayConfig[]>([]);
   writeRelays = new PersistentSubject<RelayConfig[]>([]);
   readRelays = new PersistentSubject<RelayConfig[]>([]);
@@ -34,48 +35,61 @@ class ClientRelayService {
   log = logger.extend("ClientRelays");
 
   constructor() {
-    let lastSubject: Subject<ParsedUserRelays> | undefined;
-    accountService.current.subscribe((account) => {
-      if (!account) {
-        this.log("No account, using default relays");
-        this.relays.next(DEFAULT_RELAYS);
-        return;
-      } else this.relays.next([]);
-
-      if (account.relays) {
-        this.log("Found bootstrap relays");
-        this.bootstrapRelays.clear();
-        for (const relay of account.relays) {
-          this.bootstrapRelays.add(relay);
-        }
-      }
-
-      if (lastSubject) {
-        this.log("Disconnecting from previous user relays");
-        this.relays.disconnect(lastSubject);
-        lastSubject = undefined;
-      }
-
-      // load the relays from cache or bootstrap relays
-      this.log("Load users relays from cache or bootstrap relays");
-      lastSubject = userRelaysService.requestRelays(account.pubkey, Array.from(this.bootstrapRelays), {
-        alwaysRequest: true,
-      });
-      setTimeout(() => {
-        // double check for new relay notes
-        this.log("Requesting latest relays from the write relays");
-        userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), { alwaysRequest: true });
-      }, 1000);
-
-      this.relays.connectWithHandler(lastSubject, userRelaysToRelayConfig);
-    });
+    accountService.loading.subscribe(this.handleAccountChange, this);
+    accountService.current.subscribe(this.handleAccountChange, this);
 
     // set the read and write relays
     this.relays.subscribe((relays) => {
-      this.log("Got new relay list");
+      this.log("Got new relay list", relays);
       this.writeRelays.next(relays.filter((r) => r.mode & RelayMode.WRITE));
       this.readRelays.next(relays.filter((r) => r.mode & RelayMode.READ));
     });
+  }
+
+  private userRequestRelaySubject: Subject<ParsedUserRelays> | undefined;
+  private handleAccountChange() {
+    if (accountService.loading.value) return;
+
+    // disconnect the relay list subject
+    if (this.userRequestRelaySubject) {
+      this.relays.disconnect(this.userRequestRelaySubject);
+      this.userRequestRelaySubject = undefined;
+    }
+
+    const account = accountService.current.value;
+    if (!account) {
+      this.log("No account, using default relays");
+      this.relays.next(DEFAULT_RELAYS);
+      return;
+    }
+
+    // clear relays
+    this.relays.next([]);
+
+    // connect the relay subject with the account relay subject
+    this.userRequestRelaySubject = userRelaysService.getRelays(account.pubkey);
+    this.relays.connectWithHandler(this.userRequestRelaySubject, userRelaysToRelayConfig);
+
+    // load the relays from cache
+    if (!userRelaysService.getRelays(account.pubkey).value) {
+      this.log("Load users relay list from cache");
+      userRelaysService.loadFromCache(account.pubkey).then(() => {
+        if (this.relays.value.length === 0) {
+          const bootstrapRelays = account.relays ?? ["wss://purplepag.es"];
+
+          this.log("Loading relay list from bootstrap relays", bootstrapRelays);
+          userRelaysService.requestRelays(account.pubkey, bootstrapRelays, { alwaysRequest: true });
+        }
+      });
+    }
+
+    // double check for new relay notes
+    setTimeout(() => {
+      if (this.relays.value.length === 0) return;
+
+      this.log("Requesting latest relay list from relays");
+      userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), { alwaysRequest: true });
+    }, 5000);
   }
 
   async addRelay(url: string, mode: RelayMode) {
