@@ -6,6 +6,7 @@ import { pallet } from "../helpers";
 import { buttonTheme } from "./components/button";
 import { drawerTheme } from "./components/drawer";
 import { modalTheme } from "./components/modal";
+import { menuTheme } from "./components/menu";
 
 const defaultTheme = extendTheme({
   colors: {
@@ -16,6 +17,7 @@ const defaultTheme = extendTheme({
     Button: buttonTheme,
     Drawer: drawerTheme,
     Modal: modalTheme,
+    Menu: menuTheme,
   },
   semanticTokens: {
     colors: {
