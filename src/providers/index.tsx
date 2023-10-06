@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 
 import { SigningProvider } from "./signing-provider";
-import createTheme from "../theme";
+import buildTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
 import DeleteEventProvider from "./delete-event-provider";
 import { InvoiceModalProvider } from "./invoice-modal";
@@ -16,7 +16,7 @@ import MuteModalProvider from "./mute-modal-provider";
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   const { theme: themeName, primaryColor, maxPageWidth } = useAppSettings();
   const theme = useMemo(
-    () => createTheme(themeName, primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
+    () => buildTheme(themeName, primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
     [themeName, primaryColor, maxPageWidth],
   );
 

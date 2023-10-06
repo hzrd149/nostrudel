@@ -39,7 +39,7 @@ export default function DisplaySettings() {
             </FormLabel>
             <Select id="theme" {...register("theme")}>
               <option value="default">Default</option>
-              <option value="midnight">Midnight</option>
+              <option value="chakraui">ChakraUI</option>
             </Select>
           </FormControl>
           <FormControl>

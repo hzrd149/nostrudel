@@ -2,7 +2,7 @@ import { extendTheme, Theme, DeepPartial } from "@chakra-ui/react";
 import { containerTheme } from "./container";
 import chroma from "chroma-js";
 
-import midnightTheme from "./midnight";
+import defaultTheme from "./default";
 
 function pallet(colors: string[]) {
   return [50, 100, 200, 300, 400, 500, 600, 700, 800, 900].reduce(
@@ -12,13 +12,13 @@ function pallet(colors: string[]) {
 }
 
 function getTheme(name: string) {
-  if (name === "midnight") return midnightTheme;
+  if (name === "default") return defaultTheme;
   return {};
 }
 
 const breakpoints = ["sm", "md", "lg", "xl", "2xl"] as const;
 
-export default function createTheme(
+export default function buildTheme(
   themeName: string,
   primaryColor: string = "#8DB600",
   maxBreakpoint?: (typeof breakpoints)[number],

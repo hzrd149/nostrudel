@@ -7,7 +7,7 @@ import { buttonTheme } from "./components/button";
 import { drawerTheme } from "./components/drawer";
 import { modalTheme } from "./components/modal";
 
-const midnightTheme = extendTheme({
+const defaultTheme = extendTheme({
   colors: {
     gray: pallet(chroma.scale(["#d5d5d5", "#0e0e0e"]).colors(10)),
   },
@@ -27,4 +27,4 @@ const midnightTheme = extendTheme({
   },
 } as DeepPartial<Theme>);
 
-export default midnightTheme;
+export default defaultTheme;
