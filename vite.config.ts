@@ -2,6 +2,17 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+const isProd = process.env.NODE_ENV === "production";
+process.env.VITE_ANALYTICS_SCRIPT = isProd
+  ? `
+<script
+  async defer
+  src="https://ackee.nostrudel.ninja/tracker.js"
+  data-ackee-server="https://ackee.nostrudel.ninja"
+  data-ackee-domain-id="58b1c39f-43f9-422b-bc7d-06aff35e764e"
+></script>`
+  : "";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_BASE ?? "/",
