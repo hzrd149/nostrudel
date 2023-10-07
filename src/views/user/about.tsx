@@ -205,8 +205,8 @@ export default function UserAboutTab() {
                   </Stat>
 
                   <Stat>
-                    <StatLabel>Published Notes</StatLabel>
-                    <StatNumber>{readablizeSats(stats.pub_post_count) || 0}</StatNumber>
+                    <StatLabel>Notes & replies</StatLabel>
+                    <StatNumber>{readablizeSats(stats.pub_note_count) || 0}</StatNumber>
                   </Stat>
 
                   <Stat>

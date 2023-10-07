@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useScroll } from "react-use";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -15,7 +14,6 @@ import {
   Heading,
   Spacer,
   Spinner,
-  Tag,
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
