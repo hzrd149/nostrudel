@@ -5,6 +5,7 @@ import { getEventRelays } from "../../services/event-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getPubkey, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/emoji-provider";
+import { EventSplit } from "./zaps";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -106,6 +107,16 @@ export function createEmojiTags(draft: DraftNostrEvent, emojis: Emoji[]) {
       updatedDraft.tags = addTag(updatedDraft.tags, ["emoji", emoji.name, emoji.url]);
     }
   }
+
+  return updatedDraft;
+}
+
+export function setZapSplit(draft: DraftNostrEvent, split: EventSplit) {
+  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+
+  // TODO: get best input relay for user
+  const zapTags = split.map((p) => ["zap", p.pubkey, "", String(p.percent * 100)]);
+  updatedDraft.tags.push(...zapTags);
 
   return updatedDraft;
 }

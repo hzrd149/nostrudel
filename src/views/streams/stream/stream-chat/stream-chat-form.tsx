@@ -54,8 +54,8 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
         const content = getValues().content;
         const position = textAreaRef.current?.getCaretPosition();
         if (position !== undefined) {
-          setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
-        } else setValue("content", content + imageUrl);
+          setValue("content", content.slice(0, position) + imageUrl + content.slice(position), { shouldDirty: true });
+        } else setValue("content", content + imageUrl, { shouldDirty: true });
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
@@ -75,7 +75,7 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
             autoComplete="off"
             isRequired
             value={getValues().content}
-            onChange={(e) => setValue("content", e.target.value)}
+            onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
             onPaste={(e) => {
               const file = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
               if (file) uploadImage(file);

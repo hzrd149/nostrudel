@@ -98,7 +98,7 @@ export default function InputStep({
           />
         )}
 
-        <CustomZapAmountOptions onSelect={(amount) => setValue("amount", amount)} />
+        <CustomZapAmountOptions onSelect={(amount) => setValue("amount", amount, { shouldDirty: true })} />
 
         <Flex gap="2">
           <Input

@@ -44,7 +44,12 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
         muteAlert
       ) : (
         <TrustProvider trust={focusId === post.event.id ? true : undefined}>
-          <Note event={post.event} borderColor={focusId === post.event.id ? "blue.500" : undefined} hideDrawerButton />
+          <Note
+            event={post.event}
+            borderColor={focusId === post.event.id ? "blue.500" : undefined}
+            hideDrawerButton
+            hideThreadLink
+          />
         </TrustProvider>
       )}
       {showReplyForm.isOpen && (

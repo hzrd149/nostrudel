@@ -53,13 +53,13 @@ export default function NoteView() {
     pageContent = (
       <>
         {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} hideDrawerButton />
+          <Note key={parent.event.id + "-rely"} event={parent.event} hideDrawerButton hideThreadLink />
         ))}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
     );
   } else if (events[focusId]) {
-    pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton />;
+    pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton hideThreadLink />;
   }
 
   return <VerticalPageLayout>{pageContent}</VerticalPageLayout>;

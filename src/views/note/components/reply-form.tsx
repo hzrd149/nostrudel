@@ -66,8 +66,8 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
         const content = getValues().content;
         const position = textAreaRef.current?.getCaretPosition();
         if (position !== undefined) {
-          setValue("content", content.slice(0, position) + imageUrl + content.slice(position));
-        } else setValue("content", content + imageUrl);
+          setValue("content", content.slice(0, position) + imageUrl + content.slice(position), { shouldDirty: true });
+        } else setValue("content", content + imageUrl, { shouldDirty: true });
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
@@ -105,7 +105,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
           rows={4}
           isRequired
           value={getValues().content}
-          onChange={(e) => setValue("content", e.target.value)}
+          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
           instanceRef={(inst) => (textAreaRef.current = inst)}
           onPaste={(e) => {
             const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));

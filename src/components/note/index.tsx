@@ -50,6 +50,7 @@ export type NoteProps = Omit<CardProps, "children"> & {
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   hideDrawerButton?: boolean;
+  hideThreadLink?: boolean;
   registerIntersectionEntity?: boolean;
 };
 export const Note = React.memo(
@@ -58,6 +59,7 @@ export const Note = React.memo(
     variant = "outline",
     showReplyButton,
     hideDrawerButton,
+    hideThreadLink,
     registerIntersectionEntity = true,
     ...props
   }: NoteProps) => {
@@ -96,6 +98,11 @@ export const Note = React.memo(
                 <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
                 <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
                 <Flex grow={1} />
+                {!hideThreadLink && (
+                  <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
+                    thread
+                  </NoteLink>
+                )}
                 {showSignatureVerification && <EventVerificationIcon event={event} />}
                 {!hideDrawerButton && (
                   <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
