@@ -19,7 +19,7 @@ type NostrBuildResponse = {
       };
       blurhash: string;
       sha256: string;
-      type: "picture" | "video";
+      type: "picture" | "video" | "audio";
       mime: string;
       size: number;
       metadata: Record<string, string>;
@@ -31,13 +31,14 @@ type NostrBuildResponse = {
   ];
 };
 
-export async function nostrBuildUploadImage(image: File, sign?: (draft: DraftNostrEvent) => Promise<NostrEvent>) {
-  if (!image.type.includes("image")) throw new Error("Only images are supported");
+export async function nostrBuildUploadImage(file: File, sign?: (draft: DraftNostrEvent) => Promise<NostrEvent>) {
+  if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
+    throw new Error("Unsupported file type");
 
   const url = "https://nostr.build/api/v2/upload/files";
 
   const payload = new FormData();
-  payload.append("fileToUpload", image);
+  payload.append("fileToUpload", file);
 
   const headers: HeadersInit = {};
   if (sign) {

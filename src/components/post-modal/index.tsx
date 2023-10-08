@@ -40,7 +40,7 @@ import {
 import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
-import { nostrBuildUploadImage } from "../../helpers/nostr-build";
+import { nostrBuildUploadImage as nostrBuildUpload } from "../../helpers/nostr-build";
 import CommunitySelect from "./community-select";
 import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
@@ -89,13 +89,15 @@ export default function PostModal({
   const textAreaRef = useRef<RefType | null>(null);
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
-  const uploadImage = useCallback(
-    async (imageFile: File) => {
+  const uploadFile = useCallback(
+    async (file: File) => {
       try {
-        if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
+        if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
+          throw new Error("Unsupported file type");
+
         setUploading(true);
 
-        const response = await nostrBuildUploadImage(imageFile, requestSignature);
+        const response = await nostrBuildUpload(file, requestSignature);
         const imageUrl = response.url;
 
         const content = getValues().content;
@@ -177,7 +179,7 @@ export default function PostModal({
           instanceRef={(inst) => (textAreaRef.current = inst)}
           onPaste={(e) => {
             const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-            if (imageFile) uploadImage(imageFile);
+            if (imageFile) uploadFile(imageFile);
           }}
         />
         {getValues().content.length > 0 && (
@@ -194,11 +196,11 @@ export default function PostModal({
           <Flex mr="auto" gap="2">
             <VisuallyHiddenInput
               type="file"
-              accept="image/*"
+              accept="image/*,audio/*,video/*"
               ref={imageUploadRef}
               onChange={(e) => {
                 const img = e.target.files?.[0];
-                if (img) uploadImage(img);
+                if (img) uploadFile(img);
               }}
             />
             <IconButton
