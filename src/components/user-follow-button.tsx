@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../hooks/use-current-account";
-import { ArrowDownSIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "./icons";
+import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import {
   PEOPLE_LIST_KIND,
@@ -140,7 +140,13 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   if (showLists) {
     return (
       <Menu closeOnSelect={false}>
-        <MenuButton as={Button} colorScheme="primary" {...props} rightIcon={<ArrowDownSIcon />} isDisabled={isDisabled}>
+        <MenuButton
+          as={Button}
+          colorScheme="primary"
+          {...props}
+          rightIcon={<ChevronDownIcon />}
+          isDisabled={isDisabled}
+        >
           {isFollowing ? "Unfollow" : "Follow"}
         </MenuButton>
         <MenuList>

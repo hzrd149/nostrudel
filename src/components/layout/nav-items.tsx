@@ -4,20 +4,21 @@ import { nip19 } from "nostr-tools";
 
 import {
   BadgeIcon,
-  MessagesIcon,
+  DirectMessagesIcon,
   CommunityIcon,
-  EmojiIcon,
-  FeedIcon,
+  EmojiPacksIcon,
+  NoteFeedIcon,
   GoalIcon,
-  ListIcon,
+  ListsIcon,
   LiveStreamIcon,
-  NotificationIcon,
+  NotificationsIcon,
   ProfileIcon,
   RelayIcon,
   SearchIcon,
   SettingsIcon,
   ToolsIcon,
   LogoutIcon,
+  NotesIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -59,7 +60,7 @@ export default function NavItems() {
     <>
       <Button
         onClick={() => navigate("/")}
-        leftIcon={<FeedIcon />}
+        leftIcon={<NotesIcon boxSize={6} />}
         colorScheme={active === "notes" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -69,7 +70,7 @@ export default function NavItems() {
         <>
           <Button
             onClick={() => navigate("/notifications")}
-            leftIcon={<NotificationIcon />}
+            leftIcon={<NotificationsIcon boxSize={6} />}
             colorScheme={active === "notifications" ? "primary" : undefined}
             {...buttonProps}
           >
@@ -77,7 +78,7 @@ export default function NavItems() {
           </Button>
           <Button
             onClick={() => navigate("/dm")}
-            leftIcon={<MessagesIcon />}
+            leftIcon={<DirectMessagesIcon boxSize={6} />}
             colorScheme={active === "dm" ? "primary" : undefined}
             {...buttonProps}
           >
@@ -87,7 +88,7 @@ export default function NavItems() {
       )}
       <Button
         onClick={() => navigate("/search")}
-        leftIcon={<SearchIcon />}
+        leftIcon={<SearchIcon boxSize={6} />}
         colorScheme={active === "search" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -96,7 +97,7 @@ export default function NavItems() {
       {account?.pubkey && (
         <Button
           onClick={() => navigate("/u/" + nip19.npubEncode(account.pubkey))}
-          leftIcon={<ProfileIcon />}
+          leftIcon={<ProfileIcon boxSize={6} />}
           colorScheme={active === "profile" ? "primary" : undefined}
           {...buttonProps}
         >
@@ -105,7 +106,7 @@ export default function NavItems() {
       )}
       <Button
         onClick={() => navigate("/relays")}
-        leftIcon={<RelayIcon />}
+        leftIcon={<RelayIcon boxSize={6} />}
         colorScheme={active === "relays" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -116,7 +117,7 @@ export default function NavItems() {
       </Text>
       <Button
         onClick={() => navigate("/streams")}
-        leftIcon={<LiveStreamIcon />}
+        leftIcon={<LiveStreamIcon boxSize={6} />}
         colorScheme={active === "streams" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -124,7 +125,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/communities")}
-        leftIcon={<CommunityIcon />}
+        leftIcon={<CommunityIcon boxSize={6} />}
         colorScheme={active === "communities" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -132,7 +133,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/lists")}
-        leftIcon={<ListIcon />}
+        leftIcon={<ListsIcon boxSize={6} />}
         colorScheme={active === "lists" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -140,7 +141,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/goals")}
-        leftIcon={<GoalIcon />}
+        leftIcon={<GoalIcon boxSize={6} />}
         colorScheme={active === "goals" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -148,7 +149,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/badges")}
-        leftIcon={<BadgeIcon />}
+        leftIcon={<BadgeIcon boxSize={6} />}
         colorScheme={active === "badges" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -156,7 +157,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/emojis")}
-        leftIcon={<EmojiIcon />}
+        leftIcon={<EmojiPacksIcon boxSize={6} />}
         colorScheme={active === "emojis" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -164,7 +165,7 @@ export default function NavItems() {
       </Button>
       <Button
         onClick={() => navigate("/tools")}
-        leftIcon={<ToolsIcon />}
+        leftIcon={<ToolsIcon boxSize={6} />}
         colorScheme={active === "tools" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -173,14 +174,14 @@ export default function NavItems() {
       <Box h="4" />
       <Button
         onClick={() => navigate("/settings")}
-        leftIcon={<SettingsIcon />}
+        leftIcon={<SettingsIcon boxSize={6} />}
         colorScheme={active === "settings" ? "primary" : undefined}
         {...buttonProps}
       >
         Settings
       </Button>
       {account && (
-        <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} {...buttonProps}>
+        <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout
         </Button>
       )}

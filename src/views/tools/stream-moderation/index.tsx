@@ -14,7 +14,7 @@ import RequireCurrentAccount from "../../../providers/require-current-account";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
-import { ArrowLeftSIcon } from "../../../components/icons";
+import { ChevronLeftIcon } from "../../../components/icons";
 import RelaySelectionProvider from "../../../providers/relay-selection-provider";
 import UsersCard from "./users-card";
 import ZapsCard from "./zaps-card";
@@ -88,7 +88,7 @@ function StreamModerationPage() {
   return (
     <Flex direction="column" w="full" h="full">
       <Flex gap="2" p="2" pb="0">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
         <Select

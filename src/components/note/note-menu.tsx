@@ -8,12 +8,12 @@ import { NostrEvent } from "../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 
 import {
-  ClipboardIcon,
+  BroadcastEventIcon,
+  CopyToClipboardIcon,
   CodeIcon,
   ExternalLinkIcon,
   LikeIcon,
   MuteIcon,
-  RelayIcon,
   RepostIcon,
   TrashIcon,
   UnmuteIcon,
@@ -72,7 +72,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
           Copy Share Link
         </MenuItem>
         {noteId && (
-          <MenuItem onClick={() => copyToClipboard(noteId)} icon={<ClipboardIcon />}>
+          <MenuItem onClick={() => copyToClipboard(noteId)} icon={<CopyToClipboardIcon />}>
             Copy Note ID
           </MenuItem>
         )}
@@ -81,7 +81,7 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
             Delete Note
           </MenuItem>
         )}
-        <MenuItem onClick={broadcast} icon={<RelayIcon />}>
+        <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast
         </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>

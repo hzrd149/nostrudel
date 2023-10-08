@@ -3,7 +3,7 @@ import { Kind, nip19 } from "nostr-tools";
 
 import { UserLink } from "../../components/user-link";
 import { Button, Flex, Heading, SimpleGrid, Spacer } from "@chakra-ui/react";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
@@ -69,7 +69,7 @@ export default function ListDetailsView() {
   return (
     <VerticalPageLayout overflow="hidden" h="full">
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
 

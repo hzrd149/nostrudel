@@ -14,7 +14,7 @@ import { RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from
 
 import { ErrorBoundary } from "../components/error-boundary";
 import NoteView from "../views/note";
-import { ArrowLeftSIcon, ArrowRightSIcon, ExternalLinkIcon } from "../components/icons";
+import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
 import { PageProviders } from ".";
 
 type Router = ReturnType<typeof createMemoryRouter>;
@@ -39,8 +39,8 @@ function DrawerSubView({
         <DrawerCloseButton />
         <DrawerHeader p="2">
           <ButtonGroup size="sm">
-            <IconButton icon={<ArrowLeftSIcon />} aria-label="Back" onClick={() => router.navigate(-1)} />
-            <IconButton icon={<ArrowRightSIcon />} aria-label="Forward" onClick={() => router.navigate(+1)} />
+            <IconButton icon={<ChevronLeftIcon />} aria-label="Back" onClick={() => router.navigate(-1)} />
+            <IconButton icon={<ChevronRightIcon />} aria-label="Forward" onClick={() => router.navigate(+1)} />
             <IconButton
               icon={<ExternalLinkIcon />}
               aria-label="Open"

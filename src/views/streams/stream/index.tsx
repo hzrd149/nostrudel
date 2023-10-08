@@ -29,7 +29,7 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
-import { ArrowLeftSIcon, ExternalLinkIcon } from "../../../components/icons";
+import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import StreamDebugButton from "../components/stream-debug-button";
@@ -88,7 +88,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
         <UserAvatarLink pubkey={stream.host} size="sm" display={{ base: "none", md: "block" }} />
@@ -148,7 +148,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
   return (
     <VerticalPageLayout px={0}>
       <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />} size="sm">
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />} size="sm">
           Back
         </Button>
         <Spacer />

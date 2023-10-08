@@ -5,7 +5,7 @@ import { requestProvider } from "webln";
 import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
 
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
-import { ClipboardIcon } from "./icons";
+import { CopyToClipboardIcon } from "./icons";
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
@@ -61,7 +61,12 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
         </Text>
       </Box>
       <ButtonGroup>
-        <IconButton icon={<ClipboardIcon />} title="Copy to clipboard" aria-label="copy invoice" variant="outline" />
+        <IconButton
+          icon={<CopyToClipboardIcon />}
+          title="Copy to clipboard"
+          aria-label="copy invoice"
+          variant="outline"
+        />
         <Button as="a" variant="outline" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
           ⚡ Pay {invoice.amount ? readablizeSats(invoice.amount / 1000) + " sats" : ""}
         </Button>

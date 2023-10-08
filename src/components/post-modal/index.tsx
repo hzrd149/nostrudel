@@ -22,7 +22,7 @@ import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { Kind } from "nostr-tools";
 
-import { ArrowDownSIcon, ArrowUpSIcon, ImageIcon } from "../icons";
+import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
@@ -204,7 +204,7 @@ export default function PostModal({
               }}
             />
             <IconButton
-              icon={<ImageIcon />}
+              icon={<UploadImageIcon />}
               aria-label="Upload Image"
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}
@@ -212,7 +212,7 @@ export default function PostModal({
             />
             <Button
               variant="link"
-              rightIcon={moreOptions.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
+              rightIcon={moreOptions.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               onClick={moreOptions.onToggle}
             >
               More Options

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 
-import { ArrowDownSIcon, ArrowUpSIcon, ReplyIcon } from "../../../components/icons";
+import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../../../components/icons";
 import { Note } from "../../../components/note";
 import { countReplies, ThreadItem } from "../../../helpers/thread";
 import { TrustProvider } from "../../../providers/trust";
@@ -65,7 +65,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
         {replies.length > 0 && (
           <Button onClick={toggle}>
             {numberOfReplies} {numberOfReplies > 1 ? "Replies" : "Reply"}
-            {showReplies ? <ArrowDownSIcon /> : <ArrowUpSIcon />}
+            {showReplies ? <ChevronDownIcon /> : <ChevronUpIcon />}
           </Button>
         )}
       </ButtonGroup>

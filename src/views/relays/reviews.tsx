@@ -10,7 +10,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 
 function RelayReviewsPage() {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function RelayReviewsPage() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Flex gap="2" alignItems="center">
-          <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+          <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
             Back
           </Button>
           <PeopleListSelection />

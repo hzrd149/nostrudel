@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 
 import { UserLink } from "../../components/user-link";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -123,7 +123,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
 

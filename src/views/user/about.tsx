@@ -33,7 +33,14 @@ import { parseAddress } from "../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
-import { ArrowDownSIcon, ArrowUpSIcon, AtIcon, ExternalLinkIcon, KeyIcon, LightningIcon } from "../../components/icons";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  AtIcon,
+  ExternalLinkIcon,
+  KeyIcon,
+  LightningIcon,
+} from "../../components/icons";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import { QrIconButton } from "./components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
@@ -125,7 +132,7 @@ export default function UserAboutTab() {
           </Flex>
         </Flex>
         <IconButton
-          icon={expanded.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
+          icon={expanded.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
           aria-label="expand"
           onClick={expanded.onToggle}
           top="2"

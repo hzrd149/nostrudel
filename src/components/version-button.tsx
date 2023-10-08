@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { CheckIcon, ClipboardIcon } from "./icons";
+import { CheckIcon, CopyToClipboardIcon } from "./icons";
 import { useState } from "react";
 
 export default function VersionButton({ ...props }: Omit<ButtonProps, "children">) {
@@ -12,7 +12,7 @@ export default function VersionButton({ ...props }: Omit<ButtonProps, "children"
     <Button
       variant="outline"
       size="sm"
-      rightIcon={copied ? <CheckIcon /> : <ClipboardIcon />}
+      rightIcon={copied ? <CheckIcon /> : <CopyToClipboardIcon />}
       onClick={() => {
         if (navigator.clipboard) {
           navigator.clipboard.writeText(version);

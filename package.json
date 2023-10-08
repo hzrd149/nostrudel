@@ -10,7 +10,8 @@
     "format": "prettier --ignore-path .prettierignore -w .",
     "e2e": "cypress open",
     "test": "cypress run --e2e --browser=chrome",
-    "analyze": "npx vite-bundle-visualizer -o ./stats.html"
+    "analyze": "npx vite-bundle-visualizer -o ./stats.html",
+    "build-icons": "node ./scripts/build-icons.mjs"
   },
   "dependencies": {
     "@chakra-ui/anatomy": "^2.2.1",
@@ -73,6 +74,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.2",
     "@vitejs/plugin-react": "^4.0.4",
+    "camelcase": "^8.0.0",
     "cypress": "^12.17.4",
     "prettier": "^3.0.2",
     "typescript": "^5.1.6",

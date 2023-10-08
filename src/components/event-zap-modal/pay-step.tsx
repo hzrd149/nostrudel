@@ -4,7 +4,7 @@ import { Alert, Box, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosur
 import { PayRequest } from ".";
 import { UserAvatar } from "../user-avatar";
 import { UserLink } from "../user-link";
-import { ArrowDownSIcon, ArrowUpSIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
+import { ChevronDownIcon, ChevronUpIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import { PropsWithChildren, useEffect, useState } from "react";
 import appSettings from "../../services/settings/app-settings";
@@ -52,7 +52,7 @@ function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: 
             Pay
           </Button>
           <IconButton
-            icon={showMore.isOpen ? <ArrowUpSIcon /> : <ArrowDownSIcon />}
+            icon={showMore.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             aria-label="More Options"
             onClick={showMore.onToggle}
           />

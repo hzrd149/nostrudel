@@ -49,7 +49,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <>
             <AccountSwitcher />
             <Button
-              leftIcon={<WritingIcon />}
+              leftIcon={<WritingIcon boxSize={6} />}
               aria-label="Write Note"
               title="Write Note"
               onClick={() => openModal()}

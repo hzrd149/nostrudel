@@ -25,7 +25,7 @@ import { useContextEmojis } from "../../../providers/emoji-provider";
 import UserDirectoryProvider from "../../../providers/user-directory-provider";
 import { TrustProvider } from "../../../providers/trust";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
-import { ImageIcon } from "../../../components/icons";
+import { UploadImageIcon } from "../../../components/icons";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -123,7 +123,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
             }}
           />
           <IconButton
-            icon={<ImageIcon />}
+            icon={<UploadImageIcon />}
             aria-label="Upload Image"
             title="Upload Image"
             onClick={() => imageUploadRef.current?.click()}

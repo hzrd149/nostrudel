@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ButtonGroup, ButtonGroupProps, IconButton } from "@chakra-ui/react";
 
-import { ImageGridTimelineIcon, TextTimelineIcon, TimelineHealthIcon } from "../icons";
+import { ImageGridTimelineIcon, NoteFeedIcon, TimelineHealthIcon } from "../icons";
 import { TimelineViewType } from "./index";
 import { searchParamsToJson } from "../../helpers/url";
 
@@ -21,19 +21,19 @@ export default function TimelineViewTypeButtons(props: ButtonGroupProps) {
     <ButtonGroup {...props}>
       <IconButton
         aria-label="Health"
-        icon={<TimelineHealthIcon />}
+        icon={<TimelineHealthIcon boxSize={5} />}
         variant={mode === "health" ? "solid" : "ghost"}
         onClick={() => onChange("health")}
       />
       <IconButton
         aria-label="Timeline"
-        icon={<TextTimelineIcon />}
+        icon={<NoteFeedIcon boxSize={5} />}
         variant={mode === "timeline" ? "solid" : "outline"}
         onClick={() => onChange("timeline")}
       />
       <IconButton
         aria-label="Image grid"
-        icon={<ImageGridTimelineIcon />}
+        icon={<ImageGridTimelineIcon boxSize={5} />}
         variant={mode === "images" ? "solid" : "outline"}
         onClick={() => onChange("images")}
       />

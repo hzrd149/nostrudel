@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 import { Box, Button, Divider, Flex, Heading, Image, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
@@ -47,7 +47,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center" wrap="wrap">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
 

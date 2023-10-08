@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Button, ButtonGroup, Divider, Flex, Heading, Spacer, Spinner } from "@chakra-ui/react";
 
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import GoalMenu from "./components/goal-menu";
 import { getGoalAmount, getGoalName } from "../../helpers/nostr/goal";
 import GoalProgress from "./components/goal-progress";
@@ -36,7 +36,7 @@ export default function GoalDetailsView() {
   return (
     <VerticalPageLayout overflow="hidden" h="full">
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
 
