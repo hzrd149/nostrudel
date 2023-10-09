@@ -1,4 +1,4 @@
-import { NostrEvent, isATag, isPTag } from "../../types/nostr-event";
+import { ATag, NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { getPubkeysFromList } from "./lists";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
@@ -42,4 +42,20 @@ export function validateBadgeAwardEvent(event: NostrEvent) {
   getBadgeAwardPubkey(event);
   getBadgeAwardBadge(event);
   return true;
+}
+
+export function parseProfileBadges(profileBadges: NostrEvent) {
+  const badgeAwardSets: { badgeCord: string; awardEventId: string; relay?: string }[] = [];
+
+  let lastBadgeTag: ATag | undefined;
+  for (const tag of profileBadges.tags) {
+    if (isATag(tag)) {
+      lastBadgeTag = tag;
+    } else if (isETag(tag) && lastBadgeTag) {
+      badgeAwardSets.push({ badgeCord: lastBadgeTag[1], awardEventId: tag[1], relay: tag[2] });
+      lastBadgeTag = undefined;
+    }
+  }
+
+  return badgeAwardSets;
 }

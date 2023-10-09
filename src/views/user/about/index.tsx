@@ -23,16 +23,16 @@ import {
 import { useAsync } from "react-use";
 import { nip19 } from "nostr-tools";
 
-import { readablizeSats } from "../../helpers/bolt11";
-import { getUserDisplayName } from "../../helpers/user-metadata";
-import { getLudEndpoint } from "../../helpers/lnurl";
-import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { truncatedId } from "../../helpers/nostr/events";
-import trustedUserStatsService from "../../services/trusted-user-stats";
-import { parseAddress } from "../../services/dns-identity";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
-import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
+import { readablizeSats } from "../../../helpers/bolt11";
+import { getUserDisplayName } from "../../../helpers/user-metadata";
+import { getLudEndpoint } from "../../../helpers/lnurl";
+import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
+import { truncatedId } from "../../../helpers/nostr/events";
+import trustedUserStatsService from "../../../services/trusted-user-stats";
+import { parseAddress } from "../../../services/dns-identity";
+import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import { embedNostrLinks, renderGenericUrl } from "../../../components/embed-types";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -40,19 +40,20 @@ import {
   ExternalLinkIcon,
   KeyIcon,
   LightningIcon,
-} from "../../components/icons";
-import { CopyIconButton } from "../../components/copy-icon-button";
-import { QrIconButton } from "./components/share-qr-button";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import { UserAvatar } from "../../components/user-avatar";
+} from "../../../components/icons";
+import { CopyIconButton } from "../../../components/copy-icon-button";
+import { QrIconButton } from "../components/share-qr-button";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import { UserAvatar } from "../../../components/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
-import { UserFollowButton } from "../../components/user-follow-button";
-import UserZapButton from "./components/user-zap-button";
-import { UserProfileMenu } from "./components/user-profile-menu";
-import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
-import useUserContactList from "../../hooks/use-user-contact-list";
-import { getPubkeysFromList } from "../../helpers/nostr/lists";
-import Timestamp from "../../components/timestamp";
+import { UserFollowButton } from "../../../components/user-follow-button";
+import UserZapButton from "../components/user-zap-button";
+import { UserProfileMenu } from "../components/user-profile-menu";
+import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
+import useUserContactList from "../../../hooks/use-user-contact-list";
+import { getPubkeysFromList } from "../../../helpers/nostr/lists";
+import Timestamp from "../../../components/timestamp";
+import UserProfileBadges from "./user-profile-badges";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -181,6 +182,8 @@ export default function UserAboutTab() {
           </Flex>
         )}
       </Flex>
+
+      <UserProfileBadges pubkey={pubkey} />
 
       <Accordion allowMultiple>
         <AccordionItem>

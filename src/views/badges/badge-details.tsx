@@ -77,7 +77,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
             <UserLink fontWeight="bold" pubkey={badge.pubkey} />
           </Text>
           <Text>
-            Last Updated: <Timestamp timestamp={badge.created_at} />
+            Created: <Timestamp timestamp={badge.created_at} />
           </Text>
           {description && <Text pb="2">{description}</Text>}
         </Flex>
