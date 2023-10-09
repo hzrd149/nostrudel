@@ -23,7 +23,7 @@ export default function useUserProfileBadges(pubkey: string, additionalRelays: s
     const badge = badges.find((e) => getEventCoordinate(e) === p.badgeCord);
     const award = awardEvents.find((e) => e.id === p.awardEventId);
 
-    if (badge && award) final.push({ badge, award });
+    if (badge && award && badge.pubkey === award.pubkey) final.push({ badge, award });
   }
 
   return final;

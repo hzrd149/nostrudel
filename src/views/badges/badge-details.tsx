@@ -19,7 +19,6 @@ import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import { ErrorBoundary } from "../../components/error-boundary";
 import Timestamp from "../../components/timestamp";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
@@ -70,7 +69,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
       <Flex direction={{ base: "column", lg: "row" }} gap="2">
         {image && <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} />}
-        <Flex direction="column" gap="2">
+        <Flex direction="column">
           <Heading size="md">{getBadgeName(badge)}</Heading>
           <Text>
             Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
@@ -79,15 +78,21 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
           <Text>
             Created: <Timestamp timestamp={badge.created_at} />
           </Text>
-          {description && <Text pb="2">{description}</Text>}
+          {description && (
+            <>
+              <Heading size="md" mt="2">
+                Description
+              </Heading>
+              <Text pb="2">{description}</Text>
+            </>
+          )}
         </Flex>
       </Flex>
 
       {awards.length > 0 && (
         <>
           <IntersectionObserverProvider callback={callback}>
-            <Heading size="md">Awarded to</Heading>
-            <Divider />
+            <Heading size="lg">Awarded to</Heading>
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {awards.map((award) => (
                 <>

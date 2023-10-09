@@ -46,6 +46,7 @@ function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; aw
           <Image w="14" h="14" src={getBadgeImage(badge)?.src ?? ""} />
         </Tooltip>
       </Link>
+
       <Modal isOpen={modal.isOpen} onClose={modal.onClose}>
         <ModalOverlay />
         <ModalContent>
