@@ -5,7 +5,6 @@ import {
   ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   CardProps,
   Flex,
@@ -66,6 +65,9 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
 
   return (
     <>
+      <Text>
+        Updated: <Timestamp timestamp={list.created_at} />
+      </Text>
       {people.length > 0 && (
         <>
           <Text>People ({people.length}):</Text>
@@ -77,59 +79,55 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
         </>
       )}
       {notes.length > 0 && (
-        <>
+        <Flex gap="2" overflow="hidden" wrap="wrap">
           <Text>Notes ({notes.length}):</Text>
-          <Flex gap="2" overflow="hidden">
-            {notes.slice(0, 4).map(({ id, relay }) => (
-              <NoteLink key={id} noteId={id} />
-            ))}
-          </Flex>
-        </>
+          {notes.slice(0, 4).map(({ id, relay }) => (
+            <NoteLink key={id} noteId={id} />
+          ))}
+        </Flex>
       )}
       {references.length > 0 && (
-        <>
+        <Flex gap="2" overflow="hidden" wrap="wrap">
           <Text>References ({references.length})</Text>
-          <Flex gap="2" overflow="hidden">
-            {references.slice(0, 3).map(({ url, petname }) => (
-              <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
-                {petname || url}
-              </Link>
-            ))}
-          </Flex>
-        </>
+          {references.slice(0, 3).map(({ url, petname }) => (
+            <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
+              {petname || url}
+            </Link>
+          ))}
+        </Flex>
       )}
       {communities.length > 0 && (
-        <>
+        <Flex gap="2" overflow="hidden" wrap="wrap">
           <Text>Communities ({communities.length}):</Text>
-          <Flex gap="2" overflow="hidden">
-            {communities.map((pointer) => (
-              <Link
-                key={JSON.stringify(pointer)}
-                as={RouterLink}
-                to={`/c/${pointer.identifier}/${nip19.npubEncode(pointer.pubkey)}`}
-                color="blue.500"
-              >
-                {pointer.identifier}
-              </Link>
-            ))}
-          </Flex>
-        </>
+          {communities.map((pointer) => (
+            <Link
+              key={JSON.stringify(pointer)}
+              as={RouterLink}
+              to={`/c/${pointer.identifier}/${nip19.npubEncode(pointer.pubkey)}`}
+              color="blue.500"
+            >
+              {pointer.identifier}
+            </Link>
+          ))}
+        </Flex>
       )}
       {articles.length > 0 && (
-        <>
+        <Flex overflow="hidden" direction="column" wrap="wrap">
           <Text>Articles ({articles.length}):</Text>
-          <Flex overflow="hidden" direction="column">
-            {articles.slice(0, 4).map((pointer) => (
-              <ArticleLinkLoader key={JSON.stringify(pointer)} pointer={pointer} isTruncated />
-            ))}
-          </Flex>
-        </>
+          {articles.slice(0, 4).map((pointer) => (
+            <ArticleLinkLoader key={JSON.stringify(pointer)} pointer={pointer} isTruncated />
+          ))}
+        </Flex>
       )}
     </>
   );
 }
 
-function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
+function ListCardRender({
+  list,
+  hideCreator = false,
+  ...props
+}: Omit<CardProps, "children"> & { list: NostrEvent; hideCreator?: boolean }) {
   const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
 
   // if there is a parent intersection observer, register this card
@@ -138,36 +136,43 @@ function ListCardRender({ list, ...props }: Omit<CardProps, "children"> & { list
 
   return (
     <Card ref={ref} variant="outline" {...props}>
-      <CardHeader display="flex" alignItems="center" p="2" pb="0">
+      <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0">
         <Heading size="md" isTruncated>
           <Link as={RouterLink} to={`/lists/${link}`}>
             {getListName(list)}
           </Link>
         </Heading>
-        <Link as={RouterLink} to={`/lists/${link}`} ml="auto">
-          <Timestamp timestamp={list.created_at} />
-        </Link>
-      </CardHeader>
-      <CardBody py="0" px="2">
-        <ListCardContent list={list} />
-      </CardBody>
-      <CardFooter p="2" display="flex" alignItems="center" whiteSpace="pre" gap="2">
-        <Text>Created by:</Text>
-        <UserAvatarLink pubkey={list.pubkey} size="xs" />
-        <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+        {!hideCreator && (
+          <>
+            <Text>by</Text>
+            <UserAvatarLink pubkey={list.pubkey} size="xs" />
+            <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+          </>
+        )}
         <ButtonGroup size="xs" variant="ghost" ml="auto">
           <ListFavoriteButton list={list} />
           <ListMenu list={list} aria-label="list menu" />
         </ButtonGroup>
-      </CardFooter>
+      </CardHeader>
+      <CardBody p="2">
+        <ListCardContent list={list} />
+      </CardBody>
     </Card>
   );
 }
 
-function ListCard({ cord, list: maybeEvent }: { cord?: string; list?: NostrEvent }) {
+function ListCard({
+  cord,
+  list: maybeEvent,
+  hideCreator,
+}: {
+  cord?: string;
+  list?: NostrEvent;
+  hideCreator?: boolean;
+}) {
   const event = maybeEvent ?? (cord ? useReplaceableEvent(cord as string) : undefined);
   if (!event) return null;
-  else return <ListCardRender list={event} />;
+  else return <ListCardRender list={event} hideCreator={hideCreator} />;
 }
 
 export default memo(ListCard);

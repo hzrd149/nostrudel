@@ -21,14 +21,14 @@ export default function EmbeddedList({ list: list, ...props }: Omit<CardProps, "
             {getListName(list)}
           </Link>
         </Heading>
-        <ListFeedButton list={list} ml="auto" size="sm" />
-      </CardHeader>
-      <CardBody p="2">
         <Flex gap="2">
-          <Text>Created by:</Text>
+          <Text>by</Text>
           <UserAvatarLink pubkey={list.pubkey} size="xs" />
           <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
         </Flex>
+        <ListFeedButton list={list} ml="auto" size="sm" />
+      </CardHeader>
+      <CardBody p="2">
         <ListCardContent list={list} />
       </CardBody>
     </Card>

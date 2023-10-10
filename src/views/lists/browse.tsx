@@ -69,7 +69,7 @@ function BrowseListPage() {
           </Switch>
         </Flex>
 
-        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
           {lists.map((event) => (
             <ListCard key={getEventUID(event)} list={event} />
           ))}
