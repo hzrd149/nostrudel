@@ -4,6 +4,7 @@ export const getMatchHashtag = () => /(^|[^\p{L}])#([\p{L}\p{N}]+)/gu;
 export const getMatchLink = () =>
   /https?:\/\/([a-zA-Z0-9\.\-]+\.[a-zA-Z]+)([\p{Letter}\p{Number}&\.-\/\?=#\-@%\+_,:!]*)/gu;
 export const getMatchEmoji = () => /:([a-zA-Z0-9_-]+):/gi;
+export const getMatchCashu = () => /cashuA[A-z0-9]+/g;
 
 // read more https://www.regular-expressions.info/unicode.html#category
 export function stripInvisibleChar(str?: string) {

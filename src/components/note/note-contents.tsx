@@ -21,6 +21,7 @@ import {
   embedImageGallery,
   renderGenericUrl,
   renderSongDotLinkUrl,
+  embedCashuTokens,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
@@ -48,6 +49,9 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
 
   // bitcoin
   content = embedLightningInvoice(content);
+
+  // cashu
+  content = embedCashuTokens(content);
 
   // nostr
   content = embedNostrLinks(content);
