@@ -39,7 +39,7 @@ export default function InlineCachuCard({ token }: { token: string }) {
 
   const amount = cashu?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
   return (
-    <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4">
+    <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4" flexWrap="wrap">
       <ECashIcon boxSize={10} color="green.500" />
       <Box>
         <Heading size="md">{amount} Cashu sats</Heading>
