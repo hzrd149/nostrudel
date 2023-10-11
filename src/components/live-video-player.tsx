@@ -57,7 +57,6 @@ export function LiveVideoPlayer({
       autoPlay={autoPlay}
       poster={poster}
       muted={muted}
-      style={{ maxHeight: "100%", maxWidth: "100%", width: "100%" }}
       {...props}
     />
   );

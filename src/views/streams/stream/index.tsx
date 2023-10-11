@@ -102,11 +102,13 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
         <StreamDebugButton stream={stream} variant="ghost" />
         <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
       </Flex>
-      <Flex gap="2" maxH="calc(100vh - 4rem)">
+      <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
         <LiveVideoPlayer
           stream={stream.streaming || stream.recording}
           autoPlay={!!stream.streaming}
           poster={stream.image}
+          // NOTE: width=0 is used for chromium browser to stop the video element from pushing the chat off screen
+          w={0}
           flexGrow={1}
           mx="auto"
         />
