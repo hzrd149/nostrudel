@@ -7,9 +7,9 @@ const ArrowNarrowUp = createIcon({
     <path
       d="M12 20V4M12 4L6 10M12 4L18 10"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

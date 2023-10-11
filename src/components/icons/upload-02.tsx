@@ -7,9 +7,9 @@ const Upload02 = createIcon({
     <path
       d="M21 3H3M18 13L12 7M12 7L6 13M12 7V21"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

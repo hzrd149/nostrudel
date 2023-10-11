@@ -7,9 +7,9 @@ const AlignBottom01 = createIcon({
     <path
       d="M3 21H21M12 3V17M12 17L19 10M12 17L5 10"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

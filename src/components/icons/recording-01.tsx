@@ -7,9 +7,9 @@ const Recording01 = createIcon({
     <path
       d="M3 10L3 14M7.5 6L7.5 18M12 3V21M16.5 6V18M21 10V14"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

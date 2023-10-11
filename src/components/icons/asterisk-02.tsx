@@ -7,9 +7,9 @@ const Asterisk02 = createIcon({
     <path
       d="M12 4V20M18 6L6 18M20 12H4M18 18L6 6"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

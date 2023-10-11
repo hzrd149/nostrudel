@@ -7,9 +7,9 @@ const Hash01 = createIcon({
     <path
       d="M4 8H20M4 16H20M8 3V21M16 3V21"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

@@ -7,9 +7,9 @@ const FilterLines = createIcon({
     <path
       d="M6 12H18M3 6H21M9 18H15"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

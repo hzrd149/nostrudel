@@ -7,9 +7,9 @@ const Expand02 = createIcon({
     <path
       d="M3 21L21 3M3 21H9M3 21L3 15M21 3H15M21 3V9"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

@@ -225,4 +225,4 @@ export const GhostIcon = createIcon({
 });
 
 export const ECashIcon = BankNote01;
-export const WalletIcon = Wallet02
+export const WalletIcon = Wallet02;

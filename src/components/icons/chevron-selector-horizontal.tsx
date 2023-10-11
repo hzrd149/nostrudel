@@ -7,9 +7,9 @@ const ChevronSelectorHorizontal = createIcon({
     <path
       d="M9 7L4 12L9 17M15 7L20 12L15 17"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

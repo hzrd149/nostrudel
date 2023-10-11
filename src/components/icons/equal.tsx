@@ -7,9 +7,9 @@ const Equal = createIcon({
     <path
       d="M5 9H19M5 15H19"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

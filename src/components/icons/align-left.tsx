@@ -7,9 +7,9 @@ const AlignLeft = createIcon({
     <path
       d="M16 10H3M20 6H3M20 14H3M16 18H3"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

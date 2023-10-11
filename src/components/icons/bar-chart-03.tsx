@@ -7,9 +7,9 @@ const BarChart03 = createIcon({
     <path
       d="M6 20V4M18 20V16M12 20V10"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

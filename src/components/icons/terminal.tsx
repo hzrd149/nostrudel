@@ -7,9 +7,9 @@ const Terminal = createIcon({
     <path
       d="M4 17L10 11L4 5M12 19H20"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

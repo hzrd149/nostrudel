@@ -7,9 +7,9 @@ const BluetoothOn = createIcon({
     <path
       d="M6 7L18 17L12 22V2L18 7L6 17"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

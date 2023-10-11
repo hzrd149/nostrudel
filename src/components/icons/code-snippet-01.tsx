@@ -7,9 +7,9 @@ const CodeSnippet01 = createIcon({
     <path
       d="M16 18L22 12L16 6M8 6L2 12L8 18"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

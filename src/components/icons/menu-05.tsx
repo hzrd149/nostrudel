@@ -7,9 +7,9 @@ const Menu05 = createIcon({
     <path
       d="M3 8.5H21M3 15.5H21"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

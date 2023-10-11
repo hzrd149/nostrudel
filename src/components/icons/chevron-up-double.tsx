@@ -7,9 +7,9 @@ const ChevronUpDouble = createIcon({
     <path
       d="M17 18L12 13L7 18M17 11L12 6L7 11"
       stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     ></path>,
   ],

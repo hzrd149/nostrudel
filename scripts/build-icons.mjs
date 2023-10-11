@@ -20,6 +20,15 @@ for (const filename of iconsList) {
   const pathElements = $("path");
   const paths = [];
   for (const path of pathElements) {
+    // convert all attributes to camelcase
+    for (const [key, value] of Object.entries(path.attribs)) {
+      const ccKey = camelcase(key);
+      if (ccKey !== key) {
+        delete path.attribs[key];
+        path.attribs[ccKey] = value;
+      }
+    }
+
     if (path.attribs["stroke"]) {
       path.attribs["stroke"] = "currentColor";
     }
