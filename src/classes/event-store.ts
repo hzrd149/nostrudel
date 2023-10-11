@@ -2,7 +2,7 @@ import { getEventUID } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "./subject";
 
-export type EventFilter = (event: NostrEvent) => boolean;
+export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export default class EventStore {
   name?: string;
@@ -59,7 +59,7 @@ export default class EventStore {
     while (true) {
       const event = events.shift();
       if (!event) return;
-      if (filter && !filter(event)) continue;
+      if (filter && !filter(event, this)) continue;
       if (i === nth) return event;
       i++;
     }
@@ -71,7 +71,7 @@ export default class EventStore {
     while (true) {
       const event = events.pop();
       if (!event) return;
-      if (filter && !filter(event)) continue;
+      if (filter && !filter(event, this)) continue;
       if (i === nth) return event;
       i++;
     }
