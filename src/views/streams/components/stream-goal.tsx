@@ -27,7 +27,7 @@ export default function StreamGoal({ stream, ...props }: Omit<CardProps, "childr
       <CardBody p="2" display="flex" gap="2" flexDirection="column">
         <GoalProgress goal={goal} />
         <Flex gap="2" alignItems="flex-end">
-          <GoalTopZappers goal={goal} overflow="hidden" />
+          <GoalTopZappers goal={goal} overflow="hidden" flex={1} />
           <GoalZapButton goal={goal} flexShrink={0} />
         </Flex>
       </CardBody>
