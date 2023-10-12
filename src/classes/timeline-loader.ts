@@ -278,6 +278,7 @@ export default class TimelineLoader {
   cleanup() {
     this.close();
     this.removeLoaders();
+    this.events.cleanup();
     deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 

@@ -1,12 +1,10 @@
 import dayjs from "dayjs";
-import { Kind, nip19 } from "nostr-tools";
+import { nip19 } from "nostr-tools";
 
-import { getEventRelays } from "../../services/event-relays";
-import { ATag, DraftNostrEvent, ETag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
+import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
-import relayScoreboardService from "../../services/relay-scoreboard";
-import type { AddressPointer, EventPointer } from "nostr-tools/lib/nip19";
+import type { AddressPointer } from "nostr-tools/lib/nip19";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -150,7 +148,7 @@ export function parseRTag(tag: RTag): RelayConfig {
 }
 
 export function getEventCoordinate(event: NostrEvent) {
-  const d = event.tags.find((t) => t[0] === "d")?.[1];
+  const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
 export function pointerToATag(pointer: AddressPointer): ATag {

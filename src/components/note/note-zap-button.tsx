@@ -37,7 +37,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
     <>
       {total > 0 ? (
         <Button
-          leftIcon={<LightningIcon />}
+          leftIcon={<LightningIcon verticalAlign="sub" />}
           aria-label="Zap Note"
           title="Zap Note"
           colorScheme={hasZapped ? "primary" : undefined}
@@ -49,7 +49,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
         </Button>
       ) : (
         <IconButton
-          icon={<LightningIcon />}
+          icon={<LightningIcon verticalAlign="sub" />}
           aria-label="Zap Note"
           title="Zap Note"
           {...props}
