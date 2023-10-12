@@ -66,6 +66,7 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
+import UserTracksTab from "./views/user/tracks";
 
 const ToolsHomeView = React.lazy(() => import("./views/tools"));
 const NetworkView = React.lazy(() => import("./views/tools/network"));
@@ -163,6 +164,7 @@ const router = createHashRouter([
           { path: "notes", element: <UserNotesTab /> },
           { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
+          { path: "tracks", element: <UserTracksTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },

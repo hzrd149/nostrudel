@@ -59,6 +59,7 @@ import Plus from "./icons/plus";
 import Bookmark from "./icons/bookmark";
 import BankNote01 from "./icons/bank-note-01";
 import Wallet02 from "./icons/wallet-02";
+import Download01 from "./icons/download-01";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -226,3 +227,4 @@ export const GhostIcon = createIcon({
 
 export const ECashIcon = BankNote01;
 export const WalletIcon = Wallet02;
+export const DownloadIcon = Download01
