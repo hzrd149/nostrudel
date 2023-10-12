@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid";
-import { NostrEvent } from "../types/nostr-event";
+import { CountResponse, NostrEvent } from "../types/nostr-event";
 import { NostrRequestFilter } from "../types/nostr-query";
 import relayPoolService from "../services/relay-pool";
-import Relay, { IncomingEOSE, IncomingEvent } from "./relay";
+import Relay, { IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
 import Subject from "./subject";
 import createDefer from "./deferred";
 
@@ -16,7 +16,8 @@ export default class NostrRequest {
   timeout: number;
   relays: Set<Relay>;
   state = NostrRequest.IDLE;
-  onEvent = new Subject<NostrEvent>();
+  onEvent = new Subject<NostrEvent>(undefined, false);
+  onCount = new Subject<CountResponse>(undefined, false);
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
@@ -27,6 +28,7 @@ export default class NostrRequest {
     for (const relay of this.relays) {
       relay.onEOSE.subscribe(this.handleEOSE, this);
       relay.onEvent.subscribe(this.handleEvent, this);
+      relay.onCount.subscribe(this.handleCount, this);
     }
 
     this.timeout = timeout ?? REQUEST_DEFAULT_TIMEOUT;
@@ -57,8 +59,13 @@ export default class NostrRequest {
       this.seenEvents.add(incomingEvent.body.id);
     }
   }
+  handleCount(incomingCount: IncomingCount) {
+    if (incomingCount.subId === this.id) {
+      this.onCount.next({ count: incomingCount.count, approximate: incomingCount.approximate });
+    }
+  }
 
-  start(filter: NostrRequestFilter) {
+  start(filter: NostrRequestFilter, type: "REQ" | "COUNT" = "REQ") {
     if (this.state !== NostrRequest.IDLE) {
       throw new Error("cant restart a nostr request");
     }
@@ -66,8 +73,8 @@ export default class NostrRequest {
     this.state = NostrRequest.RUNNING;
     for (const relay of this.relays) {
       if (Array.isArray(filter)) {
-        relay.send(["REQ", this.id, ...filter]);
-      } else relay.send(["REQ", this.id, filter]);
+        relay.send([type, this.id, ...filter]);
+      } else relay.send([type, this.id, filter]);
     }
 
     setTimeout(() => this.complete(), this.timeout);

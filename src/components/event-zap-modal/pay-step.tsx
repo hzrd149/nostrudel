@@ -116,7 +116,7 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
       {callbacks.map(({ pubkey, invoice, error }) => {
         if (paid.includes(pubkey))
           return (
-            <UserCard pubkey={pubkey}>
+            <UserCard key={pubkey} pubkey={pubkey}>
               <Button size="sm" variant="outline" colorScheme="green" leftIcon={<CheckIcon />}>
                 Paid
               </Button>

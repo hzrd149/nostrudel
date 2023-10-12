@@ -5049,6 +5049,11 @@ json-schema@0.4.0, json-schema@^0.4.0:
   resolved "https://registry.yarnpkg.com/json-schema/-/json-schema-0.4.0.tgz#f7de4cf6efab838ebaeb3236474cbba5a1930ab5"
   integrity sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA==
 
+json-stringify-deterministic@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/json-stringify-deterministic/-/json-stringify-deterministic-1.0.11.tgz#9e53b7431fa5b41d3badedb7bbbe2647ea74f036"
+  integrity sha512-lsn3NoTZ6dGgJJ7W4i7BUKV4WJ+hqAJ0imqHl314MNUw2U+As++qLDudcHqBqlkCXTTH7kH3v5LUQ3CHoVM0BA==
+
 json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"

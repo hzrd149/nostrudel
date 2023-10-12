@@ -29,17 +29,21 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { RelayMode } from "../../classes/relay";
 import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";
 import Header from "./components/header";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useUserEventKindCount from "../../hooks/use-user-event-kind-count";
+import { STREAM_KIND } from "../../helpers/nostr/stream";
+import { GOAL_KIND } from "../../helpers/nostr/goal";
+import { useMeasure } from "react-use";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -94,10 +98,27 @@ const UserView = () => {
   const userTopRelays = useUserTopRelays(pubkey, relayCount);
   const relayModal = useDisclosure();
 
+  const articleCount = useUserEventKindCount(pubkey, Kind.Article);
+  const streamCount = useUserEventKindCount(pubkey, STREAM_KIND);
+  const goalCount = useUserEventKindCount(pubkey, GOAL_KIND);
+
+  const filteredTabs = useMemo(
+    () =>
+      tabs.filter((t) => {
+        if (t.path === "streams" && streamCount === 0) return false;
+        if (t.path === "goals" && goalCount === 0) return false;
+        if (t.path === "articles" && articleCount === 0) return false;
+        return true;
+      }),
+    [streamCount, goalCount, articleCount],
+  );
+
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
 
-  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
+  const activeTab = filteredTabs.indexOf(
+    filteredTabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? filteredTabs[0],
+  );
 
   const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
 
@@ -114,12 +135,12 @@ const UserView = () => {
             flexGrow="1"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(tabs[v].path, { replace: true })}
+            onChange={(v) => navigate(filteredTabs[v].path, { replace: true })}
             colorScheme="primary"
             h="full"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
-              {tabs.map(({ label }) => (
+              {filteredTabs.map(({ label }) => (
                 <Tab key={label} whiteSpace="pre">
                   {label}
                 </Tab>
@@ -127,7 +148,7 @@ const UserView = () => {
             </TabList>
 
             <TabPanels>
-              {tabs.map(({ label }) => (
+              {filteredTabs.map(({ label }) => (
                 <TabPanel key={label} p={0}>
                   <ErrorBoundary>
                     <Suspense fallback={<Spinner />}>
