@@ -15,13 +15,7 @@ import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { InlineNoteContent } from "../../note/inline-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
-import styled from "@emotion/styled";
-
-const HoverLinkOverlay = styled(LinkOverlay)`
-  &:hover:before {
-    background-color: var(--chakra-colors-card-hover-overlay);
-  }
-`;
+import HoverLinkOverlay from "../../hover-link-overlay";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);

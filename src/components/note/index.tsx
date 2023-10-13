@@ -10,6 +10,7 @@ import {
   Flex,
   IconButton,
   Link,
+  LinkBox,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -44,14 +45,16 @@ import { getSharableEventAddress } from "../../helpers/nip19";
 import { COMMUNITY_DEFINITION_KIND, getCommunityName } from "../../helpers/nostr/communities";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import HoverLinkOverlay from "../hover-link-overlay";
+import { nip19 } from "nostr-tools";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   hideDrawerButton?: boolean;
-  hideThreadLink?: boolean;
   registerIntersectionEntity?: boolean;
+  clickable?: boolean;
 };
 export const Note = React.memo(
   ({
@@ -59,8 +62,8 @@ export const Note = React.memo(
     variant = "outline",
     showReplyButton,
     hideDrawerButton,
-    hideThreadLink,
     registerIntersectionEntity = true,
+    clickable = true,
     ...props
   }: NoteProps) => {
     const account = useCurrentAccount();
@@ -87,29 +90,26 @@ export const Note = React.memo(
       <TrustProvider event={event}>
         <ExpandProvider>
           <Card
+            as={LinkBox}
             variant={variant}
             ref={registerIntersectionEntity ? ref : undefined}
             data-event-id={event.id}
             {...props}
           >
+            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${nip19.noteEncode(event.id)}`} />}
             <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
                 <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
                 <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
                 <Flex grow={1} />
-                {!hideThreadLink && (
-                  <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
-                    thread
-                  </NoteLink>
-                )}
                 {showSignatureVerification && <EventVerificationIcon event={event} />}
                 {!hideDrawerButton && (
                   <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
                 )}
-                <NoteLink noteId={event.id} whiteSpace="nowrap" color="current">
+                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(event.id)}`}>
                   <Timestamp timestamp={event.created_at} />
-                </NoteLink>
+                </Link>
               </Flex>
               {community && (
                 <Text fontStyle="italic">

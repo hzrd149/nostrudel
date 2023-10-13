@@ -47,8 +47,8 @@ export const ThreadPost = ({ post, initShowReplies, focusId }: ThreadItemProps) 
           <Note
             event={post.event}
             borderColor={focusId === post.event.id ? "blue.500" : undefined}
+            clickable={focusId !== post.event.id}
             hideDrawerButton
-            hideThreadLink
           />
         </TrustProvider>
       )}

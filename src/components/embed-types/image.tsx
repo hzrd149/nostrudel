@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Image, ImageProps } from "@chakra-ui/react";
+import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
 import appSettings from "../../services/settings/app-settings";
 import { useTrusted } from "../../providers/trust";
@@ -61,23 +61,69 @@ export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, 
   else return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
 });
 
-export type EmbeddedImageProps = TrustImageProps & {
+export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"> & {
+  src?: string;
   event?: NostrEvent;
+  imageProps?: TrustImageProps;
 };
 
-export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(({ src, event, ...props }, ref) => {
-  const thumbnail = appSettings.value.imageProxy
-    ? new URL(`/256,fit/${src}`, appSettings.value.imageProxy).toString()
-    : src;
+function useImageThumbnail(src?: string) {
+  return appSettings.value.imageProxy ? new URL(`/256,fit/${src}`, appSettings.value.imageProxy).toString() : src;
+}
 
-  ref = ref || useRef<HTMLImageElement | null>(null);
-  const { show } = useRegisterSlide(
-    ref as MutableRefObject<HTMLImageElement | null>,
-    src ? { type: "image", src, event } : undefined,
-  );
+export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
+  ({ src, event, imageProps, ...props }, ref) => {
+    const thumbnail = useImageThumbnail(src);
 
-  return <TrustImage {...props} src={thumbnail} cursor="pointer" ref={ref} onClick={show} />;
-});
+    ref = ref || useRef<HTMLImageElement | null>(null);
+    const { show } = useRegisterSlide(
+      ref as MutableRefObject<HTMLImageElement | null>,
+      src ? { type: "image", src, event } : undefined,
+    );
+    const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
+      (e) => {
+        !e.isPropagationStopped() && show();
+        e.preventDefault();
+      },
+      [show],
+    );
+
+    // NOTE: the parent <div> has display=block and and <a> has inline-block
+    // this is so that the <a> element can act like a block without being full width
+    return (
+      <div>
+        <Link href={src} isExternal onClick={handleClick} display="inline-block" {...props}>
+          <TrustImage {...imageProps} src={thumbnail} cursor="pointer" ref={ref} onClick={handleClick} />
+        </Link>
+      </div>
+    );
+  },
+);
+
+export const GalleryImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
+  ({ src, event, imageProps, ...props }, ref) => {
+    const thumbnail = useImageThumbnail(src);
+
+    ref = ref || useRef<HTMLImageElement | null>(null);
+    const { show } = useRegisterSlide(
+      ref as MutableRefObject<HTMLImageElement | null>,
+      src ? { type: "image", src, event } : undefined,
+    );
+    const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
+      (e) => {
+        !e.isPropagationStopped() && show();
+        e.preventDefault();
+      },
+      [show],
+    );
+
+    return (
+      <Link href={src} isExternal onClick={handleClick} {...props}>
+        <TrustImage src={thumbnail} cursor="pointer" ref={ref} onClick={handleClick} {...imageProps} />
+      </Link>
+    );
+  },
+);
 
 export function ImageGallery({ images, event }: { images: string[]; event?: NostrEvent }) {
   const photos = useMemo(() => {
@@ -93,7 +139,9 @@ export function ImageGallery({ images, event }: { images: string[]; event?: Nost
     <PhotoGallery
       layout="rows"
       photos={photos}
-      renderPhoto={({ photo, imageProps, wrapperStyle }) => <EmbeddedImage {...imageProps} />}
+      renderPhoto={({ photo, imageProps, wrapperStyle }) => (
+        <GalleryImage src={imageProps.src} style={imageProps.style} />
+      )}
       targetRowHeight={(containerWidth) => containerWidth / rowMultiplier}
     />
   );
@@ -165,5 +213,5 @@ export function embedImageGallery(content: EmbedableContent, event?: NostrEvent)
 export function renderImageUrl(match: URL) {
   if (!isImageURL(match)) return null;
 
-  return <EmbeddedImage src={match.toString()} maxH={["initial", "35vh"]} />;
+  return <EmbeddedImage src={match.toString()} imageProps={{ maxH: ["initial", "35vh"] }} />;
 }

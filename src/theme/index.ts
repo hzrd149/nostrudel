@@ -33,8 +33,8 @@ export default function buildTheme(
     semanticTokens: {
       colors: {
         "card-hover-overlay": {
-          _light: "blackAlpha.100",
-          _dark: "whiteAlpha.100",
+          _light: "blackAlpha.50",
+          _dark: "whiteAlpha.50",
         },
       },
     },
