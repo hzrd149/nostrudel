@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Image, ImageProps, useBreakpointValue } from "@chakra-ui/react";
+import { Image, ImageProps } from "@chakra-ui/react";
 
 import appSettings from "../../services/settings/app-settings";
 import { useTrusted } from "../../providers/trust";
@@ -19,6 +19,7 @@ import { isImageURL } from "../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
 import { NostrEvent } from "../../types/nostr-event";
 import useAppSettings from "../../hooks/use-app-settings";
+import { useBreakpointValue } from "../../providers/breakpoint-provider";
 
 function useElementBlur(initBlur = false): { style: CSSProperties; onClick: MouseEventHandler } {
   const [blur, setBlur] = useState(initBlur);

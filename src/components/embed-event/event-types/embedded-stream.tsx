@@ -1,4 +1,4 @@
-import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
@@ -8,6 +8,7 @@ import { UserLink } from "../../user-link";
 import { UserAvatar } from "../../user-avatar";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import Timestamp from "../../timestamp";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
 export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const stream = parseStreamEvent(event);

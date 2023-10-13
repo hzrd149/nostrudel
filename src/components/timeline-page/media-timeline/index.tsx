@@ -1,5 +1,4 @@
 import { useMemo, useRef } from "react";
-import { useBreakpointValue } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
@@ -14,6 +13,7 @@ import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventUID } from "../../../helpers/nostr/events";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
 function GalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useRef<HTMLImageElement | null>(null);

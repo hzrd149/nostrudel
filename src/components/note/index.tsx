@@ -11,7 +11,6 @@ import {
   IconButton,
   Link,
   Text,
-  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent, isATag } from "../../types/nostr-event";
@@ -44,6 +43,7 @@ import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { COMMUNITY_DEFINITION_KIND, getCommunityName } from "../../helpers/nostr/communities";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { useBreakpointValue } from "../../providers/breakpoint-provider";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;

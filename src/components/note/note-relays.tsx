@@ -1,11 +1,11 @@
 import { memo } from "react";
-import { useBreakpointValue } from "@chakra-ui/react";
 
 import { getEventRelays } from "../../services/event-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { RelayIconStack, RelayIconStackProps } from "../relay-icon-stack";
 import { getEventUID } from "../../helpers/nostr/events";
+import { useBreakpointValue } from "../../providers/breakpoint-provider";
 
 export type NoteRelaysProps = {
   event: NostrEvent;

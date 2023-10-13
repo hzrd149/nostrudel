@@ -11,6 +11,7 @@ import PostModalProvider from "./post-modal-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { UserContactsUserDirectoryProvider } from "./user-directory-provider";
 import MuteModalProvider from "./mute-modal-provider";
+import BreakpointProvider from "./breakpoint-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -30,22 +31,24 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
 /** Providers that provider functionality to pages (needs to be rendered under a router) */
 export function PageProviders({ children }: { children: React.ReactNode }) {
   return (
-    <SigningProvider>
-      <DeleteEventProvider>
-        <MuteModalProvider>
-          <InvoiceModalProvider>
-            <NotificationTimelineProvider>
-              <DefaultEmojiProvider>
-                <UserEmojiProvider>
-                  <UserContactsUserDirectoryProvider>
-                    <PostModalProvider>{children}</PostModalProvider>
-                  </UserContactsUserDirectoryProvider>
-                </UserEmojiProvider>
-              </DefaultEmojiProvider>
-            </NotificationTimelineProvider>
-          </InvoiceModalProvider>
-        </MuteModalProvider>
-      </DeleteEventProvider>
-    </SigningProvider>
+    <BreakpointProvider>
+      <SigningProvider>
+        <DeleteEventProvider>
+          <MuteModalProvider>
+            <InvoiceModalProvider>
+              <NotificationTimelineProvider>
+                <DefaultEmojiProvider>
+                  <UserEmojiProvider>
+                    <UserContactsUserDirectoryProvider>
+                      <PostModalProvider>{children}</PostModalProvider>
+                    </UserContactsUserDirectoryProvider>
+                  </UserEmojiProvider>
+                </DefaultEmojiProvider>
+              </NotificationTimelineProvider>
+            </InvoiceModalProvider>
+          </MuteModalProvider>
+        </DeleteEventProvider>
+      </SigningProvider>
+    </BreakpointProvider>
   );
 }

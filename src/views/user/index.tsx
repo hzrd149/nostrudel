@@ -99,27 +99,10 @@ const UserView = () => {
   const userTopRelays = useUserTopRelays(pubkey, relayCount);
   const relayModal = useDisclosure();
 
-  const articleCount = useUserEventKindCount(pubkey, Kind.Article);
-  const streamCount = useUserEventKindCount(pubkey, STREAM_KIND);
-  const goalCount = useUserEventKindCount(pubkey, GOAL_KIND);
-
-  const filteredTabs = useMemo(
-    () =>
-      tabs.filter((t) => {
-        if (t.path === "streams" && streamCount === 0) return false;
-        if (t.path === "goals" && goalCount === 0) return false;
-        if (t.path === "articles" && articleCount === 0) return false;
-        return true;
-      }),
-    [streamCount, goalCount, articleCount],
-  );
-
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
 
-  const activeTab = filteredTabs.indexOf(
-    filteredTabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? filteredTabs[0],
-  );
+  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
 
   const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
 
@@ -136,12 +119,12 @@ const UserView = () => {
             flexGrow="1"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(filteredTabs[v].path, { replace: true })}
+            onChange={(v) => navigate(tabs[v].path, { replace: true })}
             colorScheme="primary"
             h="full"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
-              {filteredTabs.map(({ label }) => (
+              {tabs.map(({ label }) => (
                 <Tab key={label} whiteSpace="pre">
                   {label}
                 </Tab>
@@ -149,7 +132,7 @@ const UserView = () => {
             </TabList>
 
             <TabPanels>
-              {filteredTabs.map(({ label }) => (
+              {tabs.map(({ label }) => (
                 <TabPanel key={label} p={0}>
                   <ErrorBoundary>
                     <Suspense fallback={<Spinner />}>

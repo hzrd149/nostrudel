@@ -14,7 +14,6 @@ import {
   Heading,
   Spacer,
   Spinner,
-  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
@@ -52,6 +51,7 @@ import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
 import StreamShareButton from "../components/stream-share-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
