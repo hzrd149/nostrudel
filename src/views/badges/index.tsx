@@ -12,6 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import BadgeAwardCard from "./components/badge-award-card";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();
@@ -47,7 +48,9 @@ function BadgesPage() {
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         {awards.map((award) => (
-          <BadgeAwardCard key={award.id} award={award} />
+          <ErrorBoundary key={award.id}>
+            <BadgeAwardCard award={award} />
+          </ErrorBoundary>
         ))}
       </IntersectionObserverProvider>
     </VerticalPageLayout>

@@ -77,11 +77,11 @@ export default function LoginNsecView() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
       <Alert status="warning" maxWidth="30rem">
         <AlertIcon />
         <Box>
-          <AlertTitle>Using nsec keys is insecure.</AlertTitle>
+          <AlertTitle>Using secret keys is insecure</AlertTitle>
           <AlertDescription>
             You should use a browser extension like{" "}
             <Link isExternal href="https://getalby.com/" target="_blank">

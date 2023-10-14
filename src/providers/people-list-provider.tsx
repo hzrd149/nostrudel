@@ -43,12 +43,13 @@ function useListCoordinate(listId: ListId) {
 export type PeopleListProviderProps = PropsWithChildren & {
   initList?: ListId;
 };
-export default function PeopleListProvider({ children, initList = "following" }: PeopleListProviderProps) {
+export default function PeopleListProvider({ children, initList }: PeopleListProviderProps) {
+  const account = useCurrentAccount();
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selected = params.get("people") || (initList as ListId);
+  const selected = params.get("people") || (initList as ListId) || (account ? "following" : "global");
   const setSelected = useCallback(
     (value: ListId) => {
       const newParams = new URLSearchParams(location.search);

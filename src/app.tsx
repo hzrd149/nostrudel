@@ -19,11 +19,11 @@ import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/messages";
 import DirectMessageChatView from "./views/messages/chat";
 
-import LoginView from "./views/login";
-import LoginStartView from "./views/login/start";
-import LoginNpubView from "./views/login/npub";
-import LoginNip05View from "./views/login/nip05";
-import LoginNsecView from "./views/login/nsec";
+import LoginView from "./views/signin";
+import LoginStartView from "./views/signin/start";
+import LoginNpubView from "./views/signin/npub";
+import LoginNip05View from "./views/signin/nip05";
+import LoginNsecView from "./views/signin/nsec";
 
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
@@ -67,6 +67,7 @@ import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
 import UserTracksTab from "./views/user/tracks";
+import SignupView from "./views/signup";
 
 const ToolsHomeView = React.lazy(() => import("./views/tools"));
 const NetworkView = React.lazy(() => import("./views/tools/network"));
@@ -122,7 +123,7 @@ const RootPage = () => {
 
 const router = createHashRouter([
   {
-    path: "login",
+    path: "signin",
     element: <LoginView />,
     children: [
       { path: "", element: <LoginStartView /> },
@@ -130,6 +131,10 @@ const router = createHashRouter([
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
     ],
+  },
+  {
+    path: "signup",
+    element: <SignupView />,
   },
   {
     path: "streams/:naddr",

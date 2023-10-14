@@ -89,7 +89,7 @@ export default function LoginNip05View() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
       <FormControl>
         <FormLabel>Enter user NIP-05 id</FormLabel>
         <InputGroup>

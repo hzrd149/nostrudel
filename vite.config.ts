@@ -7,8 +7,8 @@ process.env.VITE_ANALYTICS_SCRIPT = isProd
   ? `
 <script
   async defer
-  src="https://ackee.nostrudel.ninja/tracker.js"
-  data-ackee-server="https://ackee.nostrudel.ninja"
+  src="//ackee.nostrudel.ninja/tracker.js"
+  data-ackee-server="//ackee.nostrudel.ninja"
   data-ackee-domain-id="58b1c39f-43f9-422b-bc7d-06aff35e764e"
 ></script>`
   : "";

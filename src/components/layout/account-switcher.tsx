@@ -83,7 +83,7 @@ export default function AccountSwitcher() {
             leftIcon={<AddIcon />}
             onClick={() => {
               accountService.logout();
-              navigate("/login", { state: { from: location.pathname } });
+              navigate("/signin", { state: { from: location.pathname } });
             }}
           >
             Add Account

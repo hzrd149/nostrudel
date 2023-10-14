@@ -1,4 +1,4 @@
-import { Avatar, Flex, Heading } from "@chakra-ui/react";
+import { Avatar, Center, Flex, Heading } from "@chakra-ui/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ReloadPrompt } from "../../components/reload-prompt";
 import useSubject from "../../hooks/use-subject";
@@ -13,20 +13,15 @@ export default function LoginView() {
   return (
     <>
       <ReloadPrompt />
-      <Flex
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        gap="4"
-        height="100%"
-        padding="4"
-        overflowX="hidden"
-        overflowY="auto"
-      >
-        <Avatar src="/apple-touch-icon.png" size="lg" flexShrink={0} />
-        <Heading>noStrudel</Heading>
-        <Outlet />
-      </Flex>
+      <Center w="full" h="full">
+        <Flex direction="column" alignItems="center" gap="2" maxW="sm" w="full" mx="4">
+          <Avatar src="/apple-touch-icon.png" size="lg" flexShrink={0} />
+          <Heading size="lg" mb="2">
+            Sign in
+          </Heading>
+          <Outlet />
+        </Flex>
+      </Center>
     </>
   );
 }

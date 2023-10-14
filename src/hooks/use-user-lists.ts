@@ -21,5 +21,6 @@ export default function useUserLists(pubkey?: string, additionalRelays: string[]
     { enabled: !!pubkey, eventFilter },
   );
 
-  return useSubject(timeline.timeline);
+  const lists = useSubject(timeline.timeline);
+  return pubkey ? lists : [];
 }

@@ -34,6 +34,7 @@ import Timestamp from "../../components/timestamp";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import BadgeAwardCard from "./components/badge-award-card";
 import TimelineLoader from "../../classes/timeline-loader";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
   const awards = useSubject(timeline.timeline);
@@ -43,7 +44,9 @@ function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
     <Flex direction="column" gap="4">
       <IntersectionObserverProvider callback={callback}>
         {awards.map((award) => (
-          <BadgeAwardCard key={award.id} award={award} showImage={false} />
+          <ErrorBoundary key={award.id}>
+            <BadgeAwardCard award={award} showImage={false} />
+          </ErrorBoundary>
         ))}
       </IntersectionObserverProvider>
     </Flex>

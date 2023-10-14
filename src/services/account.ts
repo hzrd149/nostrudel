@@ -95,6 +95,10 @@ class AccountService {
   }
 
   logout() {
+    if (this.current.value) {
+      this.removeAccount(this.current.value.pubkey);
+    }
+
     this.current.next(null);
     this.isGhost.next(false);
     localStorage.removeItem("lastAccount");
