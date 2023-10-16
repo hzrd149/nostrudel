@@ -1,32 +1,85 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
-import { Box, Button, Divider, Flex, Heading, Image, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Heading,
+  Image,
+  SimpleGrid,
+  Spacer,
+  Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
 
-import { ArrowLeftSIcon } from "../../components/icons";
-import { useDeleteEventContext } from "../../providers/delete-event-provider";
+import { ChevronLeftIcon } from "../../components/icons";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EventRelays } from "../../components/note/note-relays";
-import { getBadgeAwardPubkey, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
+import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import BadgeMenu from "./components/badge-menu";
-import BadgeAwardCard from "./components/award-card";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useCurrentAccount } from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import { ErrorBoundary } from "../../components/error-boundary";
 import Timestamp from "../../components/timestamp";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import BadgeAwardCard from "./components/badge-award-card";
+import TimelineLoader from "../../classes/timeline-loader";
+import { ErrorBoundary } from "../../components/error-boundary";
+
+function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
+  const awards = useSubject(timeline.timeline);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <Flex direction="column" gap="4">
+      <IntersectionObserverProvider callback={callback}>
+        {awards.map((award) => (
+          <ErrorBoundary key={award.id}>
+            <BadgeAwardCard award={award} showImage={false} />
+          </ErrorBoundary>
+        ))}
+      </IntersectionObserverProvider>
+    </Flex>
+  );
+}
+
+function BadgeUsersTab({ timeline }: { timeline: TimelineLoader }) {
+  const awards = useSubject(timeline.timeline);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  const pubkeys = new Set<string>();
+  for (const award of awards) {
+    for (const { pubkey } of getBadgeAwardPubkeys(award)) {
+      pubkeys.add(pubkey);
+    }
+  }
+
+  return (
+    <SimpleGrid spacing={4} columns={[1, 2, 2, 3, 4, 5, 6]}>
+      <IntersectionObserverProvider callback={callback}>
+        {Array.from(pubkeys).map((pubkey) => (
+          <Flex key={pubkey} gap="2" alignItems="center">
+            <UserAvatarLink pubkey={pubkey} size="md" />
+            <UserLink pubkey={pubkey} fontWeight="bold" isTruncated />
+          </Flex>
+        ))}
+      </IntersectionObserverProvider>
+    </SimpleGrid>
+  );
+}
 
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const navigate = useNavigate();
-  const { deleteEvent } = useDeleteEventContext();
-  const account = useCurrentAccount();
 
   const image = getBadgeImage(badge);
   const description = getBadgeDescription(badge);
@@ -38,16 +91,12 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
     kinds: [Kind.BadgeAward],
   });
 
-  const awards = useSubject(awardsTimeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(awardsTimeline);
-
   if (!badge) return <Spinner />;
 
-  const isAuthor = account?.pubkey === badge.pubkey;
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center" wrap="wrap">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
 
@@ -60,46 +109,47 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
         <EventRelays event={badge} />
 
-        {isAuthor && (
-          <Button colorScheme="red" onClick={() => deleteEvent(badge).then(() => navigate("/lists"))}>
-            Delete
-          </Button>
-        )}
         <BadgeMenu aria-label="More options" badge={badge} />
       </Flex>
 
-      <Flex direction={{ base: "column", lg: "row" }} gap="2">
-        {image && <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} />}
-        <Flex direction="column" gap="2">
+      <Flex direction={{ base: "column", lg: "row" }} gap="4">
+        {image && (
+          <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} borderRadius="lg" />
+        )}
+        <Flex direction="column">
           <Heading size="md">{getBadgeName(badge)}</Heading>
           <Text>
             Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
             <UserLink fontWeight="bold" pubkey={badge.pubkey} />
           </Text>
           <Text>
-            Last Updated: <Timestamp timestamp={badge.created_at} />
+            Created: <Timestamp timestamp={badge.created_at} />
           </Text>
-          {description && <Text pb="2">{description}</Text>}
+          {description && (
+            <>
+              <Heading size="md" mt="2">
+                Description
+              </Heading>
+              <Text pb="2">{description}</Text>
+            </>
+          )}
         </Flex>
       </Flex>
 
-      {awards.length > 0 && (
-        <>
-          <IntersectionObserverProvider callback={callback}>
-            <Heading size="md">Awarded to</Heading>
-            <Divider />
-            <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-              {awards.map((award) => (
-                <>
-                  {getBadgeAwardPubkey(award).map(({ pubkey }) => (
-                    <BadgeAwardCard award={award} pubkey={pubkey} />
-                  ))}
-                </>
-              ))}
-            </SimpleGrid>
-          </IntersectionObserverProvider>
-        </>
-      )}
+      <Tabs colorScheme="primary" isLazy>
+        <TabList>
+          <Tab>Activity</Tab>
+          <Tab>Users</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel px="0">
+            <BadgeActivityTab timeline={awardsTimeline} />
+          </TabPanel>
+          <TabPanel>
+            <BadgeUsersTab timeline={awardsTimeline} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </VerticalPageLayout>
   );
 }

@@ -14,6 +14,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+
 import NostrPublishAction from "../classes/nostr-publish-action";
 import useSubject from "../hooks/use-subject";
 import { CheckIcon, ErrorIcon } from "./icons";

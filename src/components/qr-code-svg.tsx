@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+
 import { drawSvgPath } from "../helpers/qrcode";
 import { Ecc, QrCode } from "../lib/qrcodegen";
 

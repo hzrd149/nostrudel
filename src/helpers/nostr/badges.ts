@@ -1,4 +1,4 @@
-import { NostrEvent, isATag, isPTag } from "../../types/nostr-event";
+import { ATag, NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { getPubkeysFromList } from "./lists";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
@@ -30,7 +30,7 @@ export function getBadgeThumbnails(event: NostrEvent) {
     .filter(Boolean);
 }
 
-export function getBadgeAwardPubkey(event: NostrEvent) {
+export function getBadgeAwardPubkeys(event: NostrEvent) {
   return getPubkeysFromList(event);
 }
 export function getBadgeAwardBadge(event: NostrEvent) {
@@ -39,7 +39,25 @@ export function getBadgeAwardBadge(event: NostrEvent) {
   return badgeCord;
 }
 export function validateBadgeAwardEvent(event: NostrEvent) {
-  getBadgeAwardPubkey(event);
+  getBadgeAwardPubkeys(event);
   getBadgeAwardBadge(event);
   return true;
+}
+
+export function parseProfileBadges(profileBadges: NostrEvent) {
+  const badgesAdded = new Set();
+  const badgeAwardSets: { badgeCord: string; awardEventId: string; relay?: string }[] = [];
+
+  let lastBadgeTag: ATag | undefined;
+  for (const tag of profileBadges.tags) {
+    if (isATag(tag)) {
+      lastBadgeTag = tag;
+    } else if (isETag(tag) && lastBadgeTag && !badgesAdded.has(lastBadgeTag[1])) {
+      badgeAwardSets.push({ badgeCord: lastBadgeTag[1], awardEventId: tag[1], relay: tag[2] });
+      badgesAdded.add(lastBadgeTag[1]);
+      lastBadgeTag = undefined;
+    }
+  }
+
+  return badgeAwardSets;
 }

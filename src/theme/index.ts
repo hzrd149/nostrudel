@@ -1,26 +1,42 @@
 import { extendTheme, Theme, DeepPartial } from "@chakra-ui/react";
 import { containerTheme } from "./container";
+import chroma from "chroma-js";
+
+import defaultTheme from "./default";
+
+function pallet(colors: string[]) {
+  return [50, 100, 200, 300, 400, 500, 600, 700, 800, 900].reduce(
+    (pallet, key, i) => ({ ...pallet, [key]: colors[i] }),
+    {},
+  );
+}
+
+function getTheme(name: string) {
+  if (name === "default") return defaultTheme;
+  return {};
+}
 
 const breakpoints = ["sm", "md", "lg", "xl", "2xl"] as const;
 
-export default function createTheme(primaryColor: string = "#8DB600", maxBreakpoint?: (typeof breakpoints)[number]) {
-  const theme = extendTheme({
+export default function buildTheme(
+  themeName: string,
+  primaryColor: string = "#8DB600",
+  maxBreakpoint?: (typeof breakpoints)[number],
+) {
+  const theme = extendTheme(getTheme(themeName), {
     colors: {
-      primary: {
-        50: primaryColor,
-        100: primaryColor,
-        200: primaryColor,
-        300: primaryColor,
-        400: primaryColor,
-        500: primaryColor,
-        600: primaryColor,
-        700: primaryColor,
-        800: primaryColor,
-        900: primaryColor,
-      },
+      primary: pallet(chroma.scale([chroma(primaryColor).brighten(1), chroma(primaryColor).darken(1)]).colors(10)),
     },
     components: {
       Container: containerTheme,
+    },
+    semanticTokens: {
+      colors: {
+        "card-hover-overlay": {
+          _light: "blackAlpha.50",
+          _dark: "whiteAlpha.50",
+        },
+      },
     },
   } as DeepPartial<Theme>);
 

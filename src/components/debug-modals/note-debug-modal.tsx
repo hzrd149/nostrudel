@@ -1,11 +1,12 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Flex } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Flex } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
+
 import { getReferences } from "../../helpers/nostr/events";
 import { NostrEvent } from "../../types/nostr-event";
 import RawJson from "./raw-json";
 import RawValue from "./raw-value";
 import RawPre from "./raw-pre";
-import { nip19 } from "nostr-tools";
 
 export default function NoteDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
   return (

@@ -16,6 +16,7 @@ export type IncomingNotice = {
 };
 export type IncomingCount = {
   type: "COUNT";
+  subId: string;
   relay: Relay;
 } & CountResponse;
 export type IncomingEOSE = {
@@ -42,7 +43,7 @@ export type RelayConfig = { url: string; mode: RelayMode };
 
 const CONNECTION_TIMEOUT = 1000 * 30;
 
-export class Relay {
+export default class Relay {
   url: string;
   onOpen = new Subject<Relay>(undefined, false);
   onClose = new Subject<Relay>(undefined, false);
@@ -116,7 +117,7 @@ export class Relay {
         this.ws?.send(JSON.stringify(json));
 
         // record start time
-        if (json[0] === "REQ") {
+        if (json[0] === "REQ" || json[0] === "COUNT") {
           this.startSubResTimer(json[1]);
         }
       } else this.queue.push(json);
@@ -186,7 +187,7 @@ export class Relay {
           this.onNotice.next({ relay: this, type, message: data[1] });
           break;
         case "COUNT":
-          this.onCount.next({ relay: this, type, ...data[2] });
+          this.onCount.next({ relay: this, type, subId: data[1], ...data[2] });
           break;
         case "EOSE":
           this.onEOSE.next({ relay: this, type, subId: data[1] });

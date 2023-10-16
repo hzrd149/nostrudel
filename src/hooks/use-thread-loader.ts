@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useUnmount } from "react-use";
 
-import { ThreadLoader } from "../classes/thread-loader";
+import ThreadLoader from "../classes/thread-loader";
 import { linkEvents } from "../helpers/thread";
 import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";

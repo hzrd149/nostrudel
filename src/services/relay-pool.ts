@@ -1,4 +1,4 @@
-import { Relay } from "../classes/relay";
+import Relay from "../classes/relay";
 import Subject from "../classes/subject";
 import { logger } from "../helpers/debug";
 import { normalizeRelayUrl } from "../helpers/url";

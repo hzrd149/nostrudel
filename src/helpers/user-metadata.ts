@@ -3,7 +3,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { truncatedId } from "./nostr/events";
 
 export type Kind0ParsedContent = {
-  pubkey?: string,
+  pubkey?: string;
   name?: string;
   display_name?: string;
   about?: string;
@@ -19,7 +19,7 @@ export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
   if (event.kind !== 0) throw new Error("expected a kind 0 event");
   try {
     const metadata = JSON.parse(event.content) as Kind0ParsedContent;
-    metadata.pubkey = event.pubkey
+    metadata.pubkey = event.pubkey;
 
     // ensure nip05 is a string
     if (metadata.nip05 && typeof metadata.nip05 !== "string") metadata.nip05 = String(metadata.nip05);

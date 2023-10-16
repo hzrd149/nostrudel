@@ -1,28 +1,29 @@
-import { AbsoluteCenter, Box, Button, ButtonProps, Divider, Text } from "@chakra-ui/react";
-import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
+import { Box, Button, ButtonProps, Text } from "@chakra-ui/react";
+import { useLocation } from "react-router-dom";
+import { nip19 } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
+
 import {
   BadgeIcon,
-  MessagesIcon,
+  DirectMessagesIcon,
   CommunityIcon,
-  EmojiIcon,
-  FeedIcon,
+  EmojiPacksIcon,
   GoalIcon,
-  ListIcon,
+  ListsIcon,
   LiveStreamIcon,
-  NotificationIcon,
+  NotificationsIcon,
   ProfileIcon,
   RelayIcon,
   SearchIcon,
   SettingsIcon,
   ToolsIcon,
   LogoutIcon,
+  NotesIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { nip19 } from "nostr-tools";
 import accountService from "../../services/account";
 
 export default function NavItems() {
-  const navigate = useNavigate();
   const location = useLocation();
   const account = useCurrentAccount();
 
@@ -46,12 +47,20 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";
   else if (location.pathname.startsWith("/t/")) active = "search";
+  else if (
+    account &&
+    (location.pathname.startsWith("/u/" + nip19.npubEncode(account.pubkey)) ||
+      location.pathname.startsWith("/u/" + account.pubkey))
+  ) {
+    active = "profile";
+  }
 
   return (
     <>
       <Button
-        onClick={() => navigate("/")}
-        leftIcon={<FeedIcon />}
+        as={RouterLink}
+        to="/"
+        leftIcon={<NotesIcon boxSize={6} />}
         colorScheme={active === "notes" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -60,16 +69,18 @@ export default function NavItems() {
       {account && (
         <>
           <Button
-            onClick={() => navigate("/notifications")}
-            leftIcon={<NotificationIcon />}
+            as={RouterLink}
+            to="/notifications"
+            leftIcon={<NotificationsIcon boxSize={6} />}
             colorScheme={active === "notifications" ? "primary" : undefined}
             {...buttonProps}
           >
             Notifications
           </Button>
           <Button
-            onClick={() => navigate("/dm")}
-            leftIcon={<MessagesIcon />}
+            as={RouterLink}
+            to={"/dm"}
+            leftIcon={<DirectMessagesIcon boxSize={6} />}
             colorScheme={active === "dm" ? "primary" : undefined}
             {...buttonProps}
           >
@@ -78,8 +89,9 @@ export default function NavItems() {
         </>
       )}
       <Button
-        onClick={() => navigate("/search")}
-        leftIcon={<SearchIcon />}
+        as={RouterLink}
+        to="/search"
+        leftIcon={<SearchIcon boxSize={6} />}
         colorScheme={active === "search" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -87,16 +99,19 @@ export default function NavItems() {
       </Button>
       {account?.pubkey && (
         <Button
-          onClick={() => navigate("/u/" + nip19.npubEncode(account.pubkey))}
-          leftIcon={<ProfileIcon />}
+          as={RouterLink}
+          to={"/u/" + nip19.npubEncode(account.pubkey)}
+          leftIcon={<ProfileIcon boxSize={6} />}
+          colorScheme={active === "profile" ? "primary" : undefined}
           {...buttonProps}
         >
           Profile
         </Button>
       )}
       <Button
-        onClick={() => navigate("/relays")}
-        leftIcon={<RelayIcon />}
+        as={RouterLink}
+        to="/relays"
+        leftIcon={<RelayIcon boxSize={6} />}
         colorScheme={active === "relays" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -106,56 +121,63 @@ export default function NavItems() {
         Other Stuff
       </Text>
       <Button
-        onClick={() => navigate("/streams")}
-        leftIcon={<LiveStreamIcon />}
+        as={RouterLink}
+        to="/streams"
+        leftIcon={<LiveStreamIcon boxSize={6} />}
         colorScheme={active === "streams" ? "primary" : undefined}
         {...buttonProps}
       >
         Streams
       </Button>
       <Button
-        onClick={() => navigate("/communities")}
-        leftIcon={<CommunityIcon />}
+        as={RouterLink}
+        to="/communities"
+        leftIcon={<CommunityIcon boxSize={6} />}
         colorScheme={active === "communities" ? "primary" : undefined}
         {...buttonProps}
       >
         Communities
       </Button>
       <Button
-        onClick={() => navigate("/lists")}
-        leftIcon={<ListIcon />}
+        as={RouterLink}
+        to="/lists"
+        leftIcon={<ListsIcon boxSize={6} />}
         colorScheme={active === "lists" ? "primary" : undefined}
         {...buttonProps}
       >
         Lists
       </Button>
       <Button
-        onClick={() => navigate("/goals")}
-        leftIcon={<GoalIcon />}
+        as={RouterLink}
+        to="/goals"
+        leftIcon={<GoalIcon boxSize={6} />}
         colorScheme={active === "goals" ? "primary" : undefined}
         {...buttonProps}
       >
         Goals
       </Button>
       <Button
-        onClick={() => navigate("/badges")}
-        leftIcon={<BadgeIcon />}
+        as={RouterLink}
+        to="/badges"
+        leftIcon={<BadgeIcon boxSize={6} />}
         colorScheme={active === "badges" ? "primary" : undefined}
         {...buttonProps}
       >
         Badges
       </Button>
       <Button
-        onClick={() => navigate("/emojis")}
-        leftIcon={<EmojiIcon />}
+        as={RouterLink}
+        to="/emojis"
+        leftIcon={<EmojiPacksIcon boxSize={6} />}
         colorScheme={active === "emojis" ? "primary" : undefined}
         {...buttonProps}
       >
         Emojis
       </Button>
       <Button
-        onClick={() => navigate("/tools")}
-        leftIcon={<ToolsIcon />}
+        as={RouterLink}
+        to="/tools"
+        leftIcon={<ToolsIcon boxSize={6} />}
         colorScheme={active === "tools" ? "primary" : undefined}
         {...buttonProps}
       >
@@ -163,15 +185,16 @@ export default function NavItems() {
       </Button>
       <Box h="4" />
       <Button
-        onClick={() => navigate("/settings")}
-        leftIcon={<SettingsIcon />}
+        as={RouterLink}
+        to="/settings"
+        leftIcon={<SettingsIcon boxSize={6} />}
         colorScheme={active === "settings" ? "primary" : undefined}
         {...buttonProps}
       >
         Settings
       </Button>
       {account && (
-        <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon />} {...buttonProps}>
+        <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout
         </Button>
       )}

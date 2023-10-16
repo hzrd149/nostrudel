@@ -1,5 +1,5 @@
 import { MouseEventHandler, useCallback } from "react";
-import { Card, CardProps, Flex, LinkBox, LinkOverlay, Spacer } from "@chakra-ui/react";
+import { Card, CardProps, Flex, LinkBox, LinkOverlay, Spacer, cssVar } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
@@ -15,13 +15,7 @@ import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { InlineNoteContent } from "../../note/inline-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
-import styled from "@emotion/styled";
-
-const HoverLinkOverlay = styled(LinkOverlay)`
-  &:hover:before {
-    background-color: rgba(0, 0, 0, 0.15);
-  }
-`;
+import HoverLinkOverlay from "../../hover-link-overlay";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);

@@ -15,6 +15,7 @@ import RelaySelectionProvider, { useRelaySelectionContext } from "../../provider
 import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
 import { NostrEvent } from "../../types/nostr-event";
 import { NostrQuery } from "../../types/nostr-query";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function CommunitiesHomePage() {
   const { filter, listId } = usePeopleListContext();
@@ -47,7 +48,9 @@ function CommunitiesHomePage() {
         </Flex>
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
           {communities.map((event) => (
-            <CommunityCard key={getEventUID(event)} community={event} />
+            <ErrorBoundary>
+              <CommunityCard key={getEventUID(event)} community={event} />
+            </ErrorBoundary>
           ))}
         </SimpleGrid>
       </VerticalPageLayout>

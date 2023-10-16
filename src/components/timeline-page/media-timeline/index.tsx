@@ -1,25 +1,25 @@
 import { useMemo, useRef } from "react";
-import { useBreakpointValue } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import { Photo } from "react-photo-album";
 
-import { TimelineLoader } from "../../../classes/timeline-loader";
+import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImage, EmbeddedImageProps } from "../../embed-types";
+import { EmbeddedImage, EmbeddedImageProps, GalleryImage } from "../../embed-types";
 import { TrustProvider } from "../../../providers/trust";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { Photo } from "react-photo-album";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventUID } from "../../../helpers/nostr/events";
-import { Kind } from "nostr-tools";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
-function GalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
+function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useRef<HTMLImageElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
-  return <EmbeddedImage {...props} event={event} ref={ref} />;
+  return <GalleryImage {...props} event={event} ref={ref} />;
 }
 
 type PhotoWithEvent = PhotoWithoutSize & { event: NostrEvent };
@@ -30,7 +30,9 @@ function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
     <PhotoGallery<Photo & { event: NostrEvent }>
       layout="masonry"
       photos={images}
-      renderPhoto={({ photo, imageProps }) => <GalleryImage event={photo.event} {...imageProps} />}
+      renderPhoto={({ photo, imageProps }) => (
+        <CustomGalleryImage src={imageProps.src} event={photo.event} style={imageProps.style} />
+      )}
       columns={rowMultiplier}
     />
   );

@@ -6,7 +6,13 @@ import { isVideoURL } from "../../helpers/url";
 export function renderVideoUrl(match: URL) {
   if (!isVideoURL(match)) return null;
 
-  return <video src={match.toString()} controls style={{ maxWidth: "30rem", maxHeight: "20rem", width: "100%" }} />;
+  return (
+    <video
+      src={match.toString()}
+      controls
+      style={{ maxWidth: "30rem", maxHeight: "20rem", width: "100%", position: "relative", zIndex: 1 }}
+    />
+  );
 }
 
 export function renderGenericUrl(match: URL) {

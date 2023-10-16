@@ -15,7 +15,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 
-import { TimelineLoader } from "../../../classes/timeline-loader";
+import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -23,7 +23,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { RelayIcon } from "../../icons";
+import { BroadcastEventIcon } from "../../icons";
 import { getEventUID } from "../../../helpers/nostr/events";
 import Timestamp from "../../timestamp";
 
@@ -75,7 +75,7 @@ function EventRow({
         </Text>
       </Td>
       <Td title="Broadcast" p="2" onClick={() => !broadcasting && broadcast()} cursor="pointer">
-        {broadcasting ? <Spinner size="xs" /> : <RelayIcon />}
+        {broadcasting ? <Spinner size="xs" /> : <BroadcastEventIcon />}
       </Td>
       {relays.map((relay) => (
         <Td key={relay} title={relay} p="2" backgroundColor={seenRelays.includes(relay) ? yes : no}>

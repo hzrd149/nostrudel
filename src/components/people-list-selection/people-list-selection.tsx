@@ -42,14 +42,23 @@ export default function PeopleListSelection({
         <MenuOptionGroup value={selected} onChange={handleSelect} type="radio">
           {account && <MenuItemOption value="following">Following</MenuItemOption>}
           {!hideGlobalOption && <MenuItemOption value="global">Global</MenuItemOption>}
-          {lists.length > 0 && <MenuDivider />}
-          {lists
-            .filter((l) => l.kind === PEOPLE_LIST_KIND)
-            .map((list) => (
-              <MenuItemOption key={getEventCoordinate(list)} value={getEventCoordinate(list)} isTruncated maxW="90vw">
-                {getListName(list)}
-              </MenuItemOption>
-            ))}
+          {lists.length > 0 && (
+            <>
+              <MenuDivider />
+              {lists
+                .filter((l) => l.kind === PEOPLE_LIST_KIND)
+                .map((list) => (
+                  <MenuItemOption
+                    key={getEventCoordinate(list)}
+                    value={getEventCoordinate(list)}
+                    isTruncated
+                    maxW="90vw"
+                  >
+                    {getListName(list)}
+                  </MenuItemOption>
+                ))}
+            </>
+          )}
         </MenuOptionGroup>
         {favoriteLists.length > 0 && (
           <>

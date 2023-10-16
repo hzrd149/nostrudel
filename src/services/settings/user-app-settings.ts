@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 
-import { SuperMap } from "../../classes/super-map";
+import SuperMap from "../../classes/super-map";
 import { PersistentSubject } from "../../classes/subject";
 import { AppSettings, defaultSettings, parseAppSettings } from "./migrations";
 import replaceableEventLoaderService, { RequestOptions } from "../replaceable-event-requester";

@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { normalizeToHex } from "../../helpers/nip19";
@@ -74,7 +74,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         <Flex height="100%" overflow="hidden" direction="column">
           <Card size="sm" flexShrink={0}>
             <CardBody display="flex" gap="2" alignItems="center">
-              <IconButton variant="ghost" icon={<ArrowLeftSIcon />} aria-label="Back" onClick={() => navigate(-1)} />
+              <IconButton variant="ghost" icon={<ChevronLeftIcon />} aria-label="Back" onClick={() => navigate(-1)} />
               <UserAvatar pubkey={pubkey} size="sm" />
               <UserLink pubkey={pubkey} />
             </CardBody>

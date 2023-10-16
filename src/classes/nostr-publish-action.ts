@@ -5,7 +5,7 @@ import relayPoolService from "../services/relay-pool";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import { NostrEvent } from "../types/nostr-event";
 import createDefer from "./deferred";
-import { IncomingCommandResult, Relay } from "./relay";
+import Relay, { IncomingCommandResult } from "./relay";
 import Subject, { PersistentSubject } from "./subject";
 
 export default class NostrPublishAction {

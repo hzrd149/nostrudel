@@ -23,6 +23,7 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import { EmbedEvent } from "../../embed-event";
 import relayScoreboardService from "../../../services/relay-scoreboard";
 import { getEventRelays } from "../../../services/event-relays";
+import useEventCount from "../../../hooks/use-event-count";
 
 function buildRepost(event: NostrEvent): DraftNostrEvent {
   const relays = getEventRelays(event.id).value;
@@ -45,6 +46,8 @@ export function RepostButton({ event }: { event: NostrEvent }) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
 
+  const repostCount = useEventCount({ "#e": [event.id], kinds: [6] });
+
   const handleClick = async () => {
     try {
       setLoading(true);
@@ -61,13 +64,19 @@ export function RepostButton({ event }: { event: NostrEvent }) {
 
   return (
     <>
-      <IconButton
-        icon={<RepostIcon />}
-        onClick={onOpen}
-        aria-label="Repost Note"
-        title="Repost Note"
-        isLoading={loading}
-      />
+      {repostCount !== undefined && repostCount > 0 ? (
+        <Button leftIcon={<RepostIcon />} onClick={onOpen} title="Repost Note" isLoading={loading}>
+          {repostCount}
+        </Button>
+      ) : (
+        <IconButton
+          icon={<RepostIcon />}
+          onClick={onOpen}
+          aria-label="Repost Note"
+          title="Repost Note"
+          isLoading={loading}
+        />
+      )}
       {isOpen && (
         <Modal isOpen={isOpen} onClose={onClose} size="2xl">
           <ModalOverlay />

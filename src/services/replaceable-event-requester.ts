@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
 
-import { NostrSubscription } from "../classes/nostr-subscription";
-import { SuperMap } from "../classes/super-map";
+import NostrSubscription from "../classes/nostr-subscription";
+import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 import { NostrQuery } from "../types/nostr-query";
@@ -192,7 +192,7 @@ class ReplaceableEventLoaderService {
     await transaction.done;
   }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
-  private loadFromCache(cord: string) {
+  loadFromCache(cord: string) {
     const dedupe = this.loadCacheDedupe.get(cord);
     if (dedupe) return dedupe;
 

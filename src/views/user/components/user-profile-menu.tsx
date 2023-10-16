@@ -5,8 +5,8 @@ import { useCopyToClipboard } from "react-use";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import {
-  MessagesIcon,
-  ClipboardIcon,
+  DirectMessagesIcon,
+  CopyToClipboardIcon,
   CodeIcon,
   ExternalLinkIcon,
   MuteIcon,
@@ -63,13 +63,13 @@ export const UserProfileMenu = ({
             {isMuted ? "Unmute User" : "Mute User"}
           </MenuItem>
         )}
-        <MenuItem icon={<MessagesIcon fontSize="1.5em" />} as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`}>
+        <MenuItem icon={<DirectMessagesIcon fontSize="1.5em" />} as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`}>
           Direct messages
         </MenuItem>
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<ClipboardIcon />}>
+        <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<CopyToClipboardIcon />}>
           Copy share link
         </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>

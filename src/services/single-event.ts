@@ -1,8 +1,8 @@
 import _throttle from "lodash.throttle";
 
-import { NostrRequest } from "../classes/nostr-request";
+import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 

@@ -6,7 +6,7 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService, { Account } from "../../services/account";
-import { AddIcon, ArrowDownSIcon, ArrowUpSIcon } from "../icons";
+import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import AccountInfoBadge from "../account-info-badge";
 import { useCurrentAccount } from "../../hooks/use-current-account";
@@ -71,7 +71,7 @@ export default function AccountSwitcher() {
           {getUserDisplayName(metadata, account.pubkey)}
         </Text>
         <Flex ml="auto" alignItems="center" justifyContent="center" aspectRatio={1} h="3rem">
-          {isOpen ? <ArrowUpSIcon fontSize="1.5rem" /> : <ArrowDownSIcon fontSize="1.5rem" />}
+          {isOpen ? <ChevronUpIcon fontSize="1.5rem" /> : <ChevronDownIcon fontSize="1.5rem" />}
         </Flex>
       </Box>
       {isOpen && (
@@ -83,7 +83,7 @@ export default function AccountSwitcher() {
             leftIcon={<AddIcon />}
             onClick={() => {
               accountService.logout();
-              navigate("/login", { state: { from: location.pathname } });
+              navigate("/signin", { state: { from: location.pathname } });
             }}
           >
             Add Account

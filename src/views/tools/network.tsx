@@ -6,7 +6,7 @@ import RequireCurrentAccount from "../../providers/require-current-account";
 import { useNetworkConnectionCount } from "../../hooks/use-user-network";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { useNavigate } from "react-router-dom";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
@@ -36,7 +36,7 @@ function NetworkPage() {
   return (
     <VerticalPageLayout>
       <Flex gap="2">
-        <Button leftIcon={<ArrowLeftSIcon />} onClick={() => navigate(-1)}>
+        <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
           Back
         </Button>
         <Select value={range} onChange={(e) => setRange(e.target.value)}>

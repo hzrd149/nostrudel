@@ -27,15 +27,9 @@ export default function RequireCurrentAccount({ children }: { children: JSX.Elem
   if (!account)
     return (
       <Flex direction="column" w="full" h="full" alignItems="center" justifyContent="center" gap="4">
-        <Heading size="md">You must be logged in to use this view</Heading>
-        <Button
-          as={Link}
-          to="/login"
-          state={{ from: location.pathname }}
-          colorScheme="primary"
-          rightIcon={<ExternalLinkIcon />}
-        >
-          Login
+        <Heading size="md">You must be signed in to use this view</Heading>
+        <Button as={Link} to="/signin" state={{ from: location.pathname }} colorScheme="primary">
+          Sign in
         </Button>
       </Flex>
     );

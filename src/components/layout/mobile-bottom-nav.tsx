@@ -1,9 +1,10 @@
 import { Avatar, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PostModalContext } from "../../providers/post-modal-provider";
-import { MessagesIcon, FeedIcon, HomeIcon, NotificationIcon, PlusCircleIcon, SearchIcon } from "../icons";
+import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import { UserAvatar } from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 
@@ -24,16 +25,22 @@ export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
         ) : (
           <Avatar size="sm" src="/apple-touch-icon.png" onClick={onOpen} cursor="pointer" />
         )}
-        <IconButton icon={<HomeIcon />} aria-label="Home" onClick={() => navigate("/")} flexGrow="1" size="md" />
         <IconButton
-          icon={<SearchIcon />}
+          icon={<NotesIcon boxSize={6} />}
+          aria-label="Home"
+          onClick={() => navigate("/")}
+          flexGrow="1"
+          size="md"
+        />
+        <IconButton
+          icon={<SearchIcon boxSize={6} />}
           aria-label="Search"
           onClick={() => navigate(`/search`)}
           flexGrow="1"
           size="md"
         />
         <IconButton
-          icon={<PlusCircleIcon fontSize="1.8em" />}
+          icon={<PlusCircleIcon boxSize={6} />}
           aria-label="New Note"
           onClick={() => {
             openModal();
@@ -43,14 +50,14 @@ export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
           isDisabled={account?.readonly ?? true}
         />
         <IconButton
-          icon={<MessagesIcon />}
+          icon={<DirectMessagesIcon boxSize={6} />}
           aria-label="Messages"
           onClick={() => navigate(`/dm`)}
           flexGrow="1"
           size="md"
         />
         <IconButton
-          icon={<NotificationIcon />}
+          icon={<NotificationsIcon boxSize={6} />}
           aria-label="Notifications"
           onClick={() => navigate("/notifications")}
           flexGrow="1"

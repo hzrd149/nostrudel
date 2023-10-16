@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
+
 import relayScoreboardService from "../services/relay-scoreboard";
 
 export function RelayScoreBreakdown({ relay }: { relay: string }) {

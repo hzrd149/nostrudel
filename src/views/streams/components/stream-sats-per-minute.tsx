@@ -22,7 +22,7 @@ import { useInterval } from "react-use";
 
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import { parsePaymentRequest } from "../../../helpers/bolt11";
-import { PlayIcon, StopIcon } from "../../../components/icons";
+import { V4VStreamIcon, V4VStopIcon } from "../../../components/icons";
 
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);
@@ -90,7 +90,7 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
                   </NumberInputStepper>
                 </NumberInput>
                 <Button
-                  leftIcon={isEnabled ? <StopIcon /> : <PlayIcon />}
+                  leftIcon={isEnabled ? <V4VStopIcon /> : <V4VStreamIcon />}
                   onClick={() => setEnabled((v) => !v)}
                   isDisabled={!isAvailable}
                 >

@@ -1,12 +1,18 @@
 import { useRef } from "react";
-import { Box, Card, CardBody, CardHeader, CardProps, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, CardProps, Flex } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { getMessageRecipient } from "../../services/direct-messages";
 import { NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { embedNostrLinks, renderGenericUrl, renderImageUrl, renderVideoUrl } from "../../components/embed-types";
+import {
+  embedCashuTokens,
+  embedNostrLinks,
+  renderGenericUrl,
+  renderImageUrl,
+  renderVideoUrl,
+} from "../../components/embed-types";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
@@ -18,6 +24,9 @@ export function MessageContent({ event, text }: { event: NostrEvent; text: strin
 
   content = embedNostrLinks(content);
   content = embedUrls(content, [renderImageUrl, renderVideoUrl, renderGenericUrl]);
+
+  // cashu
+  content = embedCashuTokens(content);
 
   return <Box whiteSpace="pre-wrap">{content}</Box>;
 }

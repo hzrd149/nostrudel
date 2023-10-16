@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, ButtonProps, IconButton } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { usePaginatedList } from "../hooks/use-paginated-list";
-import { ArrowLeftSIcon, ArrowRightSIcon } from "./icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 const range = (start: number, end: number) => {
   let length = end - start + 1;
@@ -116,7 +116,7 @@ export const PaginationControls = ({
   return (
     <ButtonGroup>
       <IconButton
-        icon={<ArrowLeftSIcon />}
+        icon={<ChevronLeftIcon />}
         aria-label="previous"
         title="previous"
         size={buttonSize}
@@ -125,7 +125,7 @@ export const PaginationControls = ({
       />
       {renderPageButtons()}
       <IconButton
-        icon={<ArrowRightSIcon />}
+        icon={<ChevronRightIcon />}
         aria-label="next"
         title="next"
         size={buttonSize}

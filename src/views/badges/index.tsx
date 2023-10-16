@@ -1,12 +1,29 @@
-import { Button, Flex, Image, Link, Spacer } from "@chakra-ui/react";
-import { Navigate, Link as RouterLink } from "react-router-dom";
+import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { Kind } from "nostr-tools";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useSubject from "../../hooks/use-subject";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import BadgeAwardCard from "./components/badge-award-card";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function BadgesPage() {
-  const account = useCurrentAccount()!;
+  const { filter, listId } = usePeopleListContext();
+  const readRelays = useReadRelayUrls();
+  const timeline = useTimelineLoader(`${listId}-lists`, readRelays, {
+    "#p": filter?.authors,
+    kinds: [Kind.BadgeAward],
+  });
+
+  const awards = useSubject(timeline.timeline);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <VerticalPageLayout>
@@ -25,11 +42,27 @@ function BadgesPage() {
           Badges
         </Button>
       </Flex>
+      <Flex gap="2" alignItems="center">
+        <Heading size="lg">Recent awards</Heading>
+        <PeopleListSelection />
+      </Flex>
+      <IntersectionObserverProvider callback={callback}>
+        {awards.map((award) => (
+          <ErrorBoundary key={award.id}>
+            <BadgeAwardCard award={award} />
+          </ErrorBoundary>
+        ))}
+      </IntersectionObserverProvider>
     </VerticalPageLayout>
   );
 }
 
 export default function BadgesView() {
-  const account = useCurrentAccount();
-  return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
+  // const account = useCurrentAccount();
+  // return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
+  return (
+    <PeopleListProvider initList="global">
+      <BadgesPage />
+    </PeopleListProvider>
+  );
 }

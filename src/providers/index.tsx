@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 
 import { SigningProvider } from "./signing-provider";
-import createTheme from "../theme";
+import buildTheme from "../theme";
 import useAppSettings from "../hooks/use-app-settings";
 import DeleteEventProvider from "./delete-event-provider";
 import { InvoiceModalProvider } from "./invoice-modal";
@@ -11,13 +11,14 @@ import PostModalProvider from "./post-modal-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { UserContactsUserDirectoryProvider } from "./user-directory-provider";
 import MuteModalProvider from "./mute-modal-provider";
+import BreakpointProvider from "./breakpoint-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
-  const { primaryColor, maxPageWidth } = useAppSettings();
+  const { theme: themeName, primaryColor, maxPageWidth } = useAppSettings();
   const theme = useMemo(
-    () => createTheme(primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
-    [primaryColor, maxPageWidth],
+    () => buildTheme(themeName, primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
+    [themeName, primaryColor, maxPageWidth],
   );
 
   return (
@@ -30,22 +31,24 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
 /** Providers that provider functionality to pages (needs to be rendered under a router) */
 export function PageProviders({ children }: { children: React.ReactNode }) {
   return (
-    <SigningProvider>
-      <DeleteEventProvider>
-        <MuteModalProvider>
-          <InvoiceModalProvider>
-            <NotificationTimelineProvider>
-              <DefaultEmojiProvider>
-                <UserEmojiProvider>
-                  <UserContactsUserDirectoryProvider>
-                    <PostModalProvider>{children}</PostModalProvider>
-                  </UserContactsUserDirectoryProvider>
-                </UserEmojiProvider>
-              </DefaultEmojiProvider>
-            </NotificationTimelineProvider>
-          </InvoiceModalProvider>
-        </MuteModalProvider>
-      </DeleteEventProvider>
-    </SigningProvider>
+    <BreakpointProvider>
+      <SigningProvider>
+        <DeleteEventProvider>
+          <MuteModalProvider>
+            <InvoiceModalProvider>
+              <NotificationTimelineProvider>
+                <DefaultEmojiProvider>
+                  <UserEmojiProvider>
+                    <UserContactsUserDirectoryProvider>
+                      <PostModalProvider>{children}</PostModalProvider>
+                    </UserContactsUserDirectoryProvider>
+                  </UserEmojiProvider>
+                </DefaultEmojiProvider>
+              </NotificationTimelineProvider>
+            </InvoiceModalProvider>
+          </MuteModalProvider>
+        </DeleteEventProvider>
+      </SigningProvider>
+    </BreakpointProvider>
   );
 }

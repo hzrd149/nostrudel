@@ -1,9 +1,8 @@
 import { Button, IconButton, useDisclosure } from "@chakra-ui/react";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import { LightningIcon } from "../../../components/icons";
-import { useInvoiceModalContext } from "../../../providers/invoice-modal";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
-import ZapModal from "../../../components/zap-modal";
+import ZapModal from "../../../components/event-zap-modal";
 import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
 import useStreamGoal from "../../../hooks/use-stream-goal";
 
@@ -19,7 +18,6 @@ export default function StreamZapButton({
   label?: string;
 }) {
   const zapModal = useDisclosure();
-  const { requestPay } = useInvoiceModalContext();
   const zapMetadata = useUserLNURLMetadata(stream.host);
   const relays = useRelaySelectionRelays();
   const goal = useStreamGoal(stream);
@@ -50,10 +48,9 @@ export default function StreamZapButton({
           isOpen
           event={zapEvent}
           pubkey={stream.host}
-          onInvoice={async (invoice) => {
+          onZapped={async () => {
             if (onZap) onZap();
             zapModal.onClose();
-            await requestPay(invoice);
           }}
           onClose={zapModal.onClose}
           initialComment={initComment}

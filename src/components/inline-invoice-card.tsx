@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { useAsync } from "react-use";
 import dayjs from "dayjs";
 import { requestProvider } from "webln";
-import { Box, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
+import { Box, BoxProps, Button, ButtonGroup, IconButton, Text } from "@chakra-ui/react";
 
 import { parsePaymentRequest, readablizeSats } from "../helpers/bolt11";
-import { ClipboardIcon } from "./icons";
+import { CopyToClipboardIcon } from "./icons";
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
 };
-export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
+export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "children"> & InvoiceButtonProps) => {
   const { value: invoice, error } = useAsync(async () => parsePaymentRequest(paymentRequest));
 
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,7 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
       flexWrap="wrap"
       gap="4"
       alignItems="center"
+      {...props}
     >
       <Box flexGrow={1}>
         <Text fontWeight="bold">Lightning Invoice</Text>
@@ -61,7 +62,12 @@ export const InlineInvoiceCard = ({ paymentRequest }: InvoiceButtonProps) => {
         </Text>
       </Box>
       <ButtonGroup>
-        <IconButton icon={<ClipboardIcon />} title="Copy to clipboard" aria-label="copy invoice" variant="outline" />
+        <IconButton
+          icon={<CopyToClipboardIcon />}
+          title="Copy to clipboard"
+          aria-label="copy invoice"
+          variant="outline"
+        />
         <Button as="a" variant="outline" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
           ⚡ Pay {invoice.amount ? readablizeSats(invoice.amount / 1000) + " sats" : ""}
         </Button>

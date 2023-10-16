@@ -1,12 +1,12 @@
+import { useContext } from "react";
 import { Avatar, Box, Button, Flex, FlexProps, Heading, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { css } from "@emotion/react";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
-import { css } from "@emotion/react";
-import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { WritingIcon } from "../icons";
 
@@ -49,7 +49,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <>
             <AccountSwitcher />
             <Button
-              leftIcon={<WritingIcon />}
+              leftIcon={<WritingIcon boxSize={6} />}
               aria-label="Write Note"
               title="Write Note"
               onClick={() => openModal()}
@@ -64,8 +64,15 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
         <NavItems />
         <Box h="4" />
         {!account && (
-          <Button as={RouterLink} to="/login" state={{ from: location.pathname }} colorScheme="primary" w="full">
-            Login
+          <Button
+            as={RouterLink}
+            to="/signin"
+            state={{ from: location.pathname }}
+            colorScheme="primary"
+            w="full"
+            flexShrink={0}
+          >
+            Sign in
           </Button>
         )}
       </Flex>

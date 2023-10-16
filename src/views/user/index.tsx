@@ -1,3 +1,4 @@
+import { Suspense, useState } from "react";
 import {
   Flex,
   FormControl,
@@ -24,17 +25,17 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
+
 import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { Suspense, useState } from "react";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { RelayMode } from "../../classes/relay";
 import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
-import { nip19 } from "nostr-tools";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";
@@ -52,6 +53,7 @@ const tabs = [
   { label: "Likes", path: "likes" },
   { label: "Relays", path: "relays" },
   { label: "Goals", path: "goals" },
+  { label: "Tracks", path: "tracks" },
   { label: "Emoji Packs", path: "emojis" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },

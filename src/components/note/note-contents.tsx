@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
+
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
 import {
@@ -20,6 +21,7 @@ import {
   embedImageGallery,
   renderGenericUrl,
   renderSongDotLinkUrl,
+  embedCashuTokens,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
@@ -47,6 +49,9 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
 
   // bitcoin
   content = embedLightningInvoice(content);
+
+  // cashu
+  content = embedCashuTokens(content);
 
   // nostr
   content = embedNostrLinks(content);

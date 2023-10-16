@@ -51,7 +51,11 @@ export default function RelayReviewForm({
     <Flex as="form" direction="column" onSubmit={onSubmit} gap="2" mb="2" {...props}>
       <Flex gap="2">
         <Heading size="md">Write review</Heading>
-        <StarRating quality={getValues().quality} fontSize="1.5rem" onChange={(q) => setValue("quality", q)} />
+        <StarRating
+          quality={getValues().quality}
+          fontSize="1.5rem"
+          onChange={(q) => setValue("quality", q, { shouldDirty: true })}
+        />
       </Flex>
       <Textarea {...register("content")} rows={5} placeholder="A short description of your experience with the relay" />
       <Flex gap="2" ml="auto">

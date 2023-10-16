@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import { Debugger } from "debug";
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
-import { NostrRequest } from "./nostr-request";
-import { NostrMultiSubscription } from "./nostr-multi-subscription";
+import NostrRequest from "./nostr-request";
+import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
@@ -20,7 +20,7 @@ function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
 
 const BLOCK_SIZE = 30;
 
-export type EventFilter = (event: NostrEvent) => boolean;
+export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export class RelayTimelineLoader {
   relay: string;
@@ -97,7 +97,7 @@ export class RelayTimelineLoader {
   }
 }
 
-export class TimelineLoader {
+export default class TimelineLoader {
   cursor = dayjs().unix();
   query?: NostrRequestFilter;
   relays: string[] = [];
@@ -134,7 +134,8 @@ export class TimelineLoader {
 
   private updateTimeline() {
     if (this.eventFilter) {
-      this.timeline.next(this.events.getSortedEvents().filter(this.eventFilter));
+      const filter = this.eventFilter;
+      this.timeline.next(this.events.getSortedEvents().filter((e) => filter(e, this.events)));
     } else this.timeline.next(this.events.getSortedEvents());
   }
   private handleEvent(event: NostrEvent) {
@@ -207,7 +208,7 @@ export class TimelineLoader {
     // update the subscription with the new query
     this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
   }
-  setFilter(filter?: (event: NostrEvent) => boolean) {
+  setFilter(filter?: EventFilter) {
     this.eventFilter = filter;
     this.updateTimeline();
   }
@@ -277,6 +278,7 @@ export class TimelineLoader {
   cleanup() {
     this.close();
     this.removeLoaders();
+    this.events.cleanup();
     deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 

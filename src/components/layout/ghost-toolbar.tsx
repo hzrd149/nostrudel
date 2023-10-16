@@ -1,8 +1,9 @@
 import { useCallback, useState } from "react";
-import { Box, BoxProps, Card, CloseButton, Divider, Flex, FlexProps, Spacer, Text } from "@chakra-ui/react";
+import { Box, Card, CloseButton, Divider, Flex, FlexProps, Spacer, Text } from "@chakra-ui/react";
 import { Kind, nip18, nip19, nip25 } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
 import { useInterval } from "react-use";
+import dayjs from "dayjs";
 
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
@@ -12,8 +13,7 @@ import { UserLink } from "../user-link";
 import { GhostIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import dayjs from "dayjs";
-import { TimelineLoader } from "../../classes/timeline-loader";
+import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { safeRelayUrls } from "../../helpers/url";

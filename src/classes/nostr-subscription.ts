@@ -1,11 +1,11 @@
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
-import { IncomingEOSE, Relay } from "./relay";
+import Relay, { IncomingEOSE } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import { Subject } from "./subject";
 import { nanoid } from "nanoid";
 
-export class NostrSubscription {
+export default class NostrSubscription {
   static INIT = "initial";
   static OPEN = "open";
   static CLOSED = "closed";

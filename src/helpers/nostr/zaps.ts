@@ -3,7 +3,7 @@ import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
 import { Kind0ParsedContent } from "../user-metadata";
-import { nip57, utils } from "nostr-tools";
+import { utils } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -74,20 +74,16 @@ export function parseZapEvent(event: NostrEvent): ParsedZap {
   };
 }
 
-export async function requestZapInvoice(zapRequest: NostrEvent, lnurl: string) {
-  const amount = zapRequest.tags.find((t) => t[0] === "amount")?.[1];
-  if (!amount) throw new Error("missing amount");
+export type EventSplit = { pubkey: string; percent: number; relay?: string }[];
+export function getZapSplits(event: NostrEvent, fallbackPubkey?: string): EventSplit {
+  const tags = event.tags.filter((t) => t[0] === "zap" && t[1] && t[3]) as [string, string, string, string][];
 
-  const callbackUrl = new URL(lnurl);
-  callbackUrl.searchParams.append("amount", amount);
-  callbackUrl.searchParams.append("nostr", JSON.stringify(zapRequest));
+  if (tags.length > 0) {
+    const targets = tags
+      .map((t) => ({ pubkey: t[1], relay: t[2], percent: parseFloat(t[3]) }))
+      .filter((p) => Number.isFinite(p.percent));
 
-  const { pr: payRequest } = await fetch(callbackUrl).then((res) => res.json());
-
-  if (payRequest as string) {
-    const parsed = parsePaymentRequest(payRequest);
-    if (parsed.amount !== parseInt(amount)) throw new Error("incorrect amount");
-
-    return payRequest as string;
-  } else throw new Error("Failed to get invoice");
+    const total = targets.reduce((v, p) => v + p.percent, 0);
+    return targets.map((p) => ({ ...p, percent: p.percent / total }));
+  } else return [{ pubkey: fallbackPubkey || event.pubkey, relay: "", percent: 1 }];
 }

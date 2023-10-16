@@ -40,7 +40,7 @@ import useUserMuteList from "../hooks/use-user-mute-list";
 import { DraftNostrEvent } from "../types/nostr-event";
 import { UserAvatar } from "../components/user-avatar";
 import { UserLink } from "../components/user-link";
-import { ArrowDownSIcon } from "../components/icons";
+import { ChevronDownIcon } from "../components/icons";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;
@@ -253,7 +253,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
               <UserAvatar pubkey={pubkey} size="sm" />
               <UserLink pubkey={pubkey} fontWeight="bold" />
               <Menu>
-                <MenuButton as={Button} size="sm" ml="auto" rightIcon={<ArrowDownSIcon />}>
+                <MenuButton as={Button} size="sm" ml="auto" rightIcon={<ChevronDownIcon />}>
                   Extend
                 </MenuButton>
                 <MenuList>
@@ -271,7 +271,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
         </ModalBody>
         <ModalFooter p="4">
           <Menu>
-            <MenuButton as={Button} mr="2" rightIcon={<ArrowDownSIcon />}>
+            <MenuButton as={Button} mr="2" rightIcon={<ChevronDownIcon />}>
               Extend
             </MenuButton>
             <MenuList>

@@ -27,17 +27,26 @@ export type AppSettingsV1 = Omit<AppSettingsV0, "version"> & {
   mutedWords?: string;
   maxPageWidth: "none" | "md" | "lg" | "xl";
 };
+export type AppSettingsV2 = Omit<AppSettingsV1, "version"> & {
+  version: 2;
+  theme: string;
+};
+
 export function isV0(settings: { version: number }): settings is AppSettingsV0 {
   return settings.version === undefined || settings.version === 0;
 }
 export function isV1(settings: { version: number }): settings is AppSettingsV1 {
   return settings.version === 1;
 }
+export function isV2(settings: { version: number }): settings is AppSettingsV2 {
+  return settings.version === 2;
+}
 
-export type AppSettings = AppSettingsV1;
+export type AppSettings = AppSettingsV2;
 
 export const defaultSettings: AppSettings = {
-  version: 1,
+  version: 2,
+  theme: "default",
   colorMode: "system",
   maxPageWidth: "none",
   blurImages: true,
@@ -59,8 +68,9 @@ export const defaultSettings: AppSettings = {
 };
 
 export function upgradeSettings(settings: { version: number }): AppSettings | null {
-  if (isV0(settings)) return { ...settings, version: 1, maxPageWidth: "none" };
-  if (isV1(settings)) return settings;
+  if (isV0(settings)) return { ...settings, version: 2, maxPageWidth: "none", theme: "default" };
+  if (isV1(settings)) return { ...settings, version: 2, theme: "default" };
+  if (isV2(settings)) return settings;
   return null;
 }
 

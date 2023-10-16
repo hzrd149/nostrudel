@@ -1,7 +1,7 @@
 import db from "./db";
 import { NostrEvent } from "../types/nostr-event";
 import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
-import { SuperMap } from "../classes/super-map";
+import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
 import { Kind } from "nostr-tools";

@@ -50,8 +50,13 @@ export default function CommunityJoinButton({
   }, [isSubscribed, list, community]);
 
   return (
-    <Button onClick={handleClick} {...props}>
-      {isSubscribed ? "Unsubscribe" : "Subscribe"}
+    <Button
+      onClick={handleClick}
+      variant={isSubscribed ? "outline" : "solid"}
+      colorScheme={isSubscribed ? "red" : "green"}
+      {...props}
+    >
+      {isSubscribed ? "Leave" : "Join"}
     </Button>
   );
 }

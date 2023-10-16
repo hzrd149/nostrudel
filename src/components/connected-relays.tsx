@@ -19,11 +19,12 @@ import {
   Flex,
   ButtonProps,
 } from "@chakra-ui/react";
+
 import relayPoolService from "../services/relay-pool";
 import { useInterval } from "react-use";
 import { RelayStatus } from "./relay-status";
 import { RelayIcon } from "./icons";
-import { Relay } from "../classes/relay";
+import Relay from "../classes/relay";
 import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayScoreBreakdown } from "./relay-score-breakdown";

@@ -24,7 +24,7 @@ import RequireCurrentAccount from "../../providers/require-current-account";
 import userRelaysService from "../../services/user-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { ArrowLeftSIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { UserAvatar } from "../../components/user-avatar";
 import { RelayMetadata, RelayPaidTag } from "./components/relay-card";
 
@@ -84,7 +84,7 @@ function PopularRelaysPage() {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
         <Heading size="md">Popular Relays</Heading>

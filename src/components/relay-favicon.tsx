@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
+
 import { RelayIcon } from "./icons";
 import { useRelayInfo } from "../hooks/use-relay-info";
 

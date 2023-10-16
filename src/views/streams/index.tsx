@@ -61,13 +61,17 @@ function StreamsPage() {
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
+        <Heading size="lg" mt="2">
+          Live
+        </Heading>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {liveStreams.map((stream) => (
             <StreamCard key={stream.event.id} stream={stream} />
           ))}
         </SimpleGrid>
-        <Heading>Ended</Heading>
-        <Divider />
+        <Heading size="lg" mt="4">
+          Ended
+        </Heading>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {endedStreams.map((stream) => (
             <StreamCard key={stream.event.id} stream={stream} />

@@ -15,7 +15,7 @@ export function getCommunityMods(community: NostrEvent) {
   const mods = community.tags.filter((t) => isPTag(t) && t[1] && t[3] === "moderator").map((t) => t[1]) as string[];
   return mods;
 }
-export function getCOmmunityRelays(community: NostrEvent) {
+export function getCommunityRelays(community: NostrEvent) {
   return community.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[];
 }
 

@@ -4,7 +4,7 @@ import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
 import useSubject from "../../../hooks/use-subject";
-import { TimelineLoader } from "../../../classes/timeline-loader";
+import TimelineLoader from "../../../classes/timeline-loader";
 import RepostNote from "./repost-note";
 import { Note } from "../../note";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -16,6 +16,7 @@ import { getEventUID, isReply } from "../../../helpers/nostr/events";
 import ReplyNote from "./reply-note";
 import RelayRecommendation from "./relay-recommendation";
 import { ExtendedIntersectionObserverEntry, useIntersectionObserver } from "../../../providers/intersection-observer";
+import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
 
 function RenderEvent({ event }: { event: NostrEvent }) {
   let content: ReactNode | null = null;
@@ -35,6 +36,8 @@ function RenderEvent({ event }: { event: NostrEvent }) {
     case Kind.RecommendRelay:
       content = <RelayRecommendation event={event} />;
       break;
+    case Kind.BadgeAward:
+      content = <BadgeAwardCard award={event} />;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;
       break;

@@ -26,7 +26,7 @@ export default function PostModalProvider({ children }: PropsWithChildren) {
   return (
     <PostModalContext.Provider value={context}>
       <ErrorBoundary>
-        {isOpen && <PostModal isOpen onClose={onClose} initContent={initContent} />}
+        {isOpen && <PostModal isOpen={isOpen} onClose={onClose} initContent={initContent} />}
         {children}
       </ErrorBoundary>
     </PostModalContext.Provider>

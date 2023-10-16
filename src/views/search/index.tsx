@@ -4,7 +4,7 @@ import { Kind } from "nostr-tools";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAsync } from "react-use";
 
-import { ClipboardIcon, QrCodeIcon } from "../../components/icons";
+import { CopyToClipboardIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
@@ -146,7 +146,7 @@ export function SearchPage() {
           <Flex gap="2" grow={1}>
             <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
             {!!navigator.clipboard.readText && (
-              <IconButton onClick={readClipboard} icon={<ClipboardIcon />} aria-label="Read clipboard" />
+              <IconButton onClick={readClipboard} icon={<CopyToClipboardIcon />} aria-label="Read clipboard" />
             )}
             <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
             <Button type="submit">Search</Button>

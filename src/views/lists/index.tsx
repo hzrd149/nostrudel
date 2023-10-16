@@ -44,40 +44,44 @@ function ListsPage() {
         </Button>
       </Flex>
 
-      <Heading size="md">Special lists</Heading>
-      <Divider />
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        <ListCard cord={`${Kind.Contacts}:${account.pubkey}`} />
-        <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} />
-        <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} />
+      <Heading size="lg" mt="2">
+        Special lists
+      </Heading>
+      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+        <ListCard cord={`${Kind.Contacts}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} hideCreator />
       </SimpleGrid>
       {peopleLists.length > 0 && (
         <>
-          <Heading size="md">People lists</Heading>
-          <Divider />
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <Heading size="lg" mt="2">
+            People lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
             {peopleLists.map((event) => (
-              <ListCard key={getEventUID(event)} list={event} />
+              <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
         </>
       )}
       {noteLists.length > 0 && (
         <>
-          <Heading size="md">Bookmark lists</Heading>
-          <Divider />
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <Heading size="lg" mt="2">
+            Bookmark lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
             {noteLists.map((event) => (
-              <ListCard key={getEventUID(event)} list={event} />
+              <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
         </>
       )}
       {favoriteLists.length > 0 && (
         <>
-          <Heading size="md">Favorite lists</Heading>
-          <Divider />
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <Heading size="lg" mt="2">
+            Favorite lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
             {favoriteLists.map((event) => (
               <ListCard key={getEventUID(event)} list={event} />
             ))}

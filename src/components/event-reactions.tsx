@@ -1,5 +1,6 @@
-import { Button, ButtonProps, IconButton, Image, useDisclosure } from "@chakra-ui/react";
 import { useCallback, useMemo } from "react";
+import { Button, ButtonProps, IconButton, Image, useDisclosure } from "@chakra-ui/react";
+
 import { NostrEvent } from "../types/nostr-event";
 import useEventReactions from "../hooks/use-event-reactions";
 import { DislikeIcon, LikeIcon } from "./icons";

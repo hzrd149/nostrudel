@@ -1,7 +1,7 @@
+import { nip04, getPublicKey, finishEvent } from "nostr-tools";
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
 import db from "./db";
-import { nip04, getPublicKey, finishEvent } from "nostr-tools";
 
 const decryptedKeys = new Map<string, string>();
 

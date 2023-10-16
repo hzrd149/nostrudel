@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useScroll } from "react-use";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -15,8 +14,6 @@ import {
   Heading,
   Spacer,
   Spinner,
-  Tag,
-  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
@@ -31,7 +28,7 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import { UserAvatarLink } from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
-import { ArrowLeftSIcon, ExternalLinkIcon } from "../../../components/icons";
+import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import StreamDebugButton from "../components/stream-debug-button";
@@ -54,6 +51,7 @@ import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
 import StreamShareButton from "../components/stream-share-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
@@ -90,7 +88,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
           Back
         </Button>
         <UserAvatarLink pubkey={stream.host} size="sm" display={{ base: "none", md: "block" }} />
@@ -104,11 +102,13 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
         <StreamDebugButton stream={stream} variant="ghost" />
         <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
       </Flex>
-      <Flex gap="2" maxH="calc(100vh - 4rem)">
+      <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
         <LiveVideoPlayer
           stream={stream.streaming || stream.recording}
           autoPlay={!!stream.streaming}
           poster={stream.image}
+          // NOTE: width=0 is used for chromium browser to stop the video element from pushing the chat off screen
+          w={0}
           flexGrow={1}
           mx="auto"
         />
@@ -150,7 +150,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
   return (
     <VerticalPageLayout px={0}>
       <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
-        <Button onClick={() => navigate(-1)} leftIcon={<ArrowLeftSIcon />} size="sm">
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />} size="sm">
           Back
         </Button>
         <Spacer />

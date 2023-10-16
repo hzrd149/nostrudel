@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 import { NostrRequestFilter } from "../types/nostr-query";
-import { NostrEvent } from "../types/nostr-event";
 import timelineCacheService from "../services/timeline-cache";
+import { EventFilter } from "../classes/timeline-loader";
 
 type Options = {
   enabled?: boolean;
-  eventFilter?: (event: NostrEvent) => boolean;
+  eventFilter?: EventFilter;
   cursor?: number;
 };
 

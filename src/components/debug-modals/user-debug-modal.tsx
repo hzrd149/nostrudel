@@ -1,12 +1,13 @@
 import { Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
+import { Kind, nip19 } from "nostr-tools";
+
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import RawValue from "./raw-value";
 import RawJson from "./raw-json";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
-import { Kind, nip19 } from "nostr-tools";
 
 export default function UserDebugModal({ pubkey, ...props }: { pubkey: string } & Omit<ModalProps, "children">) {
   const npub = nip19.npubEncode(pubkey);

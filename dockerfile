@@ -2,6 +2,8 @@
 FROM node:18
 WORKDIR /app
 COPY . /app/
+ENV VITE_COMMIT_HASH=""
+ENV VITE_APP_VERSION="custom"
 RUN yarn install && yarn build
 
 FROM nginx:stable-alpine-slim

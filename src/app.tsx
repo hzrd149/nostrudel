@@ -1,72 +1,85 @@
-import React, { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
+import { PageProviders } from "./providers";
+import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
+import useSetColorMode from "./hooks/use-set-color-mode";
 
 import HomeView from "./views/home/index";
 import SettingsView from "./views/settings";
-import LoginView from "./views/login";
+import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
+import NoteView from "./views/note";
+import NotificationsView from "./views/notifications";
+import DirectMessagesView from "./views/messages";
+import DirectMessageChatView from "./views/messages/chat";
+
+import SigninView from "./views/signin";
+import SignupView from "./views/signup";
+import LoginStartView from "./views/signin/start";
+import LoginNpubView from "./views/signin/npub";
+import LoginNip05View from "./views/signin/nip05";
+import LoginNsecView from "./views/signin/nsec";
+
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
 import UserFollowersTab from "./views/user/followers";
 import UserRelaysTab from "./views/user/relays";
 import UserFollowingTab from "./views/user/following";
-import NoteView from "./views/note";
-import LoginStartView from "./views/login/start";
-import LoginNpubView from "./views/login/npub";
-import NotificationsView from "./views/notifications";
-import LoginNip05View from "./views/login/nip05";
-import LoginNsecView from "./views/login/nsec";
 import UserZapsTab from "./views/user/zaps";
-import DirectMessagesView from "./views/messages";
-import DirectMessageChatView from "./views/messages/chat";
-import NostrLinkView from "./views/link";
 import UserReportsTab from "./views/user/reports";
-import ToolsHomeView from "./views/tools";
 import UserAboutTab from "./views/user/about";
 import UserReactionsTab from "./views/user/reactions";
-import useSetColorMode from "./hooks/use-set-color-mode";
-import UserStreamsTab from "./views/user/streams";
-import { PageProviders } from "./providers";
-import RelaysView from "./views/relays";
-import RelayView from "./views/relays/relay";
-import RelayReviewsView from "./views/relays/reviews";
+import UserListsTab from "./views/user/lists";
+import UserGoalsTab from "./views/user/goals";
+import MutedByView from "./views/user/muted-by";
+import UserArticlesTab from "./views/user/articles";
+
 import ListsView from "./views/lists";
 import ListDetailsView from "./views/lists/list-details";
-import UserListsTab from "./views/user/lists";
-
 import BrowseListView from "./views/lists/browse";
+
 import EmojiPacksBrowseView from "./views/emoji-packs/browse";
 import EmojiPackView from "./views/emoji-packs/emoji-pack";
 import UserEmojiPacksTab from "./views/user/emoji-packs";
 import EmojiPacksView from "./views/emoji-packs";
+
 import GoalsView from "./views/goals";
 import GoalsBrowseView from "./views/goals/browse";
 import GoalDetailsView from "./views/goals/goal-details";
-import UserGoalsTab from "./views/user/goals";
-import MutedByView from "./views/user/muted-by";
+
 import BadgesView from "./views/badges";
 import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
-import UserArticlesTab from "./views/user/articles";
-import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
+
 import CommunitiesHomeView from "./views/communities";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
-import PopularRelaysView from "./views/relays/popular";
+import CommunityPendingView from "./views/community/views/pending";
+import CommunityNewView from "./views/community/views/new";
 
-const NetworkView = React.lazy(() => import("./views/tools/network"));
-const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
-const StreamsView = React.lazy(() => import("./views/streams"));
-const StreamView = React.lazy(() => import("./views/streams/stream"));
-const SearchView = React.lazy(() => import("./views/search"));
-const MapView = React.lazy(() => import("./views/map"));
-const StreamModerationView = React.lazy(() => import("./views/tools/stream-moderation"));
+import RelaysView from "./views/relays";
+import RelayView from "./views/relays/relay";
+import RelayReviewsView from "./views/relays/reviews";
+import PopularRelaysView from "./views/relays/popular";
+const UserTracksTab = lazy(() => import("./views/user/tracks"));
+
+const ToolsHomeView = lazy(() => import("./views/tools"));
+const NetworkView = lazy(() => import("./views/tools/network"));
+const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
+const NetworkGraphView = lazy(() => import("./views/tools/network-mute-graph"));
+
+const UserStreamsTab = lazy(() => import("./views/user/streams"));
+const StreamsView = lazy(() => import("./views/streams"));
+const StreamView = lazy(() => import("./views/streams/stream"));
+
+const SearchView = lazy(() => import("./views/search"));
+const MapView = lazy(() => import("./views/map"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -110,13 +123,34 @@ const RootPage = () => {
 
 const router = createHashRouter([
   {
-    path: "login",
-    element: <LoginView />,
+    path: "signin",
+    element: <SigninView />,
     children: [
       { path: "", element: <LoginStartView /> },
       { path: "npub", element: <LoginNpubView /> },
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
+    ],
+  },
+  {
+    path: "signup",
+    children: [
+      {
+        path: "",
+        element: (
+          <PageProviders>
+            <SignupView />
+          </PageProviders>
+        ),
+      },
+      {
+        path: ":step",
+        element: (
+          <PageProviders>
+            <SignupView />
+          </PageProviders>
+        ),
+      },
     ],
   },
   {
@@ -152,6 +186,7 @@ const router = createHashRouter([
           { path: "notes", element: <UserNotesTab /> },
           { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
+          { path: "tracks", element: <UserTracksTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
@@ -207,7 +242,14 @@ const router = createHashRouter([
         path: "c/:community",
         children: [
           { path: "", element: <CommunityFindByNameView /> },
-          { path: ":pubkey", element: <CommunityView /> },
+          {
+            path: ":pubkey",
+            element: <CommunityView />,
+            children: [
+              { path: "", element: <CommunityNewView /> },
+              { path: "pending", element: <CommunityPendingView /> },
+            ],
+          },
         ],
       },
       {
