@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
@@ -19,7 +19,8 @@ import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/messages";
 import DirectMessageChatView from "./views/messages/chat";
 
-import LoginView from "./views/signin";
+import SigninView from "./views/signin";
+import SignupView from "./views/signup";
 import LoginStartView from "./views/signin/start";
 import LoginNpubView from "./views/signin/npub";
 import LoginNip05View from "./views/signin/nip05";
@@ -66,20 +67,19 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
-import UserTracksTab from "./views/user/tracks";
-import SignupView from "./views/signup";
+const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
-const ToolsHomeView = React.lazy(() => import("./views/tools"));
-const NetworkView = React.lazy(() => import("./views/tools/network"));
-const StreamModerationView = React.lazy(() => import("./views/tools/stream-moderation"));
-const NetworkGraphView = React.lazy(() => import("./views/tools/network-mute-graph"));
+const ToolsHomeView = lazy(() => import("./views/tools"));
+const NetworkView = lazy(() => import("./views/tools/network"));
+const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
+const NetworkGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 
-const UserStreamsTab = React.lazy(() => import("./views/user/streams"));
-const StreamsView = React.lazy(() => import("./views/streams"));
-const StreamView = React.lazy(() => import("./views/streams/stream"));
+const UserStreamsTab = lazy(() => import("./views/user/streams"));
+const StreamsView = lazy(() => import("./views/streams"));
+const StreamView = lazy(() => import("./views/streams/stream"));
 
-const SearchView = React.lazy(() => import("./views/search"));
-const MapView = React.lazy(() => import("./views/map"));
+const SearchView = lazy(() => import("./views/search"));
+const MapView = lazy(() => import("./views/map"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -124,7 +124,7 @@ const RootPage = () => {
 const router = createHashRouter([
   {
     path: "signin",
-    element: <LoginView />,
+    element: <SigninView />,
     children: [
       { path: "", element: <LoginStartView /> },
       { path: "npub", element: <LoginNpubView /> },
