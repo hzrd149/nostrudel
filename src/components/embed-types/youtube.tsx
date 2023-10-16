@@ -41,6 +41,7 @@ export function renderYoutubeUrl(match: URL) {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
           width="100%"
+          style={{ zIndex: 1, position: "relative" }}
         ></iframe>
       </AspectRatio>
     );
@@ -58,6 +59,7 @@ export function renderYoutubeUrl(match: URL) {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           width="100%"
+          style={{ zIndex: 1, position: "relative" }}
         ></iframe>
       </AspectRatio>
     );

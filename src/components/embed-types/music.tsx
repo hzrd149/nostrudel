@@ -1,4 +1,7 @@
+import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
+
+const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
 // nostr:nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0
 export function renderWavlakeUrl(match: URL) {
@@ -13,7 +16,7 @@ export function renderWavlakeUrl(match: URL) {
       frameBorder="0"
       title="Wavlake Embed"
       src={embedUrl.toString()}
-      style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573 }}
+      style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573, ...setZIndex }}
     ></iframe>
   );
 }
@@ -34,7 +37,7 @@ export function renderAppleMusicUrl(match: URL) {
       frameBorder="0"
       title={isList ? "Apple Music List Embed" : "Apple Music Embed"}
       height={isList ? 450 : 175}
-      style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent" }}
+      style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent", ...setZIndex }}
       src={embedUrl.toString()}
     ></iframe>
   );
@@ -55,7 +58,7 @@ export function renderSpotifyUrl(match: URL) {
 
   return (
     <iframe
-      style={{ borderRadius: "12px" }}
+      style={{ borderRadius: "12px", ...setZIndex }}
       width="100%"
       height={isList ? 400 : 152}
       title={isList ? "Spotify List Embed" : "Spotify Embed"}
@@ -84,6 +87,7 @@ export function renderTidalUrl(match: URL) {
       width="100%"
       height={isList ? 400 : 96}
       title={isList ? "Tidal List Embed" : "Tidal Embed"}
+      style={setZIndex}
     ></iframe>
   );
 }
@@ -102,6 +106,7 @@ export function renderSongDotLinkUrl(match: URL) {
       aspectRatio={16 / 10}
       src={`https://odesli.co/embed/?url=${encodeURIComponent(match.href)}&theme=${colorMode}`}
       sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+      style={setZIndex}
     ></Box>
   );
 }

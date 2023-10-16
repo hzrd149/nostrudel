@@ -8,7 +8,8 @@ export function embedCashuTokens(content: EmbedableContent) {
   return embedJSX(content, {
     regexp: getMatchCashu(),
     render: (match) => {
-      return <InlineCachuCard token={match[0]} />;
+      // set zIndex and position so link over dose not cover card
+      return <InlineCachuCard token={match[0]} zIndex={1} position="relative" />;
     },
     name: "emoji",
   });

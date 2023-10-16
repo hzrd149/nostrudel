@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, ButtonGroup, Card, Heading, IconButton, Link } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link } from "@chakra-ui/react";
 import { getDecodedToken, Token } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "./copy-icon-button";
@@ -22,7 +22,7 @@ function RedeemButton({ token }: { token: string }) {
   );
 }
 
-export default function InlineCachuCard({ token }: { token: string }) {
+export default function InlineCachuCard({ token, ...props }: Omit<CardProps, "children"> & { token: string }) {
   const account = useCurrentAccount();
 
   const [cashu, setCashu] = useState<Token>();
@@ -39,7 +39,7 @@ export default function InlineCachuCard({ token }: { token: string }) {
 
   const amount = cashu?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
   return (
-    <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4" flexWrap="wrap">
+    <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4" flexWrap="wrap" {...props}>
       <ECashIcon boxSize={10} color="green.500" />
       <Box>
         <Heading size="md">{amount} Cashu sats</Heading>

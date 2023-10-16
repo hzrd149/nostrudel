@@ -134,7 +134,24 @@ const router = createHashRouter([
   },
   {
     path: "signup",
-    element: <SignupView />,
+    children: [
+      {
+        path: "",
+        element: (
+          <PageProviders>
+            <SignupView />
+          </PageProviders>
+        ),
+      },
+      {
+        path: ":step",
+        element: (
+          <PageProviders>
+            <SignupView />
+          </PageProviders>
+        ),
+      },
+    ],
   },
   {
     path: "streams/:naddr",
