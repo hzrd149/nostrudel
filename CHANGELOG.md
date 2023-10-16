@@ -1,5 +1,29 @@
 # nostrudel
 
+## 0.30.0
+
+### Minor Changes
+
+- f701942: Add redeem button for cashu tokens
+- 7a3674f: Add option to set zap splits when creating note
+- 85a9dad: Add stemstr embeds
+- bcc8427: Add theme option and better dark theme
+- 5a455c7: Show repost counts on notes
+- c0e3269: Add support for paying zap splits
+- cdfdc71: Show recent badge awards on badges page
+- d2f3076: Make notes clickable
+- 4efbc48: Add sign up view
+- 21a1a8a: Show profile badges on users profile
+- b2be294: Support video and audio file uploads to nostr.build
+- 2a17d9e: Show articles in lists
+- d9353b0: Update all icons
+- 56fc982: Add badge activity tab
+
+### Patch Changes
+
+- c635b2b: Fix bug with stream chat not showing on chromium based browsers
+- 37489e5: Reduce churn when loading relays on app load
+
 ## 0.29.0
 
 ### Minor Changes
