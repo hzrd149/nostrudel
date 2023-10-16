@@ -64,7 +64,14 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
         <NavItems />
         <Box h="4" />
         {!account && (
-          <Button as={RouterLink} to="/signin" state={{ from: location.pathname }} colorScheme="primary" w="full">
+          <Button
+            as={RouterLink}
+            to="/signin"
+            state={{ from: location.pathname }}
+            colorScheme="primary"
+            w="full"
+            flexShrink={0}
+          >
             Sign in
           </Button>
         )}
