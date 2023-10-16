@@ -34,14 +34,13 @@ export function renderYoutubeUrl(match: URL) {
     embedUrl.searchParams.set("list", listId);
 
     return (
-      <AspectRatio ratio={560 / 315} maxWidth="40rem">
+      <AspectRatio ratio={560 / 315} maxWidth="40rem" zIndex={1} position="relative">
         <iframe
           src={embedUrl.toString()}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
           width="100%"
-          style={{ zIndex: 1, position: "relative" }}
         ></iframe>
       </AspectRatio>
     );
@@ -52,14 +51,13 @@ export function renderYoutubeUrl(match: URL) {
     const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://www.youtube-nocookie.com");
 
     return (
-      <AspectRatio ratio={16 / 10} maxWidth="40rem">
+      <AspectRatio ratio={16 / 10} maxWidth="40rem" zIndex={1} position="relative">
         <iframe
           src={embedUrl.toString()}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           width="100%"
-          style={{ zIndex: 1, position: "relative" }}
         ></iframe>
       </AspectRatio>
     );
