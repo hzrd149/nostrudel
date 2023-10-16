@@ -83,7 +83,7 @@ export default function BackupStep({ secretKey, onConfirm }: { secretKey: string
       <Heading>Backup your keys</Heading>
 
       <Blockquote>
-        <blockquote>&#8220;Keep It Secret, Keep it Safe.</blockquote>
+        <blockquote>Keep It Secret, Keep it Safe.</blockquote>
         <figcaption>&mdash; Gandalf, The Fellowship of the Ring</figcaption>
       </Blockquote>
 
