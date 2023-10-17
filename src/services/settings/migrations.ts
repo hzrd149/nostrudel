@@ -76,11 +76,12 @@ export const defaultSettings: AppSettings = {
   youtubeRedirect: undefined,
 };
 
-export function upgradeSettings(settings: { version: number }): AppSettings {
+export function upgradeSettings(settings: { version: number }): AppSettings | null {
   if (isV0(settings)) return { ...defaultSettings, ...settings, version: 3 };
   if (isV1(settings)) return { ...defaultSettings, ...settings, version: 3 };
   if (isV2(settings)) return { ...defaultSettings, ...settings, version: 3 };
-  return settings as AppSettings;
+  if (isV3(settings)) return settings;
+  return null;
 }
 
 export function parseAppSettings(event: NostrEvent): AppSettings {

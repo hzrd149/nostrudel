@@ -32,6 +32,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
   };
 
   const total = totalZaps(zaps);
+  const canZap = !!metadata?.allowsNostr || event.tags.some((t) => t[0] === "zap");
 
   return (
     <>
@@ -43,7 +44,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           colorScheme={hasZapped ? "primary" : undefined}
           {...props}
           onClick={onOpen}
-          isDisabled={!metadata?.allowsNostr}
+          isDisabled={!canZap}
         >
           {readablizeSats(total / 1000)}
         </Button>
@@ -54,7 +55,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           title="Zap Note"
           {...props}
           onClick={onOpen}
-          isDisabled={!metadata?.allowsNostr}
+          isDisabled={!canZap}
         />
       )}
 
