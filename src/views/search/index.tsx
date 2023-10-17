@@ -29,6 +29,7 @@ import trustedUserStatsService, { NostrBandUserStats } from "../../services/trus
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import User01 from "../../components/icons/user-01";
 import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
+import Feather from "../../components/icons/feather";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);
@@ -120,6 +121,25 @@ function NoteSearchResults({ search }: { search: string }) {
   );
 }
 
+function ArticleSearchResults({ search }: { search: string }) {
+  const searchRelays = useRelaySelectionRelays();
+
+  const timeline = useTimelineLoader(
+    `${search}-article-search`,
+    searchRelays,
+    { search: search || "", kinds: [Kind.Article] },
+    { enabled: !!search },
+  );
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback}>
+      <GenericNoteTimeline timeline={timeline} />
+    </IntersectionObserverProvider>
+  );
+}
+
 export function SearchPage() {
   const navigate = useNavigate();
   const qrScannerModal = useDisclosure();
@@ -168,7 +188,18 @@ export function SearchPage() {
     handleSearchText(searchInput);
   };
 
-  const SearchResults = type === "users" ? ProfileSearchResults : NoteSearchResults;
+  let SearchResults = ProfileSearchResults;
+  switch (type) {
+    case "users":
+      SearchResults = ProfileSearchResults;
+      break;
+    case "notes":
+      SearchResults = NoteSearchResults;
+      break;
+    case "articles":
+      SearchResults = ArticleSearchResults;
+      break;
+  }
 
   return (
     <VerticalPageLayout>
@@ -203,11 +234,18 @@ export function SearchPage() {
           >
             Notes
           </Button>
+          <Button
+            leftIcon={<Feather />}
+            colorScheme={type === "articles" ? "primary" : undefined}
+            onClick={() => mergeSearchParams({ type: "articles" })}
+          >
+            Articles
+          </Button>
         </ButtonGroup>
         <RelaySelectionButton ml="auto" size="sm" />
       </Flex>
 
-      <Flex direction="column" gap="8">
+      <Flex direction="column" gap="4">
         {search ? (
           <SearchResults search={search} />
         ) : (

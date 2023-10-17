@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Card, CardProps, Flex, Image, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Flex, Image, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
 
 import {
   getArticleImage,
@@ -28,29 +28,39 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
   useRegisterIntersectionEntity(ref, getEventUID(article));
 
   return (
-    <Card as={LinkBox} ref={ref} p="2" flexDirection="row" {...props}>
-      <Flex gap="2" direction="column" flex={1}>
-        <Flex gap="2" alignItems="center">
+    <Card as={LinkBox} ref={ref} size="sm" {...props}>
+      {image && (
+        <Box
+          backgroundImage={image}
+          w="full"
+          aspectRatio={3 / 1}
+          hideFrom="md"
+          backgroundRepeat="no-repeat"
+          backgroundPosition="center"
+          backgroundSize="cover"
+        />
+      )}
+      <CardBody>
+        {image && (
+          <Image src={image} alt={title} maxW="3in" maxH="2in" float="right" borderRadius="md" ml="2" hideBelow="md" />
+        )}
+        <Flex gap="2" alignItems="center" mb="2">
           <UserAvatarLink pubkey={article.pubkey} size="sm" />
-          <LinkOverlay href={naddr ? buildAppSelectUrl(naddr, false) : undefined} isExternal fontWeight="bold">
-            {title}
-          </LinkOverlay>
-          <Text>by:</Text>
-          <UserLink pubkey={article.pubkey} />
-          <Text>
-            | <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
-          </Text>
+          <UserLink pubkey={article.pubkey} fontWeight="bold" isTruncated />
+          <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
         </Flex>
-        <Text flex={1}>{summary}</Text>
-        <Flex gap="2" alignItems="center">
-          {article.tags
-            .filter((t) => t[0] === "t")
-            .map(([_, hashtag]) => (
-              <Tag>{hashtag}</Tag>
-            ))}
-        </Flex>
-      </Flex>
-      {image && <Image src={image} alt={title} maxW="2in" maxH="2in" float="right" borderRadius="md" />}
+        <LinkOverlay href={naddr ? buildAppSelectUrl(naddr, false) : undefined} isExternal fontWeight="bold">
+          {title}
+        </LinkOverlay>
+        <Text mb="2">{summary}</Text>
+        {article.tags
+          .filter((t) => t[0] === "t")
+          .map(([_, hashtag]) => (
+            <Tag mr="2" mb="2">
+              #{hashtag}
+            </Tag>
+          ))}
+      </CardBody>
     </Card>
   );
 }

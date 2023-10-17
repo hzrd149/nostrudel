@@ -21,7 +21,7 @@ I would recommend you use a browser extension like [Alby](https://getalby.com/) 
 ## Running with docker
 
 ```bash
-docker run --rm -p 8080:80 ghcr.io/hzrd149/nostrudel
+docker run --rm -p 8080:80 ghcr.io/hzrd149/nostrudel:master
 ```
 
 ## Running locally
