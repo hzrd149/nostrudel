@@ -1,4 +1,5 @@
-import { useFormContext } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { UseControllerProps, useController, useFormContext } from "react-hook-form";
 import {
   Flex,
   FormControl,
@@ -13,12 +14,51 @@ import {
   Input,
   Select,
   Textarea,
+  Divider,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  useDisclosure,
+  IconButton,
+  Button,
 } from "@chakra-ui/react";
+import { matchSorter } from "match-sorter";
+
 import { AppSettings } from "../../services/settings/migrations";
-import { AppearanceIcon } from "../../components/icons";
+import { AppearanceIcon, EditIcon } from "../../components/icons";
+import { useContextEmojis } from "../../providers/emoji-provider";
 
 export default function DisplaySettings() {
-  const { register } = useFormContext<AppSettings>();
+  const { register, setValue, getValues, watch } = useFormContext<AppSettings>();
+  const emojiPicker = useDisclosure();
+
+  const emojis = useContextEmojis();
+  const [emojiSearch, setEmojiSearch] = useState("");
+
+  watch("quickReactions");
+  const filteredEmojis = useMemo(() => {
+    const values = getValues();
+    if (emojiSearch.trim()) {
+      const noCustom = emojis.filter((e) => e.char && !e.url && !values.quickReactions.includes(e.char));
+      return matchSorter(noCustom, emojiSearch.trim(), { keys: ["keywords"] }).slice(0, 10);
+    }
+    return [];
+  }, [emojiSearch, getValues().quickReactions]);
+
+  const addEmoji = (char: string) => {
+    const values = getValues();
+    if (values.quickReactions.includes(char)) return;
+    setValue("quickReactions", values.quickReactions.concat(char), { shouldTouch: true, shouldDirty: true });
+  };
+  const removeEmoji = (char: string) => {
+    const values = getValues();
+    if (!values.quickReactions.includes(char)) return;
+    setValue(
+      "quickReactions",
+      values.quickReactions.filter((e) => e !== char),
+      { shouldTouch: true, shouldDirty: true },
+    );
+  };
 
   return (
     <AccordionItem>
@@ -62,6 +102,51 @@ export default function DisplaySettings() {
             <FormHelperText>
               <span>The primary color of the theme</span>
             </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="quickReactions" mb="0">
+              Quick Reactions
+            </FormLabel>
+            <Flex gap="2" wrap="wrap">
+              {getValues().quickReactions.map((char, i) => (
+                <Tag key={char + i}>
+                  <TagLabel>{char}</TagLabel>
+                  {emojiPicker.isOpen && <TagCloseButton onClick={() => removeEmoji(char)} />}
+                </Tag>
+              ))}
+              {!emojiPicker.isOpen && (
+                <Button size="sm" onClick={emojiPicker.onOpen} leftIcon={<EditIcon />}>
+                  Customize
+                </Button>
+              )}
+            </Flex>
+            {emojiPicker.isOpen && (
+              <>
+                <Divider my="2" />
+                <Input
+                  type="search"
+                  w="sm"
+                  h="8"
+                  value={emojiSearch}
+                  onChange={(e) => setEmojiSearch(e.target.value)}
+                  mb="2"
+                />
+                <Flex gap="2" wrap="wrap">
+                  {filteredEmojis.map((emoji) => (
+                    <IconButton
+                      key={emoji.char}
+                      icon={<span>{emoji.char}</span>}
+                      aria-label={`Add ${emoji.name}`}
+                      title={`Add ${emoji.name}`}
+                      variant="outline"
+                      size="sm"
+                      fontSize="lg"
+                      onClick={() => addEmoji(emoji.char)}
+                    />
+                  ))}
+                </Flex>
+              </>
+            )}
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="maxPageWidth" mb="0">
