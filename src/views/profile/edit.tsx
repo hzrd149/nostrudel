@@ -27,6 +27,7 @@ import userMetadataService from "../../services/user-metadata";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { COMMON_CONTACT_RELAY } from "../../const";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -188,7 +189,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const writeRelays = useWriteRelayUrls(["wss://purplepag.es"]); // always write profile info to wss://purplepag.es
+  const writeRelays = useWriteRelayUrls([COMMON_CONTACT_RELAY]);
   const readRelays = useReadRelayUrls();
   const toast = useToast();
   const account = useCurrentAccount()!;

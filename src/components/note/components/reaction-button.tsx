@@ -7,15 +7,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
 
-import { useCurrentAccount } from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import { useSigningContext } from "../../../providers/signing-provider";
 import clientRelaysService from "../../../services/client-relays";
 import eventReactionsService from "../../../services/event-reactions";
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { AddReactionIcon } from "../../icons";
 import ReactionPicker from "../../reaction-picker";

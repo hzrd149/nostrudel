@@ -31,6 +31,10 @@ export type AppSettingsV2 = Omit<AppSettingsV1, "version"> & {
   version: 2;
   theme: string;
 };
+export type AppSettingsV3 = Omit<AppSettingsV2, "version"> & {
+  version: 3;
+  quickReactions: string[];
+};
 
 export function isV0(settings: { version: number }): settings is AppSettingsV0 {
   return settings.version === undefined || settings.version === 0;
@@ -41,11 +45,14 @@ export function isV1(settings: { version: number }): settings is AppSettingsV1 {
 export function isV2(settings: { version: number }): settings is AppSettingsV2 {
   return settings.version === 2;
 }
+export function isV3(settings: { version: number }): settings is AppSettingsV3 {
+  return settings.version === 3;
+}
 
-export type AppSettings = AppSettingsV2;
+export type AppSettings = AppSettingsV3;
 
 export const defaultSettings: AppSettings = {
-  version: 2,
+  version: 3,
   theme: "default",
   colorMode: "system",
   maxPageWidth: "none",
@@ -54,6 +61,8 @@ export const defaultSettings: AppSettings = {
   proxyUserMedia: false,
   showReactions: true,
   showSignatureVerification: false,
+
+  quickReactions: ["🤙", "❤️", "🤣", "😍", "🔥"],
 
   autoPayWithWebLN: true,
   customZapAmounts: "50,200,500,1000,2000,5000",
@@ -68,9 +77,10 @@ export const defaultSettings: AppSettings = {
 };
 
 export function upgradeSettings(settings: { version: number }): AppSettings | null {
-  if (isV0(settings)) return { ...settings, version: 2, maxPageWidth: "none", theme: "default" };
-  if (isV1(settings)) return { ...settings, version: 2, theme: "default" };
-  if (isV2(settings)) return settings;
+  if (isV0(settings)) return { ...defaultSettings, ...settings, version: 3 };
+  if (isV1(settings)) return { ...defaultSettings, ...settings, version: 3 };
+  if (isV2(settings)) return { ...defaultSettings, ...settings, version: 3 };
+  if (isV3(settings)) return settings;
   return null;
 }
 

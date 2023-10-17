@@ -22,6 +22,7 @@ import accountService from "../../services/account";
 import clientRelaysService from "../../services/client-relays";
 import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import signingService from "../../services/signing";
+import { COMMON_CONTACT_RELAY } from "../../const";
 
 export default function LoginNsecView() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function LoginNsecView() {
   const [inputValue, setInputValue] = useState("");
 
   const [hexKey, setHexKey] = useState("");
-  const [relayUrl, setRelayUrl] = useState("wss://purplepag.es");
+  const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
 
   const [npub, setNpub] = useState("");
 

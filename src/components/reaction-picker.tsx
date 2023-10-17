@@ -1,10 +1,11 @@
-import { Button, Divider, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
+import { Divider, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 
 import { DislikeIcon, LikeIcon } from "./icons";
 import { useCurrentAccount } from "../hooks/use-current-account";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
 import { getEmojisFromPack, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
+import useAppSettings from "../hooks/use-app-settings";
 
 export type ReactionPickerProps = {
   onSelect: (emoji: string, url?: string) => void;
@@ -40,6 +41,7 @@ function EmojiPack({ cord, onSelect }: { cord: string; onSelect: ReactionPickerP
 export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
   const account = useCurrentAccount();
   const favoritePacks = useFavoriteEmojiPacks(account?.pubkey);
+  const { quickReactions } = useAppSettings();
 
   return (
     <Flex direction="column" gap="2">
@@ -52,26 +54,15 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
           size="sm"
           onClick={() => onSelect("-")}
         />
-        <IconButton
-          icon={<span>🤙</span>}
-          aria-label="Shaka"
-          variant="outline"
-          size="sm"
-          onClick={() => onSelect("🤙")}
-        />
-        <IconButton
-          icon={<span>🫂</span>}
-          aria-label="Hug"
-          variant="outline"
-          size="sm"
-          onClick={() => onSelect("🫂")}
-        />
-        <Flex>
-          <Input placeholder="🔥" display="inline" size="sm" minW="2rem" w="5rem" />
-          <Button variant="solid" colorScheme="primary" size="sm">
-            Add
-          </Button>
-        </Flex>
+        {quickReactions.map((emoji) => (
+          <IconButton
+            icon={<span>{emoji}</span>}
+            aria-label="Shaka"
+            variant="outline"
+            size="sm"
+            onClick={() => onSelect(emoji)}
+          />
+        ))}
       </Flex>
       {favoritePacks &&
         getPackCordsFromFavorites(favoritePacks).map((cord) => (

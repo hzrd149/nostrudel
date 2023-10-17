@@ -11,6 +11,7 @@ import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
+import { COMMON_CONTACT_RELAY } from "../../const";
 
 export default function CreateStep({
   metadata,
@@ -57,7 +58,7 @@ export default function CreateStep({
         hex,
       );
 
-      new NostrPublishAction("Create Profile", [...relays, "wss://purplepag.es"], kind0);
+      new NostrPublishAction("Create Profile", [...relays, COMMON_CONTACT_RELAY], kind0);
 
       // login
       const pubkey = getPublicKey(hex);

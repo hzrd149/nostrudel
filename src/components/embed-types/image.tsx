@@ -119,7 +119,7 @@ export const GalleryImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
 
     return (
       <Link href={src} isExternal onClick={handleClick} {...props}>
-        <TrustImage src={thumbnail} cursor="pointer" ref={ref} onClick={handleClick} {...imageProps} />
+        <TrustImage src={thumbnail} cursor="pointer" ref={ref} onClick={handleClick} w="full" {...imageProps} />
       </Link>
     );
   },

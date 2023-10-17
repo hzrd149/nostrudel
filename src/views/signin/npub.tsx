@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHex } from "../../helpers/nip19";
 import accountService from "../../services/account";
+import { COMMON_CONTACT_RELAY } from "../../const";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
-  const [relayUrl, setRelayUrl] = useState("wss://purplepag.es");
+  const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
