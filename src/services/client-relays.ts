@@ -9,6 +9,7 @@ import { Connection, PersistentSubject, Subject } from "../classes/subject";
 import signingService from "./signing";
 import { logger } from "../helpers/debug";
 import NostrPublishAction from "../classes/nostr-publish-action";
+import { COMMON_CONTACT_RELAY } from "../const";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -75,7 +76,7 @@ class ClientRelayService {
       this.log("Load users relay list from cache");
       userRelaysService.loadFromCache(account.pubkey).then(() => {
         if (this.relays.value.length === 0) {
-          const bootstrapRelays = account.relays ?? ["wss://purplepag.es"];
+          const bootstrapRelays = account.relays ?? [COMMON_CONTACT_RELAY];
 
           this.log("Loading relay list from bootstrap relays", bootstrapRelays);
           userRelaysService.requestRelays(account.pubkey, bootstrapRelays, { alwaysRequest: true });
@@ -136,8 +137,7 @@ class ClientRelayService {
 
     const newRelayUrls = newRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
     const oldRelayUrls = this.relays.value.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    // always write relay lists to wss://purplepag.es
-    const writeUrls = unique([...oldRelayUrls, ...newRelayUrls, "wss://purplepag.es"]);
+    const writeUrls = unique([...oldRelayUrls, ...newRelayUrls, COMMON_CONTACT_RELAY]);
 
     const current = accountService.current.value;
     if (!current) throw new Error("no account");

@@ -82,7 +82,7 @@ export default function AccountSwitcher() {
           <Button
             leftIcon={<AddIcon />}
             onClick={() => {
-              accountService.logout();
+              accountService.logout(false);
               navigate("/signin", { state: { from: location.pathname } });
             }}
           >

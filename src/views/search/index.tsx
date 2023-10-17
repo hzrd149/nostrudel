@@ -25,6 +25,7 @@ import { UserLink } from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import { readablizeSats } from "../../helpers/bolt11";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { SEARCH_RELAYS } from "../../const";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);
@@ -168,10 +169,9 @@ export function SearchPage() {
   );
 }
 
-const searchRelays = ["wss://relay.nostr.band", "wss://search.nos.today", "wss://relay.noswhere.com"];
 export default function SearchView() {
   return (
-    <RelaySelectionProvider overrideDefault={searchRelays}>
+    <RelaySelectionProvider overrideDefault={SEARCH_RELAYS}>
       <SearchPage />
     </RelaySelectionProvider>
   );
