@@ -1,5 +1,16 @@
 # nostrudel
 
+## 0.31.0
+
+### Minor Changes
+
+- 9569281: Add option to customize quick reactions
+
+### Patch Changes
+
+- 4c0d10f: Fix people list selection
+- 08eb8b2: Fix zap button on prism posts
+
 ## 0.30.0
 
 ### Minor Changes
