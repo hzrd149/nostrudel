@@ -38,6 +38,7 @@ function RenderEvent({ event }: { event: NostrEvent }) {
       break;
     case Kind.BadgeAward:
       content = <BadgeAwardCard award={event} />;
+      break;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;
       break;
