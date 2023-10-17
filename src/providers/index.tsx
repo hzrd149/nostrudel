@@ -9,7 +9,7 @@ import { InvoiceModalProvider } from "./invoice-modal";
 import NotificationTimelineProvider from "./notification-timeline";
 import PostModalProvider from "./post-modal-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
-import { UserContactsUserDirectoryProvider } from "./user-directory-provider";
+import { AllUserDirectoryProvider } from "./user-directory-provider";
 import MuteModalProvider from "./mute-modal-provider";
 import BreakpointProvider from "./breakpoint-provider";
 
@@ -39,9 +39,9 @@ export function PageProviders({ children }: { children: React.ReactNode }) {
               <NotificationTimelineProvider>
                 <DefaultEmojiProvider>
                   <UserEmojiProvider>
-                    <UserContactsUserDirectoryProvider>
+                    <AllUserDirectoryProvider>
                       <PostModalProvider>{children}</PostModalProvider>
-                    </UserContactsUserDirectoryProvider>
+                    </AllUserDirectoryProvider>
                   </UserEmojiProvider>
                 </DefaultEmojiProvider>
               </NotificationTimelineProvider>

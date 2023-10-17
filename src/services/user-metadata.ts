@@ -1,27 +1,24 @@
 import db from "./db";
+import { Kind } from "nostr-tools";
+import _throttle from "lodash.throttle";
+
 import { NostrEvent } from "../types/nostr-event";
-import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
+import { Kind0ParsedContent, getSearchNames, parseKind0Event } from "../helpers/user-metadata";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
-import { Kind } from "nostr-tools";
 
 class UserMetadataService {
-  // requester: CachedPubkeyEventRequester;
-  // constructor() {
-  //   this.requester = new CachedPubkeyEventRequester(0, "user-metadata");
-  //   this.requester.readCache = this.readCache;
-  //   this.requester.writeCache = this.writeCache;
-  // }
-
-  readCache(pubkey: string) {
-    return db.get("userMetadata", pubkey);
-  }
-  writeCache(pubkey: string, event: NostrEvent) {
-    return db.put("userMetadata", event);
-  }
-
-  private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>(() => new Subject<Kind0ParsedContent>());
+  private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
+    const sub = new Subject<Kind0ParsedContent>();
+    sub.subscribe((metadata) => {
+      if (metadata) {
+        this.writeSearchQueue.add(pubkey);
+        this.writeSearchDataThrottle();
+      }
+    });
+    return sub;
+  });
   getSubject(pubkey: string) {
     return this.parsedSubjects.get(pubkey);
   }
@@ -34,6 +31,26 @@ class UserMetadataService {
 
   receiveEvent(event: NostrEvent) {
     replaceableEventLoaderService.handleEvent(event);
+  }
+
+  private writeSearchQueue = new Set<string>();
+  private writeSearchDataThrottle = _throttle(this.writeSearchData.bind(this));
+  private async writeSearchData() {
+    if (this.writeSearchQueue.size === 0) return;
+
+    const keys = Array.from(this.writeSearchQueue);
+    this.writeSearchQueue.clear();
+
+    const transaction = db.transaction("userSearch", "readwrite");
+    for (const pubkey of keys) {
+      const metadata = this.getSubject(pubkey).value;
+      if (metadata) {
+        const names = getSearchNames(metadata);
+        transaction.objectStore("userSearch").put({ pubkey, names });
+      }
+    }
+    transaction.commit();
+    await transaction.done;
   }
 }
 
