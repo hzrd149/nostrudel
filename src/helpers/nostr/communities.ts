@@ -25,6 +25,9 @@ export function getCommunityImage(community: NostrEvent) {
 export function getCommunityDescription(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "description")?.[1];
 }
+export function getCommunityRules(community: NostrEvent) {
+  return community.tags.find((t) => t[0] === "rules")?.[1];
+}
 
 export function getApprovedEmbeddedNote(approval: NostrEvent) {
   if (!approval.content) return null;

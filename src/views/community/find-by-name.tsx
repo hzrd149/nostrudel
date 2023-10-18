@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import { Heading, SimpleGrid } from "@chakra-ui/react";
 
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
@@ -11,10 +12,16 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import CommunityCard from "../communities/components/community-card";
 import { getEventUID } from "../../helpers/nostr/events";
-import { Divider, Heading, SimpleGrid } from "@chakra-ui/react";
+import { safeDecode } from "../../helpers/nip19";
 
 export default function CommunityFindByNameView() {
   const { community } = useParams() as { community: string };
+
+  // if community name is a naddr, redirect
+  const decoded = safeDecode(community);
+  if (decoded?.type === "naddr" && decoded.data.kind === COMMUNITY_DEFINITION_KIND) {
+    return <Navigate to={`/c/${decoded.data.identifier}/${decoded.data.pubkey}`} replace />;
+  }
 
   const readRelays = useReadRelayUrls();
   const eventFilter = useCallback((event: NostrEvent) => {
@@ -33,8 +40,7 @@ export default function CommunityFindByNameView() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        <Heading>Select Community:</Heading>
-        <Divider />
+        <Heading>Select Community</Heading>
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
           {communities.map((event) => (
             <CommunityCard key={getEventUID(event)} community={event} />

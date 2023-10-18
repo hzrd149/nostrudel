@@ -18,7 +18,7 @@ import { NostrEvent, isATag } from "../../types/nostr-event";
 import { UserAvatarLink } from "../user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
 
-import { NoteMenu } from "./note-menu";
+import NoteMenu from "./note-menu";
 import { EventRelays } from "./note-relays";
 import { UserLink } from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";

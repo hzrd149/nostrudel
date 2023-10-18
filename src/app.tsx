@@ -58,10 +58,11 @@ import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
 
 import CommunitiesHomeView from "./views/communities";
+import CommunitiesExploreView from "./views/communities/explore";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
 import CommunityPendingView from "./views/community/views/pending";
-import CommunityNewView from "./views/community/views/new";
+import CommunityNewestView from "./views/community/views/newest";
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
@@ -236,7 +237,10 @@ const router = createHashRouter([
       },
       {
         path: "communities",
-        element: <CommunitiesHomeView />,
+        children: [
+          { path: "", element: <CommunitiesHomeView /> },
+          { path: "explore", element: <CommunitiesExploreView /> },
+        ],
       },
       {
         path: "c/:community",
@@ -246,7 +250,7 @@ const router = createHashRouter([
             path: ":pubkey",
             element: <CommunityView />,
             children: [
-              { path: "", element: <CommunityNewView /> },
+              { path: "", element: <CommunityNewestView /> },
               { path: "pending", element: <CommunityPendingView /> },
             ],
           },

@@ -21,46 +21,9 @@ import { RelayIconStack } from "../../components/relay-icon-stack";
 import TrendUp01 from "../../components/icons/trend-up-01";
 import Clock from "../../components/icons/clock";
 import Hourglass03 from "../../components/icons/hourglass-03";
-
-function CommunityDetails({ community }: { community: NostrEvent }) {
-  const communityRelays = getCommunityRelays(community);
-  const mods = getCommunityMods(community);
-  const description = getCommunityDescription(community);
-
-  return (
-    <Card p="4" w="xs" flexShrink={0}>
-      {description && (
-        <>
-          <Heading size="sm" mb="2">
-            Description:
-          </Heading>
-          <CommunityDescription community={community} maxLength={256} showExpand />
-        </>
-      )}
-      <Heading size="sm" mt="4" mb="2">
-        Moderators:
-      </Heading>
-      <Flex direction="column" gap="2">
-        {mods.map((pubkey) => (
-          <Flex gap="2">
-            <UserAvatarLink pubkey={pubkey} size="xs" />
-            <UserLink pubkey={pubkey} />
-          </Flex>
-        ))}
-      </Flex>
-      {communityRelays.length > 0 && (
-        <>
-          <Heading size="sm" mt="4" mb="2">
-            Relays:
-          </Heading>
-          <Flex direction="column" gap="2">
-            <RelayIconStack relays={communityRelays} />
-          </Flex>
-        </>
-      )}
-    </Card>
-  );
-}
+import VerticalCommunityDetails from "./components/vertical-community-details";
+import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import HorizontalCommunityDetails from "./components/horizonal-community-details";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
@@ -70,6 +33,8 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const image = getCommunityImage(community);
   const location = useLocation();
 
+  const verticalLayout = useBreakpointValue({ base: true, xl: false });
+
   const communityRelays = getCommunityRelays(community);
 
   let active = "new";
@@ -78,27 +43,31 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   return (
     <AdditionalRelayProvider relays={communityRelays}>
       <VerticalPageLayout pt={image && "0"}>
-        {image && (
-          <Box
-            backgroundImage={getCommunityImage(community)}
-            backgroundRepeat="no-repeat"
-            backgroundSize="cover"
-            backgroundPosition="center"
-            aspectRatio={3 / 1}
-            backgroundColor="rgba(0,0,0,0.2)"
-          />
-        )}
-        <Flex wrap="wrap" gap="2" alignItems="center">
-          <Heading size="lg">{getCommunityName(community)}</Heading>
-          <Text>Created by:</Text>
-          <Flex gap="2">
-            <UserAvatarLink pubkey={community.pubkey} size="xs" /> <UserLink pubkey={community.pubkey} />
+        <Flex
+          backgroundImage={getCommunityImage(community)}
+          backgroundRepeat="no-repeat"
+          backgroundSize="cover"
+          backgroundPosition="center"
+          aspectRatio={3 / 1}
+          backgroundColor="rgba(0,0,0,0.2)"
+          p="4"
+          gap="4"
+          direction="column"
+          justifyContent="flex-end"
+          textShadow="2px 2px var(--chakra-blur-sm) var(--chakra-colors-blackAlpha-800)"
+        >
+          <Heading>{getCommunityName(community)}</Heading>
+          <Flex gap="2" alignItems="center">
+            <UserAvatarLink pubkey={community.pubkey} size="sm" />
+            <Text>by</Text>
+            <UserLink pubkey={community.pubkey} />
           </Flex>
-          <CommunityJoinButton community={community} ml="auto" />
         </Flex>
 
-        <Flex gap="4" alignItems="flex-start">
-          <Flex direction="column" gap="4" flex={1}>
+        {verticalLayout && <HorizontalCommunityDetails community={community} w="full" flexShrink={0} />}
+
+        <Flex gap="4" alignItems="flex-start" overflow="hidden">
+          <Flex direction="column" gap="4" flex={1} overflow="hidden">
             <ButtonGroup size="sm">
               <Button leftIcon={<TrendUp01 />} isDisabled>
                 Trending
@@ -124,7 +93,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
             <Outlet context={{ community }} />
           </Flex>
 
-          <CommunityDetails community={community} />
+          {!verticalLayout && <VerticalCommunityDetails community={community} w="full" maxW="xs" flexShrink={0} />}
         </Flex>
       </VerticalPageLayout>
     </AdditionalRelayProvider>

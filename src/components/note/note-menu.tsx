@@ -29,7 +29,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
 import { useMuteModalContext } from "../../providers/mute-modal-provider";
 
-export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) => {
+export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
   const infoModal = useDisclosure();
   const reactionsModal = useDisclosure();
@@ -101,4 +101,4 @@ export const NoteMenu = ({ event, ...props }: { event: NostrEvent } & Omit<MenuI
       )}
     </>
   );
-};
+}

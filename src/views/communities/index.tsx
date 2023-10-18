@@ -1,69 +1,48 @@
-import { useCallback, useMemo } from "react";
-import { Flex, SimpleGrid } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
-import CommunityCard from "./components/community-card";
-import { getEventUID } from "../../helpers/nostr/events";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
-import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
-import { NostrEvent } from "../../types/nostr-event";
-import { NostrQuery } from "../../types/nostr-query";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useSubscribedCommunitiesList from "../../hooks/use-subscribed-communities-list";
+import { useCurrentAccount } from "../../hooks/use-current-account";
+import { Navigate } from "react-router-dom";
+import { EmbedEventPointer } from "../../components/embed-event";
 
 function CommunitiesHomePage() {
-  const { filter, listId } = usePeopleListContext();
-  const { relays } = useRelaySelectionContext();
-
-  const eventFilter = useCallback((event: NostrEvent) => {
-    return validateCommunity(event);
-  }, []);
-
-  const query = useMemo(() => {
-    const base: NostrQuery = { kinds: [COMMUNITY_DEFINITION_KIND] };
-    if (filter?.authors) {
-      base.authors = filter.authors;
-      base["#p"] = filter.authors;
-    }
-    return base;
-  }, [filter]);
-
-  const timeline = useTimelineLoader(`${listId}-browse-communities`, relays, query, { enabled: !!filter, eventFilter });
-
-  const communities = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const account = useCurrentAccount()!;
+  const { pointers: communities } = useSubscribedCommunitiesList(account.pubkey);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
-        <Flex gap="2" alignItems="center" wrap="wrap">
-          <PeopleListSelection />
-          <RelaySelectionButton />
-        </Flex>
+    <VerticalPageLayout>
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <Button as={RouterLink} to="/communities/explore">
+          Explore Communities
+        </Button>
+      </Flex>
+      {communities.length > 0 ? (
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
-          {communities.map((event) => (
+          {communities.map((pointer) => (
             <ErrorBoundary>
-              <CommunityCard key={getEventUID(event)} community={event} />
+              <EmbedEventPointer pointer={{ type: "naddr", data: pointer }} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      ) : (
+        <Center aspectRatio={3 / 4} flexDirection="column" gap="4">
+          <Heading size="md">No communities :(</Heading>
+          <Text>
+            go find a cool one to join.{" "}
+            <Link as={RouterLink} to="/communities/explore" color="blue.500">
+              Explore
+            </Link>
+          </Text>
+        </Center>
+      )}
+    </VerticalPageLayout>
   );
 }
 
 export default function CommunitiesHomeView() {
-  return (
-    <PeopleListProvider initList="global">
-      <RelaySelectionProvider>
-        <CommunitiesHomePage />
-      </RelaySelectionProvider>
-    </PeopleListProvider>
-  );
+  const account = useCurrentAccount();
+  return account ? <CommunitiesHomePage /> : <Navigate to="/communities/explore" />;
 }

@@ -14,7 +14,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import { TrustProvider } from "../../providers/trust";
 import { UserAvatar } from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { NoteMenu } from "../../components/note/note-menu";
+import NoteMenu from "../../components/note/note-menu";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { embedEmoji } from "../../components/embed-types";
 import VerticalPageLayout from "../../components/vertical-page-layout";
