@@ -10,7 +10,7 @@ import { nip19 } from "nostr-tools";
 import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
 
 import { Emoji, useContextEmojis } from "../providers/emoji-provider";
-import { useUserDirectoryContext } from "../providers/user-directory-provider";
+import { useUserSearchDirectoryContext } from "../providers/user-directory-provider";
 import { UserAvatar } from "./user-avatar";
 
 export type PeopleToken = { pubkey: string; names: string[] };
@@ -57,7 +57,7 @@ const Loading: ReactTextareaAutocompleteProps<
 
 function useAutocompleteTriggers() {
   const emojis = useContextEmojis();
-  const getDirectory = useUserDirectoryContext();
+  const getDirectory = useUserSearchDirectoryContext();
 
   const triggers: TriggerType<Token> = {
     ":": {

@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { AddIcon } from "../icons";
-import { useUserDirectoryContext } from "../../providers/user-directory-provider";
+import { useUserSearchDirectoryContext } from "../../providers/user-directory-provider";
 import { useAsync } from "react-use";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import userMetadataService from "../../services/user-metadata";
@@ -58,10 +58,10 @@ function AddUserForm({
   });
   watch("percent");
 
-  const getDirectory = useUserDirectoryContext();
+  const getDirectory = useUserSearchDirectoryContext();
   const { value: users } = useAsync(async () => {
     const dir = await getDirectory();
-    return dir.map((pubkey) => ({ pubkey, metadata: userMetadataService.getSubject(pubkey).value }));
+    return dir.map(({ pubkey }) => ({ pubkey, metadata: userMetadataService.getSubject(pubkey).value }));
   }, [getDirectory]);
 
   const submit = handleSubmit((values) => {

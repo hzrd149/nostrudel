@@ -1,17 +1,13 @@
 import { PropsWithChildren, createContext, useCallback, useContext } from "react";
 
-import { useCurrentAccount } from "../hooks/use-current-account";
-import useUserContactList from "../hooks/use-user-contact-list";
-import { getPubkeysFromList } from "../helpers/nostr/lists";
-import userMetadataService from "../services/user-metadata";
 import db from "../services/db";
 
 export type UserDirectory = { pubkey: string; names: [] }[];
 export type GetDirectoryFn = () => Promise<UserDirectory> | UserDirectory;
-const UserDirectoryContext = createContext<GetDirectoryFn>(async () => []);
+const UserSearchDirectoryContext = createContext<GetDirectoryFn>(async () => []);
 
-export function useUserDirectoryContext() {
-  return useContext(UserDirectoryContext);
+export function useUserSearchDirectoryContext() {
+  return useContext(UserSearchDirectoryContext);
 }
 
 // export function getNameDirectory(directory: UserDirectory) {
@@ -46,19 +42,19 @@ export function useUserDirectoryContext() {
 //   return <UserDirectoryProvider getDirectory={getDirectory}>{children}</UserDirectoryProvider>;
 // }
 
-export function AllUserDirectoryProvider({ children }: PropsWithChildren) {
+export function AllUserSearchDirectoryProvider({ children }: PropsWithChildren) {
   const getDirectory = useCallback(async () => {
     return await db.getAll("userSearch");
   }, []);
 
-  return <UserDirectoryProvider getDirectory={getDirectory}>{children}</UserDirectoryProvider>;
+  return <UserSearchDirectoryProvider getDirectory={getDirectory}>{children}</UserSearchDirectoryProvider>;
 }
 
-export default function UserDirectoryProvider({
+export default function UserSearchDirectoryProvider({
   children,
   getDirectory,
 }: PropsWithChildren & { getDirectory: GetDirectoryFn }) {
-  const parent = useContext(UserDirectoryContext);
+  const parent = useContext(UserSearchDirectoryContext);
   const wrapper = useCallback<() => Promise<UserDirectory>>(async () => {
     const dir = parent ? await parent() : [];
     const newDir = await getDirectory();
@@ -68,5 +64,5 @@ export default function UserDirectoryProvider({
     return dir;
   }, [parent, getDirectory]);
 
-  return <UserDirectoryContext.Provider value={wrapper}>{children}</UserDirectoryContext.Provider>;
+  return <UserSearchDirectoryContext.Provider value={wrapper}>{children}</UserSearchDirectoryContext.Provider>;
 }

@@ -5,7 +5,7 @@ import { useAsync, useThrottle } from "react-use";
 import { matchSorter } from "match-sorter";
 import { nip19 } from "nostr-tools";
 
-import { useUserDirectoryContext } from "../../providers/user-directory-provider";
+import { useUserSearchDirectoryContext } from "../../providers/user-directory-provider";
 import { UserAvatar } from "../user-avatar";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
@@ -23,7 +23,7 @@ function UserOption({ pubkey }: { pubkey: string }) {
 
 export default function SearchModal({ isOpen, onClose }: Omit<ModalProps, "children">) {
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const getDirectory = useUserDirectoryContext();
+  const getDirectory = useUserSearchDirectoryContext();
 
   const [inputValue, setInputValue] = useState("");
   const search = useThrottle(inputValue);

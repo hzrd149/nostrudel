@@ -22,7 +22,6 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { unique } from "../../../helpers/array";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/emoji-provider";
-import UserDirectoryProvider from "../../../providers/user-directory-provider";
 import { TrustProvider } from "../../../providers/trust";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
@@ -96,56 +95,54 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
   });
 
   return (
-    <UserDirectoryProvider getDirectory={() => threadMembers}>
-      <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit}>
-        <MagicTextArea
-          placeholder="Reply"
-          autoFocus
-          mb="2"
-          rows={4}
-          isRequired
-          value={getValues().content}
-          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
-          instanceRef={(inst) => (textAreaRef.current = inst)}
-          onPaste={(e) => {
-            const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-            if (imageFile) uploadImage(imageFile);
+    <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit}>
+      <MagicTextArea
+        placeholder="Reply"
+        autoFocus
+        mb="2"
+        rows={4}
+        isRequired
+        value={getValues().content}
+        onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
+        instanceRef={(inst) => (textAreaRef.current = inst)}
+        onPaste={(e) => {
+          const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
+          if (imageFile) uploadImage(imageFile);
+        }}
+      />
+      <Flex gap="2" alignItems="center">
+        <VisuallyHiddenInput
+          type="file"
+          accept="image/*"
+          ref={imageUploadRef}
+          onChange={(e) => {
+            const img = e.target.files?.[0];
+            if (img) uploadImage(img);
           }}
         />
-        <Flex gap="2" alignItems="center">
-          <VisuallyHiddenInput
-            type="file"
-            accept="image/*"
-            ref={imageUploadRef}
-            onChange={(e) => {
-              const img = e.target.files?.[0];
-              if (img) uploadImage(img);
-            }}
-          />
-          <IconButton
-            icon={<UploadImageIcon />}
-            aria-label="Upload Image"
-            title="Upload Image"
-            onClick={() => imageUploadRef.current?.click()}
-            isLoading={uploading}
-            size="sm"
-          />
-          <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
-          <ButtonGroup size="sm" ml="auto">
-            <Button onClick={onCancel}>Cancel</Button>
-            <Button type="submit" colorScheme="primary" size="sm">
-              Submit
-            </Button>
-          </ButtonGroup>
-        </Flex>
-        {getValues().content.length > 0 && (
-          <Box p="2" borderWidth={1} borderRadius="md" mb="2">
-            <TrustProvider trust>
-              <NoteContents event={draft} />
-            </TrustProvider>
-          </Box>
-        )}
+        <IconButton
+          icon={<UploadImageIcon />}
+          aria-label="Upload Image"
+          title="Upload Image"
+          onClick={() => imageUploadRef.current?.click()}
+          isLoading={uploading}
+          size="sm"
+        />
+        <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
+        <ButtonGroup size="sm" ml="auto">
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button type="submit" colorScheme="primary" size="sm">
+            Submit
+          </Button>
+        </ButtonGroup>
       </Flex>
-    </UserDirectoryProvider>
+      {getValues().content.length > 0 && (
+        <Box p="2" borderWidth={1} borderRadius="md" mb="2">
+          <TrustProvider trust>
+            <NoteContents event={draft} />
+          </TrustProvider>
+        </Box>
+      )}
+    </Flex>
   );
 }
