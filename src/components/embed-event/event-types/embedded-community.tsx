@@ -17,6 +17,7 @@ export default function EmbeddedCommunity({
     <Card
       as={LinkBox}
       variant="outline"
+      maxW="lg"
       gap="2"
       overflow="hidden"
       borderRadius="xl"

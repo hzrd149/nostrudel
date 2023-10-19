@@ -53,9 +53,9 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
           </LinkOverlay>
         </Heading>
       </CardHeader>
-      <CardBody>
+      {/* <CardBody>
         <CommunityDescription community={community} maxLength={128} flex={1} />
-      </CardBody>
+      </CardBody> */}
       <CardFooter display="flex" alignItems="center" gap="2" pt="0">
         <UserAvatarLink pubkey={community.pubkey} size="sm" />
         <Text>by</Text>
