@@ -38,7 +38,7 @@ import clientRelaysService from "../services/client-relays";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useUserMuteList from "../hooks/use-user-mute-list";
 import { DraftNostrEvent } from "../types/nostr-event";
-import { UserAvatar } from "../components/user-avatar";
+import UserAvatar from "../components/user-avatar";
 import { UserLink } from "../components/user-link";
 import { ChevronDownIcon } from "../components/icons";
 

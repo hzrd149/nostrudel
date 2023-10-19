@@ -3,7 +3,7 @@ import { getEventUID } from "../../../helpers/nostr/events";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import { NostrEvent } from "../../../types/nostr-event";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { LightningIcon } from "../../../components/icons";

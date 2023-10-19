@@ -4,7 +4,7 @@ import { nip19 } from "nostr-tools";
 
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
-import { UserAvatar } from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";

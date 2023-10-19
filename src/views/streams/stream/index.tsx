@@ -25,7 +25,7 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";

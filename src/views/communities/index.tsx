@@ -14,7 +14,7 @@ import CommunityCard from "./components/community-card";
 
 function LoadCommunityCard({ pointer }: { pointer: AddressPointer }) {
   const community = useReplaceableEvent(pointer);
-  if (!community) return <span>{nip19.naddrEncode(pointer)}</span>;
+  if (!community) return <span>Loading {pointer.identifier}</span>;
   return <CommunityCard community={community} />;
 }
 

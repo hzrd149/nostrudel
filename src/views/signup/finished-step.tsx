@@ -2,7 +2,7 @@ import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAsync } from "react-use";
 
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import { containerProps } from "./common";
 import { UserFollowButton } from "../../components/user-follow-button";

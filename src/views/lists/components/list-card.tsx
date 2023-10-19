@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
 
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import {
   getEventsFromList,

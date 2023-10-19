@@ -19,7 +19,7 @@ import { getEventUID } from "../../../helpers/nostr/events";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 import CommunityDescription from "./community-description";
 import useCountCommunityPosts from "../hooks/use-count-community-post";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {

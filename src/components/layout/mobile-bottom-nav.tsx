@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../icons";
-import { UserAvatar } from "../user-avatar";
+import UserAvatar from "../user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
 
 export default function MobileBottomNav(props: Omit<FlexProps, "children">) {

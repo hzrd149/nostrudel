@@ -6,7 +6,7 @@ import {
   getCommunityRules,
 } from "../../../helpers/nostr/communities";
 import CommunityDescription from "../../communities/components/community-description";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { RelayIconStack } from "../../../components/relay-icon-stack";
 import { NostrEvent } from "../../../types/nostr-event";

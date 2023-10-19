@@ -22,7 +22,7 @@ import { useAsync } from "react-use";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import userMetadataService from "../../services/user-metadata";
 import { normalizeToHex } from "../../helpers/nip19";
-import { UserAvatar } from "../user-avatar";
+import UserAvatar from "../user-avatar";
 import { UserLink } from "../user-link";
 
 function getRemainingPercent(split: EventSplit) {

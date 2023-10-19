@@ -1,22 +1,18 @@
-import { Box, Button, ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 
 import {
   getCommunityRelays as getCommunityRelays,
   getCommunityImage,
-  getCommunityMods,
   getCommunityName,
-  getCommunityDescription,
+  COMMUNITY_APPROVAL_KIND,
 } from "../../helpers/nostr/communities";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import CommunityDescription from "../communities/components/community-description";
-import CommunityJoinButton from "../communities/components/community-subscribe-button";
 import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
-import { RelayIconStack } from "../../components/relay-icon-stack";
 
 import TrendUp01 from "../../components/icons/trend-up-01";
 import Clock from "../../components/icons/clock";
@@ -24,6 +20,9 @@ import Hourglass03 from "../../components/icons/hourglass-03";
 import VerticalCommunityDetails from "./components/vertical-community-details";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HorizontalCommunityDetails from "./components/horizonal-community-details";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
@@ -36,6 +35,11 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const verticalLayout = useBreakpointValue({ base: true, xl: false });
 
   const communityRelays = getCommunityRelays(community);
+  const readRelays = useReadRelayUrls(communityRelays);
+  const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
+    kinds: [Kind.Text, COMMUNITY_APPROVAL_KIND],
+    "#a": [getEventCoordinate(community)],
+  });
 
   let active = "new";
   if (location.pathname.endsWith("/pending")) active = "pending";
@@ -76,6 +80,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                 leftIcon={<Clock />}
                 as={RouterLink}
                 to={getCommunityPath(community)}
+                replace
                 colorScheme={active === "new" ? "primary" : "gray"}
               >
                 New
@@ -84,13 +89,14 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                 leftIcon={<Hourglass03 />}
                 as={RouterLink}
                 to={getCommunityPath(community) + "/pending"}
+                replace
                 colorScheme={active == "pending" ? "primary" : "gray"}
               >
                 Pending
               </Button>
             </ButtonGroup>
 
-            <Outlet context={{ community }} />
+            <Outlet context={{ community, timeline }} />
           </Flex>
 
           {!verticalLayout && <VerticalCommunityDetails community={community} w="full" maxW="xs" flexShrink={0} />}

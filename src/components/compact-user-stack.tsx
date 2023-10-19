@@ -15,7 +15,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { UserAvatar } from "./user-avatar";
+import UserAvatar from "./user-avatar";
 import { getUserDisplayName } from "../helpers/user-metadata";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 

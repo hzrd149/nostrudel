@@ -15,7 +15,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent, isATag } from "../../types/nostr-event";
-import { UserAvatarLink } from "../user-avatar-link";
+import UserAvatarLink from "../user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "./note-menu";

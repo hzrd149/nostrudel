@@ -5,7 +5,7 @@ import { Kind, validateEvent } from "nostr-tools";
 import { isETag, NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
 import NoteMenu from "../../note/note-menu";
-import { UserAvatar } from "../../user-avatar";
+import UserAvatar from "../../user-avatar";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import { UserLink } from "../../user-link";
 import { TrustProvider } from "../../../providers/trust";

@@ -20,7 +20,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";

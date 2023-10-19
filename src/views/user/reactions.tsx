@@ -12,7 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { TrustProvider } from "../../providers/trust";
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import NoteMenu from "../../components/note/note-menu";
 import { EmbedEventPointer } from "../../components/embed-event";

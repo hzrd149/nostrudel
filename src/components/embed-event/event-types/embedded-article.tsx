@@ -12,7 +12,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { getEventUID } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import Timestamp from "../../timestamp";
 

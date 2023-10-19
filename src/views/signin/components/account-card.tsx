@@ -3,7 +3,7 @@ import { Box, IconButton, Text } from "@chakra-ui/react";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import accountService, { Account } from "../../../services/account";
-import { UserAvatar } from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user-avatar";
 import AccountInfoBadge from "../../../components/account-info-badge";
 
 export default function AccountCard({ account }: { account: Account }) {

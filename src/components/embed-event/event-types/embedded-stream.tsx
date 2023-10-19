@@ -5,7 +5,7 @@ import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { UserLink } from "../../user-link";
-import { UserAvatar } from "../../user-avatar";
+import UserAvatar from "../../user-avatar";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import Timestamp from "../../timestamp";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";

@@ -21,7 +21,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useAsync } from "react-use";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 
 import { readablizeSats } from "../../../helpers/bolt11";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
@@ -44,7 +44,7 @@ import {
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import { UserAvatar } from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
@@ -54,6 +54,7 @@ import useUserContactList from "../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import Timestamp from "../../../components/timestamp";
 import UserProfileBadges from "./user-profile-badges";
+import useEventCount from "../../../hooks/use-event-count";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -75,6 +76,7 @@ export default function UserAboutTab() {
   const nprofile = useSharableProfileId(pubkey);
 
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
+  const followerCount = useEventCount({ "#p": [pubkey], kinds: [Kind.Contacts] });
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
@@ -211,7 +213,7 @@ export default function UserAboutTab() {
                 <>
                   <Stat>
                     <StatLabel>Followers</StatLabel>
-                    <StatNumber>{readablizeSats(stats.followers_pubkey_count) || 0}</StatNumber>
+                    <StatNumber>{readablizeSats(followerCount ?? 0) || 0}</StatNumber>
                   </Stat>
 
                   <Stat>

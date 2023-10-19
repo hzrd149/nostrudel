@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
-import { UserAvatar } from "../user-avatar";
+import UserAvatar from "../user-avatar";
 import { UserLink } from "../user-link";
 import { GhostIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

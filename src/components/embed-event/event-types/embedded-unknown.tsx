@@ -2,7 +2,7 @@ import { Box, Card, CardBody, CardHeader, CardProps, Flex, Link, Text } from "@c
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
