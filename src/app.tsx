@@ -73,7 +73,8 @@ const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const ToolsHomeView = lazy(() => import("./views/tools"));
 const NetworkView = lazy(() => import("./views/tools/network"));
 const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
-const NetworkGraphView = lazy(() => import("./views/tools/network-mute-graph"));
+const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
+const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -224,7 +225,8 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
-          { path: "network-graph", element: <NetworkGraphView /> },
+          { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
+          { path: "network-dm-graph", element: <NetworkDMGraphView /> },
         ],
       },
       {
