@@ -19,7 +19,7 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
 
   const link = (
     <Link href={url.toString()} isExternal color="blue.500">
-      {url.toString()}
+      {decodeURI(url.toString())}
     </Link>
   );
 
