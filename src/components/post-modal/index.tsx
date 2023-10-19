@@ -55,11 +55,19 @@ type FormValues = {
   split: EventSplit;
 };
 
+export type PostModalProps = {
+  cacheFormKey?: string;
+  initContent?: string;
+  initCommunity?: string;
+};
+
 export default function PostModal({
   isOpen,
   onClose,
+  cacheFormKey = "new-note",
   initContent = "",
-}: Omit<ModalProps, "children"> & { initContent?: string }) {
+  initCommunity = "",
+}: Omit<ModalProps, "children"> & PostModalProps) {
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
@@ -73,7 +81,7 @@ export default function PostModal({
       content: initContent,
       nsfw: false,
       nsfwReason: "",
-      community: "",
+      community: initCommunity,
       split: [] as EventSplit,
     },
     mode: "all",
@@ -84,7 +92,7 @@ export default function PostModal({
   watch("split");
 
   // cache form to localStorage
-  useCacheForm<FormValues>("new-note", getValues, setValue, formState);
+  useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
 
   const textAreaRef = useRef<RefType | null>(null);
   const imageUploadRef = useRef<HTMLInputElement | null>(null);

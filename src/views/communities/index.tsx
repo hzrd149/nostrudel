@@ -20,7 +20,7 @@ function LoadCommunityCard({ pointer }: { pointer: AddressPointer }) {
 
 function CommunitiesHomePage() {
   const account = useCurrentAccount()!;
-  const { pointers: communities } = useSubscribedCommunitiesList(account.pubkey);
+  const { pointers: communities } = useSubscribedCommunitiesList(account.pubkey, { alwaysRequest: true });
 
   return (
     <VerticalPageLayout>

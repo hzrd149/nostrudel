@@ -3,7 +3,7 @@ import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Lin
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 
-import { COMMUNITY_APPROVAL_KIND, buildApprovalMap, getCommunityMods } from "../../../helpers/nostr/communities";
+import { buildApprovalMap, getCommunityMods, getPostSubject } from "../../../helpers/nostr/communities";
 import { getEventUID } from "../../../helpers/nostr/events";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -60,7 +60,7 @@ const ApprovedEvent = memo(
             <CardHeader px="2" pt="4" pb="0">
               <Heading size="md">
                 <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick}>
-                  {event.content.match(/^[^\n\t]+/)}
+                  {getPostSubject(event)}
                 </HoverLinkOverlay>
               </Heading>
             </CardHeader>
@@ -92,13 +92,12 @@ export default function CommunityNewestView() {
   const mods = getCommunityMods(community);
 
   const events = useSubject(timeline.timeline);
-  const approvalMap = buildApprovalMap(events);
+  const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events
     .filter((e) => approvalMap.has(e.id))
     .map((event) => ({ event, approvals: approvalMap.get(event.id) }));
 
-  const approvals = events.filter((e) => e.kind === COMMUNITY_APPROVAL_KIND && mods.includes(e.pubkey));
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (

@@ -29,6 +29,10 @@ export function getCommunityRules(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "rules")?.[1];
 }
 
+export function getPostSubject(event: NostrEvent) {
+  return event.tags.find((t) => t[0] === "subject")?.[1] || event.content.match(/^[^\n\t]+/);
+}
+
 export function getApprovedEmbeddedNote(approval: NostrEvent) {
   if (!approval.content) return null;
   try {
@@ -48,10 +52,10 @@ export function validateCommunity(community: NostrEvent) {
   }
 }
 
-export function buildApprovalMap(events: Iterable<NostrEvent>) {
+export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
   const approvals = new Map<string, NostrEvent[]>();
   for (const event of events) {
-    if (event.kind === COMMUNITY_APPROVAL_KIND) {
+    if (event.kind === COMMUNITY_APPROVAL_KIND && mods.includes(event.pubkey)) {
       for (const tag of event.tags) {
         if (isETag(tag)) {
           const arr = approvals.get(tag[1]);

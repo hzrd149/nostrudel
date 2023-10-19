@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 
@@ -23,6 +23,9 @@ import HorizontalCommunityDetails from "./components/horizonal-community-details
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
+import { WritingIcon } from "../../components/icons";
+import { useContext } from "react";
+import { PostModalContext } from "../../providers/post-modal-provider";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
@@ -31,6 +34,8 @@ function getCommunityPath(community: NostrEvent) {
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
   const image = getCommunityImage(community);
   const location = useLocation();
+  const { openModal } = useContext(PostModalContext);
+  const communityCoordinate = getEventCoordinate(community);
 
   const verticalLayout = useBreakpointValue({ base: true, xl: false });
 
@@ -38,7 +43,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const readRelays = useReadRelayUrls(communityRelays);
   const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
     kinds: [Kind.Text, COMMUNITY_APPROVAL_KIND],
-    "#a": [getEventCoordinate(community)],
+    "#a": [communityCoordinate],
   });
 
   let active = "new";
@@ -73,6 +78,16 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
         <Flex gap="4" alignItems="flex-start" overflow="hidden">
           <Flex direction="column" gap="4" flex={1} overflow="hidden">
             <ButtonGroup size="sm">
+              <Button
+                colorScheme="primary"
+                leftIcon={<WritingIcon />}
+                onClick={() =>
+                  openModal({ cacheFormKey: communityCoordinate + "-new-post", initCommunity: communityCoordinate })
+                }
+              >
+                New Post
+              </Button>
+              <Divider orientation="vertical" h="2rem" />
               <Button leftIcon={<TrendUp01 />} isDisabled>
                 Trending
               </Button>
