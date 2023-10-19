@@ -8,7 +8,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import useSubscribedCommunitiesList from "../../hooks/use-subscribed-communities-list";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { EmbedEventPointer } from "../../components/embed-event";
-import { AddressPointer } from "nostr-tools/lib/nip19";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import CommunityCard from "./components/community-card";
 

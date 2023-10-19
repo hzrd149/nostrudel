@@ -4,7 +4,7 @@ import { nip19 } from "nostr-tools";
 import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
-import type { AddressPointer } from "nostr-tools/lib/nip19";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;

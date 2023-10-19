@@ -4,7 +4,7 @@ import { Select, SelectProps } from "@chakra-ui/react";
 import useSubscribedCommunitiesList from "../../hooks/use-subscribed-communities-list";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { getCommunityName } from "../../helpers/nostr/communities";
-import { AddressPointer } from "nostr-tools/lib/nip19";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 

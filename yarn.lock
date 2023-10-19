@@ -2235,17 +2235,17 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-1.2.0.tgz#dbbfe516a40ceca5ee8af9966439f0a275e44af1"
-  integrity sha512-V/iC96GG14PrOsyd/92ZCCyKFJsaxJ7xvnnmzDHxzf2oyrEJcUO8nd7WMfnzQDjSrfv0QWD3qN+9VvDxwEodOw==
+"@getalby/bitcoin-connect-react@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-2.0.0.tgz#f99f78754b1627619b511760274efb40f9723c92"
+  integrity sha512-PlpXDk/p3y+2zyWRlgkKc+t5XN6wbJr9xZSWYayYFs+i988lrE1BqcydGAoYI6SotoaYpt3FDyOKgGfB4dyzsw==
   dependencies:
-    "@getalby/bitcoin-connect" "^1.2.0"
+    "@getalby/bitcoin-connect" "^2.0.0"
 
-"@getalby/bitcoin-connect@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-1.2.0.tgz#d626495a94b5e568bff7c661339bb2b69cd5e8cb"
-  integrity sha512-hIkslzG/SMKFV2NPh9IR/8TyiLsDPWlmtdH6t3MER5+37R/evnLfe3odglBNYb5EVnIPsMprOHR8IqBFyvM1ag==
+"@getalby/bitcoin-connect@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-2.0.0.tgz#9ae7f139a616a65a55008d8b8d808ebd6fc316c6"
+  integrity sha512-cLtEHenPiF8n/gbC8jG81D8lgPgRhSsNM3TeIBHbMQComyciuB2/Yth6sh4CNUefAbAN5Br97guaNGur4umBZg==
   dependencies:
     "@getalby/sdk" "^2.4.0"
     lit "^2.2.4"
@@ -2701,10 +2701,10 @@
   resolved "https://registry.yarnpkg.com/@types/stats.js/-/stats.js-0.17.2.tgz#97b6fa9bbb534e8e65c693cf0e90588756783574"
   integrity sha512-j1oI+BOPiAAAKFysNNutE9aAIjvHqqILubCs2EeHKc19pi4uybaGAgBfLXsCgJYcyKWkiilEvl8CkFF/SL+baA==
 
-"@types/three@^0.156.0":
-  version "0.156.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.156.0.tgz#cd49f2a12e858400962ea818d1e1c45e638141a8"
-  integrity sha512-733bXDSRdlrxqOmQuOmfC1UBRuJ2pREPk8sWnx9MtIJEVDQMx8U0NQO5MVVaOrjzDPyLI+cFPim2X/ss9v0+LQ==
+"@types/three@^0.157.2":
+  version "0.157.2"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.157.2.tgz#f22b9a4b6c9f2ed35de88f4346e57ee7296473cb"
+  integrity sha512-2kykrMgvO5LTAiahadM6ijoER+GcbEJ61pQVOyGxIJTCASoUnzwJvfhilsLxvEw4+glzhLYUDvvTvNjx+58Vzw==
   dependencies:
     "@types/stats.js" "*"
     "@types/webxr" "*"
@@ -4827,10 +4827,10 @@ nanoid@^3.3.6:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
 
-nanoid@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-4.0.2.tgz#140b3c5003959adbebf521c170f282c5e7f9fb9e"
-  integrity sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==
+nanoid@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.2.tgz#97588ebc70166d0feaf73ccd2799bb4ceaebf692"
+  integrity sha512-2ustYUX1R2rL/Br5B/FMhi8d5/QzvkJ912rBYxskcpu0myTHzSZfTr1LAS2Sm7jxRUObRrSBFoyzwAhL49aVSg==
 
 ngeohash@^0.6.3:
   version "0.6.3"
@@ -4899,7 +4899,7 @@ nostr-tools@1.13.1:
     "@scure/bip32" "1.3.1"
     "@scure/bip39" "1.2.1"
 
-nostr-tools@^1.15.0:
+nostr-tools@^1.17.0:
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-1.17.0.tgz#b6f62e32fedfd9e68ec0a7ce57f74c44fc768e8c"
   integrity sha512-LZmR8GEWKZeElbFV5Xte75dOeE9EFUW/QLI1Ncn3JKn0kFddDKEfBbFN8Mu4TMs+L4HR/WTPha2l+PPuRnJcMw==
@@ -6013,15 +6013,10 @@ three-spritetext@^1.8.1:
   resolved "https://registry.yarnpkg.com/three-spritetext/-/three-spritetext-1.8.1.tgz#e554230b6f80c75251e0275b8408b8cf2dc2b101"
   integrity sha512-pohv5CcdeUtAPLi9KhG0kcDLj3gmzdIFK/QlgsTJe+U07oQFSj+K0DLPQKbNDPWAK+7YzhulkRcjWdVIQ5F7nw==
 
-"three@>=0.118 <1":
+"three@>=0.118 <1", three@^0.157.0:
   version "0.157.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.157.0.tgz#5baac531941fc8c4ca62d45ee4265652e03318d0"
   integrity sha512-CeAwQrf4x3z0/e+MC4F+nXLW5t0gh3pw+L6CCBqpHvOq3bGYIgRYub7Pv0j/9wR+d++OiEglyZzWyuSYbwWGOA==
-
-three@^0.156.1:
-  version "0.156.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.156.1.tgz#bab4fec121a5b3975eb4f4d227d9c912171eb399"
-  integrity sha512-kP7H0FK9d/k6t/XvQ9FO6i+QrePoDcNhwl0I02+wmUJRNSLCUIDMcfObnzQvxb37/0Uc9TDT0T1HgsRRrO6SYQ==
 
 throttle-debounce@^3.0.1:
   version "3.0.1"

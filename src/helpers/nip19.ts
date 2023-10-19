@@ -4,7 +4,7 @@ import { getEventRelays } from "../services/event-relays";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
 import { getEventUID, isReplaceable } from "./nostr/events";
-import { DecodeResult } from "nostr-tools/lib/nip19";
+import { DecodeResult } from "nostr-tools/lib/types/nip19";
 
 export function isHexKey(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
