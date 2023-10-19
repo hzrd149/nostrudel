@@ -52,18 +52,24 @@ const ApprovedEvent = memo(
       [navigate, to],
     );
 
+    const subject = getPostSubject(event);
+
     return (
       <Flex ref={ref} gap="2" alignItems="flex-start" overflow="hidden">
         <PostVoteButtons event={event} community={community} />
-        <Flex gap="2" direction="column" flex={1}>
-          <Card as={LinkBox}>
-            <CardHeader px="2" pt="4" pb="0">
-              <Heading size="md">
-                <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick}>
-                  {getPostSubject(event)}
-                </HoverLinkOverlay>
-              </Heading>
-            </CardHeader>
+        <Flex gap="2" direction="column" flex={1} overflow="hidden">
+          <Card as={LinkBox} overflow="hidden">
+            {subject ? (
+              <CardHeader px="2" pt="4" pb="0" overflow="hidden">
+                <Heading size="md" overflow="hidden" isTruncated>
+                  <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick}>
+                    {getPostSubject(event)}
+                  </HoverLinkOverlay>
+                </Heading>
+              </CardHeader>
+            ) : (
+              <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
+            )}
             <CardBody p="2">
               <InlineNoteContent event={event} maxLength={96} />
             </CardBody>
