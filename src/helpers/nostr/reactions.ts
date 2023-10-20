@@ -17,7 +17,7 @@ export function groupReactions(reactions: NostrEvent[]) {
       groups[emoji].pubkeys.push(reactionEvent.pubkey);
     }
   }
-  return Array.from(Object.values(groups)).sort((a, b) => b.count - a.count);
+  return Array.from(Object.values(groups)).sort((a, b) => b.pubkeys.length - a.pubkeys.length);
 }
 
 export function draftEventReaction(reacted: NostrEvent, emoji = "+", url?: string) {

@@ -65,7 +65,7 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
           key={group.emoji}
           emoji={group.emoji}
           url={group.url}
-          count={group.count}
+          count={group.pubkeys.length}
           onClick={() => addReaction(group.emoji, group.url)}
           colorScheme={account && group.pubkeys.includes(account?.pubkey) ? "primary" : undefined}
         />

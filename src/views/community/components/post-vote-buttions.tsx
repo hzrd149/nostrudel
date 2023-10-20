@@ -4,7 +4,7 @@ import { Card, IconButton, Text, useToast } from "@chakra-ui/react";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import { useSigningContext } from "../../../providers/signing-provider";
-import { draftEventReaction } from "../../../helpers/nostr/reactions";
+import { draftEventReaction, groupReactions } from "../../../helpers/nostr/reactions";
 import clientRelaysService from "../../../services/client-relays";
 import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { unique } from "../../../helpers/array";
@@ -18,16 +18,10 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
   const reactions = useEventReactions(event.id);
   const toast = useToast();
 
-  const voteReactions = useMemo(() => {
-    return reactions?.filter((r) => r.content === "+" || r.content === "-") ?? [];
-  }, [reactions]);
-  const vote = useMemo(() => {
-    return voteReactions.reduce((t, r) => {
-      if (r.content === "+") return t + 1;
-      else if (r.content === "-") return t - 1;
-      return t;
-    }, 0);
-  }, [voteReactions]);
+  const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
+  const up = grouped.find((r) => r.emoji === "+");
+  const down = grouped.find((r) => r.emoji === "-");
+  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
 
   const myVote = reactions?.find((e) => e.pubkey === account?.pubkey);
 
@@ -67,7 +61,7 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
         isDisabled={!account || !!myVote}
         colorScheme={myVote ? "primary" : "gray"}
       />
-      {voteReactions.length > 0 && <Text my="1">{vote}</Text>}
+      {(up || down) && <Text my="1">{vote}</Text>}
       <IconButton
         aria-label="down vote"
         title="down vote"
