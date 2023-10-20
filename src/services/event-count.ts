@@ -9,7 +9,7 @@ import relayPoolService from "./relay-pool";
 // TODO: move this to settings
 const COUNT_RELAY = "wss://relay.nostr.band";
 
-const RATE_LIMIT = 10 / 1000;
+const RATE_LIMIT = 1000;
 
 class EventCountService {
   subjects = new SuperMap<string, Subject<number>>(() => new Subject<number>());

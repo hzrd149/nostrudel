@@ -10,6 +10,9 @@ import {
   Heading,
   LinkBox,
   LinkOverlay,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
 } from "@chakra-ui/react";
 
@@ -21,12 +24,17 @@ import CommunityDescription from "./community-description";
 import useCountCommunityPosts from "../hooks/use-count-community-post";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
+import useCountCommunityMembers from "../../../hooks/use-count-community-members";
+import { readablizeSats } from "../../../helpers/bolt11";
+import { CommunityIcon } from "../../../components/icons";
+import User01 from "../../../components/icons/user-01";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(community));
 
   const name = getCommunityName(community);
+  const countMembers = useCountCommunityMembers(community);
 
   // NOTE: disabled because nostr.band has a rate limit
   // const notesInLastMonth = useCountCommunityPosts(community);
@@ -60,6 +68,13 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
         <UserAvatarLink pubkey={community.pubkey} size="sm" />
         <Text>by</Text>
         <UserLink pubkey={community.pubkey} />
+        {countMembers && (
+          <Tag variant="solid" ml="auto" alignSelf="flex-end" textShadow="none">
+            <TagLeftIcon as={User01} boxSize={4} />
+            <TagLabel>{readablizeSats(countMembers)}</TagLabel>
+          </Tag>
+        )}
+
         {/* {notesInLastMonth !== undefined && <Text ml="auto">{notesInLastMonth} Posts in the past month</Text>} */}
       </CardFooter>
     </Card>

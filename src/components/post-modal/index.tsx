@@ -56,7 +56,7 @@ type FormValues = {
 };
 
 export type PostModalProps = {
-  cacheFormKey?: string;
+  cacheFormKey?: string | null;
   initContent?: string;
   initCommunity?: string;
 };
