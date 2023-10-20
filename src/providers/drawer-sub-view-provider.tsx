@@ -100,7 +100,7 @@ export default function DrawerSubViewProvider({
     (to: To) => {
       const newRouter = createMemoryRouter(routes, { initialEntries: [to] });
       newRouter.subscribe((e) => {
-        if (!!e.errors?.["__shim-error-route__"]) {
+        if (e.errors && e.errors[0].status === 404 && e.errors[0].internal) {
           openInParent(e.location);
         }
       });
