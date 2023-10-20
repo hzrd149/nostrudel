@@ -1,22 +1,12 @@
 import { Button, Center, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { Navigate } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useSubscribedCommunitiesList from "../../hooks/use-subscribed-communities-list";
 import { useCurrentAccount } from "../../hooks/use-current-account";
-import { EmbedEventPointer } from "../../components/embed-event";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import CommunityCard from "./components/community-card";
-
-function LoadCommunityCard({ pointer }: { pointer: AddressPointer }) {
-  const community = useReplaceableEvent(pointer);
-  if (!community) return <span>Loading {pointer.identifier}</span>;
-  return <CommunityCard community={community} />;
-}
+import { PointerCommunityCard } from "./components/community-card";
 
 function CommunitiesHomePage() {
   const account = useCurrentAccount()!;
@@ -33,7 +23,7 @@ function CommunitiesHomePage() {
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
           {communities.map((pointer) => (
             <ErrorBoundary key={pointer.kind + pointer.pubkey + pointer.identifier}>
-              <LoadCommunityCard pointer={pointer} />
+              <PointerCommunityCard pointer={pointer} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>

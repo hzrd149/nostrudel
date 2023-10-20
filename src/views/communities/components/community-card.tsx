@@ -1,9 +1,8 @@
 import { memo, useRef } from "react";
-import { Kind, nip19 } from "nostr-tools";
+import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Card,
-  CardBody,
   CardFooter,
   CardHeader,
   CardProps,
@@ -20,14 +19,13 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
-import CommunityDescription from "./community-description";
-import useCountCommunityPosts from "../hooks/use-count-community-post";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
 import { readablizeSats } from "../../../helpers/bolt11";
-import { CommunityIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -79,6 +77,12 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
       </CardFooter>
     </Card>
   );
+}
+
+export function PointerCommunityCard({ pointer, ...props }: Omit<CardProps, "children"> & { pointer: AddressPointer }) {
+  const community = useReplaceableEvent(pointer);
+  if (!community) return <span>Loading {pointer.identifier}</span>;
+  return <CommunityCard community={community} {...props} />;
 }
 
 export default memo(CommunityCard);
