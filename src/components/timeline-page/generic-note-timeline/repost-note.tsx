@@ -1,32 +1,22 @@
 import { useRef } from "react";
-import { Flex, Heading, SkeletonText, Text } from "@chakra-ui/react";
-import { Kind, validateEvent } from "nostr-tools";
+import { Flex, Heading, Link, SkeletonText, Text } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
-import { isETag, NostrEvent } from "../../../types/nostr-event";
+import { isATag, isETag, NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
 import NoteMenu from "../../note/note-menu";
 import UserAvatar from "../../user-avatar";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import { UserLink } from "../../user-link";
 import { TrustProvider } from "../../../providers/trust";
-import { safeJson } from "../../../helpers/parse";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-
-function parseHardcodedNoteContent(event: NostrEvent) {
-  const json = safeJson(event.content, null);
-  if (!json) return null;
-
-  // ensure the note has tags
-  json.tags = json.tags || [];
-
-  validateEvent(json);
-
-  return (json as NostrEvent) ?? null;
-}
+import { parseCoordinate, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
+import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 
 export default function RepostNote({ event }: { event: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -41,6 +31,9 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
   const loadedNote = useSingleEvent(eventId, readRelays);
   const note = hardCodedNote || loadedNote;
 
+  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
+  const communityCoordinate = communityTag && parseCoordinate(communityTag[1]);
+
   if (note && muteFilter(note)) return;
 
   return (
@@ -52,10 +45,19 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
             <UserLink pubkey={event.pubkey} />
           </Heading>
           <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
-          <Text as="span" whiteSpace="pre" mr="auto">
-            Shared note
+          <Text as="span" whiteSpace="pre">
+            {communityCoordinate ? `Shared to` : `Shared`}
           </Text>
-          <NoteMenu event={event} size="sm" variant="link" aria-label="note options" />
+          {communityCoordinate && (
+            <Link
+              as={RouterLink}
+              to={`/c/${communityCoordinate.identifier}/${communityCoordinate.pubkey}`}
+              fontWeight="bold"
+            >
+              {communityCoordinate.identifier}
+            </Link>
+          )}
+          <NoteMenu event={event} size="sm" variant="link" aria-label="note options" ml="auto" />
         </Flex>
         {!note ? (
           <SkeletonText />

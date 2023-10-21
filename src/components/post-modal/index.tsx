@@ -48,6 +48,7 @@ import { useCurrentAccount } from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 
 type FormValues = {
+  subject: string;
   content: string;
   nsfw: boolean;
   nsfwReason: string;
@@ -59,6 +60,7 @@ export type PostModalProps = {
   cacheFormKey?: string | null;
   initContent?: string;
   initCommunity?: string;
+  requireSubject?: boolean;
 };
 
 export default function PostModal({
@@ -67,6 +69,7 @@ export default function PostModal({
   cacheFormKey = "new-note",
   initContent = "",
   initCommunity = "",
+  requireSubject,
 }: Omit<ModalProps, "children"> & PostModalProps) {
   const toast = useToast();
   const account = useCurrentAccount()!;
@@ -78,6 +81,7 @@ export default function PostModal({
 
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
+      subject: "",
       content: initContent,
       nsfw: false,
       nsfwReason: "",
@@ -124,7 +128,7 @@ export default function PostModal({
   );
 
   const getDraft = useCallback(() => {
-    const { content, nsfw, nsfwReason, community, split } = getValues();
+    const { content, nsfw, nsfwReason, community, split, subject } = getValues();
 
     let updatedDraft = finalizeNote({
       content: content,
@@ -140,6 +144,9 @@ export default function PostModal({
     }
     if (community) {
       updatedDraft.tags.push(["a", community]);
+    }
+    if (subject) {
+      updatedDraft.tags.push(["subject", subject]);
     }
 
     const contentMentions = getContentMentions(updatedDraft.content);
@@ -177,6 +184,7 @@ export default function PostModal({
     }
     return (
       <>
+        {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
         <MagicTextArea
           autoFocus
           mb="2"

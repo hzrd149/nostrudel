@@ -1,92 +1,24 @@
-import { MouseEventHandler, memo, useCallback, useRef } from "react";
-import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
-import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import dayjs from "dayjs";
+import { memo } from "react";
+import { Flex } from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
 
-import { buildApprovalMap, getCommunityMods, getPostSubject } from "../../../helpers/nostr/communities";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { buildApprovalMap, getCommunityMods } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import { NostrEvent } from "../../../types/nostr-event";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/intersection-observer";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import PostVoteButtons from "../components/post-vote-buttions";
 import TimelineLoader from "../../../classes/timeline-loader";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
-import { getSharableEventAddress } from "../../../helpers/nip19";
-import { InlineNoteContent } from "../../../components/note/inline-note-content";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { UserLink } from "../../../components/user-link";
+import CommunityPost from "../components/community-post";
 
-function ApprovalIcon({ approval }: { approval: NostrEvent }) {
-  const ref = useRef<HTMLAnchorElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(approval));
-
-  return <UserAvatarLink pubkey={approval.pubkey} ref={ref} size="xs" />;
-}
 const ApprovedEvent = memo(
   ({ event, approvals, community }: { event: NostrEvent; approvals: NostrEvent[]; community: NostrEvent }) => {
-    const ref = useRef<HTMLDivElement | null>(null);
-    useRegisterIntersectionEntity(ref, getEventUID(event));
-
-    // const additionalRelays = useAdditionalRelayContext();
-    // const embeddedEvent = getApprovedEmbeddedNote(approval);
-    // const eventTag = approval.tags.find(isETag);
-
-    // const loadEvent = useSingleEvent(
-    //   eventTag?.[1],
-    //   eventTag?.[2] ? [eventTag[2], ...additionalRelays] : additionalRelays,
-    // );
-    // const event = loadEvent || embeddedEvent;
-    // if (!event) return;
-
-    const navigate = useNavigateInDrawer();
-    const to = `/n/${getSharableEventAddress(event)}`;
-
-    const handleClick = useCallback<MouseEventHandler>(
-      (e) => {
-        e.preventDefault();
-        navigate(to);
-      },
-      [navigate, to],
-    );
-
-    const subject = getPostSubject(event);
-
     return (
-      <Flex ref={ref} gap="2" alignItems="flex-start" overflow="hidden">
+      <Flex gap="2" alignItems="flex-start" overflow="hidden">
         <PostVoteButtons event={event} community={community} />
         <Flex gap="2" direction="column" flex={1} overflow="hidden">
-          <Card as={LinkBox} overflow="hidden">
-            {subject ? (
-              <CardHeader px="2" pt="4" pb="0" overflow="hidden">
-                <Heading size="md" overflow="hidden" isTruncated>
-                  <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick}>
-                    {getPostSubject(event)}
-                  </HoverLinkOverlay>
-                </Heading>
-              </CardHeader>
-            ) : (
-              <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
-            )}
-            <CardBody p="2">
-              <InlineNoteContent event={event} maxLength={96} />
-            </CardBody>
-            <CardFooter display="flex" gap="2" alignItems="center" p="2">
-              <Text>
-                Posted {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
-              </Text>
-              <Text fontSize="sm" ml="auto">
-                Approved by
-              </Text>
-              <AvatarGroup>
-                {approvals.map((approval) => (
-                  <ApprovalIcon key={approval.id} approval={approval} />
-                ))}
-              </AvatarGroup>
-            </CardFooter>
-          </Card>
+          <CommunityPost event={event} community={community} approvals={approvals} />
         </Flex>
       </Flex>
     );

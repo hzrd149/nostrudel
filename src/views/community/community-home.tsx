@@ -82,7 +82,11 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                 colorScheme="primary"
                 leftIcon={<WritingIcon />}
                 onClick={() =>
-                  openModal({ cacheFormKey: communityCoordinate + "-new-post", initCommunity: communityCoordinate })
+                  openModal({
+                    cacheFormKey: communityCoordinate + "-new-post",
+                    initCommunity: communityCoordinate,
+                    requireSubject: true,
+                  })
                 }
               >
                 New Post

@@ -13,7 +13,6 @@ import {
 } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { EmbedEvent } from "../../../components/embed-event";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import TimelineLoader from "../../../classes/timeline-loader";
@@ -22,13 +21,15 @@ import { useSigningContext } from "../../../providers/signing-provider";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
+import CommunityPost from "../components/community-post";
 
 type PendingProps = {
   event: NostrEvent;
+  approvals: NostrEvent[];
   community: NostrEvent;
 };
 
-function ModPendingPost({ event, community }: PendingProps) {
+function ModPendingPost({ event, community, approvals }: PendingProps) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
 
@@ -64,7 +65,7 @@ function ModPendingPost({ event, community }: PendingProps) {
 
   return (
     <Flex direction="column" gap="2" ref={ref}>
-      <EmbedEvent event={event} />
+      <CommunityPost event={event} approvals={approvals} community={community} />
       <Flex gap="2">
         <Button
           colorScheme="primary"
@@ -81,17 +82,6 @@ function ModPendingPost({ event, community }: PendingProps) {
   );
 }
 
-function PendingPost({ event }: PendingProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
-
-  return (
-    <Box ref={ref}>
-      <EmbedEvent event={event} />
-    </Box>
-  );
-}
-
 export default function CommunityPendingView() {
   const account = useCurrentAccount();
   const { community, timeline } = useOutletContext() as { community: NostrEvent; timeline: TimelineLoader };
@@ -105,13 +95,13 @@ export default function CommunityPendingView() {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const isMod = !!account && mods.includes(account?.pubkey);
-  const PostComponent = isMod ? ModPendingPost : PendingPost;
+  const PostComponent = isMod ? ModPendingPost : CommunityPost;
 
   return (
     <>
       <IntersectionObserverProvider callback={callback}>
         {pending.map((event) => (
-          <PostComponent key={getEventUID(event)} event={event} community={community} />
+          <PostComponent key={getEventUID(event)} event={event} community={community} approvals={[]} />
         ))}
       </IntersectionObserverProvider>
       <TimelineActionAndStatus timeline={timeline} />
