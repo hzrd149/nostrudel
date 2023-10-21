@@ -23,7 +23,8 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
   const down = grouped.find((r) => r.emoji === "-");
   const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
 
-  const myVote = reactions?.find((e) => e.pubkey === account?.pubkey);
+  const hasUpVote = !!account && !!up?.pubkeys.includes(account.pubkey);
+  const hasDownVote = !!account && !!down?.pubkeys.includes(account.pubkey);
 
   const { requestSignature } = useSigningContext();
   const [loading, setLoading] = useState(false);
@@ -55,11 +56,11 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
         title="up vote"
         icon={<ChevronUpIcon boxSize={6} />}
         size="sm"
-        variant={myVote?.content === "+" ? "solid" : "ghost"}
+        variant={hasUpVote ? "solid" : "ghost"}
         isLoading={loading}
         onClick={() => addVote("+")}
-        isDisabled={!account || !!myVote}
-        colorScheme={myVote ? "primary" : "gray"}
+        isDisabled={!account || !!hasUpVote}
+        colorScheme={hasUpVote ? "primary" : "gray"}
       />
       {(up || down) && <Text my="1">{vote}</Text>}
       <IconButton
@@ -67,10 +68,10 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
         title="down vote"
         icon={<ChevronDownIcon boxSize={6} />}
         size="sm"
-        variant={myVote?.content === "-" ? "solid" : "ghost"}
+        variant={hasDownVote ? "solid" : "ghost"}
         isLoading={loading}
         onClick={() => addVote("-")}
-        isDisabled={!account || !!myVote}
+        isDisabled={!account || !!hasUpVote}
       />
     </Card>
   );

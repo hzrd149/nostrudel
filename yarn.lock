@@ -2235,14 +2235,14 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^1":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-1.2.0.tgz#dbbfe516a40ceca5ee8af9966439f0a275e44af1"
-  integrity sha512-V/iC96GG14PrOsyd/92ZCCyKFJsaxJ7xvnnmzDHxzf2oyrEJcUO8nd7WMfnzQDjSrfv0QWD3qN+9VvDxwEodOw==
+"@getalby/bitcoin-connect-react@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-1.1.0.tgz#d6b97b793b5ae128783e1adafaf7a87f983a6d78"
+  integrity sha512-oX43GwUffdS2DYCPS7a6hECVWgbw1HZr0zHmR3uX16f7ov9vGjNHj8mSg4aWgYnatrxoNt12gklr1MRf6nYYKg==
   dependencies:
-    "@getalby/bitcoin-connect" "^1.2.0"
+    "@getalby/bitcoin-connect" "^1.1.0"
 
-"@getalby/bitcoin-connect@^1.2.0":
+"@getalby/bitcoin-connect@^1.1.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-1.2.0.tgz#d626495a94b5e568bff7c661339bb2b69cd5e8cb"
   integrity sha512-hIkslzG/SMKFV2NPh9IR/8TyiLsDPWlmtdH6t3MER5+37R/evnLfe3odglBNYb5EVnIPsMprOHR8IqBFyvM1ag==

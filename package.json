@@ -22,7 +22,7 @@
     "@chakra-ui/styled-system": "^2.9.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@getalby/bitcoin-connect-react": "^1",
+    "@getalby/bitcoin-connect-react": "1.1.0",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
