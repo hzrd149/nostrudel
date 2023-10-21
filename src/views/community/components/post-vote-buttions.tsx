@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Card, IconButton, Text, useToast } from "@chakra-ui/react";
+import { Card, CardProps, IconButton, Text, useToast } from "@chakra-ui/react";
 
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
@@ -13,7 +13,11 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import { NostrEvent } from "../../../types/nostr-event";
 
-export default function PostVoteButtons({ event, community }: { event: NostrEvent; community: NostrEvent }) {
+export default function PostVoteButtons({
+  event,
+  community,
+  ...props
+}: Omit<CardProps, "children"> & { event: NostrEvent; community: NostrEvent }) {
   const account = useCurrentAccount();
   const reactions = useEventReactions(event.id);
   const toast = useToast();
@@ -50,7 +54,7 @@ export default function PostVoteButtons({ event, community }: { event: NostrEven
   );
 
   return (
-    <Card direction="column" alignItems="center" borderRadius="lg">
+    <Card direction="column" alignItems="center" borderRadius="lg" {...props}>
       <IconButton
         aria-label="up vote"
         title="up vote"

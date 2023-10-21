@@ -1,5 +1,15 @@
 import { MouseEventHandler, useCallback, useRef } from "react";
-import { AvatarGroup, Card, CardBody, CardFooter, CardHeader, Heading, LinkBox, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardProps,
+  Heading,
+  LinkBox,
+  Text,
+} from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
@@ -17,6 +27,7 @@ import UserAvatarLink from "../../../components/user-avatar-link";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import useSingleEvent from "../../../hooks/use-single-event";
+import CommunityPostMenu from "./community-post-menu";
 
 export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
   const ref = useRef<HTMLAnchorElement | null>(null);
@@ -71,12 +82,17 @@ function Approvals({ approvals }: { approvals: NostrEvent[] }) {
   );
 }
 
-export function CommunityTextPost({ event, approvals, community }: CommunityPostPropTypes) {
+export function CommunityTextPost({
+  event,
+  approvals,
+  community,
+  ...props
+}: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
-    <Card as={LinkBox} overflow="hidden" ref={ref}>
+    <Card as={LinkBox} ref={ref} {...props}>
       <PostSubject event={event} />
       <CardBody p="2">
         <InlineNoteContent event={event} maxLength={96} />
@@ -86,12 +102,25 @@ export function CommunityTextPost({ event, approvals, community }: CommunityPost
           Posted {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
         {approvals.length > 0 && <Approvals approvals={approvals} />}
+        <CommunityPostMenu
+          event={event}
+          community={community}
+          approvals={approvals}
+          aria-label="More Options"
+          size="xs"
+          variant="ghost"
+        />
       </CardFooter>
     </Card>
   );
 }
 
-export function CommunityRepostPost({ event, approvals, community }: CommunityPostPropTypes) {
+export function CommunityRepostPost({
+  event,
+  approvals,
+  community,
+  ...props
+}: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const encodedRepost = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
@@ -107,7 +136,7 @@ export function CommunityRepostPost({ event, approvals, community }: CommunityPo
   if (repost && muteFilter(repost)) return;
 
   return (
-    <Card as={LinkBox} overflow="hidden" ref={ref}>
+    <Card as={LinkBox} ref={ref} {...props}>
       {repost && (
         <>
           <PostSubject event={repost} />
@@ -121,17 +150,30 @@ export function CommunityRepostPost({ event, approvals, community }: CommunityPo
           Shared {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
         {approvals.length > 0 && <Approvals approvals={approvals} />}
+        <CommunityPostMenu
+          event={event}
+          community={community}
+          approvals={approvals}
+          aria-label="More Options"
+          size="xs"
+          variant="ghost"
+        />
       </CardFooter>
     </Card>
   );
 }
 
-export default function CommunityPost({ event, approvals, community }: CommunityPostPropTypes) {
+export default function CommunityPost({
+  event,
+  approvals,
+  community,
+  ...props
+}: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   switch (event.kind) {
     case Kind.Text:
-      return <CommunityTextPost event={event} approvals={approvals} community={community} />;
+      return <CommunityTextPost event={event} approvals={approvals} community={community} {...props} />;
     case Kind.Repost:
-      return <CommunityRepostPost event={event} approvals={approvals} community={community} />;
+      return <CommunityRepostPost event={event} approvals={approvals} community={community} {...props} />;
   }
   return null;
 }
