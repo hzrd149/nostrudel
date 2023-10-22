@@ -63,7 +63,7 @@ export default function PostVoteButtons({
         variant={hasUpVote ? "solid" : "ghost"}
         isLoading={loading}
         onClick={() => addVote("+")}
-        isDisabled={!account || !!hasUpVote}
+        isDisabled={!account || !!hasUpVote || !!hasDownVote}
         colorScheme={hasUpVote ? "primary" : "gray"}
       />
       {(up || down) && <Text my="1">{vote}</Text>}
@@ -75,7 +75,7 @@ export default function PostVoteButtons({
         variant={hasDownVote ? "solid" : "ghost"}
         isLoading={loading}
         onClick={() => addVote("-")}
-        isDisabled={!account || !!hasUpVote}
+        isDisabled={!account || !!hasUpVote || !!hasDownVote}
       />
     </Card>
   );
