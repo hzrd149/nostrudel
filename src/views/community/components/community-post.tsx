@@ -6,6 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardProps,
+  Flex,
   Heading,
   LinkBox,
   Text,
@@ -70,9 +71,7 @@ function PostSubject({ event }: { event: NostrEvent }) {
 function Approvals({ approvals }: { approvals: NostrEvent[] }) {
   return (
     <>
-      <Text fontSize="sm" ml="auto">
-        Approved by
-      </Text>
+      <Text fontSize="sm">Approved by</Text>
       <AvatarGroup>
         {approvals.map((approval) => (
           <ApprovalIcon key={approval.id} approval={approval} />
@@ -97,19 +96,21 @@ export function CommunityTextPost({
       <CardBody p="2">
         <InlineNoteContent event={event} maxLength={96} />
       </CardBody>
-      <CardFooter display="flex" gap="2" alignItems="center" p="2">
+      <CardFooter display="flex" gap="2" alignItems="center" p="2" flexWrap="wrap">
         <Text>
           Posted {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
-        {approvals.length > 0 && <Approvals approvals={approvals} />}
-        <CommunityPostMenu
-          event={event}
-          community={community}
-          approvals={approvals}
-          aria-label="More Options"
-          size="xs"
-          variant="ghost"
-        />
+        <Flex gap="2" alignItems="center" ml="auto">
+          {approvals.length > 0 && <Approvals approvals={approvals} />}
+          <CommunityPostMenu
+            event={event}
+            community={community}
+            approvals={approvals}
+            aria-label="More Options"
+            size="xs"
+            variant="ghost"
+          />
+        </Flex>
       </CardFooter>
     </Card>
   );
@@ -145,19 +146,21 @@ export function CommunityRepostPost({
           </CardBody>
         </>
       )}
-      <CardFooter display="flex" gap="2" alignItems="center" p="2">
+      <CardFooter display="flex" gap="2" alignItems="center" p="2" flexWrap="wrap">
         <Text>
           Shared {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
-        {approvals.length > 0 && <Approvals approvals={approvals} />}
-        <CommunityPostMenu
-          event={event}
-          community={community}
-          approvals={approvals}
-          aria-label="More Options"
-          size="xs"
-          variant="ghost"
-        />
+        <Flex gap="2" alignItems="center" ml="auto">
+          {approvals.length > 0 && <Approvals approvals={approvals} />}
+          <CommunityPostMenu
+            event={event}
+            community={community}
+            approvals={approvals}
+            aria-label="More Options"
+            size="xs"
+            variant="ghost"
+          />
+        </Flex>
       </CardFooter>
     </Card>
   );
