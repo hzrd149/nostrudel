@@ -30,8 +30,9 @@ import CommunityMembersModal from "./community-members-modal";
 
 export default function HorizontalCommunityDetails({
   community,
+  onEditClick,
   ...props
-}: Omit<CardProps, "children"> & { community: NostrEvent }) {
+}: Omit<CardProps, "children"> & { community: NostrEvent; onEditClick?: () => void }) {
   const membersModal = useDisclosure();
   const communityRelays = getCommunityRelays(community);
   const mods = getCommunityMods(community);
@@ -47,7 +48,7 @@ export default function HorizontalCommunityDetails({
         <CardBody>
           <ButtonGroup float="right">
             <CommunityJoinButton community={community} />
-            <CommunityMenu community={community} aria-label="More" />
+            <CommunityMenu community={community} aria-label="More" onEditClick={onEditClick} />
           </ButtonGroup>
           {description && (
             <>

@@ -29,6 +29,9 @@ export function getCommunityDescription(community: NostrEvent) {
 export function getCommunityRules(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "rules")?.[1];
 }
+export function getCommunityRanking(community: NostrEvent) {
+  return community.tags.find((t) => t[0] === "rank_mode")?.[1];
+}
 
 export function getPostSubject(event: NostrEvent) {
   const subject = event.tags.find((t) => t[0] === "subject")?.[1];

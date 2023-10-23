@@ -7,11 +7,15 @@ import { CodeIcon, ExternalLinkIcon, RepostIcon } from "../../../components/icon
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
+import { useCurrentAccount } from "../../../hooks/use-current-account";
+import PencilLine from "../../../components/icons/pencil-line";
 
 export default function CommunityMenu({
   community,
+  onEditClick,
   ...props
-}: Omit<MenuIconButtonProps, "children"> & { community: NostrEvent }) {
+}: Omit<MenuIconButtonProps, "children"> & { community: NostrEvent; onEditClick?: () => void }) {
+  const account = useCurrentAccount();
   const debugModal = useDisclosure();
   const [_clipboardState, copyToClipboard] = useCopyToClipboard();
 
@@ -23,6 +27,11 @@ export default function CommunityMenu({
         {address && (
           <MenuItem onClick={() => window.open(buildAppSelectUrl(address), "_blank")} icon={<ExternalLinkIcon />}>
             View in app...
+          </MenuItem>
+        )}
+        {account?.pubkey === community.pubkey && onEditClick && (
+          <MenuItem onClick={onEditClick} icon={<PencilLine />}>
+            Edit Community
           </MenuItem>
         )}
         <MenuItem onClick={() => copyToClipboard("nostr:" + address)} icon={<RepostIcon />}>

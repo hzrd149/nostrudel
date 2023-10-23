@@ -18,8 +18,9 @@ import { readablizeSats } from "../../../helpers/bolt11";
 
 export default function VerticalCommunityDetails({
   community,
+  onEditClick,
   ...props
-}: Omit<CardProps, "children"> & { community: NostrEvent }) {
+}: Omit<CardProps, "children"> & { community: NostrEvent; onEditClick?: () => void }) {
   const membersModal = useDisclosure();
   const communityRelays = getCommunityRelays(community);
   const mods = getCommunityMods(community);
@@ -41,7 +42,7 @@ export default function VerticalCommunityDetails({
         )}
         <ButtonGroup w="full">
           <CommunityJoinButton community={community} flex={1} />
-          <CommunityMenu community={community} aria-label="More" />
+          <CommunityMenu community={community} aria-label="More" onEditClick={onEditClick} />
         </ButtonGroup>
         <Box>
           <Heading size="sm" mb="1">
