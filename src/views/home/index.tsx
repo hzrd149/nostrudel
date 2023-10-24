@@ -44,7 +44,7 @@ function HomePage() {
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
       <PeopleListSelection />
-      <Switch checked={showReplies.isOpen} onChange={showReplies.onToggle}>
+      <Switch isChecked={showReplies.isOpen} onChange={showReplies.onToggle}>
         Show Replies
       </Switch>
       <RelaySelectionButton ml="auto" />

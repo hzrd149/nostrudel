@@ -41,7 +41,7 @@ function EmojiPacksBrowsePage() {
       <VerticalPageLayout>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
-          <Switch checked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
+          <Switch isChecked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
             Show Empty
           </Switch>
         </Flex>
