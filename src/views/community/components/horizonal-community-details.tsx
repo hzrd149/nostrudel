@@ -7,10 +7,13 @@ import {
   CardProps,
   Flex,
   Heading,
+  Link,
   SimpleGrid,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+
 import {
   getCommunityDescription,
   getCommunityMods,
@@ -20,13 +23,13 @@ import {
 import CommunityDescription from "../../communities/components/community-description";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
-import { RelayIconStack } from "../../../components/relay-icon-stack";
 import { NostrEvent } from "../../../types/nostr-event";
 import CommunityJoinButton from "../../communities/components/community-subscribe-button";
 import CommunityMenu from "./community-menu";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
 import { readablizeSats } from "../../../helpers/bolt11";
 import CommunityMembersModal from "./community-members-modal";
+import { RelayFavicon } from "../../../components/relay-favicon";
 
 export default function HorizontalCommunityDetails({
   community,
@@ -94,7 +97,14 @@ export default function HorizontalCommunityDetails({
                     Relays
                   </Heading>
                   <Flex direction="column" gap="2">
-                    <RelayIconStack relays={communityRelays} />
+                    {communityRelays.map((url) => (
+                      <Flex key={url} alignItems="center" gap="2">
+                        <RelayFavicon relay={url} size="xs" />
+                        <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} fontWeight="bold" isTruncated>
+                          {url}
+                        </Link>
+                      </Flex>
+                    ))}
                   </Flex>
                 </Box>
               )}
