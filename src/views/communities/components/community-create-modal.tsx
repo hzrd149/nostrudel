@@ -9,6 +9,7 @@ import {
   IconButton,
   Image,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +21,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Text,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
@@ -27,12 +29,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
-import { UploadImageIcon } from "../../../components/icons";
+import { TrashIcon, UploadImageIcon } from "../../../components/icons";
 import Upload01 from "../../../components/icons/upload-01";
 import Upload02 from "../../../components/icons/upload-02";
 import { useCallback, useState } from "react";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { useSigningContext } from "../../../providers/signing-provider";
+import { RelayUrlInput } from "../../../components/relay-url-input";
+import { normalizeRelayUrl, safeRelayUrl } from "../../../helpers/url";
+import { RelayFavicon } from "../../../components/relay-favicon";
 
 export type FormValues = {
   name: string;
@@ -41,6 +46,7 @@ export type FormValues = {
   rules: string;
   mods: string[];
   relays: string[];
+  links: string[];
   ranking: string;
 };
 
@@ -76,6 +82,7 @@ export default function CommunityCreateModal({
       rules: "",
       mods: account ? [account.pubkey] : [],
       relays: [],
+      links: [],
       ranking: "votes",
     },
   });
@@ -83,6 +90,8 @@ export default function CommunityCreateModal({
   watch("mods");
   watch("ranking");
   watch("banner");
+  watch("links");
+  watch("relays");
 
   const [uploading, setUploading] = useState(false);
   const uploadFile = useCallback(
@@ -103,6 +112,22 @@ export default function CommunityCreateModal({
     },
     [setValue, getValues, requestSignature, toast],
   );
+
+  const [relayInput, setRelayInput] = useState("");
+  const addRelay = () => {
+    if (!relayInput) return;
+    const url = safeRelayUrl(relayInput);
+    if (url) {
+      setValue("relays", getValues("relays").concat(url));
+    }
+    setRelayInput("");
+  };
+  const removeRelay = (url: string) => {
+    setValue(
+      "relays",
+      getValues("relays").filter((r) => r !== url),
+    );
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl" {...props}>
@@ -213,6 +238,55 @@ export default function CommunityCreateModal({
             <FormHelperText>The default by posts are ranked when viewing the community</FormHelperText>
             {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
           </FormControl>
+
+          <FormControl isInvalid={!!errors.mods}>
+            <FormLabel>Relays</FormLabel>
+            <FormHelperText>A Short list of recommended relays for the community</FormHelperText>
+            <Flex direction="column" gap="2" py="2">
+              {getValues().relays.map((url) => (
+                <Flex key={url} alignItems="center" gap="2">
+                  <RelayFavicon relay={url} size="sm" />
+                  <Text fontWeight="bold" isTruncated>
+                    {url}
+                  </Text>
+                  <IconButton
+                    icon={<TrashIcon />}
+                    aria-label={`Remove ${url}`}
+                    title={`Remove ${url}`}
+                    onClick={() => removeRelay(url)}
+                    size="sm"
+                    colorScheme="red"
+                    variant="ghost"
+                    ml="auto"
+                  />
+                </Flex>
+              ))}
+            </Flex>
+            {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
+            <Flex gap="2">
+              <RelayUrlInput value={relayInput} onChange={(v) => setRelayInput(v)} />
+              <Button isDisabled={!relayInput} onClick={addRelay}>
+                Add
+              </Button>
+            </Flex>
+          </FormControl>
+
+          {/* <FormControl isInvalid={!!errors.mods}>
+            <FormLabel>Links</FormLabel>
+            <Flex direction="column">
+              {getValues().links.map((link) => (
+                <Flex key={link}>
+                  <Link href={link}>{link}</Link>
+                  <IconButton icon={<TrashIcon />} aria-label="Remove Link" title="Remove Link" />
+                </Flex>
+              ))}
+            </Flex>
+            {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
+            <Flex gap="2">
+              <Input placeholder="https://example.com/useful-resources.html" />
+              <Button>Add Link</Button>
+            </Flex>
+          </FormControl> */}
         </ModalBody>
 
         <ModalFooter p="4" display="flex" gap="2">

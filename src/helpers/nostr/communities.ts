@@ -19,6 +19,9 @@ export function getCommunityMods(community: NostrEvent) {
 export function getCommunityRelays(community: NostrEvent) {
   return community.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[];
 }
+export function getCommunityLinks(community: NostrEvent) {
+  return community.tags.filter((t) => t[0] === "r" && t[1]).map((t) => t[1]) as string[];
+}
 
 export function getCommunityImage(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "image")?.[1];
