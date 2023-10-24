@@ -14,7 +14,7 @@ import RelaySelectionProvider, { useRelaySelectionContext } from "../../provider
 import { NostrRequestFilter } from "../../types/nostr-query";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
-const showRepliesStored = localStorage.getItem("show-replies") === "true";
+var showRepliesStored = localStorage.getItem("show-replies") === "true";
 
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
@@ -50,6 +50,7 @@ function HomePage() {
         isChecked={showReplies.isOpen}
         onChange={(v) => {
           localStorage.setItem("show-replies", v.target.checked ? "true" : "false");
+          showRepliesStored = v.target.checked;
           showReplies.onToggle();
         }}
       >
