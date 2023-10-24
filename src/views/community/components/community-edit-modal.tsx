@@ -52,7 +52,7 @@ export default function CommunityEditModal({
       };
 
       for (const pubkey of values.mods) {
-        draft.tags.push(["p", pubkey, "moderator"]);
+        draft.tags.push(["p", pubkey, "", "moderator"]);
       }
       for (const url of values.relays) {
         draft.tags.push(["relay", url]);
@@ -70,6 +70,8 @@ export default function CommunityEditModal({
       );
 
       replaceableEventLoaderService.handleEvent(signed);
+
+      onClose();
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

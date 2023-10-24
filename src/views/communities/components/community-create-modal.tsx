@@ -1,10 +1,13 @@
 import {
+  Box,
   Button,
   Flex,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  IconButton,
+  Image,
   Input,
   Modal,
   ModalBody,
@@ -18,11 +21,18 @@ import {
   RadioGroup,
   Stack,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
+import { UploadImageIcon } from "../../../components/icons";
+import Upload01 from "../../../components/icons/upload-01";
+import Upload02 from "../../../components/icons/upload-02";
+import { useCallback, useState } from "react";
+import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
+import { useSigningContext } from "../../../providers/signing-provider";
 
 export type FormValues = {
   name: string;
@@ -46,11 +56,13 @@ export default function CommunityCreateModal({
   defaultValues?: FormValues;
   isUpdate?: boolean;
 }) {
+  const toast = useToast();
   const account = useCurrentAccount();
+  const { requestSignature } = useSigningContext();
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
     watch,
     getValues,
@@ -70,6 +82,27 @@ export default function CommunityCreateModal({
 
   watch("mods");
   watch("ranking");
+  watch("banner");
+
+  const [uploading, setUploading] = useState(false);
+  const uploadFile = useCallback(
+    async (file: File) => {
+      try {
+        if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
+          throw new Error("Unsupported file type");
+
+        setUploading(true);
+
+        const response = await nostrBuildUploadImage(file, requestSignature);
+        const imageUrl = response.url;
+        setValue("banner", imageUrl, { shouldDirty: true, shouldValidate: true });
+      } catch (e) {
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      }
+      setUploading(false);
+    },
+    [setValue, getValues, requestSignature, toast],
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl" {...props}>
@@ -92,6 +125,7 @@ export default function CommunityCreateModal({
                 })}
                 isReadOnly={isUpdate}
                 autoComplete="off"
+                placeholder="more-cat-pictures"
               />
               <FormHelperText>The name of your community (no-spaces)</FormHelperText>
               {errors.name?.message && <FormErrorMessage>{errors.name?.message}</FormErrorMessage>}
@@ -101,13 +135,56 @@ export default function CommunityCreateModal({
           <FormControl isInvalid={!!errors.description}>
             <FormLabel>Description</FormLabel>
             <Textarea {...register("description")} autoComplete="off" />
-            <FormHelperText>short description about your community</FormHelperText>
+            <FormHelperText>Short description about your community</FormHelperText>
             {errors.description?.message && <FormErrorMessage>{errors.description?.message}</FormErrorMessage>}
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.banner}>
+            <FormLabel>Banner</FormLabel>
+            {getValues().banner && (
+              <Box
+                backgroundImage={getValues().banner}
+                backgroundRepeat="no-repeat"
+                backgroundPosition="center"
+                backgroundSize="cover"
+                aspectRatio={3 / 1}
+                mb="2"
+                borderRadius="lg"
+              />
+            )}
+            <Flex gap="2">
+              <Input
+                type="url"
+                {...register("banner")}
+                autoComplete="off"
+                placeholder="https://example.com/banner.png"
+              />
+              <Input
+                id="banner-upload"
+                type="file"
+                accept="image/*"
+                display="none"
+                onChange={(e) => {
+                  const img = e.target.files?.[0];
+                  if (img) uploadFile(img);
+                }}
+              />
+              <IconButton
+                as="label"
+                htmlFor="banner-upload"
+                icon={<Upload01 />}
+                aria-label="Upload Image"
+                cursor="pointer"
+                tabIndex={0}
+                isLoading={uploading}
+              />
+            </Flex>
+            {errors.banner?.message && <FormErrorMessage>{errors.banner?.message}</FormErrorMessage>}
           </FormControl>
 
           <FormControl isInvalid={!!errors.rules}>
             <FormLabel>Rules and Guidelines</FormLabel>
-            <Textarea {...register("rules")} autoComplete="off" />
+            <Textarea {...register("rules")} autoComplete="off" placeholder="don't be a jerk" />
             <FormHelperText>Rules and posting guidelines</FormHelperText>
             {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
           </FormControl>
@@ -140,7 +217,7 @@ export default function CommunityCreateModal({
 
         <ModalFooter p="4" display="flex" gap="2">
           <Button onClick={onClose}>Cancel</Button>
-          <Button colorScheme="primary" type="submit">
+          <Button colorScheme="primary" type="submit" isLoading={isSubmitting}>
             {isUpdate ? "Update Community" : "Create Community"}
           </Button>
         </ModalFooter>

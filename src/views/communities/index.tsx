@@ -35,7 +35,7 @@ function CommunitiesHomePage() {
       };
 
       for (const pubkey of values.mods) {
-        draft.tags.push(["p", pubkey, "moderator"]);
+        draft.tags.push(["p", pubkey, "", "moderator"]);
       }
       for (const url of values.relays) {
         draft.tags.push(["relay", url]);
