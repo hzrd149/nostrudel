@@ -14,9 +14,11 @@ import RelaySelectionProvider, { useRelaySelectionContext } from "../../provider
 import { NostrRequestFilter } from "../../types/nostr-query";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
+const showRepliesStored = localStorage.getItem("show-replies") === "true";
+
 function HomePage() {
   const timelinePageEventFilter = useTimelinePageEventFilter();
-  const showReplies = useDisclosure();
+  const showReplies = useDisclosure({ defaultIsOpen: showRepliesStored });
   const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -44,7 +46,13 @@ function HomePage() {
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
       <PeopleListSelection />
-      <Switch isChecked={showReplies.isOpen} onChange={showReplies.onToggle}>
+      <Switch
+        isChecked={showReplies.isOpen}
+        onChange={(v) => {
+          localStorage.setItem("show-replies", v.target.checked ? "true" : "false");
+          showReplies.onToggle();
+        }}
+      >
         Show Replies
       </Switch>
       <RelaySelectionButton ml="auto" />
