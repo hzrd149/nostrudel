@@ -61,10 +61,10 @@ function BrowseListPage() {
             <option value={PEOPLE_LIST_KIND}>People List</option>
             <option value={NOTE_LIST_KIND}>Note List</option>
           </Select>
-          <Switch checked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
+          <Switch isChecked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
             Show Empty
           </Switch>
-          <Switch checked={showMute.isOpen} onChange={showMute.onToggle} whiteSpace="pre">
+          <Switch isChecked={showMute.isOpen} onChange={showMute.onToggle} whiteSpace="pre">
             Show Mute
           </Switch>
         </Flex>
