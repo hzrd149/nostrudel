@@ -2,7 +2,6 @@ import {
   Flex,
   Heading,
   IconButton,
-  Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -12,18 +11,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { nip19 } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { AddIcon } from "../icons";
-import { useUserSearchDirectoryContext } from "../../providers/user-directory-provider";
-import { useAsync } from "react-use";
-import { getUserDisplayName } from "../../helpers/user-metadata";
-import userMetadataService from "../../services/user-metadata";
 import { normalizeToHex } from "../../helpers/nip19";
 import UserAvatar from "../user-avatar";
 import { UserLink } from "../user-link";
+import NpubAutocomplete from "../npub-autocomplete";
 
 function getRemainingPercent(split: EventSplit) {
   return Math.round((1 - split.reduce((v, p) => v + p.percent, 0)) * 100) / 100;
@@ -58,12 +53,6 @@ function AddUserForm({
   });
   watch("percent");
 
-  const getDirectory = useUserSearchDirectoryContext();
-  const { value: users } = useAsync(async () => {
-    const dir = await getDirectory();
-    return dir.map(({ pubkey }) => ({ pubkey, metadata: userMetadataService.getSubject(pubkey).value }));
-  }, [getDirectory]);
-
   const submit = handleSubmit((values) => {
     try {
       const pubkey = normalizeToHex(values.pubkey);
@@ -78,18 +67,7 @@ function AddUserForm({
 
   return (
     <Flex as="form" gap="2" onSubmit={submit}>
-      <Input placeholder="npub..." list="users" {...register("pubkey", { required: true, validate: validateNpub })} />
-      {users && (
-        <datalist id="users">
-          {users
-            .filter((p) => !!p.metadata)
-            .map(({ metadata, pubkey }) => (
-              <option key={pubkey} value={nip19.npubEncode(pubkey)}>
-                {getUserDisplayName(metadata, pubkey)}
-              </option>
-            ))}
-        </datalist>
-      )}
+      <NpubAutocomplete {...register("pubkey", { required: true, validate: validateNpub })} />
       <NumberInput
         step={1}
         min={1}

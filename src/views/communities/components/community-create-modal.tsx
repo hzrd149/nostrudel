@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Box,
   Button,
@@ -7,9 +8,8 @@ import {
   FormHelperText,
   FormLabel,
   IconButton,
-  Image,
+  IconButtonProps,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -26,18 +26,23 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
+
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
-import { TrashIcon, UploadImageIcon } from "../../../components/icons";
+import { TrashIcon } from "../../../components/icons";
 import Upload01 from "../../../components/icons/upload-01";
-import Upload02 from "../../../components/icons/upload-02";
-import { useCallback, useState } from "react";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { RelayUrlInput } from "../../../components/relay-url-input";
-import { normalizeRelayUrl, safeRelayUrl } from "../../../helpers/url";
+import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";
+import NpubAutocomplete from "../../../components/npub-autocomplete";
+import { normalizeToHex } from "../../../helpers/nip19";
+
+function RemoveButton({ ...props }: IconButtonProps) {
+  return <IconButton icon={<TrashIcon />} size="sm" colorScheme="red" variant="ghost" ml="auto" {...props} />;
+}
 
 export type FormValues = {
   name: string;
@@ -112,6 +117,22 @@ export default function CommunityCreateModal({
     },
     [setValue, getValues, requestSignature, toast],
   );
+
+  const [modInput, setModInput] = useState("");
+  const addMod = () => {
+    if (!modInput) return;
+    const pubkey = normalizeToHex(modInput);
+    if (pubkey) {
+      setValue("mods", getValues("mods").concat(pubkey));
+    }
+    setModInput("");
+  };
+  const removeMod = (pubkey: string) => {
+    setValue(
+      "mods",
+      getValues("mods").filter((p) => p !== pubkey),
+    );
+  };
 
   const [relayInput, setRelayInput] = useState("");
   const addRelay = () => {
@@ -216,12 +237,25 @@ export default function CommunityCreateModal({
 
           <FormControl isInvalid={!!errors.mods}>
             <FormLabel>Moderators</FormLabel>
-            {getValues().mods.map((pubkey) => (
-              <Flex gap="2" alignItems="center" key={pubkey}>
-                <UserAvatar pubkey={pubkey} size="sm" />
-                <UserLink pubkey={pubkey} fontWeight="bold" />
-              </Flex>
-            ))}
+            <Flex direction="column" gap="2" pb="2">
+              {getValues().mods.map((pubkey) => (
+                <Flex gap="2" alignItems="center" key={pubkey}>
+                  <UserAvatar pubkey={pubkey} size="sm" />
+                  <UserLink pubkey={pubkey} fontWeight="bold" />
+                  <RemoveButton
+                    aria-label={`Remove moderator`}
+                    title={`Remove moderator`}
+                    onClick={() => removeMod(pubkey)}
+                  />
+                </Flex>
+              ))}
+            </Flex>
+            <Flex gap="2">
+              <NpubAutocomplete value={modInput} onChange={(e) => setModInput(e.target.value)} />
+              <Button isDisabled={!modInput} onClick={addMod}>
+                Add
+              </Button>
+            </Flex>
           </FormControl>
 
           <FormControl isInvalid={!!errors.mods}>
@@ -249,16 +283,7 @@ export default function CommunityCreateModal({
                   <Text fontWeight="bold" isTruncated>
                     {url}
                   </Text>
-                  <IconButton
-                    icon={<TrashIcon />}
-                    aria-label={`Remove ${url}`}
-                    title={`Remove ${url}`}
-                    onClick={() => removeRelay(url)}
-                    size="sm"
-                    colorScheme="red"
-                    variant="ghost"
-                    ml="auto"
-                  />
+                  <RemoveButton aria-label={`Remove ${url}`} title={`Remove ${url}`} onClick={() => removeRelay(url)} />
                 </Flex>
               ))}
             </Flex>
