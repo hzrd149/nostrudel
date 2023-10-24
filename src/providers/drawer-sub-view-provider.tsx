@@ -122,7 +122,7 @@ export default function DrawerSubViewProvider({
             } else if (direction.current !== "down") {
               log("Updating parent state from Router");
               direction.current = "up";
-              parentRouter.navigate(".", {
+              parentRouter.navigate(parentRouter.state.location, {
                 preventScrollReset: true,
                 state: { ...parentRouter.state.location.state, subRouterPath: e.location.pathname },
               });
@@ -145,7 +145,7 @@ export default function DrawerSubViewProvider({
   const openDrawer = useCallback(
     (to: To) => {
       marker.current = 0;
-      parentRouter.navigate(".", {
+      parentRouter.navigate(parentRouter.state.location, {
         preventScrollReset: true,
         state: { ...parentRouter.state.location.state, subRouterPath: to },
       });
@@ -160,7 +160,7 @@ export default function DrawerSubViewProvider({
       parentRouter.navigate(-i);
     } else {
       log(`Failed to navigate back, clearing state`);
-      parentRouter.navigate(".", {
+      parentRouter.navigate(parentRouter.state.location, {
         preventScrollReset: true,
         state: { ...parentRouter.state.location.state, subRouterPath: undefined },
       });
