@@ -33,8 +33,8 @@ function UserGoalsManagerPage() {
         You don't have any goals,{" "}
         <Link as={RouterLink} to="/goals/browse" color="blue.500">
           Find a goal
-        </Link>{" "}
-        to support or{" "}
+        </Link>
+        &nbsp;to support or{" "}
         <Link href="https://goals-silk.vercel.app/new" isExternal color="blue.500">
           Create one
         </Link>
