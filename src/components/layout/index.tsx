@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Container, Flex, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Box, Container, Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useKeyPressEvent } from "react-use";
 
 import { ErrorBoundary } from "../error-boundary";
@@ -50,6 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <ErrorBoundary>{children}</ErrorBoundary>
         </Container>
+        {!isMobile && <Box flexShrink={1} maxW="15rem" flex={1} />}
         {isMobile && (
           <MobileBottomNav
             position="fixed"
