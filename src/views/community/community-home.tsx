@@ -135,7 +135,9 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
           </Flex>
         </VerticalPageLayout>
       </AdditionalRelayProvider>
-      {editModal && <CommunityEditModal isOpen={editModal.isOpen} onClose={editModal.onClose} community={community} />}
+      {editModal.isOpen && (
+        <CommunityEditModal isOpen={editModal.isOpen} onClose={editModal.onClose} community={community} />
+      )}
     </>
   );
 }

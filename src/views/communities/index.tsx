@@ -16,6 +16,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import { unique } from "../../helpers/array";
 import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import { getImageSize } from "../../helpers/image";
 
 function CommunitiesHomePage() {
   const toast = useToast();
@@ -42,7 +43,14 @@ function CommunitiesHomePage() {
       }
 
       if (values.description) draft.tags.push(["description", values.description]);
-      if (values.banner) draft.tags.push(["image", values.banner]);
+      if (values.banner) {
+        try {
+          const size = await getImageSize(values.banner);
+          draft.tags.push(["image", values.banner, `${size.width}x${size.height}`]);
+        } catch (e) {
+          draft.tags.push(["image", values.banner]);
+        }
+      }
       if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
 
       const signed = await requestSignature(draft);
