@@ -10,6 +10,7 @@ import {
   IconButton,
   IconButtonProps,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -39,6 +40,7 @@ import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import NpubAutocomplete from "../../../components/npub-autocomplete";
 import { normalizeToHex } from "../../../helpers/nip19";
+import { safeUrl } from "../../../helpers/parse";
 
 function RemoveButton({ ...props }: IconButtonProps) {
   return <IconButton icon={<TrashIcon />} size="sm" colorScheme="red" variant="ghost" ml="auto" {...props} />;
@@ -51,7 +53,7 @@ export type FormValues = {
   rules: string;
   mods: string[];
   relays: string[];
-  links: string[];
+  links: ([string] | [string, string])[];
   ranking: string;
 };
 
@@ -147,6 +149,24 @@ export default function CommunityCreateModal({
     setValue(
       "relays",
       getValues("relays").filter((r) => r !== url),
+    );
+  };
+
+  const [linkInput, setLinkInput] = useState("");
+  const [linkName, setLinkName] = useState("");
+  const addLink = () => {
+    if (!linkInput) return;
+    const url = safeUrl(linkInput);
+    if (url) {
+      setValue("links", [...getValues("links"), linkName ? [url, linkName] : [url]]);
+    }
+    setLinkInput("");
+    setLinkName("");
+  };
+  const removeLink = (url: string) => {
+    setValue(
+      "links",
+      getValues("links").filter(([r]) => r !== url),
     );
   };
 
@@ -270,7 +290,7 @@ export default function CommunityCreateModal({
               </Stack>
             </RadioGroup>
             <FormHelperText>The default by posts are ranked when viewing the community</FormHelperText>
-            {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
+            {errors.ranking?.message && <FormErrorMessage>{errors.ranking?.message}</FormErrorMessage>}
           </FormControl>
 
           <FormControl isInvalid={!!errors.mods}>
@@ -287,7 +307,6 @@ export default function CommunityCreateModal({
                 </Flex>
               ))}
             </Flex>
-            {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
             <Flex gap="2">
               <RelayUrlInput value={relayInput} onChange={(v) => setRelayInput(v)} />
               <Button isDisabled={!relayInput} onClick={addRelay}>
@@ -296,22 +315,29 @@ export default function CommunityCreateModal({
             </Flex>
           </FormControl>
 
-          {/* <FormControl isInvalid={!!errors.mods}>
+          <FormControl isInvalid={!!errors.mods}>
             <FormLabel>Links</FormLabel>
             <Flex direction="column">
-              {getValues().links.map((link) => (
+              {getValues().links.map(([link, name]) => (
                 <Flex key={link}>
-                  <Link href={link}>{link}</Link>
-                  <IconButton icon={<TrashIcon />} aria-label="Remove Link" title="Remove Link" />
+                  <Link href={link}>{name || link}</Link>
+                  <RemoveButton aria-label="Remove Link" title="Remove Link" onClick={() => removeLink(link)} />
                 </Flex>
               ))}
             </Flex>
-            {errors.rules?.message && <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>}
             <Flex gap="2">
-              <Input placeholder="https://example.com/useful-resources.html" />
-              <Button>Add Link</Button>
+              <Input
+                type="url"
+                placeholder="https://example.com/useful-resources.html"
+                value={linkInput}
+                onChange={(e) => setLinkInput(e.target.value)}
+              />
+              <Input placeholder="title" value={linkName} onChange={(e) => setLinkName(e.target.value)} />
+              <Button isDisabled={!linkInput} onClick={addLink} flexShrink={0}>
+                Add
+              </Button>
             </Flex>
-          </FormControl> */}
+          </FormControl>
         </ModalBody>
 
         <ModalFooter p="4" display="flex" gap="2">

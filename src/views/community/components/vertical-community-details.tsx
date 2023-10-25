@@ -3,6 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import {
   getCommunityDescription,
+  getCommunityLinks,
   getCommunityMods,
   getCommunityRelays,
   getCommunityRules,
@@ -28,6 +29,7 @@ export default function VerticalCommunityDetails({
   const mods = getCommunityMods(community);
   const description = getCommunityDescription(community);
   const rules = getCommunityRules(community);
+  const links = getCommunityLinks(community);
 
   const countMembers = useCountCommunityMembers(community);
 
@@ -88,6 +90,20 @@ export default function VerticalCommunityDetails({
                 </Flex>
               ))}
             </Flex>
+          </Box>
+        )}
+        {links.length > 0 && (
+          <Box>
+            <Heading size="sm" mb="1">
+              Links
+            </Heading>
+            <Box>
+              {links.map(([url, name]) => (
+                <Link href={url} isTruncated isExternal display="block">
+                  {name || url}
+                </Link>
+              ))}
+            </Box>
           </Box>
         )}
       </Card>

@@ -20,7 +20,10 @@ export function getCommunityRelays(community: NostrEvent) {
   return community.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[];
 }
 export function getCommunityLinks(community: NostrEvent) {
-  return community.tags.filter((t) => t[0] === "r" && t[1]).map((t) => t[1]) as string[];
+  return community.tags.filter((t) => t[0] === "r" && t[1]).map((t) => (t[2] ? [t[1], t[2]] : [t[1]])) as (
+    | [string]
+    | [string, string]
+  )[];
 }
 
 export function getCommunityImage(community: NostrEvent) {

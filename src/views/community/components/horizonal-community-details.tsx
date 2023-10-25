@@ -16,6 +16,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import {
   getCommunityDescription,
+  getCommunityLinks,
   getCommunityMods,
   getCommunityRelays,
   getCommunityRules,
@@ -41,6 +42,7 @@ export default function HorizontalCommunityDetails({
   const mods = getCommunityMods(community);
   const description = getCommunityDescription(community);
   const rules = getCommunityRules(community);
+  const links = getCommunityLinks(community);
 
   const more = useDisclosure();
   const countMembers = useCountCommunityMembers(community);
@@ -93,7 +95,7 @@ export default function HorizontalCommunityDetails({
               )}
               {communityRelays.length > 0 && (
                 <Box>
-                  <Heading size="sm" mt="4" mb="1">
+                  <Heading size="sm" mb="1">
                     Relays
                   </Heading>
                   <Flex direction="column" gap="2">
@@ -106,6 +108,20 @@ export default function HorizontalCommunityDetails({
                       </Flex>
                     ))}
                   </Flex>
+                </Box>
+              )}
+              {links.length > 0 && (
+                <Box>
+                  <Heading size="sm" mb="1">
+                    Links
+                  </Heading>
+                  <Box>
+                    {links.map(([url, name]) => (
+                      <Link href={url} isTruncated isExternal display="block">
+                        {name || url}
+                      </Link>
+                    ))}
+                  </Box>
                 </Box>
               )}
             </SimpleGrid>

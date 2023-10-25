@@ -54,13 +54,6 @@ export default function CommunityEditModal({
         tags: [["d", getCommunityName(community)]],
       };
 
-      for (const pubkey of values.mods) {
-        draft.tags.push(["p", pubkey, "", "moderator"]);
-      }
-      for (const url of values.relays) {
-        draft.tags.push(["relay", url]);
-      }
-
       if (values.description) draft.tags.push(["description", values.description]);
       if (values.banner) {
         try {
@@ -70,6 +63,10 @@ export default function CommunityEditModal({
           draft.tags.push(["image", values.banner]);
         }
       }
+      for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
+      for (const url of values.relays) draft.tags.push(["relay", url]);
+      for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
+
       if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
 
       const signed = await requestSignature(draft);
