@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ModalProps, useDisclosure, useToast } from "@chakra-ui/react";
+import { ModalProps, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
@@ -11,7 +11,6 @@ import {
   getCommunityLinks,
   getCommunityMods,
   getCommunityName,
-  getCommunityRanking,
   getCommunityRelays,
   getCommunityRules,
 } from "../../../helpers/nostr/communities";
@@ -40,7 +39,7 @@ export default function CommunityEditModal({
       mods: getCommunityMods(community) || [],
       relays: getCommunityRelays(community) || [],
       links: getCommunityLinks(community) || [],
-      ranking: getCommunityRanking(community) || "votes",
+      // ranking: getCommunityRanking(community) || "votes",
     }),
     [community],
   );
@@ -67,7 +66,7 @@ export default function CommunityEditModal({
       for (const url of values.relays) draft.tags.push(["relay", url]);
       for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
 
-      if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
+      // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
 
       const signed = await requestSignature(draft);
       new NostrPublishAction(

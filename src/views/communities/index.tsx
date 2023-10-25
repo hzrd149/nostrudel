@@ -47,7 +47,7 @@ function CommunitiesHomePage() {
       for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
       for (const url of values.relays) draft.tags.push(["relay", url]);
       for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
-      if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
+      // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
 
       const signed = await requestSignature(draft);
       new NostrPublishAction(

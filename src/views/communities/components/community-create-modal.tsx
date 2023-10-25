@@ -54,7 +54,7 @@ export type FormValues = {
   mods: string[];
   relays: string[];
   links: ([string] | [string, string])[];
-  ranking: string;
+  // ranking: string;
 };
 
 export default function CommunityCreateModal({
@@ -90,12 +90,12 @@ export default function CommunityCreateModal({
       mods: account ? [account.pubkey] : [],
       relays: [],
       links: [],
-      ranking: "votes",
+      // ranking: "votes",
     },
   });
 
   watch("mods");
-  watch("ranking");
+  // watch("ranking");
   watch("banner");
   watch("links");
   watch("relays");
@@ -278,7 +278,7 @@ export default function CommunityCreateModal({
             </Flex>
           </FormControl>
 
-          <FormControl isInvalid={!!errors.mods}>
+          {/* <FormControl isInvalid={!!errors.mods}>
             <FormLabel>Default Raking</FormLabel>
             <RadioGroup
               value={getValues().ranking}
@@ -291,7 +291,7 @@ export default function CommunityCreateModal({
             </RadioGroup>
             <FormHelperText>The default way posts are ranked when viewing the community</FormHelperText>
             {errors.ranking?.message && <FormErrorMessage>{errors.ranking?.message}</FormErrorMessage>}
-          </FormControl>
+          </FormControl> */}
 
           <FormControl isInvalid={!!errors.mods}>
             <FormLabel>Relays</FormLabel>
