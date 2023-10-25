@@ -74,6 +74,7 @@ export default function PostVoteButtons({
         isLoading={loading}
         onClick={() => addVote("-")}
         isDisabled={!account || !!hasUpVote || !!hasDownVote}
+        colorScheme={hasDownVote ? "primary" : "gray"}
       />
     </Card>
   );
