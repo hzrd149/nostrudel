@@ -6,7 +6,7 @@ import useEventReactions from "../../../hooks/use-event-reactions";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { draftEventReaction, groupReactions } from "../../../helpers/nostr/reactions";
 import clientRelaysService from "../../../services/client-relays";
-import { getCommunityRelays } from "../../../helpers/nostr/communities";
+import { getCommunityPostVote, getCommunityRelays } from "../../../helpers/nostr/communities";
 import { unique } from "../../../helpers/array";
 import eventReactionsService from "../../../services/event-reactions";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
@@ -23,9 +23,7 @@ export default function PostVoteButtons({
   const toast = useToast();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
-  const up = grouped.find((r) => r.emoji === "+");
-  const down = grouped.find((r) => r.emoji === "-");
-  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
+  const { vote, up, down } = getCommunityPostVote(grouped);
 
   const hasUpVote = !!account && !!up?.pubkeys.includes(account.pubkey);
   const hasDownVote = !!account && !!down?.pubkeys.includes(account.pubkey);

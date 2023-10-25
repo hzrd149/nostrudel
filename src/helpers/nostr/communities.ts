@@ -1,6 +1,7 @@
 import { validateEvent } from "nostr-tools";
 import { NostrEvent, isDTag, isETag, isPTag } from "../../types/nostr-event";
 import { getMatchLink, getMatchNostrLink } from "../regexp";
+import { ReactionGroup } from "./reactions";
 
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
 export const COMMUNITY_DEFINITION_KIND = 34550;
@@ -80,4 +81,11 @@ export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
     }
   }
   return approvals;
+}
+
+export function getCommunityPostVote(grouped: ReactionGroup[]) {
+  const up = grouped.find((r) => r.emoji === "+");
+  const down = grouped.find((r) => r.emoji === "-");
+  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
+  return { up, down, vote };
 }

@@ -63,6 +63,7 @@ import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
 import CommunityPendingView from "./views/community/views/pending";
 import CommunityNewestView from "./views/community/views/newest";
+import CommunityTrendingView from "./views/community/views/trending";
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
@@ -253,6 +254,8 @@ const router = createHashRouter([
             element: <CommunityView />,
             children: [
               { path: "", element: <CommunityNewestView /> },
+              { path: "trending", element: <CommunityTrendingView /> },
+              { path: "newest", element: <CommunityNewestView /> },
               { path: "pending", element: <CommunityPendingView /> },
             ],
           },

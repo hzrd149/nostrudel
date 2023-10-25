@@ -48,8 +48,10 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
     "#a": [communityCoordinate],
   });
 
-  let active = "new";
+  let active = "newest";
+  if (location.pathname.endsWith("/newest")) active = "newest";
   if (location.pathname.endsWith("/pending")) active = "pending";
+  if (location.pathname.endsWith("/trending")) active = "trending";
 
   return (
     <>
@@ -97,15 +99,21 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                   New Post
                 </Button>
                 <Divider orientation="vertical" h="2rem" />
-                <Button leftIcon={<TrendUp01 />} isDisabled>
+                <Button
+                  leftIcon={<TrendUp01 />}
+                  as={RouterLink}
+                  to={getCommunityPath(community) + "/trending"}
+                  colorScheme={active === "trending" ? "primary" : "gray"}
+                  replace
+                >
                   Trending
                 </Button>
                 <Button
                   leftIcon={<Clock />}
                   as={RouterLink}
-                  to={getCommunityPath(community)}
+                  to={getCommunityPath(community) + "/newest"}
+                  colorScheme={active === "newest" ? "primary" : "gray"}
                   replace
-                  colorScheme={active === "new" ? "primary" : "gray"}
                 >
                   New
                 </Button>
@@ -113,8 +121,8 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                   leftIcon={<Hourglass03 />}
                   as={RouterLink}
                   to={getCommunityPath(community) + "/pending"}
-                  replace
                   colorScheme={active == "pending" ? "primary" : "gray"}
+                  replace
                 >
                   Pending
                 </Button>
