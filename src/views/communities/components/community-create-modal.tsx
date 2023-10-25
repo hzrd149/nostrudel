@@ -289,7 +289,7 @@ export default function CommunityCreateModal({
                 <Radio value="zaps">Zaps</Radio>
               </Stack>
             </RadioGroup>
-            <FormHelperText>The default by posts are ranked when viewing the community</FormHelperText>
+            <FormHelperText>The default way posts are ranked when viewing the community</FormHelperText>
             {errors.ranking?.message && <FormErrorMessage>{errors.ranking?.message}</FormErrorMessage>}
           </FormControl>
 
@@ -317,7 +317,8 @@ export default function CommunityCreateModal({
 
           <FormControl isInvalid={!!errors.mods}>
             <FormLabel>Links</FormLabel>
-            <Flex direction="column">
+            <FormHelperText>A few helpful resources for the community</FormHelperText>
+            <Flex direction="column" mt="2">
               {getValues().links.map(([link, name]) => (
                 <Flex key={link}>
                   <Link href={link}>{name || link}</Link>
