@@ -260,7 +260,9 @@ export default function PostModal({
               </FormControl>
               <Flex gap="2" direction="column">
                 <Switch {...register("nsfw")}>NSFW</Switch>
-                {getValues().nsfw && <Input {...register("nsfwReason")} placeholder="Reason" />}
+                {getValues().nsfw && (
+                  <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
+                )}
               </Flex>
             </Flex>
             <Flex direction="column" gap="2" flex={1}>

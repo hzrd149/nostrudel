@@ -9,11 +9,11 @@ export default function NoteContentWithWarning({ event }: { event: NostrEvent })
   const expand = useExpand();
   const settings = useAppSettings();
 
-  const contentWarning = event.tags.find((t) => t[0] === "content-warning")?.[1];
-  const showContentWarning = settings.showContentWarning && contentWarning && !expand?.expanded;
+  const contentWarningTag = event.tags.find((t) => t[0] === "content-warning");
+  const showContentWarning = settings.showContentWarning && contentWarningTag && !expand?.expanded;
 
   return showContentWarning ? (
-    <SensitiveContentWarning description={contentWarning} />
+    <SensitiveContentWarning description={contentWarningTag?.[1]} />
   ) : (
     <NoteContents px="2" event={event} />
   );
