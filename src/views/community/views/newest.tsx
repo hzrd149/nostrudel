@@ -12,17 +12,7 @@ import PostVoteButtons from "../components/post-vote-buttions";
 import TimelineLoader from "../../../classes/timeline-loader";
 import CommunityPost from "../components/community-post";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-
-const ApprovedEvent = memo(
-  ({ event, approvals, community }: { event: NostrEvent; approvals: NostrEvent[]; community: NostrEvent }) => {
-    return (
-      <Flex gap="2" alignItems="flex-start">
-        <PostVoteButtons event={event} community={community} flexShrink={0} />
-        <CommunityPost event={event} community={community} approvals={approvals} flex={1} />
-      </Flex>
-    );
-  },
-);
+import ApprovedEvent from "../components/community-approved-post";
 
 export default function CommunityNewestView() {
   const { community, timeline } = useOutletContext() as { community: NostrEvent; timeline: TimelineLoader };
@@ -43,7 +33,7 @@ export default function CommunityNewestView() {
     <>
       <IntersectionObserverProvider callback={callback}>
         {approved.map(({ event, approvals }) => (
-          <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} community={community} />
+          <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} />
         ))}
       </IntersectionObserverProvider>
       <TimelineActionAndStatus timeline={timeline} />

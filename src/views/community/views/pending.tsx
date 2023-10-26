@@ -65,7 +65,7 @@ function ModPendingPost({ event, community, approvals }: PendingProps) {
 
   return (
     <Flex direction="column" gap="2" ref={ref}>
-      <CommunityPost event={event} approvals={approvals} community={community} />
+      <CommunityPost event={event} approvals={approvals} />
       <Flex gap="2">
         <Button
           colorScheme="primary"

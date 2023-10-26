@@ -22,10 +22,9 @@ import CommunityPostDebugModal from "../../../components/debug-modals/community-
 
 export default function CommunityPostMenu({
   event,
-  community,
   approvals,
   ...props
-}: Omit<MenuIconButtonProps, "children"> & { event: NostrEvent; community: NostrEvent; approvals: NostrEvent[] }) {
+}: Omit<MenuIconButtonProps, "children"> & { event: NostrEvent; approvals: NostrEvent[] }) {
   const account = useCurrentAccount();
   const debugModal = useDisclosure();
 
@@ -79,7 +78,6 @@ export default function CommunityPostMenu({
           onClose={debugModal.onClose}
           size="6xl"
           approvals={approvals}
-          community={community}
         />
       )}
     </>

@@ -6,21 +6,19 @@ import useEventReactions from "../../../hooks/use-event-reactions";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { draftEventReaction, groupReactions } from "../../../helpers/nostr/reactions";
 import clientRelaysService from "../../../services/client-relays";
-import { getCommunityPostVote, getCommunityRelays } from "../../../helpers/nostr/communities";
+import { getCommunityPostVote } from "../../../helpers/nostr/communities";
 import { unique } from "../../../helpers/array";
 import eventReactionsService from "../../../services/event-reactions";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import { NostrEvent } from "../../../types/nostr-event";
+import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
 
-export default function PostVoteButtons({
-  event,
-  community,
-  ...props
-}: Omit<CardProps, "children"> & { event: NostrEvent; community: NostrEvent }) {
+export default function PostVoteButtons({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();
   const reactions = useEventReactions(event.id);
   const toast = useToast();
+  const additionalRelays = useAdditionalRelayContext();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
   const { vote, up, down } = getCommunityPostVote(grouped);
@@ -39,8 +37,7 @@ export default function PostVoteButtons({
         const signed = await requestSignature(draft);
         if (signed) {
           const writeRelays = clientRelaysService.getWriteUrls();
-          const communityRelays = getCommunityRelays(community);
-          new NostrPublishAction("Reaction", unique([...writeRelays, ...communityRelays]), signed);
+          new NostrPublishAction("Reaction", unique([...writeRelays, ...additionalRelays]), signed);
           eventReactionsService.handleEvent(signed);
         }
       } catch (e) {
@@ -48,7 +45,7 @@ export default function PostVoteButtons({
       }
       setLoading(false);
     },
-    [event, community, requestSignature],
+    [event, requestSignature, additionalRelays],
   );
 
   return (

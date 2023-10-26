@@ -2,20 +2,23 @@ import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Flex } 
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent, isATag } from "../../types/nostr-event";
 import RawJson from "./raw-json";
 import RawValue from "./raw-value";
 import RawPre from "./raw-pre";
 import userMetadataService from "../../services/user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 
 export default function CommunityPostDebugModal({
   event,
-  community,
   approvals,
   ...props
-}: { event: NostrEvent; community: NostrEvent; approvals: NostrEvent[] } & Omit<ModalProps, "children">) {
+}: { event: NostrEvent; approvals: NostrEvent[] } & Omit<ModalProps, "children">) {
+  const communityCoordinate = event.tags
+    .filter(isATag)
+    .find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"))?.[1];
+
   return (
     <Modal {...props}>
       <ModalOverlay />
@@ -25,7 +28,7 @@ export default function CommunityPostDebugModal({
           <Flex gap="2" direction="column">
             <RawValue heading="Event Id" value={event.id} />
             <RawValue heading="Encoded id (NIP-19)" value={nip19.noteEncode(event.id)} />
-            <RawValue heading="Community Coordinate" value={getEventCoordinate(community)} />
+            <RawValue heading="Community Coordinate" value={communityCoordinate} />
             <RawPre heading="Content" value={event.content} />
             <RawJson heading="JSON" json={event} />
             {approvals.map((approval) => (

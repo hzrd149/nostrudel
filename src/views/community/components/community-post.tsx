@@ -40,7 +40,6 @@ export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
 export type CommunityPostPropTypes = {
   event: NostrEvent;
   approvals: NostrEvent[];
-  community: NostrEvent;
 };
 
 function PostSubject({ event }: { event: NostrEvent }) {
@@ -84,7 +83,6 @@ function Approvals({ approvals }: { approvals: NostrEvent[] }) {
 export function CommunityTextPost({
   event,
   approvals,
-  community,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -102,14 +100,7 @@ export function CommunityTextPost({
         </Text>
         <Flex gap="2" alignItems="center" ml="auto">
           {approvals.length > 0 && <Approvals approvals={approvals} />}
-          <CommunityPostMenu
-            event={event}
-            community={community}
-            approvals={approvals}
-            aria-label="More Options"
-            size="xs"
-            variant="ghost"
-          />
+          <CommunityPostMenu event={event} approvals={approvals} aria-label="More Options" size="xs" variant="ghost" />
         </Flex>
       </CardFooter>
     </Card>
@@ -119,7 +110,6 @@ export function CommunityTextPost({
 export function CommunityRepostPost({
   event,
   approvals,
-  community,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const encodedRepost = parseHardcodedNoteContent(event);
@@ -152,14 +142,7 @@ export function CommunityRepostPost({
         </Text>
         <Flex gap="2" alignItems="center" ml="auto">
           {approvals.length > 0 && <Approvals approvals={approvals} />}
-          <CommunityPostMenu
-            event={event}
-            community={community}
-            approvals={approvals}
-            aria-label="More Options"
-            size="xs"
-            variant="ghost"
-          />
+          <CommunityPostMenu event={event} approvals={approvals} aria-label="More Options" size="xs" variant="ghost" />
         </Flex>
       </CardFooter>
     </Card>
@@ -169,14 +152,13 @@ export function CommunityRepostPost({
 export default function CommunityPost({
   event,
   approvals,
-  community,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   switch (event.kind) {
     case Kind.Text:
-      return <CommunityTextPost event={event} approvals={approvals} community={community} {...props} />;
+      return <CommunityTextPost event={event} approvals={approvals} {...props} />;
     case Kind.Repost:
-      return <CommunityRepostPost event={event} approvals={approvals} community={community} {...props} />;
+      return <CommunityRepostPost event={event} approvals={approvals} {...props} />;
   }
   return null;
 }

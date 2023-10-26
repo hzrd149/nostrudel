@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AvatarGroup, Button, Flex, Switch, useDisclosure } from "@chakra-ui/react";
+import { AvatarGroup, Button, Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -83,7 +83,7 @@ function CommunitiesExplorePage() {
           Show More
         </Switch>
       </Flex>
-      <Flex gap="4" direction="column">
+      <SimpleGrid spacing="4" columns={{ base: 1, lg: 2 }}>
         {sorted
           .filter((c) => (showMore ? c.pubkeys.length > 1 : true))
           .map(({ pointer, pubkeys }) => (
@@ -93,7 +93,7 @@ function CommunitiesExplorePage() {
               pubkeys={pubkeys}
             />
           ))}
-      </Flex>
+      </SimpleGrid>
     </VerticalPageLayout>
   );
 }
