@@ -19,6 +19,7 @@ import {
   ToolsIcon,
   LogoutIcon,
   NotesIcon,
+  LightningIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -193,6 +194,9 @@ export default function NavItems() {
         {...buttonProps}
       >
         Settings
+      </Button>
+      <Button leftIcon={<LightningIcon boxSize={6} color="yellow.400" />} {...buttonProps}>
+        Donate
       </Button>
       {account && (
         <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>

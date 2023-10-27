@@ -69,6 +69,7 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
+import UserDMsTab from "./views/user/dms";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -200,6 +201,7 @@ const router = createHashRouter([
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
           { path: "muted-by", element: <MutedByView /> },
+          { path: "dms", element: <UserDMsTab /> },
         ],
       },
       {

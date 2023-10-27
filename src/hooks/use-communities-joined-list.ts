@@ -4,7 +4,7 @@ import { RequestOptions } from "../services/replaceable-event-requester";
 import { useCurrentAccount } from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useSubscribedCommunitiesList(pubkey?: string, opts?: RequestOptions) {
+export default function useJoinedCommunitiesList(pubkey?: string, opts?: RequestOptions) {
   const account = useCurrentAccount();
   const key = pubkey ?? account?.pubkey;
 

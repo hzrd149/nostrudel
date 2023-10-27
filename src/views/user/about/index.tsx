@@ -12,6 +12,7 @@ import {
   IconButton,
   Image,
   Link,
+  SimpleGrid,
   Stat,
   StatGroup,
   StatHelpText,
@@ -55,6 +56,10 @@ import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import Timestamp from "../../../components/timestamp";
 import UserProfileBadges from "./user-profile-badges";
 import useEventCount from "../../../hooks/use-event-count";
+import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
+import { PointerCommunityCard } from "../../communities/components/community-card";
+import { ErrorBoundary } from "../../../components/error-boundary";
+import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -65,18 +70,161 @@ function buildDescriptionContent(description: string) {
   return content;
 }
 
+function UserStatsAccordion({ pubkey }: { pubkey: string }) {
+  const contextRelays = useAdditionalRelayContext();
+  const contacts = useUserContactList(pubkey, contextRelays);
+
+  const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
+  const followerCount = useEventCount({ "#p": [pubkey], kinds: [Kind.Contacts] });
+
+  return (
+    <Accordion allowMultiple>
+      <AccordionItem>
+        <h2>
+          <AccordionButton>
+            <Box as="span" flex="1" textAlign="left">
+              Network Stats
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+        </h2>
+        <AccordionPanel pb="2">
+          <StatGroup gap="4" whiteSpace="pre">
+            <Stat>
+              <StatLabel>Following</StatLabel>
+              <StatNumber>{contacts ? readablizeSats(getPubkeysFromList(contacts).length) : "Unknown"}</StatNumber>
+              {contacts && (
+                <StatHelpText>
+                  Updated <Timestamp timestamp={contacts.created_at} />
+                </StatHelpText>
+              )}
+            </Stat>
+
+            {stats && (
+              <>
+                <Stat>
+                  <StatLabel>Followers</StatLabel>
+                  <StatNumber>{readablizeSats(followerCount ?? 0) || 0}</StatNumber>
+                </Stat>
+
+                <Stat>
+                  <StatLabel>Notes & replies</StatLabel>
+                  <StatNumber>{readablizeSats(stats.pub_note_count) || 0}</StatNumber>
+                </Stat>
+
+                <Stat>
+                  <StatLabel>Reactions</StatLabel>
+                  <StatNumber>{readablizeSats(stats.pub_reaction_count) || 0}</StatNumber>
+                </Stat>
+              </>
+            )}
+          </StatGroup>
+        </AccordionPanel>
+      </AccordionItem>
+
+      {(stats?.zaps_sent || stats?.zaps_received) && (
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Box as="span" flex="1" textAlign="left">
+                Zap Stats
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pb="2">
+            <StatGroup gap="4" whiteSpace="pre">
+              {stats.zaps_sent && (
+                <>
+                  <Stat>
+                    <StatLabel>Zap Sent</StatLabel>
+                    <StatNumber>{stats.zaps_sent.count}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Total Sats Sent</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_sent.msats / 1000)}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Avg Zap Sent</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_sent.avg_msats / 1000)}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Biggest Zap Sent</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_sent.max_msats / 1000)}</StatNumber>
+                  </Stat>
+                </>
+              )}
+
+              {stats.zaps_received && (
+                <>
+                  <Stat>
+                    <StatLabel>Zap Received</StatLabel>
+                    <StatNumber>{stats.zaps_received.count}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Total Sats Received</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_received.msats / 1000)}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Avg Zap Received</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_received.avg_msats / 1000)}</StatNumber>
+                  </Stat>
+                  <Stat>
+                    <StatLabel>Biggest Zap Received</StatLabel>
+                    <StatNumber>{readablizeSats(stats.zaps_received.max_msats / 1000)}</StatNumber>
+                  </Stat>
+                </>
+              )}
+            </StatGroup>
+            <Text color="slategrey">
+              Stats from{" "}
+              <Link href="https://nostr.band" isExternal color="blue.500">
+                nostr.band
+              </Link>
+            </Text>
+          </AccordionPanel>
+        </AccordionItem>
+      )}
+    </Accordion>
+  );
+}
+
+function UserJoinedCommunities({ pubkey }: { pubkey: string }) {
+  const { pointers: communities } = useJoinedCommunitiesList(pubkey);
+  const columns = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 1;
+  const showAllCommunities = useDisclosure();
+
+  if (communities.length === 0) return null;
+
+  return (
+    <Flex direction="column" px="2">
+      <Heading size="md" my="2">
+        Joined Communities ({communities.length})
+      </Heading>
+      <SimpleGrid spacing="4" columns={columns}>
+        {(showAllCommunities.isOpen ? communities : communities.slice(0, columns * 2)).map((pointer) => (
+          <ErrorBoundary key={pointer.identifier + pointer.pubkey}>
+            <PointerCommunityCard pointer={pointer} />
+          </ErrorBoundary>
+        ))}
+      </SimpleGrid>
+      {!showAllCommunities.isOpen && communities.length > columns * 2 && (
+        <Button variant="link" py="4" onClick={showAllCommunities.onOpen}>
+          Show All
+        </Button>
+      )}
+    </Flex>
+  );
+}
+
 export default function UserAboutTab() {
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
   const metadata = useUserMetadata(pubkey, contextRelays);
-  const contacts = useUserContactList(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
-
-  const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
-  const followerCount = useEventCount({ "#p": [pubkey], kinds: [Kind.Contacts] });
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
@@ -185,116 +333,9 @@ export default function UserAboutTab() {
         )}
       </Flex>
 
-      <UserProfileBadges pubkey={pubkey} />
+      <UserProfileBadges pubkey={pubkey} px="2" />
+      <UserStatsAccordion pubkey={pubkey} />
 
-      <Accordion allowMultiple>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                Network Stats
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb="2">
-            <StatGroup gap="4" whiteSpace="pre">
-              <Stat>
-                <StatLabel>Following</StatLabel>
-                <StatNumber>{contacts ? readablizeSats(getPubkeysFromList(contacts).length) : "Unknown"}</StatNumber>
-                {contacts && (
-                  <StatHelpText>
-                    Updated <Timestamp timestamp={contacts.created_at} />
-                  </StatHelpText>
-                )}
-              </Stat>
-
-              {stats && (
-                <>
-                  <Stat>
-                    <StatLabel>Followers</StatLabel>
-                    <StatNumber>{readablizeSats(followerCount ?? 0) || 0}</StatNumber>
-                  </Stat>
-
-                  <Stat>
-                    <StatLabel>Notes & replies</StatLabel>
-                    <StatNumber>{readablizeSats(stats.pub_note_count) || 0}</StatNumber>
-                  </Stat>
-
-                  <Stat>
-                    <StatLabel>Reactions</StatLabel>
-                    <StatNumber>{readablizeSats(stats.pub_reaction_count) || 0}</StatNumber>
-                  </Stat>
-                </>
-              )}
-            </StatGroup>
-          </AccordionPanel>
-        </AccordionItem>
-
-        {(stats?.zaps_sent || stats?.zaps_received) && (
-          <AccordionItem>
-            <h2>
-              <AccordionButton>
-                <Box as="span" flex="1" textAlign="left">
-                  Zap Stats
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pb="2">
-              <StatGroup gap="4" whiteSpace="pre">
-                {stats.zaps_sent && (
-                  <>
-                    <Stat>
-                      <StatLabel>Zap Sent</StatLabel>
-                      <StatNumber>{stats.zaps_sent.count}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Total Sats Sent</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_sent.msats / 1000)}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Avg Zap Sent</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_sent.avg_msats / 1000)}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Biggest Zap Sent</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_sent.max_msats / 1000)}</StatNumber>
-                    </Stat>
-                  </>
-                )}
-
-                {stats.zaps_received && (
-                  <>
-                    <Stat>
-                      <StatLabel>Zap Received</StatLabel>
-                      <StatNumber>{stats.zaps_received.count}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Total Sats Received</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_received.msats / 1000)}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Avg Zap Received</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_received.avg_msats / 1000)}</StatNumber>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>Biggest Zap Received</StatLabel>
-                      <StatNumber>{readablizeSats(stats.zaps_received.max_msats / 1000)}</StatNumber>
-                    </Stat>
-                  </>
-                )}
-              </StatGroup>
-              <Text color="slategrey">
-                Stats from{" "}
-                <Link href="https://nostr.band" isExternal color="blue.500">
-                  nostr.band
-                </Link>
-              </Text>
-            </AccordionPanel>
-          </AccordionItem>
-        )}
-      </Accordion>
       <Flex gap="2" wrap="wrap">
         <Button
           as={Link}
@@ -324,6 +365,8 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
+
+      <UserJoinedCommunities pubkey={pubkey} />
     </Flex>
   );
 }

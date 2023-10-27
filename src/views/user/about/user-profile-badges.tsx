@@ -26,6 +26,7 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
+import { useState } from "react";
 
 function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; award: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);
@@ -81,14 +82,20 @@ function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; aw
 
 export default function UserProfileBadges({ pubkey, ...props }: Omit<FlexProps, "children"> & { pubkey: string }) {
   const profileBadges = useUserProfileBadges(pubkey);
+  const [limit, setLimit] = useState<number | null>(10);
 
   if (profileBadges.length === 0) return null;
 
   return (
-    <Flex gap="2" wrap="wrap" {...props}>
-      {profileBadges.map(({ badge, award }) => (
+    <Flex gap="2" wrap="wrap" alignItems="center" {...props}>
+      {(limit !== null ? profileBadges.slice(0, limit) : profileBadges).map(({ badge, award }) => (
         <Badge key={getEventCoordinate(badge)} pubkey={pubkey} badge={badge} award={award} />
       ))}
+      {limit !== null && profileBadges.length > limit && (
+        <Button variant="outline" onClick={() => setLimit(null)}>
+          Show More
+        </Button>
+      )}
     </Flex>
   );
 }

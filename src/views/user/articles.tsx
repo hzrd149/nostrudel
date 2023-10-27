@@ -1,5 +1,4 @@
 import { useOutletContext } from "react-router-dom";
-import { Flex } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
@@ -27,7 +26,7 @@ export default function UserArticlesTab() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         {articles.map((article) => (
-          <EmbeddedArticle article={article} />
+          <EmbeddedArticle key={article.id} article={article} />
         ))}
         <TimelineActionAndStatus timeline={timeline} />
       </VerticalPageLayout>
