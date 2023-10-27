@@ -46,6 +46,7 @@ import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 
 type FormValues = {
   subject: string;
@@ -74,7 +75,8 @@ export default function PostModal({
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelayUrls();
+  const additionalRelays = useAdditionalRelayContext();
+  const writeRelays = useWriteRelayUrls(additionalRelays);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
