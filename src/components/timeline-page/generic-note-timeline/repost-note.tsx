@@ -3,7 +3,7 @@ import { Flex, Heading, Link, SkeletonText, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import { isATag, isETag, NostrEvent } from "../../../types/nostr-event";
+import { isETag, NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
 import NoteMenu from "../../note/note-menu";
 import UserAvatar from "../../user-avatar";
@@ -15,8 +15,8 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { parseCoordinate, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
-import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
+import { parseHardcodedNoteContent } from "../../../helpers/nostr/events";
+import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 
 export default function RepostNote({ event }: { event: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -31,8 +31,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
   const loadedNote = useSingleEvent(eventId, readRelays);
   const note = hardCodedNote || loadedNote;
 
-  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
-  const communityCoordinate = communityTag && parseCoordinate(communityTag[1]);
+  const communityCoordinate = getEventCommunityPointer(event);
 
   if (note && muteFilter(note)) return;
 

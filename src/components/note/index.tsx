@@ -14,7 +14,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent, isATag } from "../../types/nostr-event";
+import { NostrEvent } from "../../types/nostr-event";
 import UserAvatarLink from "../user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -32,17 +32,16 @@ import { QuoteRepostButton } from "./components/quote-repost-button";
 import { ExternalLinkIcon, ReplyIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
-import { NoteLink } from "../note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import BookmarkButton from "./components/bookmark-button";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
-import { getReferences, parseCoordinate } from "../../helpers/nostr/events";
+import { getReferences } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { COMMUNITY_DEFINITION_KIND, getCommunityName } from "../../helpers/nostr/communities";
+import { getCommunityName, getEventCommunityPointer } from "../../helpers/nostr/communities";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HoverLinkOverlay from "../hover-link-overlay";
@@ -76,11 +75,8 @@ export const Note = React.memo(
 
     // find mostr external link
     const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
-    const communityPointer = useMemo(() => {
-      const tag = event.tags.find((t) => isATag(t) && t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
-      return tag?.[1] ? parseCoordinate(tag[1], true) : undefined;
-    }, [event]);
-    const community = useReplaceableEvent(communityPointer);
+    const communityPointer = useMemo(() => getEventCommunityPointer(event), [event]);
+    const community = useReplaceableEvent(communityPointer ?? undefined);
 
     const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
 

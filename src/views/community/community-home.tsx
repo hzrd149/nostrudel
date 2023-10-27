@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
@@ -24,13 +25,15 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
 import { WritingIcon } from "../../components/icons";
-import { useContext } from "react";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import CommunityEditModal from "./components/community-edit-modal";
+import TimelineLoader from "../../classes/timeline-loader";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
 }
+
+export type RouterContext = { community: NostrEvent; timeline: TimelineLoader };
 
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
   const image = getCommunityImage(community);
@@ -128,7 +131,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                 </Button>
               </ButtonGroup>
 
-              <Outlet context={{ community, timeline }} />
+              <Outlet context={{ community, timeline } satisfies RouterContext} />
             </Flex>
 
             {!verticalLayout && (

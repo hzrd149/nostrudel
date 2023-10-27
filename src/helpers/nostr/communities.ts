@@ -1,7 +1,8 @@
 import { validateEvent } from "nostr-tools";
-import { NostrEvent, isDTag, isETag, isPTag } from "../../types/nostr-event";
+import { NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
 import { getMatchLink, getMatchNostrLink } from "../regexp";
 import { ReactionGroup } from "./reactions";
+import { parseCoordinate } from "./events";
 
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
 export const COMMUNITY_DEFINITION_KIND = 34550;
@@ -88,4 +89,9 @@ export function getCommunityPostVote(grouped: ReactionGroup[]) {
   const down = grouped.find((r) => r.emoji === "-");
   const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
   return { up, down, vote };
+}
+
+export function getEventCommunityPointer(event: NostrEvent){
+  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
+  return communityTag ? parseCoordinate(communityTag[1], true) : null;
 }

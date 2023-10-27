@@ -15,13 +15,13 @@ import useSubject from "../../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
-import TimelineLoader from "../../../classes/timeline-loader";
 import { CheckIcon } from "../../../components/icons";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import CommunityPost from "../components/community-post";
+import { RouterContext } from "../community-home";
 
 type PendingProps = {
   event: NostrEvent;
@@ -84,7 +84,7 @@ function ModPendingPost({ event, community, approvals }: PendingProps) {
 
 export default function CommunityPendingView() {
   const account = useCurrentAccount();
-  const { community, timeline } = useOutletContext() as { community: NostrEvent; timeline: TimelineLoader };
+  const { community, timeline } = useOutletContext<RouterContext>();
 
   const events = useSubject(timeline.timeline);
 

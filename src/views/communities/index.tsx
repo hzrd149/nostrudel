@@ -131,8 +131,7 @@ function CommunitiesHomePage() {
   const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events
-    .filter((event) => event.kind !== COMMUNITY_APPROVAL_KIND)
-    .filter((e) => (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
+    .filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
     .map((event) => ({ event, approvals: approvalMap.get(event.id) }))
     .filter((e) => !muteFilter(e.event));
 
@@ -166,7 +165,7 @@ function CommunitiesHomePage() {
               </Flex>
               <IntersectionObserverProvider callback={callback}>
                 {approved.map(({ event, approvals }) => (
-                  <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} />
+                  <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} showCommunity />
                 ))}
               </IntersectionObserverProvider>
               <TimelineActionAndStatus timeline={timeline} />
@@ -202,10 +201,10 @@ function CommunitiesHomePage() {
           <DrawerCloseButton />
           <DrawerHeader p="4">Joined Communities</DrawerHeader>
 
-          <DrawerBody display="flex" flexDirection="column" gap="2" px="4" py="0">
+          <DrawerBody display="flex" flexDirection="column" gap="2" px="4" pt="0" pb="8" overflowY="auto">
             {communities.map((community) => (
               <ErrorBoundary key={getEventCoordinate(community)}>
-                <CommunityCard community={community} />
+                <CommunityCard community={community} flexShrink={0} />
               </ErrorBoundary>
             ))}
           </DrawerBody>

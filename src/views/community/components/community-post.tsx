@@ -8,6 +8,7 @@ import {
   CardProps,
   Flex,
   Heading,
+  Link,
   LinkBox,
   Text,
 } from "@chakra-ui/react";
@@ -16,7 +17,7 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 
 import { NostrEvent, isETag } from "../../../types/nostr-event";
-import { getPostSubject } from "../../../helpers/nostr/communities";
+import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr/communities";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -40,6 +41,7 @@ export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
 export type CommunityPostPropTypes = {
   event: NostrEvent;
   approvals: NostrEvent[];
+  showCommunity?: boolean;
 };
 
 function PostSubject({ event }: { event: NostrEvent }) {
@@ -83,10 +85,13 @@ function Approvals({ approvals }: { approvals: NostrEvent[] }) {
 export function CommunityTextPost({
   event,
   approvals,
+  showCommunity,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
+
+  const communityPointer = getEventCommunityPointer(event);
 
   return (
     <Card as={LinkBox} ref={ref} {...props}>
@@ -98,6 +103,14 @@ export function CommunityTextPost({
         <Text>
           Posted {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
+        {showCommunity && communityPointer && (
+          <Text>
+            to{" "}
+            <Link as={RouterLink} to={`/c/${communityPointer.identifier}/${communityPointer.pubkey}`} fontWeight="bold">
+              {communityPointer.identifier}
+            </Link>
+          </Text>
+        )}
         <Flex gap="2" alignItems="center" ml="auto">
           {approvals.length > 0 && <Approvals approvals={approvals} />}
           <CommunityPostMenu event={event} approvals={approvals} aria-label="More Options" size="xs" variant="ghost" />
@@ -110,6 +123,7 @@ export function CommunityTextPost({
 export function CommunityRepostPost({
   event,
   approvals,
+  showCommunity,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   const encodedRepost = parseHardcodedNoteContent(event);
@@ -126,6 +140,8 @@ export function CommunityRepostPost({
   const muteFilter = useUserMuteFilter();
   if (repost && muteFilter(repost)) return;
 
+  const communityPointer = getEventCommunityPointer(event);
+
   return (
     <Card as={LinkBox} ref={ref} {...props}>
       {repost && (
@@ -140,6 +156,14 @@ export function CommunityRepostPost({
         <Text>
           Shared {dayjs.unix(event.created_at).fromNow()} by <UserLink pubkey={event.pubkey} fontWeight="bold" />
         </Text>
+        {showCommunity && communityPointer && (
+          <Text>
+            to{" "}
+            <Link as={RouterLink} to={`/c/${communityPointer.identifier}/${communityPointer.pubkey}`} fontWeight="bold">
+              {communityPointer.identifier}
+            </Link>
+          </Text>
+        )}
         <Flex gap="2" alignItems="center" ml="auto">
           {approvals.length > 0 && <Approvals approvals={approvals} />}
           <CommunityPostMenu event={event} approvals={approvals} aria-label="More Options" size="xs" variant="ghost" />
@@ -149,16 +173,12 @@ export function CommunityRepostPost({
   );
 }
 
-export default function CommunityPost({
-  event,
-  approvals,
-  ...props
-}: Omit<CardProps, "children"> & CommunityPostPropTypes) {
+export default function CommunityPost({ event, ...props }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   switch (event.kind) {
     case Kind.Text:
-      return <CommunityTextPost event={event} approvals={approvals} {...props} />;
+      return <CommunityTextPost event={event} {...props} />;
     case Kind.Repost:
-      return <CommunityRepostPost event={event} approvals={approvals} {...props} />;
+      return <CommunityRepostPost event={event} {...props} />;
   }
   return null;
 }
