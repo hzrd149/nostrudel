@@ -1,47 +1,45 @@
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Card, CardProps, Center, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
+import { Card, CardFooter, CardHeader, CardProps, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
-import CommunityDescription from "../../../views/communities/components/community-description";
 
 export default function EmbeddedCommunity({
   community,
   ...props
 }: Omit<CardProps, "children"> & { community: NostrEvent }) {
-  const image = getCommunityImage(community);
   const name = getCommunityName(community);
 
   return (
-    <Card as={LinkBox} variant="outline" gap="2" overflow="hidden" {...props}>
-      {image ? (
-        <Box
-          backgroundImage={getCommunityImage(community)}
-          backgroundRepeat="no-repeat"
-          backgroundSize="contain"
-          backgroundPosition="center"
-          aspectRatio={3 / 1}
-        />
-      ) : (
-        <Center aspectRatio={4 / 1} fontWeight="bold" fontSize="2xl">
-          {name}
-        </Center>
-      )}
-      <Flex direction="column" flex={1} px="2" pb="2">
-        <Flex wrap="wrap" gap="2" alignItems="center">
-          <Heading size="lg">
-            <LinkOverlay as={RouterLink} to={`/c/${encodeURIComponent(name)}/${nip19.npubEncode(community.pubkey)}`}>
-              {name}
-            </LinkOverlay>
-          </Heading>
-          <Text>Created by:</Text>
-          <UserAvatarLink pubkey={community.pubkey} size="xs" /> <UserLink pubkey={community.pubkey} />
-        </Flex>
-        <CommunityDescription community={community} maxLength={128} flex={1} />
-      </Flex>
+    <Card
+      as={LinkBox}
+      variant="outline"
+      maxW="lg"
+      gap="2"
+      overflow="hidden"
+      borderRadius="xl"
+      backgroundImage={getCommunityImage(community)}
+      backgroundRepeat="no-repeat"
+      backgroundSize="cover"
+      backgroundPosition="center"
+      textShadow="2px 2px var(--chakra-blur-sm) var(--chakra-colors-blackAlpha-800)"
+      {...props}
+    >
+      <CardHeader pb="0">
+        <Heading size="lg">
+          <LinkOverlay as={RouterLink} to={`/c/${encodeURIComponent(name)}/${nip19.npubEncode(community.pubkey)}`}>
+            {name}
+          </LinkOverlay>
+        </Heading>
+      </CardHeader>
+      <CardFooter display="flex" alignItems="center" gap="2" pt="0">
+        <UserAvatarLink pubkey={community.pubkey} size="sm" />
+        <Text>by</Text>
+        <UserLink pubkey={community.pubkey} />
+      </CardFooter>
     </Card>
   );
 }

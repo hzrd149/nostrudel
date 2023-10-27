@@ -11,12 +11,12 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import StreamNote from "./stream-note";
 import { ErrorBoundary } from "../../error-boundary";
-import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
 import { getEventUID, isReply } from "../../../helpers/nostr/events";
 import ReplyNote from "./reply-note";
 import RelayRecommendation from "./relay-recommendation";
 import { ExtendedIntersectionObserverEntry, useIntersectionObserver } from "../../../providers/intersection-observer";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
+import ArticleNote from "./article-note";
 
 function RenderEvent({ event }: { event: NostrEvent }) {
   let content: ReactNode | null = null;
@@ -28,7 +28,7 @@ function RenderEvent({ event }: { event: NostrEvent }) {
       content = <RepostNote event={event} />;
       break;
     case Kind.Article:
-      content = <EmbeddedArticle article={event} />;
+      content = <ArticleNote article={event} />;
       break;
     case STREAM_KIND:
       content = <StreamNote event={event} />;
@@ -38,6 +38,7 @@ function RenderEvent({ event }: { event: NostrEvent }) {
       break;
     case Kind.BadgeAward:
       content = <BadgeAwardCard award={event} />;
+      break;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;
       break;

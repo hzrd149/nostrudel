@@ -77,3 +77,18 @@ export interface SchemaV3 {
   relayScoreboardStats: SchemaV2["relayScoreboardStats"];
   misc: SchemaV2["misc"];
 }
+
+export interface SchemaV4 {
+  replaceableEvents: SchemaV3["replaceableEvents"];
+  dnsIdentifiers: SchemaV3["dnsIdentifiers"];
+  relayInfo: SchemaV3["relayInfo"];
+  relayScoreboardStats: SchemaV3["relayScoreboardStats"];
+  userSearch: {
+    key: string;
+    value: {
+      pubkey: string;
+      names: string[];
+    };
+  };
+  misc: SchemaV3["misc"];
+}

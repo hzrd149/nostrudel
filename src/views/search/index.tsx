@@ -1,31 +1,35 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Box, Button, Flex, IconButton, Input, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, IconButton, Input, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAsync } from "react-use";
 
-import { CopyToClipboardIcon, QrCodeIcon } from "../../components/icons";
-import QrScannerModal from "../../components/qr-scanner-modal";
+import { SEARCH_RELAYS } from "../../const";
+import { NostrEvent } from "../../types/nostr-event";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
+import { parseKind0Event } from "../../helpers/user-metadata";
+import { readablizeSats } from "../../helpers/bolt11";
+import { searchParamsToJson } from "../../helpers/url";
+import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { CopyToClipboardIcon, NotesIcon, QrCodeIcon } from "../../components/icons";
+import QrScannerModal from "../../components/qr-scanner-modal";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
-import { NostrEvent } from "../../types/nostr-event";
-import { parseKind0Event } from "../../helpers/user-metadata";
-import { UserAvatar } from "../../components/user-avatar";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import UserAvatar from "../../components/user-avatar";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { EmbedableContent, embedUrls } from "../../helpers/embeds";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import { UserLink } from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
-import { readablizeSats } from "../../helpers/bolt11";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { SEARCH_RELAYS } from "../../const";
+import User01 from "../../components/icons/user-01";
+import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
+import Feather from "../../components/icons/feather";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);
@@ -57,11 +61,11 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
   );
 }
 
-function SearchResults({ search }: { search: string }) {
+function ProfileSearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();
 
   const timeline = useTimelineLoader(
-    `${search}-search`,
+    `${search}-profile-search`,
     searchRelays,
     { search: search || "", kinds: [Kind.Metadata] },
     { enabled: !!search },
@@ -98,12 +102,58 @@ function SearchResults({ search }: { search: string }) {
   );
 }
 
+function NoteSearchResults({ search }: { search: string }) {
+  const searchRelays = useRelaySelectionRelays();
+
+  const timeline = useTimelineLoader(
+    `${search}-note-search`,
+    searchRelays,
+    { search: search || "", kinds: [Kind.Text] },
+    { enabled: !!search },
+  );
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback}>
+      <GenericNoteTimeline timeline={timeline} />
+    </IntersectionObserverProvider>
+  );
+}
+
+function ArticleSearchResults({ search }: { search: string }) {
+  const searchRelays = useRelaySelectionRelays();
+
+  const timeline = useTimelineLoader(
+    `${search}-article-search`,
+    searchRelays,
+    { search: search || "", kinds: [Kind.Article] },
+    { enabled: !!search },
+  );
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback}>
+      <GenericNoteTimeline timeline={timeline} />
+    </IntersectionObserverProvider>
+  );
+}
+
 export function SearchPage() {
   const navigate = useNavigate();
   const qrScannerModal = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams();
+  const mergeSearchParams = useCallback(
+    (params: Record<string, any>) => {
+      setSearchParams((p) => ({ ...searchParamsToJson(p), ...params }), { replace: true });
+    },
+    [setSearchParams],
+  );
+
   const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "");
 
+  const type = searchParams.get("type") ?? "users";
   const search = searchParams.get("q");
 
   // update the input value when search changes
@@ -121,11 +171,11 @@ export function SearchPage() {
 
     const hashTagMatch = getMatchHashtag().exec(cleanText);
     if (hashTagMatch) {
-      navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() });
+      navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() }, { replace: true });
       return;
     }
 
-    setSearchParams({ q: cleanText }, { replace: true });
+    mergeSearchParams({ q: cleanText });
   };
 
   const readClipboard = useCallback(async () => {
@@ -137,6 +187,19 @@ export function SearchPage() {
     e.preventDefault();
     handleSearchText(searchInput);
   };
+
+  let SearchResults = ProfileSearchResults;
+  switch (type) {
+    case "users":
+      SearchResults = ProfileSearchResults;
+      break;
+    case "notes":
+      SearchResults = NoteSearchResults;
+      break;
+    case "articles":
+      SearchResults = ArticleSearchResults;
+      break;
+  }
 
   return (
     <VerticalPageLayout>
@@ -152,11 +215,37 @@ export function SearchPage() {
             <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
             <Button type="submit">Search</Button>
           </Flex>
-          <RelaySelectionButton />
         </Flex>
       </form>
 
-      <Flex direction="column" gap="8">
+      <Flex gap="2">
+        <ButtonGroup size="sm" isAttached variant="outline">
+          <Button
+            leftIcon={<User01 />}
+            colorScheme={type === "users" ? "primary" : undefined}
+            onClick={() => mergeSearchParams({ type: "users" })}
+          >
+            Users
+          </Button>
+          <Button
+            leftIcon={<NotesIcon />}
+            colorScheme={type === "notes" ? "primary" : undefined}
+            onClick={() => mergeSearchParams({ type: "notes" })}
+          >
+            Notes
+          </Button>
+          <Button
+            leftIcon={<Feather />}
+            colorScheme={type === "articles" ? "primary" : undefined}
+            onClick={() => mergeSearchParams({ type: "articles" })}
+          >
+            Articles
+          </Button>
+        </ButtonGroup>
+        <RelaySelectionButton ml="auto" size="sm" />
+      </Flex>
+
+      <Flex direction="column" gap="4">
         {search ? (
           <SearchResults search={search} />
         ) : (

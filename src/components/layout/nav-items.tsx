@@ -19,6 +19,7 @@ import {
   ToolsIcon,
   LogoutIcon,
   NotesIcon,
+  LightningIcon,
 } from "../icons";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -40,6 +41,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/relays")) active = "relays";
   else if (location.pathname.startsWith("/lists")) active = "lists";
   else if (location.pathname.startsWith("/communities")) active = "communities";
+  else if (location.pathname.startsWith("/c/")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
@@ -193,6 +195,9 @@ export default function NavItems() {
       >
         Settings
       </Button>
+      {/* <Button leftIcon={<LightningIcon boxSize={6} color="yellow.400" />} {...buttonProps}>
+        Donate
+      </Button> */}
       {account && (
         <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout

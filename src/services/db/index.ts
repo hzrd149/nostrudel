@@ -1,9 +1,9 @@
 import { openDB, deleteDB, IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4 } from "./schema";
 
 const dbName = "storage";
-const version = 3;
-const db = await openDB<SchemaV3>(dbName, version, {
+const version = 4;
+const db = await openDB<SchemaV4>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -70,6 +70,19 @@ const db = await openDB<SchemaV3>(dbName, version, {
         keyPath: "addr",
       });
       settings.createIndex("created", "created");
+    }
+
+    if (oldVersion < 4) {
+      const v3 = db as unknown as IDBPDatabase<SchemaV3>;
+      const v4 = db as unknown as IDBPDatabase<SchemaV4>;
+
+      // rename the tables
+      v3.deleteObjectStore("userFollows");
+
+      // create new search table
+      v4.createObjectStore("userSearch", {
+        keyPath: "pubkey",
+      });
     }
   },
 });

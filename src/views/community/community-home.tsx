@@ -1,132 +1,154 @@
-import { Box, Button, ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { useContext } from "react";
+import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 
 import {
   getCommunityRelays as getCommunityRelays,
   getCommunityImage,
-  getCommunityMods,
   getCommunityName,
-  getCommunityDescription,
+  COMMUNITY_APPROVAL_KIND,
 } from "../../helpers/nostr/communities";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import CommunityDescription from "../communities/components/community-description";
-import CommunityJoinButton from "../communities/components/community-subscribe-button";
 import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
-import { RelayIconStack } from "../../components/relay-icon-stack";
 
 import TrendUp01 from "../../components/icons/trend-up-01";
 import Clock from "../../components/icons/clock";
 import Hourglass03 from "../../components/icons/hourglass-03";
-
-function CommunityDetails({ community }: { community: NostrEvent }) {
-  const communityRelays = getCommunityRelays(community);
-  const mods = getCommunityMods(community);
-  const description = getCommunityDescription(community);
-
-  return (
-    <Card p="4" w="xs" flexShrink={0}>
-      {description && (
-        <>
-          <Heading size="sm" mb="2">
-            Description:
-          </Heading>
-          <CommunityDescription community={community} maxLength={256} showExpand />
-        </>
-      )}
-      <Heading size="sm" mt="4" mb="2">
-        Moderators:
-      </Heading>
-      <Flex direction="column" gap="2">
-        {mods.map((pubkey) => (
-          <Flex gap="2">
-            <UserAvatarLink pubkey={pubkey} size="xs" />
-            <UserLink pubkey={pubkey} />
-          </Flex>
-        ))}
-      </Flex>
-      {communityRelays.length > 0 && (
-        <>
-          <Heading size="sm" mt="4" mb="2">
-            Relays:
-          </Heading>
-          <Flex direction="column" gap="2">
-            <RelayIconStack relays={communityRelays} />
-          </Flex>
-        </>
-      )}
-    </Card>
-  );
-}
+import VerticalCommunityDetails from "./components/vertical-community-details";
+import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import HorizontalCommunityDetails from "./components/horizonal-community-details";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
+import { WritingIcon } from "../../components/icons";
+import { PostModalContext } from "../../providers/post-modal-provider";
+import CommunityEditModal from "./components/community-edit-modal";
+import TimelineLoader from "../../classes/timeline-loader";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
 }
 
+export type RouterContext = { community: NostrEvent; timeline: TimelineLoader };
+
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
   const image = getCommunityImage(community);
   const location = useLocation();
+  const { openModal } = useContext(PostModalContext);
+  const editModal = useDisclosure();
+  const communityCoordinate = getEventCoordinate(community);
+
+  const verticalLayout = useBreakpointValue({ base: true, xl: false });
 
   const communityRelays = getCommunityRelays(community);
+  const readRelays = useReadRelayUrls(communityRelays);
+  const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
+    kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
+    "#a": [communityCoordinate],
+  });
 
-  let active = "new";
+  let active = "newest";
+  if (location.pathname.endsWith("/newest")) active = "newest";
   if (location.pathname.endsWith("/pending")) active = "pending";
+  if (location.pathname.endsWith("/trending")) active = "trending";
 
   return (
-    <AdditionalRelayProvider relays={communityRelays}>
-      <VerticalPageLayout pt={image && "0"}>
-        {image && (
-          <Box
+    <>
+      <AdditionalRelayProvider relays={communityRelays}>
+        <VerticalPageLayout pt={image && "0"}>
+          <Flex
             backgroundImage={getCommunityImage(community)}
             backgroundRepeat="no-repeat"
             backgroundSize="cover"
             backgroundPosition="center"
             aspectRatio={3 / 1}
             backgroundColor="rgba(0,0,0,0.2)"
-          />
-        )}
-        <Flex wrap="wrap" gap="2" alignItems="center">
-          <Heading size="lg">{getCommunityName(community)}</Heading>
-          <Text>Created by:</Text>
-          <Flex gap="2">
-            <UserAvatarLink pubkey={community.pubkey} size="xs" /> <UserLink pubkey={community.pubkey} />
-          </Flex>
-          <CommunityJoinButton community={community} ml="auto" />
-        </Flex>
-
-        <Flex gap="4" alignItems="flex-start">
-          <Flex direction="column" gap="4" flex={1}>
-            <ButtonGroup size="sm">
-              <Button leftIcon={<TrendUp01 />} isDisabled>
-                Trending
-              </Button>
-              <Button
-                leftIcon={<Clock />}
-                as={RouterLink}
-                to={getCommunityPath(community)}
-                colorScheme={active === "new" ? "primary" : "gray"}
-              >
-                New
-              </Button>
-              <Button
-                leftIcon={<Hourglass03 />}
-                as={RouterLink}
-                to={getCommunityPath(community) + "/pending"}
-                colorScheme={active == "pending" ? "primary" : "gray"}
-              >
-                Pending
-              </Button>
-            </ButtonGroup>
-
-            <Outlet context={{ community }} />
+            p="4"
+            gap="4"
+            direction="column"
+            justifyContent="flex-end"
+            textShadow="2px 2px var(--chakra-blur-sm) var(--chakra-colors-blackAlpha-800)"
+          >
+            <Heading>{getCommunityName(community)}</Heading>
+            <Flex gap="2" alignItems="center">
+              <UserAvatarLink pubkey={community.pubkey} size="sm" />
+              <Text>by</Text>
+              <UserLink pubkey={community.pubkey} />
+            </Flex>
           </Flex>
 
-          <CommunityDetails community={community} />
-        </Flex>
-      </VerticalPageLayout>
-    </AdditionalRelayProvider>
+          {verticalLayout && (
+            <HorizontalCommunityDetails community={community} w="full" flexShrink={0} onEditClick={editModal.onOpen} />
+          )}
+
+          <Flex gap="4" alignItems="flex-start" overflow="hidden">
+            <Flex direction="column" gap="4" flex={1} overflow="hidden">
+              <ButtonGroup size="sm">
+                <Button
+                  colorScheme="primary"
+                  leftIcon={<WritingIcon />}
+                  onClick={() =>
+                    openModal({
+                      cacheFormKey: communityCoordinate + "-new-post",
+                      initCommunity: communityCoordinate,
+                      requireSubject: true,
+                    })
+                  }
+                >
+                  New Post
+                </Button>
+                <Divider orientation="vertical" h="2rem" />
+                <Button
+                  leftIcon={<TrendUp01 />}
+                  as={RouterLink}
+                  to={getCommunityPath(community) + "/trending"}
+                  colorScheme={active === "trending" ? "primary" : "gray"}
+                  replace
+                >
+                  Trending
+                </Button>
+                <Button
+                  leftIcon={<Clock />}
+                  as={RouterLink}
+                  to={getCommunityPath(community) + "/newest"}
+                  colorScheme={active === "newest" ? "primary" : "gray"}
+                  replace
+                >
+                  New
+                </Button>
+                <Button
+                  leftIcon={<Hourglass03 />}
+                  as={RouterLink}
+                  to={getCommunityPath(community) + "/pending"}
+                  colorScheme={active == "pending" ? "primary" : "gray"}
+                  replace
+                >
+                  Pending
+                </Button>
+              </ButtonGroup>
+
+              <Outlet context={{ community, timeline } satisfies RouterContext} />
+            </Flex>
+
+            {!verticalLayout && (
+              <VerticalCommunityDetails
+                community={community}
+                w="full"
+                maxW="xs"
+                flexShrink={0}
+                onEditClick={editModal.onOpen}
+              />
+            )}
+          </Flex>
+        </VerticalPageLayout>
+      </AdditionalRelayProvider>
+      {editModal.isOpen && (
+        <CommunityEditModal isOpen={editModal.isOpen} onClose={editModal.onClose} community={community} />
+      )}
+    </>
   );
 }

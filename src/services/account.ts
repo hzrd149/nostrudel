@@ -95,7 +95,7 @@ class AccountService {
   }
 
   logout(clear = true) {
-    if (this.current.value) {
+    if (clear && this.current.value) {
       this.removeAccount(this.current.value.pubkey);
     }
 

@@ -1,16 +1,16 @@
 import { useRef } from "react";
-import { Card, Flex, Image, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
+import { Card, Flex, Image, Link, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { getBadgeAwardBadge, getBadgeAwardPubkeys, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { NostrEvent, isPTag } from "../../../types/nostr-event";
+import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { UserLink } from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 
 export default function BadgeAwardCard({ award, showImage = true }: { award: NostrEvent; showImage?: boolean }) {
   const badge = useReplaceableEvent(getBadgeAwardBadge(award));

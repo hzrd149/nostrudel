@@ -2,7 +2,7 @@ import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { EditIcon, GhostIcon } from "../../../components/icons";
-import { UserAvatar } from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
 import { useCurrentAccount } from "../../../hooks/use-current-account";

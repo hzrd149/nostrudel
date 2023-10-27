@@ -20,7 +20,7 @@ export function QuoteRepostButton({
 
   const handleClick = () => {
     const nevent = getSharableEventAddress(event);
-    openModal("\nnostr:" + nevent);
+    openModal({ cacheFormKey: null, initContent: "\nnostr:" + nevent });
   };
 
   return (

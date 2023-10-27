@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { forwardRef, memo, useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
@@ -9,7 +9,7 @@ import appSettings from "../services/settings/app-settings";
 import useSubject from "../hooks/use-subject";
 import { getUserDisplayName } from "../helpers/user-metadata";
 
-export const UserIdenticon = React.memo(({ pubkey }: { pubkey: string }) => {
+export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
 
   return identicon ? <img src={`data:image/svg+xml;base64,${identicon}`} width="100%" /> : null;
@@ -20,7 +20,7 @@ export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   relay?: string;
   noProxy?: boolean;
 };
-export const UserAvatar = React.memo(({ pubkey, noProxy, relay, ...props }: UserAvatarProps) => {
+export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(({ pubkey, noProxy, relay, ...props }, ref) => {
   const { imageProxy, proxyUserMedia } = useSubject(appSettings);
   const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
   const picture = useMemo(() => {
@@ -44,8 +44,11 @@ export const UserAvatar = React.memo(({ pubkey, noProxy, relay, ...props }: User
       icon={<UserIdenticon pubkey={pubkey} />}
       overflow="hidden"
       title={getUserDisplayName(metadata, pubkey)}
+      ref={ref}
       {...props}
     />
   );
 });
 UserAvatar.displayName = "UserAvatar";
+
+export default memo(UserAvatar);

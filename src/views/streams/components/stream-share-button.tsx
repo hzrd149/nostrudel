@@ -23,7 +23,7 @@ export default function StreamShareButton({
 
   const handleClick = () => {
     const nevent = getSharableEventAddress(stream.event);
-    openModal("\nnostr:" + nevent);
+    openModal({ initContent: "\nnostr:" + nevent });
   };
 
   return (

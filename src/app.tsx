@@ -58,21 +58,25 @@ import BadgesBrowseView from "./views/badges/browse";
 import BadgeDetailsView from "./views/badges/badge-details";
 
 import CommunitiesHomeView from "./views/communities";
+import CommunitiesExploreView from "./views/communities/explore";
 import CommunityFindByNameView from "./views/community/find-by-name";
 import CommunityView from "./views/community/index";
 import CommunityPendingView from "./views/community/views/pending";
-import CommunityNewView from "./views/community/views/new";
+import CommunityNewestView from "./views/community/views/newest";
+import CommunityTrendingView from "./views/community/views/trending";
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
+import UserDMsTab from "./views/user/dms";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
 const NetworkView = lazy(() => import("./views/tools/network"));
 const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
-const NetworkGraphView = lazy(() => import("./views/tools/network-mute-graph"));
+const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
+const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -197,6 +201,7 @@ const router = createHashRouter([
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
           { path: "muted-by", element: <MutedByView /> },
+          { path: "dms", element: <UserDMsTab /> },
         ],
       },
       {
@@ -223,7 +228,8 @@ const router = createHashRouter([
         children: [
           { path: "", element: <ToolsHomeView /> },
           { path: "network", element: <NetworkView /> },
-          { path: "network-graph", element: <NetworkGraphView /> },
+          { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
+          { path: "network-dm-graph", element: <NetworkDMGraphView /> },
         ],
       },
       {
@@ -236,7 +242,10 @@ const router = createHashRouter([
       },
       {
         path: "communities",
-        element: <CommunitiesHomeView />,
+        children: [
+          { path: "", element: <CommunitiesHomeView /> },
+          { path: "explore", element: <CommunitiesExploreView /> },
+        ],
       },
       {
         path: "c/:community",
@@ -246,7 +255,9 @@ const router = createHashRouter([
             path: ":pubkey",
             element: <CommunityView />,
             children: [
-              { path: "", element: <CommunityNewView /> },
+              { path: "", element: <CommunityNewestView /> },
+              { path: "trending", element: <CommunityTrendingView /> },
+              { path: "newest", element: <CommunityNewestView /> },
               { path: "pending", element: <CommunityPendingView /> },
             ],
           },

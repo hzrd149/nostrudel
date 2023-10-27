@@ -25,7 +25,7 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
@@ -43,7 +43,7 @@ import { UserEmojiProvider } from "../../../providers/emoji-provider";
 import StreamStatusBadge from "../components/status-badge";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 import useStreamChatTimeline from "./stream-chat/use-stream-chat-timeline";
-import UserDirectoryProvider from "../../../providers/user-directory-provider";
+import UserSearchDirectoryProvider from "../../../providers/user-directory-provider";
 import StreamChatLog from "./stream-chat/chat-log";
 import TopZappers from "../components/top-zappers";
 import StreamHashtags from "../components/stream-hashtags";
@@ -206,20 +206,20 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
 
-  const chatTimeline = useStreamChatTimeline(stream);
-  const chatLog = useSubject(chatTimeline.timeline);
-  const pubkeysInChat = useMemo(() => {
-    const set = new Set<string>();
-    for (const event of chatLog) {
-      set.add(event.pubkey);
-    }
-    return Array.from(set);
-  }, [chatLog]);
+  // const chatTimeline = useStreamChatTimeline(stream);
+  // const chatLog = useSubject(chatTimeline.timeline);
+  // const pubkeysInChat = useMemo(() => {
+  //   const set = new Set<string>();
+  //   for (const event of chatLog) {
+  //     set.add(event.pubkey);
+  //   }
+  //   return Array.from(set);
+  // }, [chatLog]);
 
   return (
-    <UserDirectoryProvider getDirectory={() => pubkeysInChat}>
-      <Layout stream={stream} />
-    </UserDirectoryProvider>
+    // <UserDirectoryProvider getDirectory={() => pubkeysInChat}>
+    <Layout stream={stream} />
+    // </UserDirectoryProvider>
   );
 }
 

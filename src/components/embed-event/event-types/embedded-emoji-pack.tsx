@@ -15,7 +15,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";

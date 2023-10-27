@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getGoalName } from "../../../helpers/nostr/goal";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import GoalProgress from "../../../views/goals/components/goal-progress";
 import GoalZapButton from "../../../views/goals/components/goal-zap-button";

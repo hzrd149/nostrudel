@@ -2,7 +2,7 @@ import { memo, useMemo, useRef } from "react";
 import { Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";

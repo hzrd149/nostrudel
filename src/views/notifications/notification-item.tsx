@@ -2,7 +2,7 @@ import { ReactNode, forwardRef, memo, useMemo, useRef } from "react";
 import { Box, Card, Flex, Text } from "@chakra-ui/react";
 import { Kind, nip18, nip25 } from "nostr-tools";
 
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";

@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import { InlineNoteContent } from "../../note/inline-note-content";
 import { getDownloadURL, getHashtags, getStreamURL } from "../../../helpers/nostr/stemstr";

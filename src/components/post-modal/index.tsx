@@ -46,8 +46,10 @@ import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 
 type FormValues = {
+  subject: string;
   content: string;
   nsfw: boolean;
   nsfwReason: string;
@@ -55,25 +57,37 @@ type FormValues = {
   split: EventSplit;
 };
 
+export type PostModalProps = {
+  cacheFormKey?: string | null;
+  initContent?: string;
+  initCommunity?: string;
+  requireSubject?: boolean;
+};
+
 export default function PostModal({
   isOpen,
   onClose,
+  cacheFormKey = "new-note",
   initContent = "",
-}: Omit<ModalProps, "children"> & { initContent?: string }) {
+  initCommunity = "",
+  requireSubject,
+}: Omit<ModalProps, "children"> & PostModalProps) {
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelayUrls();
+  const additionalRelays = useAdditionalRelayContext();
+  const writeRelays = useWriteRelayUrls(additionalRelays);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
+      subject: "",
       content: initContent,
       nsfw: false,
       nsfwReason: "",
-      community: "",
+      community: initCommunity,
       split: [] as EventSplit,
     },
     mode: "all",
@@ -84,7 +98,7 @@ export default function PostModal({
   watch("split");
 
   // cache form to localStorage
-  useCacheForm<FormValues>("new-note", getValues, setValue, formState);
+  useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
 
   const textAreaRef = useRef<RefType | null>(null);
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
@@ -116,7 +130,7 @@ export default function PostModal({
   );
 
   const getDraft = useCallback(() => {
-    const { content, nsfw, nsfwReason, community, split } = getValues();
+    const { content, nsfw, nsfwReason, community, split, subject } = getValues();
 
     let updatedDraft = finalizeNote({
       content: content,
@@ -132,6 +146,9 @@ export default function PostModal({
     }
     if (community) {
       updatedDraft.tags.push(["a", community]);
+    }
+    if (subject) {
+      updatedDraft.tags.push(["subject", subject]);
     }
 
     const contentMentions = getContentMentions(updatedDraft.content);
@@ -169,6 +186,7 @@ export default function PostModal({
     }
     return (
       <>
+        {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
         <MagicTextArea
           autoFocus
           mb="2"
@@ -244,7 +262,9 @@ export default function PostModal({
               </FormControl>
               <Flex gap="2" direction="column">
                 <Switch {...register("nsfw")}>NSFW</Switch>
-                {getValues().nsfw && <Input {...register("nsfwReason")} placeholder="Reason" />}
+                {getValues().nsfw && (
+                  <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
+                )}
               </Flex>
             </Flex>
             <Flex direction="column" gap="2" flex={1}>

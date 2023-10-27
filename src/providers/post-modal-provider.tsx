@@ -1,10 +1,10 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { ErrorBoundary } from "../components/error-boundary";
-import PostModal from "../components/post-modal";
+import PostModal, { PostModalProps } from "../components/post-modal";
 
 export type PostModalContextType = {
-  openModal: (content?: string) => void;
+  openModal: (props?: PostModalProps) => void;
 };
 
 export const PostModalContext = React.createContext<PostModalContextType>({
@@ -13,20 +13,26 @@ export const PostModalContext = React.createContext<PostModalContextType>({
 
 export default function PostModalProvider({ children }: PropsWithChildren) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [initContent, setInitContent] = useState("");
+  const [initProps, setInitProps] = useState<PostModalProps>({});
+
   const openModal = useCallback(
-    (content?: string) => {
-      if (content) setInitContent(content);
+    (props?: PostModalProps) => {
+      setInitProps(props ?? {});
       onOpen();
     },
-    [onOpen, setInitContent],
+    [onOpen, setInitProps],
   );
+  const closeModal = useCallback(() => {
+    setInitProps({});
+    onClose();
+  }, [onOpen, setInitProps]);
+
   const context = useMemo(() => ({ openModal }), [openModal]);
 
   return (
     <PostModalContext.Provider value={context}>
       <ErrorBoundary>
-        {isOpen && <PostModal isOpen={isOpen} onClose={onClose} initContent={initContent} />}
+        {isOpen && <PostModal {...initProps} isOpen={isOpen} onClose={closeModal} />}
         {children}
       </ErrorBoundary>
     </PostModalContext.Provider>
