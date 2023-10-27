@@ -195,9 +195,9 @@ export default function NavItems() {
       >
         Settings
       </Button>
-      <Button leftIcon={<LightningIcon boxSize={6} color="yellow.400" />} {...buttonProps}>
+      {/* <Button leftIcon={<LightningIcon boxSize={6} color="yellow.400" />} {...buttonProps}>
         Donate
-      </Button>
+      </Button> */}
       {account && (
         <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout
