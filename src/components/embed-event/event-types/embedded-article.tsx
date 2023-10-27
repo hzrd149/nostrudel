@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Box, Card, CardBody, CardProps, Flex, Image, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
 
 import {
@@ -8,8 +7,6 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user-avatar-link";
@@ -23,12 +20,8 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
 
   const naddr = getSharableEventAddress(article);
 
-  // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(article));
-
   return (
-    <Card as={LinkBox} ref={ref} size="sm" {...props}>
+    <Card as={LinkBox} size="sm" {...props}>
       {image && (
         <Box
           backgroundImage={image}

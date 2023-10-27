@@ -1,12 +1,13 @@
+import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
+import { useOutletContext } from "react-router-dom";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
-import { useOutletContext } from "react-router-dom";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { NostrEvent, isPTag } from "../../types/nostr-event";
@@ -16,15 +17,19 @@ import ArrowRight from "../../components/icons/arrow-right";
 import { AtIcon } from "../../components/icons";
 import Timestamp from "../../components/timestamp";
 import ArrowLeft from "../../components/icons/arrow-left";
+import { getEventUID } from "../../helpers/nostr/events";
 
 function DirectMessage({ dm, pubkey }: { dm: NostrEvent; pubkey: string }) {
   const sender = dm.pubkey;
   const receiver = dm.tags.find(isPTag)?.[1];
 
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, getEventUID(dm));
+
   if (sender === pubkey) {
     if (!receiver) return null;
     return (
-      <Flex gap="2" alignItems="center">
+      <Flex gap="2" alignItems="center" ref={ref}>
         <ArrowRight boxSize={6} />
         <Timestamp timestamp={dm.created_at} />
         <Text>Sent: </Text>
@@ -34,7 +39,7 @@ function DirectMessage({ dm, pubkey }: { dm: NostrEvent; pubkey: string }) {
     );
   } else if (receiver === pubkey) {
     return (
-      <Flex gap="2" alignItems="center">
+      <Flex gap="2" alignItems="center" ref={ref}>
         <ArrowLeft boxSize={6} />
         <Timestamp timestamp={dm.created_at} />
         <Text>Received: </Text>
@@ -44,7 +49,7 @@ function DirectMessage({ dm, pubkey }: { dm: NostrEvent; pubkey: string }) {
     );
   } else {
     return (
-      <Flex gap="2" alignItems="center">
+      <Flex gap="2" alignItems="center" ref={ref}>
         <AtIcon boxSize={6} />
         <Timestamp timestamp={dm.created_at} />
         <Text>Mentioned: </Text>
