@@ -1,5 +1,13 @@
 # nostrudel
 
+## 0.32.1
+
+### Patch Changes
+
+- 5c036ff: Fix error when clearing database cache
+- 5c036ff: Fix scrolling in direct messages view
+- 02b8374: Fix community join button "no account" error
+
 ## 0.32.0
 
 ### Minor Changes
