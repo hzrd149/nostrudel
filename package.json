@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "vite serve",
-    "dev": "VITE_APP_VERSION=development vite serve",
+    "dev": "VITE_APP_VERSION=production vite serve",
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
     "analyze": "npx vite-bundle-visualizer -o ./stats.html",
@@ -22,7 +22,7 @@
     "@chakra-ui/styled-system": "^2.9.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@getalby/bitcoin-connect-react": "1.1.0",
+    "@getalby/bitcoin-connect-react": "^2.3.1",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bech32": "^2.0.0",
     "cheerio": "^1.0.0-rc.12",
