@@ -22,6 +22,7 @@ export default function LightningSettings() {
 
   return (
     <AccordionItem>
+      {({ isExpanded }) => (<>
       <h2>
         <AccordionButton fontSize="xl">
           <LightningIcon mr="2" />
@@ -33,7 +34,7 @@ export default function LightningSettings() {
       </h2>
       <AccordionPanel>
         <Flex direction="column" gap="4">
-          <Button />
+          {isExpanded && <Button />}
           <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="autoPayWithWebLN" mb="0">
@@ -70,6 +71,8 @@ export default function LightningSettings() {
           </FormControl>
         </Flex>
       </AccordionPanel>
+      </>
+      )}
     </AccordionItem>
   );
 }
