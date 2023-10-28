@@ -1,32 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Photo, PhotoAlbum, PhotoAlbumProps } from "react-photo-album";
-
-type Size = { width: number; height: number };
-const imageSizeCache = new Map<string, Size>();
-function getImageSize(src: string): Promise<{ width: number; height: number }> {
-  const cached = imageSizeCache.get(src);
-  if (cached) return Promise.resolve(cached);
-
-  return new Promise((res, rej) => {
-    const image = new Image();
-    image.src = src;
-
-    image.onload = () => {
-      const size = { width: image.width, height: image.height };
-      imageSizeCache.set(src, size);
-      res(size);
-    };
-    image.onerror = (err) => rej(err);
-  });
-}
+import { ImageSize, getImageSize } from "../helpers/image";
 
 export type PhotoWithoutSize = Omit<Photo, "width" | "height"> & { width?: number; height?: number };
 
 export default function PhotoGallery<T extends PhotoWithoutSize>({
   photos,
   ...props
-}: Omit<PhotoAlbumProps<T & Size>, "photos"> & { photos: PhotoWithoutSize[] }) {
-  const [loadedSizes, setLoadedSizes] = useState<Record<string, Size>>({});
+}: Omit<PhotoAlbumProps<T & ImageSize>, "photos"> & { photos: PhotoWithoutSize[] }) {
+  const [loadedSizes, setLoadedSizes] = useState<Record<string, ImageSize>>({});
 
   useEffect(() => {
     for (const photo of photos) {
@@ -40,17 +22,17 @@ export default function PhotoGallery<T extends PhotoWithoutSize>({
   }, [photos]);
 
   const loadedPhotos = useMemo(() => {
-    const loaded: (T & Size)[] = [];
+    const loaded: (T & ImageSize)[] = [];
 
     for (const photo of photos) {
       if (photo.width && photo.height) {
-        loaded.push(photo as T & Size);
+        loaded.push(photo as T & ImageSize);
         continue;
       }
 
       const loadedImage = loadedSizes[photo.src];
       if (loadedImage) {
-        loaded.push({ ...photo, width: loadedImage.width, height: loadedImage.height } as T & Size);
+        loaded.push({ ...photo, width: loadedImage.width, height: loadedImage.height } as T & ImageSize);
         continue;
       }
     }
@@ -58,5 +40,5 @@ export default function PhotoGallery<T extends PhotoWithoutSize>({
     return loaded;
   }, [loadedSizes, photos]);
 
-  return <PhotoAlbum<T & Size> photos={loadedPhotos} {...props} />;
+  return <PhotoAlbum<T & ImageSize> photos={loadedPhotos} {...props} />;
 }

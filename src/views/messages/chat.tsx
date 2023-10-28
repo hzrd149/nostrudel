@@ -5,7 +5,7 @@ import { Kind } from "nostr-tools";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { ChevronLeftIcon } from "../../components/icons";
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { normalizeToHex } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";

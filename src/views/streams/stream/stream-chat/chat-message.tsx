@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Box, Text } from "@chakra-ui/react";
 
 import { ParsedStream } from "../../../../helpers/nostr/stream";
-import { UserAvatar } from "../../../../components/user-avatar";
+import UserAvatar from "../../../../components/user-avatar";
 import { UserLink } from "../../../../components/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../../providers/intersection-observer";

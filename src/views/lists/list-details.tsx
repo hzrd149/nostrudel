@@ -27,7 +27,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { encodePointer } from "../../helpers/nip19";
-import { DecodeResult } from "nostr-tools/lib/nip19";
+import { DecodeResult } from "nostr-tools/lib/types/nip19";
 
 function useListCoordinate() {
   const { addr } = useParams() as { addr: string };

@@ -10,7 +10,7 @@ import RawPre from "./raw-pre";
 
 export default function NoteDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
   return (
-    <Modal {...props}>
+    <Modal size="6xl" {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />

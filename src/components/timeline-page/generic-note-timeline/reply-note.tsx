@@ -7,7 +7,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { EmbedEvent } from "../../embed-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import Note from "../../note";
-import { UserAvatar } from "../../user-avatar";
+import UserAvatar from "../../user-avatar";
 import { UserLink } from "../../user-link";
 
 function ReplyNote({ event }: { event: NostrEvent }) {

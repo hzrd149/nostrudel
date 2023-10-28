@@ -8,7 +8,7 @@ import { readablizeSats } from "../../../helpers/bolt11";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import useSubject from "../../../hooks/use-subject";
-import { UserAvatarLink } from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 
 export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
   const timeline = useStreamChatTimeline(stream);

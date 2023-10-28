@@ -32,6 +32,12 @@ export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
   return {};
 }
 
+export function getSearchNames(metadata: Kind0ParsedContent) {
+  if (!metadata) return [];
+
+  return [metadata.display_name, metadata.name].filter(Boolean) as string[];
+}
+
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
   return metadata?.display_name || metadata?.name || truncatedId(nip19.npubEncode(pubkey));
 }

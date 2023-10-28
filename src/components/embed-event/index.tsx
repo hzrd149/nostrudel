@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import type { DecodeResult } from "nostr-tools/lib/nip19";
+import type { DecodeResult } from "nostr-tools/lib/types/nip19";
 import { CardProps } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
 

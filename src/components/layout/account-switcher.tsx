@@ -7,7 +7,7 @@ import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService, { Account } from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
-import { UserAvatar } from "../user-avatar";
+import UserAvatar from "../user-avatar";
 import AccountInfoBadge from "../account-info-badge";
 import { useCurrentAccount } from "../../hooks/use-current-account";
 

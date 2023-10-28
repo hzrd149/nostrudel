@@ -28,7 +28,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/events";
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import Timestamp from "../../components/timestamp";
 import VerticalPageLayout from "../../components/vertical-page-layout";

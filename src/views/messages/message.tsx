@@ -14,7 +14,7 @@ import {
   renderVideoUrl,
 } from "../../components/embed-types";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
 import { getEventUID } from "../../helpers/nostr/events";
 import Timestamp from "../../components/timestamp";

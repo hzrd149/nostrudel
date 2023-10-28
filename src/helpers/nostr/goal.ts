@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { NostrEvent, isRTag } from "../../types/nostr-event";
-import { DecodeResult } from "nostr-tools/lib/nip19";
+import { DecodeResult } from "nostr-tools/lib/types/nip19";
 import { getPointerFromTag } from "../nip19";
 
 export const GOAL_KIND = 9041;

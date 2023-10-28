@@ -1,5 +1,27 @@
 # nostrudel
 
+## 0.32.0
+
+### Minor Changes
+
+- 0414039: Show users joined communities on about page
+- 5d66750: Add vote buttons to community view
+- 5f9c96e: Add approval button for pending community posts
+- 0d00f71: Add network dm graph tool
+- d7e289a: Show community members
+- 5d66750: Improve community view on mobile
+- 8871aed: Add support for kind 6 events in communities
+- 1f73120: Add option to search notes in search view
+- 28de4d4: Add community create and edit modals
+
+### Patch Changes
+
+- 5ac4cfc: Fix hashtags and links with (non-english) mark characters in them
+- 7b03925: Improve drawer navigation
+- a11d448: Center layout
+- 1c8f005: Fix reaction counts when user react multiple times
+- 35236c6: Add "show more" button when viewing all reactions
+
 ## 0.31.0
 
 ### Minor Changes

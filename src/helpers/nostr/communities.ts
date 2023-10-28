@@ -1,5 +1,8 @@
 import { validateEvent } from "nostr-tools";
-import { NostrEvent, isDTag, isPTag } from "../../types/nostr-event";
+import { NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
+import { getMatchLink, getMatchNostrLink } from "../regexp";
+import { ReactionGroup } from "./reactions";
+import { parseCoordinate } from "./events";
 
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
 export const COMMUNITY_DEFINITION_KIND = 34550;
@@ -18,12 +21,32 @@ export function getCommunityMods(community: NostrEvent) {
 export function getCommunityRelays(community: NostrEvent) {
   return community.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[];
 }
+export function getCommunityLinks(community: NostrEvent) {
+  return community.tags.filter((t) => t[0] === "r" && t[1]).map((t) => (t[2] ? [t[1], t[2]] : [t[1]])) as (
+    | [string]
+    | [string, string]
+  )[];
+}
 
 export function getCommunityImage(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "image")?.[1];
 }
 export function getCommunityDescription(community: NostrEvent) {
   return community.tags.find((t) => t[0] === "description")?.[1];
+}
+export function getCommunityRules(community: NostrEvent) {
+  return community.tags.find((t) => t[0] === "rules")?.[1];
+}
+export function getCommunityRanking(community: NostrEvent) {
+  return community.tags.find((t) => t[0] === "rank_mode")?.[1];
+}
+
+export function getPostSubject(event: NostrEvent) {
+  const subject = event.tags.find((t) => t[0] === "subject")?.[1];
+  if (subject) return subject;
+  const firstLine = event.content.match(/^[^\n\t]+/)?.[0];
+  if (!firstLine) return;
+  if (!getMatchNostrLink().test(firstLine) && !getMatchLink().test(firstLine)) return firstLine;
 }
 
 export function getApprovedEmbeddedNote(approval: NostrEvent) {
@@ -43,4 +66,32 @@ export function validateCommunity(community: NostrEvent) {
   } catch (e) {
     return false;
   }
+}
+
+export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
+  const approvals = new Map<string, NostrEvent[]>();
+  for (const event of events) {
+    if (event.kind === COMMUNITY_APPROVAL_KIND && mods.includes(event.pubkey)) {
+      for (const tag of event.tags) {
+        if (isETag(tag)) {
+          const arr = approvals.get(tag[1]);
+          if (!arr) approvals.set(tag[1], [event]);
+          else arr.push(event);
+        }
+      }
+    }
+  }
+  return approvals;
+}
+
+export function getCommunityPostVote(grouped: ReactionGroup[]) {
+  const up = grouped.find((r) => r.emoji === "+");
+  const down = grouped.find((r) => r.emoji === "-");
+  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
+  return { up, down, vote };
+}
+
+export function getEventCommunityPointer(event: NostrEvent){
+  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
+  return communityTag ? parseCoordinate(communityTag[1], true) : null;
 }

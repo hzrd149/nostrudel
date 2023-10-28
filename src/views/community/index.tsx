@@ -21,7 +21,7 @@ function useCommunityPointer() {
 
 export default function CommunityView() {
   const pointer = useCommunityPointer();
-  const community = useReplaceableEvent(pointer);
+  const community = useReplaceableEvent(pointer, [], { alwaysRequest: true });
 
   if (!community) return <Spinner />;
 

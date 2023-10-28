@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
-import { AddressPointer } from "nostr-tools/lib/nip19";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";

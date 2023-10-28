@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { Link as RouterLink } from "react-router-dom";
-import { UserAvatar } from "../../components/user-avatar";
+import UserAvatar from "../../components/user-avatar";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";

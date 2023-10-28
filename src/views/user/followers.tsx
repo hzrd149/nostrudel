@@ -11,7 +11,7 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import { useMemo, useRef } from "react";
 import { getEventUID } from "../../helpers/nostr/events";
 import { UserLink } from "../../components/user-link";
-import { UserAvatarLink } from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user-avatar-link";
 
 function FollowerItem({ event }: { event: Event }) {
   const ref = useRef<HTMLDivElement | null>(null);

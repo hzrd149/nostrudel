@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import useSubscribedCommunitiesList from "../../../hooks/use-subscribed-communities-list";
+import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER, getCommunityName } from "../../../helpers/nostr/communities";
 import { NOTE_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
@@ -17,7 +17,7 @@ export default function CommunityJoinButton({
   ...props
 }: Omit<ButtonProps, "children"> & { community: NostrEvent }) {
   const account = useCurrentAccount();
-  const { list, pointers } = useSubscribedCommunitiesList(account?.pubkey);
+  const { list, pointers } = useJoinedCommunitiesList(account?.pubkey);
   const { requestSignature } = useSigningContext();
   const toast = useToast();
 

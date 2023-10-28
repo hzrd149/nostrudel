@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
-import { nip19 } from "nostr-tools";
+import { nip19, validateEvent } from "nostr-tools";
 
 import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
-import type { AddressPointer } from "nostr-tools/lib/nip19";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { safeJson } from "../parse";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -203,4 +204,16 @@ export function draftRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordi
   };
 
   return draft;
+}
+
+export function parseHardcodedNoteContent(event: NostrEvent) {
+  const json = safeJson(event.content, null);
+  if (!json) return null;
+
+  // ensure the note has tags
+  json.tags = json.tags || [];
+
+  validateEvent(json);
+
+  return (json as NostrEvent) ?? null;
 }

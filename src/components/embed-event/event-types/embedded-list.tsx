@@ -5,7 +5,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { getListName, isSpecialListKind } from "../../../helpers/nostr/lists";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { UserAvatarLink } from "../../user-avatar-link";
+import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
