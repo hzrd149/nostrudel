@@ -22,6 +22,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { LightboxProvider } from "../../components/lightbox-provider";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const toast = useToast();
@@ -71,7 +72,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   return (
     <LightboxProvider>
       <IntersectionObserverProvider callback={callback}>
-        <Flex height="100%" overflow="hidden" direction="column">
+        <Flex maxH={{ base: "calc(100vh - 3.5rem)", md: "100vh" }} overflow="hidden" direction="column">
           <Card size="sm" flexShrink={0}>
             <CardBody display="flex" gap="2" alignItems="center">
               <IconButton variant="ghost" icon={<ChevronLeftIcon />} aria-label="Back" onClick={() => navigate(-1)} />
@@ -79,7 +80,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
               <UserLink pubkey={pubkey} />
             </CardBody>
           </Card>
-          <Flex flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
+          <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
             {[...messages].map((event) => (
               <Message key={event.id} event={event} />
             ))}

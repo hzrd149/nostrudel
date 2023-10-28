@@ -47,7 +47,7 @@ export default function CommunityJoinButton({
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
-  }, [isSubscribed, list, community]);
+  }, [isSubscribed, list, community, requestSignature, toast]);
 
   return (
     <Button

@@ -1,5 +1,8 @@
 import { openDB, deleteDB, IDBPDatabase } from "idb";
 import { SchemaV1, SchemaV2, SchemaV3, SchemaV4 } from "./schema";
+import { logger } from "../../helpers/debug";
+
+const log = logger.extend("Database");
 
 const dbName = "storage";
 const version = 4;
@@ -87,17 +90,31 @@ const db = await openDB<SchemaV4>(dbName, version, {
   },
 });
 
+log("Open");
+
 export async function clearCacheData() {
+  log("Clearing replaceableEvents");
   await db.clear("replaceableEvents");
-  await db.clear("userFollows");
+
+  log("Clearing userSearch");
+  await db.clear("userSearch");
+
+  log("Clearing relayInfo");
   await db.clear("relayInfo");
+
+  log("Clearing dnsIdentifiers");
   await db.clear("dnsIdentifiers");
+
+  log("Clearing relayScoreboardStats");
   await db.clear("relayScoreboardStats");
+
   window.location.reload();
 }
 
 export async function deleteDatabase() {
+  log("Closing");
   db.close();
+  log("Deleting");
   await deleteDB(dbName);
   window.location.reload();
 }
