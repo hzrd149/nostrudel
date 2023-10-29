@@ -14,7 +14,7 @@ import { getEventUID, getReferences, parseCoordinate } from "../../helpers/nostr
 import Timestamp from "../../components/timestamp";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
-import { NoteContents } from "../../components/note/note-contents";
+import { NoteContents } from "../../components/note/text-note-contents";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { TrustProvider } from "../../providers/trust";
 

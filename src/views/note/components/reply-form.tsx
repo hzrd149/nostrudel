@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { NostrEvent } from "../../../types/nostr-event";
 import { UserAvatarStack } from "../../../components/compact-user-stack";
 import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
-import { NoteContents } from "../../../components/note/note-contents";
+import { NoteContents } from "../../../components/note/text-note-contents";
 import {
   addReplyTags,
   createEmojiTags,

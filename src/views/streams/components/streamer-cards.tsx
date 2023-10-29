@@ -16,7 +16,7 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useSubject from "../../../hooks/use-subject";
-import { NoteContents } from "../../../components/note/note-contents";
+import { NoteContents } from "../../../components/note/text-note-contents";
 import { isATag } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import OpenGraphCard from "../../../components/open-graph-card";

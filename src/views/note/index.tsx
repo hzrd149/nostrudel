@@ -1,6 +1,6 @@
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Button, Spinner } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 
 import Note from "../../components/note";
 import { isHexKey } from "../../helpers/nip19";
@@ -52,9 +52,19 @@ export default function NoteView() {
 
     pageContent = (
       <>
-        {parentPosts.map((parent) => (
-          <Note key={parent.event.id + "-rely"} event={parent.event} hideDrawerButton />
-        ))}
+        {parentPosts.length > 1 && (
+          <Button
+            variant="outline"
+            size="lg"
+            h="4rem"
+            w="full"
+            as={RouterLink}
+            to={`/n/${nip19.noteEncode(parentPosts[0].event.id)}`}
+          >
+            View full thread ({parentPosts.length - 1})
+          </Button>
+        )}
+        {post.reply && <Note key={post.reply.event.id + "-rely"} event={post.reply.event} hideDrawerButton />}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
     );
@@ -62,5 +72,5 @@ export default function NoteView() {
     pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton />;
   }
 
-  return <VerticalPageLayout>{pageContent}</VerticalPageLayout>;
+  return <VerticalPageLayout px={{ base: 0, md: "2" }}>{pageContent}</VerticalPageLayout>;
 }
