@@ -2,6 +2,7 @@ import { Link } from "@chakra-ui/react";
 
 import OpenGraphCard from "../open-graph-card";
 import { isVideoURL } from "../../helpers/url";
+import OpenGraphLink from "../open-graph-link";
 
 export function renderVideoUrl(match: URL) {
   if (!isVideoURL(match)) return null;
@@ -23,6 +24,6 @@ export function renderGenericUrl(match: URL) {
   );
 }
 
-export function renderOpenGraphUrl(match: URL) {
-  return <OpenGraphCard url={match} />;
+export function renderOpenGraphUrl(match: URL, isEndOfLine: boolean) {
+  return isEndOfLine ? <OpenGraphCard url={match} /> : <OpenGraphLink url={match} />;
 }
