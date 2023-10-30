@@ -10,6 +10,7 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { ReplyIcon } from "../../../components/icons";
@@ -20,7 +21,6 @@ import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter"
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
-import { nip19 } from "nostr-tools";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
@@ -32,7 +32,6 @@ import useSubject from "../../../hooks/use-subject";
 import appSettings from "../../../services/settings/app-settings";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 import NoteReactions from "../../../components/note/components/note-reactions";
-import { useCookie } from "react-use";
 import BookmarkButton from "../../../components/note/components/bookmark-button";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
@@ -133,7 +132,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         gap="2"
         p="2"
         borderRadius="md"
-        borderWidth=".2rem .2rem .2rem .35rem"
+        borderWidth=".1rem .1rem .1rem .35rem"
         borderColor={focusId === post.event.id ? focusColor : undefined}
         borderLeftColor={color + "." + colorValue}
       >

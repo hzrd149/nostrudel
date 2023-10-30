@@ -13,6 +13,7 @@ export function getMessageRecipient(event: NostrEvent): string | undefined {
   return event.tags.filter(isPTag)[0][1];
 }
 
+/** @deprecated */
 class DirectMessagesService {
   incomingSub: NostrMultiSubscription;
   outgoingSub: NostrMultiSubscription;
@@ -129,6 +130,7 @@ class DirectMessagesService {
   }
 }
 
+/** @deprecated */
 const directMessagesService = new DirectMessagesService();
 
 export default directMessagesService;

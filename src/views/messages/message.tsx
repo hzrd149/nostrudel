@@ -31,7 +31,7 @@ export function MessageContent({ event, text }: { event: NostrEvent; text: strin
   return <Box whiteSpace="pre-wrap">{content}</Box>;
 }
 
-export function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
+export default function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
   const account = useCurrentAccount()!;
   const isOwnMessage = account.pubkey === event.pubkey;
 
