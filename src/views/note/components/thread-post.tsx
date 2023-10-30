@@ -133,11 +133,9 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         gap="2"
         p="2"
         borderRadius="md"
-        borderWidth=".2rem .25rem"
+        borderWidth=".2rem .2rem .2rem .35rem"
         borderColor={focusId === post.event.id ? focusColor : undefined}
-        borderRightColor={color + "." + colorValue}
         borderLeftColor={color + "." + colorValue}
-        backgroundImage={`linear-gradient(to right, var(--chakra-colors-transparent) 90%, var(--chakra-colors-${color}-${colorValue}) 100%)`}
       >
         {header}
         {expanded && renderContent()}
