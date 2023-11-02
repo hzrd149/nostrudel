@@ -11,7 +11,6 @@ import {
   IconButton,
   Link,
   LinkBox,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
@@ -41,11 +40,10 @@ import { getReferences } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { getCommunityName, getEventCommunityPointer } from "../../helpers/nostr/communities";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HoverLinkOverlay from "../hover-link-overlay";
 import { nip19 } from "nostr-tools";
+import NoteCommunityMetadata from "./note-community-metadata";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -75,8 +73,6 @@ export const Note = React.memo(
 
     // find mostr external link
     const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
-    const communityPointer = useMemo(() => getEventCommunityPointer(event), [event]);
-    const community = useReplaceableEvent(communityPointer ?? undefined);
 
     const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
 
@@ -107,15 +103,7 @@ export const Note = React.memo(
                   <Timestamp timestamp={event.created_at} />
                 </Link>
               </Flex>
-              {community && (
-                <Text fontStyle="italic">
-                  Posted in{" "}
-                  <Link as={RouterLink} to={`/c/${getCommunityName(community)}/${community.pubkey}`} color="blue.500">
-                    {getCommunityName(community)}
-                  </Link>{" "}
-                  community
-                </Text>
-              )}
+              <NoteCommunityMetadata event={event} />
             </CardHeader>
             <CardBody p="0">
               <NoteContentWithWarning event={event} />

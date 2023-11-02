@@ -33,6 +33,7 @@ import appSettings from "../../../services/settings/app-settings";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import BookmarkButton from "../../../components/note/components/bookmark-button";
+import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -100,9 +101,12 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
     return isMuted && !alwaysShow ? (
       muteAlert
     ) : (
-      <TrustProvider trust={focusId === post.event.id ? true : undefined}>
-        <NoteContents event={post.event} pl="2" />
-      </TrustProvider>
+      <>
+        <NoteCommunityMetadata event={post.event} pl="2" />
+        <TrustProvider trust={focusId === post.event.id ? true : undefined}>
+          <NoteContents event={post.event} pl="2" />
+        </TrustProvider>
+      </>
     );
   };
 
