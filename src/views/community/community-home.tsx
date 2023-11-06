@@ -8,6 +8,8 @@ import {
   getCommunityImage,
   getCommunityName,
   COMMUNITY_APPROVAL_KIND,
+  getCommunityMods,
+  buildApprovalMap,
 } from "../../helpers/nostr/communities";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -28,6 +30,8 @@ import { WritingIcon } from "../../components/icons";
 import { PostModalContext } from "../../providers/post-modal-provider";
 import CommunityEditModal from "./components/community-edit-modal";
 import TimelineLoader from "../../classes/timeline-loader";
+import useSubject from "../../hooks/use-subject";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function getCommunityPath(community: NostrEvent) {
   return `/c/${encodeURIComponent(getCommunityName(community))}/${nip19.npubEncode(community.pubkey)}`;
@@ -36,6 +40,7 @@ function getCommunityPath(community: NostrEvent) {
 export type RouterContext = { community: NostrEvent; timeline: TimelineLoader };
 
 export default function CommunityHomePage({ community }: { community: NostrEvent }) {
+  const muteFilter = useClientSideMuteFilter();
   const image = getCommunityImage(community);
   const location = useLocation();
   const { openModal } = useContext(PostModalContext);
@@ -50,6 +55,12 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
     kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],
   });
+
+  // get pending notes
+  const events = useSubject(timeline.timeline);
+  const mods = getCommunityMods(community);
+  const approvals = buildApprovalMap(events, mods);
+  const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id) && !muteFilter(e));
 
   let active = "newest";
   if (location.pathname.endsWith("/newest")) active = "newest";
@@ -127,7 +138,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                   colorScheme={active == "pending" ? "primary" : "gray"}
                   replace
                 >
-                  Pending
+                  Pending ({pending.length})
                 </Button>
               </ButtonGroup>
 
