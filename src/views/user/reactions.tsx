@@ -51,15 +51,14 @@ export default function UserReactionsTab() {
 
   const timeline = useTimelineLoader(`${pubkey}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
 
-  const likes = useSubject(timeline.timeline);
-
+  const reactions = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
         <VerticalPageLayout>
-          {likes.map((event) => (
+          {reactions.map((event) => (
             <Reaction reaction={event} />
           ))}
 
