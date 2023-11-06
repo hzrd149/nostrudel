@@ -13,6 +13,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import { Kind } from "nostr-tools";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { NostrEvent } from "../../types/nostr-event";
+import UserName from "../../components/user-name";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -24,30 +25,36 @@ export default function UserListsTab() {
   const timeline = useTimelineLoader(
     pubkey + "-lists",
     readRelays,
-    {
-      authors: [pubkey],
-      kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
-    },
+    [
+      {
+        authors: [pubkey],
+        kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
+      },
+      {
+        "#p": [pubkey],
+        kinds: [PEOPLE_LIST_KIND],
+      },
+    ],
     { eventFilter },
   );
 
   const lists = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  const peopleLists = lists.filter((event) => event.kind === PEOPLE_LIST_KIND);
-  const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
+  const peopleLists = lists.filter((event) => event.pubkey === pubkey && event.kind === PEOPLE_LIST_KIND);
+  const noteLists = lists.filter((event) => event.pubkey === pubkey && event.kind === NOTE_LIST_KIND);
+  const otherLists = lists.filter((event) => event.pubkey !== pubkey && event.kind === PEOPLE_LIST_KIND);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <VerticalPageLayout>
+      <IntersectionObserverProvider callback={callback}>
         <Heading size="md" mt="2">
           Special lists
         </Heading>
-        <Divider />
         <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-          <ListCard cord={`${Kind.Contacts}:${pubkey}`} />
-          <ListCard cord={`${MUTE_LIST_KIND}:${pubkey}`} />
-          <ListCard cord={`${PIN_LIST_KIND}:${pubkey}`} />
+          <ListCard cord={`${Kind.Contacts}:${pubkey}`} hideCreator />
+          <ListCard cord={`${MUTE_LIST_KIND}:${pubkey}`} hideCreator />
+          <ListCard cord={`${PIN_LIST_KIND}:${pubkey}`} hideCreator />
         </SimpleGrid>
 
         {peopleLists.length > 0 && (
@@ -55,10 +62,9 @@ export default function UserListsTab() {
             <Heading size="md" mt="2">
               People lists
             </Heading>
-            <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {peopleLists.map((event) => (
-                <ListCard key={getEventUID(event)} list={event} />
+                <ListCard key={getEventUID(event)} list={event} hideCreator />
               ))}
             </SimpleGrid>
           </>
@@ -69,15 +75,25 @@ export default function UserListsTab() {
             <Heading size="md" mt="2">
               Bookmark lists
             </Heading>
-            <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {noteLists.map((event) => (
-                <ListCard key={getEventUID(event)} list={event} />
+                <ListCard key={getEventUID(event)} list={event} hideCreator />
               ))}
             </SimpleGrid>
           </>
         )}
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+
+      <IntersectionObserverProvider callback={callback}>
+        <Heading size="md" mt="2">
+          Lists <UserName pubkey={pubkey} /> is in
+        </Heading>
+        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          {otherLists.map((event) => (
+            <ListCard key={getEventUID(event)} list={event} />
+          ))}
+        </SimpleGrid>
+      </IntersectionObserverProvider>
+    </VerticalPageLayout>
   );
 }

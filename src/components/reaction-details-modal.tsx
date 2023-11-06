@@ -18,7 +18,7 @@ import { useMemo } from "react";
 
 import { NostrEvent } from "../types/nostr-event";
 import { groupReactions } from "../helpers/nostr/reactions";
-import { ReactionIcon } from "./event-reactions";
+import { ReactionIcon } from "./event-reactions/event-reactions";
 import UserAvatarLink from "./user-avatar-link";
 import { UserLink } from "./user-link";
 
