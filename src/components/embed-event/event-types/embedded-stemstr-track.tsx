@@ -58,7 +58,7 @@ export default function EmbeddedStemstrTrack({ track, ...props }: Omit<CardProps
         {hashtags.length > 0 && (
           <Flex wrap="wrap" gap="2">
             {hashtags.map((hashtag) => (
-              <Tag>#{hashtag}</Tag>
+              <Tag key={hashtag}>#{hashtag}</Tag>
             ))}
           </Flex>
         )}

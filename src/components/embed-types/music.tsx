@@ -1,5 +1,6 @@
 import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
+import { EmbedEventPointer } from "../embed-event";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
@@ -109,4 +110,14 @@ export function renderSongDotLinkUrl(match: URL) {
       style={setZIndex}
     ></Box>
   );
+}
+
+// nostr:nevent1qqs95384ynfcgugz29u25ltl7qs6d5chve8ksw7ms3ega8eyem3n5agpz9mhxue69uhkummnw3e82efwvdhk6qgnwaehxw309aex2mrp09skymr99ehhyec6lyxqd
+export function renderStemstrUrl(match: URL) {
+  if (match.hostname !== "stemstr.app") return null;
+
+  const [_, base, id] = match.pathname.split("/");
+  if (base !== "thread" || id.length !== 64) return null;
+
+  return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: ["wss://relay.stemstr.app"] } }} />;
 }
