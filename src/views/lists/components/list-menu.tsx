@@ -1,7 +1,7 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { Image, MenuItem, useDisclosure } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent, isPTag } from "../../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import { useCurrentAccount } from "../../../hooks/use-current-account";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
@@ -21,6 +21,8 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
 
   const naddr = getSharableEventAddress(list);
 
+  const hasPeople = list.tags.some(isPTag);
+
   return (
     <>
       <CustomMenuIconButton {...props}>
@@ -37,6 +39,14 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
         {account?.pubkey === list.pubkey && !isSpecialListKind(list.kind) && (
           <MenuItem icon={<TrashIcon />} color="red.500" onClick={() => deleteEvent(list)}>
             Delete List
+          </MenuItem>
+        )}
+        {hasPeople && (
+          <MenuItem
+            icon={<Image w="4" h="4" src="https://www.makeprisms.com/favicon.ico" />}
+            onClick={() => window.open(`https://www.makeprisms.com/create/${naddr}`, "_blank")}
+          >
+            Create $prism
           </MenuItem>
         )}
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
