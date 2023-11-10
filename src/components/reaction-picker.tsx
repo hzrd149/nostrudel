@@ -1,7 +1,7 @@
 import { Divider, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 
 import { DislikeIcon, LikeIcon } from "./icons";
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
 import { getEmojisFromPack, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";

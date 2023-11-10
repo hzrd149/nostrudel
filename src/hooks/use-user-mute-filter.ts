@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import useUserMuteList from "./use-user-mute-list";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { NostrEvent } from "../types/nostr-event";

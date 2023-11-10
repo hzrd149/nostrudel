@@ -33,7 +33,7 @@ const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
       <Flex gap="2" mb="2">
         <UserAvatar pubkey={reaction.pubkey} size="xs" />
         <Text>
-          <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked" : "reacted with "}
+          <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked " : "reacted with "}
           {embedEmoji([reaction.content], reaction)}
         </Text>
         <Spacer />

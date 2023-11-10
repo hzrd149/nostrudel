@@ -5,7 +5,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { groupReactions } from "../../helpers/nostr/reactions";
 import ReactionDetailsModal from "../reaction-details-modal";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import ReactionGroupButton from "./reaction-group-button";
 import { useAddReaction } from "./common-hooks";
 

@@ -3,7 +3,7 @@ import { Avatar, Box, Button, Flex, FlexProps, Heading, LinkOverlay } from "@cha
 import { Link as RouterLink } from "react-router-dom";
 import { css } from "@emotion/react";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";

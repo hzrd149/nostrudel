@@ -5,7 +5,7 @@ import { useLocalStorage } from "react-use";
 import ContactsWindow from "./contacts-window";
 import { DirectMessagesIcon } from "../icons";
 import ChatWindow from "./chat-window";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 
 export default function ChatWindows() {
   const account = useCurrentAccount();

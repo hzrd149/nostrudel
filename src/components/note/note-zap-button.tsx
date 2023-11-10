@@ -2,7 +2,7 @@ import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react
 
 import { readablizeSats } from "../../helpers/bolt11";
 import { totalZaps } from "../../helpers/nostr/zaps";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
 import clientRelaysService from "../../services/client-relays";
 import eventZapsService from "../../services/event-zaps";

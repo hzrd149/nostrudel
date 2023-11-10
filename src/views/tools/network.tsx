@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { memo, useMemo, useState } from "react";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { useNetworkConnectionCount } from "../../hooks/use-user-network";
 import UserAvatarLink from "../../components/user-avatar-link";

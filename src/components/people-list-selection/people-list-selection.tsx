@@ -11,7 +11,7 @@ import {
 
 import { usePeopleListContext } from "../../providers/people-list-provider";
 import useUserLists from "../../hooks/use-user-lists";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { PEOPLE_LIST_KIND, getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import useFavoriteLists from "../../hooks/use-favorite-lists";

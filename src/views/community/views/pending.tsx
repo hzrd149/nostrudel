@@ -17,7 +17,7 @@ import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeli
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import { CheckIcon } from "../../../components/icons";
 import { useSigningContext } from "../../../providers/signing-provider";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import CommunityPost from "../components/community-post";

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import useWordMuteFilter from "./use-mute-word-filter";
 import useUserMuteFilter from "./use-user-mute-filter";
 import { NostrEvent } from "../types/nostr-event";

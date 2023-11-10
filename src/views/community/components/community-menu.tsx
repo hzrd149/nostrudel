@@ -7,7 +7,7 @@ import { CodeIcon, ExternalLinkIcon, RepostIcon } from "../../../components/icon
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import PencilLine from "../../../components/icons/pencil-line";
 
 export default function CommunityMenu({

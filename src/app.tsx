@@ -70,6 +70,7 @@ import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
 import UserDMsTab from "./views/user/dms";
+import DMFeedView from "./views/tools/dm-feed";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -230,6 +231,7 @@ const router = createHashRouter([
           { path: "network", element: <NetworkView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
+          { path: "dm-feed", element: <DMFeedView /> },
         ],
       },
       {

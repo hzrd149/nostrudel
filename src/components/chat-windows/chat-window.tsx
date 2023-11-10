@@ -8,7 +8,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import UserName from "../user-name";
 import MagicTextArea from "../magic-textarea";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useUserRelays } from "../../hooks/use-user-relays";
 import { RelayMode } from "../../classes/relay";

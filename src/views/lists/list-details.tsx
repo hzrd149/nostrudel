@@ -4,7 +4,7 @@ import { Kind, nip19 } from "nostr-tools";
 import { UserLink } from "../../components/user-link";
 import { Button, Flex, Heading, SimpleGrid, Spacer } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "../../components/icons";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import { parseCoordinate } from "../../helpers/nostr/events";
 import {

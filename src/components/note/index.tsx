@@ -33,7 +33,7 @@ import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import BookmarkButton from "./components/bookmark-button";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/note/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";

@@ -63,7 +63,7 @@ function PublishAction({ pub }: { pub: NostrPublishAction }) {
         <PublishActionStatusTag ml="auto" pub={pub} />
       </Flex>
       {details.isOpen && (
-        <Modal isOpen onClose={details.onClose}>
+        <Modal isOpen onClose={details.onClose} size="xl">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader pt="4" px="4" pb="0">

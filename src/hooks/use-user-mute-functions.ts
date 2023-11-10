@@ -11,7 +11,7 @@ import { useSigningContext } from "../providers/signing-provider";
 import clientRelaysService from "../services/client-relays";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "./use-async-error-handler";
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import useUserMuteList from "./use-user-mute-list";
 
 export default function useUserMuteFunctions(pubkey: string) {

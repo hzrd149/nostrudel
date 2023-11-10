@@ -24,7 +24,7 @@ import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { truncatedId } from "../../../helpers/nostr/events";
 import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 
 export const UserProfileMenu = ({
   pubkey,

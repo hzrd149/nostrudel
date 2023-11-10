@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Box, CardProps, Flex } from "@chakra-ui/react";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { getMessageRecipient } from "../../services/direct-messages";
 import { NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Card, CardProps, IconButton, Text, useToast } from "@chakra-ui/react";
 
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { draftEventReaction, groupReactions } from "../../../helpers/nostr/reactions";

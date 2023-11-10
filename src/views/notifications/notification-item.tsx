@@ -4,7 +4,7 @@ import { Kind, nip18, nip25 } from "nostr-tools";
 
 import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";

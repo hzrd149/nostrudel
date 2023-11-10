@@ -5,7 +5,7 @@ import { EditIcon, GhostIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user-follow-button";

@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useEffect, u
 import { Kind } from "nostr-tools";
 
 import { useReadRelayUrls } from "../hooks/use-client-relays";
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import TimelineLoader from "../classes/timeline-loader";
 import timelineCacheService from "../services/timeline-cache";
 import { NostrEvent } from "../types/nostr-event";

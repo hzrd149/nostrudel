@@ -10,7 +10,7 @@ import accountService from "./account";
 import { NostrQuery } from "../types/nostr-query";
 
 export function getMessageRecipient(event: NostrEvent): string | undefined {
-  return event.tags.filter(isPTag)[0][1];
+  return event.tags.find(isPTag)?.[1];
 }
 
 /** @deprecated */

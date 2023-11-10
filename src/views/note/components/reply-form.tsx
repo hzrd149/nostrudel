@@ -15,7 +15,7 @@ import {
   finalizeNote,
   getContentMentions,
 } from "../../../helpers/nostr/post";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";

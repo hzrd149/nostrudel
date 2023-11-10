@@ -35,7 +35,7 @@ import { useClientRelays } from "../../../hooks/use-client-relays";
 import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import RawJson from "../../../components/debug-modals/raw-json";
 import { RelayShareButton } from "./relay-share-button";
 

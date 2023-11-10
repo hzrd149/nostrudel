@@ -26,6 +26,8 @@ import EmbeddedArticle from "./event-types/embedded-article";
 import EmbeddedBadge from "./event-types/embedded-badge";
 import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
 import EmbeddedCommunity from "./event-types/embedded-community";
+import EmbeddedReaction from "./event-types/embedded-reaction";
+import EmbeddedDM from "./event-types/embedded-dm";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -40,6 +42,10 @@ export function EmbedEvent({
   switch (event.kind) {
     case Kind.Text:
       return <EmbeddedNote event={event} {...cardProps} />;
+    case Kind.Reaction:
+      return <EmbeddedReaction event={event} {...cardProps} />;
+    case Kind.EncryptedDirectMessage:
+      return <EmbeddedDM dm={event} {...cardProps} />;
     case STREAM_KIND:
       return <EmbeddedStream event={event} {...cardProps} />;
     case GOAL_KIND:

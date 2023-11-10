@@ -1,7 +1,7 @@
 import { COMMUNITY_DEFINITION_KIND, SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../helpers/nostr/communities";
 import { NOTE_LIST_KIND, getParsedCordsFromList } from "../helpers/nostr/lists";
 import { RequestOptions } from "../services/replaceable-event-requester";
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useJoinedCommunitiesList(pubkey?: string, opts?: RequestOptions) {

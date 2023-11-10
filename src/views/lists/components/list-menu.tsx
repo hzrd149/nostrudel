@@ -3,7 +3,7 @@ import { useCopyToClipboard } from "react-use";
 
 import { NostrEvent, isPTag } from "../../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { CodeIcon, ExternalLinkIcon, RepostIcon, TrashIcon } from "../../../components/icons";
 import { getSharableEventAddress } from "../../../helpers/nip19";

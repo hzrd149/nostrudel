@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user-avatar";
 import { UserLink } from "../../../components/user-link";
 import { TrashIcon } from "../../../components/icons";

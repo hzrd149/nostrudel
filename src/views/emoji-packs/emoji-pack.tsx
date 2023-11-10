@@ -22,7 +22,7 @@ import {
 
 import { UserLink } from "../../components/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";

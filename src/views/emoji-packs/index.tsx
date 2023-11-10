@@ -1,7 +1,7 @@
 import { Button, Divider, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
