@@ -3,7 +3,6 @@ import { createIcon, IconProps } from "@chakra-ui/icons";
 import SearchMd from "./icons/search-md";
 import Settings02 from "./icons/settings-02";
 import Mail01 from "./icons/mail-01";
-import BookmarkCheck from "./icons/bookmark-check";
 import StickerSquare from "./icons/sticker-square";
 import Code01 from "./icons/code-01";
 import DistributeSpacingVertical from "./icons/distribute-spacing-vertical";
@@ -60,6 +59,7 @@ import Bookmark from "./icons/bookmark";
 import BankNote01 from "./icons/bank-note-01";
 import Wallet02 from "./icons/wallet-02";
 import Download01 from "./icons/download-01";
+import Repeat01 from "./icons/repeat-01";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -93,7 +93,7 @@ export const BroadcastEventIcon = Share07;
 export const ExternalLinkIcon = Share04;
 
 export const SearchIcon = SearchMd;
-export const RepostIcon = Share07;
+export const RepostIcon = Repeat01;
 
 export const ReplyIcon = MessageCircle01;
 
@@ -227,4 +227,4 @@ export const GhostIcon = createIcon({
 
 export const ECashIcon = BankNote01;
 export const WalletIcon = Wallet02;
-export const DownloadIcon = Download01
+export const DownloadIcon = Download01;
