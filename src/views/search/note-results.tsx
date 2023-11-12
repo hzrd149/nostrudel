@@ -5,14 +5,16 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
+import { usePeopleListContext } from "../../providers/people-list-provider";
 
 export default function NoteSearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();
+  const { listId, filter } = usePeopleListContext();
 
   const timeline = useTimelineLoader(
-    `${search}-note-search`,
+    `${listId ?? "global"}-${search}-note-search`,
     searchRelays,
-    { search: search || "", kinds: [Kind.Text] },
+    { search: search || "", kinds: [Kind.Text], ...filter },
     { enabled: !!search },
   );
 

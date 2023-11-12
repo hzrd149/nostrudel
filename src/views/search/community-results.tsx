@@ -8,6 +8,7 @@ import { getEventUID } from "../../helpers/nostr/events";
 import { NostrEvent } from "../../types/nostr-event";
 import CommunityCard from "../communities/components/community-card";
 import useSubject from "../../hooks/use-subject";
+import { usePeopleListContext } from "../../providers/people-list-provider";
 
 function CommunityResult({ community }: { community: NostrEvent }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -22,11 +23,12 @@ function CommunityResult({ community }: { community: NostrEvent }) {
 
 export default function CommunitySearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();
+  const { listId, filter } = usePeopleListContext();
 
   const timeline = useTimelineLoader(
-    `${search}-community-search`,
+    `${listId ?? "global"}-${search}-community-search`,
     searchRelays,
-    { search: search || "", kinds: [COMMUNITY_DEFINITION_KIND] },
+    { search: search || "", kinds: [COMMUNITY_DEFINITION_KIND], ...filter },
     { enabled: !!search },
   );
 

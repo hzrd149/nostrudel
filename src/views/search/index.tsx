@@ -17,6 +17,8 @@ import ProfileSearchResults from "./profile-results";
 import NoteSearchResults from "./note-results";
 import ArticleSearchResults from "./article-results";
 import CommunitySearchResults from "./community-results";
+import PeopleListProvider from "../../providers/people-list-provider";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 
 export function SearchPage() {
   const navigate = useNavigate();
@@ -100,6 +102,7 @@ export function SearchPage() {
       </form>
 
       <Flex gap="2">
+        <PeopleListSelection size="sm" />
         <ButtonGroup size="sm" isAttached variant="outline" flexWrap="wrap">
           <Button
             leftIcon={<User01 />}
@@ -149,7 +152,9 @@ export function SearchPage() {
 export default function SearchView() {
   return (
     <RelaySelectionProvider overrideDefault={SEARCH_RELAYS}>
-      <SearchPage />
+      <PeopleListProvider initList="global">
+        <SearchPage />
+      </PeopleListProvider>
     </RelaySelectionProvider>
   );
 }

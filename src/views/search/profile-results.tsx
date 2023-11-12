@@ -18,6 +18,7 @@ import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { usePeopleListContext } from "../../providers/people-list-provider";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);
@@ -52,10 +53,11 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
 export default function ProfileSearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();
 
+  const { listId, filter } = usePeopleListContext();
   const timeline = useTimelineLoader(
-    `${search}-profile-search`,
+    `${listId ?? "global"}-${search}-profile-search`,
     searchRelays,
-    { search: search || "", kinds: [Kind.Metadata] },
+    { search: search || "", kinds: [Kind.Metadata], ...filter },
     { enabled: !!search },
   );
 
