@@ -103,7 +103,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
     ) : (
       <>
         <NoteCommunityMetadata event={post.event} pl="2" />
-        <TrustProvider trust={focusId === post.event.id ? true : undefined}>
+        <TrustProvider trust={focusId === post.event.id ? true : undefined} event={post.event}>
           <NoteContents event={post.event} pl="2" />
         </TrustProvider>
       </>
