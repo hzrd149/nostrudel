@@ -1,13 +1,18 @@
 import { useAsync } from "react-use";
 import { fetchWithCorsFallback } from "../helpers/cors";
 import type { OgObjectInteral } from "../lib/open-graph-scraper/types";
+import useAppSettings from "./use-app-settings";
 
 const pageExtensions = [".html", ".php", "htm"];
 
 const openGraphDataCache = new Map<string, OgObjectInteral>();
 
 export default function useOpenGraphData(url: URL) {
+  const { loadOpenGraphData } = useAppSettings();
+
   return useAsync(async () => {
+    if (!loadOpenGraphData) return null;
+
     const { default: extractMetaTags } = await import("../lib/open-graph-scraper/extract");
 
     if (openGraphDataCache.has(url.toString())) return openGraphDataCache.get(url.toString());

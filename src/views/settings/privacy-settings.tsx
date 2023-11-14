@@ -12,6 +12,7 @@ import {
   Link,
   FormErrorMessage,
   Code,
+  Switch,
 } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { safeUrl } from "../../helpers/parse";
@@ -146,6 +147,23 @@ export default function PrivacySettings() {
               <Code fontSize="0.9em">{`<url>`}</Code> or <Code fontSize="0.9em">{`<encoded_url>`}</Code> can be used to
               inject the raw or the encoded url into the proxy url ( example:{" "}
               <Code fontSize="0.9em">{`https://corsproxy.io/?<encoded_url>`}</Code> )
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="loadOpenGraphData" mb="0">
+                Load Open Graph data
+              </FormLabel>
+              <Switch id="loadOpenGraphData" {...register("loadOpenGraphData")} />
+            </Flex>
+            <FormHelperText>
+              <span>
+                Whether to load{" "}
+                <Link href="https://ogp.me/" isExternal color="blue.500">
+                  Open Graph
+                </Link>{" "}
+                data for links
+              </span>
             </FormHelperText>
           </FormControl>
         </Flex>
