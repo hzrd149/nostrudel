@@ -2,7 +2,7 @@ import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDis
 import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
 import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/events";

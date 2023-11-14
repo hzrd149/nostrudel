@@ -17,11 +17,12 @@ import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeli
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import { CheckIcon } from "../../../components/icons";
 import { useSigningContext } from "../../../providers/signing-provider";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import CommunityPost from "../components/community-post";
 import { RouterContext } from "../community-home";
+import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 
 type PendingProps = {
   event: NostrEvent;
@@ -84,13 +85,14 @@ function ModPendingPost({ event, community, approvals }: PendingProps) {
 
 export default function CommunityPendingView() {
   const account = useCurrentAccount();
+  const muteFilter = useUserMuteFilter();
   const { community, timeline } = useOutletContext<RouterContext>();
 
   const events = useSubject(timeline.timeline);
 
   const mods = getCommunityMods(community);
   const approvals = buildApprovalMap(events, mods);
-  const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id));
+  const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id) && !muteFilter(e));
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 

@@ -1,5 +1,5 @@
 import useReplaceableEvent from "./use-replaceable-event";
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import { getCoordinatesFromList } from "../helpers/nostr/lists";
 import useReplaceableEvents from "./use-replaceable-events";
 

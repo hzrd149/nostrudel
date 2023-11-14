@@ -15,7 +15,7 @@ import {
   useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply } from "../../helpers/nostr/events";
@@ -27,6 +27,8 @@ import useRelaysChanged from "../../hooks/use-relays-changed";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -43,6 +45,7 @@ function EditableControls() {
 
 function HashTagPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { hashtag } = useParams() as { hashtag: string };
   const [editableHashtag, setEditableHashtag] = useState(hashtag);
   useEffect(() => setEditableHashtag(hashtag), [hashtag]);
@@ -52,6 +55,7 @@ function HashTagPage() {
   const readRelays = useRelaySelectionRelays();
   const { isOpen: showReplies, onToggle } = useDisclosure();
 
+  const { listId, filter } = usePeopleListContext();
   const timelinePageEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -63,16 +67,16 @@ function HashTagPage() {
     [showReplies, muteFilter, timelinePageEventFilter],
   );
   const timeline = useTimelineLoader(
-    `${hashtag}-hashtag`,
+    `${listId ?? "global"}-${hashtag}-hashtag`,
     readRelays,
-    { kinds: [1], "#t": [hashtag] },
+    { kinds: [1], "#t": [hashtag], ...filter },
     { eventFilter },
   );
 
   useRelaysChanged(readRelays, () => timeline.reset());
 
   const header = (
-    <Flex gap="4" alignItems="center" wrap="wrap">
+    <Flex gap="2" alignItems="center" wrap="wrap">
       <Editable
         value={editableHashtag}
         onChange={(v) => setEditableHashtag(v)}
@@ -82,7 +86,7 @@ function HashTagPage() {
         gap="2"
         alignItems="center"
         selectAllOnFocus
-        onSubmit={(v) => navigate("/t/" + String(v).toLowerCase())}
+        onSubmit={(v) => navigate("/t/" + String(v).toLowerCase() + location.search)}
         flexShrink={0}
       >
         <div>
@@ -91,6 +95,7 @@ function HashTagPage() {
         <Input as={EditableInput} maxW="md" />
         <EditableControls />
       </Editable>
+      <PeopleListSelection />
       <RelaySelectionButton />
       <FormControl display="flex" alignItems="center" w="auto">
         <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
@@ -109,7 +114,9 @@ function HashTagPage() {
 export default function HashTagView() {
   return (
     <RelaySelectionProvider>
-      <HashTagPage />
+      <PeopleListProvider initList="global">
+        <HashTagPage />
+      </PeopleListProvider>
     </RelaySelectionProvider>
   );
 }

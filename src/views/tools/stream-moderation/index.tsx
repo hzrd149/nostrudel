@@ -11,7 +11,7 @@ import useSubject from "../../../hooks/use-subject";
 import { ParsedStream, STREAM_KIND, getATag } from "../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../../providers/require-current-account";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";

@@ -22,6 +22,7 @@ import {
   renderGenericUrl,
   renderSongDotLinkUrl,
   embedCashuTokens,
+  renderStemstrUrl,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
@@ -42,6 +43,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
     renderSpotifyUrl,
     renderTidalUrl,
     renderSongDotLinkUrl,
+    renderStemstrUrl,
     renderImageUrl,
     renderVideoUrl,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,

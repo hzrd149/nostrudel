@@ -4,6 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import NostrPublishAction from "../classes/nostr-publish-action";
 import useSubject from "../hooks/use-subject";
 import { RelayPaidTag } from "../views/relays/components/relay-card";
+import { EmbedEvent } from "./embed-event";
 
 export type PostResultsProps = {
   pub: NostrPublishAction;
@@ -14,6 +15,7 @@ export const PublishDetails = ({ pub }: PostResultsProps & Omit<FlexProps, "chil
 
   return (
     <Flex direction="column" gap="2">
+      <EmbedEvent event={pub.event} />
       <Progress value={(results.length / pub.relays.length) * 100} size="lg" hasStripe />
       {results.map((result) => (
         <Alert key={result.relay.url} status={result.status ? "success" : "warning"}>

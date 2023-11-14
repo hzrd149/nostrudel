@@ -17,7 +17,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import { useClientRelays, useReadRelayUrls } from "../../hooks/use-client-relays";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import useSubjects from "../../hooks/use-subjects";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import RequireCurrentAccount from "../../providers/require-current-account";

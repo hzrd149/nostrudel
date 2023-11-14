@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo } fr
 import { Kind } from "nostr-tools";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
 import { NostrEvent } from "../types/nostr-event";

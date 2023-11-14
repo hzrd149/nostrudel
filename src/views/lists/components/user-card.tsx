@@ -12,7 +12,7 @@ import { listRemovePerson } from "../../../helpers/nostr/lists";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { UserFollowButton } from "../../../components/user-follow-button";
 
 export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent } & Omit<CardProps, "children">;

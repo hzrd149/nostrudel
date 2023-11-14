@@ -4,7 +4,7 @@ import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER, getCommunityName } from "../../../helpers/nostr/communities";
 import { NOTE_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../../helpers/nostr/events";

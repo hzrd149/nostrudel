@@ -15,7 +15,7 @@ import {
   TextureLoader,
 } from "three";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";

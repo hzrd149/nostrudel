@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useInterval } from "react-use";
 import dayjs from "dayjs";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import UserAvatar from "../user-avatar";

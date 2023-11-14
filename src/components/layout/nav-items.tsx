@@ -21,7 +21,7 @@ import {
   NotesIcon,
   LightningIcon,
 } from "../icons";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 
 export default function NavItems() {

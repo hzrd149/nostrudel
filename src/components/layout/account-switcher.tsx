@@ -9,7 +9,7 @@ import accountService, { Account } from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
 import UserAvatar from "../user-avatar";
 import AccountInfoBadge from "../account-info-badge";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 
 function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;

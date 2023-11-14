@@ -4,7 +4,7 @@ import { getDecodedToken, Token } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "./copy-icon-button";
 import { useUserMetadata } from "../hooks/use-user-metadata";
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "./icons";
 
 function RedeemButton({ token }: { token: string }) {

@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import { Divider, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { Heading, SimpleGrid } from "@chakra-ui/react";
 
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -33,10 +33,9 @@ export default function UserEmojiPacksTab() {
       <VerticalPageLayout>
         {packs.length > 0 && (
           <>
-            <Heading size="md" mt="2">
+            <Heading size="lg" mt="2">
               Created packs
             </Heading>
-            <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
               {packs.map((pack) => (
                 <EmojiPackCard key={getEventUID(pack)} pack={pack} />
@@ -46,10 +45,9 @@ export default function UserEmojiPacksTab() {
         )}
         {favorites.length > 0 && (
           <>
-            <Heading size="md" mt="2">
+            <Heading size="lg" mt="2">
               Favorite packs
             </Heading>
-            <Divider />
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
               {favorites.map((event) => (
                 <EmojiPackCard key={getEventUID(event)} pack={event} />

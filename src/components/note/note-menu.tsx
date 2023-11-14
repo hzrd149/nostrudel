@@ -20,7 +20,7 @@ import {
 } from "../icons";
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { buildAppSelectUrl } from "../../helpers/nostr/apps";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
 import clientRelaysService from "../../services/client-relays";

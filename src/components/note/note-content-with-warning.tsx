@@ -1,6 +1,6 @@
 import { NostrEvent } from "../../types/nostr-event";
 
-import { NoteContents } from "./note-contents";
+import { NoteContents } from "./text-note-contents";
 import { useExpand } from "../../providers/expanded";
 import SensitiveContentWarning from "../sensitive-content-warning";
 import useAppSettings from "../../hooks/use-app-settings";

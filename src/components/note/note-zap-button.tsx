@@ -2,7 +2,7 @@ import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react
 
 import { readablizeSats } from "../../helpers/bolt11";
 import { totalZaps } from "../../helpers/nostr/zaps";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
 import clientRelaysService from "../../services/client-relays";
 import eventZapsService from "../../services/event-zaps";
@@ -21,7 +21,7 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(event.id);
+  const zaps = useEventZaps(getEventUID(event));
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const hasZapped = !!account && zaps.some((zap) => zap.request.pubkey === account.pubkey);

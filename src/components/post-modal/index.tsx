@@ -26,7 +26,7 @@ import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/signing-provider";
-import { NoteContents } from "../note/note-contents";
+import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/trust";
 import {
@@ -44,7 +44,7 @@ import { nostrBuildUploadImage as nostrBuildUpload } from "../../helpers/nostr-b
 import CommunitySelect from "./community-select";
 import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 

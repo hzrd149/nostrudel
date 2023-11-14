@@ -1,6 +1,6 @@
 import accountService from "../services/account";
 import useSubject from "./use-subject";
 
-export function useCurrentAccount() {
+export default function useCurrentAccount() {
   return useSubject(accountService.current);
 }

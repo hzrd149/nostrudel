@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "./icons";
 import useUserLists from "../hooks/use-user-lists";
 import {

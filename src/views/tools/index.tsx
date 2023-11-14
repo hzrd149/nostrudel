@@ -21,6 +21,9 @@ export default function ToolsHomeView() {
         <Button as={RouterLink} to="/tools/network-dm-graph">
           Contacts DM Graph
         </Button>
+        <Button as={RouterLink} to="/tools/dm-feed">
+          DM Feed
+        </Button>
         <Button as={RouterLink} to="/map" leftIcon={<MapIcon />}>
           Map
         </Button>

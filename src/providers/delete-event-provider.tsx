@@ -23,7 +23,7 @@ import {
 import { Event, Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import signingService from "../services/signing";
 import createDefer, { Deferred } from "../classes/deferred";
 import useEventRelays from "../hooks/use-event-relays";

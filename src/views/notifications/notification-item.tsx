@@ -4,7 +4,7 @@ import { Kind, nip18, nip25 } from "nostr-tools";
 
 import UserAvatar from "../../components/user-avatar";
 import { UserLink } from "../../components/user-link";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { NoteLink } from "../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
@@ -14,7 +14,7 @@ import { getEventUID, getReferences, parseCoordinate } from "../../helpers/nostr
 import Timestamp from "../../components/timestamp";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
-import { NoteContents } from "../../components/note/note-contents";
+import { NoteContents } from "../../components/note/text-note-contents";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { TrustProvider } from "../../providers/trust";
 

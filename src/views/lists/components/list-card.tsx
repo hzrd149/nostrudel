@@ -1,16 +1,17 @@
 import { memo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
-  AvatarGroup,
   ButtonGroup,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   CardProps,
-  Flex,
   Heading,
   Link,
+  LinkBox,
   LinkProps,
+  SimpleGrid,
   Text,
 } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
@@ -29,15 +30,20 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
-import { NoteLink } from "../../../components/note-link";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
-import Timestamp from "../../../components/timestamp";
 import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { getArticleTitle } from "../../../helpers/nostr/long-form";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
+import { CommunityIcon, NotesIcon } from "../../../components/icons";
+import User01 from "../../../components/icons/user-01";
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import NoteZapButton from "../../../components/note/note-zap-button";
+import Link01 from "../../../components/icons/link-01";
+import File02 from "../../../components/icons/file-02";
+import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
 
 function ArticleLinkLoader({ pointer, ...props }: { pointer: nip19.AddressPointer } & Omit<LinkProps, "children">) {
   const article = useReplaceableEvent(pointer);
@@ -64,62 +70,33 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
   const references = getReferencesFromList(list);
 
   return (
-    <>
-      <Text>
-        Updated: <Timestamp timestamp={list.created_at} />
-      </Text>
+    <SimpleGrid spacing="2" columns={4}>
       {people.length > 0 && (
-        <>
-          <Text>People ({people.length}):</Text>
-          <AvatarGroup overflow="hidden" mb="2" max={16} size="sm">
-            {people.map(({ pubkey, relay }) => (
-              <UserAvatarLink key={pubkey} pubkey={pubkey} relay={relay} />
-            ))}
-          </AvatarGroup>
-        </>
+        <Text>
+          <User01 boxSize={5} /> {people.length}
+        </Text>
       )}
       {notes.length > 0 && (
-        <Flex gap="2" overflow="hidden" wrap="wrap">
-          <Text>Notes ({notes.length}):</Text>
-          {notes.slice(0, 4).map(({ id, relay }) => (
-            <NoteLink key={id} noteId={id} />
-          ))}
-        </Flex>
+        <Text>
+          <NotesIcon boxSize={5} /> {notes.length}
+        </Text>
       )}
       {references.length > 0 && (
-        <Flex gap="2" overflow="hidden" wrap="wrap">
-          <Text>References ({references.length})</Text>
-          {references.slice(0, 3).map(({ url, petname }) => (
-            <Link maxW="200" href={url} isExternal whiteSpace="pre" color="blue.500" isTruncated>
-              {petname || url}
-            </Link>
-          ))}
-        </Flex>
-      )}
-      {communities.length > 0 && (
-        <Flex gap="2" overflow="hidden" wrap="wrap">
-          <Text>Communities ({communities.length}):</Text>
-          {communities.map((pointer) => (
-            <Link
-              key={JSON.stringify(pointer)}
-              as={RouterLink}
-              to={`/c/${pointer.identifier}/${nip19.npubEncode(pointer.pubkey)}`}
-              color="blue.500"
-            >
-              {pointer.identifier}
-            </Link>
-          ))}
-        </Flex>
+        <Text>
+          <Link01 boxSize={5} /> {references.length}
+        </Text>
       )}
       {articles.length > 0 && (
-        <Flex overflow="hidden" direction="column" wrap="wrap">
-          <Text>Articles ({articles.length}):</Text>
-          {articles.slice(0, 4).map((pointer) => (
-            <ArticleLinkLoader key={JSON.stringify(pointer)} pointer={pointer} isTruncated />
-          ))}
-        </Flex>
+        <Text>
+          <File02 /> {articles.length}
+        </Text>
       )}
-    </>
+      {communities.length > 0 && (
+        <Text>
+          <CommunityIcon boxSize={5} /> {communities.length}
+        </Text>
+      )}
+    </SimpleGrid>
   );
 }
 
@@ -135,12 +112,12 @@ function ListCardRender({
   useRegisterIntersectionEntity(ref, getEventUID(list));
 
   return (
-    <Card ref={ref} variant="outline" {...props}>
-      <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0">
+    <Card as={LinkBox} ref={ref} variant="outline" {...props}>
+      <CardHeader display="flex" gap="2" p="4" alignItems="center">
         <Heading size="md" isTruncated>
-          <Link as={RouterLink} to={`/lists/${link}`}>
+          <HoverLinkOverlay as={RouterLink} to={`/lists/${link}`}>
             {getListName(list)}
-          </Link>
+          </HoverLinkOverlay>
         </Heading>
         {!hideCreator && (
           <>
@@ -149,14 +126,19 @@ function ListCardRender({
             <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
           </>
         )}
-        <ButtonGroup size="xs" variant="ghost" ml="auto">
+      </CardHeader>
+      <CardBody py="0" px="4">
+        <ListCardContent list={list} />
+      </CardBody>
+      <CardFooter p="2">
+        <NoteZapButton event={list} size="sm" variant="ghost" />
+        {/* TODO: reactions are tagging every user in list */}
+        <SimpleLikeButton event={list} variant="ghost" size="sm" />
+        <ButtonGroup size="sm" variant="ghost" ml="auto">
           <ListFavoriteButton list={list} />
           <ListMenu list={list} aria-label="list menu" />
         </ButtonGroup>
-      </CardHeader>
-      <CardBody p="2">
-        <ListCardContent list={list} />
-      </CardBody>
+      </CardFooter>
     </Card>
   );
 }

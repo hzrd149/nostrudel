@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Box, CardProps, Flex } from "@chakra-ui/react";
 
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { getMessageRecipient } from "../../services/direct-messages";
 import { NostrEvent } from "../../types/nostr-event";
 import DecryptPlaceholder from "./decrypt-placeholder";
@@ -31,7 +31,7 @@ export function MessageContent({ event, text }: { event: NostrEvent; text: strin
   return <Box whiteSpace="pre-wrap">{content}</Box>;
 }
 
-export function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
+export default function Message({ event }: { event: NostrEvent } & Omit<CardProps, "children">) {
   const account = useCurrentAccount()!;
   const isOwnMessage = account.pubkey === event.pubkey;
 

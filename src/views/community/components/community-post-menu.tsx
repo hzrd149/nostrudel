@@ -2,7 +2,7 @@ import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
-import { useCurrentAccount } from "../../../hooks/use-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useMuteModalContext } from "../../../providers/mute-modal-provider";
 import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";

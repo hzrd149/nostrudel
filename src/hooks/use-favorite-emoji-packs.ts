@@ -1,5 +1,5 @@
 import useReplaceableEvent from "./use-replaceable-event";
-import { useCurrentAccount } from "./use-current-account";
+import useCurrentAccount from "./use-current-account";
 import { USER_EMOJI_LIST_KIND } from "../helpers/nostr/emoji-packs";
 import { RequestOptions } from "../services/replaceable-event-requester";
 

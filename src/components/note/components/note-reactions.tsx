@@ -2,7 +2,7 @@ import { ButtonGroup, ButtonGroupProps, Divider } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import ReactionButton from "./reaction-button";
-import EventReactionButtons from "../../event-reactions";
+import EventReactionButtons from "../../event-reactions/event-reactions";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 

@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useContext } from "react";
 import { lib } from "emojilib";
 
 import useReplaceableEvents from "../hooks/use-replaceable-events";
-import { useCurrentAccount } from "../hooks/use-current-account";
+import useCurrentAccount from "../hooks/use-current-account";
 import { isEmojiTag } from "../types/nostr-event";
 import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
 import { getPackCordsFromFavorites } from "../helpers/nostr/emoji-packs";

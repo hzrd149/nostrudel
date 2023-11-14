@@ -13,16 +13,15 @@ import { useSigningContext } from "../../providers/signing-provider";
 import clientRelaysService from "../../services/client-relays";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import { Message } from "./message";
+import Message from "./message";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { LightboxProvider } from "../../components/lightbox-provider";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const toast = useToast();

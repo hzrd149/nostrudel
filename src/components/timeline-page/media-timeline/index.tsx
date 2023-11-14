@@ -7,7 +7,7 @@ import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImage, EmbeddedImageProps, GalleryImage } from "../../embed-types";
+import { EmbeddedImageProps, GalleryImage } from "../../embed-types";
 import { TrustProvider } from "../../../providers/trust";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";

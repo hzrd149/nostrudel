@@ -19,7 +19,7 @@ import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
 import signingService from "../../services/signing";

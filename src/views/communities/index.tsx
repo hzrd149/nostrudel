@@ -26,7 +26,7 @@ import dayjs from "dayjs";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useJoinedCommunitiesList from "../../hooks/use-communities-joined-list";
-import { useCurrentAccount } from "../../hooks/use-current-account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
 import { useSigningContext } from "../../providers/signing-provider";

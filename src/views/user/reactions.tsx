@@ -33,7 +33,7 @@ const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
       <Flex gap="2" mb="2">
         <UserAvatar pubkey={reaction.pubkey} size="xs" />
         <Text>
-          <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked" : "reacted with "}
+          <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked " : "reacted with "}
           {embedEmoji([reaction.content], reaction)}
         </Text>
         <Spacer />
@@ -51,15 +51,14 @@ export default function UserReactionsTab() {
 
   const timeline = useTimelineLoader(`${pubkey}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
 
-  const likes = useSubject(timeline.timeline);
-
+  const reactions = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
         <VerticalPageLayout>
-          {likes.map((event) => (
+          {reactions.map((event) => (
             <Reaction reaction={event} />
           ))}
 

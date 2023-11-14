@@ -67,30 +67,19 @@ export function normalizeToHex(hex: string) {
   return null;
 }
 
-/** @deprecated */
-export function getSharableNoteId(eventId: string) {
-  const relays = getEventRelays(eventId).value;
-  const ranked = relayScoreboardService.getRankedRelays(relays);
-  const onlyTwo = ranked.slice(0, 2);
-
-  if (onlyTwo.length > 0) {
-    return nip19.neventEncode({ id: eventId, relays: onlyTwo });
-  } else return nip19.noteEncode(eventId);
-}
-
 export function getSharableEventAddress(event: NostrEvent) {
   const relays = getEventRelays(getEventUID(event)).value;
   const ranked = relayScoreboardService.getRankedRelays(relays);
-  const onlyTwo = ranked.slice(0, 2);
+  const maxTwo = ranked.slice(0, 2);
 
   if (isReplaceable(event.kind)) {
     const d = event.tags.find(isDTag)?.[1];
     if (!d) return null;
-    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays: onlyTwo });
+    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays: maxTwo });
   } else {
-    if (onlyTwo.length > 0) {
-      return nip19.neventEncode({ id: event.id, relays: onlyTwo });
-    } else return nip19.noteEncode(event.id);
+    if (maxTwo.length == 2) {
+      return nip19.neventEncode({ id: event.id, relays: maxTwo });
+    } else return nip19.neventEncode({ id: event.id, relays: maxTwo, author: event.pubkey });
   }
 }
 

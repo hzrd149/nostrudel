@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
+import { Kind } from "nostr-tools";
 
 import { NoteLink } from "../../components/note-link";
 import { UserLink } from "../../components/user-link";
@@ -24,13 +25,15 @@ function ReportEvent({ report }: { report: NostrEvent }) {
   useRegisterIntersectionEntity(ref, getEventUID(report));
 
   return (
-    <Flex gap="2">
+    <Flex gap="2" ref={ref}>
+      <UserLink pubkey={report.pubkey} color="blue.500" />
+      <Text>reported</Text>
       {reportedEvent ? (
         <>
           <NoteLink noteId={reportedEvent} />
           {reportedPubkey && (
             <>
-              <Text>From</Text>
+              <Text>by</Text>
               <UserLink pubkey={reportedPubkey} color="blue.500" />
             </>
           )}
@@ -38,7 +41,7 @@ function ReportEvent({ report }: { report: NostrEvent }) {
       ) : (
         <UserLink pubkey={reportedPubkey} color="blue.500" />
       )}
-      <Text>{reason}</Text>
+      {reason && <Text>for {reason}</Text>}
     </Flex>
   );
 }
@@ -47,10 +50,16 @@ export default function UserReportsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(`${pubkey}-reports`, contextRelays, {
-    authors: [pubkey],
-    kinds: [1984],
-  });
+  const timeline = useTimelineLoader(`${pubkey}-reports`, contextRelays, [
+    {
+      authors: [pubkey],
+      kinds: [Kind.Report],
+    },
+    {
+      "#p": [pubkey],
+      kinds: [Kind.Report],
+    },
+  ]);
 
   const events = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
