@@ -34,7 +34,7 @@ import UserAvatarLink from "./user-avatar-link";
 import { UserLink } from "./user-link";
 import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
 import styled from "@emotion/styled";
-import { getSharableNoteId } from "../helpers/nip19";
+import { getSharableEventAddress } from "../helpers/nip19";
 
 type RefType = MutableRefObject<HTMLElement | null>;
 
@@ -101,7 +101,7 @@ function getRefPath(ref: RefType) {
 }
 
 function EventSlideHeader({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
-  const encoded = useMemo(() => getSharableNoteId(event.id), [event.id]);
+  const encoded = useMemo(() => getSharableEventAddress(event), [event]);
 
   return (
     <Flex gap="2" alignItems="center" p="2" {...props}>
