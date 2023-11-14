@@ -20,6 +20,9 @@ export function getListName(event: NostrEvent) {
     event.tags.find(isDTag)?.[1]
   );
 }
+export function getListDescription(event: NostrEvent) {
+  return event.tags.find((t) => t[0] === "description")?.[1];
+}
 
 export function isJunkList(event: NostrEvent) {
   const name = event.tags.find(isDTag)?.[1];

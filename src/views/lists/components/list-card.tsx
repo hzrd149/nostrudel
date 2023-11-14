@@ -7,19 +7,19 @@ import {
   CardFooter,
   CardHeader,
   CardProps,
+  Flex,
   Heading,
-  Link,
   LinkBox,
-  LinkProps,
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
+import { Kind } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserLink } from "../../../components/user-link";
 import {
   getEventsFromList,
+  getListDescription,
   getListName,
   getParsedCordsFromList,
   getPubkeysFromList,
@@ -35,8 +35,6 @@ import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";
 import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
-import { getArticleTitle } from "../../../helpers/nostr/long-form";
-import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { CommunityIcon, NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -44,22 +42,6 @@ import NoteZapButton from "../../../components/note/note-zap-button";
 import Link01 from "../../../components/icons/link-01";
 import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
-
-function ArticleLinkLoader({ pointer, ...props }: { pointer: nip19.AddressPointer } & Omit<LinkProps, "children">) {
-  const article = useReplaceableEvent(pointer);
-  if (article) return <ArticleLink article={article} {...props} />;
-  return null;
-}
-function ArticleLink({ article, ...props }: { article: NostrEvent } & Omit<LinkProps, "children">) {
-  const title = getArticleTitle(article);
-  const naddr = getSharableEventAddress(article);
-
-  return (
-    <Link href={naddr ? buildAppSelectUrl(naddr, false) : undefined} isExternal color="blue.500" {...props}>
-      {title}
-    </Link>
-  );
-}
 
 export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);
@@ -111,21 +93,26 @@ function ListCardRender({
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(list));
 
+  const description = getListDescription(list);
+
   return (
     <Card as={LinkBox} ref={ref} variant="outline" {...props}>
-      <CardHeader display="flex" gap="2" p="4" alignItems="center">
-        <Heading size="md" isTruncated>
-          <HoverLinkOverlay as={RouterLink} to={`/lists/${link}`}>
-            {getListName(list)}
-          </HoverLinkOverlay>
-        </Heading>
-        {!hideCreator && (
-          <>
-            <Text>by</Text>
-            <UserAvatarLink pubkey={list.pubkey} size="xs" />
-            <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-          </>
-        )}
+      <CardHeader p="4">
+        <Flex gap="2" alignItems="center">
+          <Heading size="md" isTruncated>
+            <HoverLinkOverlay as={RouterLink} to={`/lists/${link}`}>
+              {getListName(list)}
+            </HoverLinkOverlay>
+          </Heading>
+          {!hideCreator && (
+            <>
+              <Text>by</Text>
+              <UserAvatarLink pubkey={list.pubkey} size="xs" />
+              <UserLink pubkey={list.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
+            </>
+          )}
+        </Flex>
+        {description && <Text fontStyle="italic">{description}</Text>}
       </CardHeader>
       <CardBody py="0" px="4">
         <ListCardContent list={list} />
