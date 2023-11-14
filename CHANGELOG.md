@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.33.0
+
+### Minor Changes
+
+- 5e9afb0d: Add "DM Feed" tool
+- cc4247dc: Thread view improvements
+- 6d701a7b: Add option to search communities in search view
+- 5e9afb0d: Add "create $prism" link to lists
+- 35bb0e37: Add people lists to search and hashtag views
+
+### Patch Changes
+
+- d1181ef9: Fix link cards breaking lines
+
 ## 0.32.1
 
 ### Patch Changes
