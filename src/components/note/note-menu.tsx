@@ -28,11 +28,14 @@ import { handleEventFromRelay } from "../../services/event-relays";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
 import { useMuteModalContext } from "../../providers/mute-modal-provider";
+import NoteTranslationModal from "../note-translation-modal";
+import Translate01 from "../icons/translate-01";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
   const infoModal = useDisclosure();
   const reactionsModal = useDisclosure();
+  const translationsModal = useDisclosure();
   const { isMuted, mute, unmute } = useUserMuteFunctions(event.pubkey);
   const { openModal } = useMuteModalContext();
 
@@ -81,6 +84,9 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
             Delete Note
           </MenuItem>
         )}
+        <MenuItem onClick={translationsModal.onOpen} icon={<Translate01 />}>
+          Translations
+        </MenuItem>
         <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast
         </MenuItem>
@@ -99,6 +105,8 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
       {reactionsModal.isOpen && (
         <NoteReactionsModal noteId={event.id} isOpen={reactionsModal.isOpen} onClose={reactionsModal.onClose} />
       )}
+
+      {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={event} />}
     </>
   );
 }
