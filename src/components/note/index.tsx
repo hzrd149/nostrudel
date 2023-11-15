@@ -118,7 +118,7 @@ export const Note = React.memo(
                   <Text>
                     Replying to <UserLink pubkey={repliedTo.pubkey} fontWeight="bold" />
                   </Text>
-                  <InlineNoteContent event={event} maxLength={96} isTruncated />
+                  <InlineNoteContent event={repliedTo} maxLength={96} isTruncated />
                 </Flex>
               )}
             </CardHeader>
