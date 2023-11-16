@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { ButtonGroup, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
 import { isReply, isRepost } from "../../helpers/nostr/events";
@@ -13,7 +13,7 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/people
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
 import { NostrRequestFilter } from "../../types/nostr-query";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { ReplyIcon, RepostIcon } from "../../components/icons";
+import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 
 function HomePage() {
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });
@@ -54,22 +54,7 @@ function HomePage() {
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
       <PeopleListSelection />
-      <ButtonGroup variant="outline">
-        <IconButton
-          icon={<ReplyIcon boxSize={5} />}
-          colorScheme={showReplies.isOpen ? "primary" : undefined}
-          aria-label="Toggle replies"
-          title="Toggle replies"
-          onClick={showReplies.onToggle}
-        />
-        <IconButton
-          icon={<RepostIcon boxSize={5} />}
-          colorScheme={showReposts.isOpen ? "primary" : undefined}
-          aria-label="Toggle reposts"
-          title="Toggle reposts"
-          onClick={showReposts.onToggle}
-        />
-      </ButtonGroup>
+      <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <RelaySelectionButton ml="auto" />
       <TimelineViewTypeButtons />
     </Flex>

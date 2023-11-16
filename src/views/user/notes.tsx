@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ButtonGroup, Flex, IconButton, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
@@ -11,7 +11,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import TimelineViewType from "../../components/timeline-page/timeline-view-type";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
-import { ReplyIcon, RepostIcon } from "../../components/icons";
+import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 
 export default function UserNotesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -41,22 +41,7 @@ export default function UserNotesTab() {
 
   const header = (
     <Flex gap="2" alignItems="center">
-      <ButtonGroup variant="outline">
-        <IconButton
-          icon={<ReplyIcon boxSize={5} />}
-          colorScheme={showReplies.isOpen ? "primary" : undefined}
-          aria-label="Toggle replies"
-          title="Toggle replies"
-          onClick={showReplies.onToggle}
-        />
-        <IconButton
-          icon={<RepostIcon boxSize={5} />}
-          colorScheme={showReposts.isOpen ? "primary" : undefined}
-          aria-label="Toggle reposts"
-          title="Toggle reposts"
-          onClick={showReposts.onToggle}
-        />
-      </ButtonGroup>
+      <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
       <RelayIconStack relays={readRelays} direction="row-reverse" maxRelays={4} />
       <TimelineViewType />
