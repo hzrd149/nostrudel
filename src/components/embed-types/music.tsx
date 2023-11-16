@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
 import { EmbedEventPointer } from "../embed-event";
+import appSettings from "../../services/settings/app-settings";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
@@ -120,4 +121,24 @@ export function renderStemstrUrl(match: URL) {
   if (base !== "thread" || id.length !== 64) return null;
 
   return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: ["wss://relay.stemstr.app"] } }} />;
+}
+
+export function renderSoundCloudUrl(match: URL) {
+  if (match.hostname !== "soundcloud.com" || match.pathname.split("/").length !== 3) return null;
+
+  return (
+    <iframe
+      width="100%"
+      height="166"
+      scrolling="no"
+      frameBorder="no"
+      allow="autoplay"
+      src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(
+        match.protocol + match.host + match.pathname,
+      )}&color=${encodeURIComponent(
+        "#" + appSettings.value.primaryColor || "ff5500",
+      )}&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true`}
+      style={setZIndex}
+    ></iframe>
+  );
 }

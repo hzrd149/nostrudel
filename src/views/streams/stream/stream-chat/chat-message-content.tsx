@@ -8,6 +8,8 @@ import {
   embedNostrMentions,
   renderGenericUrl,
   renderImageUrl,
+  renderSoundCloudUrl,
+  renderStemstrUrl,
 } from "../../../../components/embed-types";
 import { NostrEvent } from "../../../../types/nostr-event";
 
@@ -15,7 +17,7 @@ const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
   const content = useMemo(() => {
     let c: EmbedableContent = [event.content];
 
-    c = embedUrls(c, [renderImageUrl, renderGenericUrl]);
+    c = embedUrls(c, [renderImageUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl]);
 
     // nostr
     c = embedNostrLinks(c);
