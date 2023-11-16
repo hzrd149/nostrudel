@@ -3,11 +3,13 @@ import { useUnmount } from "react-use";
 import { NostrRequestFilter } from "../types/nostr-query";
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
+import { NostrEvent } from "../types/nostr-event";
 
 type Options = {
   enabled?: boolean;
   eventFilter?: EventFilter;
   cursor?: number;
+  customSort?: (a: NostrEvent, b: NostrEvent) => number;
 };
 
 export default function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
@@ -27,6 +29,9 @@ export default function useTimelineLoader(key: string, relays: string[], query: 
       timeline.setCursor(opts.cursor);
     }
   }, [timeline, opts?.cursor]);
+  useEffect(() => {
+    timeline.events.customSort = opts?.customSort;
+  }, [timeline, opts?.customSort]);
 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {

@@ -36,6 +36,7 @@ import { NoteContents } from "../note/text-note-contents";
 import Timestamp from "../timestamp";
 import { readablizeSats } from "../../helpers/bolt11";
 import { LightningIcon } from "../icons";
+import { DMV_STATUS_KIND, DMV_TRANSLATE_JOB_KIND, DMV_TRANSLATE_RESULT_KIND } from "../../helpers/nostr/dvm";
 
 function TranslationResult({ result }: { result: NostrEvent }) {
   const requester = result.tags.find(isPTag)?.[1];
@@ -66,7 +67,7 @@ function TranslationRequest({ request }: { request: NostrEvent }) {
   const readRelays = useReadRelayUrls();
 
   const timeline = useTimelineLoader(`${getEventUID(request)}-offers`, requestRelays || readRelays, {
-    kinds: [7000],
+    kinds: [DMV_STATUS_KIND],
     "#e": [request.id],
   });
 
@@ -161,7 +162,7 @@ export default function NoteTranslationModal({
     try {
       const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);
       const draft: DraftNostrEvent = {
-        kind: 5002,
+        kind: DMV_TRANSLATE_JOB_KIND,
         content: "",
         created_at: dayjs().unix(),
         tags: [
@@ -180,14 +181,15 @@ export default function NoteTranslationModal({
   }, [requestSignature, note, readRelays]);
 
   const timeline = useTimelineLoader(`${getEventUID(note)}-translations`, readRelays, {
-    kinds: [5002, 6002],
+    kinds: [DMV_TRANSLATE_JOB_KIND, DMV_TRANSLATE_RESULT_KIND],
     "#i": [note.id],
   });
 
   const events = useSubject(timeline.timeline);
   const filteredEvents = events.filter(
     (e, i, arr) =>
-      e.kind === 6002 || (e.kind === 5002 && !arr.some((r) => r.tags.some((t) => isETag(t) && t[1] === e.id))),
+      e.kind === DMV_TRANSLATE_RESULT_KIND ||
+      (e.kind === DMV_TRANSLATE_JOB_KIND && !arr.some((r) => r.tags.some((t) => isETag(t) && t[1] === e.id))),
   );
 
   return (
@@ -211,9 +213,9 @@ export default function NoteTranslationModal({
           </Flex>
           {filteredEvents.map((event) => {
             switch (event.kind) {
-              case 5002:
+              case DMV_TRANSLATE_JOB_KIND:
                 return <TranslationRequest key={event.id} request={event} />;
-              case 6002:
+              case DMV_TRANSLATE_RESULT_KIND:
                 return <TranslationResult key={event.id} result={event} />;
             }
           })}

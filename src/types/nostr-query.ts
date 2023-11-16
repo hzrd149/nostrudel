@@ -16,6 +16,7 @@ export type NostrQuery = {
   "#e"?: string[];
   "#g"?: string[];
   "#i"?: string[];
+  "#k"?: string[];
   "#l"?: string[];
   "#p"?: string[];
   "#r"?: string[];

@@ -12,6 +12,9 @@ export default function ToolsHomeView() {
       </Heading>
       <Divider />
       <Flex wrap="wrap" gap="4">
+        <Button as={RouterLink} to="/tools/content-discovery">
+          Content Discovery DVM
+        </Button>
         <Button as={RouterLink} to="/tools/network">
           Contact network
         </Button>
