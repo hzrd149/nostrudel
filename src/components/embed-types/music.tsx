@@ -7,7 +7,8 @@ const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
 // nostr:nevent1qqsve4ud5v8gjds2f2h7exlmjvhqayu4s520pge7frpwe22wezny0pcpp4mhxue69uhkummn9ekx7mqprdmhxue69uhkvet9v3ejumn0wd68ytnzv9hxgtmdv4kk2mxs3z0
 export function renderWavlakeUrl(match: URL) {
-  if (match.hostname !== "wavlake.com") return null;
+  if (match.hostname !== "wavlake.com" && match.hostname !== "www.wavlake.com") return null;
+  if (!match.pathname.startsWith("/track")) return null;
 
   const embedUrl = new URL(match);
   embedUrl.hostname = "embed.wavlake.com";
@@ -18,7 +19,7 @@ export function renderWavlakeUrl(match: URL) {
       frameBorder="0"
       title="Wavlake Embed"
       src={embedUrl.toString()}
-      style={{ width: "100%", aspectRatio: 576 / 356, maxWidth: 573, ...setZIndex }}
+      style={{ width: "100%", height: 354, maxWidth: 573, ...setZIndex }}
     ></iframe>
   );
 }
