@@ -1,5 +1,14 @@
 # nostrudel
 
+## 0.34.0
+
+### Minor Changes
+
+- 32c3e74a: Add note translations modal using DVMs
+- e144f13e: Improve how reposts and replies are displayed in timelines
+- 90700ebb: Use kind 10004 for communities list instead of kind 30001
+- d19b0001: Show SoundCloud embeds
+
 ## 0.33.0
 
 ### Minor Changes
