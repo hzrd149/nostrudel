@@ -10,7 +10,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubjects from "../../hooks/use-subjects";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
-import { NOTE_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
+import { COMMUNITIES_LIST_KIND, NOTE_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 import { parseCoordinate } from "../../helpers/nostr/events";
@@ -19,17 +19,12 @@ import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays: string[] = []) {
   const readRelays = useReadRelayUrls(additionalRelays);
-  const muteListSubjects = useMemo(() => {
+  const communityListsSubjects = useMemo(() => {
     return pubkeys.map((pubkey) =>
-      replaceableEventLoaderService.requestEvent(
-        readRelays,
-        NOTE_LIST_KIND,
-        pubkey,
-        SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER,
-      ),
+      replaceableEventLoaderService.requestEvent(readRelays, COMMUNITIES_LIST_KIND, pubkey),
     );
   }, [pubkeys]);
-  return useSubjects(muteListSubjects);
+  return useSubjects(communityListsSubjects);
 }
 
 function CommunityCardWithMembers({ pointer, pubkeys }: { pointer: AddressPointer; pubkeys: string[] }) {

@@ -9,7 +9,14 @@ import { getEventUID } from "../../helpers/nostr/events";
 import useUserLists from "../../hooks/use-user-lists";
 import NewListModal from "./components/new-list-modal";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND } from "../../helpers/nostr/lists";
+import {
+  BOOKMARK_LIST_KIND,
+  COMMUNITIES_LIST_KIND,
+  MUTE_LIST_KIND,
+  NOTE_LIST_KIND,
+  PEOPLE_LIST_KIND,
+  PIN_LIST_KIND,
+} from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
@@ -51,6 +58,8 @@ function ListsPage() {
         <ListCard cord={`${Kind.Contacts}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${COMMUNITIES_LIST_KIND}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${BOOKMARK_LIST_KIND}:${account.pubkey}`} hideCreator />
       </SimpleGrid>
       {peopleLists.length > 0 && (
         <>

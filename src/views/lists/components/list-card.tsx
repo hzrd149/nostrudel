@@ -87,7 +87,8 @@ function ListCardRender({
   hideCreator = false,
   ...props
 }: Omit<CardProps, "children"> & { list: NostrEvent; hideCreator?: boolean }) {
-  const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
+  const isSpecialList = isSpecialListKind(list.kind);
+  const link = isSpecialList ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
@@ -118,9 +119,8 @@ function ListCardRender({
         <ListCardContent list={list} />
       </CardBody>
       <CardFooter p="2">
-        <NoteZapButton event={list} size="sm" variant="ghost" />
-        {/* TODO: reactions are tagging every user in list */}
-        <SimpleLikeButton event={list} variant="ghost" size="sm" />
+        {!isSpecialList && <NoteZapButton event={list} size="sm" variant="ghost" />}
+        {!isSpecialList && <SimpleLikeButton event={list} variant="ghost" size="sm" />}
         <ButtonGroup size="sm" variant="ghost" ml="auto">
           <ListFavoriteButton list={list} />
           <ListMenu list={list} aria-label="list menu" />
