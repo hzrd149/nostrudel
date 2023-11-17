@@ -11,6 +11,7 @@ import {
   IconButton,
   Link,
   LinkBox,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
@@ -44,11 +45,14 @@ import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HoverLinkOverlay from "../hover-link-overlay";
 import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
+import useSingleEvent from "../../hooks/use-single-event";
+import { InlineNoteContent } from "./inline-note-content";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
+  showReplyLine?: boolean;
   hideDrawerButton?: boolean;
   registerIntersectionEntity?: boolean;
   clickable?: boolean;
@@ -58,6 +62,7 @@ export const Note = React.memo(
     event,
     variant = "outline",
     showReplyButton,
+    showReplyLine = true,
     hideDrawerButton,
     registerIntersectionEntity = true,
     clickable = true,
@@ -70,6 +75,9 @@ export const Note = React.memo(
     // if there is a parent intersection observer, register this card
     const ref = useRef<HTMLDivElement | null>(null);
     useRegisterIntersectionEntity(ref, event.id);
+
+    const refs = getReferences(event);
+    const repliedTo = useSingleEvent(refs.replyId);
 
     // find mostr external link
     const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
@@ -104,6 +112,15 @@ export const Note = React.memo(
                 </Link>
               </Flex>
               <NoteCommunityMetadata event={event} />
+              {showReplyLine && repliedTo && (
+                <Flex gap="2" fontStyle="italic" alignItems="center" whiteSpace="nowrap">
+                  <ReplyIcon />
+                  <Text>
+                    Replying to <UserLink pubkey={repliedTo.pubkey} fontWeight="bold" />
+                  </Text>
+                  <InlineNoteContent event={repliedTo} maxLength={96} isTruncated />
+                </Flex>
+              )}
             </CardHeader>
             <CardBody p="0">
               <NoteContentWithWarning event={event} />
@@ -140,11 +157,7 @@ export const Note = React.memo(
           </Card>
         </ExpandProvider>
         {replyForm.isOpen && (
-          <ReplyForm
-            item={{ event, replies: [], refs: getReferences(event) }}
-            onCancel={replyForm.onClose}
-            onSubmitted={replyForm.onClose}
-          />
+          <ReplyForm item={{ event, replies: [], refs }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
         )}
       </TrustProvider>
     );

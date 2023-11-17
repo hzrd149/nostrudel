@@ -4,6 +4,7 @@ import { getMatchLink, getMatchNostrLink } from "../regexp";
 import { ReactionGroup } from "./reactions";
 import { parseCoordinate } from "./events";
 
+/** @deprecated */
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
 export const COMMUNITY_DEFINITION_KIND = 34550;
 export const COMMUNITY_APPROVAL_KIND = 4550;
@@ -91,7 +92,7 @@ export function getCommunityPostVote(grouped: ReactionGroup[]) {
   return { up, down, vote };
 }
 
-export function getEventCommunityPointer(event: NostrEvent){
+export function getEventCommunityPointer(event: NostrEvent) {
   const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
   return communityTag ? parseCoordinate(communityTag[1], true) : null;
 }

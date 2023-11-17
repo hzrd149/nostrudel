@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from "react";
-import { Flex, Switch, useDisclosure } from "@chakra-ui/react";
+import { useCallback, useEffect, useMemo } from "react";
+import { Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
-import { isReply } from "../../helpers/nostr/events";
+import { isReply, isRepost } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
@@ -13,20 +13,28 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/people
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
 import { NostrRequestFilter } from "../../types/nostr-query";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-
-var showRepliesStored = localStorage.getItem("show-replies") === "true";
+import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 
 function HomePage() {
+  const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });
+  const showReposts = useDisclosure({ defaultIsOpen: localStorage.getItem("show-reposts") !== "false" });
+
+  // save toggles to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem("show-replies", String(showReplies.isOpen));
+    localStorage.setItem("show-reposts", String(showReposts.isOpen));
+  }, [showReplies.isOpen, showReposts.isOpen]);
+
   const timelinePageEventFilter = useTimelinePageEventFilter();
-  const showReplies = useDisclosure({ defaultIsOpen: showRepliesStored });
   const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (muteFilter(event)) return false;
       if (!showReplies.isOpen && isReply(event)) return false;
+      if (!showReposts.isOpen && isRepost(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [timelinePageEventFilter, showReplies.isOpen, muteFilter],
+    [timelinePageEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
 
   const { relays } = useRelaySelectionContext();
@@ -46,16 +54,7 @@ function HomePage() {
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
       <PeopleListSelection />
-      <Switch
-        isChecked={showReplies.isOpen}
-        onChange={(v) => {
-          localStorage.setItem("show-replies", v.target.checked ? "true" : "false");
-          showRepliesStored = v.target.checked;
-          showReplies.onToggle();
-        }}
-      >
-        Show Replies
-      </Switch>
+      <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <RelaySelectionButton ml="auto" />
       <TimelineViewTypeButtons />
     </Flex>

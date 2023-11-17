@@ -2,11 +2,11 @@ import { useCallback } from "react";
 import dayjs from "dayjs";
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent, isDTag } from "../../../types/nostr-event";
 import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER, getCommunityName } from "../../../helpers/nostr/communities";
-import { NOTE_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
+import { getCommunityName } from "../../../helpers/nostr/communities";
+import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
@@ -27,11 +27,11 @@ export default function CommunityJoinButton({
 
   const handleClick = useCallback(async () => {
     try {
-      const favList = list || {
-        kind: NOTE_LIST_KIND,
+      const favList = {
+        kind: COMMUNITIES_LIST_KIND,
         content: "",
         created_at: dayjs().unix(),
-        tags: [["d", SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER]],
+        tags: list?.tags.filter((t) => !isDTag(t)) ?? [],
       };
 
       let draft: DraftNostrEvent;

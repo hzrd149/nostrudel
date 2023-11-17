@@ -5,16 +5,23 @@ import Subject from "./subject";
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
+function sortByDate(a: NostrEvent, b: NostrEvent) {
+  return b.created_at - a.created_at;
+}
+
 export default class EventStore {
   name?: string;
   events = new Map<string, NostrEvent>();
 
-  constructor(name?: string) {
+  customSort?: typeof sortByDate;
+
+  constructor(name?: string, customSort?: typeof sortByDate) {
     this.name = name;
+    this.customSort = customSort;
   }
 
   getSortedEvents() {
-    return Array.from(this.events.values()).sort((a, b) => b.created_at - a.created_at);
+    return Array.from(this.events.values()).sort(this.customSort || sortByDate);
   }
 
   onEvent = new Subject<NostrEvent>(undefined, false);

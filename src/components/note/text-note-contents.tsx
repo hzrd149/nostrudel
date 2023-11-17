@@ -23,6 +23,7 @@ import {
   renderSongDotLinkUrl,
   embedCashuTokens,
   renderStemstrUrl,
+  renderSoundCloudUrl,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderRedditUrl } from "../embed-types/reddit";
@@ -44,6 +45,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
     renderTidalUrl,
     renderSongDotLinkUrl,
     renderStemstrUrl,
+    renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,

@@ -5,20 +5,30 @@ import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
 
+export const MUTE_LIST_KIND = 10000;
+export const PIN_LIST_KIND = 10001;
+export const BOOKMARK_LIST_KIND = 10003;
+export const COMMUNITIES_LIST_KIND = 10004;
+export const CHATS_LIST_KIND = 10005;
+
 export const PEOPLE_LIST_KIND = 30000;
 export const NOTE_LIST_KIND = 30001;
-export const PIN_LIST_KIND = 10001;
-export const MUTE_LIST_KIND = 10000;
+export const BOOKMARK_LIST_SET_KIND = 30003;
 
 export function getListName(event: NostrEvent) {
   if (event.kind === Kind.Contacts) return "Following";
-  if (event.kind === PIN_LIST_KIND) return "Pins";
   if (event.kind === MUTE_LIST_KIND) return "Mute";
+  if (event.kind === PIN_LIST_KIND) return "Pins";
+  if (event.kind === BOOKMARK_LIST_KIND) return "Bookmarks";
+  if (event.kind === COMMUNITIES_LIST_KIND) return "Communities";
   return (
     event.tags.find((t) => t[0] === "name")?.[1] ||
     event.tags.find((t) => t[0] === "title")?.[1] ||
     event.tags.find(isDTag)?.[1]
   );
+}
+export function getListDescription(event: NostrEvent) {
+  return event.tags.find((t) => t[0] === "description")?.[1];
 }
 
 export function isJunkList(event: NostrEvent) {
@@ -28,7 +38,14 @@ export function isJunkList(event: NostrEvent) {
   return /^(chats\/([0-9a-f]{64}|null)|notifications)\/lastOpened$/.test(name);
 }
 export function isSpecialListKind(kind: number) {
-  return kind === Kind.Contacts || kind === PIN_LIST_KIND || kind === MUTE_LIST_KIND;
+  return (
+    kind === Kind.Contacts ||
+    kind === MUTE_LIST_KIND ||
+    kind === PIN_LIST_KIND ||
+    kind === BOOKMARK_LIST_KIND ||
+    kind === COMMUNITIES_LIST_KIND ||
+    kind === CHATS_LIST_KIND
+  );
 }
 
 export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEvent {

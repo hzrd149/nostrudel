@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import {
   Flex,
   FormControl,
@@ -25,7 +25,7 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 
 import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
@@ -41,6 +41,9 @@ import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";
 import Header from "./components/header";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useEventExists from "../../hooks/use-event-exists";
+import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
+import { STREAM_KIND } from "../../helpers/nostr/stream";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -95,19 +98,45 @@ const UserView = () => {
   const [relayCount, setRelayCount] = useState(4);
   const userTopRelays = useUserTopRelays(pubkey, relayCount);
   const relayModal = useDisclosure();
+  const readRelays = unique([...userTopRelays, ...pointerRelays]);
+
+  const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
+  useAppTitle(getUserDisplayName(metadata, pubkey));
+
+  const hasTracks = useEventExists({ kinds: [STEMSTR_TRACK_KIND], authors: [pubkey] }, [
+    "wss://relay.stemstr.app",
+    ...readRelays,
+  ]);
+  const hasArticles = useEventExists({ kinds: [Kind.Article], authors: [pubkey] }, readRelays);
+  const hasStreams = useEventExists({ kinds: [STREAM_KIND], authors: [pubkey] }, [
+    "wss://nos.lol",
+    "wss://relay.damus.io",
+    "wss://relay.snort.social",
+    "wss://nostr.wine",
+    ...readRelays,
+  ]);
+
+  const filteredTabs = useMemo(
+    () =>
+      tabs.filter((tab) => {
+        if (tab.path === "tracks" && hasTracks === false) return false;
+        if (tab.path === "articles" && hasArticles === false) return false;
+        if (tab.path === "streams" && hasStreams === false) return false;
+        return true;
+      }),
+    [hasTracks, hasArticles, tabs],
+  );
 
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
 
-  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
-
-  const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
-
-  useAppTitle(getUserDisplayName(metadata, pubkey));
+  const activeTab = filteredTabs.indexOf(
+    filteredTabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? filteredTabs[0],
+  );
 
   return (
     <>
-      <AdditionalRelayProvider relays={unique([...userTopRelays, ...pointerRelays])}>
+      <AdditionalRelayProvider relays={readRelays}>
         <Flex direction="column" alignItems="stretch" gap="2">
           <Header pubkey={pubkey} showRelaySelectionModal={relayModal.onOpen} />
           <Tabs
@@ -116,12 +145,12 @@ const UserView = () => {
             flexGrow="1"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(tabs[v].path, { replace: true })}
+            onChange={(v) => navigate(filteredTabs[v].path, { replace: true })}
             colorScheme="primary"
             h="full"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
-              {tabs.map(({ label }) => (
+              {filteredTabs.map(({ label }) => (
                 <Tab key={label} whiteSpace="pre">
                   {label}
                 </Tab>
@@ -129,7 +158,7 @@ const UserView = () => {
             </TabList>
 
             <TabPanels>
-              {tabs.map(({ label }) => (
+              {filteredTabs.map(({ label }) => (
                 <TabPanel key={label} p={0}>
                   <ErrorBoundary>
                     <Suspense fallback={<Spinner />}>

@@ -64,7 +64,9 @@ export default function NoteView() {
             View full thread ({parentPosts.length - 1})
           </Button>
         )}
-        {post.reply && <Note key={post.reply.event.id + "-rely"} event={post.reply.event} hideDrawerButton />}
+        {post.reply && (
+          <Note key={post.reply.event.id + "-rely"} event={post.reply.event} hideDrawerButton showReplyLine={false} />
+        )}
         <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
       </>
     );

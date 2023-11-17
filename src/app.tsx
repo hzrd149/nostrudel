@@ -71,6 +71,8 @@ import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
 import UserDMsTab from "./views/user/dms";
 import DMFeedView from "./views/tools/dm-feed";
+import ContentDiscoveryView from "./views/tools/content-discovery";
+import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -228,6 +230,13 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
+          {
+            path: "content-discovery",
+            children: [
+              { path: "", element: <ContentDiscoveryView /> },
+              { path: ":pubkey", element: <ContentDiscoveryDVMView /> },
+            ],
+          },
           { path: "network", element: <NetworkView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },

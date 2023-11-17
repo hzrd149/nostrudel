@@ -66,7 +66,7 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
         <UserAvatarLink pubkey={community.pubkey} size="sm" />
         <Text>by</Text>
         <UserLink pubkey={community.pubkey} />
-        {countMembers && (
+        {countMembers !== undefined && countMembers > 0 && (
           <Tag variant="solid" ml="auto" alignSelf="flex-end" textShadow="none">
             <TagLeftIcon as={User01} boxSize={4} />
             <TagLabel>{readablizeSats(countMembers)}</TagLabel>

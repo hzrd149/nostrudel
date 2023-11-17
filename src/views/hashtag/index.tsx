@@ -10,15 +10,15 @@ import {
   IconButton,
   Input,
   Spacer,
-  Switch,
   useDisclosure,
   useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
+
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { isReply } from "../../helpers/nostr/events";
+import { isReply, isRepost } from "../../helpers/nostr/events";
 import { CheckIcon, EditIcon } from "../../components/icons";
 import { NostrEvent } from "../../types/nostr-event";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
@@ -29,6 +29,7 @@ import TimelineViewTypeButtons from "../../components/timeline-page/timeline-vie
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -52,8 +53,10 @@ function HashTagPage() {
 
   useAppTitle("#" + hashtag);
 
+  const showReplies = useDisclosure({ defaultIsOpen: true });
+  const showReposts = useDisclosure({ defaultIsOpen: true });
+
   const readRelays = useRelaySelectionRelays();
-  const { isOpen: showReplies, onToggle } = useDisclosure();
 
   const { listId, filter } = usePeopleListContext();
   const timelinePageEventFilter = useTimelinePageEventFilter();
@@ -61,10 +64,11 @@ function HashTagPage() {
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (muteFilter(event)) return false;
-      if (!showReplies && isReply(event)) return false;
+      if (!showReplies.isOpen && isReply(event)) return false;
+      if (!showReposts.isOpen && isRepost(event)) return false;
       return timelinePageEventFilter(event);
     },
-    [showReplies, muteFilter, timelinePageEventFilter],
+    [showReplies.isOpen, showReposts.isOpen, muteFilter, timelinePageEventFilter],
   );
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${hashtag}-hashtag`,
@@ -97,12 +101,7 @@ function HashTagPage() {
       </Editable>
       <PeopleListSelection />
       <RelaySelectionButton />
-      <FormControl display="flex" alignItems="center" w="auto">
-        <Switch id="show-replies" isChecked={showReplies} onChange={onToggle} mr="2" />
-        <FormLabel htmlFor="show-replies" mb="0">
-          Show Replies
-        </FormLabel>
-      </FormControl>
+      <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
       <TimelineViewTypeButtons />
     </Flex>
