@@ -63,7 +63,10 @@ class EventExistsService {
         const request = new NostrRequest([nextRelay], 500);
         const limitFilter = Array.isArray(filter) ? filter.map((f) => ({ ...f, limit: 1 })) : { ...filter, limit: 1 };
         request.start(limitFilter);
-        request.onEvent.subscribe(() => sub.next(true));
+        request.onEvent.subscribe(() => {
+          sub.next(true);
+          this.pending.delete(key);
+        });
         await request.onComplete;
         if (sub.value === undefined) sub.next(false);
       })();
