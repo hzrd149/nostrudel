@@ -1,11 +1,8 @@
-import { useCallback } from "react";
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
+import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { useCopyToClipboard } from "react-use";
 import { nip19 } from "nostr-tools";
-
-import { getSharableEventAddress } from "../../helpers/nip19";
-import { NostrEvent } from "../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
+import dayjs from "dayjs";
 
 import {
   BroadcastEventIcon,
@@ -17,7 +14,11 @@ import {
   RepostIcon,
   TrashIcon,
   UnmuteIcon,
+  PinIcon,
 } from "../icons";
+import { getSharableEventAddress } from "../../helpers/nip19";
+import { DraftNostrEvent, NostrEvent, isETag } from "../../types/nostr-event";
+import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -30,6 +31,49 @@ import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
 import { useMuteModalContext } from "../../providers/mute-modal-provider";
 import NoteTranslationModal from "../note-translation-modal";
 import Translate01 from "../icons/translate-01";
+import useUserPinList from "../../hooks/use-user-pin-list";
+import { useSigningContext } from "../../providers/signing-provider";
+import { PIN_LIST_KIND, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
+
+function PinNoteItem({ event }: { event: NostrEvent }) {
+  const toast = useToast();
+  const account = useCurrentAccount();
+  const { requestSignature } = useSigningContext();
+  const { list } = useUserPinList(account?.pubkey);
+
+  const isPinned = list?.tags.some((t) => isETag(t) && t[1] === event.id) ?? false;
+  const label = isPinned ? "Unpin Note" : "Pin Note";
+
+  const [loading, setLoading] = useState(false);
+  const togglePin = useCallback(async () => {
+    try {
+      setLoading(true);
+      let draft: DraftNostrEvent = {
+        kind: PIN_LIST_KIND,
+        created_at: dayjs().unix(),
+        content: list?.content ?? "",
+        tags: list?.tags ? Array.from(list.tags) : [],
+      };
+
+      if (isPinned) draft = listRemoveEvent(draft, event.id);
+      else draft = listAddEvent(draft, event.id);
+
+      const signed = await requestSignature(draft);
+      new NostrPublishAction(label, clientRelaysService.getWriteUrls(), signed);
+      setLoading(false);
+    } catch (e) {
+      if (e instanceof Error) toast({ status: "error", description: e.message });
+    }
+  }, [list, isPinned]);
+
+  if (event.pubkey !== account?.pubkey) return null;
+
+  return (
+    <MenuItem onClick={togglePin} icon={<PinIcon />} isDisabled={loading || account.readonly}>
+      {label}
+    </MenuItem>
+  );
+}
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
@@ -90,6 +134,7 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
         <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast
         </MenuItem>
+        <PinNoteItem event={event} />
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>

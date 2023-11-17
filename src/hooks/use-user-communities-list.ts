@@ -4,7 +4,7 @@ import { RequestOptions } from "../services/replaceable-event-requester";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useJoinedCommunitiesList(pubkey?: string, opts?: RequestOptions) {
+export default function useUserCommunitiesList(pubkey?: string, relays: string[] = [], opts?: RequestOptions) {
   const account = useCurrentAccount();
   const key = pubkey ?? account?.pubkey;
 
@@ -22,10 +22,9 @@ export default function useJoinedCommunitiesList(pubkey?: string, opts?: Request
     [],
     opts,
   );
-  const list = useReplaceableEvent(key ? { kind: COMMUNITIES_LIST_KIND, pubkey: key } : undefined, [], opts);
+  const list = useReplaceableEvent(key ? { kind: COMMUNITIES_LIST_KIND, pubkey: key } : undefined, relays, opts);
 
   let useList = list || oldList;
-  console.log(list, oldList);
 
   // if both exist, use the newest one
   if (list && oldList) {
