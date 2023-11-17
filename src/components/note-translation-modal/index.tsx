@@ -38,14 +38,21 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { LightningIcon } from "../icons";
 import { DMV_STATUS_KIND, DMV_TRANSLATE_JOB_KIND, DMV_TRANSLATE_RESULT_KIND } from "../../helpers/nostr/dvm";
 
-function TranslationResult({ result }: { result: NostrEvent }) {
+function getTranslationRequestLanguage(request: NostrEvent) {
+  const targetLanguage = request.tags.find((t) => t[0] === "param" && t[1] === "language")?.[2];
+  return codes.find((code) => code.iso639_1 === targetLanguage);
+}
+
+function TranslationResult({ result, request }: { result: NostrEvent; request?: NostrEvent }) {
   const requester = result.tags.find(isPTag)?.[1];
+  const lang = request && getTranslationRequestLanguage(request);
 
   return (
     <Card variant="outline">
       <CardHeader px="4" py="4" pb="2" display="flex" gap="2" alignItems="center">
         <UserAvatarLink pubkey={result.pubkey} size="sm" />
         <UserLink pubkey={result.pubkey} fontWeight="bold" />
+        {lang && <Text>Translated to {lang.nativeName}</Text>}
         <Timestamp timestamp={result.created_at} />
       </CardHeader>
       <CardBody px="4" pt="0" pb="4">
@@ -61,8 +68,7 @@ function TranslationResult({ result }: { result: NostrEvent }) {
 }
 
 function TranslationRequest({ request }: { request: NostrEvent }) {
-  const targetLanguage = request.tags.find((t) => t[0] === "param" && t[1] === "language")?.[2];
-  const lang = codes.find((code) => code.iso639_1 === targetLanguage);
+  const lang = getTranslationRequestLanguage(request);
   const requestRelays = request.tags.find((t) => t[0] === "relays")?.slice(1);
   const readRelays = useReadRelayUrls();
 
@@ -216,7 +222,9 @@ export default function NoteTranslationModal({
               case DMV_TRANSLATE_JOB_KIND:
                 return <TranslationRequest key={event.id} request={event} />;
               case DMV_TRANSLATE_RESULT_KIND:
-                return <TranslationResult key={event.id} result={event} />;
+                const requestId = event.tags.find(isETag)?.[1];
+                const request = events.find((e) => e.id === requestId);
+                return <TranslationResult key={event.id} result={event} request={request} />;
             }
           })}
         </ModalBody>
