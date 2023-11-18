@@ -7,6 +7,7 @@ import {
   Flex,
   IconButton,
   Link,
+  Spacer,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -35,6 +36,7 @@ import NoteReactions from "../../../components/note/components/note-reactions";
 import BookmarkButton from "../../../components/note/components/bookmark-button";
 import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import NoteProxyLink from "../../../components/note/components/note-proxy-link";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -126,7 +128,9 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         <NoteZapButton event={post.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
-      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" ml="auto" />
+      <Spacer />
+      <NoteProxyLink event={post.event} variant="ghost" size="sm" />
+      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" />
       <NoteMenu event={post.event} variant="ghost" size="sm" aria-label="More Options" />
     </Flex>
   );

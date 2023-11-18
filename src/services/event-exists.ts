@@ -57,6 +57,7 @@ class EventExistsService {
       const nextRelay = relayScoreboardService.getRankedRelays(Array.from(relays))[0];
 
       if (!nextRelay) continue;
+      relays.delete(nextRelay);
 
       (async () => {
         const sub = this.answers.get(key);
@@ -64,11 +65,15 @@ class EventExistsService {
         const limitFilter = Array.isArray(filter) ? filter.map((f) => ({ ...f, limit: 1 })) : { ...filter, limit: 1 };
         request.start(limitFilter);
         request.onEvent.subscribe(() => {
+          this.log("Found event for", filter);
           sub.next(true);
           this.pending.delete(key);
         });
         await request.onComplete;
-        if (sub.value === undefined) sub.next(false);
+        if (sub.value === undefined && this.asked.get(key).size > this.pending.get(key).size) {
+          this.log("Could not find event for", filter);
+          sub.next(false);
+        }
       })();
     }
   }

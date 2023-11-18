@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import {
   Box,
   ButtonGroup,
@@ -29,7 +29,7 @@ import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
 import { RepostButton } from "./components/repost-button";
 import { QuoteRepostButton } from "./components/quote-repost-button";
-import { ExternalLinkIcon, ReplyIcon } from "../icons";
+import { ReplyIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
@@ -47,6 +47,7 @@ import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
 import { InlineNoteContent } from "./inline-note-content";
+import NoteProxyLink from "./components/note-proxy-link";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -78,9 +79,6 @@ export const Note = React.memo(
 
     const refs = getReferences(event);
     const repliedTo = useSingleEvent(refs.replyId);
-
-    // find mostr external link
-    const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
 
     const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
 
@@ -138,17 +136,7 @@ export const Note = React.memo(
                 </ButtonGroup>
                 {!showReactionsOnNewLine && reactionButtons}
                 <Box flexGrow={1} />
-                {externalLink && (
-                  <IconButton
-                    as={Link}
-                    icon={<ExternalLinkIcon />}
-                    aria-label="Open External"
-                    href={externalLink}
-                    size="xs"
-                    variant="ghost"
-                    target="_blank"
-                  />
-                )}
+                <NoteProxyLink event={event} size="xs" variant="ghost" />
                 <EventRelays event={event} />
                 <BookmarkButton event={event} aria-label="Bookmark note" size="xs" variant="ghost" />
                 <NoteMenu event={event} size="xs" variant="ghost" aria-label="More Options" />

@@ -109,9 +109,9 @@ const UserView = () => {
   ]);
   const hasArticles = useEventExists({ kinds: [Kind.Article], authors: [pubkey] }, readRelays);
   const hasStreams = useEventExists({ kinds: [STREAM_KIND], authors: [pubkey] }, [
+    "wss://relay.snort.social",
     "wss://nos.lol",
     "wss://relay.damus.io",
-    "wss://relay.snort.social",
     "wss://nostr.wine",
     ...readRelays,
   ]);
@@ -124,7 +124,7 @@ const UserView = () => {
         if (tab.path === "streams" && hasStreams === false) return false;
         return true;
       }),
-    [hasTracks, hasArticles, tabs],
+    [hasTracks, hasArticles, hasStreams, tabs],
   );
 
   const matches = useMatches();
