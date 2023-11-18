@@ -9,6 +9,8 @@ export default function NoteProxyLink({
 }: Omit<IconButtonProps, "aria-label"> & { event: NostrEvent }) {
   const externalLink = useMemo(() => event.tags.find((t) => t[0] === "mostr" || t[0] === "proxy"), [event])?.[1];
 
+  if (!externalLink) return null;
+
   return (
     <IconButton
       as={Link}
