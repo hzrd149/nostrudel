@@ -1,5 +1,11 @@
-import { useCallback, useState } from "react";
+import { MouseEventHandler, useCallback, useState } from "react";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
   Button,
   Card,
   CardBody,
@@ -14,6 +20,7 @@ import {
   ModalOverlay,
   ModalProps,
   Select,
+  Spacer,
   Spinner,
   Text,
   useToast,
@@ -43,65 +50,53 @@ function getTranslationRequestLanguage(request: NostrEvent) {
   return codes.find((code) => code.iso639_1 === targetLanguage);
 }
 
-function TranslationResult({ result, request }: { result: NostrEvent; request?: NostrEvent }) {
-  const requester = result.tags.find(isPTag)?.[1];
-  const lang = request && getTranslationRequestLanguage(request);
-
-  return (
-    <Card variant="outline">
-      <CardHeader px="4" py="4" pb="2" display="flex" gap="2" alignItems="center">
-        <UserAvatarLink pubkey={result.pubkey} size="sm" />
-        <UserLink pubkey={result.pubkey} fontWeight="bold" />
-        {lang && <Text>Translated to {lang.nativeName}</Text>}
-        <Timestamp timestamp={result.created_at} />
-      </CardHeader>
-      <CardBody px="4" pt="0" pb="4">
-        {requester && (
-          <Text fontStyle="italic" mb="2">
-            Requested by <UserLink pubkey={requester} fontWeight="bold" />
-          </Text>
-        )}
-        <NoteContents event={result} />
-      </CardBody>
-    </Card>
-  );
-}
-
 function TranslationRequest({ request }: { request: NostrEvent }) {
   const lang = getTranslationRequestLanguage(request);
   const requestRelays = request.tags.find((t) => t[0] === "relays")?.slice(1);
   const readRelays = useReadRelayUrls();
 
-  const timeline = useTimelineLoader(`${getEventUID(request)}-offers`, requestRelays || readRelays, {
-    kinds: [DMV_STATUS_KIND],
+  const timeline = useTimelineLoader(`${getEventUID(request)}-offers-results`, requestRelays || readRelays, {
+    kinds: [DMV_STATUS_KIND, DMV_TRANSLATE_RESULT_KIND],
     "#e": [request.id],
   });
 
-  const offers = useSubject(timeline.timeline);
+  const events = useSubject(timeline.timeline);
+  const dvmStatuses: Record<string, NostrEvent> = {};
+  for (const event of events) {
+    if (
+      (event.kind === DMV_STATUS_KIND || event.kind === DMV_TRANSLATE_RESULT_KIND) &&
+      (!dvmStatuses[event.pubkey] || dvmStatuses[event.pubkey].created_at < event.created_at)
+    ) {
+      dvmStatuses[event.pubkey] = event;
+    }
+  }
 
   return (
     <Card variant="outline">
       <CardHeader px="4" py="4" pb="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
         <UserAvatarLink pubkey={request.pubkey} size="sm" />
         <UserLink pubkey={request.pubkey} fontWeight="bold" />
-        <Text>Requested translation to {lang?.nativeName}</Text>
+        <Text>
+          Requested translation to <strong>{lang?.nativeName}</strong>
+        </Text>
         <Timestamp timestamp={request.created_at} />
       </CardHeader>
-      <CardBody px="4" pt="0" pb="4">
-        {offers.length === 0 ? (
-          <Flex gap="2" alignItems="center">
-            <Spinner />
-            Waiting for offers
-          </Flex>
-        ) : (
-          <Heading size="md" mb="2">
-            Offers ({offers.length})
-          </Heading>
-        )}
-        {offers.map((offer) => (
-          <TranslationOffer key={offer.id} offer={offer} />
-        ))}
-      </CardBody>
+      {Object.keys(dvmStatuses).length === 0 && (
+        <Flex gap="2" alignItems="center" m="4">
+          <Spinner />
+          Waiting for offers
+        </Flex>
+      )}
+      <Accordion allowMultiple>
+        {Object.values(dvmStatuses).map((event) => {
+          switch (event.kind) {
+            case DMV_STATUS_KIND:
+              return <TranslationOffer key={event.id} offer={event} />;
+            case DMV_TRANSLATE_RESULT_KIND:
+              return <TranslationResult key={event.id} result={event} />;
+          }
+        })}
+      </Accordion>
     </Card>
   );
 }
@@ -115,10 +110,11 @@ function TranslationOffer({ offer }: { offer: NostrEvent }) {
 
   const [paid, setPaid] = useState(false);
   const [paying, setPaying] = useState(false);
-  const payInvoice = async () => {
+  const payInvoice: MouseEventHandler = async (e) => {
     try {
       if (window.webln && invoice) {
         setPaying(true);
+        e.stopPropagation();
         await window.webln.sendPayment(invoice);
         setPaid(true);
       }
@@ -129,27 +125,51 @@ function TranslationOffer({ offer }: { offer: NostrEvent }) {
   };
 
   return (
-    <Flex gap="2" direction="column">
-      <Flex gap="2" alignItems="center">
-        <UserAvatarLink pubkey={offer.pubkey} size="sm" />
-        <UserLink pubkey={offer.pubkey} fontWeight="bold" />
+    <AccordionItem>
+      <AccordionButton>
+        <Flex gap="2" alignItems="center" grow={1}>
+          <UserAvatarLink pubkey={offer.pubkey} size="sm" />
+          <UserLink pubkey={offer.pubkey} fontWeight="bold" />
+          <Text>Offered</Text>
+          <Spacer />
 
-        {invoice && amountMsat && (
-          <Button
-            colorScheme="yellow"
-            ml="auto"
-            size="sm"
-            leftIcon={<LightningIcon />}
-            onClick={payInvoice}
-            isLoading={paying || paid}
-            isDisabled={!window.webln}
-          >
-            Pay {readablizeSats(amountMsat / 1000)} sats
-          </Button>
-        )}
-      </Flex>
-      <Text>{offer.content}</Text>
-    </Flex>
+          {invoice && amountMsat && (
+            <Button
+              colorScheme="yellow"
+              size="sm"
+              leftIcon={<LightningIcon />}
+              onClick={payInvoice}
+              isLoading={paying || paid}
+              isDisabled={!window.webln}
+            >
+              Pay {readablizeSats(amountMsat / 1000)} sats
+            </Button>
+          )}
+          <AccordionIcon />
+        </Flex>
+      </AccordionButton>
+      <AccordionPanel pb={4}>
+        <Text>{offer.content}</Text>
+      </AccordionPanel>
+    </AccordionItem>
+  );
+}
+
+function TranslationResult({ result }: { result: NostrEvent }) {
+  return (
+    <AccordionItem>
+      <AccordionButton>
+        <Flex gap="2" alignItems="center" grow={1}>
+          <UserAvatarLink pubkey={result.pubkey} size="sm" />
+          <UserLink pubkey={result.pubkey} fontWeight="bold" />
+          <Text>Translated Note</Text>
+          <AccordionIcon ml="auto" />
+        </Flex>
+      </AccordionButton>
+      <AccordionPanel pb={4}>
+        <NoteContents event={result} />
+      </AccordionPanel>
+    </AccordionItem>
   );
 }
 
@@ -187,16 +207,12 @@ export default function NoteTranslationModal({
   }, [requestSignature, note, readRelays]);
 
   const timeline = useTimelineLoader(`${getEventUID(note)}-translations`, readRelays, {
-    kinds: [DMV_TRANSLATE_JOB_KIND, DMV_TRANSLATE_RESULT_KIND],
+    kinds: [DMV_TRANSLATE_JOB_KIND],
     "#i": [note.id],
   });
 
   const events = useSubject(timeline.timeline);
-  const filteredEvents = events.filter(
-    (e, i, arr) =>
-      e.kind === DMV_TRANSLATE_RESULT_KIND ||
-      (e.kind === DMV_TRANSLATE_JOB_KIND && !arr.some((r) => r.tags.some((t) => isETag(t) && t[1] === e.id))),
-  );
+  const jobs = events.filter((e) => e.kind === DMV_TRANSLATE_JOB_KIND);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" {...props}>
@@ -217,16 +233,9 @@ export default function NoteTranslationModal({
               Request new translation
             </Button>
           </Flex>
-          {filteredEvents.map((event) => {
-            switch (event.kind) {
-              case DMV_TRANSLATE_JOB_KIND:
-                return <TranslationRequest key={event.id} request={event} />;
-              case DMV_TRANSLATE_RESULT_KIND:
-                const requestId = event.tags.find(isETag)?.[1];
-                const request = events.find((e) => e.id === requestId);
-                return <TranslationResult key={event.id} result={event} request={request} />;
-            }
-          })}
+          {jobs.map((event) => (
+            <TranslationRequest key={event.id} request={event} />
+          ))}
         </ModalBody>
       </ModalContent>
     </Modal>
