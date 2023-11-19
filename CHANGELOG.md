@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.35.0
+
+### Minor Changes
+
+- 7cbffb96: Add option to pin notes
+- 7cbffb96: Show pinned notes on user profile
+
 ## 0.34.0
 
 ### Minor Changes
