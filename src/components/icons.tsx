@@ -60,6 +60,7 @@ import Wallet02 from "./icons/wallet-02";
 import Download01 from "./icons/download-01";
 import Repeat01 from "./icons/repeat-01";
 import ReverseLeft from "./icons/reverse-left";
+import Pin01 from "./icons/pin-01";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -89,6 +90,7 @@ export const ChevronRightIcon = ChevronRight;
 export const LightningIcon = Zap;
 export const RelayIcon = Server04;
 export const BroadcastEventIcon = Share07;
+export const PinIcon = Pin01;
 
 export const ExternalLinkIcon = Share04;
 

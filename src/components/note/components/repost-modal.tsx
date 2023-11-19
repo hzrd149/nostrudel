@@ -24,7 +24,7 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../icons";
-import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
+import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
@@ -54,7 +54,7 @@ export default function RepostModal({
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const showCommunities = useDisclosure();
-  const { pointers } = useJoinedCommunitiesList(account?.pubkey);
+  const { pointers } = useUserCommunitiesList(account?.pubkey);
 
   const [loading, setLoading] = useState(false);
   const repost = async (communityPointer?: AddressPointer) => {

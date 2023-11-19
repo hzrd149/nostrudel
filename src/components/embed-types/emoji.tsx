@@ -10,7 +10,14 @@ export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNo
       const emojiTag = note.tags.filter(isEmojiTag).find((t) => t[1].toLowerCase() === match[1].toLowerCase());
       if (emojiTag) {
         return (
-          <Image src={emojiTag[2]} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={match[1]} />
+          <Image
+            src={emojiTag[2]}
+            h="1.5em"
+            maxW="3em"
+            display="inline-block"
+            verticalAlign="middle"
+            title={match[1]}
+          />
         );
       }
       return null;

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Select, SelectProps } from "@chakra-ui/react";
 
-import useJoinedCommunitiesList from "../../hooks/use-communities-joined-list";
+import useUserCommunitiesList from "../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { getCommunityName } from "../../helpers/nostr/communities";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
@@ -17,7 +17,7 @@ function CommunityOption({ pointer }: { pointer: AddressPointer }) {
 
 const CommunitySelect = forwardRef<HTMLSelectElement, Omit<SelectProps, "children">>(({ ...props }, ref) => {
   const account = useCurrentAccount();
-  const { pointers } = useJoinedCommunitiesList(account?.pubkey);
+  const { pointers } = useUserCommunitiesList(account?.pubkey);
 
   return (
     <Select placeholder="Select community" {...props} ref={ref}>

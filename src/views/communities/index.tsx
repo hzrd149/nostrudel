@@ -25,7 +25,7 @@ import dayjs from "dayjs";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useJoinedCommunitiesList from "../../hooks/use-communities-joined-list";
+import useUserCommunitiesList from "../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
@@ -62,7 +62,9 @@ function CommunitiesHomePage() {
   const createModal = useDisclosure();
 
   const readRelays = useReadRelayUrls();
-  const { pointers: communityCoordinates } = useJoinedCommunitiesList(account.pubkey, { alwaysRequest: true });
+  const { pointers: communityCoordinates } = useUserCommunitiesList(account.pubkey, readRelays, {
+    alwaysRequest: true,
+  });
   const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(
     (a, b) => b.created_at - a.created_at,
   );

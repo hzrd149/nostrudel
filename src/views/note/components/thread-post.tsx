@@ -7,6 +7,7 @@ import {
   Flex,
   IconButton,
   Link,
+  Spacer,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -34,6 +35,8 @@ import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import BookmarkButton from "../../../components/note/components/bookmark-button";
 import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
+import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import NoteProxyLink from "../../../components/note/components/note-proxy-link";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -78,6 +81,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
+      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
       <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(post.event.id)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
@@ -124,7 +128,9 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         <NoteZapButton event={post.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
-      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" ml="auto" />
+      <Spacer />
+      <NoteProxyLink event={post.event} variant="ghost" size="sm" />
+      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" />
       <NoteMenu event={post.event} variant="ghost" size="sm" aria-label="More Options" />
     </Flex>
   );

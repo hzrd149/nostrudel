@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../../types/nostr-event";
-import useJoinedCommunitiesList from "../../../hooks/use-communities-joined-list";
+import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getCommunityName } from "../../../helpers/nostr/communities";
 import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
@@ -16,10 +16,10 @@ export default function CommunityJoinButton({
   community,
   ...props
 }: Omit<ButtonProps, "children"> & { community: NostrEvent }) {
-  const account = useCurrentAccount();
-  const { list, pointers } = useJoinedCommunitiesList(account?.pubkey);
-  const { requestSignature } = useSigningContext();
   const toast = useToast();
+  const account = useCurrentAccount();
+  const { list, pointers } = useUserCommunitiesList(account?.pubkey);
+  const { requestSignature } = useSigningContext();
 
   const isSubscribed = pointers.find(
     (cord) => cord.identifier === getCommunityName(community) && cord.pubkey === community.pubkey,
@@ -29,7 +29,7 @@ export default function CommunityJoinButton({
     try {
       const favList = {
         kind: COMMUNITIES_LIST_KIND,
-        content: "",
+        content: list?.content ?? "",
         created_at: dayjs().unix(),
         tags: list?.tags.filter((t) => !isDTag(t)) ?? [],
       };
