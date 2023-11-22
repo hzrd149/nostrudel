@@ -83,6 +83,13 @@ export function getSharableEventAddress(event: NostrEvent) {
   }
 }
 
+export function getNeventCodeWithRelays(eventId: string) {
+  const relays = getEventRelays(eventId).value;
+  const ranked = relayScoreboardService.getRankedRelays(relays);
+  const maxTwo = ranked.slice(0, 2);
+  return nip19.neventEncode({ id: eventId, relays: maxTwo });
+}
+
 export function encodePointer(pointer: DecodeResult) {
   switch (pointer.type) {
     case "naddr":
