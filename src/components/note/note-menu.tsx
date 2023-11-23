@@ -9,7 +9,6 @@ import {
   CopyToClipboardIcon,
   CodeIcon,
   ExternalLinkIcon,
-  LikeIcon,
   MuteIcon,
   RepostIcon,
   TrashIcon,
@@ -19,7 +18,6 @@ import {
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { DraftNostrEvent, NostrEvent, isETag } from "../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
-import NoteReactionsModal from "./note-zaps-modal";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { buildAppSelectUrl } from "../../helpers/nostr/apps";
@@ -34,6 +32,7 @@ import Translate01 from "../icons/translate-01";
 import useUserPinList from "../../hooks/use-user-pin-list";
 import { useSigningContext } from "../../providers/signing-provider";
 import { PIN_LIST_KIND, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
+import InfoCircle from "../icons/info-circle";
 
 function PinNoteItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
@@ -75,10 +74,13 @@ function PinNoteItem({ event }: { event: NostrEvent }) {
   );
 }
 
-export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
+export default function NoteMenu({
+  event,
+  detailsClick,
+  ...props
+}: { event: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
-  const infoModal = useDisclosure();
-  const reactionsModal = useDisclosure();
+  const debugModal = useDisclosure();
   const translationsModal = useDisclosure();
   const { isMuted, mute, unmute } = useUserMuteFunctions(event.pubkey);
   const { openModal } = useMuteModalContext();
@@ -101,6 +103,11 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
   return (
     <>
       <CustomMenuIconButton {...props}>
+        {detailsClick && (
+          <MenuItem onClick={detailsClick} icon={<InfoCircle />}>
+            Details
+          </MenuItem>
+        )}
         {address && (
           <MenuItem onClick={() => window.open(buildAppSelectUrl(address), "_blank")} icon={<ExternalLinkIcon />}>
             View in app...
@@ -135,20 +142,13 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
           Broadcast
         </MenuItem>
         <PinNoteItem event={event} />
-        <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
+        <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
           View Raw
-        </MenuItem>
-        <MenuItem onClick={reactionsModal.onOpen} icon={<LikeIcon />}>
-          Zaps/Reactions
         </MenuItem>
       </CustomMenuIconButton>
 
-      {infoModal.isOpen && (
-        <NoteDebugModal event={event} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
-      )}
-
-      {reactionsModal.isOpen && (
-        <NoteReactionsModal noteId={event.id} isOpen={reactionsModal.isOpen} onClose={reactionsModal.onClose} />
+      {debugModal.isOpen && (
+        <NoteDebugModal event={event} isOpen={debugModal.isOpen} onClose={debugModal.onClose} size="6xl" />
       )}
 
       {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={event} />}

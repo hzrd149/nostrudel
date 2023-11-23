@@ -17,10 +17,11 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { AddReactionIcon } from "../../icons";
 import ReactionPicker from "../../reaction-picker";
 import { draftEventReaction } from "../../../helpers/nostr/reactions";
+import { getEventUID } from "../../../helpers/nostr/events";
 
 export default function ReactionButton({ event, ...props }: { event: NostrEvent } & Omit<ButtonProps, "children">) {
   const { requestSignature } = useSigningContext();
-  const reactions = useEventReactions(event.id) ?? [];
+  const reactions = useEventReactions(getEventUID(event)) ?? [];
 
   const addReaction = async (emoji = "+", url?: string) => {
     const draft = draftEventReaction(event, emoji, url);

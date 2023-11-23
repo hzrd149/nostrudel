@@ -32,6 +32,7 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
+/** This class is ued to batch requests to a single relay */
 class ReplaceableEventRelayLoader {
   private subscription: NostrSubscription;
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());

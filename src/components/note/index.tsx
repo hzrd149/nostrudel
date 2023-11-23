@@ -48,6 +48,8 @@ import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
 import { InlineNoteContent } from "./inline-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
+import { NoteDetailsButton } from "./components/note-details-button";
+import EventInteractionDetailsModal from "../event-interactions-modal";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -72,6 +74,7 @@ export const Note = React.memo(
     const account = useCurrentAccount();
     const { showReactions, showSignatureVerification } = useSubject(appSettings);
     const replyForm = useDisclosure();
+    const detailsModal = useDisclosure();
 
     // if there is a parent intersection observer, register this card
     const ref = useRef<HTMLDivElement | null>(null);
@@ -80,9 +83,9 @@ export const Note = React.memo(
     const refs = getReferences(event);
     const repliedTo = useSingleEvent(refs.replyId);
 
-    const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+    const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
 
-    const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="xs" />;
+    const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />;
 
     return (
       <TrustProvider event={event}>
@@ -126,7 +129,7 @@ export const Note = React.memo(
             <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
               {showReactionsOnNewLine && reactionButtons}
               <Flex gap="2" w="full" alignItems="center">
-                <ButtonGroup size="xs" variant="ghost" isDisabled={account?.readonly ?? true}>
+                <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>
                   {showReplyButton && (
                     <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                   )}
@@ -136,10 +139,12 @@ export const Note = React.memo(
                 </ButtonGroup>
                 {!showReactionsOnNewLine && reactionButtons}
                 <Box flexGrow={1} />
-                <NoteProxyLink event={event} size="xs" variant="ghost" />
-                <EventRelays event={event} />
-                <BookmarkButton event={event} aria-label="Bookmark note" size="xs" variant="ghost" />
-                <NoteMenu event={event} size="xs" variant="ghost" aria-label="More Options" />
+                <ButtonGroup size="sm" variant="ghost">
+                  <NoteProxyLink event={event} />
+                  <NoteDetailsButton event={event} onClick={detailsModal.onOpen} />
+                  <BookmarkButton event={event} aria-label="Bookmark note" />
+                  <NoteMenu event={event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+                </ButtonGroup>
               </Flex>
             </CardFooter>
           </Card>
@@ -147,6 +152,7 @@ export const Note = React.memo(
         {replyForm.isOpen && (
           <ReplyForm item={{ event, replies: [], refs }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
         )}
+        {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={event} />}
       </TrustProvider>
     );
   },

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -37,6 +37,8 @@ import BookmarkButton from "../../../components/note/components/bookmark-button"
 import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import NoteProxyLink from "../../../components/note/components/note-proxy-link";
+import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
+import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -47,11 +49,12 @@ export type ThreadItemProps = {
   level?: number;
 };
 
-export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) => {
+export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) => {
   const { showReactions } = useSubject(appSettings);
   const [expanded, setExpanded] = useState(initShowReplies ?? (level < 2 || post.replies.length <= 1));
   const toggle = () => setExpanded((v) => !v);
-  const showReplyForm = useDisclosure();
+  const replyForm = useDisclosure();
+  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -114,14 +117,14 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
     );
   };
 
-  const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+  const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
   const reactionButtons = showReactions && (
     <NoteReactions event={post.event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">
-        <IconButton aria-label="Reply" title="Reply" onClick={showReplyForm.onToggle} icon={<ReplyIcon />} />
+        <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
 
         <RepostButton event={post.event} />
         <QuoteRepostButton event={post.event} />
@@ -129,9 +132,12 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
-      <NoteProxyLink event={post.event} variant="ghost" size="sm" />
-      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" />
-      <NoteMenu event={post.event} variant="ghost" size="sm" aria-label="More Options" />
+      <ButtonGroup size="sm" variant="ghost">
+        <NoteProxyLink event={post.event} />
+        <NoteDetailsButton event={post.event} onClick={detailsModal.onOpen} />
+        <BookmarkButton event={post.event} aria-label="Bookmark" />
+        <NoteMenu event={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+      </ButtonGroup>
     </Flex>
   );
 
@@ -151,9 +157,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         {expanded && showReactionsOnNewLine && reactionButtons}
         {expanded && footer}
       </Flex>
-      {showReplyForm.isOpen && (
-        <ReplyForm item={post} onCancel={showReplyForm.onClose} onSubmitted={showReplyForm.onClose} />
-      )}
+      {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
       {post.replies.length > 0 && expanded && (
         <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
           {post.replies.map((child) => (
@@ -161,6 +165,7 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
           ))}
         </Flex>
       )}
+      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
-};
+});

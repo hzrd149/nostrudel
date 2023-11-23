@@ -52,7 +52,7 @@ function HomePage() {
   });
 
   const header = (
-    <Flex gap="2" wrap="wrap" px={["2", 0]} alignItems="center">
+    <Flex gap="2" wrap="wrap" alignItems="center">
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <RelaySelectionButton ml="auto" />
