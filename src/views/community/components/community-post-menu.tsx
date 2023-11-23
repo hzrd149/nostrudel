@@ -55,7 +55,10 @@ export default function CommunityPostMenu({
         <MenuItem onClick={() => window.navigator.clipboard.writeText("nostr:" + address)} icon={<RepostIcon />}>
           Copy Share Link
         </MenuItem>
-        <MenuItem onClick={() => window.navigator.clipboard.writeText(event.id)} icon={<CopyToClipboardIcon />}>
+        <MenuItem
+          onClick={() => window.navigator.clipboard.writeText(nip19.noteEncode(event.id))}
+          icon={<CopyToClipboardIcon />}
+        >
           Copy Note ID
         </MenuItem>
         {account?.pubkey === event.pubkey && (

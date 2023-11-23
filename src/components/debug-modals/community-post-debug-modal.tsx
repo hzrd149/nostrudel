@@ -1,5 +1,6 @@
 import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Flex } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
 
 import { NostrEvent, isATag } from "../../types/nostr-event";
 import RawJson from "./raw-json";
@@ -27,7 +28,8 @@ export default function CommunityPostDebugModal({
         <ModalBody p="4">
           <Flex gap="2" direction="column">
             <RawValue heading="Event Id" value={event.id} />
-            <RawValue heading="Pointer (NIP-19)" value={getSharableEventAddress(event)} />
+            <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
+            <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
             <RawValue heading="Community Coordinate" value={communityCoordinate} />
             <RawPre heading="Content" value={event.content} />
             <RawJson heading="JSON" json={event} />
