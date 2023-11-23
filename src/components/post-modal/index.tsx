@@ -47,6 +47,7 @@ import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useMultiUserReadRelays } from "../../hooks/use-user-relays";
 
 type FormValues = {
   subject: string;
@@ -75,8 +76,6 @@ export default function PostModal({
   const toast = useToast();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const additionalRelays = useAdditionalRelayContext();
-  const writeRelays = useWriteRelayUrls(additionalRelays);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
@@ -92,6 +91,13 @@ export default function PostModal({
     },
     mode: "all",
   });
+
+  const { content } = getValues();
+  const contentMentions = getContentMentions(content);
+  const additionalRelays = useAdditionalRelayContext();
+  const mentionedPeopleRelays = useMultiUserReadRelays(contentMentions, additionalRelays);
+  const writeRelays = useWriteRelayUrls([...additionalRelays, ...mentionedPeopleRelays]);
+
   watch("content");
   watch("nsfw");
   watch("nsfwReason");
@@ -151,7 +157,6 @@ export default function PostModal({
       updatedDraft.tags.push(["subject", subject]);
     }
 
-    const contentMentions = getContentMentions(updatedDraft.content);
     updatedDraft = createEmojiTags(updatedDraft, emojis);
     updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
     if (split.length > 0) {
