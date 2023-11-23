@@ -22,7 +22,7 @@ export function useUserRelays(pubkey: string, additionalRelays: string[] = [], o
 export function useMultiUserReadRelays(pubkeys: string[], additionalRelays: string[] = [], opts: RequestOptions = {}) {
   const readRelays = useReadRelayUrls([...additionalRelays, COMMON_CONTACT_RELAY]);
   const subjects = useMemo(
-    () => pubkeys.map((pubkey) => userRelaysService.requestRelays(pubkey, readRelays, opts)),
+    () => pubkeys.map((pubkey) => userRelaysService.requestRelaysIfNecessary(pubkey, readRelays, opts)),
     [pubkeys.join("|"), readRelays.join("|")],
   );
   const userRelays = useSubjects(subjects);

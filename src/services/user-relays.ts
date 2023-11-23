@@ -25,9 +25,11 @@ function parseRelaysEvent(event: NostrEvent): ParsedUserRelays {
 
 class UserRelaysService {
   private subjects = new SuperMap<string, Subject<ParsedUserRelays>>(() => new Subject<ParsedUserRelays>());
+
   getRelays(pubkey: string) {
     return this.subjects.get(pubkey);
   }
+
   requestRelays(pubkey: string, relays: string[], opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
     const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.RelayList, pubkey, undefined, opts);
@@ -39,6 +41,17 @@ class UserRelaysService {
       if (contacts.relays.length > 0 && (!value || contacts.created_at > value.created_at)) {
         next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });
       }
+    });
+
+    return sub;
+  }
+
+  requestRelaysIfNecessary(pubkey: string, relays: string[], opts: RequestOptions = {}) {
+    const sub = this.subjects.get(pubkey);
+
+    this.loadFromCache(pubkey).then(() => {
+      if (sub?.value?.relays?.length) return;
+      this.requestRelays(pubkey, relays, opts);
     });
 
     return sub;
