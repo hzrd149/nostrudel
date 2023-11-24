@@ -97,7 +97,7 @@ export const Note = React.memo(
             data-event-id={event.id}
             {...props}
           >
-            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${nip19.noteEncode(event.id)}`} />}
+            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} />}
             <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
@@ -108,7 +108,7 @@ export const Note = React.memo(
                 {!hideDrawerButton && (
                   <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
                 )}
-                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(event.id)}`}>
+                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
                   <Timestamp timestamp={event.created_at} />
                 </Link>
               </Flex>

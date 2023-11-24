@@ -3,7 +3,7 @@ import { nip19 } from "nostr-tools";
 import { useParams, Link as RouterLink } from "react-router-dom";
 
 import Note from "../../components/note";
-import { isHexKey } from "../../helpers/nip19";
+import { getSharableEventAddress, isHexKey } from "../../helpers/nip19";
 import { useThreadLoader } from "../../hooks/use-thread-loader";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -59,7 +59,7 @@ export default function NoteView() {
             h="4rem"
             w="full"
             as={RouterLink}
-            to={`/n/${nip19.noteEncode(parentPosts[0].event.id)}`}
+            to={`/n/${getSharableEventAddress(parentPosts[0].event)}`}
           >
             View full thread ({parentPosts.length - 1})
           </Button>

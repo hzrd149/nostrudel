@@ -9,6 +9,7 @@ import RawPre from "./raw-pre";
 import userMetadataService from "../../services/user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
+import { getSharableEventAddress } from "../../helpers/nip19";
 
 export default function CommunityPostDebugModal({
   event,
@@ -27,7 +28,8 @@ export default function CommunityPostDebugModal({
         <ModalBody p="4">
           <Flex gap="2" direction="column">
             <RawValue heading="Event Id" value={event.id} />
-            <RawValue heading="Encoded id (NIP-19)" value={nip19.noteEncode(event.id)} />
+            <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
+            <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
             <RawValue heading="Community Coordinate" value={communityCoordinate} />
             <RawPre heading="Content" value={event.content} />
             <RawJson heading="JSON" json={event} />
