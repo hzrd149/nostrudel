@@ -1,12 +1,10 @@
 import {
-  CSSProperties,
   MouseEventHandler,
   MutableRefObject,
   forwardRef,
   useCallback,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
@@ -20,25 +18,7 @@ import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
 import { NostrEvent } from "../../types/nostr-event";
 import useAppSettings from "../../hooks/use-app-settings";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
-
-function useElementBlur(initBlur = false): { style: CSSProperties; onClick: MouseEventHandler } {
-  const [blur, setBlur] = useState(initBlur);
-
-  const onClick = useCallback<MouseEventHandler>(
-    (e) => {
-      if (blur) {
-        e.stopPropagation();
-        e.preventDefault();
-        setBlur(false);
-      }
-    },
-    [blur],
-  );
-
-  const style: CSSProperties = blur ? { filter: "blur(1.5rem)", cursor: "pointer" } : {};
-
-  return { onClick, style };
-}
+import useElementBlur from "../../hooks/use-element-blur";
 
 export type TrustImageProps = ImageProps;
 

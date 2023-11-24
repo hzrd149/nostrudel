@@ -165,12 +165,12 @@ export default function DisplaySettings() {
           <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="blurImages" mb="0">
-                Blur images from strangers
+                Blur media from strangers
               </FormLabel>
               <Switch id="blurImages" {...register("blurImages")} />
             </Flex>
             <FormHelperText>
-              <span>Enabled: blur images for people you aren't following</span>
+              <span>Enabled: blur media from people you aren't following</span>
             </FormHelperText>
           </FormControl>
           <FormControl>

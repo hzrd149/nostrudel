@@ -11,7 +11,6 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { ReplyIcon } from "../../../components/icons";
@@ -39,6 +38,7 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import NoteProxyLink from "../../../components/note/components/note-proxy-link";
 import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
+import { getNeventCodeWithRelays } from "../../../helpers/nip19";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -85,7 +85,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
-      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(post.event.id)}`}>
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getNeventCodeWithRelays(post.event.id)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       {replies.length > 0 ? (
