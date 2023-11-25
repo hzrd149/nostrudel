@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
@@ -19,11 +19,24 @@ function NotificationsPage() {
   const { people } = usePeopleListContext();
   const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-  const showReplies = useDisclosure({ defaultIsOpen: true });
-  const showMentions = useDisclosure({ defaultIsOpen: true });
-  const showZaps = useDisclosure({ defaultIsOpen: true });
-  const showReposts = useDisclosure({ defaultIsOpen: true });
-  const showReactions = useDisclosure({ defaultIsOpen: true });
+  const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-replies") !== "false" });
+  const showMentions = useDisclosure({
+    defaultIsOpen: localStorage.getItem("notifications-show-mentions") !== "false",
+  });
+  const showZaps = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-zaps") !== "false" });
+  const showReposts = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-reposts") !== "false" });
+  const showReactions = useDisclosure({
+    defaultIsOpen: localStorage.getItem("notifications-show-reactions") !== "false",
+  });
+
+  // save toggles to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem("notifications-show-replies", String(showReplies.isOpen));
+    localStorage.setItem("notifications-show-mentions", String(showMentions.isOpen));
+    localStorage.setItem("notifications-show-zaps", String(showZaps.isOpen));
+    localStorage.setItem("notifications-show-reposts", String(showReposts.isOpen));
+    localStorage.setItem("notifications-show-reactions", String(showReactions.isOpen));
+  }, [showReplies.isOpen, showMentions.isOpen, showZaps.isOpen, showReposts.isOpen, showReactions.isOpen]);
 
   const timeline = useNotificationTimeline();
   const callback = useTimelineCurserIntersectionCallback(timeline);
