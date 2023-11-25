@@ -21,7 +21,7 @@ import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { InlineNoteContent } from "../../../components/note/inline-note-content";
+import { InlineNoteContent } from "../../../components/inline-note-content";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import { UserLink } from "../../../components/user-link";

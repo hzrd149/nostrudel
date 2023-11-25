@@ -6,6 +6,7 @@ import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
+import { getContentMentions } from "./post";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -27,6 +28,9 @@ export function getEventUID(event: NostrEvent) {
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   return event.kind === 1 && !!getReferences(event).replyId;
+}
+export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+  return event.kind === 1 && filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {

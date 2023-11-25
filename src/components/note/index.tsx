@@ -46,7 +46,7 @@ import HoverLinkOverlay from "../hover-link-overlay";
 import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
-import { InlineNoteContent } from "./inline-note-content";
+import { InlineNoteContent } from "../inline-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
 import { NoteDetailsButton } from "./components/note-details-button";
 import EventInteractionDetailsModal from "../event-interactions-modal";

@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
-import { embedNostrLinks, embedNostrMentions, embedNostrHashtags, embedEmoji, renderGenericUrl } from "../embed-types";
-import { LightboxProvider } from "../lightbox-provider";
+import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../helpers/embeds";
+import { embedNostrLinks, embedNostrMentions, embedNostrHashtags, embedEmoji, renderGenericUrl } from "./embed-types";
+import { LightboxProvider } from "./lightbox-provider";
 
 function buildContents(event: NostrEvent | DraftNostrEvent) {
   let content: EmbedableContent = [event.content.trim().replace(/\n+/g, "\n")];

@@ -13,7 +13,7 @@ import { TrustProvider } from "../../../providers/trust";
 import { NoteLink } from "../../note-link";
 import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { InlineNoteContent } from "../../note/inline-note-content";
+import { InlineNoteContent } from "../../inline-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 

@@ -1,12 +1,12 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Kind } from "nostr-tools";
 
 import { useReadRelayUrls } from "../hooks/use-client-relays";
 import useCurrentAccount from "../hooks/use-current-account";
 import TimelineLoader from "../classes/timeline-loader";
-import timelineCacheService from "../services/timeline-cache";
 import { NostrEvent } from "../types/nostr-event";
 import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";
+import useTimelineLoader from "../hooks/use-timeline-loader";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -25,12 +25,6 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
   const account = useCurrentAccount();
   const readRelays = useReadRelayUrls();
 
-  const timeline = useMemo(() => {
-    return account?.pubkey
-      ? timelineCacheService.createTimeline(`${account?.pubkey ?? "anon"}-notification`)
-      : undefined;
-  }, [account?.pubkey]);
-
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -39,24 +33,13 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
     },
     [userMuteFilter],
   );
-  useEffect(() => {
-    timeline?.setFilter(eventFilter);
-  }, [timeline, eventFilter]);
 
-  useEffect(() => {
-    if (timeline && account?.pubkey) {
-      timeline.setQuery([{ "#p": [account?.pubkey], kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap] }]);
-    }
-  }, [account?.pubkey, timeline]);
-
-  useEffect(() => {
-    timeline?.setRelays(readRelays);
-  }, [readRelays.join("|")]);
-
-  useEffect(() => {
-    timeline?.open();
-    return () => timeline?.close();
-  }, [timeline]);
+  const timeline = useTimelineLoader(
+    `${account?.pubkey ?? "anon"}-notification`,
+    readRelays,
+    { "#p": [account?.pubkey ?? "0000"], kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap] },
+    { enabled: !!account?.pubkey, eventFilter },
+  );
 
   const context = useMemo(() => ({ timeline }), [timeline]);
 
