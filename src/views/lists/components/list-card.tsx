@@ -82,13 +82,17 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
   );
 }
 
+export function createListLink(list: NostrEvent) {
+  const isSpecialList = isSpecialListKind(list.kind);
+  return "/lists/" + (isSpecialList ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list));
+}
+
 function ListCardRender({
   list,
   hideCreator = false,
   ...props
 }: Omit<CardProps, "children"> & { list: NostrEvent; hideCreator?: boolean }) {
   const isSpecialList = isSpecialListKind(list.kind);
-  const link = isSpecialList ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
@@ -101,7 +105,7 @@ function ListCardRender({
       <CardHeader p="4">
         <Flex gap="2" alignItems="center">
           <Heading size="md" isTruncated>
-            <HoverLinkOverlay as={RouterLink} to={`/lists/${link}`}>
+            <HoverLinkOverlay as={RouterLink} to={createListLink(list)}>
               {getListName(list)}
             </HoverLinkOverlay>
           </Heading>

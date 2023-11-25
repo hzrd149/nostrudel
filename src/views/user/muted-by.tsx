@@ -1,26 +1,41 @@
 import { memo, useMemo, useRef } from "react";
-import { Flex, Heading, SimpleGrid } from "@chakra-ui/react";
-import { useOutletContext } from "react-router-dom";
+import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
+import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
 import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { MUTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
+import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { getEventUID } from "../../helpers/nostr/events";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { NostrEvent } from "../../types/nostr-event";
+import SuperMap from "../../classes/super-map";
+import { createListLink } from "../lists/components/list-card";
 
-const User = memo(({ pubkey, listId }: { pubkey: string; listId: string }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, listId);
+function ListLink({ list }: { list: NostrEvent }) {
+  const ref = useRef<HTMLAnchorElement | null>(null);
+  useRegisterIntersectionEntity(ref, getEventUID(list));
 
   return (
-    <Flex gap="2" overflow="hidden" ref={ref}>
+    <Link as={RouterLink} ref={ref} color="blue.500" to={createListLink(list)}>
+      {getListName(list)} ({getPubkeysFromList(list).length})
+    </Link>
+  );
+}
+const User = memo(({ pubkey, lists }: { pubkey: string; lists: NostrEvent[] }) => {
+  return (
+    <Flex gap="2" overflow="hidden">
       <UserAvatarLink pubkey={pubkey} noProxy size="sm" />
-      <UserLink pubkey={pubkey} isTruncated />
+      <Flex direction="column">
+        <UserLink pubkey={pubkey} isTruncated fontWeight="bold" />
+        {lists.map((list) => (
+          <ListLink key={list.id} list={list} />
+        ))}
+      </Flex>
     </Flex>
   );
 });
@@ -37,11 +52,11 @@ export default function UserMutedByTab() {
   const lists = useSubject(timeline.timeline);
 
   const pubkeys = useMemo(() => {
-    const keys = new Map<string, string>();
+    const dir = new SuperMap<string, NostrEvent[]>(() => []);
     for (const list of lists) {
-      keys.set(list.pubkey, getEventUID(list));
+      dir.get(list.pubkey).push(list);
     }
-    return Array.from(keys).map((a) => ({ pubkey: a[0], listId: a[1] }));
+    return Array.from(dir).map((a) => ({ pubkey: a[0], lists: a[1] }));
   }, [lists]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -49,9 +64,9 @@ export default function UserMutedByTab() {
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        <SimpleGrid spacing="2" columns={{ base: 1, md: 2, lg: 3, xl: 4 }}>
-          {pubkeys.map(({ pubkey, listId }) => (
-            <User key={pubkey} pubkey={pubkey} listId={listId} />
+        <SimpleGrid spacing="2" columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}>
+          {pubkeys.map(({ pubkey, lists }) => (
+            <User key={pubkey} pubkey={pubkey} lists={lists} />
           ))}
         </SimpleGrid>
         {pubkeys.length === 0 && (
