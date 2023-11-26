@@ -25,6 +25,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
+      workbox: {
+        // This is a temporary measure to increase the cache limit to 3mB
+        // TODO: Remove this when the 200kB gif is removed from @getalby/bitcoin-connect-react
+        maximumFileSizeToCacheInBytes: 2097152 * 1.5,
+      },
       manifest: {
         name: "noStrudel",
         short_name: "noStrudel",
