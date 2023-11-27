@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, BoxProps } from "@chakra-ui/react";
+import { Box, BoxProps, Text } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../helpers/embeds";
@@ -36,7 +36,14 @@ export const CompactNoteContent = React.memo(
       <LightboxProvider>
         <Box whiteSpace="pre-wrap" {...props}>
           {truncated}
-          {truncated !== content ? "..." : null}
+          {truncated !== content ? (
+            <>
+              <span>...</span>
+              <Text as="span" fontWeight="bold" ml="4">
+                Show More
+              </Text>
+            </>
+          ) : null}
         </Box>
       </LightboxProvider>
     );
