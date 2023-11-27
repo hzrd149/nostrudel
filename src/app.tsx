@@ -87,6 +87,7 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
+const FilesView = lazy(() => import("./views/files"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -212,6 +213,7 @@ const router = createHashRouter([
         element: <NoteView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "files", element: <FilesView /> },
       {
         path: "relays",
         children: [

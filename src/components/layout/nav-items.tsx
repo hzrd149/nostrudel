@@ -20,6 +20,7 @@ import {
   LogoutIcon,
   NotesIcon,
   LightningIcon,
+  FileIcon,
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -44,6 +45,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/c/")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
+  else if (location.pathname.startsWith("/files")) active = "files";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
   else if (location.pathname.startsWith("/settings")) active = "settings";
   else if (location.pathname.startsWith("/tools")) active = "tools";
@@ -149,6 +151,15 @@ export default function NavItems() {
         {...buttonProps}
       >
         Lists
+      </Button>
+      <Button
+        as={RouterLink}
+        to="/files"
+        leftIcon={<FileIcon boxSize={6} />}
+        colorScheme={active === "files" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Files
       </Button>
       <Button
         as={RouterLink}
