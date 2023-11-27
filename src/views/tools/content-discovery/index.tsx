@@ -65,7 +65,7 @@ export default function ContentDiscoveryView() {
           Back
         </Button>
       </Flex>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
         {DMVs.map((appData) => (
           <DVMCard key={appData.id} appData={appData} maxW="lg" />
         ))}
