@@ -4,8 +4,16 @@ import Heart from "../../components/icons/heart";
 
 type Disclosure = { isOpen: boolean; onToggle: () => void };
 
-function ToggleIconButton({ toggle, ...props }: IconButtonProps & { toggle: Disclosure }) {
-  return <IconButton colorScheme={toggle.isOpen ? "primary" : undefined} onClick={toggle.onToggle} {...props} />;
+function ToggleIconButton({ toggle, colorScheme, color, ...props }: IconButtonProps & { toggle: Disclosure }) {
+  return (
+    <IconButton
+      // colorScheme={toggle.isOpen ? colorScheme || "primary" : undefined}
+      color={toggle.isOpen ? color : undefined}
+      variant={toggle.isOpen ? "outline" : "ghost"}
+      onClick={toggle.onToggle}
+      {...props}
+    />
+  );
 }
 
 type NotificationTypeTogglesPropTypes = Omit<ButtonGroupProps, "children"> & {
@@ -31,30 +39,35 @@ export default function NotificationTypeToggles({
         aria-label="Toggle replies"
         title="Toggle replies"
         toggle={showReplies}
+        color="green.400"
       />
       <ToggleIconButton
         icon={<AtIcon boxSize={5} />}
         aria-label="Toggle reposts"
         title="Toggle reposts"
         toggle={showMentions}
+        color="purple.400"
       />
       <ToggleIconButton
         icon={<LightningIcon boxSize={5} />}
         aria-label="Toggle zaps"
         title="Toggle zaps"
         toggle={showZaps}
+        color="yellow.400"
       />
       <ToggleIconButton
         icon={<RepostIcon boxSize={5} />}
         aria-label="Toggle reposts"
         title="Toggle reposts"
         toggle={showReposts}
+        color="blue.400"
       />
       <ToggleIconButton
         icon={<Heart boxSize={5} />}
         aria-label="Toggle reactions"
         title="Toggle reactions"
         toggle={showReactions}
+        color="red.400"
       />
     </ButtonGroup>
   );

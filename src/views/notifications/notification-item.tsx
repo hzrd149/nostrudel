@@ -34,30 +34,34 @@ const ExpandableToggleButton = ({
   />
 );
 
-const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
-  const account = useCurrentAccount();
+const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
+  const account = useCurrentAccount()!;
   const refs = getReferences(event);
   const parent = useSingleEvent(refs.replyId);
 
-  if (!refs.replyId || (parent && parent.pubkey !== account?.pubkey)) return null;
+  const isReplyingToMe = !!refs.replyId && (parent ? parent.pubkey === account.pubkey : true);
+  const isMentioned = isMentionedInContent(event, account.pubkey);
 
-  return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <ReplyIcon boxSize={8} />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <EmbedEvent event={event} />
-      </Flex>
-    </Flex>
-  );
+  if (isReplyingToMe) return <ReplyNotification event={event} ref={ref} />;
+  else if (isMentioned) return <MentionNotification event={event} ref={ref} />;
+  else return null;
 });
+const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (
+  <Flex gap="2" ref={ref}>
+    <IconBox>
+      <ReplyIcon boxSize={8} color="green.400" />
+    </IconBox>
+    <Flex direction="column" w="full" gap="2">
+      <EmbedEvent event={event} />
+    </Flex>
+  </Flex>
+));
 
 const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   return (
     <Flex gap="2" ref={ref}>
       <IconBox>
-        <AtIcon boxSize={8} />
+        <AtIcon boxSize={8} color="purple.400" />
       </IconBox>
       <Flex direction="column" w="full" gap="2">
         <EmbedEvent event={event} />
@@ -76,7 +80,7 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ 
   return (
     <Flex gap="2" ref={ref}>
       <IconBox>
-        <RepostIcon boxSize={8} />
+        <RepostIcon boxSize={8} color="blue.400" />
       </IconBox>
       <Flex direction="column" w="full" gap="2">
         <Flex gap="2" alignItems="center">
@@ -100,7 +104,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
   return (
     <Flex gap="2" ref={ref}>
       <IconBox>
-        <Heart boxSize={8} />
+        <Heart boxSize={8} color="red.400" />
       </IconBox>
       <Flex direction="column" w="full" gap="2">
         <Flex gap="2" alignItems="center">
@@ -152,7 +156,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
   return (
     <Flex gap="2" ref={ref}>
       <IconBox>
-        <LightningIcon boxSize={8} />
+        <LightningIcon boxSize={8} color="yellow.400" />
       </IconBox>
       <Flex direction="column" w="full" gap="2">
         <Flex gap="2" alignItems="center">
@@ -170,16 +174,13 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
 });
 
 const NotificationItem = ({ event }: { event: NostrEvent }) => {
-  const account = useCurrentAccount();
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   let content: ReactNode | null = null;
   switch (event.kind) {
     case Kind.Text:
-      if (isReply(event)) content = <ReplyNotification event={event} ref={ref} />;
-      else if (account?.pubkey && isMentionedInContent(event, account.pubkey))
-        content = <MentionNotification event={event} ref={ref} />;
+      content = <Kind1Notification event={event} ref={ref} />;
       break;
     case Kind.Reaction:
       content = <ReactionNotification event={event} ref={ref} />;
