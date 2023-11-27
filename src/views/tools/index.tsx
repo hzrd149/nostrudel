@@ -1,105 +1,114 @@
-import { Button, Divider, Flex, Heading, Image, Link } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  ComponentWithAs,
+  Flex,
+  Heading,
+  IconProps,
+  Image,
+  Link,
+  LinkBox,
+} from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ExternalLinkIcon, LiveStreamIcon, MapIcon, ToolsIcon } from "../../components/icons";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { ConnectedRelays } from "../../components/connected-relays";
 
+import { DirectMessagesIcon, ExternalLinkIcon, LiveStreamIcon, MapIcon, MuteIcon } from "../../components/icons";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import ShieldOff from "../../components/icons/shield-off";
+import HoverLinkOverlay from "../../components/hover-link-overlay";
+import Users01 from "../../components/icons/users-01";
+import PackageSearch from "../../components/icons/package-search";
+
+function InternalLink({
+  to,
+  icon: Icon,
+  children,
+}: {
+  to?: string;
+  icon: ComponentWithAs<"svg", IconProps>;
+  children: string;
+}) {
+  return (
+    <Card as={LinkBox} alignItems="center" p="4" gap="4" minW="40">
+      <Icon boxSize={10} />
+      <CardHeader p="0">
+        <Heading size="md">
+          <HoverLinkOverlay as={RouterLink} to={to}>
+            {children}
+          </HoverLinkOverlay>
+        </Heading>
+      </CardHeader>
+    </Card>
+  );
+}
+
+function ExternalLink({ href, image, children }: { href?: string; image: string; children: string }) {
+  return (
+    <Card as={LinkBox} alignItems="center" p="4" gap="4" minW="40">
+      <Image src={image} h="10" />
+      <CardHeader p="0">
+        <Heading size="md">
+          <HoverLinkOverlay as={Link} href={href} isExternal>
+            {children}
+          </HoverLinkOverlay>
+        </Heading>
+      </CardHeader>
+    </Card>
+  );
+}
 export default function ToolsHomeView() {
   return (
     <VerticalPageLayout>
-      <Heading>
-        <ToolsIcon /> Tools
-      </Heading>
-      <Divider />
+      <Heading>Tools</Heading>
       <Flex wrap="wrap" gap="4">
-        <Button as={RouterLink} to="/tools/content-discovery">
-          Content Discovery DVM
-        </Button>
-        <Button as={RouterLink} to="/tools/network">
-          Contact network
-        </Button>
-        <Button as={RouterLink} to="/tools/network-mute-graph">
-          Contacts Mute Graph
-        </Button>
-        <Button as={RouterLink} to="/tools/network-dm-graph">
-          Contacts DM Graph
-        </Button>
-        <Button as={RouterLink} to="/tools/dm-feed">
+        <InternalLink to="/tools/content-discovery" icon={PackageSearch}>
+          Discovery DVM
+        </InternalLink>
+        <InternalLink to="/tools/network" icon={Users01}>
+          User Network
+        </InternalLink>
+        <InternalLink to="/tools/network-mute-graph" icon={MuteIcon}>
+          Mute Graph
+        </InternalLink>
+        <InternalLink to="/tools/network-dm-graph" icon={DirectMessagesIcon}>
+          DM Graph
+        </InternalLink>
+        <InternalLink to="/tools/dm-feed" icon={ShieldOff}>
           DM Feed
-        </Button>
-        <Button as={RouterLink} to="/map" leftIcon={<MapIcon />}>
+        </InternalLink>
+        <InternalLink to="/map" icon={MapIcon}>
           Map
-        </Button>
-        <Button as={RouterLink} to="/tools/stream-moderation" leftIcon={<LiveStreamIcon />}>
+        </InternalLink>
+        <InternalLink to="/tools/stream-moderation" icon={LiveStreamIcon}>
           Stream Moderation
-        </Button>
-        <ConnectedRelays />
+        </InternalLink>
       </Flex>
 
       <Heading size="lg" mt="4">
         Third party tools
       </Heading>
-      <Divider />
       <Flex wrap="wrap" gap="4">
-        <Button
-          as={Link}
-          href="https://w3.do/"
-          isExternal
-          target="_blank"
-          leftIcon={<Image src="https://w3.do/favicon.ico" h="1.5em" />}
-        >
+        <ExternalLink href="https://w3.do/" image="https://w3.do/favicon.ico">
           URL Shortener
-        </Button>
-        <Button
-          as={Link}
-          href="https://nak.nostr.com/"
-          isExternal
-          target="_blank"
-          leftIcon={<Image src="https://nak.nostr.com/favicon.ico" h="1.5em" />}
-        >
+        </ExternalLink>
+        <ExternalLink href="https://nak.nostr.com/" image="https://nak.nostr.com/favicon.ico">
           nostr army knife
-        </Button>
-        <Button
-          as={Link}
-          href="https://nostr-delete.vercel.app/"
-          isExternal
-          target="_blank"
-          leftIcon={<ExternalLinkIcon />}
-        >
+        </ExternalLink>
+        <ExternalLink href="https://nostr-delete.vercel.app/" image="https://nostr-delete.vercel.app/favicon.png">
           Nostr Event Deletion
-        </Button>
-        <Button
-          as={Link}
-          href="https://nostrdebug.com/"
-          isExternal
-          target="_blank"
-          leftIcon={<Image src="https://nostrdebug.com/favicon.ico" h="1.5em" />}
-        >
+        </ExternalLink>
+        <ExternalLink href="https://nostrdebug.com/" image="https://nostrdebug.com/favicon.ico">
           Nostr Debug
-        </Button>
-        <Button
-          as={Link}
-          href="https://metadata.nostr.com/"
-          isExternal
-          target="_blank"
-          leftIcon={<Image src="https://metadata.nostr.com/img/git.png" h="1.5em" />}
-        >
+        </ExternalLink>
+        <ExternalLink href="https://metadata.nostr.com/" image="https://metadata.nostr.com/img/git.png">
           Nostr Profile Manager
-        </Button>
-        <Button
-          as={Link}
+        </ExternalLink>
+        <ExternalLink
           href="https://www.nostrapps.com/"
-          isExternal
-          target="_blank"
-          leftIcon={
-            <Image
-              src="https://uploads-ssl.webflow.com/641d0d46d5c124ac928a6027/64b1dd06d59d8f1e530d2926_32x32.png"
-              h="1.5em"
-            />
-          }
+          image="https://uploads-ssl.webflow.com/641d0d46d5c124ac928a6027/64b1dd06d59d8f1e530d2926_32x32.png"
         >
           Nostr Apps
-        </Button>
+        </ExternalLink>
       </Flex>
     </VerticalPageLayout>
   );

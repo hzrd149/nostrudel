@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import { memo, useRef } from "react";
 import { Kind } from "nostr-tools";
 
@@ -12,6 +12,8 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import useSubject from "../../hooks/use-subject";
 import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
 import { NostrEvent } from "../../types/nostr-event";
+import { ChevronLeftIcon } from "../../components/icons";
+import { useNavigate } from "react-router-dom";
 
 const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -25,6 +27,7 @@ const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
 });
 
 export function DMFeedPage() {
+  const navigate = useNavigate();
   const { listId, filter } = usePeopleListContext();
 
   const readRelays = useReadRelayUrls();
@@ -48,6 +51,9 @@ export function DMFeedPage() {
   return (
     <VerticalPageLayout>
       <Flex gap="2">
+        <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
+          Back
+        </Button>
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>

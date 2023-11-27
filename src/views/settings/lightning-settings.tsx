@@ -22,56 +22,57 @@ export default function LightningSettings() {
 
   return (
     <AccordionItem>
-      {({ isExpanded }) => (<>
-      <h2>
-        <AccordionButton fontSize="xl">
-          <LightningIcon mr="2" />
-          <Box as="span" flex="1" textAlign="left">
-            Lightning
-          </Box>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
-      <AccordionPanel>
-        <Flex direction="column" gap="4">
-          {isExpanded && <Button />}
-          <FormControl>
-            <Flex alignItems="center">
-              <FormLabel htmlFor="autoPayWithWebLN" mb="0">
-                Auto pay with WebLN
-              </FormLabel>
-              <Switch id="autoPayWithWebLN" {...register("autoPayWithWebLN")} />
+      {({ isExpanded }) => (
+        <>
+          <h2>
+            <AccordionButton fontSize="xl">
+              <LightningIcon mr="2" />
+              <Box as="span" flex="1" textAlign="left">
+                Lightning
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel>
+            <Flex direction="column" gap="4">
+              {isExpanded && <Button />}
+              <FormControl>
+                <Flex alignItems="center">
+                  <FormLabel htmlFor="autoPayWithWebLN" mb="0">
+                    Auto pay with WebLN
+                  </FormLabel>
+                  <Switch id="autoPayWithWebLN" {...register("autoPayWithWebLN")} />
+                </Flex>
+
+                <FormHelperText>
+                  <span>Enabled: Attempt to automatically pay with WebLN if its available</span>
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="customZapAmounts" mb="0">
+                  Zap Amounts
+                </FormLabel>
+                <Input
+                  id="customZapAmounts"
+                  autoComplete="off"
+                  {...register("customZapAmounts", {
+                    validate: (v) => {
+                      if (!/^[\d,]*$/.test(v)) return "Must be a list of comma separated numbers";
+                      return true;
+                    },
+                  })}
+                />
+                {formState.errors.customZapAmounts && (
+                  <FormErrorMessage>{formState.errors.customZapAmounts.message}</FormErrorMessage>
+                )}
+                <FormHelperText>
+                  <span>Comma separated list of custom zap amounts</span>
+                </FormHelperText>
+              </FormControl>
             </Flex>
-
-            <FormHelperText>
-              <span>Enabled: Attempt to automatically pay with WebLN if its available</span>
-            </FormHelperText>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="customZapAmounts" mb="0">
-              Zap Amounts
-            </FormLabel>
-            <Input
-              id="customZapAmounts"
-              autoComplete="off"
-              {...register("customZapAmounts", {
-                validate: (v) => {
-                  if (!/^[\d,]*$/.test(v)) return "Must be a list of comma separated numbers";
-                  return true;
-                },
-              })}
-            />
-            {formState.errors.customZapAmounts && (
-              <FormErrorMessage>{formState.errors.customZapAmounts.message}</FormErrorMessage>
-            )}
-            <FormHelperText>
-              <span>Comma separated list of custom zap amounts</span>
-            </FormHelperText>
-          </FormControl>
-        </Flex>
-      </AccordionPanel>
-      </>
+          </AccordionPanel>
+        </>
       )}
     </AccordionItem>
   );

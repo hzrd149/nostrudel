@@ -1,11 +1,4 @@
-import {
-  MouseEventHandler,
-  MutableRefObject,
-  forwardRef,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
 import appSettings from "../../services/settings/app-settings";
