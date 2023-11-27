@@ -1,19 +1,54 @@
-import { useEffect, useMemo } from "react";
-import { Flex, useDisclosure } from "@chakra-ui/react";
+import { useEffect, useMemo, useRef } from "react";
+import { Divider, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
 import RequireCurrentAccount from "../../providers/require-current-account";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotificationTimeline } from "../../providers/notification-timeline";
-import { isReply } from "../../helpers/nostr/events";
+import { getEventUID, isReply } from "../../helpers/nostr/events";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import NotificationItem from "./notification-item";
+import NotificationItem, { ExpandableToggleButton } from "./notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
+import { NostrEvent } from "../../types/nostr-event";
+import dayjs from "dayjs";
+import SuperMap from "../../classes/super-map";
+
+const specialNames = {
+  [dayjs().startOf("day").unix()]: "Today",
+  [dayjs().subtract(1, "day").startOf("day").unix()]: "Yesterday",
+};
+
+function NotificationDay({ day, events }: { day: number; events: NostrEvent[] }) {
+  const expanded = useDisclosure({ defaultIsOpen: true });
+  const now = dayjs();
+  const date = dayjs.unix(day);
+  let title = specialNames[day] || date.fromNow();
+  if (now.diff(date, "week") > 2) {
+    title = date.format("L");
+  }
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, expanded.isOpen ? undefined : getEventUID(events[events.length - 1]));
+
+  return (
+    <>
+      <Flex gap="4" alignItems="center" mt="4" ref={ref}>
+        <Divider w="10" flexShrink={0} />
+        <Heading size="lg" whiteSpace="nowrap">
+          {title}
+        </Heading>
+        <Divider />
+        <ExpandableToggleButton toggle={expanded} aria-label="Toggle day" title="Toggle day" />
+      </Flex>
+      {expanded.isOpen && events.map((event) => <NotificationItem key={event.id} event={event} />)}
+    </>
+  );
+}
 
 function NotificationsPage() {
   const { people } = usePeopleListContext();
@@ -54,6 +89,17 @@ function NotificationsPage() {
     return true;
   });
 
+  const grouped = useMemo(() => {
+    const map = new SuperMap<number, NostrEvent[]>(() => []);
+    for (const event of events) {
+      const day = dayjs.unix(event.created_at).startOf("day").unix();
+      map.get(day).push(event);
+    }
+    return map;
+  }, [events]);
+
+  const sortedDays = Array.from(grouped.entries()).sort((a, b) => b[0] - a[0]);
+
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
@@ -68,8 +114,8 @@ function NotificationsPage() {
           <PeopleListSelection flexShrink={0} />
         </Flex>
 
-        {events.map((event) => (
-          <NotificationItem key={event.id} event={event} />
+        {sortedDays.map(([day, events]) => (
+          <NotificationDay key={day} day={day} events={events} />
         ))}
         <TimelineActionAndStatus timeline={timeline} />
       </VerticalPageLayout>

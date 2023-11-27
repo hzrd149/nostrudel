@@ -7,7 +7,7 @@ import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
 import { parseZapEvent } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getEventUID, getReferences, isMentionedInContent, isReply, parseCoordinate } from "../../helpers/nostr/events";
+import { getEventUID, getReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -22,7 +22,7 @@ const IconBox = ({ children }: PropsWithChildren) => (
     {children}
   </Box>
 );
-const ExpandableToggleButton = ({
+export const ExpandableToggleButton = ({
   toggle,
   ...props
 }: { toggle: { isOpen: boolean; onToggle: () => void } } & Omit<IconButtonProps, "icon">) => (
