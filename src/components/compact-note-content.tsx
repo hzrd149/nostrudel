@@ -6,14 +6,14 @@ import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../helper
 import { embedNostrLinks, embedNostrMentions, embedNostrHashtags, embedEmoji, renderGenericUrl } from "./embed-types";
 import { LightboxProvider } from "./lightbox-provider";
 
-function buildContents(event: NostrEvent | DraftNostrEvent) {
+function buildContents(event: NostrEvent | DraftNostrEvent, textOnly = false) {
   let content: EmbedableContent = [event.content.trim().replace(/\n+/g, "\n")];
 
   // common
   content = embedUrls(content, [renderGenericUrl]);
 
   // nostr
-  content = embedNostrLinks(content);
+  content = embedNostrLinks(content, textOnly);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
   content = embedEmoji(content, event);
@@ -23,12 +23,13 @@ function buildContents(event: NostrEvent | DraftNostrEvent) {
 
 export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
+  textOnly?: boolean;
   maxLength?: number;
 };
 
-export const InlineNoteContent = React.memo(
-  ({ event, maxLength, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
-    let content = buildContents(event);
+export const CompactNoteContent = React.memo(
+  ({ event, maxLength, textOnly = false, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
+    let content = buildContents(event, textOnly);
     let truncated = maxLength !== undefined ? truncateEmbedableContent(content, maxLength) : content;
 
     return (

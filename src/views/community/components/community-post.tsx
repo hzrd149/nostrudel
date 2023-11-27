@@ -21,7 +21,7 @@ import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { InlineNoteContent } from "../../../components/inline-note-content";
+import { CompactNoteContent } from "../../../components/compact-note-content";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import { UserLink } from "../../../components/user-link";
@@ -97,7 +97,7 @@ export function CommunityTextPost({
     <Card as={LinkBox} ref={ref} {...props}>
       <PostSubject event={event} />
       <CardBody p="2">
-        <InlineNoteContent event={event} maxLength={96} />
+        <CompactNoteContent event={event} maxLength={96} />
       </CardBody>
       <CardFooter display="flex" gap="2" alignItems="center" p="2" flexWrap="wrap">
         <Text>
@@ -148,7 +148,7 @@ export function CommunityRepostPost({
         <>
           <PostSubject event={repost} />
           <CardBody p="2">
-            <InlineNoteContent event={repost} maxLength={96} />
+            <CompactNoteContent event={repost} maxLength={96} />
           </CardBody>
         </>
       )}

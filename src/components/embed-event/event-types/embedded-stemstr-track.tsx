@@ -18,7 +18,7 @@ import {
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
-import { InlineNoteContent } from "../../inline-note-content";
+import { CompactNoteContent } from "../../compact-note-content";
 import { getDownloadURL, getHashtags, getStreamURL } from "../../../helpers/nostr/stemstr";
 import { DownloadIcon, ReplyIcon } from "../../icons";
 import NoteZapButton from "../../note/note-zap-button";
@@ -54,7 +54,7 @@ export default function EmbeddedStemstrTrack({ track, ...props }: Omit<CardProps
       </CardHeader>
       <CardBody p="2" display="flex" gap="2" flexDirection="column">
         {player}
-        <InlineNoteContent event={track} />
+        <CompactNoteContent event={track} />
         {hashtags.length > 0 && (
           <Flex wrap="wrap" gap="2">
             {hashtags.map((hashtag) => (

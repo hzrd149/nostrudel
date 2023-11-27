@@ -13,7 +13,7 @@ import { TrustProvider } from "../../../providers/trust";
 import { NoteLink } from "../../note-link";
 import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { InlineNoteContent } from "../../inline-note-content";
+import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 
@@ -44,7 +44,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
             <Timestamp timestamp={event.created_at} />
           </NoteLink>
         </Flex>
-        <InlineNoteContent px="2" event={event} maxLength={96} />
+        <CompactNoteContent px="2" event={event} maxLength={96} />
       </Card>
     </TrustProvider>
   );

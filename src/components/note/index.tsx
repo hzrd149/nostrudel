@@ -46,7 +46,7 @@ import HoverLinkOverlay from "../hover-link-overlay";
 import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
-import { InlineNoteContent } from "../inline-note-content";
+import { CompactNoteContent } from "../compact-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
 import { NoteDetailsButton } from "./components/note-details-button";
 import EventInteractionDetailsModal from "../event-interactions-modal";
@@ -119,7 +119,7 @@ export const Note = React.memo(
                   <Text>
                     Replying to <UserLink pubkey={repliedTo.pubkey} fontWeight="bold" />
                   </Text>
-                  <InlineNoteContent event={repliedTo} maxLength={96} isTruncated />
+                  <CompactNoteContent event={repliedTo} maxLength={96} isTruncated textOnly />
                 </Flex>
               )}
             </CardHeader>
