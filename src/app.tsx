@@ -39,6 +39,7 @@ import UserListsTab from "./views/user/lists";
 import UserGoalsTab from "./views/user/goals";
 import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
+const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
 import ListsView from "./views/lists";
 import ListDetailsView from "./views/lists/list-details";
@@ -87,6 +88,10 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
+
+const TorrentsView = lazy(() => import("./views/torrents"));
+const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
+const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -205,6 +210,7 @@ const router = createHashRouter([
           { path: "reports", element: <UserReportsTab /> },
           { path: "muted-by", element: <MutedByView /> },
           { path: "dms", element: <UserDMsTab /> },
+          { path: "torrents", element: <UserTorrentsTab /> },
         ],
       },
       {
@@ -272,6 +278,17 @@ const router = createHashRouter([
               { path: "pending", element: <CommunityPendingView /> },
             ],
           },
+        ],
+      },
+      {
+        path: "torrents/:id/preview",
+        element: <TorrentPreviewView />,
+      },
+      {
+        path: "torrents",
+        children: [
+          { path: "", element: <TorrentsView /> },
+          { path: ":id", element: <TorrentDetailsView /> },
         ],
       },
       {

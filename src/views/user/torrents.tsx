@@ -1,0 +1,53 @@
+import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
+import { useOutletContext } from "react-router-dom";
+
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import useSubject from "../../hooks/use-subject";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { TORRENT_KIND } from "../../helpers/nostr/torrents";
+import TorrentTableRow from "../torrents/components/torrent-table-row";
+
+export default function UserTorrentsTab() {
+  const { pubkey } = useOutletContext() as { pubkey: string };
+  const contextRelays = useAdditionalRelayContext();
+
+  const timeline = useTimelineLoader(`${pubkey}-torrents`, contextRelays, {
+    authors: [pubkey],
+    kinds: [TORRENT_KIND],
+  });
+
+  const torrents = useSubject(timeline.timeline);
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
+  return (
+    <IntersectionObserverProvider callback={callback}>
+      <VerticalPageLayout>
+        <TableContainer>
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>Tags</Th>
+                <Th>Name</Th>
+                <Th>Uploaded</Th>
+                <Th>Size</Th>
+                <Th>From</Th>
+                <Th />
+              </Tr>
+            </Thead>
+            <Tbody>
+              {torrents.map((torrent) => (
+                <TorrentTableRow key={torrent.id} torrent={torrent} />
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+
+        <TimelineActionAndStatus timeline={timeline} />
+      </VerticalPageLayout>
+    </IntersectionObserverProvider>
+  );
+}

@@ -8,13 +8,14 @@ import { useUserMetadata } from "../hooks/use-user-metadata";
 export type UserLinkProps = LinkProps & {
   pubkey: string;
   showAt?: boolean;
+  tab?: string;
 };
 
-export const UserLink = ({ pubkey, showAt, ...props }: UserLinkProps) => {
+export const UserLink = ({ pubkey, showAt, tab, ...props }: UserLinkProps) => {
   const metadata = useUserMetadata(pubkey);
 
   return (
-    <Link as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}`} whiteSpace="nowrap" {...props}>
+    <Link as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}` + (tab ? "/" + tab : "")} whiteSpace="nowrap" {...props}>
       {showAt && "@"}
       {getUserDisplayName(metadata, pubkey)}
     </Link>

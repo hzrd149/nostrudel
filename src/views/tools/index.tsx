@@ -18,6 +18,7 @@ import ShieldOff from "../../components/icons/shield-off";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import Users01 from "../../components/icons/users-01";
 import PackageSearch from "../../components/icons/package-search";
+import Magnet from "../../components/icons/magnet";
 
 function InternalLink({
   to,
@@ -64,6 +65,12 @@ export default function ToolsHomeView() {
         <InternalLink to="/tools/content-discovery" icon={PackageSearch}>
           Discovery DVM
         </InternalLink>
+        <InternalLink to="/tools/stream-moderation" icon={LiveStreamIcon}>
+          Stream Moderation
+        </InternalLink>
+        <InternalLink to="/torrents" icon={Magnet}>
+          Torrents
+        </InternalLink>
         <InternalLink to="/tools/network" icon={Users01}>
           User Network
         </InternalLink>
@@ -78,9 +85,6 @@ export default function ToolsHomeView() {
         </InternalLink>
         <InternalLink to="/map" icon={MapIcon}>
           Map
-        </InternalLink>
-        <InternalLink to="/tools/stream-moderation" icon={LiveStreamIcon}>
-          Stream Moderation
         </InternalLink>
       </Flex>
 

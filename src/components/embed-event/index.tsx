@@ -28,6 +28,8 @@ import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
 import EmbeddedCommunity from "./event-types/embedded-community";
 import EmbeddedReaction from "./event-types/embedded-reaction";
 import EmbeddedDM from "./event-types/embedded-dm";
+import { TORRENT_KIND } from "../../helpers/nostr/torrents";
+import EmbeddedTorrent from "./event-types/embedded-torrent";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -65,6 +67,8 @@ export function EmbedEvent({
       return <EmbeddedCommunity community={event} {...cardProps} />;
     case STEMSTR_TRACK_KIND:
       return <EmbeddedStemstrTrack track={event} {...cardProps} />;
+    case TORRENT_KIND:
+      return <EmbeddedTorrent torrent={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;
