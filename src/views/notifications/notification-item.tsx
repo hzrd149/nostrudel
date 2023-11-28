@@ -16,6 +16,7 @@ import Heart from "../../components/icons/heart";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";
 import useSingleEvent from "../../hooks/use-single-event";
+import { CompactNoteContent } from "../../components/compact-note-content";
 
 const IconBox = ({ children }: PropsWithChildren) => (
   <Box px="2" pb="2">
@@ -165,7 +166,6 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
           </AvatarGroup>
           <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
           <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
-          {/* <Timestamp timestamp={event.created_at} ml="auto" /> */}
         </Flex>
         {expanded.isOpen && eventJSX}
       </Flex>

@@ -13,6 +13,7 @@ import {
   Tbody,
   Td,
   Text,
+  Textarea,
   Th,
   Thead,
   Tr,
@@ -32,17 +33,22 @@ import { formatBytes } from "../../helpers/number";
 import { NoteContents } from "../../components/note/text-note-contents";
 import Timestamp from "../../components/timestamp";
 import NoteZapButton from "../../components/note/note-zap-button";
+import TorrentMenu from "./components/torrent-menu";
+import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
 
 function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
   const files = getTorrentFiles(torrent);
 
   return (
     <VerticalPageLayout>
-      <Flex as={Heading} size="md" gap="2" alignItems="center" wrap="wrap">
-        <UserAvatarLink pubkey={torrent.pubkey} size="md" />
-        <UserLink pubkey={torrent.pubkey} fontWeight="bold" />
-        <Text> - </Text>
-        <Text>{getTorrentTitle(torrent)}</Text>
+      <Flex gap="2" alignItems="center" wrap="wrap">
+        <Flex as={Heading} size="md" gap="2" alignItems="center" wrap="wrap">
+          <UserAvatarLink pubkey={torrent.pubkey} size="md" />
+          <UserLink pubkey={torrent.pubkey} fontWeight="bold" />
+          <Text> - </Text>
+          <Text>{getTorrentTitle(torrent)}</Text>
+        </Flex>
+        <TorrentMenu torrent={torrent} ml="auto" aria-label="More Options" />
       </Flex>
       <Card p="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
         <Text>Size: {formatBytes(getTorrentSize(torrent))}</Text>
@@ -59,6 +65,7 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
         </Flex>
         <ButtonGroup variant="ghost" size="sm">
           <NoteZapButton event={torrent} />
+          <QuoteRepostButton event={torrent} />
           <Button as={Link} leftIcon={<Magnet boxSize={5} />} href={getTorrentMagnetLink(torrent)} isExternal>
             Download torrent
           </Button>
@@ -93,6 +100,11 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
           </Table>
         </TableContainer>
       </Card>
+
+      <Heading size="sm" mt="2">
+        Comments (Coming soon)
+      </Heading>
+      <Textarea placeholder="Coming soon" isDisabled />
     </VerticalPageLayout>
   );
 }

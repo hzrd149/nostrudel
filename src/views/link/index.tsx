@@ -7,6 +7,7 @@ import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { decode } from "ngeohash";
+import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 
 function NostrLinkPage() {
   const { link } = useParams() as { link?: string };
@@ -36,6 +37,7 @@ function NostrLinkPage() {
       if (decoded.data.kind === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
       if (decoded.data.kind === COMMUNITY_DEFINITION_KIND) return <Navigate to={`/c/${cleanLink}`} replace />;
+      if (decoded.data.kind === TORRENT_KIND) return <Navigate to={`/torrents/${cleanLink}`} replace />;
   }
 
   return (

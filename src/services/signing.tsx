@@ -49,6 +49,9 @@ class SigningService {
 
     const encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encode.encode(secKey));
 
+    // add key to cache
+    decryptedKeys.set(getPublicKey(secKey), secKey);
+
     return {
       secKey: encrypted,
       iv,

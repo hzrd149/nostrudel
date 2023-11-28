@@ -92,6 +92,7 @@ const MapView = lazy(() => import("./views/map"));
 const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
 const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
+const NewTorrentView = lazy(() => import("./views/torrents/new"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -288,6 +289,7 @@ const router = createHashRouter([
         path: "torrents",
         children: [
           { path: "", element: <TorrentsView /> },
+          { path: "new", element: <NewTorrentView /> },
           { path: ":id", element: <TorrentDetailsView /> },
         ],
       },

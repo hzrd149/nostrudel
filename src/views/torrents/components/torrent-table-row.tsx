@@ -12,6 +12,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { getEventUID } from "../../../helpers/nostr/events";
 import { formatBytes } from "../../../helpers/number";
 import NoteZapButton from "../../../components/note/note-zap-button";
+import TorrentMenu from "./torrent-menu";
 
 export default function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
   const ref = useRef<HTMLTableRowElement | null>(null);
@@ -39,10 +40,11 @@ export default function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
       <Td>
         <UserLink pubkey={torrent.pubkey} tab="torrents" />
       </Td>
-      <Td>
+      <Td isNumeric>
         <ButtonGroup variant="ghost" size="xs">
-          <IconButton as={Link} icon={<Magnet />} aria-label="Magnet URI" isExternal href={magnetLink} />
           <NoteZapButton event={torrent} />
+          <IconButton as={Link} icon={<Magnet />} aria-label="Magnet URI" isExternal href={magnetLink} />
+          <TorrentMenu torrent={torrent} aria-label="More Options" ml="auto" />
         </ButtonGroup>
       </Td>
     </Tr>

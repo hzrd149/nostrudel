@@ -61,7 +61,7 @@ export default function BadgesView() {
   // const account = useCurrentAccount();
   // return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
   return (
-    <PeopleListProvider initList="global">
+    <PeopleListProvider>
       <BadgesPage />
     </PeopleListProvider>
   );

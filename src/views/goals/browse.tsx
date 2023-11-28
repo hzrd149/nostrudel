@@ -14,6 +14,7 @@ import { getEventUID } from "../../helpers/nostr/events";
 import { GOAL_KIND, getGoalClosedDate } from "../../helpers/nostr/goal";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -50,7 +51,9 @@ function GoalsBrowsePage() {
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
           {goals.map((event) => (
-            <GoalCard key={getEventUID(event)} goal={event} />
+            <ErrorBoundary key={getEventUID(event)}>
+              <GoalCard goal={event} />
+            </ErrorBoundary>
           ))}
         </SimpleGrid>
       </VerticalPageLayout>

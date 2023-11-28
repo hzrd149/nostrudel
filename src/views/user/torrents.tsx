@@ -1,5 +1,6 @@
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
+import { useCallback } from "react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
@@ -8,17 +9,24 @@ import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { TORRENT_KIND } from "../../helpers/nostr/torrents";
+import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
 import TorrentTableRow from "../torrents/components/torrent-table-row";
+import { NostrEvent } from "../../types/nostr-event";
 
 export default function UserTorrentsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(`${pubkey}-torrents`, contextRelays, {
-    authors: [pubkey],
-    kinds: [TORRENT_KIND],
-  });
+  const eventFilter = useCallback((t: NostrEvent) => validateTorrent(t), []);
+  const timeline = useTimelineLoader(
+    `${pubkey}-torrents`,
+    contextRelays,
+    {
+      authors: [pubkey],
+      kinds: [TORRENT_KIND],
+    },
+    { eventFilter },
+  );
 
   const torrents = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
