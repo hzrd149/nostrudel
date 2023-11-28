@@ -6,6 +6,7 @@ import relayScoreboardService from "../../services/relay-scoreboard";
 import { getPubkey, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/emoji-provider";
 import { EventSplit } from "./zaps";
+import { unique } from "../array";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -68,12 +69,14 @@ export function correctContentMentions(content: string) {
 
 export function getContentMentions(content: string) {
   const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
-  return Array.from(matched)
-    .map((m) => {
-      const parsed = safeDecode(m[1]);
-      return parsed && getPubkey(parsed);
-    })
-    .filter(Boolean) as string[];
+  return unique(
+    Array.from(matched)
+      .map((m) => {
+        const parsed = safeDecode(m[1]);
+        return parsed && getPubkey(parsed);
+      })
+      .filter(Boolean) as string[],
+  );
 }
 
 export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
