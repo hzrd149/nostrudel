@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
+
 import { NostrRequestFilter } from "../types/nostr-query";
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
 import { NostrEvent } from "../types/nostr-event";
+import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
 type Options = {
   enabled?: boolean;
@@ -16,13 +18,10 @@ export default function useTimelineLoader(key: string, relays: string[], query: 
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {
-    timeline.setQuery(query);
-  }, [timeline, JSON.stringify(query)]);
+    timeline.setQueryMap(createSimpleQueryMap(relays, query));
+  }, [timeline, JSON.stringify(query), relays.join("|")]);
   useEffect(() => {
-    timeline.setRelays(relays);
-  }, [timeline, relays.join("|")]);
-  useEffect(() => {
-    timeline.setFilter(opts?.eventFilter);
+    timeline.setEventFilter(opts?.eventFilter);
   }, [timeline, opts?.eventFilter]);
   useEffect(() => {
     if (opts?.cursor !== undefined) {
@@ -36,7 +35,6 @@ export default function useTimelineLoader(key: string, relays: string[], query: 
   const enabled = opts?.enabled ?? true;
   useEffect(() => {
     if (enabled) {
-      timeline.setQuery(query);
       timeline.open();
     } else timeline.close();
   }, [timeline, enabled]);

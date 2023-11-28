@@ -47,7 +47,7 @@ function ContactCard({ pubkey }: { pubkey: string }) {
 }
 
 function DirectMessagesPage() {
-  const [from, setFrom] = useState(dayjs().subtract(2, "days"));
+  const [from, setFrom] = useState(dayjs().subtract(2, "days").unix());
   const conversations = useSubject(directMessagesService.conversations);
 
   useEffect(() => directMessagesService.loadDateRange(from), [from]);
@@ -55,7 +55,7 @@ function DirectMessagesPage() {
   const [loading, setLoading] = useState(false);
   const loadMore = () => {
     setLoading(true);
-    setFrom((date) => dayjs(date).subtract(2, "days"));
+    setFrom((date) => dayjs(date).subtract(2, "days").unix());
     setTimeout(() => {
       setLoading(false);
     }, 1000);

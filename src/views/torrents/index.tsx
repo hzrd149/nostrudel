@@ -84,7 +84,7 @@ function TorrentsPage() {
   );
   const query = useMemo(
     () => (tags.length > 0 ? { ...filter, kinds: [TORRENT_KIND], "#t": tags } : { ...filter, kinds: [TORRENT_KIND] }),
-    [tags.join(",")],
+    [tags.join(","), filter],
   );
   const timeline = useTimelineLoader(`${listId}-torrents`, relays, query, { eventFilter, enabled: !!filter });
 

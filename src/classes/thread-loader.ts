@@ -3,7 +3,9 @@ import { NostrEvent } from "../types/nostr-event";
 import NostrRequest from "./nostr-request";
 import NostrMultiSubscription from "./nostr-multi-subscription";
 import { PersistentSubject } from "./subject";
+import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
+/** @deprecated */
 export default class ThreadLoader {
   loading = new PersistentSubject(false);
   focusId = new PersistentSubject<string>("");
@@ -16,7 +18,7 @@ export default class ThreadLoader {
   constructor(relays: string[], eventId: string) {
     this.relays = relays;
 
-    this.subscription = new NostrMultiSubscription(relays);
+    this.subscription = new NostrMultiSubscription();
 
     this.subscription.onEvent.subscribe((event) => {
       this.events.next({ ...this.events.value, [event.id]: event });
@@ -68,13 +70,13 @@ export default class ThreadLoader {
 
   setRelays(relays: string[]) {
     this.relays = relays;
-    this.subscription.setRelays(relays);
+    this.subscription.setQueryMap(createSimpleQueryMap(this.relays, { "#e": [this.rootId.value], kinds: [1] }));
     this.loadEvent();
   }
 
   private updateSubscription() {
     if (this.rootId.value) {
-      this.subscription.setQuery({ "#e": [this.rootId.value], kinds: [1] });
+      this.subscription.setQueryMap(createSimpleQueryMap(this.relays, { "#e": [this.rootId.value], kinds: [1] }));
       if (this.subscription.state !== NostrMultiSubscription.OPEN) {
         this.subscription.open();
       }

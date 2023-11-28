@@ -88,6 +88,7 @@ function EventRow({
 
 export default function TimelineHealth({ timeline }: { timeline: TimelineLoader }) {
   const events = useSubject(timeline.timeline);
+  const relays = Array.from(Object.keys(timeline.queryMap));
 
   return (
     <>
@@ -103,7 +104,7 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
               </Th>
               <Th p="2">Content</Th>
               <Th />
-              {timeline.relays.map((relay) => (
+              {relays.map((relay) => (
                 <Th key={relay} title={relay} w="0.1rem" p="0">
                   <Tooltip label={relay}>
                     <Box p="2">
@@ -116,7 +117,7 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
           </Thead>
           <Tbody>
             {events.map((event) => (
-              <EventRow key={event.id} event={event} relays={timeline.relays} />
+              <EventRow key={event.id} event={event} relays={relays} />
             ))}
           </Tbody>
         </Table>

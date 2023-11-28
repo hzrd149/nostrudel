@@ -7,7 +7,7 @@ import clientRelaysService from "./client-relays";
 import SuperMap from "../classes/super-map";
 import { PersistentSubject } from "../classes/subject";
 import accountService from "./account";
-import { NostrQuery } from "../types/nostr-query";
+import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
 export function getMessageRecipient(event: NostrEvent): string | undefined {
   return event.tags.find(isPTag)?.[1];
@@ -19,20 +19,13 @@ class DirectMessagesService {
   outgoingSub: NostrMultiSubscription;
   conversations = new PersistentSubject<string[]>([]);
   messages = new SuperMap<string, PersistentSubject<NostrEvent[]>>(() => new PersistentSubject<NostrEvent[]>([]));
+  from = dayjs().subtract(2, "day").unix();
 
   constructor() {
-    this.incomingSub = new NostrMultiSubscription(
-      clientRelaysService.getReadUrls(),
-      undefined,
-      "incoming-direct-messages",
-    );
+    this.incomingSub = new NostrMultiSubscription("incoming-direct-messages");
     this.incomingSub.onEvent.subscribe(this.receiveEvent, this);
 
-    this.outgoingSub = new NostrMultiSubscription(
-      clientRelaysService.getReadUrls(),
-      undefined,
-      "outgoing-direct-messages",
-    );
+    this.outgoingSub = new NostrMultiSubscription("outgoing-direct-messages");
     this.outgoingSub.onEvent.subscribe(this.receiveEvent, this);
 
     // reset the messages when the account changes
@@ -41,30 +34,34 @@ class DirectMessagesService {
       this.conversations.next([]);
 
       if (!newAccount) return;
-
-      // update subscriptions
-      if (this.incomingSub.query) {
-        this.incomingSub.setQuery({
-          ...this.incomingSub.query,
-          "#p": [newAccount.pubkey],
-          since: dayjs().subtract(1, "day").unix(),
-        });
-      }
-      if (this.outgoingSub.query) {
-        this.outgoingSub.setQuery({
-          ...this.outgoingSub.query,
-          authors: [newAccount.pubkey],
-          since: dayjs().subtract(1, "day").unix(),
-        });
-      }
+      this.updateSubscriptions();
     });
 
     // update relays when they change
-    clientRelaysService.readRelays.subscribe((relays) => {
-      const urls = relays.map((r) => r.url);
-      this.incomingSub.setRelays(urls);
-      this.outgoingSub.setRelays(urls);
+    clientRelaysService.readRelays.subscribe(() => {
+      this.updateSubscriptions();
     });
+  }
+
+  private updateSubscriptions() {
+    const account = accountService.current.value;
+    if (!account) return;
+    const readRelays = clientRelaysService.getReadUrls();
+
+    this.incomingSub.setQueryMap(
+      createSimpleQueryMap(readRelays, {
+        "#p": [account.pubkey],
+        kinds: [Kind.EncryptedDirectMessage],
+        since: this.from,
+      }),
+    );
+    this.outgoingSub.setQueryMap(
+      createSimpleQueryMap(readRelays, {
+        authors: [account.pubkey],
+        kinds: [Kind.EncryptedDirectMessage],
+        since: this.from,
+      }),
+    );
   }
 
   receiveEvent(event: NostrEvent) {
@@ -91,35 +88,13 @@ class DirectMessagesService {
     return this.messages.size;
   }
 
-  loadDateRange(from: dayjs.ConfigType) {
+  loadDateRange(from: number) {
     const account = accountService.current.value;
     if (!account) return;
+    if (dayjs.unix(this.from).isBefore(this.from)) return;
 
-    if (
-      !Array.isArray(this.incomingSub.query) &&
-      this.incomingSub.query?.since &&
-      dayjs.unix(this.incomingSub.query.since).isBefore(from)
-    ) {
-      // "since" is already set on the subscription and its older than "from"
-      return;
-    }
-
-    const incomingQuery: NostrQuery = {
-      kinds: [Kind.EncryptedDirectMessage],
-      "#p": [account.pubkey],
-      since: dayjs(from).unix(),
-    };
-    this.incomingSub.setQuery(incomingQuery);
-
-    const outgoingQuery: NostrQuery = {
-      kinds: [Kind.EncryptedDirectMessage],
-      authors: [account.pubkey],
-      since: dayjs(from).unix(),
-    };
-    this.outgoingSub.setQuery(outgoingQuery);
-
-    this.incomingSub.setRelays(clientRelaysService.getReadUrls());
-    this.outgoingSub.setRelays(clientRelaysService.getReadUrls());
+    this.from = from;
+    this.updateSubscriptions();
 
     if (this.incomingSub.state !== NostrMultiSubscription.OPEN) {
       this.incomingSub.open();
@@ -132,5 +107,10 @@ class DirectMessagesService {
 
 /** @deprecated */
 const directMessagesService = new DirectMessagesService();
+
+if (import.meta.env.DEV) {
+  // @ts-ignore
+  window.directMessagesService = directMessagesService;
+}
 
 export default directMessagesService;

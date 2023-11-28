@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
+import stringify from "json-stringify-deterministic";
+
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
+import { NostrQuery, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
 import NostrRequest from "./nostr-request";
 import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
@@ -10,13 +12,7 @@ import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import deleteEventService from "../services/delete-events";
-
-function addToQuery(filter: NostrRequestFilter, query: NostrQuery) {
-  if (Array.isArray(filter)) {
-    return filter.map((f) => ({ ...f, ...query }));
-  }
-  return { ...filter, ...query };
-}
+import { addQueryToFilter, isFilterEqual, mapQueryMap } from "../helpers/nostr/filter";
 
 const BLOCK_SIZE = 30;
 
@@ -24,7 +20,7 @@ export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export class RelayBlockLoader {
   relay: string;
-  query: NostrRequestFilter;
+  filter: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
   private log: Debugger;
 
@@ -35,9 +31,9 @@ export class RelayBlockLoader {
 
   onBlockFinish = new Subject<void>();
 
-  constructor(relay: string, query: NostrRequestFilter, log?: Debugger) {
+  constructor(relay: string, filter: NostrRequestFilter, log?: Debugger) {
     this.relay = relay;
-    this.query = query;
+    this.filter = filter;
 
     this.log = log || logger.extend(relay);
     this.events = new EventStore(relay);
@@ -47,10 +43,10 @@ export class RelayBlockLoader {
 
   loadNextBlock() {
     this.loading = true;
-    let query: NostrRequestFilter = addToQuery(this.query, { limit: this.blockSize });
+    let filter: NostrRequestFilter = addQueryToFilter(this.filter, { limit: this.blockSize });
     let oldestEvent = this.getLastEvent();
     if (oldestEvent) {
-      query = addToQuery(query, { until: oldestEvent.created_at - 1 });
+      filter = addQueryToFilter(filter, { until: oldestEvent.created_at - 1 });
     }
 
     const request = new NostrRequest([this.relay]);
@@ -70,7 +66,11 @@ export class RelayBlockLoader {
       this.onBlockFinish.next();
     });
 
-    request.start(query);
+    request.start(filter);
+  }
+
+  private handleEvent(event: NostrEvent) {
+    return this.events.addEvent(event);
   }
 
   private handleDeleteEvent(deleteEvent: NostrEvent) {
@@ -79,10 +79,6 @@ export class RelayBlockLoader {
 
     if (cord) this.events.deleteEvent(cord);
     if (eventId) this.events.deleteEvent(eventId);
-  }
-
-  private handleEvent(event: NostrEvent) {
-    return this.events.addEvent(event);
   }
 
   cleanup() {
@@ -99,8 +95,7 @@ export class RelayBlockLoader {
 
 export default class TimelineLoader {
   cursor = dayjs().unix();
-  query?: NostrRequestFilter;
-  relays: string[] = [];
+  queryMap: RelayQueryMap = {};
 
   events: EventStore;
   timeline = new PersistentSubject<NostrEvent[]>([]);
@@ -114,14 +109,14 @@ export default class TimelineLoader {
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
-  blockLoaders = new Map<string, RelayBlockLoader>();
+  private blockLoaders = new Map<string, RelayBlockLoader>();
 
   constructor(name: string) {
     this.name = name;
     this.log = logger.extend("TimelineLoader:" + name);
     this.events = new EventStore(name);
 
-    this.subscription = new NostrMultiSubscription([], undefined, name);
+    this.subscription = new NostrMultiSubscription(name);
     this.subscription.onEvent.subscribe(this.handleEvent, this);
 
     // update the timeline when there are new events
@@ -153,72 +148,71 @@ export default class TimelineLoader {
     if (eventId) this.events.deleteEvent(eventId);
   }
 
-  private createBlockLoaders() {
-    if (!this.query) return;
-
-    for (const relay of this.relays) {
-      if (!this.blockLoaders.has(relay)) {
-        const loader = new RelayBlockLoader(relay, this.query, this.log.extend(relay));
-        this.blockLoaders.set(relay, loader);
-        this.events.connect(loader.events);
-        loader.onBlockFinish.subscribe(this.updateLoading, this);
-        loader.onBlockFinish.subscribe(this.updateComplete, this);
-      }
-    }
+  private connectToBlockLoader(loader: RelayBlockLoader) {
+    this.events.connect(loader.events);
+    loader.onBlockFinish.subscribe(this.updateLoading, this);
+    loader.onBlockFinish.subscribe(this.updateComplete, this);
   }
-  private removeBlockLoaders(filter?: (loader: RelayBlockLoader) => boolean) {
-    for (const [relay, loader] of this.blockLoaders) {
-      if (!filter || filter(loader)) {
-        loader.cleanup();
-        this.events.disconnect(loader.events);
-        loader.onBlockFinish.unsubscribe(this.updateLoading, this);
-        loader.onBlockFinish.unsubscribe(this.updateComplete, this);
+  private disconnectToBlockLoader(loader: RelayBlockLoader) {
+    loader.cleanup();
+    this.events.disconnect(loader.events);
+    loader.onBlockFinish.unsubscribe(this.updateLoading, this);
+    loader.onBlockFinish.unsubscribe(this.updateComplete, this);
+  }
+
+  setQueryMap(queryMap: RelayQueryMap) {
+    if (isFilterEqual(this.queryMap, queryMap)) return;
+
+    this.log("set query map", queryMap);
+
+    // remove relays
+    for (const relay of Object.keys(this.queryMap)) {
+      const loader = this.blockLoaders.get(relay);
+      if (!loader) continue;
+      if (!queryMap[relay]) {
+        this.disconnectToBlockLoader(loader);
         this.blockLoaders.delete(relay);
       }
     }
-  }
 
-  setRelays(relays: string[]) {
-    if (this.relays.sort().join("|") === relays.sort().join("|")) return;
+    for (const [relay, filter] of Object.entries(queryMap)) {
+      // remove outdated loaders
+      if (this.queryMap[relay] && !isFilterEqual(this.queryMap[relay], filter)) {
+        const old = this.blockLoaders.get(relay)!;
+        this.disconnectToBlockLoader(old);
+        this.blockLoaders.delete(relay);
+      }
 
-    // remove loaders
-    this.removeBlockLoaders((loader) => !relays.includes(loader.relay));
+      if (!this.blockLoaders.has(relay)) {
+        const loader = new RelayBlockLoader(relay, filter, this.log.extend(relay));
+        this.blockLoaders.set(relay, loader);
+        this.connectToBlockLoader(loader);
+      }
+    }
 
-    this.relays = relays;
-    this.createBlockLoaders();
+    this.queryMap = queryMap;
 
-    this.subscription.setRelays(relays);
-    this.updateComplete();
-  }
-  setQuery(query: NostrRequestFilter) {
-    if (JSON.stringify(this.query) === JSON.stringify(query)) return;
+    // update the subscription query map and add limit
+    this.subscription.setQueryMap(
+      mapQueryMap(this.queryMap, (filter) => addQueryToFilter(filter, { limit: BLOCK_SIZE / 2 })),
+    );
 
-    // remove all loaders
-    this.removeBlockLoaders();
-
-    this.log("set query", query);
-    this.query = query;
-
-    // forget all events
+    // TODO: maybe smartly prune the events based on the new filter
     this.forgetEvents();
-    // create any missing loaders
-    this.createBlockLoaders();
-    // update the complete flag
-    this.updateComplete();
-    // update the subscription with the new query
-    this.subscription.setQuery(addToQuery(query, { limit: BLOCK_SIZE / 2 }));
+
+    this.triggerBlockLoads();
   }
-  setFilter(filter?: EventFilter) {
+
+  setEventFilter(filter?: EventFilter) {
     this.eventFilter = filter;
     this.updateTimeline();
   }
-
   setCursor(cursor: number) {
     this.cursor = cursor;
-    this.loadNextBlocks();
+    this.triggerBlockLoads();
   }
 
-  loadNextBlocks() {
+  triggerBlockLoads() {
     let triggeredLoad = false;
     for (const [relay, loader] of this.blockLoaders) {
       if (loader.complete || loader.loading) continue;
@@ -230,8 +224,7 @@ export default class TimelineLoader {
     }
     if (triggeredLoad) this.updateLoading();
   }
-  /** @deprecated */
-  loadMore() {
+  loadNextBlock() {
     let triggeredLoad = false;
     for (const [relay, loader] of this.blockLoaders) {
       if (loader.complete || loader.loading) continue;
@@ -268,25 +261,27 @@ export default class TimelineLoader {
     this.subscription.close();
   }
 
+  forgetEvents() {
+    this.events.clear();
+    this.timeline.next([]);
+    this.subscription.forgetEvents();
+  }
   reset() {
     this.cursor = dayjs().unix();
-    this.removeBlockLoaders();
+    for (const [_, loader] of this.blockLoaders) this.disconnectToBlockLoader(loader);
+    this.blockLoaders.clear();
     this.forgetEvents();
   }
 
   /** close the subscription and remove any event listeners for this timeline */
   cleanup() {
     this.close();
-    this.removeBlockLoaders();
-    this.events.cleanup();
-    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
-  }
 
-  // TODO: this is only needed because the current logic dose not remove events when the relay they where fetched from is removed
-  /** @deprecated */
-  forgetEvents() {
-    this.events.clear();
-    this.timeline.next([]);
-    this.subscription.forgetEvents();
+    for (const [_, loader] of this.blockLoaders) this.disconnectToBlockLoader(loader);
+    this.blockLoaders.clear();
+
+    this.events.cleanup();
+
+    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 }
