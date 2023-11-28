@@ -41,11 +41,6 @@ export default function ({ community, onClose, ...props }: Omit<ModalProps, "chi
   const communityCoordinate = getEventCoordinate(community);
   const readRelays = useReadRelayUrls(getCommunityRelays(community));
   const timeline = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
-    {
-      "#a": [communityCoordinate],
-      "#d": [SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER],
-      kinds: [NOTE_LIST_KIND],
-    },
     { "#a": [communityCoordinate], kinds: [COMMUNITIES_LIST_KIND] },
   ]);
 

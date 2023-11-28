@@ -34,7 +34,7 @@ export default function PeopleListSelection({
   };
 
   return (
-    <Menu>
+    <Menu isLazy>
       <MenuButton as={Button} {...props}>
         {listEvent ? getListName(listEvent) : selected === "global" ? "Global" : "Loading..."}
       </MenuButton>

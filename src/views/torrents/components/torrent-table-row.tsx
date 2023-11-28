@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import { ButtonGroup, IconButton, Link, Td, Tr } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -14,7 +14,7 @@ import { formatBytes } from "../../../helpers/number";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import TorrentMenu from "./torrent-menu";
 
-export default function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
+function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
   const ref = useRef<HTMLTableRowElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(torrent));
 
@@ -29,7 +29,7 @@ export default function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
           .join(" > ")}
       </Td>
       <Td>
-        <Link as={RouterLink} to={`/torrents/${getNeventCodeWithRelays(torrent.id)}`}>
+        <Link as={RouterLink} to={`/torrents/${getNeventCodeWithRelays(torrent.id)}`} isTruncated maxW="lg">
           {getTorrentTitle(torrent)}
         </Link>
       </Td>
@@ -50,3 +50,4 @@ export default function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
     </Tr>
   );
 }
+export default memo(TorrentTableRow);

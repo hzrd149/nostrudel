@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -20,6 +20,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
+import CategorySelect from "./components/category-select";
 
 function Warning() {
   const navigate = useNavigate();
@@ -58,21 +59,34 @@ function Warning() {
 function TorrentsPage() {
   const { filter, listId } = usePeopleListContext();
   const { relays } = useRelaySelectionContext();
+  const [params, setParams] = useSearchParams();
+  const tags = params.get("tags")?.split(",") ?? [];
+
+  const handleTagsChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
+    (e) => {
+      const newParams = new URLSearchParams(params);
+      if (e.target.value) newParams.set("tags", e.target.value);
+      else newParams.delete("tags");
+      setParams(newParams, { replace: true });
+    },
+    [params],
+  );
 
   const muteFilter = useClientSideMuteFilter();
-
   const eventFilter = useCallback(
     (e: NostrEvent) => {
-      return !muteFilter(e) && validateTorrent(e);
+      if (muteFilter(e)) return false;
+      if (!validateTorrent(e)) return false;
+      if (tags.length > 0 && tags.some((t) => !e.tags.some((e) => e[1] === t))) return false;
+      return true;
     },
-    [muteFilter],
+    [muteFilter, tags.join(",")],
   );
-  const timeline = useTimelineLoader(
-    `${listId}-torrents`,
-    relays,
-    { ...filter, kinds: [TORRENT_KIND] },
-    { eventFilter, enabled: !!filter },
+  const query = useMemo(
+    () => (tags.length > 0 ? { ...filter, kinds: [TORRENT_KIND], "#t": tags } : { ...filter, kinds: [TORRENT_KIND] }),
+    [tags.join(",")],
   );
+  const timeline = useTimelineLoader(`${listId}-torrents`, relays, query, { eventFilter, enabled: !!filter });
 
   const torrents = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -85,6 +99,7 @@ function TorrentsPage() {
       <Flex gap="2">
         <RelaySelectionButton />
         <PeopleListSelection />
+        <CategorySelect maxW="xs" value={tags.join(",")} onChange={handleTagsChange} />
         <Spacer />
         <Button as={RouterLink} to="/torrents/new">
           New Torrent
