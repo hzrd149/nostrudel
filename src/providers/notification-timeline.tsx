@@ -7,6 +7,7 @@ import TimelineLoader from "../classes/timeline-loader";
 import { NostrEvent } from "../types/nostr-event";
 import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../hooks/use-timeline-loader";
+import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -37,7 +38,10 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
   const timeline = useTimelineLoader(
     `${account?.pubkey ?? "anon"}-notification`,
     readRelays,
-    { "#p": [account?.pubkey ?? "0000"], kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap] },
+    {
+      "#p": [account?.pubkey ?? "0000"],
+      kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND],
+    },
     { enabled: !!account?.pubkey, eventFilter },
   );
 

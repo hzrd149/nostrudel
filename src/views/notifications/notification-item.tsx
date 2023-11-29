@@ -16,7 +16,7 @@ import Heart from "../../components/icons/heart";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";
 import useSingleEvent from "../../hooks/use-single-event";
-import { CompactNoteContent } from "../../components/compact-note-content";
+import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 
 const IconBox = ({ children }: PropsWithChildren) => (
   <Box px="2" pb="2">
@@ -35,7 +35,7 @@ export const ExpandableToggleButton = ({
   />
 );
 
-const Kind1Notification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
+const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
   const refs = getReferences(event);
   const parent = useSingleEvent(refs.replyId);
@@ -180,7 +180,8 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
   let content: ReactNode | null = null;
   switch (event.kind) {
     case Kind.Text:
-      content = <Kind1Notification event={event} ref={ref} />;
+    case TORRENT_COMMENT_KIND:
+      content = <NoteNotification event={event} ref={ref} />;
       break;
     case Kind.Reaction:
       content = <ReactionNotification event={event} ref={ref} />;

@@ -1,4 +1,15 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  PropsWithChildren,
+  Suspense,
+  createContext,
+  lazy,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ButtonGroup,
   Drawer,
@@ -8,7 +19,9 @@ import {
   DrawerHeader,
   DrawerOverlay,
   DrawerProps,
+  Heading,
   IconButton,
+  Spinner,
 } from "@chakra-ui/react";
 import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from "react-router-dom";
 
@@ -17,6 +30,8 @@ import ThreadView from "../views/note";
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
 import { PageProviders } from ".";
 import { logger } from "../helpers/debug";
+
+const TorrentDetailsView = lazy(() => import("../views/torrents/torrent"));
 
 type Router = ReturnType<typeof createMemoryRouter>;
 
@@ -54,7 +69,15 @@ function DrawerSubView({
           <ErrorBoundary>
             <IsInDrawerContext.Provider value={true}>
               <PageProviders>
-                <RouterProvider router={router} />
+                <Suspense
+                  fallback={
+                    <Heading size="md" mx="auto" my="4">
+                      <Spinner /> Loading page
+                    </Heading>
+                  }
+                >
+                  <RouterProvider router={router} />
+                </Suspense>
               </PageProviders>
             </IsInDrawerContext.Provider>
           </ErrorBoundary>
@@ -68,6 +91,10 @@ const routes: RouteObject[] = [
   {
     path: "/n/:id",
     element: <ThreadView />,
+  },
+  {
+    path: "/torrents/:id",
+    element: <TorrentDetailsView />,
   },
 ];
 

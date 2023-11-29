@@ -17,6 +17,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 
@@ -27,7 +28,13 @@ import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { UserLink } from "../../components/user-link";
-import { getTorrentFiles, getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../helpers/nostr/torrents";
+import {
+  TORRENT_COMMENT_KIND,
+  getTorrentFiles,
+  getTorrentMagnetLink,
+  getTorrentSize,
+  getTorrentTitle,
+} from "../../helpers/nostr/torrents";
 import Magnet from "../../components/icons/magnet";
 import { formatBytes } from "../../helpers/number";
 import { NoteContents } from "../../components/note/text-note-contents";
@@ -35,9 +42,14 @@ import Timestamp from "../../components/timestamp";
 import NoteZapButton from "../../components/note/note-zap-button";
 import TorrentMenu from "./components/torrent-menu";
 import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
+import TorrentComments from "./components/torrents-comments";
+import ReplyForm from "../note/components/reply-form";
+import { getReferences } from "../../helpers/nostr/events";
+import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
 
 function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
   const files = getTorrentFiles(torrent);
+  const replyForm = useDisclosure();
 
   return (
     <VerticalPageLayout>
@@ -71,13 +83,17 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
           </Button>
         </ButtonGroup>
       </Card>
-      <Heading size="sm" mt="2">
-        Description
-      </Heading>
-      <Card p="2">
-        <NoteContents event={torrent} />
-      </Card>
-      <Heading size="sm" mt="2">
+      {torrent.content.length > 0 && (
+        <>
+          <Heading size="md" mt="2">
+            Description
+          </Heading>
+          <Card p="2">
+            <NoteContents event={torrent} />
+          </Card>
+        </>
+      )}
+      <Heading size="md" mt="2">
         Files
       </Heading>
       <Card p="2">
@@ -101,10 +117,25 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
         </TableContainer>
       </Card>
 
-      <Heading size="sm" mt="2">
-        Comments (Coming soon)
-      </Heading>
-      <Textarea placeholder="Coming soon" isDisabled />
+      <Flex gap="2">
+        <Heading size="md" mt="2">
+          Comments
+        </Heading>
+        {!replyForm.isOpen && (
+          <Button leftIcon={<MessageTextCircle01 />} size="sm" ml="auto" onClick={replyForm.onOpen}>
+            New Comment
+          </Button>
+        )}
+      </Flex>
+      {replyForm.isOpen && (
+        <ReplyForm
+          item={{ event: torrent, refs: getReferences(torrent), replies: [] }}
+          onCancel={replyForm.onClose}
+          onSubmitted={replyForm.onClose}
+          replyKind={TORRENT_COMMENT_KIND}
+        />
+      )}
+      <TorrentComments torrent={torrent} />
     </VerticalPageLayout>
   );
 }

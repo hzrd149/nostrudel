@@ -73,7 +73,7 @@ function TorrentPreviewPage({ event }: { event: NostrEvent }) {
   );
 }
 
-export default function TorrentDetailsView() {
+export default function TorrentPreviewView() {
   const { id } = useParams() as { id: string };
   const parsed = useMemo(() => {
     const result = safeDecode(id);

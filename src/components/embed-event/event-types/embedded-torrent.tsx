@@ -1,3 +1,4 @@
+import { MouseEventHandler, useCallback } from "react";
 import {
   Button,
   Card,
@@ -8,6 +9,7 @@ import {
   Flex,
   Heading,
   Link,
+  LinkBox,
   Spacer,
   Tag,
   Text,
@@ -22,17 +24,28 @@ import Timestamp from "../../timestamp";
 import Magnet from "../../icons/magnet";
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { formatBytes } from "../../../helpers/number";
+import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
+import HoverLinkOverlay from "../../hover-link-overlay";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
+  const navigate = useNavigateInDrawer();
   const link = `/torrents/${getNeventCodeWithRelays(torrent.id)}`;
 
+  const handleClick = useCallback<MouseEventHandler>(
+    (e) => {
+      e.preventDefault();
+      navigate(link);
+    },
+    [navigate, link],
+  );
+
   return (
-    <Card {...props}>
+    <Card as={LinkBox} {...props}>
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
-          <Link as={RouterLink} to={link}>
+          <HoverLinkOverlay as={RouterLink} to={link} onClick={handleClick}>
             {getTorrentTitle(torrent)}
-          </Link>
+          </HoverLinkOverlay>
         </Heading>
         <UserAvatarLink pubkey={torrent.pubkey} size="xs" />
         <UserLink pubkey={torrent.pubkey} isTruncated fontWeight="bold" fontSize="md" />
