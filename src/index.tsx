@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { GlobalProviders } from "./providers";
 
+import "./services/serial-port";
+
 // setup dayjs
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";

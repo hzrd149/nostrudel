@@ -1,11 +1,25 @@
 import { useState } from "react";
-import { Badge, Button, Flex, Spinner, Text, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  Flex,
+  IconButton,
+  Link,
+  Spinner,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import accountService from "../../services/account";
 import Key01 from "../../components/icons/key-01";
 import ChevronDown from "../../components/icons/chevron-down";
 import ChevronUp from "../../components/icons/chevron-up";
+import serialPortService from "../../services/serial-port";
+import UsbFlashDrive from "../../components/icons/usb-flash-drive";
+import HelpCircle from "../../components/icons/help-circle";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -33,17 +47,44 @@ export default function LoginStartView() {
             relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
           }
 
-          accountService.addAccount({ pubkey, relays, useExtension: true, readonly: false });
+          accountService.addAccount({ pubkey, relays, connectionType: "extension", readonly: false });
         }
 
         accountService.switchAccount(pubkey);
-      } catch (e) {}
+      } catch (e) {
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      }
       setLoading(false);
     } else {
-      toast({
-        status: "warning",
-        title: "Cant find extension",
-      });
+      toast({ status: "warning", title: "Cant find extension" });
+    }
+  };
+  const loginWithSerial = async () => {
+    if (serialPortService.supported) {
+      try {
+        setLoading(true);
+
+        const pubkey = await serialPortService.getPublicKey();
+
+        if (!accountService.hasAccount(pubkey)) {
+          let relays: string[] = [];
+
+          // TODO: maybe get relays from device
+
+          if (relays.length === 0) {
+            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
+          }
+
+          accountService.addAccount({ pubkey, relays, connectionType: "serial", readonly: false });
+        }
+
+        accountService.switchAccount(pubkey);
+      } catch (e) {
+        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      }
+      setLoading(false);
+    } else {
+      toast({ status: "warning", title: "Serial is not supported" });
     }
   };
 
@@ -54,6 +95,21 @@ export default function LoginStartView() {
       <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="sm" colorScheme="primary">
         Sign in with extension
       </Button>
+      {serialPortService.supported && (
+        <ButtonGroup colorScheme="purple">
+          <Button onClick={loginWithSerial} leftIcon={<UsbFlashDrive boxSize={6} />} w="xs">
+            Use Signing Device
+          </Button>
+          <IconButton
+            as={Link}
+            aria-label="What is NSD?"
+            title="What is NSD?"
+            isExternal
+            href="https://lnbits.github.io/nostr-signing-device/installer/"
+            icon={<HelpCircle boxSize={5} />}
+          />
+        </ButtonGroup>
+      )}
       <Button
         variant="link"
         onClick={advanced.onToggle}

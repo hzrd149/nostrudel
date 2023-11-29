@@ -17,7 +17,6 @@ const DEFAULT_RELAYS = [
   { url: "wss://relay.damus.io", mode: RelayMode.READ },
   { url: "wss://nostr.wine", mode: RelayMode.READ },
   { url: "wss://relay.snort.social", mode: RelayMode.READ },
-  { url: "wss://eden.nostr.land", mode: RelayMode.READ },
   { url: "wss://nos.lol", mode: RelayMode.READ },
   { url: "wss://purplerelay.com", mode: RelayMode.READ },
 ];
