@@ -28,16 +28,17 @@ function NostrLinkPage() {
     case "nprofile":
       return <Navigate to={`/u/${cleanLink}`} replace />;
     case "note":
-    case "nevent":
       return <Navigate to={`/n/${cleanLink}`} replace />;
+    case "nevent":
     case "naddr":
+      if (decoded.data.kind === Kind.Text) return <Navigate to={`/n/${cleanLink}`} replace />;
+      if (decoded.data.kind === TORRENT_KIND) return <Navigate to={`/torrents/${cleanLink}`} replace />;
       if (decoded.data.kind === STREAM_KIND) return <Navigate to={`/streams/${cleanLink}`} replace />;
       if (decoded.data.kind === EMOJI_PACK_KIND) return <Navigate to={`/emojis/${cleanLink}`} replace />;
       if (decoded.data.kind === NOTE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
       if (decoded.data.kind === COMMUNITY_DEFINITION_KIND) return <Navigate to={`/c/${cleanLink}`} replace />;
-      if (decoded.data.kind === TORRENT_KIND) return <Navigate to={`/torrents/${cleanLink}`} replace />;
   }
 
   return (
