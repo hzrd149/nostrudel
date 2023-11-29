@@ -11,7 +11,7 @@ export default function MuteUserMenuItem({ event }: { event: NostrEvent }) {
   const { isMuted, mute, unmute } = useUserMuteFunctions(event.pubkey);
   const { openModal } = useMuteModalContext();
 
-  if (account?.pubkey !== event.pubkey) return null;
+  if (account?.pubkey === event.pubkey) return null;
 
   return (
     <MenuItem
