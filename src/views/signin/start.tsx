@@ -105,7 +105,7 @@ export default function LoginStartView() {
             aria-label="What is NSD?"
             title="What is NSD?"
             isExternal
-            href="https://lnbits.github.io/nostr-signing-device/installer/"
+            href="https://github.com/lnbits/nostr-signing-device"
             icon={<HelpCircle boxSize={5} />}
           />
         </ButtonGroup>
