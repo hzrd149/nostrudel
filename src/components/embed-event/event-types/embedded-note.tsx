@@ -16,6 +16,7 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
+import singleEventService from "../../../services/single-event";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
@@ -25,6 +26,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();
+      singleEventService.handleEvent(event);
       navigate(to);
     },
     [navigate, to],

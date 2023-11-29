@@ -13,7 +13,7 @@ import {
 import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from "react-router-dom";
 
 import { ErrorBoundary } from "../components/error-boundary";
-import NoteView from "../views/note";
+import ThreadView from "../views/note";
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
 import { PageProviders } from ".";
 import { logger } from "../helpers/debug";
@@ -67,7 +67,7 @@ function DrawerSubView({
 const routes: RouteObject[] = [
   {
     path: "/n/:id",
-    element: <NoteView />,
+    element: <ThreadView />,
   },
 ];
 

@@ -86,7 +86,10 @@ function TorrentsPage() {
     () => (tags.length > 0 ? { ...filter, kinds: [TORRENT_KIND], "#t": tags } : { ...filter, kinds: [TORRENT_KIND] }),
     [tags.join(","), filter],
   );
-  const timeline = useTimelineLoader(`${listId}-torrents`, relays, query, { eventFilter, enabled: !!filter });
+  const timeline = useTimelineLoader(`${listId || "global"}-torrents`, relays, query, {
+    eventFilter,
+    enabled: !!filter,
+  });
 
   const torrents = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);

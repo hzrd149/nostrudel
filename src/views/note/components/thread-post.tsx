@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -39,6 +39,7 @@ import NoteProxyLink from "../../../components/note/components/note-proxy-link";
 import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import { getNeventCodeWithRelays } from "../../../helpers/nip19";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 
 const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
 
@@ -141,6 +142,9 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
     </Flex>
   );
 
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, post.event.id);
+
   return (
     <>
       <Flex
@@ -151,6 +155,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
         borderWidth=".1rem .1rem .1rem .35rem"
         borderColor={focusId === post.event.id ? focusColor : undefined}
         borderLeftColor={color + "." + colorValue}
+        ref={ref}
       >
         {header}
         {expanded && renderContent()}

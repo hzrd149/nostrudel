@@ -1,14 +1,17 @@
 import TimelineLoader from "../classes/timeline-loader";
+import { logger } from "../helpers/debug";
 
-const MAX_CACHE = 20;
+const MAX_CACHE = 30;
 
 class TimelineCacheService {
   private timelines = new Map<string, TimelineLoader>();
   private cacheQueue: string[] = [];
+  private log = logger.extend("TimelineCacheService");
 
   createTimeline(key: string) {
     let timeline = this.timelines.get(key);
     if (!timeline) {
+      this.log(`Creating ${key}`);
       timeline = new TimelineLoader(key);
       this.timelines.set(key, timeline);
     }
@@ -22,6 +25,7 @@ class TimelineCacheService {
       if (!deleteKey) break;
       const deadTimeline = this.timelines.get(deleteKey);
       if (deadTimeline) {
+        this.log(`Destroying ${deadTimeline.name}`);
         this.timelines.delete(deleteKey);
         deadTimeline.cleanup();
       }

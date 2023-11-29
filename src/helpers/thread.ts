@@ -32,7 +32,7 @@ export function getThreadMembers(item: ThreadItem, omit?: string) {
   return Array.from(pubkeys);
 }
 
-export function linkEvents(events: NostrEvent[]) {
+export function buildThread(events: NostrEvent[]) {
   const idToChildren: Record<string, NostrEvent[]> = {};
 
   const replies = new Map<string, ThreadItem>();

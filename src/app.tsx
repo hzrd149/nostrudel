@@ -14,7 +14,7 @@ import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
-import NoteView from "./views/note";
+import ThreadView from "./views/note";
 import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/messages";
 import DirectMessageChatView from "./views/messages/chat";
@@ -216,7 +216,7 @@ const router = createHashRouter([
       },
       {
         path: "/n/:id",
-        element: <NoteView />,
+        element: <ThreadView />,
       },
       { path: "settings", element: <SettingsView /> },
       {

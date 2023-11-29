@@ -76,7 +76,7 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
 
   return (
     <>
-      <Menu closeOnSelect={false}>
+      <Menu isLazy closeOnSelect={false}>
         <MenuButton
           as={IconButton}
           icon={inLists.length > 0 ? <BookmarkedIcon /> : <BookmarkIcon />}

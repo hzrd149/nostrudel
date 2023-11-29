@@ -14,11 +14,16 @@ type Options = {
   customSort?: (a: NostrEvent, b: NostrEvent) => number;
 };
 
-export default function useTimelineLoader(key: string, relays: string[], query: NostrRequestFilter, opts?: Options) {
+export default function useTimelineLoader(
+  key: string,
+  relays: string[],
+  query: NostrRequestFilter | undefined,
+  opts?: Options,
+) {
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {
-    timeline.setQueryMap(createSimpleQueryMap(relays, query));
+    if (query) timeline.setQueryMap(createSimpleQueryMap(relays, query));
   }, [timeline, JSON.stringify(query), relays.join("|")]);
   useEffect(() => {
     timeline.setEventFilter(opts?.eventFilter);
@@ -32,7 +37,7 @@ export default function useTimelineLoader(key: string, relays: string[], query: 
     timeline.events.customSort = opts?.customSort;
   }, [timeline, opts?.customSort]);
 
-  const enabled = opts?.enabled ?? true;
+  const enabled = opts?.enabled ?? !!query;
   useEffect(() => {
     if (enabled) {
       timeline.open();

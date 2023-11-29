@@ -43,13 +43,13 @@ import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HoverLinkOverlay from "../hover-link-overlay";
-import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
 import { CompactNoteContent } from "../compact-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
 import { NoteDetailsButton } from "./components/note-details-button";
 import EventInteractionDetailsModal from "../event-interactions-modal";
+import singleEventService from "../../services/single-event";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -97,7 +97,13 @@ export const Note = React.memo(
             data-event-id={event.id}
             {...props}
           >
-            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} />}
+            {clickable && (
+              <HoverLinkOverlay
+                as={RouterLink}
+                to={`/n/${getSharableEventAddress(event)}`}
+                onClick={() => singleEventService.handleEvent(event)}
+              />
+            )}
             <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
@@ -106,7 +112,12 @@ export const Note = React.memo(
                 <Flex grow={1} />
                 {showSignatureVerification && <EventVerificationIcon event={event} />}
                 {!hideDrawerButton && (
-                  <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
+                  <OpenInDrawerButton
+                    to={`/n/${getSharableEventAddress(event)}`}
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => singleEventService.handleEvent(event)}
+                  />
                 )}
                 <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
                   <Timestamp timestamp={event.created_at} />

@@ -197,9 +197,6 @@ export default class TimelineLoader {
       mapQueryMap(this.queryMap, (filter) => addQueryToFilter(filter, { limit: BLOCK_SIZE / 2 })),
     );
 
-    // TODO: maybe smartly prune the events based on the new filter
-    this.forgetEvents();
-
     this.triggerBlockLoads();
   }
 

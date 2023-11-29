@@ -103,8 +103,13 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const events = eTags.map((t) => t[1]);
   const contentTagRefs = getContentTagRefs(event.content, event.tags);
 
-  let replyId = eTags.find((t) => t[3] === "reply")?.[1];
-  let rootId = eTags.find((t) => t[3] === "root")?.[1];
+  const replyTag = eTags.find((t) => t[3] === "reply");
+  const rootTag = eTags.find((t) => t[3] === "root");
+
+  let replyId = replyTag?.[1];
+  let replyRelay = replyTag?.[2];
+  let rootId = rootTag?.[1];
+  let rootRelay = rootTag?.[2];
 
   if (!rootId || !replyId) {
     // a direct reply dose not need a "reply" reference
@@ -136,7 +141,9 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   return {
     events,
     rootId,
+    rootRelay,
     replyId,
+    replyRelay,
     contentTagRefs,
   };
 }
