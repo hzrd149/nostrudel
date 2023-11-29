@@ -1,12 +1,12 @@
 import { openDB, deleteDB, IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5 } from "./schema";
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 4;
-const db = await openDB<SchemaV4>(dbName, version, {
+const version = 5;
+const db = await openDB<SchemaV5>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -85,6 +85,27 @@ const db = await openDB<SchemaV4>(dbName, version, {
       // create new search table
       v4.createObjectStore("userSearch", {
         keyPath: "pubkey",
+      });
+    }
+
+    if (oldVersion < 5) {
+      const v4 = db as unknown as IDBPDatabase<SchemaV4>;
+      const v5 = db as unknown as IDBPDatabase<SchemaV5>;
+
+      // migrate accounts table
+      const objectStore = transaction.objectStore("accounts");
+
+      objectStore.getAll().then((accounts: SchemaV4["accounts"]["value"][]) => {
+        for (const account of accounts) {
+          const newAccount: SchemaV5["accounts"] = {
+            ...account,
+            connectionType: account.useExtension ? "extension" : undefined,
+          };
+          // @ts-ignore
+          delete newAccount.useExtension;
+
+          objectStore.put(newAccount);
+        }
       });
     }
   },

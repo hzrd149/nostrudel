@@ -1,7 +1,7 @@
 import { DBSchema } from "idb";
 import { NostrEvent } from "../../types/nostr-event";
-import { Account } from "../account";
 import { RelayInformationDocument } from "../relay-info";
+import { AppSettings } from "../settings/migrations";
 
 export interface SchemaV1 extends DBSchema {
   userMetadata: {
@@ -46,11 +46,20 @@ export interface SchemaV1 extends DBSchema {
   };
   accounts: {
     key: string;
-    value: Account;
+    value: {
+      pubkey: string;
+      readonly: boolean;
+      relays?: string[];
+      secKey?: ArrayBuffer;
+      iv?: Uint8Array;
+      useExtension?: boolean;
+      localSettings?: AppSettings;
+    };
   };
 }
 
 export interface SchemaV2 extends SchemaV1 {
+  accounts: SchemaV1["accounts"];
   settings: {
     key: string;
     value: NostrEvent;
@@ -63,6 +72,7 @@ export interface SchemaV2 extends SchemaV1 {
 }
 
 export interface SchemaV3 {
+  accounts: SchemaV2["accounts"];
   replaceableEvents: {
     key: string;
     value: {
@@ -79,6 +89,7 @@ export interface SchemaV3 {
 }
 
 export interface SchemaV4 {
+  accounts: SchemaV3["accounts"];
   replaceableEvents: SchemaV3["replaceableEvents"];
   dnsIdentifiers: SchemaV3["dnsIdentifiers"];
   relayInfo: SchemaV3["relayInfo"];
@@ -91,4 +102,22 @@ export interface SchemaV4 {
     };
   };
   misc: SchemaV3["misc"];
+}
+
+export interface SchemaV5 {
+  accounts: {
+    pubkey: string;
+    readonly: boolean;
+    relays?: string[];
+    secKey?: ArrayBuffer;
+    iv?: Uint8Array;
+    connectionType?: "extension" | "serial";
+    localSettings?: AppSettings;
+  };
+  replaceableEvents: SchemaV4["replaceableEvents"];
+  dnsIdentifiers: SchemaV4["dnsIdentifiers"];
+  relayInfo: SchemaV4["relayInfo"];
+  relayScoreboardStats: SchemaV4["relayScoreboardStats"];
+  userSearch: SchemaV4["userSearch"];
+  misc: SchemaV4["misc"];
 }
