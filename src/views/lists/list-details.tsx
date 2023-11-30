@@ -45,8 +45,8 @@ function useListCoordinate() {
   return parsed.data;
 }
 
-function BookmarkedEvent({ id, relay }: { id: string; relay?: string }) {
-  const event = useSingleEvent(id, relay ? [relay] : undefined);
+function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
+  const event = useSingleEvent(id, relays);
 
   return event ? <EmbedEvent event={event} /> : <>Loading {id}</>;
 }
@@ -121,8 +121,8 @@ export default function ListDetailsView() {
           <>
             <Heading size="lg">Notes</Heading>
             <Flex gap="2" direction="column">
-              {notes.map(({ id, relay }) => (
-                <BookmarkedEvent id={id} relay={relay} />
+              {notes.map(({ id, relays }) => (
+                <BookmarkedEvent id={id} relays={relays} />
               ))}
             </Flex>
           </>

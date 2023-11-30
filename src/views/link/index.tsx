@@ -39,6 +39,7 @@ function NostrLinkPage() {
       if (decoded.data.kind === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
       if (decoded.data.kind === COMMUNITY_DEFINITION_KIND) return <Navigate to={`/c/${cleanLink}`} replace />;
+      if (decoded.data.kind === Kind.ChannelCreation) return <Navigate to={`/channels/${cleanLink}`} replace />;
   }
 
   return (

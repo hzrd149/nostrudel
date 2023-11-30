@@ -31,6 +31,7 @@ import EmbeddedDM from "./event-types/embedded-dm";
 import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
 import EmbeddedTorrent from "./event-types/embedded-torrent";
 import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
+import EmbeddedChannel from "./event-types/embedded-channel";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -71,7 +72,9 @@ export function EmbedEvent({
     case TORRENT_KIND:
       return <EmbeddedTorrent torrent={event} {...cardProps} />;
     case TORRENT_COMMENT_KIND:
-      return <EmbeddedTorrentComment comment={event} {...cardProps}/>
+      return <EmbeddedTorrentComment comment={event} {...cardProps} />;
+    case Kind.ChannelCreation:
+      return <EmbeddedChannel channel={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;

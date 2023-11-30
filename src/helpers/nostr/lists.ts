@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
@@ -60,8 +60,8 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEv
 export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
-export function getEventsFromList(event: NostrEvent | DraftNostrEvent) {
-  return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
+export function getEventsFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
+  return event.tags.filter(isETag).map((t) => (t[2] ? { id: t[1], relays: [t[2]] } : { id: t[1] }));
 }
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));

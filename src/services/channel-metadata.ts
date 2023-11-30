@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
+import { Kind } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
@@ -9,9 +10,8 @@ import Subject from "../classes/subject";
 import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
 import db from "./db";
-import { nameOrPubkey } from "./user-metadata";
-import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
+import { getChannelPointer } from "../helpers/nostr/channel";
 
 type Pubkey = string;
 type Relay = string;
@@ -25,15 +25,8 @@ export type RequestOptions = {
   // keepAlive?: boolean;
 };
 
-export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
-  return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
-}
-export function createCoordinate(kind: number, pubkey: string, d?: string) {
-  return `${kind}:${pubkey}${d ? ":" + d : ""}`;
-}
-
 /** This class is ued to batch requests to a single relay */
-class ReplaceableEventRelayLoader {
+class ChannelMetadataRelayLoader {
   private subscription: NostrSubscription;
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
@@ -43,7 +36,7 @@ class ReplaceableEventRelayLoader {
   log: Debugger;
 
   constructor(relay: string, log?: Debugger) {
-    this.subscription = new NostrSubscription(relay, undefined, `replaceable-event-loader`);
+    this.subscription = new NostrSubscription(relay, undefined, `channel-metadata-loader`);
 
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
     this.subscription.onEOSE.subscribe(this.handleEOSE.bind(this));
@@ -52,12 +45,13 @@ class ReplaceableEventRelayLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    const cord = getEventCoordinate(event);
+    const channelId = getChannelPointer(event)?.id;
+    if (!channelId) return;
 
     // remove the pubkey from the waiting list
-    this.requested.delete(cord);
+    this.requested.delete(channelId);
 
-    const sub = this.events.get(cord);
+    const sub = this.events.get(channelId);
 
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
@@ -69,28 +63,27 @@ class ReplaceableEventRelayLoader {
     this.requested.clear();
   }
 
-  getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(createCoordinate(kind, pubkey, d));
+  getSubject(channelId: string) {
+    return this.events.get(channelId);
   }
 
-  requestEvent(kind: number, pubkey: string, d?: string) {
-    const cord = createCoordinate(kind, pubkey, d);
-    const event = this.events.get(cord);
+  requestMetadata(channelId: string) {
+    const subject = this.events.get(channelId);
 
-    if (!event.value) {
-      this.requestNext.add(cord);
+    if (!subject.value) {
+      this.requestNext.add(channelId);
       this.updateThrottle();
     }
 
-    return event;
+    return subject;
   }
 
   updateThrottle = _throttle(this.update, 1000);
   update() {
     let needsUpdate = false;
-    for (const cord of this.requestNext) {
-      if (!this.requested.has(cord)) {
-        this.requested.set(cord, new Date());
+    for (const channelId of this.requestNext) {
+      if (!this.requested.has(channelId)) {
+        this.requested.set(channelId, new Date());
         needsUpdate = true;
       }
     }
@@ -98,9 +91,9 @@ class ReplaceableEventRelayLoader {
 
     // prune requests
     const timeout = dayjs().subtract(1, "minute");
-    for (const [cord, date] of this.requested) {
+    for (const [channelId, date] of this.requested) {
       if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(cord);
+        this.requested.delete(channelId);
         needsUpdate = true;
       }
     }
@@ -108,30 +101,12 @@ class ReplaceableEventRelayLoader {
     // update the subscription
     if (needsUpdate) {
       if (this.requested.size > 0) {
-        const filters: Record<number, NostrQuery> = {};
+        const query: NostrQuery = {
+          kinds: [Kind.ChannelMetadata],
+          "#e": Array.from(this.requested.keys()),
+        };
 
-        for (const [cord] of this.requested) {
-          const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
-          const kind = parseInt(kindStr);
-          filters[kind] = filters[kind] || { kinds: [kind] };
-
-          const arr = (filters[kind].authors = filters[kind].authors || []);
-          arr.push(pubkey);
-
-          if (d) {
-            const arr = (filters[kind]["#d"] = filters[kind]["#d"] || []);
-            arr.push(d);
-          }
-        }
-
-        const query = Array.from(Object.values(filters));
-
-        this.log(
-          `Updating query`,
-          Array.from(Object.keys(filters))
-            .map((kind: string) => `kind ${kind}: ${filters[parseInt(kind)].authors?.length}`)
-            .join(", "),
-        );
+        if (query["#e"] && query["#e"].length > 0) this.log(`Updating query`, query["#e"].length);
         this.subscription.setQuery(query);
 
         if (this.subscription.state !== NostrSubscription.OPEN) {
@@ -144,29 +119,31 @@ class ReplaceableEventRelayLoader {
   }
 }
 
-class ReplaceableEventLoaderService {
-  private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+/** This is a clone of ReplaceableEventLoaderService to support channel metadata */
+class ChannelMetadataService {
+  private metadata = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
-  private loaders = new SuperMap<Relay, ReplaceableEventRelayLoader>(
-    (relay) => new ReplaceableEventRelayLoader(relay, this.log.extend(relay)),
+  private loaders = new SuperMap<Relay, ChannelMetadataRelayLoader>(
+    (relay) => new ChannelMetadataRelayLoader(relay, this.log.extend(relay)),
   );
 
-  log = logger.extend("ReplaceableEventLoader");
+  log = logger.extend("ChannelMetadata");
   dbLog = this.log.extend("database");
 
   handleEvent(event: NostrEvent, saveToCache = true) {
-    const cord = getEventCoordinate(event);
+    const channelId = getChannelPointer(event)?.id;
+    if (!channelId) return;
 
-    const sub = this.events.get(cord);
+    const sub = this.metadata.get(channelId);
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      if (saveToCache) this.saveToCache(cord, event);
+      if (saveToCache) this.saveToCache(channelId, event);
     }
   }
 
-  getEvent(kind: number, pubkey: string, d?: string) {
-    return this.events.get(createCoordinate(kind, pubkey, d));
+  getSubject(channelId: string) {
+    return this.metadata.get(channelId);
   }
 
   private readFromCachePromises = new Map<string, Deferred<boolean>>();
@@ -175,11 +152,11 @@ class ReplaceableEventLoaderService {
     if (this.readFromCachePromises.size === 0) return;
 
     let read = 0;
-    const transaction = db.transaction("replaceableEvents", "readonly");
-    for (const [cord, promise] of this.readFromCachePromises) {
+    const transaction = db.transaction("channelMetadata", "readonly");
+    for (const [channelId, promise] of this.readFromCachePromises) {
       transaction
-        .objectStore("replaceableEvents")
-        .get(cord)
+        .objectStore("channelMetadata")
+        .get(channelId)
         .then((cached) => {
           if (cached?.event) {
             this.handleEvent(cached.event, false);
@@ -192,18 +169,18 @@ class ReplaceableEventLoaderService {
     this.readFromCachePromises.clear();
     transaction.commit();
     await transaction.done;
-    if (read) this.dbLog(`Read ${read} events from database`);
+    if (read > 0) this.dbLog(`Read ${read} events from database`);
   }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
-  loadFromCache(cord: string) {
-    const dedupe = this.loadCacheDedupe.get(cord);
+  loadFromCache(channelId: string) {
+    const dedupe = this.loadCacheDedupe.get(channelId);
     if (dedupe) return dedupe;
 
     // add to read queue
     const promise = createDefer<boolean>();
-    this.readFromCachePromises.set(cord, promise);
+    this.readFromCachePromises.set(channelId, promise);
 
-    this.loadCacheDedupe.set(cord, promise);
+    this.loadCacheDedupe.set(channelId, promise);
     this.readFromCacheThrottle();
 
     return promise;
@@ -215,46 +192,45 @@ class ReplaceableEventLoaderService {
     if (this.writeCacheQueue.size === 0) return;
 
     this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
-    for (const [cord, event] of this.writeCacheQueue) {
-      transaction.objectStore("replaceableEvents").put({ addr: cord, event, created: dayjs().unix() });
+    const transaction = db.transaction("channelMetadata", "readwrite");
+    for (const [channelId, event] of this.writeCacheQueue) {
+      transaction.objectStore("channelMetadata").put({ channelId, event, created: dayjs().unix() });
     }
     this.writeCacheQueue.clear();
     transaction.commit();
     await transaction.done;
   }
-  private async saveToCache(cord: string, event: NostrEvent) {
-    this.writeCacheQueue.set(cord, event);
+  private async saveToCache(channelId: string, event: NostrEvent) {
+    this.writeCacheQueue.set(channelId, event);
     this.writeToCacheThrottle();
   }
 
   async pruneDatabaseCache() {
     const keys = await db.getAllKeysFromIndex(
-      "replaceableEvents",
+      "channelMetadata",
       "created",
       IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
     );
 
     if (keys.length === 0) return;
     this.dbLog(`Pruning ${keys.length} expired events from database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
+    const transaction = db.transaction("channelMetadata", "readwrite");
     for (const key of keys) {
       transaction.store.delete(key);
     }
     await transaction.commit();
   }
 
-  private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
-    const cord = createCoordinate(kind, pubkey, d);
-    const sub = this.events.get(cord);
+  private requestChannelMetadataFromRelays(relays: string[], channelId: string) {
+    const sub = this.metadata.get(channelId);
 
     for (const relay of relays) {
-      const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
+      const request = this.loaders.get(relay).requestMetadata(channelId);
 
       sub.connectWithHandler(request, (event, next, current) => {
         if (!current || event.created_at > current.created_at) {
           next(event);
-          this.saveToCache(cord, event);
+          this.saveToCache(channelId, event);
         }
       });
     }
@@ -262,37 +238,36 @@ class ReplaceableEventLoaderService {
     return sub;
   }
 
-  requestEvent(relays: string[], kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
-    const cord = createCoordinate(kind, pubkey, d);
-    const sub = this.events.get(cord);
+  requestMetadata(relays: string[], channelId: string, opts: RequestOptions = {}) {
+    const sub = this.metadata.get(channelId);
 
     if (!sub.value) {
-      this.loadFromCache(cord).then((loaded) => {
-        if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
+      this.loadFromCache(channelId).then((loaded) => {
+        if (!loaded && !sub.value) this.requestChannelMetadataFromRelays(relays, channelId);
       });
     }
 
     if (opts?.alwaysRequest || (!sub.value && opts.ignoreCache)) {
-      this.requestEventFromRelays(relays, kind, pubkey, d);
+      this.requestChannelMetadataFromRelays(relays, channelId);
     }
 
     return sub;
   }
 }
 
-const replaceableEventLoaderService = new ReplaceableEventLoaderService();
+const channelMetadataService = new ChannelMetadataService();
 
-replaceableEventLoaderService.pruneDatabaseCache();
+channelMetadataService.pruneDatabaseCache();
 setInterval(
   () => {
-    replaceableEventLoaderService.pruneDatabaseCache();
+    channelMetadataService.pruneDatabaseCache();
   },
   1000 * 60 * 60,
 );
 
 if (import.meta.env.DEV) {
   //@ts-ignore
-  window.replaceableEventLoaderService = replaceableEventLoaderService;
+  window.channelMetadataService = channelMetadataService;
 }
 
-export default replaceableEventLoaderService;
+export default channelMetadataService;

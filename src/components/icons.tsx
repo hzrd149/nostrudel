@@ -62,6 +62,7 @@ import Repeat01 from "./icons/repeat-01";
 import ReverseLeft from "./icons/reverse-left";
 import Pin01 from "./icons/pin-01";
 import Translate01 from "./icons/translate-01";
+import MessageChatSquare from "./icons/message-chat-square";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -233,3 +234,5 @@ export const WalletIcon = Wallet02;
 export const DownloadIcon = Download01;
 
 export const TranslateIcon = Translate01;
+
+export const ChannelsIcon = MessageChatSquare;

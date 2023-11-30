@@ -1,12 +1,12 @@
 import { openDB, deleteDB, IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6 } from "./schema";
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 5;
-const db = await openDB<SchemaV5>(dbName, version, {
+const version = 6;
+const db = await openDB<SchemaV6>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -108,6 +108,16 @@ const db = await openDB<SchemaV5>(dbName, version, {
         }
       });
     }
+
+    if (oldVersion < 6) {
+      const v6 = db as unknown as IDBPDatabase<SchemaV6>;
+
+      // create new search table
+      const channelMetadata = v6.createObjectStore("channelMetadata", {
+        keyPath: "channelId",
+      });
+      channelMetadata.createIndex("created", "created");
+    }
   },
 });
 
@@ -116,6 +126,9 @@ log("Open");
 export async function clearCacheData() {
   log("Clearing replaceableEvents");
   await db.clear("replaceableEvents");
+
+  log("Clearing channelMetadata");
+  await db.clear("channelMetadata");
 
   log("Clearing userSearch");
   await db.clear("userSearch");

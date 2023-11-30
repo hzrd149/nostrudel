@@ -15,7 +15,7 @@ export function truncatedId(str: string, keep = 6) {
 
 // based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
 export function isReplaceable(kind: number) {
-  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || (kind >= 10000 && kind < 20000);
+  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || kind === 41 || (kind >= 10000 && kind < 20000);
 }
 
 // used to get a unique Id for each event, should take into account replaceable events

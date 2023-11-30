@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import stringify from "json-stringify-deterministic";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrQuery, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
+import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
 import NostrRequest from "./nostr-request";
 import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";

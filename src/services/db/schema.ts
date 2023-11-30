@@ -121,3 +121,21 @@ export interface SchemaV5 {
   userSearch: SchemaV4["userSearch"];
   misc: SchemaV4["misc"];
 }
+
+export interface SchemaV6 {
+  accounts: SchemaV5["accounts"];
+  replaceableEvents: SchemaV5["replaceableEvents"];
+  channelMetadata: {
+    key: string;
+    value: {
+      channelId: string;
+      created: number;
+      event: NostrEvent;
+    };
+  };
+  dnsIdentifiers: SchemaV5["dnsIdentifiers"];
+  relayInfo: SchemaV5["relayInfo"];
+  relayScoreboardStats: SchemaV5["relayScoreboardStats"];
+  userSearch: SchemaV5["userSearch"];
+  misc: SchemaV5["misc"];
+}

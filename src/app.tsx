@@ -89,6 +89,9 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
 
+const ChannelsHomeView = lazy(() => import("./views/channels"));
+const ChannelView = lazy(() => import("./views/channels/channel"));
+
 const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
 const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
@@ -291,6 +294,13 @@ const router = createHashRouter([
           { path: "", element: <TorrentsView /> },
           { path: "new", element: <NewTorrentView /> },
           { path: ":id", element: <TorrentDetailsView /> },
+        ],
+      },
+      {
+        path: "channels",
+        children: [
+          { path: "", element: <ChannelsHomeView /> },
+          { path: ":id", element: <ChannelView /> },
         ],
       },
       {
