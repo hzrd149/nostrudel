@@ -28,6 +28,7 @@ import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
+import { UserLink } from "../user-link";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
@@ -199,7 +200,13 @@ export default function ZapModal({
       <ModalContent>
         <ModalCloseButton />
         <ModalHeader px="4" pb="0" pt="4">
-          Zap Event
+          {event ? (
+            "Zap Event"
+          ) : (
+            <>
+              Zap <UserLink pubkey={pubkey} fontWeight="bold" />
+            </>
+          )}
         </ModalHeader>
         <ModalBody padding="4">{renderContent()}</ModalBody>
       </ModalContent>
