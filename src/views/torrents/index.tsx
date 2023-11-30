@@ -82,13 +82,13 @@ function TorrentsPage() {
     },
     [muteFilter, tags.join(",")],
   );
-  const query = useMemo(
-    () => (tags.length > 0 ? { ...filter, kinds: [TORRENT_KIND], "#t": tags } : { ...filter, kinds: [TORRENT_KIND] }),
-    [tags.join(","), filter],
-  );
+  const query = useMemo(() => {
+    if (!filter) return undefined;
+    if (tags.length > 0) return { ...filter, kinds: [TORRENT_KIND], "#t": tags };
+    else return { ...filter, kinds: [TORRENT_KIND] };
+  }, [tags.join(","), filter]);
   const timeline = useTimelineLoader(`${listId || "global"}-torrents`, relays, query, {
     eventFilter,
-    enabled: !!filter,
   });
 
   const torrents = useSubject(timeline.timeline);

@@ -32,8 +32,8 @@ function GoalsBrowsePage() {
   const timeline = useTimelineLoader(
     `${listId}-browse-goals`,
     readRelays,
-    { ...filter, kinds: [GOAL_KIND] },
-    { enabled: !!filter, eventFilter },
+    filter ? { ...filter, kinds: [GOAL_KIND] } : undefined,
+    { eventFilter },
   );
 
   const goals = useSubject(timeline.timeline);

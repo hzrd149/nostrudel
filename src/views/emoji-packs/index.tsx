@@ -22,11 +22,12 @@ function UserEmojiPackMangerPage() {
   const timeline = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
     readRelays,
-    {
-      authors: [account.pubkey],
-      kinds: [EMOJI_PACK_KIND],
-    },
-    { enabled: !!account.pubkey },
+    account.pubkey
+      ? {
+          authors: [account.pubkey],
+          kinds: [EMOJI_PACK_KIND],
+        }
+      : undefined,
   );
 
   const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));

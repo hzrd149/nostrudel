@@ -57,8 +57,7 @@ export default function ProfileSearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-profile-search`,
     searchRelays,
-    { search: search || "", kinds: [Kind.Metadata], ...filter },
-    { enabled: !!search },
+    search ? { search: search, kinds: [Kind.Metadata], ...filter } : undefined,
   );
 
   const profiles = useSubject(timeline?.timeline) ?? [];

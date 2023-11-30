@@ -14,8 +14,7 @@ export default function NoteSearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-note-search`,
     searchRelays,
-    { search: search || "", kinds: [Kind.Text], ...filter },
-    { enabled: !!search },
+    search ? { search: search, kinds: [Kind.Text], ...filter } : undefined,
   );
 
   const callback = useTimelineCurserIntersectionCallback(timeline);

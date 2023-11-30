@@ -110,11 +110,12 @@ function CommunitiesHomePage() {
   const timeline = useTimelineLoader(
     `all-communities-timeline`,
     readRelays,
-    {
-      kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
-      "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
-    },
-    { enabled: communityCoordinates.length > 0 },
+    communityCoordinates.length > 0
+      ? {
+          kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
+          "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
+        }
+      : undefined,
   );
 
   const showUnapproved = useDisclosure();

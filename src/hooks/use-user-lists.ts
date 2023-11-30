@@ -14,11 +14,13 @@ export default function useUserLists(pubkey?: string, additionalRelays: string[]
   const timeline = useTimelineLoader(
     `${pubkey}-lists`,
     readRelays,
-    {
-      authors: pubkey ? [pubkey] : [],
-      kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
-    },
-    { enabled: !!pubkey, eventFilter },
+    pubkey
+      ? {
+          authors: pubkey ? [pubkey] : [],
+          kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
+        }
+      : undefined,
+    { eventFilter },
   );
 
   const lists = useSubject(timeline.timeline);

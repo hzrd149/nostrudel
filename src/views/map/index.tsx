@@ -122,8 +122,7 @@ export default function MapView() {
   const timeline = useTimelineLoader(
     "geo-events",
     readRelays,
-    { "#g": cells, kinds: [Kind.Text] },
-    { enabled: cells.length > 0 },
+    cells.length > 0 ? { "#g": cells, kinds: [Kind.Text] } : undefined,
   );
 
   const setCellsFromMap = useCallback(() => {

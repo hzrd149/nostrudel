@@ -21,10 +21,6 @@ export default function RelayNotes({ relay }: { relay: string }) {
 
   const { filter } = usePeopleListContext();
   const kinds = [Kind.Text];
-  const query = useMemo<NostrRequestFilter>(() => {
-    if (filter === undefined) return { kinds };
-    return { ...filter, kinds };
-  }, [filter]);
 
   const timelineEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
@@ -37,7 +33,9 @@ export default function RelayNotes({ relay }: { relay: string }) {
     },
     [timelineEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
-  const timeline = useTimelineLoader(`${relay}-notes`, [relay], query, { eventFilter, enabled: !!filter });
+  const timeline = useTimelineLoader(`${relay}-notes`, [relay], filter ? { ...filter, kinds } : undefined, {
+    eventFilter,
+  });
 
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]}>

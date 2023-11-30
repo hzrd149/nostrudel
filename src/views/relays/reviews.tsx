@@ -20,12 +20,13 @@ function RelayReviewsPage() {
   const timeline = useTimelineLoader(
     "relay-reviews",
     readRelays,
-    {
-      ...filter,
-      kinds: [1985],
-      "#l": ["review/relay"],
-    },
-    { enabled: !!filter },
+    filter
+      ? {
+          ...filter,
+          kinds: [1985],
+          "#l": ["review/relay"],
+        }
+      : undefined,
   );
 
   const reviews = useSubject(timeline.timeline);

@@ -29,8 +29,8 @@ function EmojiPacksBrowsePage() {
   const timeline = useTimelineLoader(
     `${listId}-browse-emoji-packs`,
     readRelays,
-    { ...filter, kinds: [EMOJI_PACK_KIND] },
-    { enabled: !!filter, eventFilter },
+    filter ? { ...filter, kinds: [EMOJI_PACK_KIND] } : undefined,
+    { eventFilter },
   );
 
   const packs = useSubject(timeline.timeline);

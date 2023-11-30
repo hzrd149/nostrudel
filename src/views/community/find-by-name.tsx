@@ -30,8 +30,7 @@ export default function CommunityFindByNameView() {
   const timeline = useTimelineLoader(
     `${community}-find-communities`,
     readRelays,
-    { kinds: [COMMUNITY_DEFINITION_KIND], "#d": [community] },
-    { enabled: !!community },
+    community ? { kinds: [COMMUNITY_DEFINITION_KIND], "#d": [community] } : undefined,
   );
 
   const communities = useSubject(timeline.timeline);

@@ -38,11 +38,13 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
   const timeline = useTimelineLoader(
     `${account?.pubkey ?? "anon"}-notification`,
     readRelays,
-    {
-      "#p": [account?.pubkey ?? "0000"],
-      kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND],
-    },
-    { enabled: !!account?.pubkey, eventFilter },
+    account?.pubkey
+      ? {
+          "#p": [account.pubkey],
+          kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND],
+        }
+      : undefined,
+    { eventFilter },
   );
 
   const context = useMemo(() => ({ timeline }), [timeline]);

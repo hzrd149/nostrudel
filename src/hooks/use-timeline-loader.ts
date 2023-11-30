@@ -8,6 +8,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
 type Options = {
+  /** @deprecated */
   enabled?: boolean;
   eventFilter?: EventFilter;
   cursor?: number;
@@ -23,8 +24,12 @@ export default function useTimelineLoader(
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {
-    if (query) timeline.setQueryMap(createSimpleQueryMap(relays, query));
+    if (query) {
+      timeline.setQueryMap(createSimpleQueryMap(relays, query));
+      timeline.open();
+    } else timeline.close();
   }, [timeline, JSON.stringify(query), relays.join("|")]);
+
   useEffect(() => {
     timeline.setEventFilter(opts?.eventFilter);
   }, [timeline, opts?.eventFilter]);
@@ -36,13 +41,6 @@ export default function useTimelineLoader(
   useEffect(() => {
     timeline.events.customSort = opts?.customSort;
   }, [timeline, opts?.customSort]);
-
-  const enabled = opts?.enabled ?? !!query;
-  useEffect(() => {
-    if (enabled) {
-      timeline.open();
-    } else timeline.close();
-  }, [timeline, enabled]);
 
   useUnmount(() => {
     timeline.close();

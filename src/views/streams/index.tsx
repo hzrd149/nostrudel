@@ -34,15 +34,15 @@ function StreamsPage() {
   );
 
   const { filter, listId } = usePeopleListContext();
-  const query = useMemo<NostrRequestFilter>(() => {
-    if (!listId || !filter) return { kinds: [STREAM_KIND] };
+  const query = useMemo<NostrRequestFilter | undefined>(() => {
+    if (!listId || !filter) return undefined;
     return [
       { authors: filter.authors, kinds: [STREAM_KIND] },
       { "#p": filter.authors, kinds: [STREAM_KIND] },
     ];
   }, [filter, listId]);
 
-  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { enabled: !!filter, eventFilter });
+  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());
 

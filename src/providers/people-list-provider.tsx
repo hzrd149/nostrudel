@@ -66,7 +66,8 @@ export default function PeopleListProvider({ children, initList }: PeopleListPro
 
   const filter = useMemo<NostrQuery | undefined>(() => {
     if (selected === "global") return {};
-    return people && { authors: people.map((p) => p.pubkey) };
+    if (!people) return undefined;
+    return { authors: people.map((p) => p.pubkey) };
   }, [people, selected]);
 
   const context = useMemo(

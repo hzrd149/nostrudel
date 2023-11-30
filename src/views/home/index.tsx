@@ -11,7 +11,6 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
-import { NostrRequestFilter } from "../../types/nostr-query";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 
@@ -41,13 +40,8 @@ function HomePage() {
   const { listId, filter } = usePeopleListContext();
 
   const kinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay, Kind.BadgeAward];
-  const query = useMemo<NostrRequestFilter>(() => {
-    if (filter === undefined) return { kinds };
-    return { ...filter, kinds };
-  }, [filter]);
 
-  const timeline = useTimelineLoader(`${listId}-home-feed`, relays, query, {
-    enabled: !!filter,
+  const timeline = useTimelineLoader(`${listId}-home-feed`, relays, filter ? { ...filter, kinds } : undefined, {
     eventFilter,
   });
 

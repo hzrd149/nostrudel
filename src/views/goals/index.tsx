@@ -18,11 +18,12 @@ function UserGoalsManagerPage() {
   const timeline = useTimelineLoader(
     `${account.pubkey}-goals`,
     readRelays,
-    {
-      authors: [account.pubkey],
-      kinds: [GOAL_KIND],
-    },
-    { enabled: !!account.pubkey },
+    account.pubkey
+      ? {
+          authors: [account.pubkey],
+          kinds: [GOAL_KIND],
+        }
+      : undefined,
   );
 
   const goals = useSubject(timeline.timeline);
