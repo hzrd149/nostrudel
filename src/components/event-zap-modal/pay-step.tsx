@@ -141,6 +141,7 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
         colorScheme="yellow"
         onClick={payAllWithWebLN}
         isLoading={payingAll}
+        isDisabled={!window.webln}
       >
         Pay All
       </Button>

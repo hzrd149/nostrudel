@@ -109,7 +109,14 @@ export default function InputStep({
             flex={1}
             {...register("amount", { valueAsNumber: true, min: 1 })}
           />
-          <Button leftIcon={<LightningIcon />} type="submit" isLoading={isSubmitting} variant="solid" size="md">
+          <Button
+            leftIcon={<LightningIcon />}
+            type="submit"
+            isLoading={isSubmitting}
+            variant="solid"
+            size="md"
+            autoFocus
+          >
             {actionName} {readablizeSats(watch("amount"))} sats
           </Button>
         </Flex>

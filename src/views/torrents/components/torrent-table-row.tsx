@@ -36,7 +36,7 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
     if (location.pathname.startsWith("/torrents")) {
       const params = new URLSearchParams(location.search);
       params.set("tags", c.tags.join(","));
-      return `/torrents` + params.toString();
+      return `/torrents?` + params.toString();
     }
     return `/torrents?tags=${c.tags.join(",")}`;
   };
