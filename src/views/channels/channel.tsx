@@ -22,7 +22,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   const drawer = useDisclosure();
 
   return (
-    <Flex h="full" overflow="hidden" direction="column" p="2" gap="2">
+    <Flex h="full" overflow="hidden" direction="column" p="2" gap="2" flexGrow={1}>
       <Flex gap="2" alignItems="center">
         <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
           Back

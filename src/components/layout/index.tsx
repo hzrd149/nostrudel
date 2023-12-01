@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <ReloadPrompt mb="2" />
-      <Flex direction={{ base: "column", md: "row" }}>
+      <Flex direction={{ base: "column", md: "row" }} minH="100vh">
         <Spacer display={["none", null, "block"]} />
         {!isMobile && <DesktopSideNav position="sticky" top="0" flexShrink={0} />}
         <Container

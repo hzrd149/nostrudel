@@ -35,14 +35,14 @@ function StreamsPage() {
 
   const { filter, listId } = usePeopleListContext();
   const query = useMemo<NostrRequestFilter | undefined>(() => {
-    if (!listId || !filter) return undefined;
+    if (!filter) return undefined;
     return [
       { authors: filter.authors, kinds: [STREAM_KIND] },
       { "#p": filter.authors, kinds: [STREAM_KIND] },
     ];
-  }, [filter, listId]);
+  }, [filter]);
 
-  const timeline = useTimelineLoader(`${listId}-streams`, relays, query, { eventFilter });
+  const timeline = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
 
   useRelaysChanged(relays, () => timeline.reset());
 

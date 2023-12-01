@@ -9,7 +9,6 @@ import IntersectionObserverProvider from "../../../providers/intersection-observ
 import useSubject from "../../../hooks/use-subject";
 import ChannelChatMessage from "./channel-chat-message";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import { isReply } from "../../../helpers/nostr/events";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 
 export default function ChannelChatLog({
@@ -21,7 +20,6 @@ export default function ChannelChatLog({
   const eventFilter = useCallback(
     (e: NostrEvent) => {
       if (clientMuteFilter(e)) return false;
-      if (isReply(e)) return false;
       return true;
     },
     [clientMuteFilter],
@@ -42,7 +40,7 @@ export default function ChannelChatLog({
   return (
     <IntersectionObserverProvider callback={callback}>
       <LightboxProvider>
-        <Flex direction="column-reverse" overflowX="hidden" overflowY="auto" gap="2" {...props}>
+        <Flex direction="column-reverse" overflowX="hidden" overflowY="auto" gap="2" h="0" {...props}>
           {messages.map((message) => (
             <ChannelChatMessage key={message.id} channel={channel} message={message} />
           ))}
