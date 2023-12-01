@@ -97,7 +97,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
           )}
 
           <Flex gap="4" alignItems="flex-start" overflow="hidden">
-            <Flex direction="column" gap="4" flex={1} overflow="hidden">
+            <Flex direction="column" gap="4" flex={1} overflow="hidden" minH="full">
               <ButtonGroup size="sm">
                 <Button
                   colorScheme="primary"

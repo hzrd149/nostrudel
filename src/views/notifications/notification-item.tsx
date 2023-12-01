@@ -181,6 +181,7 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
   switch (event.kind) {
     case Kind.Text:
     case TORRENT_COMMENT_KIND:
+    case Kind.Article:
       content = <NoteNotification event={event} ref={ref} />;
       break;
     case Kind.Reaction:

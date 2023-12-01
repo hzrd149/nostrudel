@@ -41,7 +41,7 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
     account?.pubkey
       ? {
           "#p": [account.pubkey],
-          kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND],
+          kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND, Kind.Article],
         }
       : undefined,
     { eventFilter },
