@@ -78,8 +78,8 @@ export function getSharableEventAddress(event: NostrEvent) {
     return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays: maxTwo });
   } else {
     if (maxTwo.length == 2) {
-      return nip19.neventEncode({ id: event.id, relays: maxTwo });
-    } else return nip19.neventEncode({ id: event.id, relays: maxTwo, author: event.pubkey });
+      return nip19.neventEncode({ id: event.id, kind: event.kind, relays: maxTwo });
+    } else return nip19.neventEncode({ id: event.id, kind: event.kind, relays: maxTwo, author: event.pubkey });
   }
 }
 

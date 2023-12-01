@@ -8,11 +8,13 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
+import { isSpecialListKind } from "../../../helpers/nostr/lists";
 
 export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const infoModal = useDisclosure();
 
   const naddr = getSharableEventAddress(list);
+  const isSpecial = isSpecialListKind(list.kind);
 
   const hasPeople = list.tags.some(isPTag);
 
@@ -21,7 +23,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
       <CustomMenuIconButton {...props}>
         <OpenInAppMenuItem event={list} />
         <CopyEmbedCodeMenuItem event={list} />
-        <DeleteEventMenuItem event={list} label="Delete List" />
+        {!isSpecial && <DeleteEventMenuItem event={list} label="Delete List" />}
         {hasPeople && (
           <MenuItem
             icon={<Image w="4" h="4" src="https://www.makeprisms.com/favicon.ico" />}

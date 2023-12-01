@@ -1,8 +1,6 @@
 import { nip19 } from "nostr-tools";
 import { NostrEvent, isETag } from "../../types/nostr-event";
 
-export const USER_CHANNELS_LIST_KIND = 10005;
-
 export type ChannelMetadata = {
   name: string;
   about: string;

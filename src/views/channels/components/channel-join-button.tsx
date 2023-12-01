@@ -2,14 +2,13 @@ import { useCallback } from "react";
 import dayjs from "dayjs";
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 
-import { DraftNostrEvent, NostrEvent, isDTag, isETag } from "../../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { listAddEvent, listRemoveEvent } from "../../../helpers/nostr/lists";
+import { CHANNELS_LIST_KIND, listAddEvent, listRemoveEvent } from "../../../helpers/nostr/lists";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import useUserChannelsList from "../../../hooks/use-user-channels-list";
-import { USER_CHANNELS_LIST_KIND } from "../../../helpers/nostr/channel";
 
 export default function ChannelJoinButton({
   channel,
@@ -25,7 +24,7 @@ export default function ChannelJoinButton({
   const handleClick = useCallback(async () => {
     try {
       const favList = {
-        kind: USER_CHANNELS_LIST_KIND,
+        kind: CHANNELS_LIST_KIND,
         content: list?.content ?? "",
         created_at: dayjs().unix(),
         tags: list?.tags ?? [],

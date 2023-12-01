@@ -9,7 +9,7 @@ export const MUTE_LIST_KIND = 10000;
 export const PIN_LIST_KIND = 10001;
 export const BOOKMARK_LIST_KIND = 10003;
 export const COMMUNITIES_LIST_KIND = 10004;
-export const CHATS_LIST_KIND = 10005;
+export const CHANNELS_LIST_KIND = 10005;
 
 export const PEOPLE_LIST_KIND = 30000;
 export const NOTE_LIST_KIND = 30001;
@@ -44,7 +44,7 @@ export function isSpecialListKind(kind: number) {
     kind === PIN_LIST_KIND ||
     kind === BOOKMARK_LIST_KIND ||
     kind === COMMUNITIES_LIST_KIND ||
-    kind === CHATS_LIST_KIND
+    kind === CHANNELS_LIST_KIND
   );
 }
 

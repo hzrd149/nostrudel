@@ -19,7 +19,6 @@ import {
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { USER_CHANNELS_LIST_KIND } from "../../../helpers/nostr/channel";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/intersection-observer";
@@ -30,6 +29,7 @@ import { useRelaySelectionContext } from "../../../providers/relay-selection-pro
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
+import { CHANNELS_LIST_KIND } from "../../../helpers/nostr/lists";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   return (
@@ -42,7 +42,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
 }
 function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: string[] }) {
   const timeline = useTimelineLoader(`${channel.id}-members`, relays, {
-    kinds: [USER_CHANNELS_LIST_KIND],
+    kinds: [CHANNELS_LIST_KIND],
     "#e": [channel.id],
   });
   const userLists = useSubject(timeline.timeline);

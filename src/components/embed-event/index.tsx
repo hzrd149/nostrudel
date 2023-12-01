@@ -10,7 +10,13 @@ import { NostrEvent } from "../../types/nostr-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
-import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
+import {
+  BOOKMARK_LIST_KIND,
+  CHANNELS_LIST_KIND,
+  COMMUNITIES_LIST_KIND,
+  NOTE_LIST_KIND,
+  PEOPLE_LIST_KIND,
+} from "../../helpers/nostr/lists";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -58,6 +64,9 @@ export function EmbedEvent({
       return <EmbeddedEmojiPack pack={event} {...cardProps} />;
     case PEOPLE_LIST_KIND:
     case NOTE_LIST_KIND:
+    case BOOKMARK_LIST_KIND:
+    case COMMUNITIES_LIST_KIND:
+    case CHANNELS_LIST_KIND:
       return <EmbeddedList list={event} {...cardProps} />;
     case Kind.Article:
       return <EmbeddedArticle article={event} {...cardProps} />;

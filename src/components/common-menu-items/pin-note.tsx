@@ -45,7 +45,7 @@ export default function PinNoteMenuItem({ event }: { event: NostrEvent }) {
   if (event.pubkey !== account?.pubkey) return null;
 
   return (
-    <MenuItem onClick={togglePin} icon={<PinIcon />} isDisabled={loading || !account?.readonly}>
+    <MenuItem onClick={togglePin} icon={<PinIcon />} isDisabled={loading || !!account?.readonly}>
       {label}
     </MenuItem>
   );

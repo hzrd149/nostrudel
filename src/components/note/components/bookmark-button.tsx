@@ -12,6 +12,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/signing-provider";
@@ -22,14 +23,16 @@ import {
   listRemoveEvent,
   getEventsFromList,
   getListName,
+  BOOKMARK_LIST_KIND,
 } from "../../../helpers/nostr/lists";
-import { NostrEvent } from "../../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
 import clientRelaysService from "../../../services/client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../../icons";
 import NewListModal from "../../../views/lists/components/new-list-modal";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import userUserBookmarksList from "../../../hooks/use-user-bookmarks-list";
 
 export default function BookmarkButton({ event, ...props }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
   const toast = useToast();
@@ -38,7 +41,36 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
   const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
 
+  const { list: bookmarkList, pointers: bookmarkPointers } = userUserBookmarksList();
   const lists = useUserLists(account?.pubkey).filter((list) => list.kind === NOTE_LIST_KIND);
+
+  const isBookmarked = bookmarkPointers.some((p) => p.id === event.id);
+  const handleBookmarkClick = useCallback(async () => {
+    const writeRelays = clientRelaysService.getWriteUrls();
+
+    setLoading(true);
+    try {
+      let draft: DraftNostrEvent = {
+        kind: BOOKMARK_LIST_KIND,
+        content: bookmarkList?.content ?? "",
+        tags: bookmarkList?.tags ?? [],
+        created_at: dayjs().unix(),
+      };
+
+      if (isBookmarked) {
+        draft = listRemoveEvent(draft, event.id);
+        const signed = await requestSignature(draft);
+        new NostrPublishAction("Remove Bookmark", writeRelays, signed);
+      } else {
+        draft = listAddEvent(draft, event.id);
+        const signed = await requestSignature(draft);
+        new NostrPublishAction("Bookmark Note", writeRelays, signed);
+      }
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+    setLoading(false);
+  }, [event.id, requestSignature, bookmarkList, isBookmarked]);
 
   const inLists = lists.filter((list) => getEventsFromList(list).some((p) => p.id === event.id));
 
@@ -79,11 +111,19 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
       <Menu isLazy closeOnSelect={false}>
         <MenuButton
           as={IconButton}
-          icon={inLists.length > 0 ? <BookmarkedIcon /> : <BookmarkIcon />}
+          icon={inLists.length > 0 || isBookmarked ? <BookmarkedIcon /> : <BookmarkIcon />}
           isDisabled={account?.readonly ?? true}
           {...props}
         />
         <MenuList minWidth="240px">
+          <MenuItem
+            icon={isBookmarked ? <BookmarkedIcon /> : <BookmarkIcon />}
+            isDisabled={account?.readonly || isLoading}
+            onClick={handleBookmarkClick}
+          >
+            Bookmark
+          </MenuItem>
+          <MenuDivider />
           {lists.length > 0 && (
             <MenuOptionGroup
               type="checkbox"
@@ -94,7 +134,7 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
                 <MenuItemOption
                   key={getEventCoordinate(list)}
                   value={getEventCoordinate(list)}
-                  isDisabled={account?.readonly && isLoading}
+                  isDisabled={account?.readonly || isLoading}
                   isTruncated
                   maxW="90vw"
                 >
