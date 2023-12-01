@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Flex, Heading, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 
 import { safeDecode } from "../../helpers/nip19";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -22,16 +22,17 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   const drawer = useDisclosure();
 
   return (
-    <Flex h="100vh" overflow="hidden" direction="column" p="2" gap="2">
+    <Flex h="full" overflow="hidden" direction="column" p="2" gap="2">
       <Flex gap="2" alignItems="center">
         <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
           Back
         </Button>
-        <RelaySelectionButton />
+        <RelaySelectionButton hideBelow="lg" />
         <Heading hideBelow="lg" size="lg">
           {metadata?.name}
         </Heading>
-        <ChannelJoinButton channel={channel} ml="auto" />
+        <Spacer />
+        <ChannelJoinButton channel={channel} hideBelow="lg" />
         <Button onClick={drawer.onOpen}>Channel Info</Button>
         <ChannelMenu channel={channel} aria-label="More Options" />
       </Flex>

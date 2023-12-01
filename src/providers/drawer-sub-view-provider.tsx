@@ -144,7 +144,11 @@ export default function DrawerSubViewProvider({
 
           const newRouter = createMemoryRouter(routes, { initialEntries: [subRoute] });
           newRouter.subscribe((e) => {
-            if (e.errors && e.errors[0].status === 404 && e.errors[0].internal) {
+            if (
+              e.errors &&
+              e.errors["__shim-error-route__"].status === 404 &&
+              e.errors["__shim-error-route__"].internal
+            ) {
               openInParent(e.location);
             } else if (direction.current !== "down") {
               log("Updating parent state from Router");

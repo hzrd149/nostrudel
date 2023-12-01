@@ -1,4 +1,6 @@
 import {
+  Button,
+  ButtonGroup,
   Card,
   Drawer,
   DrawerBody,
@@ -9,7 +11,10 @@ import {
   DrawerProps,
   Flex,
   Heading,
+  Image,
+  Link,
   LinkBox,
+  Text,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
@@ -23,6 +28,8 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user-avatar";
 import { useRelaySelectionContext } from "../../../providers/relay-selection-provider";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import ChannelJoinButton from "./channel-join-button";
+import { ExternalLinkIcon } from "../../../components/icons";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   return (
@@ -67,10 +74,28 @@ export default function ChannelMetadataDrawer({
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>{metadata?.name}</DrawerHeader>
+        <DrawerHeader p="4">{metadata?.name}</DrawerHeader>
 
-        <DrawerBody>
-          <Heading size="sm">Members</Heading>
+        <DrawerBody px="4" pt="0" pb="4">
+          <ButtonGroup>
+            <ChannelJoinButton channel={channel} />
+            <Button
+              as={Link}
+              href={`https://www.nostrchat.io/channel/${channel.id}`}
+              leftIcon={<Image src="https://www.nostrchat.io//favicon.ico" w="6" h="6" />}
+              rightIcon={<ExternalLinkIcon />}
+              isExternal
+            >
+              Open NostrChat
+            </Button>
+          </ButtonGroup>
+          <Heading size="sm" mt="2">
+            About
+          </Heading>
+          <Text whiteSpace="pre">{metadata.about}</Text>
+          <Heading size="sm" mt="2">
+            Members
+          </Heading>
           <ChannelMembers channel={channel} relays={relays} />
         </DrawerBody>
       </DrawerContent>
