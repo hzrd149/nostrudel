@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getNeventCodeWithRelays } from "../../../helpers/nip19";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user-avatar-link";
 import { UserLink } from "../../user-link";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -29,7 +29,7 @@ import HoverLinkOverlay from "../../hover-link-overlay";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
   const navigate = useNavigateInDrawer();
-  const link = `/torrents/${getNeventCodeWithRelays(torrent.id)}`;
+  const link = `/torrents/${getSharableEventAddress(torrent)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

@@ -9,7 +9,7 @@ import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../event-verification-icon";
 import { TrustProvider } from "../../../providers/trust";
 import Timestamp from "../../timestamp";
-import { getNeventCodeWithRelays } from "../../../helpers/nip19";
+import { getNeventForEventId } from "../../../helpers/nip19";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import { getReferences } from "../../../helpers/nostr/events";
@@ -26,7 +26,7 @@ export default function EmbeddedTorrentComment({
   const { showSignatureVerification } = useSubject(appSettings);
   const refs = getReferences(comment);
   const torrent = useSingleEvent(refs.rootId, refs.rootRelay ? [refs.rootRelay] : []);
-  const linkToTorrent = refs.rootId && `/torrents/${getNeventCodeWithRelays(refs.rootId)}`;
+  const linkToTorrent = refs.rootId && `/torrents/${getNeventForEventId(refs.rootId)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

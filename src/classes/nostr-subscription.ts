@@ -1,9 +1,10 @@
+import { nanoid } from "nanoid";
+
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import Relay, { IncomingEOSE } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import { Subject } from "./subject";
-import { nanoid } from "nanoid";
 
 export default class NostrSubscription {
   static INIT = "initial";
@@ -26,7 +27,9 @@ export default class NostrSubscription {
     this.relay = relayPoolService.requestRelay(relayUrl);
 
     this.onEvent.connectWithHandler(this.relay.onEvent, (event, next) => {
-      if (this.state === NostrSubscription.OPEN) next(event.body);
+      if (this.state === NostrSubscription.OPEN) {
+        next(event.body);
+      }
     });
     this.onEOSE.connectWithHandler(this.relay.onEOSE, (eose, next) => {
       if (this.state === NostrSubscription.OPEN) next(eose);

@@ -29,6 +29,7 @@ import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
 import { UserLink } from "../user-link";
+import relayHintService from "../../services/event-relay-hint";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
@@ -69,7 +70,7 @@ async function getPayRequestForPubkey(
         .map((r) => r.url) ?? [],
     )
     .slice(0, 4);
-  const eventRelays = event ? relayScoreboardService.getRankedRelays(getEventRelays(event.id).value).slice(0, 4) : [];
+  const eventRelays = event ? relayHintService.getEventRelayHints(event, 4) : [];
   const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.getWriteUrls()).slice(0, 4);
   const additional = relayScoreboardService.getRankedRelays(additionalRelays);
 

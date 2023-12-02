@@ -3,7 +3,7 @@ import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { Spinner } from "@chakra-ui/react";
 import CommunityHomePage from "./community-home";
-import { getPubkey, isHexKey, safeDecode } from "../../helpers/nip19";
+import { getPubkeyFromDecodeResult, isHexKey, safeDecode } from "../../helpers/nip19";
 
 function useCommunityPointer() {
   const { community, pubkey } = useParams();
@@ -12,7 +12,7 @@ function useCommunityPointer() {
   if (decoded) {
     if (decoded.type === "naddr" && decoded.data.kind === COMMUNITY_DEFINITION_KIND) return decoded.data;
   } else if (community && pubkey) {
-    const hexPubkey = isHexKey(pubkey) ? pubkey : getPubkey(safeDecode(pubkey));
+    const hexPubkey = isHexKey(pubkey) ? pubkey : getPubkeyFromDecodeResult(safeDecode(pubkey));
     if (!hexPubkey) return;
 
     return { kind: COMMUNITY_DEFINITION_KIND, pubkey: hexPubkey, identifier: community };

@@ -12,6 +12,7 @@ import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
+import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -31,6 +32,8 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
 export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
+
+const RELAY_REQUEST_BATCH_TIME = 1000;
 
 /** This class is ued to batch requests to a single relay */
 class ReplaceableEventRelayLoader {
@@ -85,7 +88,7 @@ class ReplaceableEventRelayLoader {
     return event;
   }
 
-  updateThrottle = _throttle(this.update, 1000);
+  updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
   update() {
     let needsUpdate = false;
     for (const cord of this.requestNext) {
@@ -144,6 +147,9 @@ class ReplaceableEventRelayLoader {
   }
 }
 
+const READ_CACHE_BATCH_TIME = 250;
+const WRITE_CACHE_BATCH_TIME = 250;
+
 class ReplaceableEventLoaderService {
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
@@ -170,7 +176,7 @@ class ReplaceableEventLoaderService {
   }
 
   private readFromCachePromises = new Map<string, Deferred<boolean>>();
-  private readFromCacheThrottle = _throttle(this.readFromCache, 1000);
+  private readFromCacheThrottle = _throttle(this.readFromCache, READ_CACHE_BATCH_TIME);
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
@@ -210,7 +216,7 @@ class ReplaceableEventLoaderService {
   }
 
   private writeCacheQueue = new Map<string, NostrEvent>();
-  private writeToCacheThrottle = _throttle(this.writeToCache, 1000);
+  private writeToCacheThrottle = _throttle(this.writeToCache, WRITE_CACHE_BATCH_TIME);
   private async writeToCache() {
     if (this.writeCacheQueue.size === 0) return;
 
@@ -248,7 +254,10 @@ class ReplaceableEventLoaderService {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
-    for (const relay of relays) {
+    const relayUrls = Array.from(relays);
+    if (localCacheRelayService.enabled) relayUrls.unshift(LOCAL_CACHE_RELAY);
+
+    for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
 
       sub.connectWithHandler(request, (event, next, current) => {

@@ -12,6 +12,7 @@ import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
 import { getChannelPointer } from "../helpers/nostr/channel";
+import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -24,6 +25,8 @@ export type RequestOptions = {
   // TODO: figure out a clean way for useReplaceableEvent hook to "unset" or "unsubscribe"
   // keepAlive?: boolean;
 };
+
+const RELAY_REQUEST_BATCH_TIME = 1000;
 
 /** This class is ued to batch requests to a single relay */
 class ChannelMetadataRelayLoader {
@@ -78,7 +81,7 @@ class ChannelMetadataRelayLoader {
     return subject;
   }
 
-  updateThrottle = _throttle(this.update, 1000);
+  updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
   update() {
     let needsUpdate = false;
     for (const channelId of this.requestNext) {
@@ -119,6 +122,9 @@ class ChannelMetadataRelayLoader {
   }
 }
 
+const READ_CACHE_BATCH_TIME = 250;
+const WRITE_CACHE_BATCH_TIME = 250;
+
 /** This is a clone of ReplaceableEventLoaderService to support channel metadata */
 class ChannelMetadataService {
   private metadata = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
@@ -147,7 +153,7 @@ class ChannelMetadataService {
   }
 
   private readFromCachePromises = new Map<string, Deferred<boolean>>();
-  private readFromCacheThrottle = _throttle(this.readFromCache, 1000);
+  private readFromCacheThrottle = _throttle(this.readFromCache, READ_CACHE_BATCH_TIME);
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
@@ -187,7 +193,7 @@ class ChannelMetadataService {
   }
 
   private writeCacheQueue = new Map<string, NostrEvent>();
-  private writeToCacheThrottle = _throttle(this.writeToCache, 1000);
+  private writeToCacheThrottle = _throttle(this.writeToCache, WRITE_CACHE_BATCH_TIME);
   private async writeToCache() {
     if (this.writeCacheQueue.size === 0) return;
 
@@ -224,7 +230,11 @@ class ChannelMetadataService {
   private requestChannelMetadataFromRelays(relays: string[], channelId: string) {
     const sub = this.metadata.get(channelId);
 
-    for (const relay of relays) {
+    const relayUrls = Array.from(relays);
+    if (localCacheRelayService.enabled) {
+      relayUrls.unshift(LOCAL_CACHE_RELAY);
+    }
+    for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestMetadata(channelId);
 
       sub.connectWithHandler(request, (event, next, current) => {

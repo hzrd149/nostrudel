@@ -36,7 +36,7 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import NoteProxyLink from "../../../components/note/components/note-proxy-link";
 import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
-import { getNeventCodeWithRelays } from "../../../helpers/nip19";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
@@ -80,7 +80,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
-      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getNeventCodeWithRelays(post.event.id)}`}>
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       {replies.length > 0 ? (

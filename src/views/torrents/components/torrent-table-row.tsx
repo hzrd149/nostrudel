@@ -7,7 +7,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../../components/timestamp";
 import { UserLink } from "../../../components/user-link";
 import Magnet from "../../../components/icons/magnet";
-import { getNeventCodeWithRelays } from "../../../helpers/nip19";
+import { getNeventForEventId } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { formatBytes } from "../../../helpers/number";
@@ -58,7 +58,7 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
           ))}
       </Td>
       <Td>
-        <Link as={RouterLink} to={`/torrents/${getNeventCodeWithRelays(torrent.id)}`} isTruncated maxW="lg">
+        <Link as={RouterLink} to={`/torrents/${getNeventForEventId(torrent.id)}`} isTruncated maxW="lg">
           {getTorrentTitle(torrent)}
         </Link>
       </Td>

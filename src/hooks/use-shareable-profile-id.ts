@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import relayScoreboardService from "../services/relay-scoreboard";
-import { RelayMode } from "../classes/relay";
 import { nip19 } from "nostr-tools";
+
+import { RelayMode } from "../classes/relay";
+import relayScoreboardService from "../services/relay-scoreboard";
 import { useUserRelays } from "./use-user-relays";
 
 export function useSharableProfileId(pubkey: string, relayCount = 2) {

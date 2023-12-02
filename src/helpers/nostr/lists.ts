@@ -149,7 +149,8 @@ export function listAddCoordinate(
   coordinate: string,
   relay?: string,
 ): DraftNostrEvent {
-  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("coordinate already in list");
+  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("Event already in list");
+
   return {
     created_at: dayjs().unix(),
     kind: list.kind,

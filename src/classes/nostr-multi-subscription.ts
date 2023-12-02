@@ -29,10 +29,14 @@ export default class NostrMultiSubscription {
     this.id = nanoid();
     this.name = name;
   }
-  private handleEvent(event: IncomingEvent) {
-    if (this.state === NostrMultiSubscription.OPEN && event.subId === this.id && !this.seenEvents.has(event.body.id)) {
-      this.onEvent.next(event.body);
-      this.seenEvents.add(event.body.id);
+  private handleEvent(incomingEvent: IncomingEvent) {
+    if (
+      this.state === NostrMultiSubscription.OPEN &&
+      incomingEvent.subId === this.id &&
+      !this.seenEvents.has(incomingEvent.body.id)
+    ) {
+      this.onEvent.next(incomingEvent.body);
+      this.seenEvents.add(incomingEvent.body.id);
     }
   }
 

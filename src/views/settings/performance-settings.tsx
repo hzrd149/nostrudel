@@ -13,13 +13,28 @@ import {
   Input,
   Link,
   FormErrorMessage,
+  Code,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
+  Text,
+  Heading,
 } from "@chakra-ui/react";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
 import { PerformanceIcon } from "../../components/icons";
+import { useLocalStorage } from "react-use";
+import { LOCAL_CACHE_RELAY } from "../../services/local-cache-relay";
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();
+  const [localCacheRelay, setLocalCacheRelay] = useLocalStorage<boolean>("enable-cache-relay");
+  const cacheDetails = useDisclosure();
 
   return (
     <AccordionItem>
@@ -94,6 +109,58 @@ export default function PerformanceSettings() {
               <Switch id="showSignatureVerification" {...register("showSignatureVerification")} />
             </Flex>
             <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="localCacheRelay" mb="0">
+                Local Cache Relay
+              </FormLabel>
+              <Switch
+                id="localCacheRelay"
+                isChecked={localCacheRelay}
+                onChange={(e) => setLocalCacheRelay(e.target.checked)}
+              />
+              <Button onClick={cacheDetails.onOpen} variant="link" ml="4">
+                Details
+              </Button>
+            </Flex>
+            <FormHelperText>Enabled: Use a local relay as a caching service</FormHelperText>
+
+            <Modal isOpen={cacheDetails.isOpen} onClose={cacheDetails.onClose} size="4xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader p="4">Local cache relay</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody px="4" pb="4" pt="0">
+                  <Text>
+                    When this option is enabled noStrudel will mirror every event it sees to the relay. It will also try
+                    to load as much data from the relay first before reaching out to other relays.
+                  </Text>
+                  <Text>
+                    For security reasons noStrudel will only use <Code>ws://localhost:7000</Code> as the cache relay.
+                  </Text>
+                  <Heading size="md" mt="2">
+                    Linux setup instructions
+                  </Heading>
+                  <Text>
+                    You can run a local relay using{" "}
+                    <Link href="https://www.docker.com/get-started/" isExternal>
+                      docker
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="https://hub.docker.com/r/scsibug/nostr-rs-relay" isExternal>
+                      nostr-rs-relay
+                    </Link>
+                  </Text>
+                  <Text mt="2">1. Create a folder for the data</Text>
+                  <Code>mkdir ~/.nostr-relay/data -p -m 777</Code>
+                  <Text mt="2">2. Start the relay</Text>
+                  <Code>
+                    docker run --rm -it -p 7000:8080 -v ~/.nostr-relay/data:/usr/src/app/db scsibug/nostr-rs-relay
+                  </Code>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </FormControl>
         </Flex>
       </AccordionPanel>
