@@ -165,6 +165,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
             <UserAvatarLink pubkey={zap.request.pubkey} />
           </AvatarGroup>
           <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
+          {zap.request.content && <Text>{zap.request.content}</Text>}
           {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
         </Flex>
         {expanded.isOpen && eventJSX}
