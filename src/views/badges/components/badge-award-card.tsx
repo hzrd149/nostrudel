@@ -17,7 +17,7 @@ export default function BadgeAwardCard({ award, showImage = true }: { award: Nos
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, badge && getEventUID(badge));
+  useRegisterIntersectionEntity(ref, getEventUID(award));
 
   if (!badge) return null;
 
