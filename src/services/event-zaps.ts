@@ -3,8 +3,7 @@ import { Kind } from "nostr-tools";
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
-import { getReferences } from "../helpers/nostr/events";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrRequestFilter } from "../types/nostr-query";
 import { isHexKey } from "../helpers/nip19";
 
@@ -29,11 +28,10 @@ class EventZapsService {
 
   handleEvent(event: NostrEvent) {
     if (event.kind !== Kind.Zap) return;
-    const refs = getReferences(event);
-    const id = refs.events[0];
-    if (!id) return;
+    const eventUID = event.tags.find(isETag)?.[1] ?? event.tags.find(isATag)?.[1];
+    if (!eventUID) return;
 
-    const subject = this.subjects.get(id);
+    const subject = this.subjects.get(eventUID);
     if (!subject.value) {
       subject.next([event]);
     } else if (!subject.value.some((e) => e.id === event.id)) {
@@ -73,6 +71,11 @@ class EventZapsService {
 }
 
 const eventZapsService = new EventZapsService();
+
+if (import.meta.env.DEV) {
+  // @ts-ignore
+  window.eventZapsService = eventZapsService;
+}
 
 setInterval(() => {
   eventZapsService.batchRequests();

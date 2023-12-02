@@ -18,6 +18,7 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
+  Text,
 } from "@chakra-ui/react";
 
 import { UserLink } from "../../components/user-link";
@@ -34,6 +35,10 @@ import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import UserAvatarLink from "../../components/user-avatar-link";
+import NoteZapButton from "../../components/note/note-zap-button";
+import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
+import Timestamp from "../../components/timestamp";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -127,11 +132,6 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
           Back
         </Button>
 
-        <Heading size="md" isTruncated>
-          {getPackName(pack)}
-        </Heading>
-        <EmojiPackFavoriteButton pack={pack} size="sm" />
-
         <Spacer />
 
         <ButtonGroup>
@@ -151,6 +151,28 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
         </ButtonGroup>
       </Flex>
 
+      <Flex gap="2" alignItems="center">
+        <Heading size="lg" isTruncated>
+          {getPackName(pack)}
+        </Heading>
+        <EmojiPackFavoriteButton pack={pack} size="sm" />
+      </Flex>
+
+      <Flex gap="2" alignItems="center">
+        <Text>Created by:</Text>
+        <UserAvatarLink pubkey={pack.pubkey} size="sm" />
+        <UserLink pubkey={pack.pubkey} fontWeight="bold" />
+      </Flex>
+      <Text>
+        Updated: <Timestamp timestamp={pack.created_at} />
+      </Text>
+
+      <ButtonGroup variant="ghost">
+        <NoteZapButton event={pack} />
+        <QuoteRepostButton event={pack} />
+        <EmojiPackFavoriteButton pack={pack} />
+      </ButtonGroup>
+
       {emojis.length > 0 && (
         <>
           {!editing && (
@@ -169,7 +191,6 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
               </ButtonGroup>
             </Flex>
           )}
-          <Divider />
           <SimpleGrid columns={{ base: 2, sm: 3, md: 2, lg: 4, xl: 6 }} gap="2">
             {(editing ? draftEmojis : emojis).map(({ name, url }) => (
               <EmojiTag
