@@ -13,14 +13,29 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { useCallback } from "react";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();
+  const muteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (e) => {
+      if (muteFilter(e)) return false;
+      return true;
+    },
+    [muteFilter],
+  );
   const readRelays = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${listId}-lists`, readRelays, {
-    "#p": filter?.authors,
-    kinds: [Kind.BadgeAward],
-  });
+  const timeline = useTimelineLoader(
+    `${listId}-lists`,
+    readRelays,
+    {
+      "#p": filter?.authors,
+      kinds: [Kind.BadgeAward],
+    },
+    { eventFilter },
+  );
 
   const awards = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
