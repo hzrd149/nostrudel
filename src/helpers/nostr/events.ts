@@ -1,12 +1,10 @@
-import dayjs from "dayjs";
-import { nip19, validateEvent } from "nostr-tools";
+import { Kind, nip19, validateEvent } from "nostr-tools";
 
 import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
-import { getContentMentions } from "./post";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -27,6 +25,7 @@ export function getEventUID(event: NostrEvent) {
 }
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
+  if (event.kind === Kind.Repost) return false;
   return !!getReferences(event).replyId;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
@@ -34,8 +33,10 @@ export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
+  if (event.kind === Kind.Repost) return true;
+
   const match = event.content.match(getMatchNostrLink());
-  return event.kind === 6 || (match && match[0].length === event.content.length);
+  return match && match[0].length === event.content.length;
 }
 
 /**
