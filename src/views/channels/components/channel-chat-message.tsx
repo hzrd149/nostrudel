@@ -3,7 +3,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { TrustProvider } from "../../../providers/trust";
 import UserAvatar from "../../../components/user-avatar";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { memo, useMemo, useRef } from "react";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import {

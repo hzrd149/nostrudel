@@ -29,7 +29,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import { CodeIcon } from "../../../components/icons";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import UserAvatar from "../../../components/user-avatar";
 import { useClientRelays } from "../../../hooks/use-client-relays";
 import clientRelaysService from "../../../services/client-relays";

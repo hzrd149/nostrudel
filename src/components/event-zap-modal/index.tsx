@@ -28,7 +28,7 @@ import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import relayHintService from "../../services/event-relay-hint";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };

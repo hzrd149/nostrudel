@@ -30,7 +30,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user-avatar";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { TrashIcon } from "../../../components/icons";
 import Upload01 from "../../../components/icons/upload-01";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";

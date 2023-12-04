@@ -20,7 +20,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "./note-menu";
 import { EventRelays } from "./note-relays";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "../../providers/expanded";

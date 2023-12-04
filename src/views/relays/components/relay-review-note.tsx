@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import StarRating from "../../../components/star-rating";
 import { safeJson } from "../../../helpers/parse";

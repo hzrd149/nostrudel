@@ -31,7 +31,7 @@ import { getEventUID } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import UserAvatarLink from "../user-avatar-link";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { useSigningContext } from "../../providers/signing-provider";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import NostrPublishAction from "../../classes/nostr-publish-action";

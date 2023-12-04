@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useAsync } from "react-use";
 
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { containerProps } from "./common";
 import { UserFollowButton } from "../../components/user-follow-button";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";

@@ -16,7 +16,7 @@ import {
 import { Kind } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import {
   getEventsFromList,
   getListDescription,

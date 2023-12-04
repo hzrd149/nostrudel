@@ -3,7 +3,7 @@ import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/trust";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import Timestamp from "../../timestamp";
 import ReactionIcon from "../../event-reactions/reaction-icon";
 import { NoteLink } from "../../note-link";

@@ -10,7 +10,7 @@ import { EmbedEvent, EmbedProps } from "../embed-event";
 import useAppSettings from "../../hooks/use-app-settings";
 import CustomZapAmountOptions from "./zap-options";
 import UserAvatar from "../user-avatar";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 
 function UserCard({ pubkey, percent }: { pubkey: string; percent?: number }) {
   const { address } = useUserLNURLMetadata(pubkey);

@@ -3,7 +3,7 @@ import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";

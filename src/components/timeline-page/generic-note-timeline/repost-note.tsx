@@ -8,7 +8,7 @@ import { Note } from "../../note";
 import NoteMenu from "../../note/note-menu";
 import UserAvatar from "../../user-avatar";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import { TrustProvider } from "../../../providers/trust";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";

@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import useSubject from "../../../hooks/use-subject";
 import appSettings from "../../../services/settings/app-settings";

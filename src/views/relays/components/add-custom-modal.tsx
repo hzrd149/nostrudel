@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import UserAvatar from "../../../components/user-avatar";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { safeRelayUrl } from "../../../helpers/url";
 import { useDebounce } from "react-use";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";

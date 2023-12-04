@@ -10,7 +10,7 @@ import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useMemo, useRef } from "react";
 import { getEventUID } from "../../helpers/nostr/events";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import UserAvatarLink from "../../components/user-avatar-link";
 
 function FollowerItem({ event }: { event: Event }) {

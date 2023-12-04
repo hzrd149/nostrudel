@@ -17,7 +17,7 @@ import {
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import { CompactNoteContent } from "../../compact-note-content";
 import { getDownloadURL, getHashtags, getStreamURL } from "../../../helpers/nostr/stemstr";
 import { DownloadIcon, ReplyIcon } from "../../icons";

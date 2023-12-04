@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";

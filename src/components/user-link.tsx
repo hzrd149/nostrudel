@@ -4,6 +4,8 @@ import { nip19 } from "nostr-tools";
 
 import { getUserDisplayName } from "../helpers/user-metadata";
 import { useUserMetadata } from "../hooks/use-user-metadata";
+import useAppSettings from "../hooks/use-app-settings";
+import useCurrentAccount from "../hooks/use-current-account";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;
@@ -11,13 +13,15 @@ export type UserLinkProps = LinkProps & {
   tab?: string;
 };
 
-export const UserLink = ({ pubkey, showAt, tab, ...props }: UserLinkProps) => {
+export default function UserLink({ pubkey, showAt, tab, ...props }: UserLinkProps) {
   const metadata = useUserMetadata(pubkey);
+  const account = useCurrentAccount();
+  const { hideUsernames } = useAppSettings();
 
   return (
     <Link as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}` + (tab ? "/" + tab : "")} whiteSpace="nowrap" {...props}>
       {showAt && "@"}
-      {getUserDisplayName(metadata, pubkey)}
+      {hideUsernames && pubkey !== account?.pubkey ? "Anon" : getUserDisplayName(metadata, pubkey)}
     </Link>
   );
-};
+}

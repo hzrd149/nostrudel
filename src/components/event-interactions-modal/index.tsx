@@ -16,7 +16,7 @@ import {
 
 import { NostrEvent } from "../../types/nostr-event";
 import UserAvatarLink from "../user-avatar-link";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { LightningIcon } from "../icons";
 import { ParsedZap } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";

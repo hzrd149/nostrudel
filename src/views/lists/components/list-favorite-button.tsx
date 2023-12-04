@@ -10,7 +10,12 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
-import { NOTE_LIST_KIND, isSpecialListKind, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
+import {
+  NOTE_LIST_KIND,
+  isSpecialListKind,
+  listAddCoordinate,
+  listRemoveCoordinate,
+} from "../../../helpers/nostr/lists";
 
 export default function ListFavoriteButton({
   list,

@@ -19,7 +19,7 @@ import { TrustProvider } from "../../../providers/trust";
 import ReplyForm from "./reply-form";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import Expand01 from "../../../components/icons/expand-01";

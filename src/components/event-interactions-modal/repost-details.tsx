@@ -3,7 +3,7 @@ import { Kind } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
 import UserAvatarLink from "../user-avatar-link";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";

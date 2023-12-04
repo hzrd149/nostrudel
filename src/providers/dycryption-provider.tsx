@@ -37,8 +37,8 @@ const DecryptionContext = createContext<DecryptionContextType>({
   getQueue: () => [],
 });
 
-export function useDecryptionContext(){
-	return useContext(DecryptionContext)
+export function useDecryptionContext() {
+  return useContext(DecryptionContext);
 }
 export function useDecryptionContainer(pubkey: string, data: string) {
   const { getOrCreateContainer, addToQueue, startQueue } = useContext(DecryptionContext);

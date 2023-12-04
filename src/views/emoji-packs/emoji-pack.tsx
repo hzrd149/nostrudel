@@ -21,7 +21,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";

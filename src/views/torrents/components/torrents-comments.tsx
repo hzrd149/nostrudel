@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";

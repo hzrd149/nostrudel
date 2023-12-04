@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { UseControllerProps, useController, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   FormControl,
@@ -21,6 +22,7 @@ import {
   useDisclosure,
   IconButton,
   Button,
+  Link,
 } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 
@@ -171,6 +173,26 @@ export default function DisplaySettings() {
             </Flex>
             <FormHelperText>
               <span>Enabled: blur media from people you aren't following</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="hideUsernames" mb="0">
+                Hide Usernames (anon mode)
+              </FormLabel>
+              <Switch id="hideUsernames" {...register("hideUsernames")} />
+            </Flex>
+            <FormHelperText>
+              <span>
+                Enabled: hides usernames and pictures.{" "}
+                <Link
+                  as={RouterLink}
+                  color="blue.500"
+                  to="/n/nevent1qqsxvkjgpc6zhydj4rxjpl0frev7hmgynruq027mujdgy2hwjypaqfspzpmhxue69uhkummnw3ezuamfdejszythwden5te0dehhxarjw4jjucm0d5sfntd0"
+                >
+                  Details
+                </Link>
+              </span>
             </FormHelperText>
           </FormControl>
           <FormControl>

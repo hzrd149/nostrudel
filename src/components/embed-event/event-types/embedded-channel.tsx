@@ -3,7 +3,7 @@ import { Box, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Heading, 
 import { nip19 } from "nostr-tools";
 
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import HoverLinkOverlay from "../../hover-link-overlay";

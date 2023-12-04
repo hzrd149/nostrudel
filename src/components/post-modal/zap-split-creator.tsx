@@ -17,7 +17,7 @@ import { EventSplit } from "../../helpers/nostr/zaps";
 import { AddIcon } from "../icons";
 import { normalizeToHex } from "../../helpers/nip19";
 import UserAvatar from "../user-avatar";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import NpubAutocomplete from "../npub-autocomplete";
 
 function getRemainingPercent(split: EventSplit) {

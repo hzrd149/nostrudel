@@ -21,7 +21,7 @@ import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import UserAvatar from "../../user-avatar";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { EventRelays } from "../../note/note-relays";
 import { useAsync } from "react-use";

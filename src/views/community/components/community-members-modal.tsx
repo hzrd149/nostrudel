@@ -22,7 +22,7 @@ import IntersectionObserverProvider from "../../../providers/intersection-observ
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import UserAvatarLink from "../../../components/user-avatar-link";
 

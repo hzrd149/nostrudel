@@ -8,7 +8,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user-avatar-link";
 

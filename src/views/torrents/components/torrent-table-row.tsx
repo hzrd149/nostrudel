@@ -5,7 +5,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../../components/timestamp";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import Magnet from "../../../components/icons/magnet";
 import { getNeventForEventId } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";

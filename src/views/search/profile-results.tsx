@@ -9,7 +9,7 @@ import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import UserAvatar from "../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

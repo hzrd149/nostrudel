@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { ChevronLeftIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import { useSigningContext } from "../../providers/signing-provider";

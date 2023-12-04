@@ -24,7 +24,7 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { CompactNoteContent } from "../../../components/compact-note-content";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";

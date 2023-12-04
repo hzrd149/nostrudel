@@ -3,7 +3,7 @@ import { Alert, Box, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosur
 
 import { PayRequest } from ".";
 import UserAvatar from "../user-avatar";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { ChevronDownIcon, ChevronUpIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import { PropsWithChildren, useEffect, useState } from "react";

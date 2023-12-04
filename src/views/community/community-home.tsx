@@ -14,7 +14,7 @@ import {
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
 
 import TrendUp01 from "../../components/icons/trend-up-01";

@@ -22,7 +22,7 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/intersection-observer";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user-avatar";
 import { useRelaySelectionContext } from "../../../providers/relay-selection-provider";

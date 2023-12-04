@@ -21,7 +21,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import singleEventService from "../../../services/single-event";

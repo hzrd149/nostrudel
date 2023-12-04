@@ -27,7 +27,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import {
   TORRENT_COMMENT_KIND,
   getTorrentFiles,
