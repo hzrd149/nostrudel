@@ -233,8 +233,11 @@ const router = createHashRouter([
       { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
-      { path: "dm", element: <DirectMessagesView /> },
-      { path: "dm/:key", element: <DirectMessageChatView /> },
+      {
+        path: "dm",
+        element: <DirectMessagesView />,
+        children: [{ path: ":pubkey", element: <DirectMessageChatView /> }],
+      },
       { path: "profile", element: <ProfileView /> },
       {
         path: "tools",

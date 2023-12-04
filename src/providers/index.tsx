@@ -12,6 +12,7 @@ import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import MuteModalProvider from "./mute-modal-provider";
 import BreakpointProvider from "./breakpoint-provider";
+import DecryptionProvider from "./dycryption-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -33,21 +34,23 @@ export function PageProviders({ children }: { children: React.ReactNode }) {
   return (
     <BreakpointProvider>
       <SigningProvider>
-        <DeleteEventProvider>
-          <MuteModalProvider>
-            <InvoiceModalProvider>
-              <NotificationTimelineProvider>
-                <DefaultEmojiProvider>
-                  <UserEmojiProvider>
-                    <AllUserSearchDirectoryProvider>
-                      <PostModalProvider>{children}</PostModalProvider>
-                    </AllUserSearchDirectoryProvider>
-                  </UserEmojiProvider>
-                </DefaultEmojiProvider>
-              </NotificationTimelineProvider>
-            </InvoiceModalProvider>
-          </MuteModalProvider>
-        </DeleteEventProvider>
+        <DecryptionProvider>
+          <DeleteEventProvider>
+            <MuteModalProvider>
+              <InvoiceModalProvider>
+                <NotificationTimelineProvider>
+                  <DefaultEmojiProvider>
+                    <UserEmojiProvider>
+                      <AllUserSearchDirectoryProvider>
+                        <PostModalProvider>{children}</PostModalProvider>
+                      </AllUserSearchDirectoryProvider>
+                    </UserEmojiProvider>
+                  </DefaultEmojiProvider>
+                </NotificationTimelineProvider>
+              </InvoiceModalProvider>
+            </MuteModalProvider>
+          </DeleteEventProvider>
+        </DecryptionProvider>
       </SigningProvider>
     </BreakpointProvider>
   );
