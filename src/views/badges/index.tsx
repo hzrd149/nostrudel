@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { Kind } from "nostr-tools";
@@ -14,13 +15,13 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { useCallback } from "react";
+import { NostrEvent } from "../../types/nostr-event";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();
   const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
-    (e) => {
+    (e: NostrEvent) => {
       if (muteFilter(e)) return false;
       return true;
     },
