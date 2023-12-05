@@ -8,6 +8,8 @@ import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
 
+const WRITE_USER_SEARCH_BATCH_TIME = 500;
+
 class UserMetadataService {
   private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
     const sub = new Subject<Kind0ParsedContent>();
@@ -34,7 +36,7 @@ class UserMetadataService {
   }
 
   private writeSearchQueue = new Set<string>();
-  private writeSearchDataThrottle = _throttle(this.writeSearchData.bind(this));
+  private writeSearchDataThrottle = _throttle(this.writeSearchData.bind(this), WRITE_USER_SEARCH_BATCH_TIME);
   private async writeSearchData() {
     if (this.writeSearchQueue.size === 0) return;
 

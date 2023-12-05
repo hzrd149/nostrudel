@@ -2,10 +2,17 @@ import { Badge, BadgeProps } from "@chakra-ui/react";
 import { Account } from "../services/account";
 
 export default function AccountInfoBadge({ account, ...props }: BadgeProps & { account: Account }) {
-  if (account.useExtension) {
+  if (account.connectionType === "extension") {
     return (
       <Badge {...props} variant="solid" colorScheme="green">
         extension
+      </Badge>
+    );
+  }
+  if (account.connectionType === "serial") {
+    return (
+      <Badge {...props} variant="solid" colorScheme="teal">
+        serial
       </Badge>
     );
   }

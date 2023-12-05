@@ -6,7 +6,7 @@ import { NostrRequestFilter } from "../types/nostr-query";
 import NostrRequest from "../classes/nostr-request";
 import relayPoolService from "./relay-pool";
 
-// TODO: move this to settings
+/** @deprecated */
 const COUNT_RELAY = "wss://relay.nostr.band";
 
 const RATE_LIMIT = 1000;
@@ -59,6 +59,7 @@ class EventCountService {
   }
 }
 
+/** @deprecated */
 const eventCountService = new EventCountService();
 
 if (import.meta.env.DEV) {

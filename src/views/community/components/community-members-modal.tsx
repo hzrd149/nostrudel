@@ -11,17 +11,18 @@ import {
   ModalProps,
   SimpleGrid,
 } from "@chakra-ui/react";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
-import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER, getCommunityRelays } from "../../../helpers/nostr/communities";
+import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { COMMUNITIES_LIST_KIND, NOTE_LIST_KIND } from "../../../helpers/nostr/lists";
+import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../../providers/intersection-observer";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import UserAvatarLink from "../../../components/user-avatar-link";
 
@@ -37,23 +38,20 @@ function UserCard({ pubkey }: { pubkey: string }) {
   );
 }
 
-export default function ({ community, onClose, ...props }: Omit<ModalProps, "children"> & { community: NostrEvent }) {
+export default function CommunityMembersModal({
+  community,
+  onClose,
+  ...props
+}: Omit<ModalProps, "children"> & { community: NostrEvent }) {
   const communityCoordinate = getEventCoordinate(community);
   const readRelays = useReadRelayUrls(getCommunityRelays(community));
   const timeline = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
-    {
-      "#a": [communityCoordinate],
-      "#d": [SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER],
-      kinds: [NOTE_LIST_KIND],
-    },
     { "#a": [communityCoordinate], kinds: [COMMUNITIES_LIST_KIND] },
   ]);
 
   const lists = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  // TODO: remove at some future date when apps have transitioned to using k:10004 for communities
-  // https://github.com/nostr-protocol/nips/pull/880
   const listsByPubkey: Record<string, NostrEvent> = {};
   for (const list of lists) {
     if (!listsByPubkey[list.pubkey] || listsByPubkey[list.pubkey].created_at < list.created_at) {

@@ -1,11 +1,11 @@
 import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag } from "../regexp";
 import { getReferences } from "./events";
-import { getEventRelays } from "../../services/event-relays";
-import relayScoreboardService from "../../services/relay-scoreboard";
-import { getPubkey, safeDecode } from "../nip19";
+import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/emoji-provider";
 import { EventSplit } from "./zaps";
+import { unique } from "../array";
+import relayHintService from "../../services/event-relay-hint";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -20,10 +20,9 @@ function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   return [...tags, tag];
 }
 function AddEtag(tags: Tag[], eventId: string, type?: string, overwrite = false) {
-  const relays = getEventRelays(eventId).value ?? [];
-  const top = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
+  const hint = relayHintService.getEventPointerRelayHint(eventId) ?? "";
 
-  const tag = type ? ["e", eventId, top, type] : ["e", eventId, top];
+  const tag = type ? ["e", eventId, hint, type] : ["e", eventId, hint];
 
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1] && t[3] === tag[3])) {
     if (overwrite) {
@@ -68,12 +67,14 @@ export function correctContentMentions(content: string) {
 
 export function getContentMentions(content: string) {
   const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
-  return Array.from(matched)
-    .map((m) => {
-      const parsed = safeDecode(m[1]);
-      return parsed && getPubkey(parsed);
-    })
-    .filter(Boolean) as string[];
+  return unique(
+    Array.from(matched)
+      .map((m) => {
+        const parsed = safeDecode(m[1]);
+        return parsed && getPubkeyFromDecodeResult(parsed);
+      })
+      .filter(Boolean) as string[],
+  );
 }
 
 export function ensureNotifyContentMentions(draft: DraftNostrEvent) {

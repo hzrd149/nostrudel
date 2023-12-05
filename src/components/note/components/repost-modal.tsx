@@ -13,28 +13,25 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Kind } from "nostr-tools";
+import dayjs from "dayjs";
+import type { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { EmbedEvent } from "../../embed-event";
-import { getEventRelays } from "../../../services/event-relays";
-import relayScoreboardService from "../../../services/relay-scoreboard";
-import { Kind } from "nostr-tools";
-import dayjs from "dayjs";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import { useSigningContext } from "../../../providers/signing-provider";
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../icons";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
+import relayHintService from "../../../services/event-relay-hint";
 
 function buildRepost(event: NostrEvent): DraftNostrEvent {
-  const relays = getEventRelays(event.id).value;
-  const topRelay = relayScoreboardService.getRankedRelays(relays)[0] ?? "";
-
+  const hint = relayHintService.getEventRelayHint(event);
   const tags: NostrEvent["tags"] = [];
-  tags.push(["e", event.id, topRelay]);
+  tags.push(["e", event.id, hint ?? ""]);
 
   return {
     kind: Kind.Repost,
@@ -65,6 +62,7 @@ export default function RepostModal({
         draftRepost.tags.push([
           "a",
           createCoordinate(communityPointer.kind, communityPointer.pubkey, communityPointer.identifier),
+          relayHintService.getAddressPointerRelayHint(communityPointer) ?? "",
         ]);
       }
       const signed = await requestSignature(draftRepost);

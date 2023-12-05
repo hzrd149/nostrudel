@@ -20,7 +20,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "./note-menu";
 import { EventRelays } from "./note-relays";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import NoteZapButton from "./note-zap-button";
 import { ExpandProvider } from "../../providers/expanded";
@@ -43,11 +43,13 @@ import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import HoverLinkOverlay from "../hover-link-overlay";
-import { nip19 } from "nostr-tools";
 import NoteCommunityMetadata from "./note-community-metadata";
 import useSingleEvent from "../../hooks/use-single-event";
-import { InlineNoteContent } from "./inline-note-content";
+import { CompactNoteContent } from "../compact-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
+import { NoteDetailsButton } from "./components/note-details-button";
+import EventInteractionDetailsModal from "../event-interactions-modal";
+import singleEventService from "../../services/single-event";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -72,6 +74,7 @@ export const Note = React.memo(
     const account = useCurrentAccount();
     const { showReactions, showSignatureVerification } = useSubject(appSettings);
     const replyForm = useDisclosure();
+    const detailsModal = useDisclosure();
 
     // if there is a parent intersection observer, register this card
     const ref = useRef<HTMLDivElement | null>(null);
@@ -80,9 +83,9 @@ export const Note = React.memo(
     const refs = getReferences(event);
     const repliedTo = useSingleEvent(refs.replyId);
 
-    const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+    const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
 
-    const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="xs" />;
+    const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />;
 
     return (
       <TrustProvider event={event}>
@@ -94,7 +97,13 @@ export const Note = React.memo(
             data-event-id={event.id}
             {...props}
           >
-            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${nip19.noteEncode(event.id)}`} />}
+            {clickable && (
+              <HoverLinkOverlay
+                as={RouterLink}
+                to={`/n/${getSharableEventAddress(event)}`}
+                onClick={() => singleEventService.handleEvent(event)}
+              />
+            )}
             <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
@@ -103,9 +112,14 @@ export const Note = React.memo(
                 <Flex grow={1} />
                 {showSignatureVerification && <EventVerificationIcon event={event} />}
                 {!hideDrawerButton && (
-                  <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
+                  <OpenInDrawerButton
+                    to={`/n/${getSharableEventAddress(event)}`}
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => singleEventService.handleEvent(event)}
+                  />
                 )}
-                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(event.id)}`}>
+                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
                   <Timestamp timestamp={event.created_at} />
                 </Link>
               </Flex>
@@ -116,7 +130,7 @@ export const Note = React.memo(
                   <Text>
                     Replying to <UserLink pubkey={repliedTo.pubkey} fontWeight="bold" />
                   </Text>
-                  <InlineNoteContent event={repliedTo} maxLength={96} isTruncated />
+                  <CompactNoteContent event={repliedTo} maxLength={96} isTruncated textOnly />
                 </Flex>
               )}
             </CardHeader>
@@ -126,7 +140,7 @@ export const Note = React.memo(
             <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
               {showReactionsOnNewLine && reactionButtons}
               <Flex gap="2" w="full" alignItems="center">
-                <ButtonGroup size="xs" variant="ghost" isDisabled={account?.readonly ?? true}>
+                <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>
                   {showReplyButton && (
                     <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                   )}
@@ -136,10 +150,12 @@ export const Note = React.memo(
                 </ButtonGroup>
                 {!showReactionsOnNewLine && reactionButtons}
                 <Box flexGrow={1} />
-                <NoteProxyLink event={event} size="xs" variant="ghost" />
-                <EventRelays event={event} />
-                <BookmarkButton event={event} aria-label="Bookmark note" size="xs" variant="ghost" />
-                <NoteMenu event={event} size="xs" variant="ghost" aria-label="More Options" />
+                <ButtonGroup size="sm" variant="ghost">
+                  <NoteProxyLink event={event} />
+                  <NoteDetailsButton event={event} onClick={detailsModal.onOpen} />
+                  <BookmarkButton event={event} aria-label="Bookmark note" />
+                  <NoteMenu event={event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+                </ButtonGroup>
               </Flex>
             </CardFooter>
           </Card>
@@ -147,6 +163,7 @@ export const Note = React.memo(
         {replyForm.isOpen && (
           <ReplyForm item={{ event, replies: [], refs }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
         )}
+        {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={event} />}
       </TrustProvider>
     );
   },

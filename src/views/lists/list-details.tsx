@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -45,8 +45,8 @@ function useListCoordinate() {
   return parsed.data;
 }
 
-function BookmarkedEvent({ id, relay }: { id: string; relay?: string }) {
-  const event = useSingleEvent(id, relay ? [relay] : undefined);
+function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
+  const event = useSingleEvent(id, relays);
 
   return event ? <EmbedEvent event={event} /> : <>Loading {id}</>;
 }
@@ -121,8 +121,8 @@ export default function ListDetailsView() {
           <>
             <Heading size="lg">Notes</Heading>
             <Flex gap="2" direction="column">
-              {notes.map(({ id, relay }) => (
-                <BookmarkedEvent id={id} relay={relay} />
+              {notes.map(({ id, relays }) => (
+                <BookmarkedEvent id={id} relays={relays} />
               ))}
             </Flex>
           </>

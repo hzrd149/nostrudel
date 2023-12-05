@@ -6,7 +6,7 @@ import { getListDescription, getListName, isSpecialListKind } from "../../../hel
 import { createCoordinate } from "../../../services/replaceable-event-requester";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
 

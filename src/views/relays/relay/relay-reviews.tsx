@@ -16,13 +16,14 @@ export default function RelayReviews({ relay }: { relay: string }) {
   const timeline = useTimelineLoader(
     `${relay}-reviews`,
     readRelays,
-    {
-      ...filter,
-      kinds: [1985],
-      "#r": [relay],
-      "#l": [RELAY_REVIEW_LABEL],
-    },
-    { enabled: !!filter },
+    filter
+      ? {
+          ...filter,
+          kinds: [1985],
+          "#r": [relay],
+          "#l": [RELAY_REVIEW_LABEL],
+        }
+      : undefined,
   );
 
   const events = useSubject(timeline.timeline);

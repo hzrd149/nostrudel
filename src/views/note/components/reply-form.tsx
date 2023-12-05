@@ -28,11 +28,12 @@ import { UploadImageIcon } from "../../../components/icons";
 
 export type ReplyFormProps = {
   item: ThreadItem;
+  replyKind?: number;
   onCancel: () => void;
   onSubmitted?: (event: NostrEvent) => void;
 };
 
-export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProps) {
+export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kind.Text }: ReplyFormProps) {
   const toast = useToast();
   const account = useCurrentAccount();
   const emojis = useContextEmojis();
@@ -76,7 +77,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted }: ReplyFormProp
   );
 
   const draft = useMemo(() => {
-    let updated = finalizeNote({ kind: Kind.Text, content: getValues().content, created_at: dayjs().unix(), tags: [] });
+    let updated = finalizeNote({ kind: replyKind, content: getValues().content, created_at: dayjs().unix(), tags: [] });
     updated = createEmojiTags(updated, emojis);
     updated = addReplyTags(updated, item.event);
     updated = ensureNotifyPubkeys(updated, notifyPubkeys);

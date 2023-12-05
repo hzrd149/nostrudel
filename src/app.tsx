@@ -14,7 +14,7 @@ import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
-import NoteView from "./views/note";
+import ThreadView from "./views/note";
 import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/messages";
 import DirectMessageChatView from "./views/messages/chat";
@@ -39,6 +39,7 @@ import UserListsTab from "./views/user/lists";
 import UserGoalsTab from "./views/user/goals";
 import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
+const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
 import ListsView from "./views/lists";
 import ListDetailsView from "./views/lists/list-details";
@@ -87,6 +88,14 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
+
+const ChannelsHomeView = lazy(() => import("./views/channels"));
+const ChannelView = lazy(() => import("./views/channels/channel"));
+
+const TorrentsView = lazy(() => import("./views/torrents"));
+const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
+const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
+const NewTorrentView = lazy(() => import("./views/torrents/new"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -205,11 +214,12 @@ const router = createHashRouter([
           { path: "reports", element: <UserReportsTab /> },
           { path: "muted-by", element: <MutedByView /> },
           { path: "dms", element: <UserDMsTab /> },
+          { path: "torrents", element: <UserTorrentsTab /> },
         ],
       },
       {
         path: "/n/:id",
-        element: <NoteView />,
+        element: <ThreadView />,
       },
       { path: "settings", element: <SettingsView /> },
       {
@@ -223,8 +233,11 @@ const router = createHashRouter([
       { path: "r/:relay", element: <RelayView /> },
       { path: "notifications", element: <NotificationsView /> },
       { path: "search", element: <SearchView /> },
-      { path: "dm", element: <DirectMessagesView /> },
-      { path: "dm/:key", element: <DirectMessageChatView /> },
+      {
+        path: "dm",
+        element: <DirectMessagesView />,
+        children: [{ path: ":pubkey", element: <DirectMessageChatView /> }],
+      },
       { path: "profile", element: <ProfileView /> },
       {
         path: "tools",
@@ -272,6 +285,25 @@ const router = createHashRouter([
               { path: "pending", element: <CommunityPendingView /> },
             ],
           },
+        ],
+      },
+      {
+        path: "torrents/:id/preview",
+        element: <TorrentPreviewView />,
+      },
+      {
+        path: "torrents",
+        children: [
+          { path: "", element: <TorrentsView /> },
+          { path: "new", element: <NewTorrentView /> },
+          { path: ":id", element: <TorrentDetailsView /> },
+        ],
+      },
+      {
+        path: "channels",
+        children: [
+          { path: "", element: <ChannelsHomeView /> },
+          { path: ":id", element: <ChannelView /> },
         ],
       },
       {

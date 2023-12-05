@@ -61,6 +61,8 @@ import Download01 from "./icons/download-01";
 import Repeat01 from "./icons/repeat-01";
 import ReverseLeft from "./icons/reverse-left";
 import Pin01 from "./icons/pin-01";
+import Translate01 from "./icons/translate-01";
+import MessageChatSquare from "./icons/message-chat-square";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -90,6 +92,7 @@ export const ChevronRightIcon = ChevronRight;
 export const LightningIcon = Zap;
 export const RelayIcon = Server04;
 export const BroadcastEventIcon = Share07;
+export const ShareIcon = Share07;
 export const PinIcon = Pin01;
 
 export const ExternalLinkIcon = Share04;
@@ -192,7 +195,6 @@ export const BookmarkedIcon = createIcon({
 export const V4VStreamIcon = PlayCircle;
 export const V4VStopIcon = StopCircle;
 
-/** @deprecated */
 export const AddReactionIcon = createIcon({
   displayName: "AddReactionIcon",
   d: "M19.0001 13.9999V16.9999H22.0001V18.9999H18.9991L19.0001 21.9999H17.0001L16.9991 18.9999H14.0001V16.9999H17.0001V13.9999H19.0001ZM20.2426 4.75736C22.505 7.0244 22.5829 10.636 20.4795 12.992L19.06 11.574C20.3901 10.0499 20.3201 7.65987 18.827 6.1701C17.3244 4.67092 14.9076 4.60701 13.337 6.01688L12.0019 7.21524L10.6661 6.01781C9.09098 4.60597 6.67506 4.66808 5.17157 6.17157C3.68183 7.66131 3.60704 10.0473 4.97993 11.6232L13.412 20.069L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736Z",
@@ -212,7 +214,6 @@ export const AppearanceIcon = Colors;
 export const DatabaseIcon = Database01;
 export const PerformanceIcon = Speedometer03;
 
-/** @deprecated */
 export const CommunityIcon = createIcon({
   displayName: "CommunityIcon",
   d: "M9.55 11.5C8.30736 11.5 7.3 10.4926 7.3 9.25C7.3 8.00736 8.30736 7 9.55 7C10.7926 7 11.8 8.00736 11.8 9.25C11.8 10.4926 10.7926 11.5 9.55 11.5ZM10 19.748V16.4C10 15.9116 10.1442 15.4627 10.4041 15.0624C10.1087 15.0213 9.80681 15 9.5 15C7.93201 15 6.49369 15.5552 5.37091 16.4797C6.44909 18.0721 8.08593 19.2553 10 19.748ZM4.45286 14.66C5.86432 13.6168 7.61013 13 9.5 13C10.5435 13 11.5431 13.188 12.4667 13.5321C13.3447 13.1888 14.3924 13 15.5 13C17.1597 13 18.6849 13.4239 19.706 14.1563C19.8976 13.4703 20 12.7471 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 12.9325 4.15956 13.8278 4.45286 14.66ZM18.8794 16.0859C18.4862 15.5526 17.1708 15 15.5 15C13.4939 15 12 15.7967 12 16.4V20C14.9255 20 17.4843 18.4296 18.8794 16.0859ZM12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM15.5 12.5C14.3954 12.5 13.5 11.6046 13.5 10.5C13.5 9.39543 14.3954 8.5 15.5 8.5C16.6046 8.5 17.5 9.39543 17.5 10.5C17.5 11.6046 16.6046 12.5 15.5 12.5Z",
@@ -229,3 +230,7 @@ export const GhostIcon = createIcon({
 export const ECashIcon = BankNote01;
 export const WalletIcon = Wallet02;
 export const DownloadIcon = Download01;
+
+export const TranslateIcon = Translate01;
+
+export const ChannelsIcon = MessageChatSquare;

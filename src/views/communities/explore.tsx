@@ -5,12 +5,12 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/people
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { PointerCommunityCard } from "./components/community-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { COMMUNITY_DEFINITION_KIND, SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../../helpers/nostr/communities";
+import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubjects from "../../hooks/use-subjects";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
-import { COMMUNITIES_LIST_KIND, NOTE_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
+import { COMMUNITIES_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 import { parseCoordinate } from "../../helpers/nostr/events";

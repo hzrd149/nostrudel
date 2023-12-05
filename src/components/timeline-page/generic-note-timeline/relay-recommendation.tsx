@@ -3,7 +3,7 @@ import { Flex, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../user-avatar";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { safeRelayUrl } from "../../../helpers/url";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";

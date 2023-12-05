@@ -28,8 +28,7 @@ export default function CommunitySearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-community-search`,
     searchRelays,
-    { search: search || "", kinds: [COMMUNITY_DEFINITION_KIND], ...filter },
-    { enabled: !!search },
+    search ? { search: search, kinds: [COMMUNITY_DEFINITION_KIND], ...filter } : undefined,
   );
 
   const communities = useSubject(timeline.timeline);

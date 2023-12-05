@@ -1,12 +1,65 @@
-import { Button, Spinner } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { Button, Heading, Spinner } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useParams, Link as RouterLink } from "react-router-dom";
 
 import Note from "../../components/note";
-import { isHexKey } from "../../helpers/nip19";
-import { useThreadLoader } from "../../hooks/use-thread-loader";
+import { getSharableEventAddress, isHexKey } from "../../helpers/nip19";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { ThreadItem, buildThread } from "../../helpers/thread";
+import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
+import useSingleEvent from "../../hooks/use-single-event";
+
+function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadItem>; rootId: string; focusId: string }) {
+  const isRoot = rootId === focusId;
+
+  const focusedPost = thread.get(focusId);
+  const rootPost = thread.get(rootId);
+  if (isRoot && rootPost) {
+    return <ThreadPost post={rootPost} initShowReplies focusId={focusId} />;
+  }
+
+  if (!focusedPost) return null;
+
+  const parentPosts = [];
+  if (focusedPost.reply) {
+    let p = focusedPost;
+    while (p.reply) {
+      parentPosts.unshift(p.reply);
+      p = p.reply;
+    }
+  }
+
+  return (
+    <>
+      {parentPosts.length > 1 && (
+        <Button
+          variant="outline"
+          size="lg"
+          h="4rem"
+          w="full"
+          as={RouterLink}
+          to={`/n/${getSharableEventAddress(parentPosts[0].event)}`}
+        >
+          View full thread ({parentPosts.length - 1})
+        </Button>
+      )}
+      {focusedPost.reply && (
+        <Note
+          key={focusedPost.reply.event.id + "-rely"}
+          event={focusedPost.reply.event}
+          hideDrawerButton
+          showReplyLine={false}
+        />
+      )}
+      <ThreadPost key={focusedPost.event.id} post={focusedPost} initShowReplies focusId={focusId} />
+    </>
+  );
+}
 
 function useNotePointer() {
   const { id } = useParams() as { id: string };
@@ -23,56 +76,33 @@ function useNotePointer() {
   }
 }
 
-export default function NoteView() {
+export default function ThreadView() {
   const pointer = useNotePointer();
+  const readRelays = useReadRelayUrls(pointer.relays);
 
-  const { thread, events, rootId, focusId, loading } = useThreadLoader(pointer.id, pointer.relays, {
-    enabled: !!pointer.id,
-  });
-  if (loading) return <Spinner />;
+  const focusedEvent = useSingleEvent(pointer.id, pointer.relays);
+  const { rootId, events, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
+  const thread = useMemo(() => buildThread(events), [events]);
 
-  let pageContent = <span>Missing Event</span>;
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  const isRoot = rootId === focusId;
-  const rootPost = thread.get(rootId);
-  if (isRoot && rootPost) {
-    pageContent = <ThreadPost post={rootPost} initShowReplies focusId={focusId} />;
-  }
-
-  const post = thread.get(focusId);
-  if (post) {
-    const parentPosts = [];
-    if (post.reply) {
-      let p = post;
-      while (p.reply) {
-        parentPosts.unshift(p.reply);
-        p = p.reply;
-      }
-    }
-
-    pageContent = (
-      <>
-        {parentPosts.length > 1 && (
-          <Button
-            variant="outline"
-            size="lg"
-            h="4rem"
-            w="full"
-            as={RouterLink}
-            to={`/n/${nip19.noteEncode(parentPosts[0].event.id)}`}
-          >
-            View full thread ({parentPosts.length - 1})
-          </Button>
+  return (
+    <VerticalPageLayout px={{ base: 0, md: "2" }}>
+      {!focusedEvent && (
+        <Heading mx="auto" my="4">
+          <Spinner /> Loading note
+        </Heading>
+      )}
+      {/* <Code as="pre">
+        {JSON.stringify({ pointer, rootId, focused: focusedEvent?.id, refs, timelineId, events: events.length }, null, 2)}
+      </Code> */}
+      <IntersectionObserverProvider callback={callback}>
+        {focusedEvent && rootId ? (
+          <ThreadPage thread={thread} rootId={rootId} focusId={focusedEvent.id} />
+        ) : (
+          <Spinner />
         )}
-        {post.reply && (
-          <Note key={post.reply.event.id + "-rely"} event={post.reply.event} hideDrawerButton showReplyLine={false} />
-        )}
-        <ThreadPost key={post.event.id} post={post} initShowReplies focusId={focusId} />
-      </>
-    );
-  } else if (events[focusId]) {
-    pageContent = <Note event={events[focusId]} variant="filled" hideDrawerButton />;
-  }
-
-  return <VerticalPageLayout px={{ base: 0, md: "2" }}>{pageContent}</VerticalPageLayout>;
+      </IntersectionObserverProvider>
+    </VerticalPageLayout>
+  );
 }

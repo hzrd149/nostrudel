@@ -44,6 +44,8 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import useEventExists from "../../hooks/use-event-exists";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
+import { TORRENT_KIND } from "../../helpers/nostr/torrents";
+import { GOAL_KIND } from "../../helpers/nostr/goal";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -57,7 +59,8 @@ const tabs = [
   { label: "Relays", path: "relays" },
   { label: "Goals", path: "goals" },
   { label: "Tracks", path: "tracks" },
-  { label: "Emoji Packs", path: "emojis" },
+  { label: "Emojis", path: "emojis" },
+  { label: "Torrents", path: "torrents" },
   { label: "Reports", path: "reports" },
   { label: "Followers", path: "followers" },
   { label: "Muted by", path: "muted-by" },
@@ -103,6 +106,8 @@ const UserView = () => {
   const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
   useAppTitle(getUserDisplayName(metadata, pubkey));
 
+  const hasTorrents = useEventExists({ kinds: [TORRENT_KIND], authors: [pubkey] }, readRelays);
+  const hasGoals = useEventExists({ kinds: [GOAL_KIND], authors: [pubkey] }, readRelays);
   const hasTracks = useEventExists({ kinds: [STEMSTR_TRACK_KIND], authors: [pubkey] }, [
     "wss://relay.stemstr.app",
     ...readRelays,
@@ -122,9 +127,11 @@ const UserView = () => {
         if (tab.path === "tracks" && hasTracks === false) return false;
         if (tab.path === "articles" && hasArticles === false) return false;
         if (tab.path === "streams" && hasStreams === false) return false;
+        if (tab.path === "torrents" && hasTorrents === false) return false;
+        if (tab.path === "goals" && hasGoals === false) return false;
         return true;
       }),
-    [hasTracks, hasArticles, hasStreams, tabs],
+    [hasTracks, hasArticles, hasStreams, hasTorrents, hasGoals, tabs],
   );
 
   const matches = useMatches();

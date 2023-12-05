@@ -1,8 +1,8 @@
-import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
 import { useState } from "react";
+import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
 
 import { UnlockIcon } from "../../components/icons";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useDecryptionContainer } from "../../providers/dycryption-provider";
 
 export default function DecryptPlaceholder({
   children,
@@ -13,30 +13,28 @@ export default function DecryptPlaceholder({
   data: string;
   pubkey: string;
 }): JSX.Element {
-  const { requestDecrypt } = useSigningContext();
   const [loading, setLoading] = useState(false);
-  const [decrypted, setDecrypted] = useState<string>();
-  const [error, setError] = useState<Error>();
+  const { requestDecrypt, plaintext, error } = useDecryptionContainer(pubkey, data);
 
   const decrypt = async () => {
     setLoading(true);
     try {
-      const decrypted = await requestDecrypt(data, pubkey);
-      if (decrypted) setDecrypted(decrypted);
-    } catch (e) {
-      if (e instanceof Error) setError(e);
-    }
+      await requestDecrypt();
+    } catch (e) {}
     setLoading(false);
   };
 
-  if (decrypted) {
-    return children(decrypted);
+  if (plaintext) {
+    return children(plaintext);
   }
   if (error) {
     return (
       <Alert status="error">
         <AlertIcon />
         <AlertDescription>{error.message}</AlertDescription>
+        <Button isLoading={loading} leftIcon={<UnlockIcon />} onClick={decrypt} size="sm" ml="auto">
+          Try again
+        </Button>
       </Alert>
     );
   }

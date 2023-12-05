@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Button, Card, CardBody, Flex, IconButton, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Card, Flex, IconButton, Textarea, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Kind, nip19 } from "nostr-tools";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { ChevronLeftIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
-import { UserLink } from "../../components/user-link";
-import { normalizeToHex } from "../../helpers/nip19";
+import UserLink from "../../components/user-link";
+import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import { useSigningContext } from "../../providers/signing-provider";
 import clientRelaysService from "../../services/client-relays";
@@ -22,17 +22,26 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { LightboxProvider } from "../../components/lightbox-provider";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import { useDecryptionContext } from "../../providers/dycryption-provider";
+import { useUserRelays } from "../../hooks/use-user-relays";
+import { RelayMode } from "../../classes/relay";
+import { unique } from "../../helpers/array";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const toast = useToast();
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
+  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
   const { requestEncrypt, requestSignature } = useSigningContext();
   const [content, setContent] = useState<string>("");
 
-  const readRelays = useReadRelayUrls();
+  const myInbox = useReadRelayUrls();
+  const usersInbox = useUserRelays(pubkey)
+    .filter((r) => r.mode & RelayMode.READ)
+    .map((r) => r.url);
 
-  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, readRelays, [
+  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
     {
       kinds: [Kind.EncryptedDirectMessage],
       "#p": [account.pubkey],
@@ -59,11 +68,27 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       };
       const signed = await requestSignature(event);
       const writeRelays = clientRelaysService.getWriteUrls();
-      const pub = new NostrPublishAction("Send DM", writeRelays, signed);
+      const relays = unique([...writeRelays, ...usersInbox]);
+      new NostrPublishAction("Send DM", relays, signed);
       setContent("");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }
+  };
+
+  const [loading, setLoading] = useState(false);
+  const decryptAll = async () => {
+    const promises = messages
+      .map((message) => {
+        const container = getOrCreateContainer(pubkey, message.content);
+        if (container.plaintext.value === undefined) return addToQueue(container);
+      })
+      .filter(Boolean);
+
+    startQueue();
+
+    setLoading(true);
+    Promise.all(promises).finally(() => setLoading(false));
   };
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -71,36 +96,60 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   return (
     <LightboxProvider>
       <IntersectionObserverProvider callback={callback}>
-        <Flex maxH={{ base: "calc(100vh - 3.5rem)", md: "100vh" }} overflow="hidden" direction="column">
-          <Card size="sm" flexShrink={0}>
-            <CardBody display="flex" gap="2" alignItems="center">
-              <IconButton variant="ghost" icon={<ChevronLeftIcon />} aria-label="Back" onClick={() => navigate(-1)} />
-              <UserAvatar pubkey={pubkey} size="sm" />
-              <UserLink pubkey={pubkey} />
-            </CardBody>
-          </Card>
-          <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-            {[...messages].map((event) => (
-              <Message key={event.id} event={event} />
-            ))}
-            <TimelineActionAndStatus timeline={timeline} />
+        <Card size="sm" flexShrink={0} p="2" flexDirection="row">
+          <Flex gap="2" alignItems="center">
+            <IconButton
+              variant="ghost"
+              icon={<ChevronLeftIcon />}
+              aria-label="Back"
+              onClick={() => navigate(-1)}
+              hideFrom="xl"
+            />
+            <UserAvatar pubkey={pubkey} size="sm" />
+            <UserLink pubkey={pubkey} fontWeight="bold" />
+            <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
           </Flex>
-          <Flex shrink={0}>
-            <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
-            <Button isDisabled={!content} onClick={sendMessage}>
-              Send
-            </Button>
-          </Flex>
+          <Button onClick={decryptAll} isLoading={loading} ml="auto">
+            Decrypt All
+          </Button>
+        </Card>
+        <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
+          {[...messages].map((event) => (
+            <Message key={event.id} event={event} />
+          ))}
+          <TimelineActionAndStatus timeline={timeline} />
+        </Flex>
+        <Flex shrink={0}>
+          <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
+          <Button isDisabled={!content} onClick={sendMessage}>
+            Send
+          </Button>
         </Flex>
       </IntersectionObserverProvider>
     </LightboxProvider>
   );
 }
+
+function useUserPointer() {
+  const { pubkey } = useParams() as { pubkey: string };
+
+  if (isHexKey(pubkey)) return { pubkey, relays: [] };
+  const pointer = nip19.decode(pubkey);
+
+  switch (pointer.type) {
+    case "npub":
+      return { pubkey: pointer.data as string, relays: [] };
+    case "nprofile":
+      const d = pointer.data as nip19.ProfilePointer;
+      return { pubkey: d.pubkey, relays: d.relays ?? [] };
+    default:
+      throw new Error(`Unknown type ${pointer.type}`);
+  }
+}
+
 export default function DirectMessageChatView() {
-  const { key } = useParams();
-  if (!key) return <Navigate to="/" />;
-  const pubkey = normalizeToHex(key);
-  if (!pubkey) throw new Error("invalid pubkey");
+  const { pubkey } = useUserPointer();
+
   return (
     <RequireCurrentAccount>
       <DirectMessageChatPage pubkey={pubkey} />

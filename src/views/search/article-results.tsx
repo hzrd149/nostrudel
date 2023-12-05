@@ -14,8 +14,7 @@ export default function ArticleSearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-article-search`,
     searchRelays,
-    { search: search || "", kinds: [Kind.Article], ...filter },
-    { enabled: !!search },
+    search ? { search: search, kinds: [Kind.Article], ...filter } : undefined,
   );
 
   const callback = useTimelineCurserIntersectionCallback(timeline);

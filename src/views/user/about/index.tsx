@@ -31,6 +31,7 @@ import UserProfileBadges from "./user-profile-badges";
 import UserJoinedCommunities from "./user-joined-communities";
 import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
+import UserJoinedChanneled from "./user-joined-channels";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -192,6 +193,7 @@ export default function UserAboutTab() {
 
       <UserPinnedEvents pubkey={pubkey} />
       <UserJoinedCommunities pubkey={pubkey} />
+      <UserJoinedChanneled pubkey={pubkey} />
     </Flex>
   );
 }

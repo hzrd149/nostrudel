@@ -45,8 +45,8 @@ function BrowseListPage() {
   const timeline = useTimelineLoader(
     `${listId}-lists`,
     readRelays,
-    { ...filter, kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND] },
-    { enabled: !!filter, eventFilter },
+    filter ? { ...filter, kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND] } : undefined,
+    { eventFilter },
   );
 
   const lists = useSubject(timeline.timeline);

@@ -5,9 +5,9 @@ import { useAsync } from "react-use";
 
 import { getIdenticon } from "../helpers/identicon";
 import { safeUrl } from "../helpers/parse";
-import appSettings from "../services/settings/app-settings";
-import useSubject from "../hooks/use-subject";
 import { getUserDisplayName } from "../helpers/user-metadata";
+import useAppSettings from "../hooks/use-app-settings";
+import useCurrentAccount from "../hooks/use-current-account";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -21,9 +21,11 @@ export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   noProxy?: boolean;
 };
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(({ pubkey, noProxy, relay, ...props }, ref) => {
-  const { imageProxy, proxyUserMedia } = useSubject(appSettings);
+  const { imageProxy, proxyUserMedia, hideUsernames } = useAppSettings();
+  const account = useCurrentAccount();
   const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
   const picture = useMemo(() => {
+    if (hideUsernames && pubkey !== account?.pubkey) return undefined;
     if (metadata?.picture) {
       const src = safeUrl(metadata?.picture);
       if (!noProxy) {
@@ -36,7 +38,7 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(({ pubkey,
       }
       return src;
     }
-  }, [metadata?.picture, imageProxy]);
+  }, [metadata?.picture, imageProxy, hideUsernames, account]);
 
   return (
     <Avatar

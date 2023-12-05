@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useRef, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -11,7 +11,6 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { ReplyIcon } from "../../../components/icons";
@@ -20,7 +19,7 @@ import { TrustProvider } from "../../../providers/trust";
 import ReplyForm from "./reply-form";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import Expand01 from "../../../components/icons/expand-01";
@@ -29,16 +28,18 @@ import NoteZapButton from "../../../components/note/note-zap-button";
 import { QuoteRepostButton } from "../../../components/note/components/quote-repost-button";
 import { RepostButton } from "../../../components/note/components/repost-button";
 import NoteMenu from "../../../components/note/note-menu";
-import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import BookmarkButton from "../../../components/note/components/bookmark-button";
 import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import NoteProxyLink from "../../../components/note/components/note-proxy-link";
-
-const LEVEL_COLORS = ["green", "blue", "red", "purple", "yellow", "cyan", "pink"];
+import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
+import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
+import { getSharableEventAddress } from "../../../helpers/nip19";
+import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import useAppSettings from "../../../hooks/use-app-settings";
+import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -47,11 +48,11 @@ export type ThreadItemProps = {
   level?: number;
 };
 
-export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) => {
-  const { showReactions } = useSubject(appSettings);
-  const [expanded, setExpanded] = useState(initShowReplies ?? (level < 2 || post.replies.length <= 1));
-  const toggle = () => setExpanded((v) => !v);
-  const showReplyForm = useDisclosure();
+export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) => {
+  const { showReactions } = useAppSettings();
+  const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.length <= 1) });
+  const replyForm = useDisclosure();
+  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -72,30 +73,27 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
 
   if (isMuted && replies.length === 0) return null;
 
-  const colorMode = useColorMode().colorMode;
-  const color = LEVEL_COLORS[level % LEVEL_COLORS.length];
-  const colorValue = colorMode === "light" ? 200 : 800;
-  const focusColor = colorMode === "light" ? "blue.300" : "blue.700";
+  const colorProps = useThreadColorLevelProps(level, focusId === post.event.id);
 
   const header = (
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
-      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${nip19.noteEncode(post.event.id)}`}>
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       {replies.length > 0 ? (
-        <Button variant="ghost" onClick={toggle} rightIcon={expanded ? <Minus /> : <Expand01 />}>
+        <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
           ({numberOfReplies})
         </Button>
       ) : (
         <IconButton
           variant="ghost"
-          onClick={toggle}
-          icon={expanded ? <Minus /> : <Expand01 />}
-          aria-label={expanded ? "Collapse" : "Expand"}
-          title={expanded ? "Collapse" : "Expand"}
+          onClick={expanded.onToggle}
+          icon={expanded.isOpen ? <Minus /> : <Expand01 />}
+          aria-label={expanded.isOpen ? "Collapse" : "Expand"}
+          title={expanded.isOpen ? "Collapse" : "Expand"}
         />
       )}
     </Flex>
@@ -114,14 +112,14 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
     );
   };
 
-  const showReactionsOnNewLine = useBreakpointValue({ base: true, md: false });
+  const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
   const reactionButtons = showReactions && (
     <NoteReactions event={post.event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">
-        <IconButton aria-label="Reply" title="Reply" onClick={showReplyForm.onToggle} icon={<ReplyIcon />} />
+        <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
 
         <RepostButton event={post.event} />
         <QuoteRepostButton event={post.event} />
@@ -129,11 +127,17 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
-      <NoteProxyLink event={post.event} variant="ghost" size="sm" />
-      <BookmarkButton event={post.event} variant="ghost" aria-label="Bookmark" size="sm" />
-      <NoteMenu event={post.event} variant="ghost" size="sm" aria-label="More Options" />
+      <ButtonGroup size="sm" variant="ghost">
+        <NoteProxyLink event={post.event} />
+        <NoteDetailsButton event={post.event} onClick={detailsModal.onOpen} />
+        <BookmarkButton event={post.event} aria-label="Bookmark" />
+        <NoteMenu event={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+      </ButtonGroup>
     </Flex>
   );
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, post.event.id);
 
   return (
     <>
@@ -143,24 +147,23 @@ export const ThreadPost = ({ post, initShowReplies, focusId, level = -1 }: Threa
         p="2"
         borderRadius="md"
         borderWidth=".1rem .1rem .1rem .35rem"
-        borderColor={focusId === post.event.id ? focusColor : undefined}
-        borderLeftColor={color + "." + colorValue}
+        {...colorProps}
+        ref={ref}
       >
         {header}
-        {expanded && renderContent()}
-        {expanded && showReactionsOnNewLine && reactionButtons}
-        {expanded && footer}
+        {expanded.isOpen && renderContent()}
+        {expanded.isOpen && showReactionsOnNewLine && reactionButtons}
+        {expanded.isOpen && footer}
       </Flex>
-      {showReplyForm.isOpen && (
-        <ReplyForm item={post} onCancel={showReplyForm.onClose} onSubmitted={showReplyForm.onClose} />
-      )}
-      {post.replies.length > 0 && expanded && (
+      {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
+      {post.replies.length > 0 && expanded.isOpen && (
         <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
           {post.replies.map((child) => (
             <ThreadPost key={child.event.id} post={child} focusId={focusId} level={level + 1} />
           ))}
         </Flex>
       )}
+      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
-};
+});

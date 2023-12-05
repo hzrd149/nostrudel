@@ -5,7 +5,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import { useNetworkConnectionCount } from "../../hooks/use-user-network";
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useNavigate } from "react-router-dom";
 import VerticalPageLayout from "../../components/vertical-page-layout";

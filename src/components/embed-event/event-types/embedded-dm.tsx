@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardProps, LinkBox, Spacer, Text } from "@c
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/trust";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import Timestamp from "../../timestamp";
 import DecryptPlaceholder from "../../../views/messages/decrypt-placeholder";
 import { MessageContent } from "../../../views/messages/message";

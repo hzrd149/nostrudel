@@ -3,7 +3,7 @@ import { Box, Button, Card, CardBody, CardHeader, CardProps, Flex, Link, Text, u
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user-avatar-link";
-import { UserLink } from "../../user-link";
+import UserLink from "../../user-link";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";

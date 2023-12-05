@@ -5,7 +5,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { SEARCH_RELAYS } from "../../const";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
-import { searchParamsToJson } from "../../helpers/url";
 import { CommunityIcon, CopyToClipboardIcon, NotesIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
@@ -26,7 +25,14 @@ export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const mergeSearchParams = useCallback(
     (params: Record<string, any>) => {
-      setSearchParams((p) => ({ ...searchParamsToJson(p), ...params }), { replace: true });
+      setSearchParams(
+        (p) => {
+          const newParams = new URLSearchParams(p);
+          for (const [key, value] of Object.entries(params)) newParams.set(key, value);
+          return newParams;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );

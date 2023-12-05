@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, Flex, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Kind } from "nostr-tools";
@@ -28,10 +28,13 @@ import RelaySelectionProvider, { useRelaySelectionContext } from "../../provider
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { useDebounce } from "react-use";
 import useSubject from "../../hooks/use-subject";
+import { ChevronLeftIcon } from "../../components/icons";
+import { useNavigate } from "react-router-dom";
 
 type NodeType = { id: string; image?: string; name?: string };
 
 function NetworkDMGraphPage() {
+  const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const { relays } = useRelaySelectionContext();
 
@@ -110,6 +113,9 @@ function NetworkDMGraphPage() {
   return (
     <Flex direction="column" gap="2" h="full" pt="2">
       <Flex gap="2" alignItems="center">
+        <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
+          Back
+        </Button>
         <Input
           type="datetime-local"
           maxW="sm"

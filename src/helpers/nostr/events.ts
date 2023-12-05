@@ -1,5 +1,4 @@
-import dayjs from "dayjs";
-import { nip19, validateEvent } from "nostr-tools";
+import { Kind, nip19, validateEvent } from "nostr-tools";
 
 import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
@@ -14,7 +13,7 @@ export function truncatedId(str: string, keep = 6) {
 
 // based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
 export function isReplaceable(kind: number) {
-  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || (kind >= 10000 && kind < 20000);
+  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || kind === 41 || (kind >= 10000 && kind < 20000);
 }
 
 // used to get a unique Id for each event, should take into account replaceable events
@@ -26,12 +25,18 @@ export function getEventUID(event: NostrEvent) {
 }
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  return event.kind === 1 && !!getReferences(event).replyId;
+  if (event.kind === Kind.Repost) return false;
+  return !!getReferences(event).replyId;
+}
+export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+  return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
+  if (event.kind === Kind.Repost) return true;
+
   const match = event.content.match(getMatchNostrLink());
-  return event.kind === 6 || (match && match[0].length === event.content.length);
+  return match && match[0].length === event.content.length;
 }
 
 /**
@@ -99,8 +104,13 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const events = eTags.map((t) => t[1]);
   const contentTagRefs = getContentTagRefs(event.content, event.tags);
 
-  let replyId = eTags.find((t) => t[3] === "reply")?.[1];
-  let rootId = eTags.find((t) => t[3] === "root")?.[1];
+  const replyTag = eTags.find((t) => t[3] === "reply");
+  const rootTag = eTags.find((t) => t[3] === "root");
+
+  let replyId = replyTag?.[1];
+  let replyRelay = replyTag?.[2];
+  let rootId = rootTag?.[1];
+  let rootRelay = rootTag?.[2];
 
   if (!rootId || !replyId) {
     // a direct reply dose not need a "reply" reference
@@ -132,7 +142,9 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   return {
     events,
     rootId,
+    rootRelay,
     replyId,
+    replyRelay,
     contentTagRefs,
   };
 }
@@ -180,30 +192,6 @@ export function parseCoordinate(a: string, requireD = false): CustomEventPointer
     pubkey,
     identifier: d,
   };
-}
-
-export function draftAddCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string, relay?: string) {
-  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("event already in list");
-
-  const draft: DraftNostrEvent = {
-    created_at: dayjs().unix(),
-    kind: list.kind,
-    content: list.content,
-    tags: [...list.tags, relay ? ["a", coordinate, relay] : ["a", coordinate]],
-  };
-
-  return draft;
-}
-
-export function draftRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string) {
-  const draft: DraftNostrEvent = {
-    created_at: dayjs().unix(),
-    kind: list.kind,
-    content: list.content,
-    tags: list.tags.filter((t) => !(t[0] === "a" && t[1] === coordinate)),
-  };
-
-  return draft;
 }
 
 export function parseHardcodedNoteContent(event: NostrEvent) {

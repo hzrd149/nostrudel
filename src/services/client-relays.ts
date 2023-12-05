@@ -17,7 +17,6 @@ const DEFAULT_RELAYS = [
   { url: "wss://relay.damus.io", mode: RelayMode.READ },
   { url: "wss://nostr.wine", mode: RelayMode.READ },
   { url: "wss://relay.snort.social", mode: RelayMode.READ },
-  { url: "wss://eden.nostr.land", mode: RelayMode.READ },
   { url: "wss://nos.lol", mode: RelayMode.READ },
   { url: "wss://purplerelay.com", mode: RelayMode.READ },
 ];
@@ -93,6 +92,7 @@ class ClientRelayService {
     }, 5000);
   }
 
+  /** @deprecated */
   async addRelay(url: string, mode: RelayMode) {
     this.log(`Adding ${url} relay`);
     if (!this.relays.value.some((r) => r.url === url)) {
@@ -100,6 +100,7 @@ class ClientRelayService {
       await this.postUpdatedRelays(newRelays);
     }
   }
+  /** @deprecated */
   async updateRelay(url: string, mode: RelayMode) {
     this.log(`Updating ${url} relay`);
     if (this.relays.value.some((r) => r.url === url)) {
@@ -107,6 +108,7 @@ class ClientRelayService {
       await this.postUpdatedRelays(newRelays);
     }
   }
+  /** @deprecated */
   async removeRelay(url: string) {
     this.log(`Removing ${url} relay`);
     if (this.relays.value.some((r) => r.url === url)) {
@@ -115,6 +117,7 @@ class ClientRelayService {
     }
   }
 
+  /** @deprecated */
   async postUpdatedRelays(newRelays: RelayConfig[]) {
     const rTags: RTag[] = newRelays.map((r) => {
       switch (r.mode) {

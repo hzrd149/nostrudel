@@ -20,7 +20,7 @@ import { useRegisterIntersectionEntity } from "../../../providers/intersection-o
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
 import { readablizeSats } from "../../../helpers/bolt11";
 import User01 from "../../../components/icons/user-01";

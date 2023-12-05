@@ -39,7 +39,7 @@ import replaceableEventLoaderService from "../services/replaceable-event-request
 import useUserMuteList from "../hooks/use-user-mute-list";
 import { DraftNostrEvent } from "../types/nostr-event";
 import UserAvatar from "../components/user-avatar";
-import { UserLink } from "../components/user-link";
+import UserLink from "../components/user-link";
 import { ChevronDownIcon } from "../components/icons";
 
 type MuteModalContextType = {

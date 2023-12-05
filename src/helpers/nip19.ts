@@ -1,10 +1,9 @@
 import { bech32 } from "bech32";
 import { getPublicKey, nip19 } from "nostr-tools";
-import { getEventRelays } from "../services/event-relays";
-import relayScoreboardService from "../services/relay-scoreboard";
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
-import { getEventUID, isReplaceable } from "./nostr/events";
+import { isReplaceable } from "./nostr/events";
 import { DecodeResult } from "nostr-tools/lib/types/nip19";
+import relayHintService from "../services/event-relay-hint";
 
 export function isHexKey(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
@@ -47,7 +46,7 @@ export function safeDecode(str: string) {
   } catch (e) {}
 }
 
-export function getPubkey(result?: nip19.DecodeResult) {
+export function getPubkeyFromDecodeResult(result?: nip19.DecodeResult) {
   if (!result) return;
   switch (result.type) {
     case "naddr":
@@ -68,19 +67,21 @@ export function normalizeToHex(hex: string) {
 }
 
 export function getSharableEventAddress(event: NostrEvent) {
-  const relays = getEventRelays(getEventUID(event)).value;
-  const ranked = relayScoreboardService.getRankedRelays(relays);
-  const maxTwo = ranked.slice(0, 2);
+  const relays = relayHintService.getEventRelayHints(event, 2);
 
   if (isReplaceable(event.kind)) {
     const d = event.tags.find(isDTag)?.[1];
     if (!d) return null;
-    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays: maxTwo });
+    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays });
   } else {
-    if (maxTwo.length == 2) {
-      return nip19.neventEncode({ id: event.id, relays: maxTwo });
-    } else return nip19.neventEncode({ id: event.id, relays: maxTwo, author: event.pubkey });
+    return nip19.neventEncode({ id: event.id, kind: event.kind, relays, author: event.pubkey });
   }
+}
+
+/** @deprecated use getSharableEventAddress unless required */
+export function getNeventForEventId(eventId: string, maxRelays = 2) {
+  const relays = relayHintService.getEventPointerRelayHints(eventId).slice(0, maxRelays);
+  return nip19.neventEncode({ id: eventId, relays });
 }
 
 export function encodePointer(pointer: DecodeResult) {

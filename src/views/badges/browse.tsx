@@ -19,8 +19,7 @@ function BadgesBrowsePage() {
   const timeline = useTimelineLoader(
     `${listId}-badges`,
     readRelays,
-    { ...filter, kinds: [Kind.BadgeDefinition] },
-    { enabled: !!filter },
+    filter ? { ...filter, kinds: [Kind.BadgeDefinition] } : undefined,
   );
 
   const lists = useSubject(timeline.timeline);

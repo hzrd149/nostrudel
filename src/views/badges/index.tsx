@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { Kind } from "nostr-tools";
@@ -13,14 +14,29 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { NostrEvent } from "../../types/nostr-event";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();
+  const muteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (e: NostrEvent) => {
+      if (muteFilter(e)) return false;
+      return true;
+    },
+    [muteFilter],
+  );
   const readRelays = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${listId}-lists`, readRelays, {
-    "#p": filter?.authors,
-    kinds: [Kind.BadgeAward],
-  });
+  const timeline = useTimelineLoader(
+    `${listId}-lists`,
+    readRelays,
+    {
+      "#p": filter?.authors,
+      kinds: [Kind.BadgeAward],
+    },
+    { eventFilter },
+  );
 
   const awards = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -61,7 +77,7 @@ export default function BadgesView() {
   // const account = useCurrentAccount();
   // return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
   return (
-    <PeopleListProvider initList="global">
+    <PeopleListProvider>
       <BadgesPage />
     </PeopleListProvider>
   );

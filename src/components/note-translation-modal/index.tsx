@@ -5,13 +5,10 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Box,
   Button,
   Card,
-  CardBody,
   CardHeader,
   Flex,
-  Heading,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -28,13 +25,13 @@ import {
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
 
-import { DraftNostrEvent, NostrEvent, isETag, isPTag } from "../../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventUID } from "../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import UserAvatarLink from "../user-avatar-link";
-import { UserLink } from "../user-link";
+import UserLink from "../user-link";
 import { useSigningContext } from "../../providers/signing-provider";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import NostrPublishAction from "../../classes/nostr-publish-action";
@@ -137,6 +134,7 @@ function TranslationOffer({ offer }: { offer: NostrEvent }) {
             <Button
               colorScheme="yellow"
               size="sm"
+              variant="solid"
               leftIcon={<LightningIcon />}
               onClick={payInvoice}
               isLoading={paying || paid}
@@ -229,7 +227,7 @@ export default function NoteTranslationModal({
                 </option>
               ))}
             </Select>
-            <Button colorScheme="primary" onClick={requestTranslation} flexShrink={0}>
+            <Button size="md" variant="solid" colorScheme="primary" onClick={requestTranslation} flexShrink={0}>
               Request new translation
             </Button>
           </Flex>

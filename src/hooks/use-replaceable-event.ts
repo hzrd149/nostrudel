@@ -1,5 +1,6 @@
-import { useReadRelayUrls } from "./use-client-relays";
 import { useMemo } from "react";
+
+import { useReadRelayUrls } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
 import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
 import useSubject from "./use-subject";

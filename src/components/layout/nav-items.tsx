@@ -1,7 +1,6 @@
-import { Box, Button, ButtonProps, Text } from "@chakra-ui/react";
-import { useLocation } from "react-router-dom";
+import { Box, Button, ButtonProps, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
 
 import {
   BadgeIcon,
@@ -20,13 +19,20 @@ import {
   LogoutIcon,
   NotesIcon,
   LightningIcon,
+  ChannelsIcon,
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
+import { useLocalStorage } from "react-use";
+import ZapModal from "../event-zap-modal";
+import dayjs from "dayjs";
 
 export default function NavItems() {
   const location = useLocation();
   const account = useCurrentAccount();
+
+  const donateModal = useDisclosure();
+  const [lastDonate, setLastDonate] = useLocalStorage<number>("last-donate");
 
   const buttonProps: ButtonProps = {
     py: "2",
@@ -41,6 +47,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/relays")) active = "relays";
   else if (location.pathname.startsWith("/lists")) active = "lists";
   else if (location.pathname.startsWith("/communities")) active = "communities";
+  else if (location.pathname.startsWith("/channels")) active = "channels";
   else if (location.pathname.startsWith("/c/")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
@@ -49,6 +56,8 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";
   else if (location.pathname.startsWith("/t/")) active = "search";
+  else if (location.pathname.startsWith("/torrents")) active = "tools";
+  else if (location.pathname.startsWith("/map")) active = "tools";
   else if (location.pathname.startsWith("/profile")) active = "profile";
   else if (
     account &&
@@ -143,6 +152,15 @@ export default function NavItems() {
       </Button>
       <Button
         as={RouterLink}
+        to="/channels"
+        leftIcon={<ChannelsIcon boxSize={6} />}
+        colorScheme={active === "channels" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Channels
+      </Button>
+      <Button
+        as={RouterLink}
         to="/lists"
         leftIcon={<ListsIcon boxSize={6} />}
         colorScheme={active === "lists" ? "primary" : undefined}
@@ -196,9 +214,29 @@ export default function NavItems() {
       >
         Settings
       </Button>
-      {/* <Button leftIcon={<LightningIcon boxSize={6} color="yellow.400" />} {...buttonProps}>
-        Donate
-      </Button> */}
+      {(lastDonate === undefined || dayjs.unix(lastDonate).isBefore(dayjs().subtract(1, "week"))) && (
+        <Button
+          as={Link}
+          leftIcon={<LightningIcon boxSize={6} color="yellow.400" />}
+          href="https://geyser.fund/project/nostrudel"
+          isExternal
+          onClick={(e) => {
+            e.preventDefault();
+            donateModal.onOpen();
+          }}
+          {...buttonProps}
+        >
+          Donate
+        </Button>
+      )}
+      {donateModal.isOpen && (
+        <ZapModal
+          isOpen
+          pubkey="713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8"
+          onClose={donateModal.onClose}
+          onZapped={() => setLastDonate(dayjs().unix())}
+        />
+      )}
       {account && (
         <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout

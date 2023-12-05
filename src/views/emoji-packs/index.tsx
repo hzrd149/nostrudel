@@ -22,11 +22,12 @@ function UserEmojiPackMangerPage() {
   const timeline = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
     readRelays,
-    {
-      authors: [account.pubkey],
-      kinds: [EMOJI_PACK_KIND],
-    },
-    { enabled: !!account.pubkey },
+    account.pubkey
+      ? {
+          authors: [account.pubkey],
+          kinds: [EMOJI_PACK_KIND],
+        }
+      : undefined,
   );
 
   const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
@@ -39,10 +40,9 @@ function UserEmojiPackMangerPage() {
     <>
       {favorites.length > 0 && (
         <>
-          <Heading size="md" mt="2">
+          <Heading size="lg" mt="2">
             Favorite packs
           </Heading>
-          <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
             {favorites.map((event) => (
               <EmojiPackCard key={getEventUID(event)} pack={event} />
@@ -52,10 +52,9 @@ function UserEmojiPackMangerPage() {
       )}
       {packs.length > 0 && (
         <>
-          <Heading size="md" mt="2">
+          <Heading size="lg" mt="2">
             Emoji packs
           </Heading>
-          <Divider />
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
             {packs.map((event) => (
               <EmojiPackCard key={getEventUID(event)} pack={event} />

@@ -28,7 +28,7 @@ function EmojiPack({ cord, onSelect }: { cord: string; onSelect: ReactionPickerP
             icon={<Image src={emoji.url} height="1.2rem" />}
             aria-label={emoji.name}
             title={emoji.name}
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => onSelect(emoji.name, emoji.url)}
           />
@@ -46,11 +46,11 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
   return (
     <Flex direction="column" gap="2">
       <Flex wrap="wrap" gap="2">
-        <IconButton icon={<LikeIcon />} aria-label="Like" variant="outline" size="sm" onClick={() => onSelect("+")} />
+        <IconButton icon={<LikeIcon />} aria-label="Like" variant="ghost" size="sm" onClick={() => onSelect("+")} />
         <IconButton
           icon={<DislikeIcon />}
           aria-label="Dislike"
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => onSelect("-")}
         />
@@ -58,7 +58,7 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
           <IconButton
             icon={<span>{emoji}</span>}
             aria-label="Shaka"
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => onSelect(emoji)}
           />

@@ -1,8 +1,8 @@
 import { RouteObject } from "react-router-dom";
 
-import NoteView from "./views/note";
+import ThreadView from "./views/note";
 
 export const threadRoute: RouteObject = {
   path: "/n/:id",
-  element: <NoteView />,
+  element: <ThreadView />,
 };

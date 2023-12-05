@@ -4,13 +4,18 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
-import { draftAddCoordinate, draftRemoveCoordinate, getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/events";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
-import { NOTE_LIST_KIND, isSpecialListKind } from "../../../helpers/nostr/lists";
+import {
+  NOTE_LIST_KIND,
+  isSpecialListKind,
+  listAddCoordinate,
+  listRemoveCoordinate,
+} from "../../../helpers/nostr/lists";
 
 export default function ListFavoriteButton({
   list,
@@ -38,7 +43,7 @@ export default function ListFavoriteButton({
 
     try {
       setLoading(true);
-      const draft = isFavorite ? draftRemoveCoordinate(prev, coordinate) : draftAddCoordinate(prev, coordinate);
+      const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
       const signed = await requestSignature(draft);
       const pub = new NostrPublishAction("Favorite list", clientRelaysService.getWriteUrls(), signed);
       replaceableEventLoaderService.handleEvent(signed);

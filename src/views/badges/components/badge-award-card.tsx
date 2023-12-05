@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Card, Flex, Image, Link, LinkBox, Text } from "@chakra-ui/react";
+import { memo, useRef } from "react";
+import { Button, Card, Flex, Image, Link, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { getBadgeAwardBadge, getBadgeAwardPubkeys, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
@@ -8,18 +8,29 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user-avatar-link";
 
+const UserCard = memo(({ pubkey }: { pubkey: string }) => (
+  <Flex gap="2" alignItems="center">
+    <UserAvatarLink pubkey={pubkey} size="sm" />
+    <UserLink pubkey={pubkey} fontWeight="bold" isTruncated />
+  </Flex>
+));
+
 export default function BadgeAwardCard({ award, showImage = true }: { award: NostrEvent; showImage?: boolean }) {
   const badge = useReplaceableEvent(getBadgeAwardBadge(award));
+  const showAll = useDisclosure();
 
   // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, badge && getEventUID(badge));
+  useRegisterIntersectionEntity(ref, getEventUID(award));
 
   if (!badge) return null;
+
+  const awards = getBadgeAwardPubkeys(award);
+  const collapsed = !showAll.isOpen && awards.length > 10;
 
   const naddr = getSharableEventAddress(badge);
   return (
@@ -41,12 +52,14 @@ export default function BadgeAwardCard({ award, showImage = true }: { award: Nos
           <Timestamp timestamp={award.created_at} ml="auto" />
         </Flex>
         <Flex gap="4" wrap="wrap">
-          {getBadgeAwardPubkeys(award).map(({ pubkey }) => (
-            <Flex key={pubkey} gap="2" alignItems="center">
-              <UserAvatarLink pubkey={pubkey} size="sm" />
-              <UserLink pubkey={pubkey} fontWeight="bold" isTruncated />
-            </Flex>
+          {(collapsed ? awards.slice(0, 10) : awards).map(({ pubkey }) => (
+            <UserCard key={pubkey} pubkey={pubkey} />
           ))}
+          {collapsed && (
+            <Button variant="ghost" onClick={showAll.onOpen}>
+              Show {awards.length - 10} more
+            </Button>
+          )}
         </Flex>
       </Flex>
     </Card>

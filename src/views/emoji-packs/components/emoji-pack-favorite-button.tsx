@@ -4,13 +4,14 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
-import { draftAddCoordinate, draftRemoveCoordinate, getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/events";
 import { useSigningContext } from "../../../providers/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import { USER_EMOJI_LIST_KIND } from "../../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
+import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 
 export default function EmojiPackFavoriteButton({
   pack,
@@ -33,7 +34,7 @@ export default function EmojiPackFavoriteButton({
 
     try {
       setLoading(true);
-      const draft = isFavorite ? draftRemoveCoordinate(prev, coordinate) : draftAddCoordinate(prev, coordinate);
+      const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
       const signed = await requestSignature(draft);
       const pub = new NostrPublishAction(
         isFavorite ? "Unfavorite Emoji pack" : "Favorite emoji pack",

@@ -36,7 +36,8 @@ class UserRelaysService {
     // also fetch the relays from the users contacts
     const contactsSub = userContactsService.requestContacts(pubkey, relays, opts);
     sub.connectWithHandler(contactsSub, (contacts, next, value) => {
-      if (contacts.relays.length > 0 && (!value || contacts.created_at > value.created_at)) {
+      // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
+      if (contacts.relays.length > 0 && !value) {
         next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });
       }
     });

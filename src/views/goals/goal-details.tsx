@@ -10,7 +10,7 @@ import useSingleEvent from "../../hooks/use-single-event";
 import { isHexKey } from "../../helpers/nip19";
 import { EventPointer } from "nostr-tools/lib/types/nip19";
 import UserAvatar from "../../components/user-avatar";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import GoalContents from "./components/goal-contents";
 import GoalZapList from "./components/goal-zap-list";
 import { readablizeSats } from "../../helpers/bolt11";

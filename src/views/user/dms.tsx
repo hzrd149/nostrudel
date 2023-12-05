@@ -12,7 +12,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { NostrEvent, isPTag } from "../../types/nostr-event";
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import ArrowRight from "../../components/icons/arrow-right";
 import { AtIcon } from "../../components/icons";
 import Timestamp from "../../components/timestamp";

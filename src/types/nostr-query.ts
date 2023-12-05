@@ -28,3 +28,5 @@ export type NostrQuery = {
 };
 
 export type NostrRequestFilter = NostrQuery | NostrQuery[];
+
+export type RelayQueryMap = Record<string, NostrRequestFilter>;

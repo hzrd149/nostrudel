@@ -31,7 +31,7 @@ export default function ContactsWindow({
   const [expanded, setExpanded] = useState(true);
 
   // TODO: find a better way to load recent contacts
-  const [from, setFrom] = useState(() => dayjs().subtract(2, "days"));
+  const [from, setFrom] = useState(() => dayjs().subtract(2, "days").unix());
   const conversations = useSubject(directMessagesService.conversations);
   useEffect(() => directMessagesService.loadDateRange(from), [from]);
   const sortedConversations = useMemo(() => {

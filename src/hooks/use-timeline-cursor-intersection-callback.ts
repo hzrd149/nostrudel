@@ -7,7 +7,7 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
   // if the cursor is set too far ahead and the last block did not overlap with the cursor
   // we need to keep loading blocks until the timeline is complete or the blocks pass the cursor
   useInterval(() => {
-    timeline.loadNextBlocks();
+    timeline.triggerBlockLoads();
   }, 1000);
 
   return useIntersectionMapCallback(
@@ -25,7 +25,7 @@ export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) 
 
       if (oldestEvent) {
         timeline.setCursor(oldestEvent.created_at);
-        timeline.loadNextBlocks();
+        timeline.triggerBlockLoads();
       }
     },
     [timeline],

@@ -7,7 +7,7 @@ import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
 import { NoteLink } from "../../components/note-link";
 import UserAvatarLink from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
 import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/nostr/zaps";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

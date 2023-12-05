@@ -4,7 +4,6 @@ import { ButtonGroup, ButtonGroupProps, IconButton } from "@chakra-ui/react";
 
 import { ImageGridTimelineIcon, NoteFeedIcon, TimelineHealthIcon } from "../icons";
 import { TimelineViewType } from "./index";
-import { searchParamsToJson } from "../../helpers/url";
 
 export default function TimelineViewTypeButtons(props: ButtonGroupProps) {
   const [params, setParams] = useSearchParams();
@@ -12,7 +11,14 @@ export default function TimelineViewTypeButtons(props: ButtonGroupProps) {
 
   const onChange = useCallback(
     (type: TimelineViewType) => {
-      setParams((p) => ({ ...searchParamsToJson(p), view: type }), { replace: true });
+      setParams(
+        (p) => {
+          const newParams = new URLSearchParams(p);
+          newParams.set("view", type);
+          return newParams;
+        },
+        { replace: true },
+      );
     },
     [setParams],
   );

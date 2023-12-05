@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { Kind, nip19 } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
@@ -9,7 +9,7 @@ export const MUTE_LIST_KIND = 10000;
 export const PIN_LIST_KIND = 10001;
 export const BOOKMARK_LIST_KIND = 10003;
 export const COMMUNITIES_LIST_KIND = 10004;
-export const CHATS_LIST_KIND = 10005;
+export const CHANNELS_LIST_KIND = 10005;
 
 export const PEOPLE_LIST_KIND = 30000;
 export const NOTE_LIST_KIND = 30001;
@@ -44,7 +44,7 @@ export function isSpecialListKind(kind: number) {
     kind === PIN_LIST_KIND ||
     kind === BOOKMARK_LIST_KIND ||
     kind === COMMUNITIES_LIST_KIND ||
-    kind === CHATS_LIST_KIND
+    kind === CHANNELS_LIST_KIND
   );
 }
 
@@ -60,8 +60,8 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEv
 export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
-export function getEventsFromList(event: NostrEvent | DraftNostrEvent) {
-  return event.tags.filter(isETag).map((t) => ({ id: t[1], relay: t[2] }));
+export function getEventsFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
+  return event.tags.filter(isETag).map((t) => (t[2] ? { id: t[1], relays: [t[2]] } : { id: t[1] }));
 }
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
@@ -149,7 +149,8 @@ export function listAddCoordinate(
   coordinate: string,
   relay?: string,
 ): DraftNostrEvent {
-  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("coordinate already in list");
+  if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("Event already in list");
+
   return {
     created_at: dayjs().unix(),
     kind: list.kind,

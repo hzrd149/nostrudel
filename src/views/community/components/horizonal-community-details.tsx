@@ -23,7 +23,7 @@ import {
 } from "../../../helpers/nostr/communities";
 import CommunityDescription from "../../communities/components/community-description";
 import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserLink } from "../../../components/user-link";
+import UserLink from "../../../components/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import CommunityJoinButton from "../../communities/components/community-join-button";
 import CommunityMenu from "./community-menu";

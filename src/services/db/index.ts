@@ -1,12 +1,12 @@
 import { openDB, deleteDB, IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6 } from "./schema";
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 4;
-const db = await openDB<SchemaV4>(dbName, version, {
+const version = 6;
+const db = await openDB<SchemaV6>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -87,6 +87,37 @@ const db = await openDB<SchemaV4>(dbName, version, {
         keyPath: "pubkey",
       });
     }
+
+    if (oldVersion < 5) {
+      const v4 = db as unknown as IDBPDatabase<SchemaV4>;
+      const v5 = db as unknown as IDBPDatabase<SchemaV5>;
+
+      // migrate accounts table
+      const objectStore = transaction.objectStore("accounts");
+
+      objectStore.getAll().then((accounts: SchemaV4["accounts"]["value"][]) => {
+        for (const account of accounts) {
+          const newAccount: SchemaV5["accounts"] = {
+            ...account,
+            connectionType: account.useExtension ? "extension" : undefined,
+          };
+          // @ts-ignore
+          delete newAccount.useExtension;
+
+          objectStore.put(newAccount);
+        }
+      });
+    }
+
+    if (oldVersion < 6) {
+      const v6 = db as unknown as IDBPDatabase<SchemaV6>;
+
+      // create new search table
+      const channelMetadata = v6.createObjectStore("channelMetadata", {
+        keyPath: "channelId",
+      });
+      channelMetadata.createIndex("created", "created");
+    }
   },
 });
 
@@ -95,6 +126,9 @@ log("Open");
 export async function clearCacheData() {
   log("Clearing replaceableEvents");
   await db.clear("replaceableEvents");
+
+  log("Clearing channelMetadata");
+  await db.clear("channelMetadata");
 
   log("Clearing userSearch");
   await db.clear("userSearch");

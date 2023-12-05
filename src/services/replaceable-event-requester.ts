@@ -12,6 +12,7 @@ import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
+import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -32,6 +33,9 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
+const RELAY_REQUEST_BATCH_TIME = 1000;
+
+/** This class is ued to batch requests to a single relay */
 class ReplaceableEventRelayLoader {
   private subscription: NostrSubscription;
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
@@ -84,7 +88,7 @@ class ReplaceableEventRelayLoader {
     return event;
   }
 
-  updateThrottle = _throttle(this.update, 1000);
+  updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
   update() {
     let needsUpdate = false;
     for (const cord of this.requestNext) {
@@ -143,6 +147,9 @@ class ReplaceableEventRelayLoader {
   }
 }
 
+const READ_CACHE_BATCH_TIME = 250;
+const WRITE_CACHE_BATCH_TIME = 250;
+
 class ReplaceableEventLoaderService {
   private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
@@ -169,11 +176,11 @@ class ReplaceableEventLoaderService {
   }
 
   private readFromCachePromises = new Map<string, Deferred<boolean>>();
-  private readFromCacheThrottle = _throttle(this.readFromCache, 1000);
+  private readFromCacheThrottle = _throttle(this.readFromCache, READ_CACHE_BATCH_TIME);
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
-    this.dbLog(`Reading ${this.readFromCachePromises.size} events from database`);
+    let read = 0;
     const transaction = db.transaction("replaceableEvents", "readonly");
     for (const [cord, promise] of this.readFromCachePromises) {
       transaction
@@ -183,6 +190,7 @@ class ReplaceableEventLoaderService {
           if (cached?.event) {
             this.handleEvent(cached.event, false);
             promise.resolve(true);
+            read++;
           }
           promise.resolve(false);
         });
@@ -190,6 +198,7 @@ class ReplaceableEventLoaderService {
     this.readFromCachePromises.clear();
     transaction.commit();
     await transaction.done;
+    if (read) this.dbLog(`Read ${read} events from database`);
   }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
   loadFromCache(cord: string) {
@@ -207,7 +216,7 @@ class ReplaceableEventLoaderService {
   }
 
   private writeCacheQueue = new Map<string, NostrEvent>();
-  private writeToCacheThrottle = _throttle(this.writeToCache, 1000);
+  private writeToCacheThrottle = _throttle(this.writeToCache, WRITE_CACHE_BATCH_TIME);
   private async writeToCache() {
     if (this.writeCacheQueue.size === 0) return;
 
@@ -229,9 +238,10 @@ class ReplaceableEventLoaderService {
     const keys = await db.getAllKeysFromIndex(
       "replaceableEvents",
       "created",
-      IDBKeyRange.upperBound(dayjs().subtract(1, "day").unix()),
+      IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
     );
 
+    if (keys.length === 0) return;
     this.dbLog(`Pruning ${keys.length} expired events from database`);
     const transaction = db.transaction("replaceableEvents", "readwrite");
     for (const key of keys) {
@@ -244,7 +254,10 @@ class ReplaceableEventLoaderService {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
-    for (const relay of relays) {
+    const relayUrls = Array.from(relays);
+    if (localCacheRelayService.enabled) relayUrls.unshift(LOCAL_CACHE_RELAY);
+
+    for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
 
       sub.connectWithHandler(request, (event, next, current) => {
@@ -279,9 +292,12 @@ class ReplaceableEventLoaderService {
 const replaceableEventLoaderService = new ReplaceableEventLoaderService();
 
 replaceableEventLoaderService.pruneDatabaseCache();
-setInterval(() => {
-  replaceableEventLoaderService.pruneDatabaseCache();
-}, 1000 * 60);
+setInterval(
+  () => {
+    replaceableEventLoaderService.pruneDatabaseCache();
+  },
+  1000 * 60 * 60,
+);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

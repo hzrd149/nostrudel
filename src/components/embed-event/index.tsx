@@ -10,7 +10,13 @@ import { NostrEvent } from "../../types/nostr-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
-import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
+import {
+  BOOKMARK_LIST_KIND,
+  CHANNELS_LIST_KIND,
+  COMMUNITIES_LIST_KIND,
+  NOTE_LIST_KIND,
+  PEOPLE_LIST_KIND,
+} from "../../helpers/nostr/lists";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -28,6 +34,10 @@ import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
 import EmbeddedCommunity from "./event-types/embedded-community";
 import EmbeddedReaction from "./event-types/embedded-reaction";
 import EmbeddedDM from "./event-types/embedded-dm";
+import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
+import EmbeddedTorrent from "./event-types/embedded-torrent";
+import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
+import EmbeddedChannel from "./event-types/embedded-channel";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -54,6 +64,9 @@ export function EmbedEvent({
       return <EmbeddedEmojiPack pack={event} {...cardProps} />;
     case PEOPLE_LIST_KIND:
     case NOTE_LIST_KIND:
+    case BOOKMARK_LIST_KIND:
+    case COMMUNITIES_LIST_KIND:
+    case CHANNELS_LIST_KIND:
       return <EmbeddedList list={event} {...cardProps} />;
     case Kind.Article:
       return <EmbeddedArticle article={event} {...cardProps} />;
@@ -65,6 +78,12 @@ export function EmbedEvent({
       return <EmbeddedCommunity community={event} {...cardProps} />;
     case STEMSTR_TRACK_KIND:
       return <EmbeddedStemstrTrack track={event} {...cardProps} />;
+    case TORRENT_KIND:
+      return <EmbeddedTorrent torrent={event} {...cardProps} />;
+    case TORRENT_COMMENT_KIND:
+      return <EmbeddedTorrentComment comment={event} {...cardProps} />;
+    case Kind.ChannelCreation:
+      return <EmbeddedChannel channel={event} {...cardProps} />;
   }
 
   return <EmbeddedUnknown event={event} {...cardProps} />;

@@ -54,13 +54,3 @@ export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
   if (replacementUrl.password) newUrl.password = replacementUrl.password;
   return newUrl;
 }
-
-export function searchParamsToJson(params: URLSearchParams) {
-  const json: URLSearchParamsInit = {};
-
-  for (const [key, value] of params.entries()) {
-    json[key] = value;
-  }
-
-  return json;
-}
