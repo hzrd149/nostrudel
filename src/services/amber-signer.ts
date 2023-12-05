@@ -18,7 +18,9 @@ export function createNip04EncryptIntent(pubkey: string, plainText: string) {
   )}#Intent;scheme=nostrsigner;S.pubKey=${pubkey};S.compressionType=none;S.returnType=signature;S.type=nip04_encrypt;end`;
 }
 export function createNip04DecryptIntent(pubkey: string, data: string) {
-  return `intent:${data}#Intent;scheme=nostrsigner;S.pubKey=${pubkey};S.compressionType=none;S.returnType=signature;S.type=nip04_decrypt;end`;
+  return `intent:${encodeURIComponent(
+    data,
+  )}#Intent;scheme=nostrsigner;S.pubKey=${pubkey};S.compressionType=none;S.returnType=signature;S.type=nip04_decrypt;end`;
 }
 
 let pendingRequest: Deferred<string> | null = null;
