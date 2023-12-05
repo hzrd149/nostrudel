@@ -8,7 +8,7 @@ export type Account = {
   relays?: string[];
   secKey?: ArrayBuffer;
   iv?: Uint8Array;
-  connectionType?: "extension" | "serial";
+  connectionType?: "extension" | "serial" | "amber";
   localSettings?: AppSettings;
 };
 

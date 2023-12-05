@@ -13,13 +13,17 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import accountService from "../../services/account";
 import Key01 from "../../components/icons/key-01";
+import Diamond01 from "../../components/icons/diamond-01";
 import ChevronDown from "../../components/icons/chevron-down";
 import ChevronUp from "../../components/icons/chevron-up";
-import serialPortService from "../../services/serial-port";
 import UsbFlashDrive from "../../components/icons/usb-flash-drive";
 import HelpCircle from "../../components/icons/help-circle";
+
+import { COMMON_CONTACT_RELAY } from "../../const";
+import accountService from "../../services/account";
+import serialPortService from "../../services/serial-port";
+import amberSignerService from "../../services/amber-signer";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -44,7 +48,7 @@ export default function LoginStartView() {
           }
 
           if (relays.length === 0) {
-            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
+            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
           }
 
           accountService.addAccount({ pubkey, relays, connectionType: "extension", readonly: false });
@@ -59,7 +63,7 @@ export default function LoginStartView() {
       toast({ status: "warning", title: "Cant find extension" });
     }
   };
-  const loginWithSerial = async () => {
+  const signinWithSerial = async () => {
     if (serialPortService.supported) {
       try {
         setLoading(true);
@@ -68,11 +72,8 @@ export default function LoginStartView() {
 
         if (!accountService.hasAccount(pubkey)) {
           let relays: string[] = [];
-
-          // TODO: maybe get relays from device
-
           if (relays.length === 0) {
-            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"];
+            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
           }
 
           accountService.addAccount({ pubkey, relays, connectionType: "serial", readonly: false });
@@ -88,6 +89,23 @@ export default function LoginStartView() {
     }
   };
 
+  const signinWithAmber = async () => {
+    try {
+      const pubkey = await amberSignerService.getPublicKey();
+      if (!accountService.hasAccount(pubkey)) {
+        let relays: string[] = [];
+        if (relays.length === 0) {
+          relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
+        }
+
+        accountService.addAccount({ pubkey, relays, connectionType: "amber", readonly: false });
+      }
+      accountService.switchAccount(pubkey);
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    }
+  };
+
   if (loading) return <Spinner />;
 
   return (
@@ -97,7 +115,7 @@ export default function LoginStartView() {
       </Button>
       {serialPortService.supported && (
         <ButtonGroup colorScheme="purple">
-          <Button onClick={loginWithSerial} leftIcon={<UsbFlashDrive boxSize={6} />} w="xs">
+          <Button onClick={signinWithSerial} leftIcon={<UsbFlashDrive boxSize={6} />} w="xs">
             Use Signing Device
           </Button>
           <IconButton
@@ -106,6 +124,21 @@ export default function LoginStartView() {
             title="What is NSD?"
             isExternal
             href="https://github.com/lnbits/nostr-signing-device"
+            icon={<HelpCircle boxSize={5} />}
+          />
+        </ButtonGroup>
+      )}
+      {amberSignerService.supported && (
+        <ButtonGroup colorScheme="orange">
+          <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} w="xs">
+            Use Amber
+          </Button>
+          <IconButton
+            as={Link}
+            aria-label="What is Amber?"
+            title="What is Amber?"
+            isExternal
+            href="https://github.com/greenart7c3/Amber"
             icon={<HelpCircle boxSize={5} />}
           />
         </ButtonGroup>
@@ -128,13 +161,13 @@ export default function LoginStartView() {
             </Badge>
           </Button>
           <Button as={RouterLink} to="./npub" state={location.state} w="sm">
-            public key (npub)
+            Public key (npub)
             <Badge ml="2" colorScheme="blue">
               read-only
             </Badge>
           </Button>
           <Button as={RouterLink} to="./nsec" state={location.state} w="sm">
-            secret key (nsec)
+            Secret key (nsec)
           </Button>
         </>
       )}

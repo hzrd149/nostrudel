@@ -20,7 +20,7 @@ export type CountResponse = {
   approximate?: boolean;
 };
 
-export type DraftNostrEvent = Omit<NostrEvent, "pubkey" | "id" | "sig">;
+export type DraftNostrEvent = Omit<NostrEvent, "pubkey" | "id" | "sig"> & { pubkey?: string; id?: string };
 
 export type RawIncomingEvent = ["EVENT", string, NostrEvent];
 export type RawIncomingNotice = ["NOTICE", string];
