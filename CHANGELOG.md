@@ -1,5 +1,30 @@
 # nostrudel
 
+## 0.36.0
+
+### Minor Changes
+
+- bc71d920: Add option to hide usernames
+- abce505a: Add Torrent create view
+- 2786f848: Add support for default bookmark list
+- c119e02a: Add decrypt all button to DMs
+- abce505a: Change "Copy Share Link" to use njump.me
+- abce505a: Replace "Copy Note Id" with "Copy Embed Code"
+- 6ab2d1c2: Add colors to notifications view
+- a2a920c4: Add simple torrents view
+- 7ff3c81d: Add Channels view
+- a714a2c6: Use nevent instead of note1 in urls
+- 199f208b: Add local relay cache option
+- d8e08d6a: Add support for Nostr Signing Device
+- 6d44e534: Rebuild notifications view
+- c8ee526a: Rebuild tools view
+- b372edab: Show reposts in note details modal
+- c119e02a: Cache decrypted events
+- a796661e: Add comments to torrents
+- a714a2c6: Blur videos from strangers
+- d18e03af: Rebuild thread loading
+- b69bfa37: Show list links on muted by view
+
 ## 0.35.0
 
 ### Minor Changes

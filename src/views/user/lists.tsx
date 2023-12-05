@@ -5,7 +5,14 @@ import { Divider, Heading, SimpleGrid } from "@chakra-ui/react";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import { MUTE_LIST_KIND, NOTE_LIST_KIND, PEOPLE_LIST_KIND, PIN_LIST_KIND, isJunkList } from "../../helpers/nostr/lists";
+import {
+  BOOKMARK_LIST_KIND,
+  MUTE_LIST_KIND,
+  NOTE_LIST_KIND,
+  PEOPLE_LIST_KIND,
+  PIN_LIST_KIND,
+  isJunkList,
+} from "../../helpers/nostr/lists";
 import { getEventUID } from "../../helpers/nostr/events";
 import ListCard from "../lists/components/list-card";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
@@ -55,6 +62,7 @@ export default function UserListsTab() {
           <ListCard cord={`${Kind.Contacts}:${pubkey}`} hideCreator />
           <ListCard cord={`${MUTE_LIST_KIND}:${pubkey}`} hideCreator />
           <ListCard cord={`${PIN_LIST_KIND}:${pubkey}`} hideCreator />
+          <ListCard cord={`${BOOKMARK_LIST_KIND}:${pubkey}`} hideCreator />
         </SimpleGrid>
 
         {peopleLists.length > 0 && (
