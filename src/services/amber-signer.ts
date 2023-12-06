@@ -42,7 +42,7 @@ function onVisibilityChange() {
         .readText()
         .then((result) => pendingRequest?.resolve(result))
         .catch((e) => pendingRequest?.reject(e));
-    }, 500);
+    }, 200);
   }
 }
 document.addEventListener("visibilitychange", onVisibilityChange);
@@ -51,10 +51,10 @@ async function intentRequest(intent: string) {
   rejectPending();
   const request = createDefer<string>();
   window.open(intent, "_blank");
-  // NOTE: wait 100ms before setting the pending request since the visibilitychange event fires as soon as window.open is called
+  // NOTE: wait 500ms before setting the pending request since the visibilitychange event fires as soon as window.open is called
   setTimeout(() => {
     pendingRequest = request;
-  }, 100);
+  }, 500);
   const result = await request;
   if (result.length === 0) throw new Error("Empty clipboard");
   return result;
