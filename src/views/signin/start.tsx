@@ -51,7 +51,7 @@ export default function LoginStartView() {
             relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
           }
 
-          accountService.addAccount({ pubkey, relays, connectionType: "extension", readonly: false });
+          accountService.addAccount({ pubkey, relays, type: "extension", readonly: false });
         }
 
         accountService.switchAccount(pubkey);
@@ -76,7 +76,7 @@ export default function LoginStartView() {
             relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
           }
 
-          accountService.addAccount({ pubkey, relays, connectionType: "serial", readonly: false });
+          accountService.addAccount({ pubkey, relays, type: "serial", readonly: false });
         }
 
         accountService.switchAccount(pubkey);
@@ -98,7 +98,7 @@ export default function LoginStartView() {
           relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
         }
 
-        accountService.addAccount({ pubkey, relays, connectionType: "amber", readonly: false });
+        accountService.addAccount({ pubkey, relays, type: "amber", readonly: false });
       }
       accountService.switchAccount(pubkey);
     } catch (e) {
@@ -112,6 +112,9 @@ export default function LoginStartView() {
     <Flex direction="column" gap="2" flexShrink={0} alignItems="center">
       <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="sm" colorScheme="primary">
         Sign in with extension
+      </Button>
+      <Button as={RouterLink} to="./nostr-connect" state={location.state} w="sm">
+        Nostr Connect (NIP-46)
       </Button>
       {serialPortService.supported && (
         <ButtonGroup colorScheme="purple">
@@ -155,7 +158,7 @@ export default function LoginStartView() {
       {advanced.isOpen && (
         <>
           <Button as={RouterLink} to="./nip05" state={location.state} w="sm">
-            NIP05
+            DNS ID
             <Badge ml="2" colorScheme="blue">
               read-only
             </Badge>

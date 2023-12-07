@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
 
 import { UnlockIcon } from "../../components/icons";
 import { useDecryptionContainer } from "../../providers/dycryption-provider";
@@ -8,11 +8,12 @@ export default function DecryptPlaceholder({
   children,
   data,
   pubkey,
+  ...props
 }: {
   children: (decrypted: string) => JSX.Element;
   data: string;
   pubkey: string;
-}): JSX.Element {
+} & Omit<ButtonProps, "children">): JSX.Element {
   const [loading, setLoading] = useState(false);
   const { requestDecrypt, plaintext, error } = useDecryptionContainer(pubkey, data);
 
@@ -39,7 +40,7 @@ export default function DecryptPlaceholder({
     );
   }
   return (
-    <Button onClick={decrypt} isLoading={loading} leftIcon={<UnlockIcon />} width="full">
+    <Button onClick={decrypt} isLoading={loading} leftIcon={<UnlockIcon />} width="full" {...props}>
       Decrypt
     </Button>
   );

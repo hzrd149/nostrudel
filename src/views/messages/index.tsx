@@ -82,7 +82,7 @@ function DirectMessagesPage() {
   const isChatOpen = !!params.pubkey;
 
   return (
-    <Flex gap="4" maxH={{ base: "calc(100vh - 3.5rem)", md: "100vh" }}>
+    <Flex gap="4" h={{ base: "calc(100vh - 3.5rem)", md: "100vh" }}>
       <Flex
         gap="2"
         direction="column"

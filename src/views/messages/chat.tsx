@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Card, Flex, IconButton, Textarea, useToast } from "@chakra-ui/react";
-import dayjs from "dayjs";
+import { Button, Card, Flex, IconButton } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -9,9 +8,6 @@ import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
-import { useSigningContext } from "../../providers/signing-provider";
-import clientRelaysService from "../../services/client-relays";
-import { DraftNostrEvent } from "../../types/nostr-event";
 import RequireCurrentAccount from "../../providers/require-current-account";
 import Message from "./message";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -20,26 +16,17 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import { LightboxProvider } from "../../components/lightbox-provider";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/dycryption-provider";
-import { useUserRelays } from "../../hooks/use-user-relays";
-import { RelayMode } from "../../classes/relay";
-import { unique } from "../../helpers/array";
+import SendMessageForm from "./send-message-form";
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
-  const toast = useToast();
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
-  const { requestEncrypt, requestSignature } = useSigningContext();
-  const [content, setContent] = useState<string>("");
 
   const myInbox = useReadRelayUrls();
-  const usersInbox = useUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
 
   const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
     {
@@ -55,26 +42,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   ]);
 
   const messages = useSubject(timeline.timeline);
-
-  const sendMessage = async () => {
-    try {
-      if (!content) return;
-      const encrypted = await requestEncrypt(content, pubkey);
-      const event: DraftNostrEvent = {
-        kind: Kind.EncryptedDirectMessage,
-        content: encrypted,
-        tags: [["p", pubkey]],
-        created_at: dayjs().unix(),
-      };
-      const signed = await requestSignature(event);
-      const writeRelays = clientRelaysService.getWriteUrls();
-      const relays = unique([...writeRelays, ...usersInbox]);
-      new NostrPublishAction("Send DM", relays, signed);
-      setContent("");
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
-    }
-  };
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
@@ -119,12 +86,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           ))}
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>
-        <Flex shrink={0}>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
-          <Button isDisabled={!content} onClick={sendMessage}>
-            Send
-          </Button>
-        </Flex>
+        <SendMessageForm flexShrink={0} pubkey={pubkey} />
       </IntersectionObserverProvider>
     </LightboxProvider>
   );

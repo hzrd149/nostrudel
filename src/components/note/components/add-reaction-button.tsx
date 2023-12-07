@@ -22,7 +22,7 @@ import { draftEventReaction } from "../../../helpers/nostr/reactions";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useState } from "react";
 
-export default function ReactionButton({ event, ...props }: { event: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function AddReactionButton({ event, ...props }: { event: NostrEvent } & Omit<ButtonProps, "children">) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const reactions = useEventReactions(getEventUID(event)) ?? [];

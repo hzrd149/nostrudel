@@ -22,7 +22,7 @@ export default function LoginNpubView() {
     }
 
     if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount({ pubkey, relays: [relayUrl], readonly: true });
+      accountService.addAccount({ type: "pubkey", pubkey, relays: [relayUrl], readonly: true });
     }
     accountService.switchAccount(pubkey);
   };

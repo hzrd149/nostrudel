@@ -112,6 +112,12 @@ export default class NostrMultiSubscription {
     this.relayQueries.delete(relay);
   }
 
+  sendAll(event: NostrEvent) {
+    for (const relay of this.relays) {
+      relay.send(["EVENT", event]);
+    }
+  }
+
   open() {
     if (this.state === NostrMultiSubscription.OPEN) return this;
 

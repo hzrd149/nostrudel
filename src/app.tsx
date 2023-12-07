@@ -74,6 +74,7 @@ import UserDMsTab from "./views/user/dms";
 import DMFeedView from "./views/tools/dm-feed";
 import ContentDiscoveryView from "./views/tools/content-discovery";
 import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
+import LoginNostrConnectView from "./views/signin/nostr-connect";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -146,6 +147,7 @@ const router = createHashRouter([
       { path: "npub", element: <LoginNpubView /> },
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
+      { path: "nostr-connect", element: <LoginNostrConnectView /> },
     ],
   },
   {

@@ -1,11 +1,11 @@
-import { openDB, deleteDB, IDBPDatabase } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6 } from "./schema";
+import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7 } from "./schema";
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 6;
+const version = 7;
 const db = await openDB<SchemaV6>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
@@ -44,11 +44,11 @@ const db = await openDB<SchemaV6>(dbName, version, {
     }
 
     if (oldVersion < 2) {
-      const v1 = db as unknown as IDBPDatabase<SchemaV1>;
+      const trans = transaction as unknown as IDBPTransaction<SchemaV1, string[], "versionchange">;
       const v2 = db as unknown as IDBPDatabase<SchemaV2>;
 
       // rename the old settings object store to misc
-      const oldSettings = transaction.objectStore("settings");
+      const oldSettings = trans.objectStore("settings");
       oldSettings.name = "misc";
 
       // create new settings object store
@@ -63,10 +63,10 @@ const db = await openDB<SchemaV6>(dbName, version, {
       const v3 = db as unknown as IDBPDatabase<SchemaV3>;
 
       // rename the old event caches
-      v3.deleteObjectStore("userMetadata");
-      v3.deleteObjectStore("userContacts");
-      v3.deleteObjectStore("userRelays");
-      v3.deleteObjectStore("settings");
+      v2.deleteObjectStore("userMetadata");
+      v2.deleteObjectStore("userContacts");
+      v2.deleteObjectStore("userRelays");
+      v2.deleteObjectStore("settings");
 
       // create new replaceable event object store
       const settings = v3.createObjectStore("replaceableEvents", {
@@ -89,15 +89,14 @@ const db = await openDB<SchemaV6>(dbName, version, {
     }
 
     if (oldVersion < 5) {
-      const v4 = db as unknown as IDBPDatabase<SchemaV4>;
-      const v5 = db as unknown as IDBPDatabase<SchemaV5>;
+      const trans = transaction as unknown as IDBPTransaction<SchemaV5, string[], "versionchange">;
 
       // migrate accounts table
-      const objectStore = transaction.objectStore("accounts");
+      const objectStore = trans.objectStore("accounts");
 
       objectStore.getAll().then((accounts: SchemaV4["accounts"]["value"][]) => {
         for (const account of accounts) {
-          const newAccount: SchemaV5["accounts"] = {
+          const newAccount: SchemaV5["accounts"]["value"] = {
             ...account,
             connectionType: account.useExtension ? "extension" : undefined,
           };
@@ -117,6 +116,52 @@ const db = await openDB<SchemaV6>(dbName, version, {
         keyPath: "channelId",
       });
       channelMetadata.createIndex("created", "created");
+    }
+
+    if (oldVersion < 7) {
+      const transV6 = transaction as unknown as IDBPTransaction<SchemaV6, string[], "versionchange">;
+      const transV7 = transaction as unknown as IDBPTransaction<SchemaV7, string[], "versionchange">;
+
+      const accounts = transV7.objectStore("accounts");
+
+      transV6
+        .objectStore("accounts")
+        .getAll()
+        .then((oldAccounts: SchemaV6["accounts"]["value"][]) => {
+          for (const account of oldAccounts) {
+            if (account.secKey && account.iv) {
+              // migrate local accounts
+              accounts.put({
+                type: "local",
+                pubkey: account.pubkey,
+                secKey: account.secKey,
+                iv: account.iv,
+                readonly: false,
+                relays: account.relays,
+              } satisfies SchemaV7["accounts"]["value"]);
+            } else if (account.readonly) {
+              // migrate readonly accounts
+              accounts.put({
+                type: "pubkey",
+                pubkey: account.pubkey,
+                readonly: true,
+                relays: account.relays,
+              } satisfies SchemaV7["accounts"]["value"]);
+            } else if (
+              account.connectionType === "serial" ||
+              account.connectionType === "amber" ||
+              account.connectionType === "extension"
+            ) {
+              // migrate extension, serial, amber accounts
+              accounts.put({
+                type: account.connectionType,
+                pubkey: account.pubkey,
+                readonly: false,
+                relays: account.relays,
+              } satisfies SchemaV7["accounts"]["value"]);
+            }
+          }
+        });
     }
   },
 });
