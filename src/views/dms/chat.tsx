@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Button, Card, Flex, IconButton } from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
+import { Button, ButtonGroup, Card, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
-import { useNavigate, useParams } from "react-router-dom";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { ChevronLeftIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
@@ -9,7 +9,7 @@ import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import MessageBlock from "./message-block";
+import MessageBlock from "./components/message-block";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -19,13 +19,25 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import { LightboxProvider } from "../../components/lightbox-provider";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/dycryption-provider";
-import SendMessageForm from "./send-message-form";
-import { NostrEvent } from "../../types/nostr-event";
-import dayjs from "dayjs";
+import SendMessageForm from "./components/send-message-form";
+import { groupMessages } from "../../helpers/nostr/dms";
+import ThreadDrawer from "./components/thread-drawer";
+import MessageChatSquare from "../../components/icons/message-chat-square";
+import ThreadsProvider from "./components/thread-provider";
+import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 
-const GROUP_MESSAGES_LESS_THAN_MIN = 5;
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { router } = useContext(UNSAFE_DataRouterContext)!;
+  const marker = useRouterMarker(router);
+  useEffect(() => {
+    if (location.state?.thread && marker.index.current === null) {
+      // the drawer just open, set the marker
+      marker.set(1);
+    }
+  }, [location]);
+
   const account = useCurrentAccount()!;
   const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
 
@@ -45,23 +57,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   ]);
 
   const messages = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root"));
-
-  const grouped: { id: string; events: NostrEvent[] }[] = [];
-  for (const message of messages) {
-    const last = grouped[grouped.length - 1];
-    if (last && last.events[0]?.pubkey === message.pubkey) {
-      const lastEvent = last.events[last.events.length - 1];
-      if (
-        lastEvent &&
-        dayjs.unix(lastEvent.created_at).diff(dayjs.unix(message.created_at), "minute") < GROUP_MESSAGES_LESS_THAN_MIN
-      ) {
-        last.events.push(message);
-        continue;
-      }
-    }
-
-    grouped.push({ id: message.id, events: [message] });
-  }
+  const grouped = groupMessages(messages);
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
@@ -81,7 +77,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <LightboxProvider>
+    <ThreadsProvider timeline={timeline}>
       <IntersectionObserverProvider callback={callback}>
         <Card size="sm" flexShrink={0} p="2" flexDirection="row">
           <Flex gap="2" alignItems="center">
@@ -96,19 +92,44 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <UserLink pubkey={pubkey} fontWeight="bold" />
             <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
           </Flex>
-          <Button onClick={decryptAll} isLoading={loading} ml="auto">
-            Decrypt All
-          </Button>
+          <ButtonGroup ml="auto">
+            <Button onClick={decryptAll} isLoading={loading}>
+              Decrypt All
+            </Button>
+            <IconButton
+              aria-label="Threads"
+              title="Threads"
+              icon={<MessageChatSquare boxSize={5} />}
+              onClick={() => {
+                marker.set(0);
+                navigate(".", { state: { thread: "list" } });
+              }}
+            />
+          </ButtonGroup>
         </Card>
         <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          {grouped.map((group) => (
-            <MessageBlock key={group.id} events={group.events} />
-          ))}
+          <LightboxProvider>
+            {grouped.map((group) => (
+              <MessageBlock key={group.id} messages={group.events} reverse />
+            ))}
+          </LightboxProvider>
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>
         <SendMessageForm flexShrink={0} pubkey={pubkey} />
+        {location.state?.thread && (
+          <ThreadDrawer
+            isOpen
+            onClose={() => {
+              if (marker.index.current !== null && marker.index.current > 0) {
+                navigate(-marker.index.current);
+              } else navigate(".", { state: { thread: undefined } });
+            }}
+            threadId={location.state.thread}
+            pubkey={pubkey}
+          />
+        )}
       </IntersectionObserverProvider>
-    </LightboxProvider>
+    </ThreadsProvider>
   );
 }
 

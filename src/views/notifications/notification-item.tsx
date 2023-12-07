@@ -102,6 +102,9 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
   const expanded = useDisclosure({ defaultIsOpen: true });
   if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 
+  const reactedEvent = useSingleEvent(pointer.id, pointer.relays);
+  if (reactedEvent?.kind === Kind.EncryptedDirectMessage) return null;
+
   return (
     <Flex gap="2" ref={ref}>
       <IconBox>

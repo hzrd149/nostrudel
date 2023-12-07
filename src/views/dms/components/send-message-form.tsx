@@ -4,18 +4,22 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 
 import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
-import { useSigningContext } from "../../providers/signing-provider";
-import MagicTextArea, { RefType } from "../../components/magic-textarea";
-import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
-import clientRelaysService from "../../services/client-relays";
-import { unique } from "../../helpers/array";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { useUserRelays } from "../../hooks/use-user-relays";
-import { RelayMode } from "../../classes/relay";
-import { useDecryptionContext } from "../../providers/dycryption-provider";
+import { useSigningContext } from "../../../providers/signing-provider";
+import MagicTextArea, { RefType } from "../../../components/magic-textarea";
+import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
+import clientRelaysService from "../../../services/client-relays";
+import { unique } from "../../../helpers/array";
+import { DraftNostrEvent } from "../../../types/nostr-event";
+import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { useUserRelays } from "../../../hooks/use-user-relays";
+import { RelayMode } from "../../../classes/relay";
+import { useDecryptionContext } from "../../../providers/dycryption-provider";
 
-export default function SendMessageForm({ pubkey, ...props }: { pubkey: string } & Omit<FlexProps, "children">) {
+export default function SendMessageForm({
+  pubkey,
+  rootId,
+  ...props
+}: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
   const toast = useToast();
   const { requestEncrypt, requestSignature } = useSigningContext();
   const { getOrCreateContainer } = useDecryptionContext();
@@ -47,6 +51,10 @@ export default function SendMessageForm({ pubkey, ...props }: { pubkey: string }
         tags: [["p", pubkey]],
         created_at: dayjs().unix(),
       };
+
+      if (rootId) {
+        event.tags.push(["e", rootId, "", "root"]);
+      }
 
       setLoadingMessage("Signing...");
       const signed = await requestSignature(event);

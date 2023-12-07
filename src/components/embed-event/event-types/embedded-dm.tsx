@@ -1,21 +1,19 @@
-import { Card, CardBody, CardHeader, CardProps, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/trust";
 import UserAvatarLink from "../../user-avatar-link";
 import UserLink from "../../user-link";
 import Timestamp from "../../timestamp";
-import DecryptPlaceholder from "../../../views/dms/decrypt-placeholder";
-import { MessageContent } from "../../../views/dms/message-block";
-import { getMessageRecipient } from "../../../services/direct-messages";
+import DecryptPlaceholder from "../../../views/dms/components/decrypt-placeholder";
 import useCurrentAccount from "../../../hooks/use-current-account";
+import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
+import { MessageContent } from "../../../views/dms/components/message-bubble";
 
 export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children"> & { dm: NostrEvent }) {
   const account = useCurrentAccount();
-  const isOwnMessage = account?.pubkey === dm.pubkey;
-
-  const sender = dm.pubkey;
-  const receiver = getMessageRecipient(dm);
+  const sender = getDMSender(dm);
+  const receiver = getDMRecipient(dm);
 
   if (!receiver) return "Broken DM";
 
@@ -30,11 +28,13 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
           <UserLink pubkey={receiver} fontWeight="bold" isTruncated fontSize="lg" />
           <Timestamp timestamp={dm.created_at} />
         </CardHeader>
-        <CardBody px="2" pt="0" pb="2">
-          <DecryptPlaceholder data={dm.content} pubkey={isOwnMessage ? getMessageRecipient(dm) ?? "" : dm.pubkey}>
-            {(text) => <MessageContent event={dm} text={text} />}
-          </DecryptPlaceholder>
-        </CardBody>
+        {(sender === account?.pubkey || receiver === account?.pubkey) && (
+          <CardBody px="2" pt="0" pb="2">
+            <DecryptPlaceholder message={dm}>
+              {(plaintext) => <MessageContent event={dm} text={plaintext} />}
+            </DecryptPlaceholder>
+          </CardBody>
+        )}
       </Card>
     </TrustProvider>
   );
