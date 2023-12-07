@@ -74,7 +74,6 @@ export default function SendMessageForm({ pubkey, ...props }: { pubkey: string }
       ) : (
         <>
           <MagicTextArea
-            autoFocus
             mb="2"
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
