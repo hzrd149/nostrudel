@@ -82,7 +82,7 @@ function DirectMessagesPage() {
   const isChatOpen = !!params.pubkey;
 
   return (
-    <Flex gap="4" h={{ base: "calc(100vh - 3.5rem)", md: "100vh" }}>
+    <Flex gap="4" h={{ base: "calc(100vh - 3.5rem)", md: "100vh" }} overflow="hidden">
       <Flex
         gap="2"
         direction="column"
@@ -104,7 +104,7 @@ function DirectMessagesPage() {
           Load More
         </Button>
       </Flex>
-      <Flex gap="2" direction="column" flex={1} hideBelow={!isChatOpen ? "xl" : undefined}>
+      <Flex gap="2" direction="column" flex={1} hideBelow={!isChatOpen ? "xl" : undefined} overflow="hidden">
         <Outlet />
       </Flex>
     </Flex>

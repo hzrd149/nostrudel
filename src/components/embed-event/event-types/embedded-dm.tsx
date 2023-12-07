@@ -6,7 +6,7 @@ import UserAvatarLink from "../../user-avatar-link";
 import UserLink from "../../user-link";
 import Timestamp from "../../timestamp";
 import DecryptPlaceholder from "../../../views/dms/decrypt-placeholder";
-import { MessageContent } from "../../../views/dms/message";
+import { MessageContent } from "../../../views/dms/message-block";
 import { getMessageRecipient } from "../../../services/direct-messages";
 import useCurrentAccount from "../../../hooks/use-current-account";
 

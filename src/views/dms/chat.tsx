@@ -9,7 +9,7 @@ import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import Message from "./message";
+import MessageBlock from "./message-block";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -20,7 +20,10 @@ import { LightboxProvider } from "../../components/lightbox-provider";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/dycryption-provider";
 import SendMessageForm from "./send-message-form";
+import { NostrEvent } from "../../types/nostr-event";
+import dayjs from "dayjs";
 
+const GROUP_MESSAGES_LESS_THAN_MIN = 5;
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
@@ -41,7 +44,24 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     },
   ]);
 
-  const messages = useSubject(timeline.timeline);
+  const messages = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root"));
+
+  const grouped: { id: string; events: NostrEvent[] }[] = [];
+  for (const message of messages) {
+    const last = grouped[grouped.length - 1];
+    if (last && last.events[0]?.pubkey === message.pubkey) {
+      const lastEvent = last.events[last.events.length - 1];
+      if (
+        lastEvent &&
+        dayjs.unix(lastEvent.created_at).diff(dayjs.unix(message.created_at), "minute") < GROUP_MESSAGES_LESS_THAN_MIN
+      ) {
+        last.events.push(message);
+        continue;
+      }
+    }
+
+    grouped.push({ id: message.id, events: [message] });
+  }
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
@@ -81,8 +101,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           </Button>
         </Card>
         <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          {[...messages].map((event) => (
-            <Message key={event.id} event={event} />
+          {grouped.map((group) => (
+            <MessageBlock key={group.id} events={group.events} />
           ))}
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>

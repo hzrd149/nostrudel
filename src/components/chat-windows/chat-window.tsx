@@ -15,7 +15,7 @@ import { RelayMode } from "../../classes/relay";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import useSubject from "../../hooks/use-subject";
-import Message from "../../views/dms/message";
+import MessageBlock from "../../views/dms/message-block";
 import { LightboxProvider } from "../lightbox-provider";
 import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
@@ -99,7 +99,7 @@ export default function ChatWindow({ pubkey, onClose }: { pubkey: string; onClos
             <LightboxProvider>
               <IntersectionObserverProvider callback={callback}>
                 {messages.map((event) => (
-                  <Message key={event.id} event={event} />
+                  <MessageBlock key={event.id} events={event} />
                 ))}
               </IntersectionObserverProvider>
             </LightboxProvider>
