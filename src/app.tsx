@@ -95,7 +95,6 @@ const ChannelView = lazy(() => import("./views/channels/channel"));
 
 const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
-const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
 const NewTorrentView = lazy(() => import("./views/torrents/new"));
 
 const overrideReactTextareaAutocompleteStyles = css`
@@ -288,10 +287,6 @@ const router = createHashRouter([
             ],
           },
         ],
-      },
-      {
-        path: "torrents/:id/preview",
-        element: <TorrentPreviewView />,
       },
       {
         path: "torrents",
