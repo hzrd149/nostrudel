@@ -158,6 +158,8 @@ export default function PostModal({
         </>
       );
     }
+
+    // TODO: wrap this in a form
     return (
       <>
         {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
@@ -170,6 +172,9 @@ export default function PostModal({
           isRequired
           instanceRef={(inst) => (textAreaRef.current = inst)}
           onPaste={onPaste}
+          onKeyDown={(e) => {
+            if (e.ctrlKey && e.key === "Enter") submit();
+          }}
         />
         {getValues().content.length > 0 && (
           <Box>
