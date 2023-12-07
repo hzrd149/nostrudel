@@ -5,8 +5,8 @@ import { TrustProvider } from "../../../providers/trust";
 import UserAvatarLink from "../../user-avatar-link";
 import UserLink from "../../user-link";
 import Timestamp from "../../timestamp";
-import DecryptPlaceholder from "../../../views/messages/decrypt-placeholder";
-import { MessageContent } from "../../../views/messages/message";
+import DecryptPlaceholder from "../../../views/dms/decrypt-placeholder";
+import { MessageContent } from "../../../views/dms/message";
 import { getMessageRecipient } from "../../../services/direct-messages";
 import useCurrentAccount from "../../../hooks/use-current-account";
 

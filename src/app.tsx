@@ -16,8 +16,8 @@ import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
 import ThreadView from "./views/note";
 import NotificationsView from "./views/notifications";
-import DirectMessagesView from "./views/messages";
-import DirectMessageChatView from "./views/messages/chat";
+import DirectMessagesView from "./views/dms";
+import DirectMessageChatView from "./views/dms/chat";
 
 import SigninView from "./views/signin";
 import SignupView from "./views/signup";

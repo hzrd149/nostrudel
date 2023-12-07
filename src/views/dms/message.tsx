@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Box, ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps, Flex } from "@chakra-ui/react";
+import { Box, BoxProps, ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps, Flex } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { getMessageRecipient } from "../../services/direct-messages";
@@ -25,7 +25,7 @@ import useEventReactions from "../../hooks/use-event-reactions";
 import AddReactionButton from "../../components/note/components/add-reaction-button";
 import { TrustProvider } from "../../providers/trust";
 
-export function MessageContent({ event, text }: { event: NostrEvent; text: string }) {
+export function MessageContent({ event, text, children, ...props }: { event: NostrEvent; text: string } & BoxProps) {
   let content: EmbedableContent = [text];
 
   content = embedNostrLinks(content);
@@ -36,8 +36,9 @@ export function MessageContent({ event, text }: { event: NostrEvent; text: strin
 
   return (
     <TrustProvider event={event}>
-      <Box whiteSpace="pre-wrap" display="inline">
+      <Box whiteSpace="pre-wrap" {...props}>
         {content}
+        {children}
       </Box>
     </TrustProvider>
   );
@@ -72,9 +73,12 @@ export default function Message({ event }: { event: NostrEvent } & Omit<CardProp
             variant="link"
             py="4"
           >
-            {(text) => <MessageContent event={event} text={text} />}
+            {(text) => (
+              <MessageContent event={event} text={text} display="inline">
+                {reactions.length === 0 && <Timestamp float="right" timestamp={event.created_at} />}
+              </MessageContent>
+            )}
           </DecryptPlaceholder>
-          {reactions.length === 0 && <Timestamp float="right" timestamp={event.created_at} />}
         </CardBody>
         {reactions.length > 0 && (
           <CardFooter alignItems="center" display="flex" gap="2" px="2" pt="0" pb="2">
