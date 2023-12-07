@@ -21,7 +21,7 @@ export default function SendMessageForm({ pubkey, ...props }: { pubkey: string }
   const { getOrCreateContainer } = useDecryptionContext();
 
   const [loadingMessage, setLoadingMessage] = useState("");
-  const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm({
+  const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       content: "",
     },
@@ -63,8 +63,10 @@ export default function SendMessageForm({ pubkey, ...props }: { pubkey: string }
     setLoadingMessage("");
   });
 
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   return (
-    <Flex as="form" gap="2" {...props}>
+    <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
       {loadingMessage ? (
         <Heading size="md" mx="auto" my="4">
           {loadingMessage}
@@ -80,8 +82,11 @@ export default function SendMessageForm({ pubkey, ...props }: { pubkey: string }
             isRequired
             instanceRef={(inst) => (textAreaRef.current = inst)}
             onPaste={onPaste}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+            }}
           />
-          <Button onClick={sendMessage}>Send</Button>
+          <Button type="submit">Send</Button>
         </>
       )}
     </Flex>
