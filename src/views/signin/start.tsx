@@ -113,7 +113,7 @@ export default function LoginStartView() {
       <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="sm" colorScheme="primary">
         Sign in with extension
       </Button>
-      <Button as={RouterLink} to="./nostr-connect" state={location.state} w="sm">
+      <Button as={RouterLink} to="./nostr-connect" state={location.state} w="sm" colorScheme="blue">
         Nostr Connect (NIP-46)
       </Button>
       {serialPortService.supported && (
