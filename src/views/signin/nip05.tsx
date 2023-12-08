@@ -73,7 +73,7 @@ export default function LoginNip05View() {
         }
       }
 
-      accountService.addAccount({ pubkey, relays: Array.from(bootstrapRelays), readonly: true });
+      accountService.addAccount({ type: "pubkey", pubkey, relays: Array.from(bootstrapRelays), readonly: true });
     }
 
     accountService.switchAccount(pubkey);

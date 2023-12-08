@@ -182,7 +182,7 @@ function parseResponse(value: string) {
 export const utf8Decoder = new TextDecoder("utf-8");
 export const utf8Encoder = new TextEncoder();
 
-export async function encrypt(pubkey: string, text: string) {
+export async function nip04Encrypt(pubkey: string, text: string) {
   const sharedSecretStr = await callMethodOnDevice(METHOD_SHARED_SECRET, [xOnlyToXY(pubkey)]);
   const sharedSecret = hexToBytes(sharedSecretStr);
 
@@ -196,7 +196,7 @@ export async function encrypt(pubkey: string, text: string) {
   return `${ctb64}?iv=${ivb64}`;
 }
 
-export async function decrypt(pubkey: string, data: string) {
+export async function nip04Decrypt(pubkey: string, data: string) {
   let [ctb64, ivb64] = data.split("?iv=");
 
   const sharedSecretStr = await callMethodOnDevice(METHOD_SHARED_SECRET, [xOnlyToXY(pubkey)]);
@@ -235,8 +235,8 @@ const serialPortService = {
   supported: !!navigator.serial,
   signEvent,
   getPublicKey,
-  encrypt,
-  decrypt,
+  nip04Encrypt,
+  nip04Decrypt,
   callMethodOnDevice,
   connectToDevice,
 };

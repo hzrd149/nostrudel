@@ -5,7 +5,6 @@ import {
   Drawer,
   DrawerBody,
   DrawerContent,
-  DrawerHeader,
   DrawerOverlay,
   DrawerProps,
   Flex,

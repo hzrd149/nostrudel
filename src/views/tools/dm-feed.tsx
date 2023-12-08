@@ -1,5 +1,5 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { memo, useRef } from "react";
+import { memo, useCallback, useRef } from "react";
 import { Kind } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -14,6 +14,7 @@ import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useNavigate } from "react-router-dom";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -30,6 +31,14 @@ export function DMFeedPage() {
   const navigate = useNavigate();
   const { listId, filter } = usePeopleListContext();
 
+  const clientMuteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (e: NostrEvent) => {
+      if (clientMuteFilter(e)) return false;
+      return true;
+    },
+    [clientMuteFilter],
+  );
   const readRelays = useReadRelayUrls();
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-dm-feed`,
@@ -43,6 +52,7 @@ export function DMFeedPage() {
           { "#p": filter.authors, kinds: [Kind.EncryptedDirectMessage] },
         ]
       : { kinds: [Kind.EncryptedDirectMessage] },
+    { eventFilter },
   );
 
   const dms = useSubject(timeline.timeline);

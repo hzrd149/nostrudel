@@ -1,7 +1,7 @@
 import { ButtonGroup, ButtonGroupProps, Divider } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import ReactionButton from "./reaction-button";
+import AddReactionButton from "./add-reaction-button";
 import EventReactionButtons from "../../event-reactions/event-reactions";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import { useBreakpointValue } from "../../../providers/breakpoint-provider";
@@ -12,7 +12,7 @@ export default function NoteReactions({ event, ...props }: Omit<ButtonGroupProps
 
   return (
     <ButtonGroup spacing="1" {...props}>
-      <ReactionButton event={event} />
+      <AddReactionButton event={event} />
       {reactions.length > 0 && (
         <>
           <Divider orientation="vertical" h="1.5rem" />

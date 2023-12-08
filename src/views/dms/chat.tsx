@@ -1,46 +1,76 @@
-import { useState } from "react";
-import { Button, Card, Flex, IconButton, Textarea, useToast } from "@chakra-ui/react";
-import dayjs from "dayjs";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Button, ButtonGroup, Card, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
-import { useNavigate, useParams } from "react-router-dom";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { ChevronLeftIcon } from "../../components/icons";
+import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
-import { useSigningContext } from "../../providers/signing-provider";
-import clientRelaysService from "../../services/client-relays";
-import { DraftNostrEvent } from "../../types/nostr-event";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import Message from "./message";
+import MessageBlock from "./components/message-block";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { LightboxProvider } from "../../components/lightbox-provider";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/dycryption-provider";
-import { useUserRelays } from "../../hooks/use-user-relays";
-import { RelayMode } from "../../classes/relay";
-import { unique } from "../../helpers/array";
+import SendMessageForm from "./components/send-message-form";
+import { groupMessages } from "../../helpers/nostr/dms";
+import ThreadDrawer from "./components/thread-drawer";
+import ThreadsProvider from "./components/thread-provider";
+import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
+import TimelineLoader from "../../classes/timeline-loader";
+
+/** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
+const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
+  const messages = useSubject(timeline.timeline);
+  const filteredMessages = useMemo(
+    () => messages.filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root")),
+    [messages.length],
+  );
+  const grouped = useMemo(() => groupMessages(filteredMessages), [filteredMessages]);
+
+  return (
+    <>
+      {grouped.map((group) => (
+        <MessageBlock key={group.id} messages={group.events} reverse />
+      ))}
+    </>
+  );
+});
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
-  const toast = useToast();
-  const navigate = useNavigate();
   const account = useCurrentAccount()!;
+  const navigate = useNavigate();
+  const location = useLocation();
   const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
-  const { requestEncrypt, requestSignature } = useSigningContext();
-  const [content, setContent] = useState<string>("");
+
+  const { router } = useContext(UNSAFE_DataRouterContext)!;
+  const marker = useRouterMarker(router);
+  useEffect(() => {
+    if (location.state?.thread && marker.index.current === null) {
+      // the drawer just open, set the marker
+      marker.set(1);
+    }
+  }, [location]);
+
+  const openDrawerList = useCallback(() => {
+    marker.set(0);
+    navigate(".", { state: { thread: "list" } });
+  }, [marker, navigate]);
+
+  const closeDrawer = useCallback(() => {
+    if (marker.index.current !== null && marker.index.current > 0) {
+      navigate(-marker.index.current);
+    } else navigate(".", { state: { thread: undefined } });
+    marker.reset();
+  }, [marker, navigate]);
 
   const myInbox = useReadRelayUrls();
-  const usersInbox = useUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
-
   const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
     {
       kinds: [Kind.EncryptedDirectMessage],
@@ -54,31 +84,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     },
   ]);
 
-  const messages = useSubject(timeline.timeline);
-
-  const sendMessage = async () => {
-    try {
-      if (!content) return;
-      const encrypted = await requestEncrypt(content, pubkey);
-      const event: DraftNostrEvent = {
-        kind: Kind.EncryptedDirectMessage,
-        content: encrypted,
-        tags: [["p", pubkey]],
-        created_at: dayjs().unix(),
-      };
-      const signed = await requestSignature(event);
-      const writeRelays = clientRelaysService.getWriteUrls();
-      const relays = unique([...writeRelays, ...usersInbox]);
-      new NostrPublishAction("Send DM", relays, signed);
-      setContent("");
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
-    }
-  };
-
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
-    const promises = messages
+    const promises = timeline.timeline.value
       .map((message) => {
         const container = getOrCreateContainer(pubkey, message.content);
         if (container.plaintext.value === undefined) return addToQueue(container);
@@ -94,7 +102,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <LightboxProvider>
+    <ThreadsProvider timeline={timeline}>
       <IntersectionObserverProvider callback={callback}>
         <Card size="sm" flexShrink={0} p="2" flexDirection="row">
           <Flex gap="2" alignItems="center">
@@ -109,24 +117,28 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <UserLink pubkey={pubkey} fontWeight="bold" />
             <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
           </Flex>
-          <Button onClick={decryptAll} isLoading={loading} ml="auto">
-            Decrypt All
-          </Button>
+          <ButtonGroup ml="auto">
+            <Button onClick={decryptAll} isLoading={loading}>
+              Decrypt All
+            </Button>
+            <IconButton
+              aria-label="Threads"
+              title="Threads"
+              icon={<ThreadIcon boxSize={5} />}
+              onClick={openDrawerList}
+            />
+          </ButtonGroup>
         </Card>
         <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          {[...messages].map((event) => (
-            <Message key={event.id} event={event} />
-          ))}
+          <ChatLog timeline={timeline} />
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>
-        <Flex shrink={0}>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} />
-          <Button isDisabled={!content} onClick={sendMessage}>
-            Send
-          </Button>
-        </Flex>
+        <SendMessageForm flexShrink={0} pubkey={pubkey} />
+        {location.state?.thread && (
+          <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
+        )}
       </IntersectionObserverProvider>
-    </LightboxProvider>
+    </ThreadsProvider>
   );
 }
 

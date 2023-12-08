@@ -35,3 +35,15 @@ relayPoolService.onRelayCreated.subscribe((relay) => {
     handleEventFromRelay(relay, event);
   });
 });
+
+const eventRelaysService = {
+  getEventRelays,
+  handleEventFromRelay,
+};
+
+if (import.meta.env.DEV) {
+  //@ts-ignore
+  window.eventRelaysService = eventRelaysService;
+}
+
+export default eventRelaysService;

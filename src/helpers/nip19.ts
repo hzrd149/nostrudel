@@ -1,10 +1,15 @@
 import { bech32 } from "bech32";
 import { getPublicKey, nip19 } from "nostr-tools";
+
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
 import { isReplaceable } from "./nostr/events";
 import { DecodeResult } from "nostr-tools/lib/types/nip19";
 import relayHintService from "../services/event-relay-hint";
 
+export function isHex(str?: string) {
+  if (str?.match(/^[0-9a-f]+$/i)) return true;
+  return false;
+}
 export function isHexKey(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
   return false;

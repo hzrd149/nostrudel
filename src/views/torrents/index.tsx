@@ -34,7 +34,7 @@ function Warning() {
       const secKey = generatePrivateKey();
       const encrypted = await signingService.encryptSecKey(secKey);
       const pubkey = getPublicKey(secKey);
-      accountService.addAccount({ ...encrypted, pubkey, readonly: false });
+      accountService.addAccount({ type: "local", ...encrypted, pubkey, readonly: false });
       accountService.switchAccount(pubkey);
       navigate("/relays");
     } catch (e) {

@@ -9,7 +9,7 @@ import { PersistentSubject } from "../classes/subject";
 import accountService from "./account";
 import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
-export function getMessageRecipient(event: NostrEvent): string | undefined {
+function getMessageRecipient(event: NostrEvent): string | undefined {
   return event.tags.find(isPTag)?.[1];
 }
 

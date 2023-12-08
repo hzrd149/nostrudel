@@ -62,7 +62,6 @@
     "three": "^0.157.0",
     "three-spritetext": "^1.8.1",
     "webln": "^0.3.2",
-    "webtorrent": "^2.1.29",
     "yet-another-react-lightbox": "^3.12.1"
   },
   "devDependencies": {
@@ -79,13 +78,12 @@
     "@types/react-dom": "^18.2.7",
     "@types/three": "^0.157.2",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.2",
-    "@types/webtorrent": "^0.109.7",
     "@vitejs/plugin-react": "^4.0.4",
     "camelcase": "^8.0.0",
     "prettier": "^3.0.2",
     "typescript": "^5.3.2",
     "vite": "^5.0.2",
-    "vite-plugin-pwa": "^0.17.2",
+    "vite-plugin-pwa": "^0.17.4",
     "workbox-build": "^7.0.0",
     "workbox-window": "^7.0.0"
   },

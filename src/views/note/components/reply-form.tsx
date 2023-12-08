@@ -95,8 +95,10 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kin
     }
   });
 
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   return (
-    <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit}>
+    <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit} ref={formRef}>
       <MagicTextArea
         placeholder="Reply"
         autoFocus
@@ -109,6 +111,9 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kin
         onPaste={(e) => {
           const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
           if (imageFile) uploadImage(imageFile);
+        }}
+        onKeyDown={(e) => {
+          if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
         }}
       />
       <Flex gap="2" alignItems="center">

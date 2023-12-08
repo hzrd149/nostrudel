@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Box, Button, Card, CardBody, CardHeader, CardProps, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
@@ -7,9 +8,16 @@ import UserLink from "../../user-link";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
-import { useMemo } from "react";
-import { embedEmoji, embedNostrHashtags, embedNostrLinks, embedNostrMentions } from "../../embed-types";
-import { EmbedableContent } from "../../../helpers/embeds";
+import {
+  embedEmoji,
+  embedNostrHashtags,
+  embedNostrLinks,
+  embedNostrMentions,
+  renderGenericUrl,
+  renderImageUrl,
+  renderVideoUrl,
+} from "../../embed-types";
+import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import Timestamp from "../../timestamp";
 import { CodeIcon } from "../../icons";
 import NoteDebugModal from "../../debug-modals/note-debug-modal";
@@ -18,15 +26,18 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
   const debugModal = useDisclosure();
   const address = getSharableEventAddress(event);
 
+  const alt = event.tags.find((t) => t[0] === "alt")?.[1];
   const content = useMemo(() => {
-    let jsx: EmbedableContent = [event.content];
+    let jsx: EmbedableContent = [alt || event.content];
     jsx = embedNostrLinks(jsx);
     jsx = embedNostrMentions(jsx, event);
     jsx = embedNostrHashtags(jsx, event);
     jsx = embedEmoji(jsx, event);
 
+    jsx = embedUrls(jsx, [renderImageUrl, renderVideoUrl, renderGenericUrl]);
+
     return jsx;
-  }, [event.content]);
+  }, [event.content, alt]);
 
   return (
     <>

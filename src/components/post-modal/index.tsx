@@ -40,13 +40,13 @@ import {
 import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/emoji-provider";
-import { nostrBuildUploadImage as nostrBuildUpload } from "../../helpers/nostr-build";
 import CommunitySelect from "./community-select";
 import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
 
 type FormValues = {
   subject: string;
@@ -100,34 +100,10 @@ export default function PostModal({
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
 
-  const textAreaRef = useRef<RefType | null>(null);
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const uploadFile = useCallback(
-    async (file: File) => {
-      try {
-        if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
-          throw new Error("Unsupported file type");
 
-        setUploading(true);
-
-        const response = await nostrBuildUpload(file, requestSignature);
-        const imageUrl = response.url;
-
-        const content = getValues().content;
-        const position = textAreaRef.current?.getCaretPosition();
-        if (position !== undefined) {
-          setValue("content", content.slice(0, position) + imageUrl + " " + content.slice(position), {
-            shouldDirty: true,
-          });
-        } else setValue("content", content + imageUrl + " ", { shouldDirty: true });
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
-      }
-      setUploading(false);
-    },
-    [setValue, getValues],
-  );
+  const textAreaRef = useRef<RefType | null>(null);
+  const { onPaste, onFileInputChange, uploading } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
 
   const getDraft = useCallback(() => {
     const { content, nsfw, nsfwReason, community, split, subject } = getValues();
@@ -138,8 +114,6 @@ export default function PostModal({
       tags: [],
       created_at: dayjs().unix(),
     });
-
-    updatedDraft.content = correctContentMentions(updatedDraft.content);
 
     if (nsfw) {
       updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
@@ -184,6 +158,8 @@ export default function PostModal({
         </>
       );
     }
+
+    // TODO: wrap this in a form
     return (
       <>
         {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
@@ -191,13 +167,13 @@ export default function PostModal({
           autoFocus
           mb="2"
           value={getValues().content}
-          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
+          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
           rows={5}
           isRequired
           instanceRef={(inst) => (textAreaRef.current = inst)}
-          onPaste={(e) => {
-            const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-            if (imageFile) uploadFile(imageFile);
+          onPaste={onPaste}
+          onKeyDown={(e) => {
+            if (e.ctrlKey && e.key === "Enter") submit();
           }}
         />
         {getValues().content.length > 0 && (
@@ -216,10 +192,7 @@ export default function PostModal({
               type="file"
               accept="image/*,audio/*,video/*"
               ref={imageUploadRef}
-              onChange={(e) => {
-                const img = e.target.files?.[0];
-                if (img) uploadFile(img);
-              }}
+              onChange={onFileInputChange}
             />
             <IconButton
               icon={<UploadImageIcon />}

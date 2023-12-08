@@ -44,6 +44,7 @@ export const UserProfileMenu = ({
     const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
     if (!accountService.hasAccount(pubkey)) {
       accountService.addAccount({
+        type: 'pubkey',
         pubkey,
         relays: readRelays,
         readonly: true,

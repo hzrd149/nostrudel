@@ -234,3 +234,5 @@ export const DownloadIcon = Download01;
 export const TranslateIcon = Translate01;
 
 export const ChannelsIcon = MessageChatSquare;
+
+export const ThreadIcon = MessageChatSquare;

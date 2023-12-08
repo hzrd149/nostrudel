@@ -16,8 +16,8 @@ import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
 import ThreadView from "./views/note";
 import NotificationsView from "./views/notifications";
-import DirectMessagesView from "./views/messages";
-import DirectMessageChatView from "./views/messages/chat";
+import DirectMessagesView from "./views/dms";
+import DirectMessageChatView from "./views/dms/chat";
 
 import SigninView from "./views/signin";
 import SignupView from "./views/signup";
@@ -74,6 +74,7 @@ import UserDMsTab from "./views/user/dms";
 import DMFeedView from "./views/tools/dm-feed";
 import ContentDiscoveryView from "./views/tools/content-discovery";
 import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
+import LoginNostrConnectView from "./views/signin/nostr-connect";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -94,7 +95,6 @@ const ChannelView = lazy(() => import("./views/channels/channel"));
 
 const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
-const TorrentPreviewView = lazy(() => import("./views/torrents/preview"));
 const NewTorrentView = lazy(() => import("./views/torrents/new"));
 
 const overrideReactTextareaAutocompleteStyles = css`
@@ -146,6 +146,7 @@ const router = createHashRouter([
       { path: "npub", element: <LoginNpubView /> },
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
+      { path: "nostr-connect", element: <LoginNostrConnectView /> },
     ],
   },
   {
@@ -286,10 +287,6 @@ const router = createHashRouter([
             ],
           },
         ],
-      },
-      {
-        path: "torrents/:id/preview",
-        element: <TorrentPreviewView />,
       },
       {
         path: "torrents",

@@ -12,7 +12,6 @@ import GhostToolbar from "./ghost-toolbar";
 import { useBreakpointValue } from "../../providers/breakpoint-provider";
 import SearchModal from "../search-modal";
 import { useLocation } from "react-router-dom";
-// import ChatWindows from "../chat-windows";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -66,7 +65,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Flex>
       {isGhost && <GhostToolbar />}
       {searchModal.isOpen && <SearchModal isOpen onClose={searchModal.onClose} />}
-      {/* {!isMobile && <ChatWindows />} */}
     </>
   );
 }

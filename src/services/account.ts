@@ -2,15 +2,47 @@ import { PersistentSubject } from "../classes/subject";
 import db from "./db";
 import { AppSettings } from "./settings/migrations";
 
-export type Account = {
+type CommonAccount = {
   pubkey: string;
-  readonly: boolean;
   relays?: string[];
-  secKey?: ArrayBuffer;
-  iv?: Uint8Array;
-  connectionType?: "extension" | "serial";
   localSettings?: AppSettings;
 };
+export type LocalAccount = CommonAccount & {
+  type: "local";
+  readonly: false;
+  secKey: ArrayBuffer;
+  iv: Uint8Array;
+};
+export type PubkeyAccount = CommonAccount & {
+  type: "pubkey";
+  readonly: true;
+};
+export type ExtensionAccount = CommonAccount & {
+  type: "extension";
+  readonly: false;
+};
+export type SerialAccount = CommonAccount & {
+  type: "serial";
+  readonly: false;
+};
+export type AmberAccount = CommonAccount & {
+  type: "amber";
+  readonly: false;
+};
+export type NostrConnectAccount = CommonAccount & {
+  type: "nostr-connect";
+  clientSecretKey: string;
+  signerRelays: string[];
+  readonly: false;
+};
+
+export type Account =
+  | ExtensionAccount
+  | LocalAccount
+  | NostrConnectAccount
+  | SerialAccount
+  | AmberAccount
+  | PubkeyAccount;
 
 class AccountService {
   loading = new PersistentSubject(true);
@@ -33,6 +65,7 @@ class AccountService {
 
   startGhost(pubkey: string) {
     const ghostAccount: Account = {
+      type: "pubkey",
       pubkey,
       readonly: true,
     };
