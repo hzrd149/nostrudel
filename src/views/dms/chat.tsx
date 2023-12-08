@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Card, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { ChevronLeftIcon } from "../../components/icons";
+import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
@@ -16,19 +16,39 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { LightboxProvider } from "../../components/lightbox-provider";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/dycryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
-import MessageChatSquare from "../../components/icons/message-chat-square";
 import ThreadsProvider from "./components/thread-provider";
 import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
+import TimelineLoader from "../../classes/timeline-loader";
+
+/** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
+const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
+  const messages = useSubject(timeline.timeline);
+  const filteredMessages = useMemo(
+    () => messages.filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root")),
+    [messages.length],
+  );
+  const grouped = useMemo(() => groupMessages(filteredMessages), [filteredMessages]);
+
+  return (
+    <>
+      {grouped.map((group) => (
+        <MessageBlock key={group.id} messages={group.events} reverse />
+      ))}
+    </>
+  );
+});
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
+  const account = useCurrentAccount()!;
   const navigate = useNavigate();
   const location = useLocation();
+  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
+
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
   useEffect(() => {
@@ -38,11 +58,19 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     }
   }, [location]);
 
-  const account = useCurrentAccount()!;
-  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
+  const openDrawerList = useCallback(() => {
+    marker.set(0);
+    navigate(".", { state: { thread: "list" } });
+  }, [marker, navigate]);
+
+  const closeDrawer = useCallback(() => {
+    if (marker.index.current !== null && marker.index.current > 0) {
+      navigate(-marker.index.current);
+    } else navigate(".", { state: { thread: undefined } });
+    marker.reset();
+  }, [marker, navigate]);
 
   const myInbox = useReadRelayUrls();
-
   const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
     {
       kinds: [Kind.EncryptedDirectMessage],
@@ -56,12 +84,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     },
   ]);
 
-  const messages = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root"));
-  const grouped = groupMessages(messages);
-
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
-    const promises = messages
+    const promises = timeline.timeline.value
       .map((message) => {
         const container = getOrCreateContainer(pubkey, message.content);
         if (container.plaintext.value === undefined) return addToQueue(container);
@@ -99,34 +124,18 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <IconButton
               aria-label="Threads"
               title="Threads"
-              icon={<MessageChatSquare boxSize={5} />}
-              onClick={() => {
-                marker.set(0);
-                navigate(".", { state: { thread: "list" } });
-              }}
+              icon={<ThreadIcon boxSize={5} />}
+              onClick={openDrawerList}
             />
           </ButtonGroup>
         </Card>
         <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          <LightboxProvider>
-            {grouped.map((group) => (
-              <MessageBlock key={group.id} messages={group.events} reverse />
-            ))}
-          </LightboxProvider>
+          <ChatLog timeline={timeline} />
           <TimelineActionAndStatus timeline={timeline} />
         </Flex>
         <SendMessageForm flexShrink={0} pubkey={pubkey} />
         {location.state?.thread && (
-          <ThreadDrawer
-            isOpen
-            onClose={() => {
-              if (marker.index.current !== null && marker.index.current > 0) {
-                navigate(-marker.index.current);
-              } else navigate(".", { state: { thread: undefined } });
-            }}
-            threadId={location.state.thread}
-            pubkey={pubkey}
-          />
+          <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
         )}
       </IntersectionObserverProvider>
     </ThreadsProvider>

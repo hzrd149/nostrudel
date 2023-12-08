@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useContext } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 
 import TimelineLoader from "../../../classes/timeline-loader";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -11,8 +11,14 @@ export type Thread = {
 };
 type ThreadsContextType = {
   threads: Record<string, Thread>;
+  getRoot: (id: string) => NostrEvent | undefined;
 };
-const ThreadsContext = createContext<ThreadsContextType>({ threads: {} });
+const ThreadsContext = createContext<ThreadsContextType>({
+  threads: {},
+  getRoot: (id: string) => {
+    return undefined;
+  },
+});
 
 export function useThreadsContext() {
   return useContext(ThreadsContext);
@@ -21,23 +27,32 @@ export function useThreadsContext() {
 export default function ThreadsProvider({ timeline, children }: { timeline: TimelineLoader } & PropsWithChildren) {
   const messages = useSubject(timeline.timeline);
 
-  const groupedByRoot: Record<string, NostrEvent[]> = {};
-  for (const message of messages) {
-    const rootId = message.tags.find((t) => t[0] === "e" && t[3] === "root")?.[1];
-    if (rootId) {
-      if (!groupedByRoot[rootId]) groupedByRoot[rootId] = [];
-      groupedByRoot[rootId].push(message);
+  const threads = useMemo(() => {
+    const grouped: Record<string, Thread> = {};
+    for (const message of messages) {
+      const rootId = message.tags.find((t) => t[0] === "e" && t[3] === "root")?.[1];
+      if (rootId) {
+        if (!grouped[rootId]) {
+          grouped[rootId] = {
+            messages: [],
+            rootId,
+            root: timeline.events.getEvent(rootId),
+          };
+        }
+        grouped[rootId].messages.push(message);
+      }
     }
-  }
+    return grouped;
+  }, [messages.length, timeline.events]);
 
-  const threads: Record<string, Thread> = {};
-  for (const [rootId, messages] of Object.entries(groupedByRoot)) {
-    threads[rootId] = {
-      messages,
-      rootId,
-      root: timeline.events.getEvent(rootId),
-    };
-  }
+  const getRoot = useCallback(
+    (id: string) => {
+      return timeline.events.getEvent(id);
+    },
+    [timeline.events],
+  );
 
-  return <ThreadsContext.Provider value={{ threads }}>{children}</ThreadsContext.Provider>;
+  const context = useMemo(() => ({ threads, getRoot }), [threads, getRoot]);
+
+  return <ThreadsContext.Provider value={context}>{children}</ThreadsContext.Provider>;
 }

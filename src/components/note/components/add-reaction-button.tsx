@@ -6,6 +6,7 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Portal,
   useBoolean,
   useToast,
 } from "@chakra-ui/react";
@@ -22,7 +23,11 @@ import { draftEventReaction } from "../../../helpers/nostr/reactions";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useState } from "react";
 
-export default function AddReactionButton({ event, ...props }: { event: NostrEvent } & Omit<ButtonProps, "children">) {
+export default function AddReactionButton({
+  event,
+  portal = false,
+  ...props
+}: { event: NostrEvent; portal?: boolean } & Omit<ButtonProps, "children">) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const reactions = useEventReactions(getEventUID(event)) ?? [];
@@ -47,6 +52,15 @@ export default function AddReactionButton({ event, ...props }: { event: NostrEve
     setLoading(false);
   };
 
+  const content = (
+    <PopoverContent>
+      <PopoverArrow />
+      <PopoverBody>
+        <ReactionPicker onSelect={addReaction} />
+      </PopoverBody>
+    </PopoverContent>
+  );
+
   return (
     <Popover isLazy isOpen={popover} onOpen={setPopover.on} onClose={setPopover.off}>
       <PopoverTrigger>
@@ -60,12 +74,7 @@ export default function AddReactionButton({ event, ...props }: { event: NostrEve
           {reactions?.length ?? 0}
         </IconButton>
       </PopoverTrigger>
-      <PopoverContent>
-        <PopoverArrow />
-        <PopoverBody>
-          <ReactionPicker onSelect={addReaction} />
-        </PopoverBody>
-      </PopoverContent>
+      {portal ? <Portal>{content}</Portal> : content}
     </Popover>
   );
 }

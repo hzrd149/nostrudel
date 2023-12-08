@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -25,12 +26,9 @@ import Timestamp from "../../../components/timestamp";
 import { Thread, useThreadsContext } from "./thread-provider";
 import ThreadButton from "./thread-button";
 import MessageBlock from "./message-block";
-import { LightboxProvider } from "../../../components/lightbox-provider";
-import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import { useDecryptionContext } from "../../../providers/dycryption-provider";
-import { useState } from "react";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
@@ -84,12 +82,10 @@ function ThreadMessages({ thread, pubkey }: { thread: Thread; pubkey: string }) 
   return (
     <>
       <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column" gap="2">
-        {thread.root && <MessageBlock messages={[thread.root]} showThreadButtons={false} />}
-        <LightboxProvider>
-          {grouped.map((group) => (
-            <MessageBlock key={group.id} messages={group.events} showThreadButtons={false} />
-          ))}
-        </LightboxProvider>
+        {thread.root && <MessageBlock messages={[thread.root]} showThreadButton={false} />}
+        {grouped.map((group) => (
+          <MessageBlock key={group.id} messages={group.events} showThreadButton={false} />
+        ))}
       </Flex>
       <SendMessageForm flexShrink={0} pubkey={pubkey} rootId={thread.rootId} />
     </>
@@ -101,7 +97,7 @@ export default function ThreadDrawer({
   pubkey,
   ...props
 }: Omit<DrawerProps, "children"> & { threadId: string; pubkey: string }) {
-  const { threads } = useThreadsContext();
+  const { threads, getRoot } = useThreadsContext();
   const { startQueue, getOrCreateContainer, addToQueue } = useDecryptionContext();
 
   const thread = threads[threadId];
@@ -129,8 +125,9 @@ export default function ThreadDrawer({
 
   const renderContent = () => {
     if (threadId === "list") return <ListThreads />;
-    if (!thread) return <Spinner />;
-    return <ThreadMessages thread={thread} pubkey={pubkey} />;
+    if (!thread) {
+      return <ThreadMessages thread={{ rootId: threadId, messages: [], root: getRoot(threadId) }} pubkey={pubkey} />;
+    } else return <ThreadMessages thread={thread} pubkey={pubkey} />;
   };
 
   return (

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { CardProps, Flex } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -7,30 +8,30 @@ import MessageBubble, { MessageBubbleProps } from "./message-bubble";
 import { useThreadsContext } from "./thread-provider";
 import ThreadButton from "./thread-button";
 
-function MessageBubbleWithThread({ message, ...props }: MessageBubbleProps) {
+function MessageBubbleWithThread({ message, showThreadButton = true, ...props }: MessageBubbleProps) {
   const { threads } = useThreadsContext();
   const thread = threads[message.id];
 
   return (
     <>
-      {thread && <ThreadButton thread={thread} />}
-      <MessageBubble message={message} {...props} />
+      {showThreadButton && !!thread && <ThreadButton thread={thread} />}
+      <MessageBubble message={message} showThreadButton={showThreadButton && !thread} {...props} />
     </>
   );
 }
 
-export default function MessageBlock({
+function MessageBlock({
   messages,
-  showThreadButtons = true,
+  showThreadButton = true,
   reverse = false,
-}: { messages: NostrEvent[]; showThreadButtons?: boolean; reverse?: boolean } & Omit<CardProps, "children">) {
+}: { messages: NostrEvent[]; showThreadButton?: boolean; reverse?: boolean } & Omit<CardProps, "children">) {
   const lastEvent = messages[messages.length - 1];
   const account = useCurrentAccount()!;
   const isOwn = account.pubkey === lastEvent.pubkey;
 
   const avatar = <UserAvatar pubkey={lastEvent.pubkey} size="sm" my="1" />;
 
-  const MessageBubbleComponent = showThreadButtons ? MessageBubbleWithThread : MessageBubble;
+  const MessageBubbleComponent = showThreadButton ? MessageBubbleWithThread : MessageBubble;
 
   return (
     <Flex direction="row" gap="2" alignItems="flex-end">
@@ -51,7 +52,9 @@ export default function MessageBlock({
             message={message}
             showHeader={reverse ? i === arr.length - 1 : i === 0}
             minW={{ base: 0, sm: "sm", md: "md" }}
+            maxW="full"
             overflow="hidden"
+            showThreadButton={showThreadButton}
           />
         ))}
       </Flex>
@@ -59,3 +62,5 @@ export default function MessageBlock({
     </Flex>
   );
 }
+
+export default memo(MessageBlock);
