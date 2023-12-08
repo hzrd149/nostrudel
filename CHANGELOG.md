@@ -1,5 +1,16 @@
 # nostrudel
 
+## 0.37.0
+
+### Minor Changes
+
+- 53b2c9e3: Add reactions and zaps to DMs
+- 98b4bef4: Add support for threads in DMs
+- 43faa025: Add support for Amber signer
+- 53b2c9e3: Make DMs view more readable
+- 53b2c9e3: Add support for NIP-46 signer
+- ca4d6df8: Support NIP-31 on unknown event kinds
+
 ## 0.36.0
 
 ### Minor Changes
