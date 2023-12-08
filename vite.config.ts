@@ -33,7 +33,7 @@ export default defineConfig({
       manifest: {
         name: "noStrudel",
         short_name: "noStrudel",
-        description: "A simple PWA nostr client",
+        description: "A sandbox for exploring nostr",
         orientation: "any",
         theme_color: "#8DB600",
         categories: ["nostr"],
