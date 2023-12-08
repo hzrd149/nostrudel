@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="screenshots/icon.svg" alt="Project Logo" width="21%">
+</p>
+
 # noStrudel
 
 > NOTE: This client is still in development and will have bugs
