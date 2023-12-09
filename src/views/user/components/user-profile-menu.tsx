@@ -1,7 +1,6 @@
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { useCopyToClipboard } from "react-use";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import {
@@ -13,6 +12,7 @@ import {
   RelayIcon,
   SpyIcon,
   UnmuteIcon,
+  ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
@@ -38,13 +38,11 @@ export const UserProfileMenu = ({
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
 
-  const [_clipboardState, copyToClipboard] = useCopyToClipboard();
-
   const loginAsUser = () => {
     const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
     if (!accountService.hasAccount(pubkey)) {
       accountService.addAccount({
-        type: 'pubkey',
+        type: "pubkey",
         pubkey,
         relays: readRelays,
         readonly: true,
@@ -70,8 +68,17 @@ export const UserProfileMenu = ({
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<CopyToClipboardIcon />}>
+        <MenuItem
+          onClick={() => window.navigator.clipboard.writeText("https://njump.me/" + sharableId)}
+          icon={<ShareIcon />}
+        >
           Copy share link
+        </MenuItem>
+        <MenuItem
+          onClick={() => window.navigator.clipboard.writeText("nostr:" + sharableId)}
+          icon={<CopyToClipboardIcon />}
+        >
+          Copy Embed Code
         </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw

@@ -13,7 +13,7 @@ export default function CopyShareLinkMenuItem({ event }: { event: NostrEvent }) 
         onClick={() => window.navigator.clipboard.writeText("https://njump.me/" + address)}
         icon={<ShareIcon />}
       >
-        Copy Share Link
+        Copy share link
       </MenuItem>
     )
   );
