@@ -34,7 +34,7 @@ function rejectPending() {
 
 function onVisibilityChange() {
   if (document.visibilityState === "visible") {
-    if (!pendingRequest) return;
+    if (!pendingRequest || !navigator.clipboard) return;
 
     // read the result from the clipboard
     setTimeout(() => {
@@ -92,7 +92,7 @@ async function nip04Decrypt(pubkey: string, data: string): Promise<string> {
 }
 
 const amberSignerService = {
-  supported: navigator.userAgent.includes("Android"),
+  supported: navigator.userAgent.includes("Android") && navigator.clipboard,
   getPublicKey,
   signEvent,
   nip04Encrypt,

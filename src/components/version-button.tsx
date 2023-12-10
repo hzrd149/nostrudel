@@ -1,8 +1,9 @@
-import { Button, ButtonProps } from "@chakra-ui/react";
+import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 import { CheckIcon, CopyToClipboardIcon } from "./icons";
 import { useState } from "react";
 
 export default function VersionButton({ ...props }: Omit<ButtonProps, "children">) {
+  const toast = useToast();
   const [copied, setCopied] = useState(false);
   const version = [import.meta.env.VITE_APP_VERSION, import.meta.env.VITE_COMMIT_HASH].filter(Boolean).join("-");
 
@@ -18,7 +19,7 @@ export default function VersionButton({ ...props }: Omit<ButtonProps, "children"
           navigator.clipboard.writeText(version);
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
-        }
+        } else toast({ description: version, isClosable: true, duration: null });
       }}
       {...props}
     >

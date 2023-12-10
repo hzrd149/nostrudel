@@ -1,4 +1,4 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
@@ -14,6 +14,7 @@ export default function CommunityPostMenu({
   approvals,
   ...props
 }: Omit<MenuIconButtonProps, "children"> & { event: NostrEvent; approvals: NostrEvent[] }) {
+  const toast = useToast();
   const debugModal = useDisclosure();
 
   return (
@@ -22,7 +23,11 @@ export default function CommunityPostMenu({
         <OpenInAppMenuItem event={event} />
         <CopyShareLinkMenuItem event={event} />
         <MenuItem
-          onClick={() => window.navigator.clipboard.writeText(nip19.noteEncode(event.id))}
+          onClick={() => {
+            const text = nip19.noteEncode(event.id);
+            if (navigator.clipboard) navigator.clipboard.writeText(text);
+            else toast({ description: text, isClosable: true, duration: null });
+          }}
           icon={<CopyToClipboardIcon />}
         >
           Copy Note ID

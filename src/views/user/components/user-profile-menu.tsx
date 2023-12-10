@@ -1,4 +1,4 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
@@ -31,6 +31,7 @@ export const UserProfileMenu = ({
   showRelaySelectionModal,
   ...props
 }: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
+  const toast = useToast();
   const account = useCurrentAccount();
   const metadata = useUserMetadata(pubkey);
   const userRelays = useUserRelays(pubkey);
@@ -69,13 +70,21 @@ export const UserProfileMenu = ({
           Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
         <MenuItem
-          onClick={() => window.navigator.clipboard.writeText("https://njump.me/" + sharableId)}
+          onClick={() => {
+            const text = "https://njump.me/" + sharableId;
+            if (navigator.clipboard) navigator.clipboard?.writeText(text);
+            else toast({ description: text, isClosable: true, duration: null });
+          }}
           icon={<ShareIcon />}
         >
           Copy share link
         </MenuItem>
         <MenuItem
-          onClick={() => window.navigator.clipboard.writeText("nostr:" + sharableId)}
+          onClick={() => {
+            const text = "nostr:" + sharableId;
+            if (navigator.clipboard) navigator.clipboard?.writeText(text);
+            else toast({ description: text, isClosable: true, duration: null });
+          }}
           icon={<CopyToClipboardIcon />}
         >
           Copy Embed Code
