@@ -98,7 +98,7 @@ export function SearchPage() {
         <Flex gap="2" wrap="wrap">
           <Flex gap="2" grow={1}>
             <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
-            {!!navigator.clipboard.readText && (
+            {!!navigator.clipboard?.readText && (
               <IconButton onClick={readClipboard} icon={<CopyToClipboardIcon />} aria-label="Read clipboard" />
             )}
             <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />

@@ -25,7 +25,7 @@ function niceBytes(x: number) {
 }
 
 function DatabaseStats() {
-  const { value: estimatedStorage } = useAsync(() => window.navigator?.storage?.estimate?.(), []);
+  const { value: estimatedStorage } = useAsync(async () => await window.navigator?.storage?.estimate?.(), []);
 
   const { value: replaceableEventCount } = useAsync(async () => {
     const keys = await db.getAllKeys("replaceableEvents");

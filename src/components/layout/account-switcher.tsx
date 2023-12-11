@@ -24,8 +24,10 @@ function AccountItem({ account, onClick }: { account: Account; onClick?: () => v
     <Box display="flex" gap="2" alignItems="center" cursor="pointer">
       <Flex as="button" onClick={handleClick} flex={1} gap="2" overflow="hidden" alignItems="center">
         <UserAvatar pubkey={pubkey} size="md" />
-        <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
-        <AccountInfoBadge fontSize="0.7em" account={account} />
+        <Flex direction="column" overflow="hidden" alignItems="flex-start">
+          <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
+          <AccountInfoBadge fontSize="0.7em" account={account} />
+        </Flex>
       </Flex>
       <IconButton
         icon={<CloseIcon />}

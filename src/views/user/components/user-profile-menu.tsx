@@ -1,7 +1,6 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { useCopyToClipboard } from "react-use";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import {
@@ -13,6 +12,7 @@ import {
   RelayIcon,
   SpyIcon,
   UnmuteIcon,
+  ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
@@ -31,6 +31,7 @@ export const UserProfileMenu = ({
   showRelaySelectionModal,
   ...props
 }: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
+  const toast = useToast();
   const account = useCurrentAccount();
   const metadata = useUserMetadata(pubkey);
   const userRelays = useUserRelays(pubkey);
@@ -38,13 +39,11 @@ export const UserProfileMenu = ({
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
 
-  const [_clipboardState, copyToClipboard] = useCopyToClipboard();
-
   const loginAsUser = () => {
     const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
     if (!accountService.hasAccount(pubkey)) {
       accountService.addAccount({
-        type: 'pubkey',
+        type: "pubkey",
         pubkey,
         relays: readRelays,
         readonly: true,
@@ -70,8 +69,25 @@ export const UserProfileMenu = ({
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
         </MenuItem>
-        <MenuItem onClick={() => copyToClipboard("nostr:" + sharableId)} icon={<CopyToClipboardIcon />}>
+        <MenuItem
+          onClick={() => {
+            const text = "https://njump.me/" + sharableId;
+            if (navigator.clipboard) navigator.clipboard?.writeText(text);
+            else toast({ description: text, isClosable: true, duration: null });
+          }}
+          icon={<ShareIcon />}
+        >
           Copy share link
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            const text = "nostr:" + sharableId;
+            if (navigator.clipboard) navigator.clipboard?.writeText(text);
+            else toast({ description: text, isClosable: true, duration: null });
+          }}
+          icon={<CopyToClipboardIcon />}
+        >
+          Copy Embed Code
         </MenuItem>
         <MenuItem onClick={infoModal.onOpen} icon={<CodeIcon />}>
           View Raw
