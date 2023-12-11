@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.37.1
+
+### Patch Changes
+
+- feec6880: Fix storage and clipboard use on http connection
+
 ## 0.37.0
 
 ### Minor Changes
