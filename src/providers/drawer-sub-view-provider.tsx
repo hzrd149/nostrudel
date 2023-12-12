@@ -114,7 +114,7 @@ const log = logger.extend("DrawerRouter");
 
 export function useRouterMarker(router: Router) {
   const index = useRef<number | null>(null);
-  const set = useCallback((v=0) => (index.current = v), []);
+  const set = useCallback((v = 0) => (index.current = v), []);
   const reset = useCallback(() => (index.current = null), []);
 
   useEffect(() => {

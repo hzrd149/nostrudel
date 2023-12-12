@@ -3,8 +3,10 @@ import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "./relay-pool";
 import _throttle from "lodash.throttle";
 
-const enabled = !!localStorage.getItem("enable-cache-relay");
-export const LOCAL_CACHE_RELAY = "ws://localhost:7000";
+const enabled = !!window.CACHE_RELAY_ENABLED;
+const url = new URL("/cache-relay", location.href);
+url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+export const LOCAL_CACHE_RELAY = url.toString();
 
 const wroteEvents = new Set<string>();
 const writeQueue: NostrEvent[] = [];

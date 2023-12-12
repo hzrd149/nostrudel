@@ -115,16 +115,12 @@ export default function PerformanceSettings() {
               <FormLabel htmlFor="localCacheRelay" mb="0">
                 Local Cache Relay
               </FormLabel>
-              <Switch
-                id="localCacheRelay"
-                isChecked={localCacheRelay}
-                onChange={(e) => setLocalCacheRelay(e.target.checked)}
-              />
+              <Switch id="localCacheRelay" isChecked={!!window.CACHE_RELAY_ENABLED} />
               <Button onClick={cacheDetails.onOpen} variant="link" ml="4">
                 Details
               </Button>
             </Flex>
-            <FormHelperText>Enabled: Use a local relay as a caching service</FormHelperText>
+            <FormHelperText>Enabled: Use a local relay as a cache</FormHelperText>
 
             <Modal isOpen={cacheDetails.isOpen} onClose={cacheDetails.onClose} size="4xl">
               <ModalOverlay />
@@ -133,31 +129,42 @@ export default function PerformanceSettings() {
                 <ModalCloseButton />
                 <ModalBody px="4" pb="4" pt="0">
                   <Text>
-                    When this option is enabled noStrudel will mirror every event it sees to the relay. It will also try
-                    to load as much data from the relay first before reaching out to other relays.
+                    When this is enabled noStrudel will connect to the relay at ws://{"<app domain>"}/cache-relay and
+                    use it to cache all events it finds.
                   </Text>
                   <Text>
-                    For security reasons noStrudel will only use <Code>ws://localhost:7000</Code> as the cache relay.
+                    For security reasons this can only be enabled when running the docker container and setting the
+                    CACHE_RELAY env variable
                   </Text>
                   <Heading size="md" mt="2">
-                    Linux setup instructions
+                    Docker compose example
                   </Heading>
-                  <Text>
-                    You can run a local relay using{" "}
-                    <Link href="https://www.docker.com/get-started/" isExternal>
-                      docker
-                    </Link>{" "}
-                    and{" "}
-                    <Link href="https://hub.docker.com/r/scsibug/nostr-rs-relay" isExternal>
-                      nostr-rs-relay
-                    </Link>
+                  <Text mt="2">
+                    1. Create a docker-compose.yml file with nostr-rs-relay and noStrudel and set{" "}
+                    <Code>CACHE_RELAY: relay:8080</Code>
                   </Text>
-                  <Text mt="2">1. Create a folder for the data</Text>
-                  <Code>mkdir ~/.nostr-relay/data -p -m 777</Code>
-                  <Text mt="2">2. Start the relay</Text>
-                  <Code>
-                    docker run --rm -it -p 7000:8080 -v ~/.nostr-relay/data:/usr/src/app/db scsibug/nostr-rs-relay
+                  <Code whiteSpace="pre" w="full">
+                    {`version: "3.7"
+volumes:
+  data: {}
+
+services:
+  relay:
+    image: scsibug/nostr-rs-relay:0.8.13
+    volumes:
+      - data:/data
+  app:
+  image: ghcr.io/hzrd149/nostrudel:latest
+    depends_on:
+      - relay
+    environment:
+      CACHE_RELAY: relay:8080
+    ports:
+      - 8080:80
+`.trim()}
                   </Code>
+                  <Text mt="2">2. Start docker compose</Text>
+                  <Code>docker compose up</Code>
                 </ModalBody>
               </ModalContent>
             </Modal>
