@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
-import { Divider, Flex, Heading, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
 import RequireCurrentAccount from "../../providers/require-current-account";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -12,41 +13,22 @@ import { getEventUID, isReply } from "../../helpers/nostr/events";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import NotificationItem, { ExpandableToggleButton } from "./notification-item";
+import NotificationItem from "./notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
 import { NostrEvent } from "../../types/nostr-event";
-import dayjs from "dayjs";
-import SuperMap from "../../classes/super-map";
-
-const specialNames = {
-  [dayjs().startOf("day").unix()]: "Today",
-  [dayjs().subtract(1, "day").startOf("day").unix()]: "Yesterday",
-};
+import { groupByDay } from "../../helpers/notification";
+import DayGroup from "./components/day-group";
 
 function NotificationDay({ day, events }: { day: number; events: NostrEvent[] }) {
-  const expanded = useDisclosure({ defaultIsOpen: true });
-  const now = dayjs();
-  const date = dayjs.unix(day);
-  let title = specialNames[day] || date.fromNow();
-  if (now.diff(date, "week") > 2) {
-    title = date.format("L");
-  }
-
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, expanded.isOpen ? undefined : getEventUID(events[events.length - 1]));
+  useRegisterIntersectionEntity(ref, getEventUID(events[events.length - 1]));
 
   return (
-    <>
-      <Flex gap="4" alignItems="center" mt="4" ref={ref}>
-        <Divider w="10" flexShrink={0} />
-        <Heading size="lg" whiteSpace="nowrap">
-          {title}
-        </Heading>
-        <Divider />
-        <ExpandableToggleButton toggle={expanded} aria-label="Toggle day" title="Toggle day" />
-      </Flex>
-      {expanded.isOpen && events.map((event) => <NotificationItem key={event.id} event={event} />)}
-    </>
+    <DayGroup day={day} ref={ref} hideRefOnClose>
+      {events.map((event) => (
+        <NotificationItem key={event.id} event={event} />
+      ))}
+    </DayGroup>
   );
 }
 
@@ -89,21 +71,12 @@ function NotificationsPage() {
     return true;
   });
 
-  const grouped = useMemo(() => {
-    const map = new SuperMap<number, NostrEvent[]>(() => []);
-    for (const event of events) {
-      const day = dayjs.unix(event.created_at).startOf("day").unix();
-      map.get(day).push(event);
-    }
-    return map;
-  }, [events]);
-
-  const sortedDays = Array.from(grouped.entries()).sort((a, b) => b[0] - a[0]);
+  const sortedDays = useMemo(() => groupByDay(events), [events]);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        <Flex gap="2">
+        <Flex gap="2" wrap="wrap">
           <NotificationTypeToggles
             showReplies={showReplies}
             showMentions={showMentions}
@@ -111,7 +84,12 @@ function NotificationsPage() {
             showReactions={showReactions}
             showReposts={showReposts}
           />
-          <PeopleListSelection flexShrink={0} />
+          <ButtonGroup>
+            <PeopleListSelection flexShrink={0} />
+            <Button as={RouterLink} to="/notifications/threads">
+              Threads
+            </Button>
+          </ButtonGroup>
         </Flex>
 
         {sortedDays.map(([day, events]) => (

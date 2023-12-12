@@ -75,6 +75,7 @@ import DMFeedView from "./views/tools/dm-feed";
 import ContentDiscoveryView from "./views/tools/content-discovery";
 import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
+import ThreadsNotificationsView from "./views/notifications/threads";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -232,7 +233,13 @@ const router = createHashRouter([
         ],
       },
       { path: "r/:relay", element: <RelayView /> },
-      { path: "notifications", element: <NotificationsView /> },
+      {
+        path: "notifications",
+        children: [
+          { path: "threads", element: <ThreadsNotificationsView /> },
+          { path: "", element: <NotificationsView /> },
+        ],
+      },
       { path: "search", element: <SearchView /> },
       {
         path: "dm",

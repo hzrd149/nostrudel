@@ -125,7 +125,7 @@ export default function MessageBubble({
           {(plaintext) => (
             <MessageContent event={message} text={plaintext} display="inline">
               {!hasReactions && (
-                <ButtonGroup size="xs" variant="ghost" float="right">
+                <ButtonGroup size="xs" variant="ghost" float="right" ml="2">
                   {actionPosition === "inline" && actions}
                   <Timestamp timestamp={message.created_at} ml="2" />
                 </ButtonGroup>

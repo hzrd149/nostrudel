@@ -24,7 +24,7 @@ export function useNotificationTimeline() {
 
 export default function NotificationTimelineProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
-  const readRelays = useReadRelayUrls();
+  const inbox = useReadRelayUrls();
 
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -37,7 +37,7 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
 
   const timeline = useTimelineLoader(
     `${account?.pubkey ?? "anon"}-notification`,
-    readRelays,
+    inbox,
     account?.pubkey
       ? {
           "#p": [account.pubkey],

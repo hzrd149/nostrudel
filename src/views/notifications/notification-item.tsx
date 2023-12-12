@@ -1,5 +1,5 @@
-import { PropsWithChildren, ReactNode, forwardRef, memo, useMemo, useRef } from "react";
-import { AvatarGroup, Box, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
+import { ReactNode, forwardRef, memo, useMemo, useRef } from "react";
+import { AvatarGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
 import { Kind, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -17,12 +17,8 @@ import UserAvatarLink from "../../components/user-avatar-link";
 import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";
 import useSingleEvent from "../../hooks/use-single-event";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
+import NotificationIconEntry from "./components/notification-icon-entry";
 
-const IconBox = ({ children }: PropsWithChildren) => (
-  <Box px="2" pb="2">
-    {children}
-  </Box>
-);
 export const ExpandableToggleButton = ({
   toggle,
   ...props
@@ -48,28 +44,16 @@ const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ ev
   else return null;
 });
 const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (
-  <Flex gap="2" ref={ref}>
-    <IconBox>
-      <ReplyIcon boxSize={8} color="green.400" />
-    </IconBox>
-    <Flex direction="column" w="full" gap="2">
-      <EmbedEvent event={event} />
-    </Flex>
-  </Flex>
+  <NotificationIconEntry ref={ref} icon={<ReplyIcon boxSize={8} color="green.400" />}>
+    <EmbedEvent event={event} />
+  </NotificationIconEntry>
 ));
 
-const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
-  return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <AtIcon boxSize={8} color="purple.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <EmbedEvent event={event} />
-      </Flex>
-    </Flex>
-  );
-});
+const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (
+  <NotificationIconEntry ref={ref} icon={<AtIcon boxSize={8} color="purple.400" />}>
+    <EmbedEvent event={event} />
+  </NotificationIconEntry>
+));
 
 const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
@@ -79,20 +63,15 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ 
   if (pointer?.author !== account.pubkey) return null;
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <RepostIcon boxSize={8} color="blue.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={event.pubkey} />
-          </AvatarGroup>
-          <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
-        </Flex>
-        {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    <NotificationIconEntry ref={ref} icon={<RepostIcon boxSize={8} color="blue.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={event.pubkey} />
+        </AvatarGroup>
+        <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
       </Flex>
-    </Flex>
+      {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    </NotificationIconEntry>
   );
 });
 
@@ -106,22 +85,17 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
   if (reactedEvent?.kind === Kind.EncryptedDirectMessage) return null;
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <Heart boxSize={8} color="red.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={event.pubkey} />
-          </AvatarGroup>
-          <Text fontSize="xl">{event.content}</Text>
-          <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
-          {/* <Timestamp timestamp={event.created_at} ml="auto" /> */}
-        </Flex>
-        {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    <NotificationIconEntry ref={ref} icon={<Heart boxSize={8} color="red.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={event.pubkey} />
+        </AvatarGroup>
+        <Text fontSize="xl">{event.content}</Text>
+        <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
+        {/* <Timestamp timestamp={event.created_at} ml="auto" /> */}
       </Flex>
-    </Flex>
+      {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    </NotificationIconEntry>
   );
 });
 
@@ -158,22 +132,17 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
   }
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <LightningIcon boxSize={8} color="yellow.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={zap.request.pubkey} />
-          </AvatarGroup>
-          <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
-          {zap.request.content && <Text>{zap.request.content}</Text>}
-          {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
-        </Flex>
-        {expanded.isOpen && eventJSX}
+    <NotificationIconEntry ref={ref} icon={<LightningIcon boxSize={8} color="yellow.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={zap.request.pubkey} />
+        </AvatarGroup>
+        <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
+        {zap.request.content && <Text>{zap.request.content}</Text>}
+        {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
       </Flex>
-    </Flex>
+      {expanded.isOpen && eventJSX}
+    </NotificationIconEntry>
   );
 });
 

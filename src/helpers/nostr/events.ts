@@ -98,14 +98,11 @@ export function filterTagsByContentRefs(content: string, tags: Tag[], referenced
 
 export type EventReferences = ReturnType<typeof getReferences>;
 export function getReferences(event: NostrEvent | DraftNostrEvent) {
-  const eTags = event.tags.filter(isETag);
-  const pTags = event.tags.filter(isPTag);
-
-  const events = eTags.map((t) => t[1]);
   const contentTagRefs = getContentTagRefs(event.content, event.tags);
 
-  const replyTag = eTags.find((t) => t[3] === "reply");
-  const rootTag = eTags.find((t) => t[3] === "root");
+  const replyTag = event.tags.find((t) => t[3] === "reply");
+  const rootTag = event.tags.find((t) => t[3] === "root");
+  const mentionTags = event.tags.find((t) => t[3] === "mention");
 
   let replyId = replyTag?.[1];
   let replyRelay = replyTag?.[2];
@@ -123,8 +120,8 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
 
   // legacy behavior
   // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-  const legacyTags = eTags.filter((t, i) => {
-    // ignore it if there is a third piece of data
+  const legacyTags = event.tags.filter(isETag).filter((t, i) => {
+    // ignore it if there is a type
     if (t[3]) return false;
     const tagIndex = event.tags.indexOf(t);
     if (contentTagRefs.includes(tagIndex)) return false;
@@ -140,11 +137,15 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
   }
 
   return {
-    events,
+    replyTag,
+    rootTag,
+    mentionTags,
+
     rootId,
     rootRelay,
     replyId,
     replyRelay,
+
     contentTagRefs,
   };
 }
