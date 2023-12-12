@@ -2,9 +2,7 @@
 set -e
 
 CACHE_RELAY_PROXY=""
-if [ -z ${CACHE_RELAY+x} ]; then
-  echo "No cache relay set"
-else
+if [ -n "$CACHE_RELAY" ]; then
   echo "Cache relay set to $CACHE_RELAY"
   sed -i 's/CACHE_RELAY_ENABLED = false/CACHE_RELAY_ENABLED = true/g' /usr/share/nginx/html/index.html
   CACHE_RELAY_PROXY="
@@ -12,6 +10,8 @@ else
         proxy_pass http://$CACHE_RELAY/;
     }
   "
+else
+  echo "No cache relay set"
 fi
 
 CONF_FILE="/etc/nginx/conf.d/default.conf"
