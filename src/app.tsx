@@ -14,7 +14,7 @@ import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
-import ThreadView from "./views/note";
+import ThreadView from "./views/thread";
 import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/dms";
 import DirectMessageChatView from "./views/dms/chat";

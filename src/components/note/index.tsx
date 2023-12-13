@@ -36,7 +36,7 @@ import { useRegisterIntersectionEntity } from "../../providers/intersection-obse
 import BookmarkButton from "./components/bookmark-button";
 import useCurrentAccount from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
-import ReplyForm from "../../views/note/components/reply-form";
+import ReplyForm from "../../views/thread/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";

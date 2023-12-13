@@ -26,7 +26,7 @@ import {
 import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from "react-router-dom";
 
 import { ErrorBoundary } from "../components/error-boundary";
-import ThreadView from "../views/note";
+import ThreadView from "../views/thread";
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
 import { PageProviders } from ".";
 import { logger } from "../helpers/debug";

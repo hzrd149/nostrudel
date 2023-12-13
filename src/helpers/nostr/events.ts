@@ -1,10 +1,11 @@
 import { Kind, nip19, validateEvent } from "nostr-tools";
 
-import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
+import { ATag, DraftNostrEvent, isDTag, isETag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
+import { COMMUNITY_DEFINITION_KIND } from "./communities";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -26,6 +27,7 @@ export function getEventUID(event: NostrEvent) {
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   if (event.kind === Kind.Repost) return false;
+  // TODO: update this to only look for a "root" or "reply" tag
   return !!getReferences(event).replyId;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
@@ -96,12 +98,19 @@ export function filterTagsByContentRefs(content: string, tags: Tag[], referenced
   return newTags;
 }
 
+function isCommunityRefTag(t: Tag): t is ATag {
+  return t.length >= 2 && t[0] === "a" && t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":");
+}
+
 export type EventReferences = ReturnType<typeof getReferences>;
 export function getReferences(event: NostrEvent | DraftNostrEvent) {
   const contentTagRefs = getContentTagRefs(event.content, event.tags);
 
-  const replyTag = event.tags.find((t) => t[3] === "reply");
-  const rootTag = event.tags.find((t) => t[3] === "root");
+  // find the root and reply tags.
+  // NOTE: Ignore community reference tags since there is another client out there that is marking them as "root"
+  // and it dose not make sense to "reply" to a community
+  const replyTag = event.tags.find((t) => !isCommunityRefTag(t) && t[3] === "reply");
+  const rootTag = event.tags.find((t) => !isCommunityRefTag(t) && t[3] === "root");
   const mentionTags = event.tags.find((t) => t[3] === "mention");
 
   let replyId = replyTag?.[1];

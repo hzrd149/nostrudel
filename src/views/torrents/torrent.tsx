@@ -43,7 +43,7 @@ import NoteZapButton from "../../components/note/note-zap-button";
 import TorrentMenu from "./components/torrent-menu";
 import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
 import TorrentComments from "./components/torrents-comments";
-import ReplyForm from "../note/components/reply-form";
+import ReplyForm from "../thread/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
 

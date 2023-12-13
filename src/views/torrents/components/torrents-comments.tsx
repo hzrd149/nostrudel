@@ -30,7 +30,7 @@ import { TrustProvider } from "../../../providers/trust";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import { ReplyIcon } from "../../../components/icons";
-import ReplyForm from "../../note/components/reply-form";
+import ReplyForm from "../../thread/components/reply-form";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
