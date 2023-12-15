@@ -8,7 +8,7 @@ import Timestamp from "../../timestamp";
 import DecryptPlaceholder from "../../../views/dms/components/decrypt-placeholder";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
-import { MessageContent } from "../../../views/dms/components/message-bubble";
+import DirectMessageContent from "../../../views/dms/components/direct-message-content";
 
 export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children"> & { dm: NostrEvent }) {
   const account = useCurrentAccount();
@@ -31,7 +31,7 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
         {(sender === account?.pubkey || receiver === account?.pubkey) && (
           <CardBody px="2" pt="0" pb="2">
             <DecryptPlaceholder message={dm}>
-              {(plaintext) => <MessageContent event={dm} text={plaintext} />}
+              {(plaintext) => <DirectMessageContent event={dm} text={plaintext} />}
             </DecryptPlaceholder>
           </CardBody>
         )}

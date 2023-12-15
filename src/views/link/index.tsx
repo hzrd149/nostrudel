@@ -6,7 +6,6 @@ import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
-import { decode } from "ngeohash";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 
 function NostrLinkPage() {

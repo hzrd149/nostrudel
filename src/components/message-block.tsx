@@ -1,12 +1,11 @@
-import { memo } from "react";
 import { CardProps, Flex } from "@chakra-ui/react";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatar from "../../../components/user-avatar";
+import useCurrentAccount from "../hooks/use-current-account";
+import { NostrEvent } from "../types/nostr-event";
+import UserAvatar from "./user-avatar";
 import MessageBubble, { MessageBubbleProps } from "./message-bubble";
-import { useThreadsContext } from "./thread-provider";
-import ThreadButton from "./thread-button";
+import { useThreadsContext } from "../providers/thread-provider";
+import ThreadButton from "../views/dms/components/thread-button";
 
 function MessageBubbleWithThread({ message, showThreadButton = true, ...props }: MessageBubbleProps) {
   const { threads } = useThreadsContext();
@@ -20,11 +19,19 @@ function MessageBubbleWithThread({ message, showThreadButton = true, ...props }:
   );
 }
 
-function MessageBlock({
+export type MessageBlockProps = Omit<CardProps, "children"> & {
+  messages: NostrEvent[];
+  showThreadButton?: boolean;
+  reverse?: boolean;
+  renderContent: MessageBubbleProps["renderContent"];
+};
+
+export default function MessageBlock({
   messages,
   showThreadButton = true,
   reverse = false,
-}: { messages: NostrEvent[]; showThreadButton?: boolean; reverse?: boolean } & Omit<CardProps, "children">) {
+  renderContent,
+}: MessageBlockProps) {
   const lastEvent = messages[messages.length - 1];
   const account = useCurrentAccount()!;
   const isOwn = account.pubkey === lastEvent.pubkey;
@@ -55,6 +62,7 @@ function MessageBlock({
             maxW="full"
             overflow="hidden"
             showThreadButton={showThreadButton}
+            renderContent={renderContent}
           />
         ))}
       </Flex>
@@ -62,5 +70,3 @@ function MessageBlock({
     </Flex>
   );
 }
-
-export default memo(MessageBlock);

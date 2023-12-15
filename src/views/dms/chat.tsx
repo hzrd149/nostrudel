@@ -1,5 +1,5 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, Card, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
 import { Kind, nip19 } from "nostr-tools";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -9,7 +9,6 @@ import UserLink from "../../components/user-link";
 import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/require-current-account";
-import MessageBlock from "./components/message-block";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -21,9 +20,10 @@ import { useDecryptionContext } from "../../providers/dycryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
-import ThreadsProvider from "./components/thread-provider";
+import ThreadsProvider from "../../providers/thread-provider";
 import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
+import DirectMessageBlock from "./components/direct-message-block";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -37,7 +37,7 @@ const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
   return (
     <>
       {grouped.map((group) => (
-        <MessageBlock key={group.id} messages={group.events} reverse />
+        <DirectMessageBlock key={group.id} messages={group.events} reverse />
       ))}
     </>
   );
