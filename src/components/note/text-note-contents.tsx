@@ -24,9 +24,10 @@ import {
   embedCashuTokens,
   renderStemstrUrl,
   renderSoundCloudUrl,
+  renderSimpleXLink,
+  renderRedditUrl,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
-import { renderRedditUrl } from "../embed-types/reddit";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -36,6 +37,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
 
   // common
   content = embedUrls(content, [
+    renderSimpleXLink,
     renderYoutubeUrl,
     renderTwitterUrl,
     renderRedditUrl,
