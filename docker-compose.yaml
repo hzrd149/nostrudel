@@ -7,7 +7,7 @@ services:
   relay:
     image: scsibug/nostr-rs-relay:0.8.13
     volumes:
-      - data:/data
+      - data:/usr/src/app/db
   app:
     build: .
     depends_on:
