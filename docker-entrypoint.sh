@@ -7,7 +7,10 @@ if [ -n "$CACHE_RELAY" ]; then
   sed -i 's/CACHE_RELAY_ENABLED = false/CACHE_RELAY_ENABLED = true/g' /usr/share/nginx/html/index.html
   CACHE_RELAY_PROXY="
     location /cache-relay {
-        proxy_pass http://$CACHE_RELAY/;
+      proxy_pass http://$CACHE_RELAY/;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade \$http_upgrade;
+      proxy_set_header Connection "upgrade";
     }
   "
 else
