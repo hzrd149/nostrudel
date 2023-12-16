@@ -36,7 +36,10 @@ export function useRegisterIntersectionEntity(ref: MutableRefObject<Element | nu
   useEffect(() => {
     if (observer && ref.current) {
       observer.observe(ref.current);
-      if (id) setElementId(ref.current, id);
+      if (id) {
+        setElementId(ref.current, id);
+        if (import.meta.env.DEV) ref.current.setAttribute("data-event-id", id);
+      }
     }
   }, [observer]);
   useUnmount(() => {
