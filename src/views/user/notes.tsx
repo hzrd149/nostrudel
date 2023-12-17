@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Flex, Spacer } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
@@ -12,13 +12,14 @@ import { STREAM_KIND } from "../../helpers/nostr/stream";
 import TimelineViewType from "../../components/timeline-page/timeline-view-type";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 
 export default function UserNotesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const showReplies = useDisclosure();
-  const showReposts = useDisclosure({ defaultIsOpen: true });
+  const showReplies = useRouteStateBoolean("show-replies", false);
+  const showReposts = useRouteStateBoolean("show-reposts", true);
 
   const timelineEventFilter = useTimelinePageEventFilter();
   const eventFilter = useCallback(

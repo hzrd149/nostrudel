@@ -5,12 +5,9 @@ import {
   EditableInput,
   EditablePreview,
   Flex,
-  FormControl,
-  FormLabel,
   IconButton,
   Input,
   Spacer,
-  useDisclosure,
   useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
@@ -30,6 +27,7 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -53,8 +51,8 @@ function HashTagPage() {
 
   useAppTitle("#" + hashtag);
 
-  const showReplies = useDisclosure({ defaultIsOpen: true });
-  const showReposts = useDisclosure({ defaultIsOpen: true });
+  const showReplies = useRouteStateBoolean("show-replies", true);
+  const showReposts = useRouteStateBoolean("show-reposts", true);
 
   const readRelays = useRelaySelectionRelays();
 
