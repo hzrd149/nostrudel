@@ -1,23 +1,11 @@
-import {
-  Button,
-  Card,
-  CardHeader,
-  ComponentWithAs,
-  Flex,
-  Heading,
-  IconProps,
-  Image,
-  Link,
-  LinkBox,
-} from "@chakra-ui/react";
+import { Card, CardHeader, ComponentWithAs, Flex, Heading, IconProps, Image, Link, LinkBox } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { DirectMessagesIcon, ExternalLinkIcon, LiveStreamIcon, MapIcon, MuteIcon } from "../../components/icons";
+import { DirectMessagesIcon, LiveStreamIcon, MapIcon, MuteIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import ShieldOff from "../../components/icons/shield-off";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import Users01 from "../../components/icons/users-01";
-import PackageSearch from "../../components/icons/package-search";
 import Magnet from "../../components/icons/magnet";
 
 function InternalLink({
@@ -62,9 +50,6 @@ export default function ToolsHomeView() {
     <VerticalPageLayout>
       <Heading>Tools</Heading>
       <Flex wrap="wrap" gap="4">
-        <InternalLink to="/tools/content-discovery" icon={PackageSearch}>
-          Discovery DVM
-        </InternalLink>
         <InternalLink to="/tools/stream-moderation" icon={LiveStreamIcon}>
           Stream Moderation
         </InternalLink>

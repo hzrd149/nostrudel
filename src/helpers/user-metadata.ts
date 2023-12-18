@@ -7,6 +7,8 @@ export type Kind0ParsedContent = {
   name?: string;
   display_name?: string;
   about?: string;
+  /** @deprecated */
+  image?: string
   picture?: string;
   banner?: string;
   website?: string;

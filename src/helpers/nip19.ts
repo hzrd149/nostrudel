@@ -1,4 +1,3 @@
-import { bech32 } from "bech32";
 import { getPublicKey, nip19 } from "nostr-tools";
 
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
@@ -13,36 +12,6 @@ export function isHex(str?: string) {
 export function isHexKey(key?: string) {
   if (key?.toLowerCase()?.match(/^[0-9a-f]{64}$/)) return true;
   return false;
-}
-
-/** @deprecated */
-export function isBech32Key(bech32String: string) {
-  try {
-    const { prefix } = bech32.decode(bech32String.toLowerCase());
-    if (!prefix) return false;
-    if (!isHexKey(bech32ToHex(bech32String))) return false;
-  } catch (error) {
-    return false;
-  }
-  return true;
-}
-
-/** @deprecated */
-export function bech32ToHex(bech32String: string) {
-  try {
-    const { words } = bech32.decode(bech32String);
-    return toHexString(new Uint8Array(bech32.fromWords(words)));
-  } catch (error) {}
-  return "";
-}
-
-/** @deprecated */
-export function toHexString(buffer: Uint8Array) {
-  return buffer.reduce((s, byte) => {
-    let hex = byte.toString(16);
-    if (hex.length === 1) hex = "0" + hex;
-    return s + hex;
-  }, "");
 }
 
 export function safeDecode(str: string) {
@@ -64,11 +33,11 @@ export function getPubkeyFromDecodeResult(result?: nip19.DecodeResult) {
   }
 }
 
-/** @deprecated */
 export function normalizeToHex(hex: string) {
   if (isHexKey(hex)) return hex;
-  if (isBech32Key(hex)) return bech32ToHex(hex);
-  return null;
+  const decode = safeDecode(hex);
+  if (!decode) return null;
+  return getPubkeyFromDecodeResult(decode) ?? null;
 }
 
 export function getSharableEventAddress(event: NostrEvent) {

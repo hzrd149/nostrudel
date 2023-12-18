@@ -10,6 +10,7 @@ import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 
 import HomeView from "./views/home/index";
+import DVMFeedHomeView from "./views/dvm-feed/index";
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -72,10 +73,9 @@ import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
 import UserDMsTab from "./views/user/dms";
 import DMFeedView from "./views/tools/dm-feed";
-import ContentDiscoveryView from "./views/tools/content-discovery";
-import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
+import DVMFeedView from "./views/dvm-feed/feed";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -240,6 +240,13 @@ const router = createHashRouter([
           { path: "", element: <NotificationsView /> },
         ],
       },
+      {
+        path: "dvm",
+        children: [
+          { path: ":addr", element: <DVMFeedView /> },
+          { path: "", element: <DVMFeedHomeView /> },
+        ],
+      },
       { path: "search", element: <SearchView /> },
       {
         path: "dm",
@@ -251,13 +258,6 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
-          {
-            path: "content-discovery",
-            children: [
-              { path: "", element: <ContentDiscoveryView /> },
-              { path: ":pubkey", element: <ContentDiscoveryDVMView /> },
-            ],
-          },
           { path: "network", element: <NetworkView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },

@@ -26,6 +26,7 @@ import accountService from "../../services/account";
 import { useLocalStorage } from "react-use";
 import ZapModal from "../event-zap-modal";
 import dayjs from "dayjs";
+import PuzzlePiece01 from "../icons/puzzle-piece-01";
 
 export default function NavItems() {
   const location = useLocation();
@@ -42,6 +43,7 @@ export default function NavItems() {
 
   let active = "notes";
   if (location.pathname.startsWith("/notifications")) active = "notifications";
+  else if (location.pathname.startsWith("/dvm")) active = "dvm";
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
@@ -77,6 +79,15 @@ export default function NavItems() {
         {...buttonProps}
       >
         Notes
+      </Button>
+      <Button
+        as={RouterLink}
+        to="/dvm"
+        leftIcon={<PuzzlePiece01 boxSize={6} />}
+        colorScheme={active === "dvm" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Discover
       </Button>
       {account && (
         <>

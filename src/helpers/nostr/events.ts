@@ -174,6 +174,13 @@ export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
+export function getEventAddressPointer(event: NostrEvent): AddressPointer {
+  const { kind, pubkey } = event;
+  if (!isReplaceable(kind)) throw new Error("Event is not replaceable");
+  const identifier = event.tags.find(isDTag)?.[1];
+  if (!identifier) throw new Error("Missing identifier");
+  return { kind, pubkey, identifier };
+}
 export function pointerToATag(pointer: AddressPointer): ATag {
   const relay = pointer.relays?.[0];
   const coordinate = `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
@@ -186,16 +193,27 @@ export type CustomEventPointer = Omit<AddressPointer, "identifier"> & {
 
 export function parseCoordinate(a: string): CustomEventPointer | null;
 export function parseCoordinate(a: string, requireD: false): CustomEventPointer | null;
-export function parseCoordinate(a: string, requireD: true): AddressPointer;
-export function parseCoordinate(a: string, requireD = false): CustomEventPointer | null {
+export function parseCoordinate(a: string, requireD: true): AddressPointer | null;
+export function parseCoordinate(a: string, requireD: false, silent: false): CustomEventPointer;
+export function parseCoordinate(a: string, requireD: true, silent: false): AddressPointer;
+export function parseCoordinate(a: string, requireD = false, silent = true): CustomEventPointer | null {
   const parts = a.split(":") as (string | undefined)[];
   const kind = parts[0] && parseInt(parts[0]);
   const pubkey = parts[1];
   const d = parts[2];
 
-  if (!kind) return null;
-  if (!pubkey) return null;
-  if (requireD && !d) return null;
+  if (!kind) {
+    if (silent) return null;
+    else throw new Error("Missing kind");
+  }
+  if (!pubkey) {
+    if (silent) return null;
+    else throw new Error("Missing pubkey");
+  }
+  if (requireD && !d) {
+    if (silent) return null;
+    else throw new Error("Missing identifier");
+  }
 
   return {
     kind,
