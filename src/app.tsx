@@ -90,6 +90,7 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
+const FilesView = lazy(() => import("./views/files"));
 
 const ChannelsHomeView = lazy(() => import("./views/channels"));
 const ChannelView = lazy(() => import("./views/channels/channel"));
@@ -224,6 +225,7 @@ const router = createHashRouter([
         element: <ThreadView />,
       },
       { path: "settings", element: <SettingsView /> },
+      { path: "files", element: <FilesView /> },
       {
         path: "relays",
         children: [
