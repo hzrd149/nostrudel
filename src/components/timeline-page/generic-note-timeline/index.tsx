@@ -1,68 +1,15 @@
-import { ReactNode, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Button } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
+import { useThrottle } from "react-use";
 
 import useSubject from "../../../hooks/use-subject";
 import TimelineLoader from "../../../classes/timeline-loader";
-import RepostNote from "./repost-note";
-import { Note } from "../../note";
 import { NostrEvent } from "../../../types/nostr-event";
-import { STREAM_KIND } from "../../../helpers/nostr/stream";
-import StreamNote from "./stream-note";
-import { ErrorBoundary } from "../../error-boundary";
-import { getEventUID, isReply } from "../../../helpers/nostr/events";
-import ReplyNote from "./reply-note";
-import RelayRecommendation from "./relay-recommendation";
-import {
-  ExtendedIntersectionObserverEntry,
-  useIntersectionObserver,
-  useRegisterIntersectionEntity,
-} from "../../../providers/intersection-observer";
-import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
-import ArticleNote from "./article-note";
-import SuperMap from "../../../classes/super-map";
-import { useDebounce, useThrottle } from "react-use";
-
-function RenderEvent({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
-
-  let content: ReactNode | null = null;
-  switch (event.kind) {
-    case Kind.Text:
-      content = isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
-      break;
-    case Kind.Repost:
-      content = <RepostNote event={event} />;
-      break;
-    case Kind.Article:
-      content = <ArticleNote article={event} />;
-      break;
-    case STREAM_KIND:
-      content = <StreamNote event={event} />;
-      break;
-    case Kind.RecommendRelay:
-      content = <RelayRecommendation event={event} />;
-      break;
-    case Kind.BadgeAward:
-      content = <BadgeAwardCard award={event} />;
-      break;
-    default:
-      content = <Text>Unknown event kind: {event.kind}</Text>;
-      break;
-  }
-
-  return (
-    <ErrorBoundary>
-      <Box minHeight={minHeight} ref={ref}>
-        {visible && content}
-      </Box>
-    </ErrorBoundary>
-  );
-}
-const RenderEventMemo = memo(RenderEvent);
+import { getEventUID } from "../../../helpers/nostr/events";
+import { ExtendedIntersectionObserverEntry, useIntersectionObserver } from "../../../providers/intersection-observer";
+import GenericTimelineNote from "./generic-timeline-note";
 
 const NOTE_BUFFER = 5;
 const timelineNoteMinHeightCache = new WeakMap<TimelineLoader, Record<string, Record<string, number>>>();
@@ -206,7 +153,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
         </Box>
       )}
       {notes.map((note) => (
-        <RenderEventMemo
+        <GenericTimelineNote
           key={note.id}
           event={note}
           visible={note.created_at <= maxDate}
