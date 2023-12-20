@@ -90,7 +90,9 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
-const FilesView = lazy(() => import("./views/files"));
+
+const ThingsView = lazy(() => import("./views/things/index"));
+const ThingUploadView = lazy(() => import("./views/things/upload"));
 
 const ChannelsHomeView = lazy(() => import("./views/channels"));
 const ChannelView = lazy(() => import("./views/channels/channel"));
@@ -225,7 +227,6 @@ const router = createHashRouter([
         element: <ThreadView />,
       },
       { path: "settings", element: <SettingsView /> },
-      { path: "files", element: <FilesView /> },
       {
         path: "relays",
         children: [
@@ -264,6 +265,13 @@ const router = createHashRouter([
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
           { path: "dm-feed", element: <DMFeedView /> },
+        ],
+      },
+      {
+        path: "things",
+        children: [
+          { path: "", element: <ThingsView /> },
+          { path: "upload", element: <ThingUploadView /> },
         ],
       },
       {

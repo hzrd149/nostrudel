@@ -1,11 +1,10 @@
-import { Box, Flex, Image, SimpleGrid, SkipNavContent, Spacer, Text } from "@chakra-ui/react";
+import { Flex, Image, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
-import BlurhashImage from "../../components/blurhash-image";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useAppSettings from "../../hooks/use-app-settings";
 import { TrustProvider, useTrusted } from "../../providers/trust";
@@ -15,7 +14,7 @@ import RelaySelectionProvider, { useRelaySelectionContext } from "../../provider
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { UserAvatarLink } from "../../components/user-avatar-link";
-import { UserLink } from "../../components/user-link";
+import UserLink from "../../components/user-link";
 import MimeTypePicker from "./mime-type-picker";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
