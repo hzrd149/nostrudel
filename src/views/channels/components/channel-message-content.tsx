@@ -9,6 +9,7 @@ import {
   embedEmoji,
   embedImageGallery,
   embedLightningInvoice,
+  embedNipDefinitions,
   embedNostrHashtags,
   embedNostrLinks,
   embedNostrMentions,
@@ -64,6 +65,7 @@ const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & 
     c = embedNostrLinks(c);
     c = embedNostrMentions(c, message);
     c = embedNostrHashtags(c, message);
+    c = embedNipDefinitions(c);
     c = embedEmoji(c, message);
 
     return c;

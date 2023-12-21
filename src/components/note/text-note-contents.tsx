@@ -26,6 +26,7 @@ import {
   renderSoundCloudUrl,
   renderSimpleXLink,
   renderRedditUrl,
+  embedNipDefinitions,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 
@@ -63,6 +64,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
   content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
+  content = embedNipDefinitions(content);
   content = embedEmoji(content, event);
 
   return content;
