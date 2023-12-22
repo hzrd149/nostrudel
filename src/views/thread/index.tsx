@@ -93,9 +93,6 @@ export default function ThreadView() {
           <Spinner /> Loading note
         </Heading>
       )}
-      {/* <Code as="pre">
-        {JSON.stringify({ pointer, rootId, focused: focusedEvent?.id, refs, timelineId, events: events.length }, null, 2)}
-      </Code> */}
       <IntersectionObserverProvider callback={callback}>
         {focusedEvent && rootId ? (
           <ThreadPage thread={thread} rootId={rootId} focusId={focusedEvent.id} />
