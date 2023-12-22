@@ -47,6 +47,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
+import { useThrottle } from "react-use";
 
 type FormValues = {
   subject: string;
@@ -147,6 +148,8 @@ export default function PostModal({
   const canSubmit = getValues().content.length > 0;
   const mentions = getContentMentions(correctContentMentions(getValues().content));
 
+  const previewDraft = useThrottle(getDraft(), 500);
+
   const renderContent = () => {
     if (publishAction) {
       return (
@@ -176,12 +179,12 @@ export default function PostModal({
             if (e.ctrlKey && e.key === "Enter") submit();
           }}
         />
-        {getValues().content.length > 0 && (
+        {previewDraft.content.length > 0 && (
           <Box>
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
               <TrustProvider trust>
-                <NoteContents event={getDraft()} />
+                <NoteContents event={previewDraft} />
               </TrustProvider>
             </Box>
           </Box>
