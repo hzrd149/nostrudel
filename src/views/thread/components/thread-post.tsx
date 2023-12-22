@@ -71,8 +71,6 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
     </Alert>
   );
 
-  if (isMuted && replies.length === 0) return null;
-
   const colorProps = useThreadColorLevelProps(level, focusId === post.event.id);
 
   const header = (
@@ -138,6 +136,8 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, post.event.id);
+
+  if (isMuted && replies.length === 0) return null;
 
   return (
     <>
