@@ -25,6 +25,7 @@ import { useContextEmojis } from "../../../providers/emoji-provider";
 import { TrustProvider } from "../../../providers/trust";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
+import { useThrottle } from "react-use";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -96,6 +97,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kin
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
+  const previewDraft = useThrottle(draft, 500);
 
   return (
     <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit} ref={formRef}>
@@ -142,10 +144,10 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kin
           </Button>
         </ButtonGroup>
       </Flex>
-      {getValues().content.length > 0 && (
+      {previewDraft.content.length > 0 && (
         <Box p="2" borderWidth={1} borderRadius="md" mb="2">
           <TrustProvider trust>
-            <NoteContents event={draft} />
+            <NoteContents event={previewDraft} />
           </TrustProvider>
         </Box>
       )}

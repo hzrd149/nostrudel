@@ -11,6 +11,7 @@ import { parseZapEvent } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import { TrustProvider } from "../../../../providers/trust";
 import ChatMessageContent from "./chat-message-content";
+import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 
 function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -21,8 +22,10 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
       return parseZapEvent(zap);
     } catch (e) {}
   }, [zap]);
+  const clientMuteFilter = useClientSideMuteFilter();
 
   if (!parsed || !parsed.payment.amount) return null;
+  if (clientMuteFilter(parsed.event)) return null;
 
   return (
     <TrustProvider event={parsed.request}>
