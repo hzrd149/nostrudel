@@ -2,11 +2,11 @@ import { useMemo } from "react";
 
 import { useReadRelayUrls } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
-import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
 import useSubject from "./use-subject";
 
 export default function useReplaceableEvent(
-  cord: string | CustomEventPointer | undefined,
+  cord: string | CustomAddressPointer | undefined,
   additionalRelays: string[] = [],
   opts: RequestOptions = {},
 ) {

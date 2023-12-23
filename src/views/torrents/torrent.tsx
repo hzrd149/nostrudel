@@ -13,16 +13,13 @@ import {
   Tbody,
   Td,
   Text,
-  Textarea,
   Th,
   Thead,
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
 
 import useSingleEvent from "../../hooks/use-single-event";
-import { safeDecode } from "../../helpers/nip19";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -46,6 +43,7 @@ import TorrentComments from "./components/torrents-comments";
 import ReplyForm from "../thread/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 
 function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
   const files = getTorrentFiles(torrent);
@@ -141,14 +139,8 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
 }
 
 export default function TorrentDetailsView() {
-  const { id } = useParams() as { id: string };
-  const parsed = useMemo(() => {
-    const result = safeDecode(id);
-    if (!result) return;
-    if (result.type === "note") return { id: result.data };
-    if (result.type === "nevent") return result.data;
-  }, [id]);
-  const torrent = useSingleEvent(parsed?.id, parsed?.relays ?? []);
+  const pointer = useParamsEventPointer("id");
+  const torrent = useSingleEvent(pointer?.id, pointer?.relays ?? []);
 
   if (!torrent) return <Spinner />;
 

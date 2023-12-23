@@ -13,6 +13,7 @@ import IntersectionObserverProvider from "../../providers/intersection-observer"
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 
 function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadItem>; rootId: string; focusId: string }) {
   const isRoot = rootId === focusId;
@@ -61,23 +62,8 @@ function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadIte
   );
 }
 
-function useNotePointer() {
-  const { id } = useParams() as { id: string };
-  if (isHexKey(id)) return { id, relays: [] };
-  const pointer = nip19.decode(id);
-
-  switch (pointer.type) {
-    case "note":
-      return { id: pointer.data as string, relays: [] };
-    case "nevent":
-      return { id: pointer.data.id, relays: pointer.data.relays ?? [] };
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
-  }
-}
-
 export default function ThreadView() {
-  const pointer = useNotePointer();
+  const pointer = useParamsEventPointer("id");
   const readRelays = useReadRelayUrls(pointer.relays);
 
   const focusedEvent = useSingleEvent(pointer.id, pointer.relays);

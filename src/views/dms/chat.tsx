@@ -24,6 +24,7 @@ import ThreadsProvider from "../../providers/thread-provider";
 import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -142,25 +143,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   );
 }
 
-function useUserPointer() {
-  const { pubkey } = useParams() as { pubkey: string };
-
-  if (isHexKey(pubkey)) return { pubkey, relays: [] };
-  const pointer = nip19.decode(pubkey);
-
-  switch (pointer.type) {
-    case "npub":
-      return { pubkey: pointer.data as string, relays: [] };
-    case "nprofile":
-      const d = pointer.data as nip19.ProfilePointer;
-      return { pubkey: d.pubkey, relays: d.relays ?? [] };
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
-  }
-}
-
 export default function DirectMessageChatView() {
-  const { pubkey } = useUserPointer();
+  const { pubkey } = useParamsProfilePointer();
 
   return (
     <RequireCurrentAccount>

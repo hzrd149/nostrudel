@@ -2,13 +2,13 @@ import { useMemo } from "react";
 
 import { useReadRelayUrls } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
-import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
 import Subject from "../classes/subject";
 import { NostrEvent } from "../types/nostr-event";
 import useSubjects from "./use-subjects";
 
 export default function useReplaceableEvents(
-  coordinates: string[] | CustomEventPointer[] | undefined,
+  coordinates: string[] | CustomAddressPointer[] | undefined,
   additionalRelays: string[] = [],
   opts: RequestOptions = {},
 ) {

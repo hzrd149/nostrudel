@@ -46,6 +46,7 @@ import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -66,22 +67,6 @@ const tabs = [
   { label: "Muted by", path: "muted-by" },
 ];
 
-function useUserPointer() {
-  const { pubkey } = useParams() as { pubkey: string };
-  if (isHexKey(pubkey)) return { pubkey, relays: [] };
-  const pointer = nip19.decode(pubkey);
-
-  switch (pointer.type) {
-    case "npub":
-      return { pubkey: pointer.data as string, relays: [] };
-    case "nprofile":
-      const d = pointer.data as nip19.ProfilePointer;
-      return { pubkey: d.pubkey, relays: d.relays ?? [] };
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
-  }
-}
-
 function useUserTopRelays(pubkey: string, count: number = 4) {
   const readRelays = useReadRelayUrls();
   // get user relays
@@ -96,7 +81,7 @@ function useUserTopRelays(pubkey: string, count: number = 4) {
 }
 
 const UserView = () => {
-  const { pubkey, relays: pointerRelays } = useUserPointer();
+  const { pubkey, relays: pointerRelays = [] } = useParamsProfilePointer();
   const navigate = useNavigate();
   const [relayCount, setRelayCount] = useState(4);
   const userTopRelays = useUserTopRelays(pubkey, relayCount);

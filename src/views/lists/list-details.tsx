@@ -1,12 +1,12 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
+import type { DecodeResult } from "nostr-tools/lib/types/nip19";
+import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 
 import UserLink from "../../components/user-link";
-import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/delete-event-provider";
-import { parseCoordinate } from "../../helpers/nostr/events";
 import {
   getEventsFromList,
   getListDescription,
@@ -27,23 +27,9 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import { encodePointer } from "../../helpers/nip19";
-import { DecodeResult } from "nostr-tools/lib/types/nip19";
 import useSingleEvent from "../../hooks/use-single-event";
 import UserAvatarLink from "../../components/user-avatar-link";
-
-function useListCoordinate() {
-  const { addr } = useParams() as { addr: string };
-
-  if (addr.includes(":")) {
-    const parsed = parseCoordinate(addr);
-    if (!parsed) throw new Error("Bad coordinate");
-    return parsed;
-  }
-
-  const parsed = nip19.decode(addr);
-  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
-  return parsed.data;
-}
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);
@@ -53,16 +39,16 @@ function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
 
 export default function ListDetailsView() {
   const navigate = useNavigate();
-  const coordinate = useListCoordinate();
+  const pointer = useParamsAddressPointer("addr");
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
 
-  const list = useReplaceableEvent(coordinate, [], { alwaysRequest: true });
+  const list = useReplaceableEvent(pointer, [], { alwaysRequest: true });
 
   if (!list)
     return (
       <>
-        Looking for list "{coordinate.identifier}" created by <UserLink pubkey={coordinate.pubkey} />
+        Looking for list "{pointer.identifier}" created by <UserLink pubkey={pointer.pubkey} />
       </>
     );
 

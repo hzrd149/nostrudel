@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { nip19 } from "nostr-tools";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 import dayjs from "dayjs";
@@ -8,7 +7,6 @@ import dayjs from "dayjs";
 import {
   Button,
   ButtonGroup,
-  Divider,
   Flex,
   Heading,
   Image,
@@ -39,6 +37,7 @@ import UserAvatarLink from "../../components/user-avatar-link";
 import NoteZapButton from "../../components/note/note-zap-button";
 import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
 import Timestamp from "../../components/timestamp";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -220,15 +219,8 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   );
 }
 
-function useListCoordinate() {
-  const { addr } = useParams() as { addr: string };
-  const parsed = nip19.decode(addr);
-  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
-  return parsed.data;
-}
-
 export default function EmojiPackView() {
-  const coordinate = useListCoordinate();
+  const coordinate = useParamsAddressPointer("addr");
   const pack = useReplaceableEvent(coordinate);
 
   if (!pack) {

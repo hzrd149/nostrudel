@@ -1,9 +1,8 @@
 import { memo, useCallback, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
-import { safeDecode } from "../../helpers/nip19";
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { NostrEvent } from "../../types/nostr-event";
@@ -25,6 +24,7 @@ import { groupMessages } from "../../helpers/nostr/dms";
 import ChannelMessageBlock from "./components/channel-message-block";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import ChannelMessageForm from "./components/send-message-form";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
   const messages = useSubject(timeline.timeline);
@@ -109,14 +109,8 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
 }
 
 export default function ChannelView() {
-  const { id } = useParams() as { id: string };
-  const parsed = useMemo(() => {
-    const result = safeDecode(id);
-    if (!result) return;
-    if (result.type === "note") return { id: result.data };
-    if (result.type === "nevent") return result.data;
-  }, [id]);
-  const channel = useSingleEvent(parsed?.id, parsed?.relays ?? []);
+  const pointer = useParamsEventPointer("id");
+  const channel = useSingleEvent(pointer?.id, pointer?.relays);
 
   if (!channel) return <Spinner />;
 

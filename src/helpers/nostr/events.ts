@@ -187,16 +187,18 @@ export function pointerToATag(pointer: AddressPointer): ATag {
   return relay ? ["a", coordinate, relay] : ["a", coordinate];
 }
 
-export type CustomEventPointer = Omit<AddressPointer, "identifier"> & {
+export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
   identifier?: string;
 };
 
-export function parseCoordinate(a: string): CustomEventPointer | null;
-export function parseCoordinate(a: string, requireD: false): CustomEventPointer | null;
+export function parseCoordinate(a: string): CustomAddressPointer | null;
+export function parseCoordinate(a: string, requireD: false): CustomAddressPointer | null;
 export function parseCoordinate(a: string, requireD: true): AddressPointer | null;
-export function parseCoordinate(a: string, requireD: false, silent: false): CustomEventPointer;
+export function parseCoordinate(a: string, requireD: false, silent: false): CustomAddressPointer;
 export function parseCoordinate(a: string, requireD: true, silent: false): AddressPointer;
-export function parseCoordinate(a: string, requireD = false, silent = true): CustomEventPointer | null {
+export function parseCoordinate(a: string, requireD: true, silent: true): AddressPointer | null;
+export function parseCoordinate(a: string, requireD: false, silent: true): CustomAddressPointer | null;
+export function parseCoordinate(a: string, requireD = false, silent = true): CustomAddressPointer | null {
   const parts = a.split(":") as (string | undefined)[];
   const kind = parts[0] && parseInt(parts[0]);
   const pubkey = parts[1];

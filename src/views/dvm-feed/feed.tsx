@@ -13,8 +13,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { nip19 } from "nostr-tools";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 import {
   DMV_CONTENT_DISCOVERY_JOB_KIND,
@@ -32,7 +32,6 @@ import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useUserRelays } from "../../hooks/use-user-relays";
-import { useNavigate, useParams } from "react-router-dom";
 import { useSigningContext } from "../../providers/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
@@ -40,8 +39,8 @@ import { CodeIcon } from "../../components/icons";
 import { unique } from "../../helpers/array";
 import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
-import { parseCoordinate } from "../../helpers/nostr/events";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "hour").unix());
@@ -124,20 +123,8 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   );
 }
 
-function useDVMCoordinate() {
-  const { addr } = useParams() as { addr: string };
-  if (addr.includes(":")) {
-    const parsed = parseCoordinate(addr, true);
-    if (!parsed) throw new Error("Bad coordinate");
-    return parsed;
-  }
-
-  const parsed = nip19.decode(addr);
-  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
-  return parsed.data;
-}
 export default function DVMFeedView() {
-  const pointer = useDVMCoordinate();
+  const pointer = useParamsAddressPointer("addr");
 
   return (
     <RequireCurrentAccount>

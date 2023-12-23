@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { useNavigate } from "react-router-dom";
+import { Kind } from "nostr-tools";
 import {
   Button,
   Flex,
@@ -35,6 +35,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import BadgeAwardCard from "./components/badge-award-card";
 import TimelineLoader from "../../classes/timeline-loader";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
   const awards = useSubject(timeline.timeline);
@@ -154,15 +155,8 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   );
 }
 
-function useBadgeCoordinate() {
-  const { naddr } = useParams() as { naddr: string };
-  const parsed = nip19.decode(naddr);
-  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
-  return parsed.data;
-}
-
 export default function BadgeDetailsView() {
-  const pointer = useBadgeCoordinate();
+  const pointer = useParamsAddressPointer("naddr");
   const badge = useReplaceableEvent(pointer);
 
   if (!badge) return <Spinner />;

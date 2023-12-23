@@ -42,8 +42,6 @@ import StreamSatsPerMinute from "../components/stream-sats-per-minute";
 import { UserEmojiProvider } from "../../../providers/emoji-provider";
 import StreamStatusBadge from "../components/status-badge";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
-import useStreamChatTimeline from "./stream-chat/use-stream-chat-timeline";
-import UserSearchDirectoryProvider from "../../../providers/user-directory-provider";
 import StreamChatLog from "./stream-chat/chat-log";
 import TopZappers from "../components/top-zappers";
 import StreamHashtags from "../components/stream-hashtags";
