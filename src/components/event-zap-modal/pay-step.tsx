@@ -1,5 +1,5 @@
 import { useMount } from "react-use";
-import { Alert, Box, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosure, useToast } from "@chakra-ui/react";
+import { Alert, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosure, useToast } from "@chakra-ui/react";
 
 import { PayRequest } from ".";
 import UserAvatar from "../user-avatar";
@@ -13,9 +13,7 @@ function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) 
   return (
     <Flex gap="2" alignItems="center" overflow="hidden">
       <UserAvatar pubkey={pubkey} size="md" />
-      <Box>
-        <UserLink pubkey={pubkey} fontWeight="bold" />
-      </Box>
+      <UserLink pubkey={pubkey} fontWeight="bold" isTruncated />
       <Spacer />
       {children}
     </Flex>
