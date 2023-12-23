@@ -17,9 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { normalizeToHex } from "../../helpers/nip19";
+import { isHex, normalizeToHexPubkey, safeDecode } from "../../helpers/nip19";
 import accountService from "../../services/account";
-import clientRelaysService from "../../services/client-relays";
 import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import signingService from "../../services/signing";
 import { COMMON_CONTACT_RELAY } from "../../const";
@@ -50,7 +49,13 @@ export default function LoginNsecView() {
       setInputValue(e.target.value);
 
       try {
-        const hex = normalizeToHex(e.target.value);
+        let hex: string | null = null;
+        if (isHex(e.target.value)) hex = e.target.value;
+        else {
+          const decode = safeDecode(e.target.value);
+          if (decode && decode.type === "nsec") hex = decode.data;
+        }
+
         if (hex) {
           const pubkey = getPublicKey(hex);
           setHexKey(hex);

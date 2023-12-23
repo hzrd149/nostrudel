@@ -33,7 +33,7 @@ export function getPubkeyFromDecodeResult(result?: nip19.DecodeResult) {
   }
 }
 
-export function normalizeToHex(hex: string) {
+export function normalizeToHexPubkey(hex: string) {
   if (isHexKey(hex)) return hex;
   const decode = safeDecode(hex);
   if (!decode) return null;

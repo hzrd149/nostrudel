@@ -3,7 +3,7 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useT
 import { useNavigate } from "react-router-dom";
 
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { normalizeToHex } from "../../helpers/nip19";
+import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../const";
 
@@ -16,7 +16,7 @@ export default function LoginNpubView() {
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
 
-    const pubkey = normalizeToHex(npub);
+    const pubkey = normalizeToHexPubkey(npub);
     if (!pubkey) {
       return toast({ status: "error", title: "Invalid npub" });
     }

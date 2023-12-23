@@ -39,7 +39,7 @@ import { RelayUrlInput } from "../../../components/relay-url-input";
 import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import NpubAutocomplete from "../../../components/npub-autocomplete";
-import { normalizeToHex } from "../../../helpers/nip19";
+import { normalizeToHexPubkey } from "../../../helpers/nip19";
 import { safeUrl } from "../../../helpers/parse";
 
 function RemoveButton({ ...props }: IconButtonProps) {
@@ -123,7 +123,7 @@ export default function CommunityCreateModal({
   const [modInput, setModInput] = useState("");
   const addMod = () => {
     if (!modInput) return;
-    const pubkey = normalizeToHex(modInput);
+    const pubkey = normalizeToHexPubkey(modInput);
     if (pubkey) {
       setValue("mods", getValues("mods").concat(pubkey));
     }
