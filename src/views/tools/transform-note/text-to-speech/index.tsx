@@ -1,5 +1,17 @@
 import { MouseEventHandler, useCallback, useState } from "react";
-import { Button, Card, CardHeader, Flex, Select, Spacer, Spinner, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Flex,
+  IconButton,
+  Select,
+  Spacer,
+  Spinner,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
 
@@ -7,12 +19,11 @@ import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { getEventUID } from "../../../../helpers/nostr/events";
 import {
-  ChainedDVMJob,
+  DVMJob,
   DVMResponse,
   DVM_STATUS_KIND,
   DVM_TTS_JOB_KIND,
   DVM_TTS_RESULT_KIND,
-  chainJobs,
   getRequestInputParam,
   groupEventsIntoJobs,
 } from "../../../../helpers/nostr/dvm";
@@ -21,7 +32,7 @@ import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import UserAvatarLink from "../../../../components/user-avatar-link";
 import UserLink from "../../../../components/user-link";
 import Timestamp from "../../../../components/timestamp";
-import { LightningIcon } from "../../../../components/icons";
+import { CodeIcon, LightningIcon } from "../../../../components/icons";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import { useSigningContext } from "../../../../providers/signing-provider";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
@@ -29,35 +40,49 @@ import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../../services/client-relays";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import { NostrQuery } from "../../../../types/nostr-query";
+import NoteDebugModal from "../../../../components/debug-modals/note-debug-modal";
 
 function getTranslationRequestLanguage(request: NostrEvent) {
   const targetLanguage = getRequestInputParam(request, "language", false);
   return codes.find((code) => code.iso639_1 === targetLanguage);
 }
 
-function TextToSpeechChain({ chain }: { chain: ChainedDVMJob }) {
-  const lang = getTranslationRequestLanguage(chain.request);
+function TextToSpeechJob({ job }: { job: DVMJob }) {
+  const lang = getTranslationRequestLanguage(job.request);
+  const debug = useDisclosure();
 
   return (
-    <Card variant="outline">
-      <CardHeader px="4" py="4" pb="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
-        <UserAvatarLink pubkey={chain.request.pubkey} size="sm" />
-        <UserLink pubkey={chain.request.pubkey} fontWeight="bold" />
-        <Text>
-          Requested reading in <strong>{lang?.nativeName}</strong>
-        </Text>
-        <Timestamp timestamp={chain.request.created_at} />
-      </CardHeader>
-      {chain.responses.length === 0 && (
-        <Flex gap="2" alignItems="center" m="4">
-          <Spinner />
-          Waiting for offers
-        </Flex>
-      )}
-      {Object.values(chain.responses).map((response) => (
-        <TextToSpeechResponse key={response.pubkey} response={response} />
-      ))}
-    </Card>
+    <>
+      <Card variant="outline">
+        <CardHeader px="4" py="4" pb="2" display="flex" gap="2" alignItems="center" flexWrap="wrap">
+          <UserAvatarLink pubkey={job.request.pubkey} size="sm" />
+          <UserLink pubkey={job.request.pubkey} fontWeight="bold" />
+          <Text>
+            Requested reading in <strong>{lang?.nativeName}</strong>
+          </Text>
+          <Timestamp timestamp={job.request.created_at} />
+          <Spacer />
+          <IconButton
+            icon={<CodeIcon />}
+            aria-label="Show Raw"
+            title="Show Raw"
+            variant="ghost"
+            size="sm"
+            onClick={debug.onOpen}
+          />
+        </CardHeader>
+        {job.responses.length === 0 && (
+          <Flex gap="2" alignItems="center" m="4">
+            <Spinner />
+            Waiting for response
+          </Flex>
+        )}
+        {Object.values(job.responses).map((response) => (
+          <TextToSpeechResponse key={response.pubkey} response={response} />
+        ))}
+      </Card>
+      {debug.isOpen && <NoteDebugModal isOpen onClose={debug.onClose} event={job.request} />}
+    </>
   );
 }
 
@@ -172,14 +197,13 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
 
   const events = useSubject(timeline.timeline);
   const jobs = groupEventsIntoJobs(events);
-  const chains = chainJobs(Array.from(Object.values(jobs)));
 
   return (
     <>
       <Flex gap="2">
         <Select value={lang} onChange={(e) => setLang(e.target.value)} w="60">
           {codes.map((code) => (
-            <option value={code.iso639_1}>
+            <option key={code.iso639_1} value={code.iso639_1}>
               {code.name} ({code.nativeName})
             </option>
           ))}
@@ -188,8 +212,8 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
           Request new reading
         </Button>
       </Flex>
-      {chains.map((chain) => (
-        <TextToSpeechChain key={chain.request.id} chain={chain} />
+      {Array.from(Object.values(jobs)).map((job) => (
+        <TextToSpeechJob key={job.request.id} job={job} />
       ))}
     </>
   );
