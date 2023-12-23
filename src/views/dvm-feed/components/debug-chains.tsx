@@ -14,41 +14,34 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  ChainedDVMJob,
-  DVMJob,
-  getEventIdsFromJobs,
-  getJobStatusType,
-  getRequestInput,
-  getRequestRelays,
-} from "../../../helpers/nostr/dvm";
+import { ChainedDVMJob, getEventIdsFromJobs, getRequestInput, getRequestRelays } from "../../../helpers/nostr/dvm";
 import dayjs from "dayjs";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { CopyIconButton } from "../../../components/copy-icon-button";
+import { NostrEvent } from "../../../types/nostr-event";
+import UserLink from "../../../components/user-link";
 
-function JobResult({ job }: { job: DVMJob }) {
-  if (!job.result) return <Spinner />;
+function JobResult({ result }: { result: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(job.result.id)} <CopyIconButton size="xs" aria-label="copy id" text={job.result.id} />
+        ID: {truncatedId(result.id)} <CopyIconButton size="xs" aria-label="copy id" text={result.id} />
       </Text>
       <Flex gap="2" alignItems="center" overflow="hidden">
-        <Text isTruncated>Content: {job.result.content}</Text>{" "}
-        <CopyIconButton size="xs" aria-label="copy content" text={job.result.content} />
+        <Text isTruncated>Content: {result.content}</Text>{" "}
+        <CopyIconButton size="xs" aria-label="copy content" text={result.content} />
       </Flex>
     </>
   );
 }
-function JobStatus({ job }: { job: DVMJob }) {
-  if (!job.status) return <Spinner />;
+function JobStatus({ status }: { status: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(job.status.id)} <CopyIconButton size="xs" aria-label="copy id" text={job.status.id} />
+        ID: {truncatedId(status.id)} <CopyIconButton size="xs" aria-label="copy id" text={status.id} />
       </Text>
-      <Text isTruncated>Status: {getJobStatusType(job)}</Text>
-      <Text isTruncated>Content: {job.status.content}</Text>
+      <Text isTruncated>Status: {status.tags.find((t) => t[0] === "status")?.[1]}</Text>
+      <Text isTruncated>Content: {status.content}</Text>
     </>
   );
 }
@@ -71,11 +64,18 @@ function ChainedJob({ job }: { job: ChainedDVMJob }) {
       <Heading size="sm">Relays:</Heading>
       <Text>{getRequestRelays(job.request).join(", ")}</Text>
       <Divider my="2" />
-      <Heading size="sm">Status:</Heading>
-      <JobStatus job={job} />
-      <Divider my="2" />
-      <Heading size="sm">Result:</Heading>
-      <JobResult job={job} />
+      {job.responses.map((response) => (
+        <>
+          <Heading>
+            <UserLink pubkey={response.pubkey} />
+          </Heading>
+          <Heading size="sm">Status:</Heading>
+          {response.status ? <JobStatus status={response.status} /> : <Spinner />}
+          <Divider my="2" />
+          <Heading size="sm">Result:</Heading>
+          {response.result ? <JobResult result={response.result} /> : <Spinner />}
+        </>
+      ))}
       <Divider my="2" />
       {job.prev && (
         <>

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
-import { getReferences } from "./nostr/events";
+import { getReferences, sortByDate } from "./nostr/events";
 
 export function groupByDay(events: NostrEvent[]) {
   const grouped = new SuperMap<number, NostrEvent[]>(() => []);
@@ -20,7 +20,7 @@ export function groupByRoot(events: NostrEvent[]) {
     if (refs.rootId) grouped.get(refs.rootId).push(event);
   }
   for (const [_, groupedEvents] of grouped) {
-    groupedEvents.sort((a, b) => b.created_at - a.created_at);
+    groupedEvents.sort(sortByDate);
   }
 
   return Array.from(grouped.entries()).sort((a, b) => b[1][0].created_at - a[1][0].created_at);

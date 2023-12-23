@@ -1,13 +1,16 @@
 import { NostrEvent, Tag, isETag } from "../../types/nostr-event";
 import { safeJson } from "../parse";
 
-export const DMV_STATUS_KIND = 7000;
+export const DVM_STATUS_KIND = 7000;
 
-export const DMV_TRANSLATE_JOB_KIND = 5002;
-export const DMV_TRANSLATE_RESULT_KIND = 6002;
+export const DVM_TRANSLATE_JOB_KIND = 5002;
+export const DVM_TRANSLATE_RESULT_KIND = 6002;
 
-export const DMV_CONTENT_DISCOVERY_JOB_KIND = 5300;
-export const DMV_CONTENT_DISCOVERY_RESULT_KIND = 6300;
+export const DVM_TTS_JOB_KIND = 5250;
+export const DVM_TTS_RESULT_KIND = 6250;
+
+export const DVM_CONTENT_DISCOVERY_JOB_KIND = 5300;
+export const DVM_CONTENT_DISCOVERY_RESULT_KIND = 6300;
 
 type DVMMetadata = {
   name?: string;
@@ -43,12 +46,18 @@ export function getRequestInputParams(e: NostrEvent, k: string) {
   return e.tags.filter((t) => t[0] === "param" && t[1] === k).map((t) => t[2]);
 }
 
-export function getRequestInputParam(e: NostrEvent, k: string) {
+export function getRequestInputParam(e: NostrEvent, k: string): string;
+export function getRequestInputParam(e: NostrEvent, k: string, required: true): string;
+export function getRequestInputParam(e: NostrEvent, k: string, required: false): string | undefined;
+export function getRequestInputParam(e: NostrEvent, k: string, required: boolean = true) {
   const value = getRequestInputParams(e, k)[0];
-  if (value === undefined) throw new Error(`Missing ${k} param`);
+  if (value === undefined && required) throw new Error(`Missing ${k} param`);
   return value;
 }
 
+export function getResponseFromDVM(job: DVMJob, pubkey: string) {
+  return job.responses.find((r) => r.pubkey === pubkey);
+}
 export function getResultEventIds(result: NostrEvent) {
   const parsed = JSON.parse(result.content);
   if (!Array.isArray(parsed)) return [];
@@ -56,31 +65,44 @@ export function getResultEventIds(result: NostrEvent) {
   return tags.filter(isETag).map((t) => t[1]);
 }
 
-export type DVMJob = { request: NostrEvent; result?: NostrEvent; status?: NostrEvent };
+export type DVMResponse = { pubkey: string; result?: NostrEvent; status?: NostrEvent };
+export type DVMJob = { request: NostrEvent; responses: DVMResponse[] };
 export type ChainedDVMJob = DVMJob & { next: ChainedDVMJob[]; prevId?: string; prev?: ChainedDVMJob };
 
-export function getJobStatusType(job: DVMJob) {
-  return job.status?.tags.find((t) => t[0] === "status")?.[1];
+export function getJobStatusType(job: DVMJob, dvm?: string) {
+  const response = dvm ? job.responses[0] : job.responses.find((r) => r.pubkey === dvm);
+  return response?.status?.tags.find((t) => t[0] === "status")?.[1];
 }
 
 export function groupEventsIntoJobs(events: NostrEvent[]) {
-  const requests: Record<string, DVMJob> = {};
+  const jobs: Record<string, DVMJob> = {};
   for (const event of events) {
-    if (event.kind === DMV_CONTENT_DISCOVERY_JOB_KIND) requests[event.id] = { request: event };
+    if (event.kind >= 5000 && event.kind < 6000) jobs[event.id] = { request: event, responses: [] };
   }
+
   for (const event of events) {
-    if (event.kind === DMV_CONTENT_DISCOVERY_RESULT_KIND) {
-      const requestId = event.tags.find(isETag)?.[1];
-      if (!requestId || !requests[requestId]) continue;
-      requests[requestId].result = event;
-    } else if (event.kind === DMV_STATUS_KIND) {
-      const requestId = event.tags.find(isETag)?.[1];
-      if (!requestId || !requests[requestId]) continue;
-      requests[requestId].status = event;
+    // skip requests
+    if (event.kind >= 5000 && event.kind < 6000) continue;
+
+    const requestId = event.tags.find(isETag)?.[1];
+    if (!requestId) continue;
+    const job = jobs[requestId];
+    if (!job) continue;
+
+    let response = job.responses.find((r) => r.pubkey === event.pubkey);
+    if (!response) {
+      response = { pubkey: event.pubkey };
+      job.responses.push(response);
+    }
+
+    if (event.kind >= 6000 && event.kind < 7000) {
+      if (!response.result || response.result.created_at < event.created_at) response.result = event;
+    } else if (event.kind === DVM_STATUS_KIND) {
+      if (!response.status || response.status.created_at < event.created_at) response.status = event;
     }
   }
 
-  return requests;
+  return jobs;
 }
 
 export function chainJobs(jobs: DVMJob[]) {
@@ -129,5 +151,5 @@ export function flattenJobChain(jobs: ChainedDVMJob[]) {
 }
 
 export function getEventIdsFromJobs(jobs: ChainedDVMJob[]) {
-  return jobs.map((p) => (p.result ? getResultEventIds(p.result) : [])).flat();
+  return jobs.map((j) => j.responses?.map((r) => (r.result ? getResultEventIds(r.result) : [])).flat()).flat();
 }

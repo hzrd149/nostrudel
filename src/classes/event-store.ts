@@ -1,13 +1,9 @@
-import { getEventUID, isReplaceable } from "../helpers/nostr/events";
+import { getEventUID, isReplaceable, sortByDate } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import { NostrEvent, isDTag } from "../types/nostr-event";
 import Subject from "./subject";
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
-
-function sortByDate(a: NostrEvent, b: NostrEvent) {
-  return b.created_at - a.created_at;
-}
 
 export default class EventStore {
   name?: string;

@@ -49,7 +49,7 @@ import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
 import IntersectionObserverProvider from "../../providers/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -65,9 +65,7 @@ function CommunitiesHomePage() {
   const { pointers: communityCoordinates } = useUserCommunitiesList(account.pubkey, readRelays, {
     alwaysRequest: true,
   });
-  const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(
-    (a, b) => b.created_at - a.created_at,
-  );
+  const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(sortByDate);
 
   const createCommunity = async (values: FormValues) => {
     try {

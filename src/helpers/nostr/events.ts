@@ -235,3 +235,7 @@ export function parseHardcodedNoteContent(event: NostrEvent) {
 
   return (json as NostrEvent) ?? null;
 }
+
+export function sortByDate(a: NostrEvent, b: NostrEvent) {
+  return b.created_at - a.created_at;
+}

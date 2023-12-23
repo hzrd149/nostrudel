@@ -2,7 +2,7 @@ import { SimpleGrid } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import DVMCard from "./components/dvm-card";
-import { DMV_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
+import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
@@ -13,7 +13,7 @@ function DVMFeedHomePage() {
   const readRelays = useReadRelayUrls();
   const timeline = useTimelineLoader("content-discovery-dvms", readRelays, {
     kinds: [31990],
-    "#k": [String(DMV_CONTENT_DISCOVERY_JOB_KIND)],
+    "#k": [String(DVM_CONTENT_DISCOVERY_JOB_KIND)],
   });
 
   const DMVs = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "web"));

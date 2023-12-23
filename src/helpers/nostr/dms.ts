@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { NostrEvent, isPTag } from "../../types/nostr-event";
+import { sortByDate } from "./events";
 
 export function getDMSender(event: NostrEvent) {
   return event.pubkey;
@@ -11,7 +12,7 @@ export function getDMRecipient(event: NostrEvent) {
 }
 
 export function groupMessages(messages: NostrEvent[], minutes = 5, ascending = false) {
-  const sorted = messages.sort((a, b) => b.created_at - a.created_at);
+  const sorted = messages.sort(sortByDate);
 
   const groups: { id: string; pubkey: string; events: NostrEvent[] }[] = [];
   for (const message of sorted) {

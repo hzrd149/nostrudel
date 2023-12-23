@@ -76,6 +76,7 @@ import DMFeedView from "./views/tools/dm-feed";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
 import DVMFeedView from "./views/dvm-feed/feed";
+import TransformNoteView from "./views/tools/transform-note";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -262,6 +263,7 @@ const router = createHashRouter([
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
           { path: "dm-feed", element: <DMFeedView /> },
+          { path: "transform/:id", element: <TransformNoteView /> },
         ],
       },
       {

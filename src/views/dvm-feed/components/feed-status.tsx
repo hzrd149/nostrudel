@@ -1,7 +1,12 @@
 import { Button, Card, CardBody, CardHeader, Code, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
-import { ChainedDVMJob, DMV_CONTENT_DISCOVERY_JOB_KIND, getJobStatusType } from "../../../helpers/nostr/dvm";
+import {
+  ChainedDVMJob,
+  DVM_CONTENT_DISCOVERY_JOB_KIND,
+  getJobStatusType,
+  getResponseFromDVM,
+} from "../../../helpers/nostr/dvm";
 import { InlineInvoiceCard } from "../../../components/inline-invoice-card";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/signing-provider";
@@ -15,7 +20,7 @@ import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
-function NextPageButton({ pointer, chain }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
+function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const dvmRelays = useUserRelays(pointer.pubkey)
@@ -27,7 +32,7 @@ function NextPageButton({ pointer, chain }: { pointer: AddressPointer; chain: Ch
   const requestNextPage = async () => {
     try {
       const draft: DraftNostrEvent = {
-        kind: DMV_CONTENT_DISCOVERY_JOB_KIND,
+        kind: DVM_CONTENT_DISCOVERY_JOB_KIND,
         created_at: dayjs().unix(),
         content: "",
         tags: [
@@ -45,11 +50,13 @@ function NextPageButton({ pointer, chain }: { pointer: AddressPointer; chain: Ch
     }
   };
 
+  const response = getResponseFromDVM(lastJob, pointer.pubkey);
+
   return (
     <Button
       colorScheme="primary"
       onClick={requestNextPage}
-      isLoading={lastJob && !lastJob.result && !lastJob.status}
+      isLoading={lastJob && !response?.result && !response?.status}
       mx="auto"
       my="4"
       px="20"
@@ -61,7 +68,8 @@ function NextPageButton({ pointer, chain }: { pointer: AddressPointer; chain: Ch
 
 export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[]; pointer: AddressPointer }) {
   const lastJob = chain[chain.length - 1];
-  if (lastJob.result) return <NextPageButton pointer={pointer} chain={chain} />;
+  const response = lastJob.responses.find((r) => r.pubkey === pointer.pubkey);
+  if (response?.result) return <NextPageButton pointer={pointer} chain={chain} />;
 
   const cardProps = { minW: "2xl", mx: "auto" };
   const cardHeader = (
@@ -71,7 +79,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
     </CardHeader>
   );
 
-  const statusEvent = lastJob.status;
+  const statusEvent = response?.status;
   if (!statusEvent)
     return (
       <Card {...cardProps}>

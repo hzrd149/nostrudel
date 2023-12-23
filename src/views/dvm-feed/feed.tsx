@@ -17,9 +17,9 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 import {
-  DMV_CONTENT_DISCOVERY_JOB_KIND,
-  DMV_CONTENT_DISCOVERY_RESULT_KIND,
-  DMV_STATUS_KIND,
+  DVM_CONTENT_DISCOVERY_JOB_KIND,
+  DVM_CONTENT_DISCOVERY_RESULT_KIND,
+  DVM_STATUS_KIND,
   flattenJobChain,
   chainJobs,
   groupEventsIntoJobs,
@@ -52,11 +52,11 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const dvmRelays = useUserRelays(pointer.pubkey).map((r) => r.url);
   const readRelays = useReadRelayUrls(dvmRelays);
   const timeline = useTimelineLoader(`${pointer.kind}:${pointer.pubkey}:${pointer.identifier}-jobs`, readRelays, [
-    { authors: [account.pubkey], "#p": [pointer.pubkey], kinds: [DMV_CONTENT_DISCOVERY_JOB_KIND], since },
+    { authors: [account.pubkey], "#p": [pointer.pubkey], kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND], since },
     {
       authors: [pointer.pubkey],
       "#p": [account.pubkey],
-      kinds: [DMV_CONTENT_DISCOVERY_RESULT_KIND, DMV_STATUS_KIND],
+      kinds: [DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],
       since,
     },
   ]);
@@ -72,7 +72,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
     try {
       setRequesting(true);
       const draft: DraftNostrEvent = {
-        kind: DMV_CONTENT_DISCOVERY_JOB_KIND,
+        kind: DVM_CONTENT_DISCOVERY_JOB_KIND,
         created_at: dayjs().unix(),
         content: "",
         tags: [
