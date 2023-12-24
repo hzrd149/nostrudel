@@ -7,6 +7,7 @@ import ShieldOff from "../../components/icons/shield-off";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import Users01 from "../../components/icons/users-01";
 import Magnet from "../../components/icons/magnet";
+import Moon01 from "../../components/icons/moon-01";
 
 function InternalLink({
   to,
@@ -56,6 +57,16 @@ export default function ToolsHomeView() {
         <InternalLink to="/torrents" icon={Magnet}>
           Torrents
         </InternalLink>
+        <Card as={LinkBox} alignItems="center" p="4" gap="4" minW="40">
+          <Image src="https://satellite.earth/image.png" w="10" h="10" />
+          <CardHeader p="0">
+            <Heading size="md">
+              <HoverLinkOverlay as={RouterLink} to="/tools/satellite-cdn">
+                Satellite CDN
+              </HoverLinkOverlay>
+            </Heading>
+          </CardHeader>
+        </Card>
         <InternalLink to="/tools/network" icon={Users01}>
           User Network
         </InternalLink>
