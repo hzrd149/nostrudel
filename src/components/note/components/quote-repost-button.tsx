@@ -10,7 +10,7 @@ export type QuoteRepostButtonProps = Omit<ButtonProps, "children" | "onClick"> &
   event: NostrEvent;
 };
 
-export function QuoteRepostButton({
+export default function QuoteRepostButton({
   event,
   "aria-label": ariaLabel,
   title = "Quote repost",

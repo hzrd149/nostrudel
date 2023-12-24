@@ -29,6 +29,7 @@ import {
   embedNipDefinitions,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
+import { renderModelUrl } from "../embed-types/model";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -51,6 +52,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderModelUrl,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 

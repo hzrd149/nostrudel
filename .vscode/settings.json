@@ -1,3 +1,17 @@
 {
-  "cSpell.words": ["Bech", "Chakra", "damus", "lnurl", "Msat", "nostr", "noStrudel", "Npub", "pubkeys", "Sats", "webln"]
+  "cSpell.words": [
+    "Bech",
+    "Chakra",
+    "damus",
+    "lnurl",
+    "Msat",
+    "nostr",
+    "noStrudel",
+    "Npub",
+    "pubkeys",
+    "Sats",
+    "webln"
+  ],
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

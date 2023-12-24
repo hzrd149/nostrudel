@@ -38,7 +38,7 @@ import { NoteContents } from "../../components/note/text-note-contents";
 import Timestamp from "../../components/timestamp";
 import NoteZapButton from "../../components/note/note-zap-button";
 import TorrentMenu from "./components/torrent-menu";
-import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
+import QuoteRepostButton from "../../components/note/components/quote-repost-button";
 import TorrentComments from "./components/torrents-comments";
 import ReplyForm from "../thread/components/reply-form";
 import { getReferences } from "../../helpers/nostr/events";

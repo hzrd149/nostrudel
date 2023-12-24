@@ -5,7 +5,7 @@ import { RepostIcon } from "../../icons";
 import useEventCount from "../../../hooks/use-event-count";
 import RepostModal from "./repost-modal";
 
-export function RepostButton({ event }: { event: NostrEvent }) {
+export default function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const repostCount = useEventCount({ "#e": [event.id], kinds: [6] });

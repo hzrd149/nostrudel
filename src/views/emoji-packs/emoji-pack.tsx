@@ -35,7 +35,7 @@ import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user-avatar-link";
 import NoteZapButton from "../../components/note/note-zap-button";
-import { QuoteRepostButton } from "../../components/note/components/quote-repost-button";
+import QuoteRepostButton from "../../components/note/components/quote-repost-button";
 import Timestamp from "../../components/timestamp";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 

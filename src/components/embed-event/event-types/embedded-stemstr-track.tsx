@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   Box,
   Button,
@@ -22,9 +23,8 @@ import { CompactNoteContent } from "../../compact-note-content";
 import { getDownloadURL, getHashtags, getStreamURL } from "../../../helpers/nostr/stemstr";
 import { DownloadIcon, ReplyIcon } from "../../icons";
 import NoteZapButton from "../../note/note-zap-button";
-import { QuoteRepostButton } from "../../note/components/quote-repost-button";
+import QuoteRepostButton from "../../note/components/quote-repost-button";
 import Timestamp from "../../timestamp";
-import { ReactNode } from "react";
 import { LiveAudioPlayer } from "../../live-audio-player";
 
 // example nevent1qqst32cnyhhs7jt578u7vp3y047dduuwjquztpvwqc43f3nvg8dh28gpzamhxue69uhhyetvv9ujuum5v4khxarj9eshquq4rxdxa

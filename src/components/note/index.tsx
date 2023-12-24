@@ -19,7 +19,6 @@ import UserAvatarLink from "../user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "./note-menu";
-import { EventRelays } from "./note-relays";
 import UserLink from "../user-link";
 import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
 import NoteZapButton from "./note-zap-button";
@@ -27,8 +26,8 @@ import { ExpandProvider } from "../../providers/expanded";
 import useSubject from "../../hooks/use-subject";
 import appSettings from "../../services/settings/app-settings";
 import EventVerificationIcon from "../event-verification-icon";
-import { RepostButton } from "./components/repost-button";
-import { QuoteRepostButton } from "./components/quote-repost-button";
+import RepostButton from "./components/repost-button";
+import QuoteRepostButton from "./components/quote-repost-button";
 import { ReplyIcon } from "../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../providers/trust";

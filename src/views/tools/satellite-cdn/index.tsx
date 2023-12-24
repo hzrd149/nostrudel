@@ -27,6 +27,7 @@ import Timestamp from "../../../components/timestamp";
 import { SatelliteCDNFile, getAccount, getAccountAuthToken, uploadFile } from "../../../helpers/satellite-cdn";
 import FileDeleteButton from "./delete-file-button";
 import { matchSorter } from "match-sorter";
+import ShareFileButton from "./share-file-button";
 
 function FileUploadButton() {
   const toast = useToast();
@@ -81,6 +82,7 @@ function FileRow({ file }: { file: SatelliteCDNFile }) {
         </Td>
         <Td isNumeric>
           <ButtonGroup size="sm" variant="ghost">
+            <ShareFileButton file={file} />
             <FileDeleteButton file={file} />
           </ButtonGroup>
         </Td>
