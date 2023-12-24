@@ -54,7 +54,7 @@ function GenericTimelineNote({
 
   return (
     <ErrorBoundary>
-      <Box minHeight={minHeight} ref={ref}>
+      <Box minHeight={minHeight + "px"} ref={ref}>
         {visible && content}
       </Box>
     </ErrorBoundary>

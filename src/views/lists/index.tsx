@@ -20,7 +20,7 @@ import {
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
-function ListsPage() {
+function ListsHomePage() {
   const account = useCurrentAccount()!;
   const lists = useUserLists(account.pubkey);
   const { lists: favoriteLists } = useFavoriteLists();
@@ -109,7 +109,7 @@ function ListsPage() {
   );
 }
 
-export default function ListsView() {
+export default function ListsHomeView() {
   const account = useCurrentAccount();
-  return account ? <ListsPage /> : <Navigate to="/lists/browse" />;
+  return account ? <ListsHomePage /> : <Navigate to="/lists/browse" />;
 }

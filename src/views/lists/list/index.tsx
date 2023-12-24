@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Kind, nip19 } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
-import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
-import UserLink from "../../components/user-link";
-import { ChevronLeftIcon } from "../../components/icons";
-import useCurrentAccount from "../../hooks/use-current-account";
-import { useDeleteEventContext } from "../../providers/delete-event-provider";
+import UserLink from "../../../components/user-link";
+import { ChevronLeftIcon } from "../../../components/icons";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import { useDeleteEventContext } from "../../../providers/delete-event-provider";
 import {
   getEventsFromList,
   getListDescription,
@@ -15,21 +15,22 @@ import {
   getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
-} from "../../helpers/nostr/lists";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import UserCard from "./components/user-card";
-import OpenGraphCard from "../../components/open-graph-card";
-import { TrustProvider } from "../../providers/trust";
-import ListMenu from "./components/list-menu";
-import ListFavoriteButton from "./components/list-favorite-button";
-import ListFeedButton from "./components/list-feed-button";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
-import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
-import { encodePointer } from "../../helpers/nip19";
-import useSingleEvent from "../../hooks/use-single-event";
-import UserAvatarLink from "../../components/user-avatar-link";
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+} from "../../../helpers/nostr/lists";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import UserCard from "../components/user-card";
+import OpenGraphCard from "../../../components/open-graph-card";
+import { TrustProvider } from "../../../providers/trust";
+import ListMenu from "../components/list-menu";
+import ListFavoriteButton from "../components/list-favorite-button";
+import ListFeedButton from "../components/list-feed-button";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
+import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
+import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
+import { encodePointer } from "../../../helpers/nip19";
+import useSingleEvent from "../../../hooks/use-single-event";
+import UserAvatarLink from "../../../components/user-avatar-link";
+import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
+import { NostrEvent } from "../../../types/nostr-event";
 
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);
@@ -37,20 +38,10 @@ function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   return event ? <EmbedEvent event={event} /> : <>Loading {id}</>;
 }
 
-export default function ListDetailsView() {
+function ListPage({ list }: { list: NostrEvent }) {
   const navigate = useNavigate();
-  const pointer = useParamsAddressPointer("addr");
   const { deleteEvent } = useDeleteEventContext();
   const account = useCurrentAccount();
-
-  const list = useReplaceableEvent(pointer, [], { alwaysRequest: true });
-
-  if (!list)
-    return (
-      <>
-        Looking for list "{pointer.identifier}" created by <UserLink pubkey={pointer.pubkey} />
-      </>
-    );
 
   const description = getListDescription(list);
   const isAuthor = account?.pubkey === list.pubkey;
@@ -153,4 +144,19 @@ export default function ListDetailsView() {
       </VerticalPageLayout>
     </TrustProvider>
   );
+}
+
+export default function ListView() {
+  const pointer = useParamsAddressPointer("addr", false);
+
+  const list = useReplaceableEvent(pointer, [], { alwaysRequest: true });
+
+  if (!list)
+    return (
+      <>
+        <Spinner /> Looking for list "{pointer.identifier}" created by <UserLink pubkey={pointer.pubkey} />
+      </>
+    );
+
+  return <ListPage list={list} />;
 }

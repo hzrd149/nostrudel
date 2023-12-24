@@ -1,4 +1,5 @@
 import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+
 import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

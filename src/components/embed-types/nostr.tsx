@@ -103,9 +103,13 @@ export function embedNipDefinitions(content: EmbedableContent) {
       if (NIP_NAMES[match[1]]) {
         return (
           <Tooltip label={NIP_NAMES[match[1]]} aria-label="NIP Definition">
-            <Text as="abbr" title={NIP_NAMES[match[1]]}>
+            <Link
+              isExternal
+              href={`https://github.com/nostr-protocol/nips/blob/master/${match[1]}.md`}
+              textDecoration="underline"
+            >
               {match[0]}
-            </Text>
+            </Link>
           </Tooltip>
         );
       }

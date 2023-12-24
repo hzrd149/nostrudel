@@ -42,8 +42,8 @@ import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
 const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
-import ListsView from "./views/lists";
-import ListDetailsView from "./views/lists/list-details";
+import ListsHomeView from "./views/lists";
+import ListView from "./views/lists/list";
 import BrowseListView from "./views/lists/browse";
 
 import EmojiPacksBrowseView from "./views/emoji-packs/browse";
@@ -269,9 +269,9 @@ const router = createHashRouter([
       {
         path: "lists",
         children: [
-          { path: "", element: <ListsView /> },
+          { path: "", element: <ListsHomeView /> },
           { path: "browse", element: <BrowseListView /> },
-          { path: ":addr", element: <ListDetailsView /> },
+          { path: ":addr", element: <ListView /> },
         ],
       },
       {
