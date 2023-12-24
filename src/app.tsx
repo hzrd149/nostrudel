@@ -93,6 +93,9 @@ const StreamView = lazy(() => import("./views/streams/stream"));
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
 
+const ThingsView = lazy(() => import("./views/things/index"));
+const ThingUploadView = lazy(() => import("./views/things/upload"));
+
 const ChannelsHomeView = lazy(() => import("./views/channels"));
 const ChannelView = lazy(() => import("./views/channels/channel"));
 
@@ -266,6 +269,13 @@ const router = createHashRouter([
           { path: "dm-feed", element: <DMFeedView /> },
           { path: "transform/:id", element: <TransformNoteView /> },
           { path: "satellite-cdn", element: <SatelliteCDNView /> },
+        ],
+      },
+      {
+        path: "things",
+        children: [
+          { path: "", element: <ThingsView /> },
+          { path: "upload", element: <ThingUploadView /> },
         ],
       },
       {

@@ -20,6 +20,7 @@ import {
   NotesIcon,
   LightningIcon,
   ChannelsIcon,
+  ThingsIcon,
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -54,6 +55,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
+  else if (location.pathname.startsWith("/things")) active = "things";
   else if (location.pathname.startsWith("/settings")) active = "settings";
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";
@@ -205,6 +207,15 @@ export default function NavItems() {
         {...buttonProps}
       >
         Emojis
+      </Button>
+      <Button
+        as={RouterLink}
+        to="/things"
+        leftIcon={<ThingsIcon boxSize={6} />}
+        colorScheme={active === "things" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Things
       </Button>
       <Button
         as={RouterLink}
