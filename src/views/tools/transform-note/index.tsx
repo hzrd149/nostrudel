@@ -3,7 +3,7 @@ import { Flex, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs } from "
 import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
 import { NostrEvent } from "../../../types/nostr-event";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { NoteTranslationsPage } from "../../../components/note-translation-modal";
+import { NoteTranslationsPage } from "./translation";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
@@ -18,7 +18,7 @@ function TransformNotePage({ note }: { note: NostrEvent }) {
     <Tabs colorScheme="primary" isLazy>
       <TabList>
         <Tab>Original</Tab>
-        <Tab>Translate</Tab>
+        <Tab>Translation</Tab>
         <Tab>Text to speech</Tab>
       </TabList>
 

@@ -9,7 +9,7 @@ import DeleteEventMenuItem from "../../../components/common-menu-items/delete-ev
 import Translate01 from "../../../components/icons/translate-01";
 import { CodeIcon } from "../../../components/icons";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
-import NoteTranslationModal from "../../../components/note-translation-modal";
+import NoteTranslationModal from "../../tools/transform-note/translation";
 import { NostrEvent } from "../../../types/nostr-event";
 
 export default function TorrentCommentMenu({

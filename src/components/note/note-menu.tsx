@@ -9,7 +9,7 @@ import NoteDebugModal from "../debug-modals/note-debug-modal";
 import clientRelaysService from "../../services/client-relays";
 import { handleEventFromRelay } from "../../services/event-relays";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import NoteTranslationModal from "../note-translation-modal";
+import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
 import InfoCircle from "../icons/info-circle";
 import PinNoteMenuItem from "../common-menu-items/pin-note";

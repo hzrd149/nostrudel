@@ -4,7 +4,7 @@ import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/m
 import { NostrEvent } from "../../../types/nostr-event";
 import { CodeIcon, TranslateIcon } from "../../../components/icons";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
-import NoteTranslationModal from "../../../components/note-translation-modal";
+import NoteTranslationModal from "../../tools/transform-note/translation";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
