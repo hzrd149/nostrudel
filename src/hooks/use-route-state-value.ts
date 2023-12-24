@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Actions<T> = {
-  setValue: (v: T | ((v: T | undefined) => T)) => void;
+  setValue: (v: T | ((v: T | undefined) => T), replace?: boolean) => void;
   clearValue: () => void;
 };
 
@@ -21,7 +21,7 @@ export default function useRouteStateValue<T extends unknown>(key: string, fallb
   valueRef.current = stateRef.current[key] ?? fallback;
 
   const setValue = useCallback(
-    (valueOrSetter: T | ((v: T) => T)) => {
+    (valueOrSetter: T | ((v: T) => T), replace = true) => {
       const newState = { ...stateRef.current };
       if (typeof valueOrSetter === "function") {
         // @ts-ignore
@@ -29,7 +29,7 @@ export default function useRouteStateValue<T extends unknown>(key: string, fallb
       } else newState[key] = valueOrSetter;
 
       if (stateRef.current[key] !== newState[key]) {
-        navigate(".", { state: newState, replace: true });
+        navigate(".", { state: newState, replace });
       }
     },
     [key],
