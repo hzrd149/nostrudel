@@ -67,7 +67,7 @@
     "react-singleton-hook": "^4.0.1",
     "react-use": "^17.4.0",
     "react-virtualized-auto-sizer": "^1.0.20",
-    "three": "^0.157.0",
+    "three": "^0.160.0",
     "three-spritetext": "^1.8.1",
     "webln": "^0.3.2",
     "yet-another-react-lightbox": "^3.15.6"
@@ -84,7 +84,7 @@
     "@types/ngeohash": "^0.6.8",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "@types/three": "^0.157.2",
+    "@types/three": "^0.160.0",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
     "@vitejs/plugin-react": "^4.2.1",
     "camelcase": "^8.0.0",
