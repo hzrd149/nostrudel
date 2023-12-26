@@ -1,8 +1,13 @@
+// @ts-nocheck
+/**
+ * @react-three/fiber extends the global JSX.IntrinsicElements with 100+ extra elements which overloads typescripts type checking.
+ * To fix this I pulled in the patch-package tool to comment out the offending code in @react-three/fiber
+ */
 import { forwardRef } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { Color, Fog, Vector3 } from "three";
 import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei/core/OrbitControls";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 
 const STLViewer = forwardRef<HTMLCanvasElement, Omit<BoxProps, "children"> & { url: string }>(
