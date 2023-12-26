@@ -208,7 +208,7 @@ export default function NavItems() {
       >
         Emojis
       </Button>
-      <Button
+      {/* <Button
         as={RouterLink}
         to="/things"
         leftIcon={<ThingsIcon boxSize={6} />}
@@ -216,7 +216,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         Things
-      </Button>
+      </Button> */}
       <Button
         as={RouterLink}
         to="/tools"

@@ -18,6 +18,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import MapTimeline from "./timeline";
 
 import iconUrl from "./marker-icon.svg";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 const pinIcon = L.icon({ iconUrl, iconSize: [32, 32], iconAnchor: [16, 32] });
 
 function getPrecision(zoom: number) {

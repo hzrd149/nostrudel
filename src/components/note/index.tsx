@@ -49,6 +49,7 @@ import NoteProxyLink from "./components/note-proxy-link";
 import { NoteDetailsButton } from "./components/note-details-button";
 import EventInteractionDetailsModal from "../event-interactions-modal";
 import singleEventService from "../../services/single-event";
+import NoteToolsMenu from "./note-tools-menu";
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -153,6 +154,7 @@ export const Note = React.memo(
                   <NoteProxyLink event={event} />
                   <NoteDetailsButton event={event} onClick={detailsModal.onOpen} />
                   <BookmarkButton event={event} aria-label="Bookmark note" />
+                  <NoteToolsMenu event={event} aria-label="Note Tools" />
                   <NoteMenu event={event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
                 </ButtonGroup>
               </Flex>

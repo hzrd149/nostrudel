@@ -18,34 +18,21 @@ import ArticleSearchResults from "./article-results";
 import CommunitySearchResults from "./community-results";
 import PeopleListProvider from "../../providers/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export function SearchPage() {
   const navigate = useNavigate();
   const qrScannerModal = useDisclosure();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const mergeSearchParams = useCallback(
-    (params: Record<string, any>) => {
-      setSearchParams(
-        (p) => {
-          const newParams = new URLSearchParams(p);
-          for (const [key, value] of Object.entries(params)) newParams.set(key, value);
-          return newParams;
-        },
-        { replace: true },
-      );
-    },
-    [setSearchParams],
-  );
 
-  const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "");
+  const typeParam = useRouteSearchValue("type", "users");
+  const queryParam = useRouteSearchValue("q", "");
 
-  const type = searchParams.get("type") ?? "users";
-  const search = searchParams.get("q");
+  const [searchInput, setSearchInput] = useState(queryParam.value);
 
   // update the input value when search changes
   useEffect(() => {
-    setSearchInput(searchParams.get("q") ?? "");
-  }, [searchParams]);
+    setSearchInput(queryParam.value);
+  }, [queryParam.value]);
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
@@ -61,7 +48,7 @@ export function SearchPage() {
       return;
     }
 
-    mergeSearchParams({ q: cleanText });
+    queryParam.setValue(cleanText);
   };
 
   const readClipboard = useCallback(async () => {
@@ -75,7 +62,7 @@ export function SearchPage() {
   };
 
   let SearchResults = ProfileSearchResults;
-  switch (type) {
+  switch (typeParam.value) {
     case "users":
       SearchResults = ProfileSearchResults;
       break;
@@ -112,29 +99,29 @@ export function SearchPage() {
         <ButtonGroup size="sm" isAttached variant="outline" flexWrap="wrap">
           <Button
             leftIcon={<User01 />}
-            colorScheme={type === "users" ? "primary" : undefined}
-            onClick={() => mergeSearchParams({ type: "users" })}
+            colorScheme={typeParam.value === "users" ? "primary" : undefined}
+            onClick={() => typeParam.setValue("users")}
           >
             Users
           </Button>
           <Button
             leftIcon={<NotesIcon />}
-            colorScheme={type === "notes" ? "primary" : undefined}
-            onClick={() => mergeSearchParams({ type: "notes" })}
+            colorScheme={typeParam.value === "notes" ? "primary" : undefined}
+            onClick={() => typeParam.setValue("notes")}
           >
             Notes
           </Button>
           <Button
             leftIcon={<Feather />}
-            colorScheme={type === "articles" ? "primary" : undefined}
-            onClick={() => mergeSearchParams({ type: "articles" })}
+            colorScheme={typeParam.value === "articles" ? "primary" : undefined}
+            onClick={() => typeParam.setValue("articles")}
           >
             Articles
           </Button>
           <Button
             leftIcon={<CommunityIcon />}
-            colorScheme={type === "communities" ? "primary" : undefined}
-            onClick={() => mergeSearchParams({ type: "communities" })}
+            colorScheme={typeParam.value === "communities" ? "primary" : undefined}
+            onClick={() => typeParam.setValue("communities")}
           >
             Communities
           </Button>
@@ -143,8 +130,8 @@ export function SearchPage() {
       </Flex>
 
       <Flex direction="column" gap="4">
-        {search ? (
-          <SearchResults search={search} />
+        {queryParam.value ? (
+          <SearchResults search={queryParam.value} />
         ) : (
           <Link isExternal href="https://nostr.band" color="blue.500" mx="auto">
             Advanced Search

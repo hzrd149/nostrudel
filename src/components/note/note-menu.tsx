@@ -45,22 +45,16 @@ export default function NoteMenu({
         <CopyEmbedCodeMenuItem event={event} />
         <MuteUserMenuItem event={event} />
         <DeleteEventMenuItem event={event} />
+
+        <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
+          Broadcast
+        </MenuItem>
+        <PinNoteMenuItem event={event} />
         {detailsClick && (
           <MenuItem onClick={detailsClick} icon={<InfoCircle />}>
             Details
           </MenuItem>
         )}
-
-        <MenuItem as={RouterLink} icon={<Dataflow02 />} to={`/tools/transform/${getSharableEventAddress(event)}`}>
-          Transform Note
-        </MenuItem>
-        <MenuItem onClick={translationsModal.onOpen} icon={<Translate01 />}>
-          Translate
-        </MenuItem>
-        <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
-          Broadcast
-        </MenuItem>
-        <PinNoteMenuItem event={event} />
         <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>

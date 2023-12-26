@@ -1,6 +1,6 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -21,6 +21,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import CategorySelect from "./components/category-select";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 function Warning() {
   const navigate = useNavigate();
@@ -59,17 +60,15 @@ function Warning() {
 function TorrentsPage() {
   const { filter, listId } = usePeopleListContext();
   const { relays } = useRelaySelectionContext();
-  const [params, setParams] = useSearchParams();
-  const tags = params.get("tags")?.split(",") ?? [];
+  const tagsParam = useRouteSearchValue("tags");
+  const tags = tagsParam.value?.split(",") ?? [];
 
   const handleTagsChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     (e) => {
-      const newParams = new URLSearchParams(params);
-      if (e.target.value) newParams.set("tags", e.target.value);
-      else newParams.delete("tags");
-      setParams(newParams, { replace: true });
+      if (e.target.value) tagsParam.setValue(e.target.value);
+      else tagsParam.clearValue();
     },
-    [params],
+    [tagsParam.setValue, tagsParam.clearValue],
   );
 
   const muteFilter = useClientSideMuteFilter();

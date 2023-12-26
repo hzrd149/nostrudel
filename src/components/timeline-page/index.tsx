@@ -11,6 +11,7 @@ import TimelineActionAndStatus from "./timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -34,8 +35,8 @@ export default function TimelinePage({
 }: { timeline: TimelineLoader; header?: React.ReactNode } & Omit<FlexProps, "children" | "direction" | "gap">) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  const [params, setParams] = useSearchParams();
-  const mode = (params.get("view") as TimelineViewType) ?? "timeline";
+  const viewParam = useRouteSearchValue("view", "timeline");
+  const mode = (viewParam.value as TimelineViewType) ?? "timeline";
 
   const renderTimeline = () => {
     switch (mode) {

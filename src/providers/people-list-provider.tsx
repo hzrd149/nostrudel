@@ -1,12 +1,12 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Kind } from "nostr-tools";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import useCurrentAccount from "../hooks/use-current-account";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrQuery } from "../types/nostr-query";
+import useRouteSearchValue from "../hooks/use-route-search-value";
 
 export type ListId = "following" | "global" | string;
 export type Person = { pubkey: string; relay?: string };
@@ -45,18 +45,14 @@ export type PeopleListProviderProps = PropsWithChildren & {
 };
 export default function PeopleListProvider({ children, initList }: PeopleListProviderProps) {
   const account = useCurrentAccount();
-  const [params, setParams] = useSearchParams();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const peopleParam = useRouteSearchValue("people");
 
-  const selected = params.get("people") || (initList as ListId) || (account ? "following" : "global");
+  const selected = peopleParam.value || (initList as ListId) || (account ? "following" : "global");
   const setSelected = useCallback(
     (value: ListId) => {
-      const newParams = new URLSearchParams(location.search);
-      newParams.set("people", value);
-      navigate(location.pathname + "?" + newParams.toString(), { state: location.state });
+      peopleParam.setValue(value);
     },
-    [navigate, location],
+    [peopleParam.setValue],
   );
 
   const listId = useListCoordinate(selected);
