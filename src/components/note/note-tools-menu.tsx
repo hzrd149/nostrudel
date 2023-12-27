@@ -15,10 +15,18 @@ export default function NoteToolsMenu({
   return (
     <>
       <CustomMenuIconButton icon={<Tool01 />} {...props}>
-        <MenuItem as={RouterLink} icon={<Recording02 />} to={`/tools/transform/${getSharableEventAddress(event)}`}>
+        <MenuItem
+          as={RouterLink}
+          icon={<Recording02 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=tts`}
+        >
           Text to speech
         </MenuItem>
-        <MenuItem as={RouterLink} icon={<Translate01 />} to={`/tools/transform/${getSharableEventAddress(event)}`}>
+        <MenuItem
+          as={RouterLink}
+          icon={<Translate01 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=translation`}
+        >
           Translate
         </MenuItem>
       </CustomMenuIconButton>

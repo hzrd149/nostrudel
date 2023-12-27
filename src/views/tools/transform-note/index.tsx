@@ -10,12 +10,21 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import UserLink from "../../../components/user-link";
 import NoteMenu from "../../../components/note/note-menu";
 import NoteTextToSpeechPage from "./text-to-speech";
+import useRouteSearchValue from "../../../hooks/use-route-search-value";
+
+const tabs = ["original", "translation", "tts"];
 
 function TransformNotePage({ note }: { note: NostrEvent }) {
+  const tab = useRouteSearchValue("tab", "original");
   const tabProps = { px: "2", pt: "2", pb: "10", display: "flex", flexDirection: "column", gap: "2" } as const;
 
   return (
-    <Tabs colorScheme="primary" isLazy>
+    <Tabs
+      colorScheme="primary"
+      isLazy
+      index={tab ? tabs.indexOf(tab.value) : 0}
+      onChange={(v) => tab.setValue(tabs[v])}
+    >
       <TabList>
         <Tab>Original</Tab>
         <Tab>Translation</Tab>
