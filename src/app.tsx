@@ -72,17 +72,18 @@ import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
 import UserDMsTab from "./views/user/dms";
-import DMFeedView from "./views/tools/dm-feed";
+import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
 import DVMFeedView from "./views/dvm-feed/feed";
 import TransformNoteView from "./views/tools/transform-note";
 import SatelliteCDNView from "./views/tools/satellite-cdn";
+import OtherStuffView from "./views/other-stuff";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
-const NetworkView = lazy(() => import("./views/tools/network"));
-const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
+const WotTestView = lazy(() => import("./views/tools/wot-test"));
+const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 
@@ -142,6 +143,16 @@ const RootPage = () => {
     </PageProviders>
   );
 };
+const NoLayoutPage = () => {
+  return (
+    <PageProviders>
+      <ScrollRestoration />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
+    </PageProviders>
+  );
+};
 
 const router = createHashRouter([
   {
@@ -157,38 +168,31 @@ const router = createHashRouter([
   },
   {
     path: "signup",
+    element: <NoLayoutPage />,
     children: [
       {
         path: "",
-        element: (
-          <PageProviders>
-            <SignupView />
-          </PageProviders>
-        ),
+        element: <SignupView />,
       },
       {
         path: ":step",
-        element: (
-          <PageProviders>
-            <SignupView />
-          </PageProviders>
-        ),
+        element: <SignupView />,
       },
     ],
+  },
+  {
+    path: "streams/moderation",
+    element: (
+      <PageProviders>
+        <StreamModerationView />
+      </PageProviders>
+    ),
   },
   {
     path: "streams/:naddr",
     element: (
       <PageProviders>
         <StreamView />
-      </PageProviders>
-    ),
-  },
-  {
-    path: "tools/stream-moderation",
-    element: (
-      <PageProviders>
-        <StreamModerationView />
       </PageProviders>
     ),
   },
@@ -228,6 +232,7 @@ const router = createHashRouter([
         path: "/n/:id",
         element: <ThreadView />,
       },
+      { path: "other-stuff", element: <OtherStuffView /> },
       { path: "settings", element: <SettingsView /> },
       {
         path: "relays",
@@ -263,10 +268,10 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
-          { path: "network", element: <NetworkView /> },
+          { path: "wot-test", element: <WotTestView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
-          { path: "dm-feed", element: <DMFeedView /> },
+          { path: "dm-timeline", element: <DMTimelineView /> },
           { path: "transform/:id", element: <TransformNoteView /> },
           { path: "satellite-cdn", element: <SatelliteCDNView /> },
         ],

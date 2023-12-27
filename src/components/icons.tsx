@@ -64,6 +64,7 @@ import Pin01 from "./icons/pin-01";
 import Translate01 from "./icons/translate-01";
 import MessageChatSquare from "./icons/message-chat-square";
 import Package from "./icons/package";
+import Magnet from "./icons/magnet";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -236,3 +237,4 @@ export const TranslateIcon = Translate01;
 export const ChannelsIcon = MessageChatSquare;
 export const ThreadIcon = MessageChatSquare;
 export const ThingsIcon = Package;
+export const TorrentIcon = Magnet

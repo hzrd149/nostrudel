@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";

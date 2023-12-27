@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 import useSubject from "../../../hooks/use-subject";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import useStreamChatTimeline from "../../streams/stream/stream-chat/use-stream-chat-timeline";
+import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
 import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";

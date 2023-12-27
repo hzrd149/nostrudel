@@ -3,8 +3,8 @@ import { Flex } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 
 import useSubject from "../../../hooks/use-subject";
-import useStreamChatTimeline from "../../streams/stream/stream-chat/use-stream-chat-timeline";
-import ZapMessageMemo from "../../streams/stream/stream-chat/zap-message";
+import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
+import ZapMessageMemo from "../stream/stream-chat/zap-message";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 
 function ZapsCard({ stream }: { stream: ParsedStream }) {

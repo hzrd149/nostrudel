@@ -1,33 +1,28 @@
 import { Box, Button, ButtonProps, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import dayjs from "dayjs";
 
 import {
-  BadgeIcon,
   DirectMessagesIcon,
   CommunityIcon,
-  EmojiPacksIcon,
-  GoalIcon,
-  ListsIcon,
   LiveStreamIcon,
   NotificationsIcon,
   ProfileIcon,
   RelayIcon,
   SearchIcon,
   SettingsIcon,
-  ToolsIcon,
   LogoutIcon,
   NotesIcon,
   LightningIcon,
   ChannelsIcon,
-  ThingsIcon,
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
 import { useLocalStorage } from "react-use";
 import ZapModal from "../event-zap-modal";
-import dayjs from "dayjs";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
+import Package from "../icons/package";
 
 export default function NavItems() {
   const location = useLocation();
@@ -63,6 +58,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/torrents")) active = "tools";
   else if (location.pathname.startsWith("/map")) active = "tools";
   else if (location.pathname.startsWith("/profile")) active = "profile";
+  else if (location.pathname.startsWith("/other-stuff")) active = "other-stuff";
   else if (
     account &&
     (location.pathname.startsWith("/u/" + nip19.npubEncode(account.pubkey)) ||
@@ -174,57 +170,12 @@ export default function NavItems() {
       </Button>
       <Button
         as={RouterLink}
-        to="/lists"
-        leftIcon={<ListsIcon boxSize={6} />}
-        colorScheme={active === "lists" ? "primary" : undefined}
+        to="/other-stuff"
+        leftIcon={<Package boxSize={6} />}
+        colorScheme={active === "other-stuff" ? "primary" : undefined}
         {...buttonProps}
       >
-        Lists
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/goals"
-        leftIcon={<GoalIcon boxSize={6} />}
-        colorScheme={active === "goals" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Goals
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/badges"
-        leftIcon={<BadgeIcon boxSize={6} />}
-        colorScheme={active === "badges" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Badges
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/emojis"
-        leftIcon={<EmojiPacksIcon boxSize={6} />}
-        colorScheme={active === "emojis" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Emojis
-      </Button>
-      {/* <Button
-        as={RouterLink}
-        to="/things"
-        leftIcon={<ThingsIcon boxSize={6} />}
-        colorScheme={active === "things" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Things
-      </Button> */}
-      <Button
-        as={RouterLink}
-        to="/tools"
-        leftIcon={<ToolsIcon boxSize={6} />}
-        colorScheme={active === "tools" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Tools
+        More
       </Button>
       <Box h="4" />
       <Button

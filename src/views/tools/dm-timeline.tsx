@@ -27,7 +27,7 @@ const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
   );
 });
 
-export function DMFeedPage() {
+export function DMTimelinePage() {
   const navigate = useNavigate();
   const { listId, filter } = usePeopleListContext();
 
@@ -75,10 +75,10 @@ export function DMFeedPage() {
   );
 }
 
-export default function DMFeedView() {
+export default function DMTimelineView() {
   return (
     <PeopleListProvider>
-      <DMFeedPage />
+      <DMTimelinePage />
     </PeopleListProvider>
   );
 }

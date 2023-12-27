@@ -6,10 +6,8 @@ import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-sh
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
-import Translate01 from "../../../components/icons/translate-01";
 import { CodeIcon } from "../../../components/icons";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
-import NoteTranslationModal from "../../tools/transform-note/translation";
 import { NostrEvent } from "../../../types/nostr-event";
 
 export default function TorrentCommentMenu({
@@ -18,7 +16,6 @@ export default function TorrentCommentMenu({
   ...props
 }: { comment: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
   const debugModal = useDisclosure();
-  const translationsModal = useDisclosure();
 
   return (
     <>
@@ -28,9 +25,6 @@ export default function TorrentCommentMenu({
         <CopyEmbedCodeMenuItem event={comment} />
         <MuteUserMenuItem event={comment} />
         <DeleteEventMenuItem event={comment} />
-        <MenuItem onClick={translationsModal.onOpen} icon={<Translate01 />}>
-          Translations
-        </MenuItem>
         <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
           View Raw
         </MenuItem>
@@ -39,8 +33,6 @@ export default function TorrentCommentMenu({
       {debugModal.isOpen && (
         <NoteDebugModal event={comment} isOpen={debugModal.isOpen} onClose={debugModal.onClose} size="6xl" />
       )}
-
-      {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={comment} />}
     </>
   );
 }

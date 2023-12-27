@@ -12,6 +12,7 @@ import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
 import { Emoji, useContextEmojis } from "../providers/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/user-directory-provider";
 import UserAvatar from "./user-avatar";
+import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -36,7 +37,8 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
   } else if (isPersonToken(entity)) {
     return (
       <span>
-        <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}
+        <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
+        <UserDnsIdentityIcon pubkey={entity.pubkey} onlyIcon />
       </span>
     );
   } else return null;

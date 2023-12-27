@@ -1,5 +1,5 @@
-import { Box, Button, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { memo, useMemo, useState } from "react";
+import { Button, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/require-current-account";
@@ -18,7 +18,7 @@ const User = memo(({ pubkey, count }: { pubkey: string; count: number }) => (
   </Flex>
 ));
 
-function NetworkPage() {
+function WotTestPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const [range, setRange] = useState("50-100");
@@ -57,10 +57,10 @@ function NetworkPage() {
   );
 }
 
-export default function NetworkView() {
+export default function WotTestView() {
   return (
     <RequireCurrentAccount>
-      <NetworkPage />
+      <WotTestPage />
     </RequireCurrentAccount>
   );
 }
