@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import useEventReactions from "../../../hooks/use-event-reactions";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import clientRelaysService from "../../../services/client-relays";
 import eventReactionsService from "../../../services/event-reactions";
 import { NostrEvent } from "../../../types/nostr-event";

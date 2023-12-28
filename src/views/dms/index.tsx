@@ -9,10 +9,10 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import directMessagesService from "../../services/direct-messages";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import Timestamp from "../../components/timestamp";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 
 function ContactCard({ pubkey }: { pubkey: string }) {
   const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);

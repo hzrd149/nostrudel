@@ -12,11 +12,13 @@ import {
   getCommunityRelays,
 } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import { CheckIcon } from "../../../components/icons";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";

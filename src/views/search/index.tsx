@@ -8,7 +8,7 @@ import { getMatchHashtag } from "../../helpers/regexp";
 import { CommunityIcon, CopyToClipboardIcon, NotesIcon, QrCodeIcon } from "../../components/icons";
 import QrScannerModal from "../../components/qr-scanner-modal";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider from "../../providers/relay-selection-provider";
+import RelaySelectionProvider from "../../providers/local/relay-selection-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import User01 from "../../components/icons/user-01";
 import Feather from "../../components/icons/feather";
@@ -16,7 +16,7 @@ import ProfileSearchResults from "./profile-results";
 import NoteSearchResults from "./note-results";
 import ArticleSearchResults from "./article-results";
 import CommunitySearchResults from "./community-results";
-import PeopleListProvider from "../../providers/people-list-provider";
+import PeopleListProvider from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 

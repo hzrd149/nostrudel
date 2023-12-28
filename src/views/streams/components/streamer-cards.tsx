@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
-import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../../providers/local/relay-selection-provider";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useSubject from "../../../hooks/use-subject";
 import { NoteContents } from "../../../components/note/text-note-contents";

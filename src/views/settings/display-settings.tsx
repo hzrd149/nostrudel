@@ -28,7 +28,7 @@ import { matchSorter } from "match-sorter";
 
 import { AppSettings } from "../../services/settings/migrations";
 import { AppearanceIcon, EditIcon } from "../../components/icons";
-import { useContextEmojis } from "../../providers/emoji-provider";
+import { useContextEmojis } from "../../providers/global/emoji-provider";
 
 export default function DisplaySettings() {
   const { register, setValue, getValues, watch } = useFormContext<AppSettings>();

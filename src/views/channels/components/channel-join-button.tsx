@@ -5,7 +5,7 @@ import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { CHANNELS_LIST_KIND, listAddEvent, listRemoveEvent } from "../../../helpers/nostr/lists";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import useUserChannelsList from "../../../hooks/use-user-channels-list";

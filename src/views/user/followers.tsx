@@ -6,7 +6,9 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useMemo, useRef } from "react";
 import { getEventUID } from "../../helpers/nostr/events";

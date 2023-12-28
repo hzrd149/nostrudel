@@ -1,10 +1,10 @@
 import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import { PointerCommunityCard } from "../../communities/components/community-card";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 export default function UserJoinedCommunities({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();

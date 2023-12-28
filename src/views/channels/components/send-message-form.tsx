@@ -4,14 +4,14 @@ import dayjs from "dayjs";
 import { Kind } from "nostr-tools";
 
 import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { createEmojiTags, ensureNotifyPubkeys, getContentMentions } from "../../../helpers/nostr/post";
-import { useContextEmojis } from "../../../providers/emoji-provider";
+import { useContextEmojis } from "../../../providers/global/emoji-provider";
 
 export default function ChannelMessageForm({
   channel,

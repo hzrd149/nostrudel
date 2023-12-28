@@ -5,7 +5,6 @@ import { css, Global } from "@emotion/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
-import { PageProviders } from "./providers";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 
@@ -79,6 +78,7 @@ import DVMFeedView from "./views/dvm-feed/feed";
 import TransformNoteView from "./views/tools/transform-note";
 import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
+import { RouteProviders } from "./providers/route";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -133,24 +133,24 @@ const RootPage = () => {
   useSetColorMode();
 
   return (
-    <PageProviders>
+    <RouteProviders>
       <Layout>
         <ScrollRestoration />
         <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>
       </Layout>
-    </PageProviders>
+    </RouteProviders>
   );
 };
 const NoLayoutPage = () => {
   return (
-    <PageProviders>
+    <RouteProviders>
       <ScrollRestoration />
       <Suspense fallback={<Spinner />}>
         <Outlet />
       </Suspense>
-    </PageProviders>
+    </RouteProviders>
   );
 };
 
@@ -183,17 +183,17 @@ const router = createHashRouter([
   {
     path: "streams/moderation",
     element: (
-      <PageProviders>
+      <RouteProviders>
         <StreamModerationView />
-      </PageProviders>
+      </RouteProviders>
     ),
   },
   {
     path: "streams/:naddr",
     element: (
-      <PageProviders>
+      <RouteProviders>
         <StreamView />
-      </PageProviders>
+      </RouteProviders>
     ),
   },
   {

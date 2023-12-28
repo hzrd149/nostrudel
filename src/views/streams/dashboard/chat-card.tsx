@@ -3,7 +3,7 @@ import { Flex } from "@chakra-ui/react";
 
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import StreamChatLog from "../stream/stream-chat/chat-log";
 import ChatMessageForm from "../stream/stream-chat/stream-chat-form";
 import { ParsedStream } from "../../../helpers/nostr/stream";

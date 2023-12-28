@@ -22,12 +22,12 @@ import {
 import UserLink from "../../components/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useDeleteEventContext } from "../../providers/delete-event-provider";
+import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";
 import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
 import { EMOJI_PACK_KIND, getEmojisFromPack, getPackName } from "../../helpers/nostr/emoji-packs";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useSigningContext } from "../../providers/global/signing-provider";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";

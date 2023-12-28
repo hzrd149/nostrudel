@@ -2,7 +2,7 @@ import { memo, useMemo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import {
   embedCashuTokens,

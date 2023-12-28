@@ -7,7 +7,7 @@ import {
   muteListRemovePubkey,
   pruneExpiredPubkeys,
 } from "../helpers/nostr/mute-list";
-import { useSigningContext } from "../providers/signing-provider";
+import { useSigningContext } from "../providers/global/signing-provider";
 import clientRelaysService from "../services/client-relays";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "./use-async-error-handler";

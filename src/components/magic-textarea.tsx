@@ -9,8 +9,8 @@ import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
 import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
 
-import { Emoji, useContextEmojis } from "../providers/emoji-provider";
-import { useUserSearchDirectoryContext } from "../providers/user-directory-provider";
+import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
+import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user-avatar";
 import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
 

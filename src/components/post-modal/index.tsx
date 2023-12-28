@@ -25,10 +25,10 @@ import { Kind } from "nostr-tools";
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import { useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useSigningContext } from "../../providers/global/signing-provider";
 import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
-import { TrustProvider } from "../../providers/trust";
+import { TrustProvider } from "../../providers/local/trust";
 import {
   correctContentMentions,
   createEmojiTags,
@@ -39,13 +39,13 @@ import {
 } from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
-import { useContextEmojis } from "../../providers/emoji-provider";
+import { useContextEmojis } from "../../providers/global/emoji-provider";
 import CommunitySelect from "./community-select";
 import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
 import { useThrottle } from "react-use";
 

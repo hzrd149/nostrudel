@@ -8,7 +8,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { getCommunityName } from "../../../helpers/nostr/communities";
 import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 

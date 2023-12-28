@@ -3,7 +3,7 @@ import { Card, CardProps, IconButton, Text, useToast } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useEventReactions from "../../../hooks/use-event-reactions";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { draftEventReaction, groupReactions } from "../../../helpers/nostr/reactions";
 import clientRelaysService from "../../../services/client-relays";
 import { getCommunityPostVote } from "../../../helpers/nostr/communities";
@@ -12,7 +12,7 @@ import eventReactionsService from "../../../services/event-reactions";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
 export default function PostVoteButtons({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();

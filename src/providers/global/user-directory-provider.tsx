@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useContext } from "react";
 
-import db from "../services/db";
+import db from "../../services/db";
 
 export type UserDirectory = { pubkey: string; names: [] }[];
 export type GetDirectoryFn = () => Promise<UserDirectory> | UserDirectory;

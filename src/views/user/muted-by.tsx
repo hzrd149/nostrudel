@@ -8,7 +8,9 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { getEventUID } from "../../helpers/nostr/events";
 import VerticalPageLayout from "../../components/vertical-page-layout";

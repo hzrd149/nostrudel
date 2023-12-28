@@ -8,7 +8,7 @@ import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timelin
 import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
 import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
-import { useMuteModalContext } from "../../../providers/mute-modal-provider";
+import { useMuteModalContext } from "../../../providers/route/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../../helpers/nostr/lists";
 import { ParsedStream } from "../../../helpers/nostr/stream";

@@ -6,7 +6,7 @@ import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@
 import UserLink from "../../../components/user-link";
 import { ChevronLeftIcon } from "../../../components/icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useDeleteEventContext } from "../../../providers/delete-event-provider";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import {
   getEventsFromList,
   getListDescription,
@@ -19,7 +19,7 @@ import {
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import UserCard from "../components/user-card";
 import OpenGraphCard from "../../../components/open-graph-card";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import ListMenu from "../components/list-menu";
 import ListFavoriteButton from "../components/list-favorite-button";
 import ListFeedButton from "../components/list-feed-button";

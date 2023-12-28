@@ -9,7 +9,7 @@ import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import useSubject from "../../../hooks/use-subject";
 import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../event-verification-icon";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import { NoteLink } from "../../note-link";
 import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../helpers/nip19";

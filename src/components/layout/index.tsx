@@ -9,7 +9,7 @@ import MobileBottomNav from "./mobile-bottom-nav";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import GhostToolbar from "./ghost-toolbar";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SearchModal from "../search-modal";
 import { useLocation } from "react-router-dom";
 

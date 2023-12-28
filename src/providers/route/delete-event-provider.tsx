@@ -23,18 +23,18 @@ import {
 import { Event, Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
-import useCurrentAccount from "../hooks/use-current-account";
-import signingService from "../services/signing";
-import createDefer, { Deferred } from "../classes/deferred";
-import useEventRelays from "../hooks/use-event-relays";
-import { useWriteRelayUrls } from "../hooks/use-client-relays";
-import { RelayFavicon } from "../components/relay-favicon";
-import { ExternalLinkIcon } from "../components/icons";
-import { getEventCoordinate, getEventUID, isReplaceable } from "../helpers/nostr/events";
-import NostrPublishAction from "../classes/nostr-publish-action";
-import { Tag } from "../types/nostr-event";
-import deleteEventService from "../services/delete-events";
-import { EmbedEvent } from "../components/embed-event";
+import useCurrentAccount from "../../hooks/use-current-account";
+import signingService from "../../services/signing";
+import createDefer, { Deferred } from "../../classes/deferred";
+import useEventRelays from "../../hooks/use-event-relays";
+import { useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { RelayFavicon } from "../../components/relay-favicon";
+import { ExternalLinkIcon } from "../../components/icons";
+import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/events";
+import NostrPublishAction from "../../classes/nostr-publish-action";
+import { Tag } from "../../types/nostr-event";
+import deleteEventService from "../../services/delete-events";
+import { EmbedEvent } from "../../components/embed-event";
 
 type DeleteEventContextType = {
   isLoading: boolean;

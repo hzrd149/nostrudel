@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import dayjs from "dayjs";
 import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
 
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";

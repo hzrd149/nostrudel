@@ -1,10 +1,10 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useRef } from "react";
 import { nanoid } from "nanoid";
 
-import Subject from "../classes/subject";
+import Subject from "../../classes/subject";
 import { useSigningContext } from "./signing-provider";
-import useSubject from "../hooks/use-subject";
-import createDefer, { Deferred } from "../classes/deferred";
+import useSubject from "../../hooks/use-subject";
+import createDefer, { Deferred } from "../../classes/deferred";
 
 class DecryptionContainer {
   id = nanoid();

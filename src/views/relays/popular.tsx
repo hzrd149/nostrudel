@@ -20,7 +20,7 @@ import { useClientRelays, useReadRelayUrls } from "../../hooks/use-client-relays
 import useCurrentAccount from "../../hooks/use-current-account";
 import useSubjects from "../../hooks/use-subjects";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import userRelaysService from "../../services/user-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayFavicon } from "../../components/relay-favicon";

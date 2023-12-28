@@ -3,14 +3,16 @@ import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotificationTimeline } from "../../providers/notification-timeline";
+import { useNotificationTimeline } from "../../providers/global/notification-timeline";
 import { getEventUID, isReply } from "../../helpers/nostr/events";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NotificationItem from "./notification-item";

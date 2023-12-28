@@ -18,7 +18,7 @@ import {
 
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";

@@ -7,7 +7,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
 import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
-import { PostModalContext } from "../../providers/post-modal-provider";
+import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { WritingIcon } from "../icons";
 
 const hideScrollbar = css`

@@ -1,9 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import useSubject from "../hooks/use-subject";
-import accountService from "../services/account";
+import useSubject from "../../hooks/use-subject";
+import accountService from "../../services/account";
 import { Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
-import { deleteDatabase } from "../services/db";
-import { ExternalLinkIcon } from "../components/icons";
+import { deleteDatabase } from "../../services/db";
 
 export default function RequireCurrentAccount({ children }: { children: JSX.Element }) {
   let location = useLocation();

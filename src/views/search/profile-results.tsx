@@ -11,14 +11,14 @@ import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import UserLink from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
-import { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { Kind } from "nostr-tools";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { usePeopleListContext } from "../../providers/people-list-provider";
+import { usePeopleListContext } from "../../providers/local/people-list-provider";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const metadata = parseKind0Event(profile);

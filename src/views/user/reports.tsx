@@ -8,10 +8,12 @@ import UserLink from "../../components/user-link";
 import { filterTagsByContentRefs, getEventUID } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 

@@ -10,7 +10,7 @@ import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user-follow-button";
 import accountService from "../../../services/account";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 export default function Header({
   pubkey,

@@ -16,7 +16,7 @@ import {
 } from "three";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
@@ -24,7 +24,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
 import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { useDebounce } from "react-use";
 import useSubject from "../../hooks/use-subject";

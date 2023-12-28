@@ -3,12 +3,14 @@ import { memo, useCallback, useRef } from "react";
 import { Kind } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
 import { NostrEvent } from "../../types/nostr-event";

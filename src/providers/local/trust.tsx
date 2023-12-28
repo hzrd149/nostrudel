@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext } from "react";
-import { NostrEvent } from "../types/nostr-event";
-import useCurrentAccount from "../hooks/use-current-account";
-import useUserContactList from "../hooks/use-user-contact-list";
-import { getPubkeysFromList } from "../helpers/nostr/lists";
+import { NostrEvent } from "../../types/nostr-event";
+import useCurrentAccount from "../../hooks/use-current-account";
+import useUserContactList from "../../hooks/use-user-contact-list";
+import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
 const TrustContext = React.createContext<boolean>(false);
 

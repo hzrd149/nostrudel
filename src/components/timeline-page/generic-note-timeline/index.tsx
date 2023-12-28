@@ -8,7 +8,10 @@ import useSubject from "../../../hooks/use-subject";
 import TimelineLoader from "../../../classes/timeline-loader";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventUID } from "../../../helpers/nostr/events";
-import { ExtendedIntersectionObserverEntry, useIntersectionObserver } from "../../../providers/intersection-observer";
+import {
+  ExtendedIntersectionObserverEntry,
+  useIntersectionObserver,
+} from "../../../providers/local/intersection-observer";
 import GenericTimelineNote from "./generic-timeline-note";
 
 const NOTE_BUFFER = 5;

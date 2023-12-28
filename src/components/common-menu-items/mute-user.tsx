@@ -3,7 +3,7 @@ import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { MuteIcon, UnmuteIcon } from "../icons";
-import { useMuteModalContext } from "../../providers/mute-modal-provider";
+import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
 import useUserMuteFunctions from "../../hooks/use-user-mute-functions";
 
 export default function MuteUserMenuItem({ event }: { event: NostrEvent }) {

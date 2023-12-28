@@ -5,11 +5,11 @@ import { ParsedStream } from "../../../../helpers/nostr/stream";
 import UserAvatar from "../../../../components/user-avatar";
 import UserLink from "../../../../components/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../../providers/local/intersection-observer";
 import { LightningIcon } from "../../../../components/icons";
 import { parseZapEvent } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";
-import { TrustProvider } from "../../../../providers/trust";
+import { TrustProvider } from "../../../../providers/local/trust";
 import ChatMessageContent from "./chat-message-content";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 

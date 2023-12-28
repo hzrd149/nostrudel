@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 
 import { nostrBuildUploadImage } from "../helpers/nostr-build";
 import { RefType } from "../components/magic-textarea";
-import { useSigningContext } from "../providers/signing-provider";
+import { useSigningContext } from "../providers/global/signing-provider";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 
 export function useTextAreaUploadFileWithForm(

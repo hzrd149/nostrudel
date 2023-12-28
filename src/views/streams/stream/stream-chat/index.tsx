@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, CardProps, Heading } from "@chakra-ui/react
 
 import { ParsedStream } from "../../../../helpers/nostr/stream";
 import { LightboxProvider } from "../../../../components/lightbox-provider";
-import IntersectionObserverProvider from "../../../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
 import TopZappers from "../../components/top-zappers";
 import ChatMessageForm from "./stream-chat-form";

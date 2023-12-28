@@ -14,7 +14,7 @@ import {
 } from "../../../../helpers/nostr/dvm";
 import useSubject from "../../../../hooks/use-subject";
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
-import { useSigningContext } from "../../../../providers/signing-provider";
+import { useSigningContext } from "../../../../providers/global/signing-provider";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../../services/client-relays";

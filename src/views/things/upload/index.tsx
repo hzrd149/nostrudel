@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { useNavigate } from "react-router-dom";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import SelectFileStep from "./select-file-step";

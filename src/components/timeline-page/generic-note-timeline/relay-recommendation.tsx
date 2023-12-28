@@ -6,7 +6,7 @@ import UserAvatar from "../../user-avatar";
 import UserLink from "../../user-link";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { safeRelayUrl } from "../../../helpers/url";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 
 export default function RelayRecommendation({ event }: { event: NostrEvent }) {
   const safeUrl = safeRelayUrl(event.content);

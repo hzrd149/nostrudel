@@ -4,10 +4,12 @@ import { Kind } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { NostrEvent, isPTag } from "../../types/nostr-event";

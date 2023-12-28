@@ -3,7 +3,7 @@ import { ButtonProps, IconButton } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { QuoteRepostIcon } from "../../icons";
-import { PostModalContext } from "../../../providers/post-modal-provider";
+import { PostModalContext } from "../../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 
 export type QuoteRepostButtonProps = Omit<ButtonProps, "children" | "onClick"> & {

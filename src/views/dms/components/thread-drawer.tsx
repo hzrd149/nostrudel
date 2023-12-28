@@ -23,11 +23,11 @@ import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import Timestamp from "../../../components/timestamp";
-import { Thread, useThreadsContext } from "../../../providers/thread-provider";
+import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
 import ThreadButton from "./thread-button";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
-import { useDecryptionContext } from "../../../providers/dycryption-provider";
+import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import DirectMessageBlock from "./direct-message-block";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {

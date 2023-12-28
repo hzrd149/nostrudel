@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
-import InvoiceModal from "../components/invoice-modal";
-import createDefer, { Deferred } from "../classes/deferred";
-import appSettings from "../services/settings/app-settings";
+import InvoiceModal from "../../components/invoice-modal";
+import createDefer, { Deferred } from "../../classes/deferred";
+import appSettings from "../../services/settings/app-settings";
 
 export type InvoiceModalContext = {
   requestPay: (invoice: string) => Promise<void>;
@@ -17,7 +17,7 @@ export function useInvoiceModalContext() {
   return useContext(InvoiceModalContext);
 }
 
-export const InvoiceModalProvider = ({ children }: { children: React.ReactNode }) => {
+export default function InvoiceModalProvider({ children }: { children: React.ReactNode }) {
   const [invoice, setInvoice] = useState<string>();
   const [defer, setDefer] = useState<Deferred<void>>();
 
@@ -60,4 +60,4 @@ export const InvoiceModalProvider = ({ children }: { children: React.ReactNode }
       {invoice && <InvoiceModal isOpen onClose={handleClose} invoice={invoice} onPaid={handlePaid} />}
     </InvoiceModalContext.Provider>
   );
-};
+}

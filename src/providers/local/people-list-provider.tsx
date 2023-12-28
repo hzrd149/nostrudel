@@ -1,12 +1,12 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Kind } from "nostr-tools";
 
-import useCurrentAccount from "../hooks/use-current-account";
-import { getPubkeysFromList } from "../helpers/nostr/lists";
-import useReplaceableEvent from "../hooks/use-replaceable-event";
-import { NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
-import useRouteSearchValue from "../hooks/use-route-search-value";
+import useCurrentAccount from "../../hooks/use-current-account";
+import { getPubkeysFromList } from "../../helpers/nostr/lists";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { NostrEvent } from "../../types/nostr-event";
+import { NostrQuery } from "../../types/nostr-query";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export type ListId = "following" | "global" | string;
 export type Person = { pubkey: string; relay?: string };

@@ -1,6 +1,6 @@
 import { useInterval } from "react-use";
 import TimelineLoader from "../classes/timeline-loader";
-import { useIntersectionMapCallback } from "../providers/intersection-observer";
+import { useIntersectionMapCallback } from "../providers/local/intersection-observer";
 import { NostrEvent } from "../types/nostr-event";
 
 export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) {

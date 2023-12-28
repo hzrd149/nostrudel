@@ -19,7 +19,7 @@ import {
   renderWavlakeUrl,
   renderYoutubeUrl,
 } from "../../../components/embed-types";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 
 export default function DirectMessageContent({

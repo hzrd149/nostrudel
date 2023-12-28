@@ -26,7 +26,7 @@ import {
   isPubkeyInList,
 } from "../helpers/nostr/lists";
 import { getEventCoordinate } from "../helpers/nostr/events";
-import { useSigningContext } from "../providers/signing-provider";
+import { useSigningContext } from "../providers/global/signing-provider";
 import NostrPublishAction from "../classes/nostr-publish-action";
 import clientRelaysService from "../services/client-relays";
 import useUserContactList from "../hooks/use-user-contact-list";
@@ -34,7 +34,7 @@ import replaceableEventLoaderService from "../services/replaceable-event-request
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
 import useUserMuteFunctions from "../hooks/use-user-mute-functions";
-import { useMuteModalContext } from "../providers/mute-modal-provider";
+import { useMuteModalContext } from "../providers/route/mute-modal-provider";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const toast = useToast();

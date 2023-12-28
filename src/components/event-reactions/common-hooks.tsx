@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 
 import { ReactionGroup, draftEventReaction } from "../../helpers/nostr/reactions";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useSigningContext } from "../../providers/global/signing-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
 import NostrPublishAction from "../../classes/nostr-publish-action";

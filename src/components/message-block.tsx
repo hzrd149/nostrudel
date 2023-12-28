@@ -4,7 +4,7 @@ import useCurrentAccount from "../hooks/use-current-account";
 import { NostrEvent } from "../types/nostr-event";
 import UserAvatar from "./user-avatar";
 import MessageBubble, { MessageBubbleProps } from "./message-bubble";
-import { useThreadsContext } from "../providers/thread-provider";
+import { useThreadsContext } from "../providers/local/thread-provider";
 import ThreadButton from "../views/dms/components/thread-button";
 
 function MessageBubbleWithThread({ message, showThreadButton = true, ...props }: MessageBubbleProps) {

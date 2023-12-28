@@ -2,7 +2,7 @@ import { memo, useMemo, useState } from "react";
 import { Button, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { useNetworkConnectionCount } from "../../hooks/use-user-network";
 import UserAvatarLink from "../../components/user-avatar-link";
 import UserLink from "../../components/user-link";

@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useMount, useUnmount } from "react-use";
 
-import Subject from "../classes/subject";
+import Subject from "../../classes/subject";
 
 export type ExtendedIntersectionObserverEntry = { entry: IntersectionObserverEntry; id: string | undefined };
 export type ExtendedIntersectionObserverCallback = (

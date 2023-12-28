@@ -22,7 +22,7 @@ import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { CompactNoteContent } from "../../../components/compact-note-content";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import UserLink from "../../../components/user-link";
 import UserAvatarLink from "../../../components/user-avatar-link";

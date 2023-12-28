@@ -8,7 +8,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import CommunityCard from "../communities/components/community-card";
 import { getEventUID } from "../../helpers/nostr/events";

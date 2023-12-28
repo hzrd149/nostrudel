@@ -7,7 +7,7 @@ import { getLudEndpoint } from "../../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/events";
 import { parseAddress } from "../../../services/dns-identity";
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { embedNostrLinks, renderGenericUrl } from "../../../components/embed-types";
 import {

@@ -1,9 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useCallback, useContext, useMemo } from "react";
-import useSubject from "../hooks/use-subject";
-import accountService from "../services/account";
-import signingService from "../services/signing";
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import useSubject from "../../hooks/use-subject";
+import accountService from "../../services/account";
+import signingService from "../../services/signing";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 
 export type SigningContextType = {
   requestSignature: (draft: DraftNostrEvent) => Promise<NostrEvent>;

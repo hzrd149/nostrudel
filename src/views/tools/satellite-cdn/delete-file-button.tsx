@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { IconButton, useToast } from "@chakra-ui/react";
 
 import { SatelliteCDNFile, deleteFile } from "../../../helpers/satellite-cdn";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { TrashIcon } from "../../../components/icons";
 
 export default function FileDeleteButton({ file }: { file: SatelliteCDNFile }) {

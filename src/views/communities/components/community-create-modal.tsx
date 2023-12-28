@@ -34,7 +34,7 @@ import UserLink from "../../../components/user-link";
 import { TrashIcon } from "../../../components/icons";
 import Upload01 from "../../../components/icons/upload-01";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";

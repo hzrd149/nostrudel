@@ -1,8 +1,8 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useReadRelayUrls } from "../hooks/use-client-relays";
-import { unique } from "../helpers/array";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { unique } from "../../helpers/array";
 
 type RelaySelectionContextType = {
   relays: string[];

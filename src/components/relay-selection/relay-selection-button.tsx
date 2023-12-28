@@ -1,7 +1,7 @@
 import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
 
 import { RelayIcon } from "../icons";
-import { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import RelaySelectionModal from "./relay-selection-modal";
 
 export default function RelaySelectionButton({ ...props }: ButtonProps) {

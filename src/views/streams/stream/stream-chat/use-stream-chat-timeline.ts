@@ -5,7 +5,7 @@ import { getEventUID } from "../../../../helpers/nostr/events";
 import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
 import useStreamGoal from "../../../../hooks/use-stream-goal";
 import { NostrQuery } from "../../../../types/nostr-query";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";

@@ -18,7 +18,7 @@ import { Kind } from "nostr-tools";
 
 import { readablizeSats } from "../../../helpers/bolt11";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import Timestamp from "../../../components/timestamp";

@@ -3,7 +3,7 @@ import { MenuItem, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useSigningContext } from "../../providers/global/signing-provider";
 import useUserPinList from "../../hooks/use-user-pin-list";
 import { DraftNostrEvent, NostrEvent, isETag } from "../../types/nostr-event";
 import { PIN_LIST_KIND, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";

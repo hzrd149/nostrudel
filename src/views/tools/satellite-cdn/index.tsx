@@ -19,7 +19,7 @@ import {
 import { useAsync } from "react-use";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { NostrEvent } from "../../../types/nostr-event";
 import { formatBytes } from "../../../helpers/number";
 import { CopyIconButton } from "../../../components/copy-icon-button";

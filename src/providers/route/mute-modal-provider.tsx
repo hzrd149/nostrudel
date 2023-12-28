@@ -21,26 +21,26 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo, use
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getUserDisplayName } from "../helpers/user-metadata";
-import { useUserMetadata } from "../hooks/use-user-metadata";
-import useCurrentAccount from "../hooks/use-current-account";
+import { getUserDisplayName } from "../../helpers/user-metadata";
+import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useCurrentAccount from "../../hooks/use-current-account";
 import {
   createEmptyMuteList,
   getPubkeysExpiration,
   muteListAddPubkey,
   muteListRemovePubkey,
   pruneExpiredPubkeys,
-} from "../helpers/nostr/mute-list";
-import { cloneList } from "../helpers/nostr/lists";
-import { useSigningContext } from "./signing-provider";
-import NostrPublishAction from "../classes/nostr-publish-action";
-import clientRelaysService from "../services/client-relays";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
-import useUserMuteList from "../hooks/use-user-mute-list";
-import { DraftNostrEvent } from "../types/nostr-event";
-import UserAvatar from "../components/user-avatar";
-import UserLink from "../components/user-link";
-import { ChevronDownIcon } from "../components/icons";
+} from "../../helpers/nostr/mute-list";
+import { cloneList } from "../../helpers/nostr/lists";
+import { useSigningContext } from "../global/signing-provider";
+import NostrPublishAction from "../../classes/nostr-publish-action";
+import clientRelaysService from "../../services/client-relays";
+import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import useUserMuteList from "../../hooks/use-user-mute-list";
+import { DraftNostrEvent } from "../../types/nostr-event";
+import UserAvatar from "../../components/user-avatar";
+import UserLink from "../../components/user-link";
+import { ChevronDownIcon } from "../../components/icons";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;

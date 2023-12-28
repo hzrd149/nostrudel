@@ -35,7 +35,7 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { RelayMode } from "../../classes/relay";
-import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { useUserRelays } from "../../hooks/use-user-relays";

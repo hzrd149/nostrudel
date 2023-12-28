@@ -2,7 +2,7 @@ import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, 
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
 import appSettings from "../../services/settings/app-settings";
-import { useTrusted } from "../../providers/trust";
+import { useTrusted } from "../../providers/local/trust";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { getMatchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
@@ -10,7 +10,7 @@ import { isImageURL } from "../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
 import { NostrEvent } from "../../types/nostr-event";
 import useAppSettings from "../../hooks/use-app-settings";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import useElementBlur from "../../hooks/use-element-blur";
 
 export type TrustImageProps = ImageProps;

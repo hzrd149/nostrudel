@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import useOpenGraphData from "../hooks/use-open-graph-data";
-import { useBreakpointValue } from "../providers/breakpoint-provider";
+import { useBreakpointValue } from "../providers/global/breakpoint-provider";
 
 export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<CardProps, "children">) {
   const { value: data } = useOpenGraphData(url);

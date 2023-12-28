@@ -3,7 +3,7 @@ import { ParsedStream } from "../../../helpers/nostr/stream";
 import { LightningIcon } from "../../../components/icons";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import ZapModal from "../../../components/event-zap-modal";
-import { useRelaySelectionRelays } from "../../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../../providers/local/relay-selection-provider";
 import useStreamGoal from "../../../hooks/use-stream-goal";
 
 export default function StreamZapButton({

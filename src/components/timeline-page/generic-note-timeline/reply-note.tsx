@@ -1,7 +1,7 @@
 import { memo, useRef } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import Note from "../../note";
 
 function ReplyNote({ event }: { event: NostrEvent }) {

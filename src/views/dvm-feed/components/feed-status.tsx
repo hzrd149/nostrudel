@@ -9,7 +9,7 @@ import {
 } from "../../../helpers/nostr/dvm";
 import { InlineInvoiceCard } from "../../../components/inline-invoice-card";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { unique } from "../../../helpers/array";
 import clientRelaysService from "../../../services/client-relays";

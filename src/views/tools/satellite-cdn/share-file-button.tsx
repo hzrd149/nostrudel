@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { SatelliteCDNFile } from "../../../helpers/satellite-cdn";
-import { PostModalContext } from "../../../providers/post-modal-provider";
+import { PostModalContext } from "../../../providers/route/post-modal-provider";
 import { ButtonProps, IconButton } from "@chakra-ui/react";
 import { QuoteRepostIcon } from "../../../components/icons";
 

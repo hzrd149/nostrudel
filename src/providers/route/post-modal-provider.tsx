@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
-import { ErrorBoundary } from "../components/error-boundary";
-import PostModal, { PostModalProps } from "../components/post-modal";
+import { ErrorBoundary } from "../../components/error-boundary";
+import PostModal, { PostModalProps } from "../../components/post-modal";
 
 export type PostModalContextType = {
   openModal: (props?: PostModalProps) => void;

@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserPinList from "../../../hooks/use-user-pin-list";
 import { EmbedEventPointer } from "../../../components/embed-event";
 

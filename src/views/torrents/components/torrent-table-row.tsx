@@ -8,7 +8,7 @@ import Timestamp from "../../../components/timestamp";
 import UserLink from "../../../components/user-link";
 import Magnet from "../../../components/icons/magnet";
 import { getNeventForEventId } from "../../../helpers/nip19";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { formatBytes } from "../../../helpers/number";
 import NoteZapButton from "../../../components/note/note-zap-button";

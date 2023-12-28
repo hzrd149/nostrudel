@@ -5,7 +5,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 import { RelayIconStack, RelayIconStackProps } from "../relay-icon-stack";
 import { getEventUID } from "../../helpers/nostr/events";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 export type NoteRelaysProps = {
   event: NostrEvent;

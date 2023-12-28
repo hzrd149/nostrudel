@@ -6,7 +6,9 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import {
   Alert,
@@ -26,7 +28,7 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import { ReplyIcon } from "../../../components/icons";

@@ -2,7 +2,7 @@ import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag } from "../regexp";
 import { getReferences } from "./events";
 import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
-import { Emoji } from "../../providers/emoji-provider";
+import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
 import relayHintService from "../../services/event-relay-hint";

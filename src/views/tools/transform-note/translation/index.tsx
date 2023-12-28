@@ -20,7 +20,7 @@ import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { getEventUID } from "../../../../helpers/nostr/events";
 import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
 import useSubject from "../../../../hooks/use-subject";
-import { useSigningContext } from "../../../../providers/signing-provider";
+import { useSigningContext } from "../../../../providers/global/signing-provider";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../../services/client-relays";

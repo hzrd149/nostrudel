@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { Kind } from "nostr-tools";
 
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr/events";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

@@ -10,7 +10,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../relays/components/relay-card";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useRelayInfo } from "../../hooks/use-relay-info";
 import { ErrorBoundary } from "../../components/error-boundary";

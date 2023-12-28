@@ -4,15 +4,15 @@ import { Link as RouterLink } from "react-router-dom";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { FILE_KIND } from "../../helpers/nostr/files";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import Upload01 from "../../components/icons/upload-01";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function FilesPage() {
   const { listId, filter } = usePeopleListContext();

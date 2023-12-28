@@ -3,7 +3,7 @@ import { ModalProps, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import {
   COMMUNITY_DEFINITION_KIND,
   getCommunityDescription,

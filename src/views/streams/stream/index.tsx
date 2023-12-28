@@ -35,11 +35,11 @@ import StreamDebugButton from "../components/stream-debug-button";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useSubject from "../../../hooks/use-subject";
 import RelaySelectionButton from "../../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider from "../../../providers/relay-selection-provider";
+import RelaySelectionProvider from "../../../providers/local/relay-selection-provider";
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import StreamSatsPerMinute from "../components/stream-sats-per-minute";
-import { UserEmojiProvider } from "../../../providers/emoji-provider";
+import { UserEmojiProvider } from "../../../providers/global/emoji-provider";
 import StreamStatusBadge from "../components/status-badge";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 import StreamChatLog from "./stream-chat/chat-log";
@@ -49,7 +49,7 @@ import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
 import StreamShareButton from "../components/stream-share-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);

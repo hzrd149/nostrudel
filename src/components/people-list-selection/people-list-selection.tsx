@@ -9,7 +9,7 @@ import {
   MenuOptionGroup,
 } from "@chakra-ui/react";
 
-import { usePeopleListContext } from "../../providers/people-list-provider";
+import { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useUserLists from "../../hooks/use-user-lists";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { PEOPLE_LIST_KIND, getListName } from "../../helpers/nostr/lists";

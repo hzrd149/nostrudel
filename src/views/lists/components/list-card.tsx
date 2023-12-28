@@ -30,7 +30,7 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import ListFavoriteButton from "./list-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import ListMenu from "./list-menu";

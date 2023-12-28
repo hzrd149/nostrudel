@@ -19,7 +19,7 @@ import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
 import NostrPublishAction from "../../../classes/nostr-publish-action";

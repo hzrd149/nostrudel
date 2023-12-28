@@ -3,10 +3,10 @@ import { useOutletContext } from "react-router-dom";
 import { useCallback } from "react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";

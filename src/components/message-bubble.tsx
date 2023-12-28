@@ -2,7 +2,7 @@ import { ReactNode, useRef } from "react";
 import { ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps } from "@chakra-ui/react";
 
 import { NostrEvent } from "../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../providers/local/intersection-observer";
 import { getEventUID } from "../helpers/nostr/events";
 import Timestamp from "./timestamp";
 import NoteZapButton from "./note/note-zap-button";

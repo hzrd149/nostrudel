@@ -9,7 +9,7 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { listRemovePerson } from "../../../helpers/nostr/lists";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";

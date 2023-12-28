@@ -6,7 +6,7 @@ import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 
 function DVMFeedHomePage() {

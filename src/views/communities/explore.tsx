@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { AvatarGroup, Button, Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { PointerCommunityCard } from "./components/community-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";

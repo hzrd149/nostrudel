@@ -3,12 +3,12 @@ import { Kind } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotificationTimeline } from "../../providers/notification-timeline";
+import { useNotificationTimeline } from "../../providers/global/notification-timeline";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
 import { NostrEvent } from "../../types/nostr-event";
@@ -23,7 +23,9 @@ import Timestamp from "../../components/timestamp";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { getEventUID } from "../../helpers/nostr/events";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 

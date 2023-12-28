@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { useAsync } from "react-use";
 import { nip19 } from "nostr-tools";
 
-import { useUserSearchDirectoryContext } from "../providers/user-directory-provider";
+import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import userMetadataService from "../services/user-metadata";
 import { getUserDisplayName } from "../helpers/user-metadata";
 

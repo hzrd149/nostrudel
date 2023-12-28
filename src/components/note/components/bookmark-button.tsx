@@ -15,7 +15,7 @@ import {
 import dayjs from "dayjs";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import useUserLists from "../../../hooks/use-user-lists";
 import {
   NOTE_LIST_KIND,

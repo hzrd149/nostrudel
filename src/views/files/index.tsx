@@ -7,10 +7,10 @@ import { NostrEvent } from "../../types/nostr-event";
 import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useAppSettings from "../../hooks/use-app-settings";
-import { TrustProvider, useTrusted } from "../../providers/trust";
+import { TrustProvider, useTrusted } from "../../providers/local/trust";
 import BlurredImage from "../../components/blured-image";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { UserAvatarLink } from "../../components/user-avatar-link";
@@ -20,7 +20,9 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import Timestamp from "../../components/timestamp";
 import NoteZapButton from "../../components/note/note-zap-button";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 
 function ImageFile({ event }: { event: NostrEvent }) {

@@ -7,7 +7,7 @@ import UserLink from "../../user-link";
 import useSubject from "../../../hooks/use-subject";
 import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../event-verification-icon";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import Timestamp from "../../timestamp";
 import { getNeventForEventId } from "../../../helpers/nip19";
 import { CompactNoteContent } from "../../compact-note-content";

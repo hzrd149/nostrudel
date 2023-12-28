@@ -2,7 +2,7 @@ import { Button, IconButton } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import UserAvatar from "../../../components/user-avatar";
-import { Thread } from "../../../providers/thread-provider";
+import { Thread } from "../../../providers/local/thread-provider";
 import { ChevronRightIcon, ThreadIcon } from "../../../components/icons";
 import { IconButtonProps } from "yet-another-react-lightbox";
 import { NostrEvent } from "../../../types/nostr-event";

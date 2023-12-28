@@ -4,14 +4,14 @@ import { Kind, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../providers/local/intersection-observer";
 import { parseZapEvent } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
 import { getEventUID, getReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { TrustProvider } from "../../providers/trust";
+import { TrustProvider } from "../../providers/local/trust";
 import Heart from "../../components/icons/heart";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";

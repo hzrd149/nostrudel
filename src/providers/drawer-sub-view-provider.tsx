@@ -28,8 +28,8 @@ import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavig
 import { ErrorBoundary } from "../components/error-boundary";
 import ThreadView from "../views/thread";
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
-import { PageProviders } from ".";
 import { logger } from "../helpers/debug";
+import { RouteProviders } from "./route";
 
 const TorrentDetailsView = lazy(() => import("../views/torrents/torrent"));
 
@@ -68,17 +68,15 @@ function DrawerSubView({
         <DrawerBody px="2" pb="2" pt="0">
           <ErrorBoundary>
             <IsInDrawerContext.Provider value={true}>
-              <PageProviders>
-                <Suspense
-                  fallback={
-                    <Heading size="md" mx="auto" my="4">
-                      <Spinner /> Loading page
-                    </Heading>
-                  }
-                >
-                  <RouterProvider router={router} />
-                </Suspense>
-              </PageProviders>
+              <Suspense
+                fallback={
+                  <Heading size="md" mx="auto" my="4">
+                    <Spinner /> Loading page
+                  </Heading>
+                }
+              >
+                <RouterProvider router={router} />
+              </Suspense>
             </IsInDrawerContext.Provider>
           </ErrorBoundary>
         </DrawerBody>
@@ -90,11 +88,19 @@ function DrawerSubView({
 const routes: RouteObject[] = [
   {
     path: "/n/:id",
-    element: <ThreadView />,
+    element: (
+      <RouteProviders>
+        <ThreadView />
+      </RouteProviders>
+    ),
   },
   {
     path: "/torrents/:id",
-    element: <TorrentDetailsView />,
+    element: (
+      <RouteProviders>
+        <TorrentDetailsView />
+      </RouteProviders>
+    ),
   },
 ];
 

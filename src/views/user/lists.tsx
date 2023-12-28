@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Divider, Heading, SimpleGrid } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import {
@@ -15,7 +15,7 @@ import {
 } from "../../helpers/nostr/lists";
 import { getEventUID } from "../../helpers/nostr/events";
 import ListCard from "../lists/components/list-card";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { Kind } from "nostr-tools";
 import VerticalPageLayout from "../../components/vertical-page-layout";

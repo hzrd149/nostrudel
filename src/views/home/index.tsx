@@ -9,8 +9,8 @@ import TimelinePage, { useTimelinePageEventFilter } from "../../components/timel
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 

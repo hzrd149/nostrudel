@@ -3,14 +3,14 @@ import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
-import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
 import { useUserRelays } from "../../../../hooks/use-user-relays";
 import { RelayMode } from "../../../../classes/relay";
 import { unique } from "../../../../helpers/array";
-import { useSigningContext } from "../../../../providers/signing-provider";
+import { useSigningContext } from "../../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
-import { useContextEmojis } from "../../../../providers/emoji-provider";
+import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";

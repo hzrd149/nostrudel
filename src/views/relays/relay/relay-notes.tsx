@@ -9,7 +9,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../../components/timeline-page";
 import TimelineViewTypeButtons from "../../../components/timeline-page/timeline-view-type";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
-import { usePeopleListContext } from "../../../providers/people-list-provider";
+import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 import { NostrRequestFilter } from "../../../types/nostr-query";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";

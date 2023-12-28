@@ -6,7 +6,7 @@ import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import StarRating from "../../../components/star-rating";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 
 export default function RelayReviewForm({

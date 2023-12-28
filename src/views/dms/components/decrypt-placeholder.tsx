@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
 
 import { UnlockIcon } from "../../../components/icons";
-import { useDecryptionContainer } from "../../../providers/dycryption-provider";
+import { useDecryptionContainer } from "../../../providers/global/dycryption-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import { NostrEvent } from "../../../types/nostr-event";

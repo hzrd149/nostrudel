@@ -23,7 +23,7 @@ import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName 
 import BadgeMenu from "./components/badge-menu";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";

@@ -1,7 +1,7 @@
 import "./polyfill";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
-import { GlobalProviders } from "./providers";
+import { GlobalProviders } from "./providers/global";
 
 // setup dayjs
 import dayjs from "dayjs";

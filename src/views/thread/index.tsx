@@ -9,7 +9,7 @@ import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { ThreadItem, buildThread } from "../../helpers/thread";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";

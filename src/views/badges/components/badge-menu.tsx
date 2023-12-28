@@ -5,7 +5,7 @@ import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/m
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import { CodeIcon, TrashIcon } from "../../../components/icons";
-import { useDeleteEventContext } from "../../../providers/delete-event-provider";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 

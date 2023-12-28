@@ -18,7 +18,7 @@ import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
 import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
-import IntersectionObserverProvider from "../../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";

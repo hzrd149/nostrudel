@@ -1,13 +1,13 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Kind } from "nostr-tools";
 
-import { useReadRelayUrls } from "../hooks/use-client-relays";
-import useCurrentAccount from "../hooks/use-current-account";
-import TimelineLoader from "../classes/timeline-loader";
-import { NostrEvent } from "../types/nostr-event";
-import useClientSideMuteFilter from "../hooks/use-client-side-mute-filter";
-import useTimelineLoader from "../hooks/use-timeline-loader";
-import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useCurrentAccount from "../../hooks/use-current-account";
+import TimelineLoader from "../../classes/timeline-loader";
+import { NostrEvent } from "../../types/nostr-event";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;

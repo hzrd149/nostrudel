@@ -6,7 +6,7 @@ import useSubject from "../../../hooks/use-subject";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RelayReviewNote from "../components/relay-review-note";
 import { useAppTitle } from "../../../hooks/use-app-title";
-import { usePeopleListContext } from "../../../providers/people-list-provider";
+import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 
 export default function RelayReviews({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Reviews`);

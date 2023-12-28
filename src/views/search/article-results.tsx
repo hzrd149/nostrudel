@@ -1,11 +1,11 @@
 import { Kind } from "nostr-tools";
 
-import { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
+import { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
-import { usePeopleListContext } from "../../providers/people-list-provider";
+import { usePeopleListContext } from "../../providers/local/people-list-provider";
 
 export default function ArticleSearchResults({ search }: { search: string }) {
   const searchRelays = useRelaySelectionRelays();

@@ -10,7 +10,7 @@ import ArticleNote from "./article-note";
 import StreamNote from "./stream-note";
 import RelayRecommendation from "./relay-recommendation";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID, isReply } from "../../../helpers/nostr/events";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";

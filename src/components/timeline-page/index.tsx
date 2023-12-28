@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
 import TimelineLoader from "../../classes/timeline-loader";

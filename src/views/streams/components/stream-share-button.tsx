@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import { PostModalContext } from "../../../providers/post-modal-provider";
+import { PostModalContext } from "../../../providers/route/post-modal-provider";
 import { RepostIcon } from "../../../components/icons";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 

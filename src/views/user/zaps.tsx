@@ -12,11 +12,13 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/nostr/zaps";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent, isATag, isETag, isPTag } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";

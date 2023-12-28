@@ -21,7 +21,7 @@ import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { EmbedEvent } from "../../embed-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import clientRelaysService from "../../../services/client-relays";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../icons";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";

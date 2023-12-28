@@ -29,7 +29,7 @@ import useUserCommunitiesList from "../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
-import { useSigningContext } from "../../providers/signing-provider";
+import { useSigningContext } from "../../providers/global/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import {
   COMMUNITY_APPROVAL_KIND,
@@ -50,7 +50,7 @@ import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 
