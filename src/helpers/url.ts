@@ -4,6 +4,7 @@ export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : n
 
 export const IMAGE_EXT = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
 export const VIDEO_EXT = [".mp4", ".mkv", ".webm", ".mov"];
+export const AUDIO_EXT = [".mp3", ".wav", ".ogg", ".aac"];
 
 export function isMediaURL(url: string | URL) {
   return isImageURL(url) || isVideoURL(url);
@@ -15,6 +16,10 @@ export function isImageURL(url: string | URL) {
 export function isVideoURL(url: string | URL) {
   const u = new URL(url);
   return VIDEO_EXT.some((ext) => u.pathname.endsWith(ext));
+}
+export function isAudioURL(url: string | URL) {
+  const u = new URL(url);
+  return AUDIO_EXT.some((ext) => u.pathname.endsWith(ext));
 }
 
 export function normalizeRelayUrl(relayUrl: string) {

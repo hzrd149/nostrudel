@@ -29,6 +29,7 @@ import {
   renderYoutubeUrl,
 } from "../../../components/embed-types";
 import { LightboxProvider } from "../../../components/lightbox-provider";
+import { renderAudioUrl } from "../../../components/embed-types/audio";
 
 const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & { message: NostrEvent }) => {
   const content = useMemo(() => {
@@ -52,6 +53,7 @@ const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & 
       renderSoundCloudUrl,
       renderImageUrl,
       renderVideoUrl,
+      renderAudioUrl,
       renderGenericUrl,
     ]);
 

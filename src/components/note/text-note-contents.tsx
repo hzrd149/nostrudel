@@ -30,6 +30,7 @@ import {
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
 import { renderModelUrl } from "../embed-types/model";
+import { renderAudioUrl } from "../embed-types/audio";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -52,6 +53,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderAudioUrl,
     renderModelUrl,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);

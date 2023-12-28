@@ -259,7 +259,7 @@ relayScoreboardService.loadStats();
 
 setInterval(() => {
   relayScoreboardService.saveStats();
-}, 1000 * 5);
+}, 1000 * 30);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

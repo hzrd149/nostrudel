@@ -21,6 +21,7 @@ import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import Timestamp from "../../timestamp";
 import { CodeIcon } from "../../icons";
 import NoteDebugModal from "../../debug-modals/note-debug-modal";
+import { renderAudioUrl } from "../../embed-types/audio";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const debugModal = useDisclosure();
@@ -34,7 +35,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
     jsx = embedNostrHashtags(jsx, event);
     jsx = embedEmoji(jsx, event);
 
-    jsx = embedUrls(jsx, [renderImageUrl, renderVideoUrl, renderGenericUrl]);
+    jsx = embedUrls(jsx, [renderImageUrl, renderVideoUrl, renderAudioUrl, renderGenericUrl]);
 
     return jsx;
   }, [event.content, alt]);

@@ -21,6 +21,7 @@ import {
 } from "../../../components/embed-types";
 import { TrustProvider } from "../../../providers/local/trust";
 import { LightboxProvider } from "../../../components/lightbox-provider";
+import { renderAudioUrl } from "../../../components/embed-types/audio";
 
 export default function DirectMessageContent({
   event,
@@ -45,6 +46,7 @@ export default function DirectMessageContent({
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderAudioUrl,
     renderGenericUrl,
   ]);
 
