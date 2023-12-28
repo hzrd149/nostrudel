@@ -19,7 +19,7 @@ import MuteUserMenuItem from "../common-menu-items/mute-user";
 import DeleteEventMenuItem from "../common-menu-items/delete-event";
 import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import Dataflow02 from "../icons/dataflow-02";
+import Recording02 from "../icons/recording-02";
 
 export default function NoteMenu({
   event,
@@ -45,6 +45,21 @@ export default function NoteMenu({
         <CopyEmbedCodeMenuItem event={event} />
         <MuteUserMenuItem event={event} />
         <DeleteEventMenuItem event={event} />
+
+        <MenuItem
+          as={RouterLink}
+          icon={<Recording02 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=tts`}
+        >
+          Text to speech
+        </MenuItem>
+        <MenuItem
+          as={RouterLink}
+          icon={<Translate01 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=translation`}
+        >
+          Translate
+        </MenuItem>
 
         <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast

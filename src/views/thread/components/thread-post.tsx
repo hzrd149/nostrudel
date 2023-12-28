@@ -40,7 +40,6 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
-import NoteToolsMenu from "../../../components/note/note-tools-menu";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -129,7 +128,6 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
         <NoteProxyLink event={post.event} />
         <NoteDetailsButton event={post.event} onClick={detailsModal.onOpen} />
         <BookmarkButton event={post.event} aria-label="Bookmark" />
-        <NoteToolsMenu event={post.event} aria-label="Note Tools" />
         <NoteMenu event={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
       </ButtonGroup>
     </Flex>

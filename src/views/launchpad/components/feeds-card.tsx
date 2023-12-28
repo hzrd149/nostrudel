@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Link,
   LinkBox,
   Text,
 } from "@chakra-ui/react";
@@ -22,6 +23,7 @@ import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/events";
 import Plus from "../../../components/icons/plus";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import useRecentIds from "../../../hooks/use-recent-ids";
+import useFavoriteLists from "../../../hooks/use-favorite-lists";
 
 function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "children">) {
   const people = getPubkeysFromList(list);
@@ -47,11 +49,14 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
 export default function FeedsCard() {
   const account = useCurrentAccount();
   const contacts = useUserContactList(account?.pubkey);
-  const lists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
+  const myLists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
+  const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
+
+  console.log(favoriteLists);
 
   const { recent: recentFeeds, useThing: useFeed } = useRecentIds("feeds", 4);
 
-  const sortedFeeds = Array.from(lists).sort((a, b) => {
+  const sortedFeeds = [...myLists, ...favoriteLists].sort((a, b) => {
     const ai = recentFeeds.indexOf(getEventUID(a));
     const bi = recentFeeds.indexOf(getEventUID(b));
     const date = Math.sign(b.created_at - a.created_at);
@@ -65,7 +70,11 @@ export default function FeedsCard() {
   return (
     <Card as={LinkBox} variant="outline">
       <CardHeader display="flex" justifyContent="space-between">
-        <Heading size="lg">Feeds</Heading>
+        <Heading size="lg">
+          <Link as={RouterLink} to="/lists">
+            Feeds
+          </Link>
+        </Heading>
 
         <IconButton
           as={RouterLink}

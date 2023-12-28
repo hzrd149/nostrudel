@@ -5,10 +5,12 @@ import useReplaceableEvents from "./use-replaceable-events";
 
 export const FAVORITE_LISTS_IDENTIFIER = "nostrudel-favorite-lists";
 
-export default function useFavoriteLists() {
+export default function useFavoriteLists(pubkey?: string) {
   const account = useCurrentAccount();
+  const key = pubkey || account?.pubkey;
+
   const favoriteList = useReplaceableEvent(
-    account ? { kind: 30078, pubkey: account.pubkey, identifier: FAVORITE_LISTS_IDENTIFIER } : undefined,
+    key ? { kind: 30078, pubkey: key, identifier: FAVORITE_LISTS_IDENTIFIER } : undefined,
     [],
     { ignoreCache: true },
   );
