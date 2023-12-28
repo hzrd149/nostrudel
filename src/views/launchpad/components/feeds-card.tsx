@@ -21,6 +21,7 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/events";
 import Plus from "../../../components/icons/plus";
 import useUserContactList from "../../../hooks/use-user-contact-list";
+import useRecentIds from "../../../hooks/use-recent-ids";
 
 function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "children">) {
   const people = getPubkeysFromList(list);
@@ -32,7 +33,7 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
       </CardHeader>
       <CardBody px="4" pt="0" pb="4" overflow="hidden" display="flex" gap="2" alignItems="center">
         <AvatarGroup>
-          {people.slice(0, 6).map((person) => (
+          {people.slice(0, 5).map((person) => (
             <UserAvatar key={person.pubkey} pubkey={person.pubkey} />
           ))}
         </AvatarGroup>
@@ -45,8 +46,21 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
 
 export default function FeedsCard() {
   const account = useCurrentAccount();
-  const contacts = useUserContactList();
+  const contacts = useUserContactList(account?.pubkey);
   const lists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
+
+  const { recent: recentFeeds, useThing: useFeed } = useRecentIds("feeds", 4);
+
+  const sortedFeeds = Array.from(lists).sort((a, b) => {
+    const ai = recentFeeds.indexOf(getEventUID(a));
+    const bi = recentFeeds.indexOf(getEventUID(b));
+    const date = Math.sign(b.created_at - a.created_at);
+
+    if (ai === -1 && bi === -1) return date;
+    else if (bi === -1) return -1;
+    else if (ai === -1) return 1;
+    else return ai - bi;
+  });
 
   return (
     <Card as={LinkBox} variant="outline">
@@ -62,13 +76,17 @@ export default function FeedsCard() {
           size="sm"
         />
       </CardHeader>
-      <CardBody overflowX="auto" overflowY="hidden" pt="0">
-        <Flex gap="4">
-          {contacts && <Feed list={contacts} w="xs" flexShrink={0} />}
-          {lists.slice(0, 10).map((list) => (
-            <Feed key={getEventUID(list)} list={list} w="xs" flexShrink={0} />
-          ))}
-        </Flex>
+      <CardBody overflowX="auto" overflowY="hidden" pt="0" display="flex" gap="4">
+        {contacts && <Feed list={contacts} w="17rem" flexShrink={0} />}
+        {sortedFeeds.slice(0, 10).map((list) => (
+          <Feed
+            key={getEventUID(list)}
+            list={list}
+            w="17rem"
+            flexShrink={0}
+            onClick={() => useFeed(getEventUID(list))}
+          />
+        ))}
       </CardBody>
     </Card>
   );

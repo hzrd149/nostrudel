@@ -12,7 +12,7 @@ export default function TextToSpeechResult({ result }: { result: NostrEvent }) {
         <UserLink pubkey={result.pubkey} fontWeight="bold" />
         <Text>Finished job</Text>
       </Flex>
-      <Text>{result.content}</Text>
+      <audio src={result.content} controls />
     </>
   );
 }

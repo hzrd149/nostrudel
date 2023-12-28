@@ -4,7 +4,7 @@ import { Heading, Input, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs } f
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import AppCard, { App } from "./component/app-card";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import useRecentApps from "./use-recent-apps";
+import useRecentIds from "../../hooks/use-recent-ids";
 import { allApps, externalTools, internalTools } from "./apps";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
@@ -13,7 +13,7 @@ const tabs = ["all", "tools", "3rd-party-tools"];
 export default function OtherStuffView() {
   const [search, setSearch] = useState("");
   const tab = useRouteSearchValue("tab", "all");
-  const { recentApps, useApp } = useRecentApps();
+  const { recent: recentApps, useThing: useApp } = useRecentIds("apps");
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
   const sortByRecent = (a: App, b: App) => recentApps.indexOf(b.id) - recentApps.indexOf(a.id);
