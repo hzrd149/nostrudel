@@ -6,6 +6,7 @@ import AppCard, { App } from "./component/app-card";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useRecentApps from "./use-recent-apps";
 import { allApps, externalTools, internalTools } from "./apps";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 const tabs = ["all", "tools", "3rd-party-tools"];
 
@@ -13,6 +14,7 @@ export default function OtherStuffView() {
   const [search, setSearch] = useState("");
   const tab = useRouteSearchValue("tab", "all");
   const { recentApps, useApp } = useRecentApps();
+  const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
   const sortByRecent = (a: App, b: App) => recentApps.indexOf(b.id) - recentApps.indexOf(a.id);
   const sortByName = (a: App, b: App) => {
@@ -98,6 +100,7 @@ export default function OtherStuffView() {
         maxW="sm"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        autoFocus={autoFocusSearch}
       />
 
       {renderContent()}

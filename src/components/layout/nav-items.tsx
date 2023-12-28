@@ -1,4 +1,5 @@
-import { Box, Button, ButtonProps, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { useRef } from "react";
+import { Box, Button, ButtonProps, Code, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import dayjs from "dayjs";
@@ -19,10 +20,31 @@ import {
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
-import { useLocalStorage } from "react-use";
+import { useKeyPressEvent, useLocalStorage } from "react-use";
 import ZapModal from "../event-zap-modal";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Package from "../icons/package";
+import Rocket02 from "../icons/rocket-02";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+
+function KBD({ letter }: { letter: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useKeyPressEvent(
+    (e) => e.ctrlKey && e.key === letter,
+    (e) => {
+      if (ref.current?.parentElement) {
+        e.preventDefault();
+        ref.current.parentElement.click();
+      }
+    },
+  );
+
+  return (
+    <Code fontSize="md" ml="auto" mr="2" textDecoration="none" textTransform="capitalize" ref={ref}>
+      &#8984;{letter}
+    </Code>
+  );
+}
 
 export default function NavItems() {
   const location = useLocation();
@@ -30,6 +52,8 @@ export default function NavItems() {
 
   const donateModal = useDisclosure();
   const [lastDonate, setLastDonate] = useLocalStorage<number>("last-donate");
+
+  const showShortcuts = useBreakpointValue({ base: false, md: true });
 
   const buttonProps: ButtonProps = {
     py: "2",
@@ -39,6 +63,7 @@ export default function NavItems() {
 
   let active = "notes";
   if (location.pathname.startsWith("/notifications")) active = "notifications";
+  else if (location.pathname.startsWith("/launchpad")) active = "launchpad";
   else if (location.pathname.startsWith("/dvm")) active = "dvm";
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
@@ -71,6 +96,16 @@ export default function NavItems() {
     <>
       <Button
         as={RouterLink}
+        to="/launchpad"
+        leftIcon={<Rocket02 boxSize={6} />}
+        colorScheme={active === "launchpad" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Launchpad
+        {showShortcuts && <KBD letter="l" />}
+      </Button>
+      <Button
+        as={RouterLink}
         to="/"
         leftIcon={<NotesIcon boxSize={6} />}
         colorScheme={active === "notes" ? "primary" : undefined}
@@ -97,6 +132,7 @@ export default function NavItems() {
             {...buttonProps}
           >
             Notifications
+            {showShortcuts && <KBD letter="i" />}
           </Button>
           <Button
             as={RouterLink}
@@ -106,6 +142,7 @@ export default function NavItems() {
             {...buttonProps}
           >
             Messages
+            {showShortcuts && <KBD letter="m" />}
           </Button>
         </>
       )}
@@ -117,6 +154,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         Search
+        {showShortcuts && <KBD letter="k" />}
       </Button>
       {account?.pubkey && (
         <Button
@@ -176,6 +214,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         More
+        {showShortcuts && <KBD letter="o" />}
       </Button>
       <Box h="4" />
       <Button

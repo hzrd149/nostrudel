@@ -79,6 +79,7 @@ import TransformNoteView from "./views/tools/transform-note";
 import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
+import LaunchpadView from "./views/launchpad";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -199,6 +200,14 @@ const router = createHashRouter([
   {
     path: "map",
     element: <MapView />,
+  },
+  {
+    path: "launchpad",
+    element: (
+      <RouteProviders>
+        <LaunchpadView />
+      </RouteProviders>
+    ),
   },
   {
     path: "/",

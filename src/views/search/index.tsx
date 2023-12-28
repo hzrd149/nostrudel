@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button, ButtonGroup, Flex, IconButton, Input, Link, useDisclosure } from "@chakra-ui/react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { SEARCH_RELAYS } from "../../const";
 import { safeDecode } from "../../helpers/nip19";
@@ -19,10 +19,13 @@ import CommunitySearchResults from "./community-results";
 import PeopleListProvider from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 export function SearchPage() {
   const navigate = useNavigate();
   const qrScannerModal = useDisclosure();
+
+  const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
   const typeParam = useRouteSearchValue("type", "users");
   const queryParam = useRouteSearchValue("q", "");
@@ -88,7 +91,12 @@ export function SearchPage() {
             {!!navigator.clipboard?.readText && (
               <IconButton onClick={readClipboard} icon={<CopyToClipboardIcon />} aria-label="Read clipboard" />
             )}
-            <Input type="search" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+            <Input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              autoFocus={autoFocusSearch}
+            />
             <Button type="submit">Search</Button>
           </Flex>
         </Flex>
