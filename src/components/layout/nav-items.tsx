@@ -79,6 +79,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/settings")) active = "settings";
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";
+  else if (location.pathname.startsWith("/tracks")) active = "tracks";
   else if (location.pathname.startsWith("/t/")) active = "search";
   else if (location.pathname.startsWith("/torrents")) active = "tools";
   else if (location.pathname.startsWith("/map")) active = "tools";

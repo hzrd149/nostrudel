@@ -80,6 +80,7 @@ import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
 import LaunchpadView from "./views/launchpad";
+import TracksView from "./views/tracks";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
@@ -365,6 +366,10 @@ const router = createHashRouter([
       {
         path: "streams",
         element: <StreamsView />,
+      },
+      {
+        path: "tracks",
+        element: <TracksView />,
       },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },

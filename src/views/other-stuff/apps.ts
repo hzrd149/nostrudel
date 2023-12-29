@@ -10,6 +10,7 @@ import {
   MapIcon,
   MuteIcon,
   TorrentIcon,
+  TrackIcon,
 } from "../../components/icons";
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
@@ -35,6 +36,7 @@ export const internalApps: App[] = [
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
+  { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   // { title: "Things", icon: ThingsIcon, id: "things", to: "/things" },
 ];
 
