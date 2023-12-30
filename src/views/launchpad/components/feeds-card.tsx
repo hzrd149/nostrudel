@@ -46,7 +46,7 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
   );
 }
 
-export default function FeedsCard() {
+export default function FeedsCard({...props}: Omit<CardProps,'children'>) {
   const account = useCurrentAccount();
   const contacts = useUserContactList(account?.pubkey);
   const myLists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
@@ -68,7 +68,7 @@ export default function FeedsCard() {
   });
 
   return (
-    <Card as={LinkBox} variant="outline">
+    <Card variant="outline" {...props}>
       <CardHeader display="flex" justifyContent="space-between">
         <Heading size="lg">
           <Link as={RouterLink} to="/lists">

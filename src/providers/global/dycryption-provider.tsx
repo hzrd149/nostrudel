@@ -5,6 +5,9 @@ import Subject from "../../classes/subject";
 import { useSigningContext } from "./signing-provider";
 import useSubject from "../../hooks/use-subject";
 import createDefer, { Deferred } from "../../classes/deferred";
+import { NostrEvent } from "../../types/nostr-event";
+import useCurrentAccount from "../../hooks/use-current-account";
+import { getDMRecipient, getDMSender } from "../../helpers/nostr/dms";
 
 class DecryptionContainer {
   id = nanoid();

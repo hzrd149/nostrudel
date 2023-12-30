@@ -1,6 +1,5 @@
 import { useContext } from "react";
-import { useKeyPressEvent } from "react-use";
-import { Button, Code, Container, Flex, IconButton } from "@chakra-ui/react";
+import { Button, Container, Flex, IconButton } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -11,15 +10,16 @@ import { SettingsIcon } from "../../components/icons";
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";
 import SearchForm from "./components/search-form";
+import KeyboardShortcut from "../../components/keyboard-shortcut";
+import DMsCard from "./components/dms-card";
+import NotificationsCard from "./components/notifications-card";
 
 function LaunchpadPage() {
   const { openModal } = useContext(PostModalContext);
 
-  useKeyPressEvent("n", () => !(document.activeElement instanceof HTMLInputElement) && openModal());
-
   return (
-    <VerticalPageLayout gap="4">
-      <Flex justifyContent="space-between">
+    <VerticalPageLayout gap="4" direction="row" wrap="wrap">
+      <Flex justifyContent="space-between" w="full">
         <AccountSwitcher />
         <IconButton
           as={RouterLink}
@@ -31,16 +31,16 @@ function LaunchpadPage() {
           to="/settings"
         />
       </Flex>
-      <Flex gap="4">
+      <Flex gap="4" w="full">
         <Button colorScheme="primary" size="lg" onClick={() => openModal()} variant="outline">
           New Note
-          <Code ml="2" fontSize="lg" hideBelow="md">
-            N
-          </Code>
+          <KeyboardShortcut letter="n" ml="auto" onPress={(e) => openModal()} />
         </Button>
         <SearchForm flex={1} />
       </Flex>
-      <FeedsCard />
+      <FeedsCard w="full" />
+      <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
+      <DMsCard w={{ base: "full", md: "40%" }} />
     </VerticalPageLayout>
   );
 }

@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { Box, Button, ButtonProps, Code, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, ButtonProps, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import dayjs from "dayjs";
@@ -26,25 +25,7 @@ import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Package from "../icons/package";
 import Rocket02 from "../icons/rocket-02";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-
-function KBD({ letter }: { letter: string }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useKeyPressEvent(
-    (e) => e.ctrlKey && e.key === letter,
-    (e) => {
-      if (ref.current?.parentElement) {
-        e.preventDefault();
-        ref.current.parentElement.click();
-      }
-    },
-  );
-
-  return (
-    <Code fontSize="md" ml="auto" mr="2" textDecoration="none" textTransform="capitalize" ref={ref}>
-      &#8984;{letter}
-    </Code>
-  );
-}
+import KeyboardShortcut from "../keyboard-shortcut";
 
 export default function NavItems() {
   const location = useLocation();
@@ -103,7 +84,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         Launchpad
-        {showShortcuts && <KBD letter="l" />}
+        {showShortcuts && <KeyboardShortcut letter="l" requireMeta ml="auto" />}
       </Button>
       <Button
         as={RouterLink}
@@ -133,7 +114,7 @@ export default function NavItems() {
             {...buttonProps}
           >
             Notifications
-            {showShortcuts && <KBD letter="i" />}
+            {showShortcuts && <KeyboardShortcut letter="i" requireMeta ml="auto" />}
           </Button>
           <Button
             as={RouterLink}
@@ -143,7 +124,7 @@ export default function NavItems() {
             {...buttonProps}
           >
             Messages
-            {showShortcuts && <KBD letter="m" />}
+            {showShortcuts && <KeyboardShortcut letter="m" requireMeta ml="auto" />}
           </Button>
         </>
       )}
@@ -155,7 +136,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         Search
-        {showShortcuts && <KBD letter="k" />}
+        {showShortcuts && <KeyboardShortcut letter="k" requireMeta ml="auto" />}
       </Button>
       {account?.pubkey && (
         <Button
@@ -215,7 +196,7 @@ export default function NavItems() {
         {...buttonProps}
       >
         More
-        {showShortcuts && <KBD letter="o" />}
+        {showShortcuts && <KeyboardShortcut letter="o" requireMeta ml="auto" />}
       </Button>
       <Box h="4" />
       <Button

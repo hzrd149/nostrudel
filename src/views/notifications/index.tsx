@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
 import { Kind } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
@@ -20,8 +20,10 @@ import NotificationTypeToggles from "./notification-type-toggles";
 import { NostrEvent } from "../../types/nostr-event";
 import { groupByDay } from "../../helpers/notification";
 import DayGroup from "./components/day-group";
+import { useThrottle } from "react-use";
+import TimelineLoader from "../../classes/timeline-loader";
 
-function NotificationDay({ day, events }: { day: number; events: NostrEvent[] }) {
+const NotificationDay = memo(({ day, events }: { day: number; events: NostrEvent[] }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(events[events.length - 1]));
 
@@ -32,12 +34,60 @@ function NotificationDay({ day, events }: { day: number; events: NostrEvent[] })
       ))}
     </DayGroup>
   );
-}
+});
+
+const NotificationsTimeline = memo(
+  ({
+    timeline,
+    showReplies,
+    showMentions,
+    showZaps,
+    showReposts,
+    showReactions,
+  }: {
+    timeline: TimelineLoader;
+    showReplies: boolean;
+    showMentions: boolean;
+    showZaps: boolean;
+    showReposts: boolean;
+    showReactions: boolean;
+  }) => {
+    const { people } = usePeopleListContext();
+    const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
+
+    const events = useSubject(timeline.timeline);
+
+    const throttledEvents = useThrottle(events, 500);
+    const filteredEvents = useMemo(
+      () =>
+        throttledEvents.filter((e) => {
+          if (peoplePubkeys && e.kind !== Kind.Zap && !peoplePubkeys.includes(e.pubkey)) return false;
+
+          if (e.kind === Kind.Text) {
+            if (!showReplies && isReply(e)) return false;
+            if (!showMentions && !isReply(e)) return false;
+          }
+          if (!showReactions && e.kind === Kind.Reaction) return false;
+          if (!showReposts && e.kind === Kind.Repost) return false;
+          if (!showZaps && e.kind === Kind.Zap) return false;
+
+          return true;
+        }),
+      [throttledEvents, peoplePubkeys, showReplies, showMentions, showReactions, showReposts, showZaps],
+    );
+    const sortedDays = useMemo(() => groupByDay(filteredEvents), [filteredEvents]);
+
+    return (
+      <>
+        {sortedDays.map(([day, events]) => (
+          <NotificationDay key={day} day={day} events={events} />
+        ))}
+      </>
+    );
+  },
+);
 
 function NotificationsPage() {
-  const { people } = usePeopleListContext();
-  const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
-
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-replies") !== "false" });
   const showMentions = useDisclosure({
     defaultIsOpen: localStorage.getItem("notifications-show-mentions") !== "false",
@@ -59,21 +109,6 @@ function NotificationsPage() {
 
   const timeline = useNotificationTimeline();
   const callback = useTimelineCurserIntersectionCallback(timeline);
-  const events = useSubject(timeline?.timeline).filter((e) => {
-    if (peoplePubkeys && e.kind !== Kind.Zap && !peoplePubkeys.includes(e.pubkey)) return false;
-
-    if (e.kind === Kind.Text) {
-      if (!showReplies.isOpen && isReply(e)) return false;
-      if (!showMentions.isOpen && !isReply(e)) return false;
-    }
-    if (!showReactions.isOpen && e.kind === Kind.Reaction) return false;
-    if (!showReposts.isOpen && e.kind === Kind.Repost) return false;
-    if (!showZaps.isOpen && e.kind === Kind.Zap) return false;
-
-    return true;
-  });
-
-  const sortedDays = useMemo(() => groupByDay(events), [events]);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -94,9 +129,14 @@ function NotificationsPage() {
           </ButtonGroup>
         </Flex>
 
-        {sortedDays.map(([day, events]) => (
-          <NotificationDay key={day} day={day} events={events} />
-        ))}
+        <NotificationsTimeline
+          timeline={timeline}
+          showReplies={showReplies.isOpen}
+          showMentions={showMentions.isOpen}
+          showZaps={showZaps.isOpen}
+          showReposts={showReposts.isOpen}
+          showReactions={showReactions.isOpen}
+        />
         <TimelineActionAndStatus timeline={timeline} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>

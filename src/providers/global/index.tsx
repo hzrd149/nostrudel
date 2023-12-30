@@ -9,6 +9,7 @@ import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import DecryptionProvider from "./dycryption-provider";
+import DMTimelineProvider from "./dm-timeline";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -24,11 +25,13 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
         <SigningProvider>
           <DecryptionProvider>
             <NotificationTimelineProvider>
-              <DefaultEmojiProvider>
-                <UserEmojiProvider>
-                  <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
-                </UserEmojiProvider>
-              </DefaultEmojiProvider>
+              <DMTimelineProvider>
+                <DefaultEmojiProvider>
+                  <UserEmojiProvider>
+                    <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
+                  </UserEmojiProvider>
+                </DefaultEmojiProvider>
+              </DMTimelineProvider>
             </NotificationTimelineProvider>
           </DecryptionProvider>
         </SigningProvider>

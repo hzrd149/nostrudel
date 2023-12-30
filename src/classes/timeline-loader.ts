@@ -13,7 +13,7 @@ import replaceableEventLoaderService from "../services/replaceable-event-request
 import deleteEventService from "../services/delete-events";
 import { addQueryToFilter, isFilterEqual, mapQueryMap } from "../helpers/nostr/filter";
 
-const BLOCK_SIZE = 30;
+const BLOCK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
@@ -28,7 +28,7 @@ export class RelayBlockLoader {
   /** set to true when the next block produces 0 events */
   complete = false;
 
-  onBlockFinish = new Subject<void>();
+  onBlockFinish = new Subject<number>();
 
   constructor(relay: string, filter: NostrRequestFilter, log?: Debugger) {
     this.relay = relay;
@@ -57,12 +57,11 @@ export class RelayBlockLoader {
     });
     request.onComplete.then(() => {
       this.loading = false;
-      this.log(`Got ${gotEvents} events`);
       if (gotEvents === 0) {
         this.complete = true;
         this.log("Complete");
-      }
-      this.onBlockFinish.next();
+      } else this.log(`Got ${gotEvents} events`);
+      this.onBlockFinish.next(gotEvents);
     });
 
     request.start(filter);

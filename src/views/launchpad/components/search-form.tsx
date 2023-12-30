@@ -19,6 +19,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useUserSearchDirectoryContext } from "../../../providers/global/user-directory-provider";
 import UserAvatar from "../../../components/user-avatar";
 import UserName from "../../../components/user-name";
+import KeyboardShortcut from "../../../components/keyboard-shortcut";
 
 function UserOption({ pubkey }: { pubkey: string }) {
   return (
@@ -56,7 +57,7 @@ export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
   );
 
   useKeyPressEvent(
-    (e) => e.ctrlKey && e.key === "k",
+    (e) => (e.ctrlKey || e.metaKey) && e.key === "k",
     (e) => {
       e.preventDefault();
       ref.current?.focus();
@@ -76,9 +77,7 @@ export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
           ref={ref}
         />
         <InputRightElement hideBelow="md">
-          <Code mx="2" fontSize="lg">
-            &#8984;K
-          </Code>
+          <KeyboardShortcut letter="k" requireMeta onPress={() => ref.current?.focus()} />
         </InputRightElement>
       </InputGroup>
       {autoComplete.isOpen && (

@@ -20,7 +20,7 @@ function FollowerItem({ event }: { event: Event }) {
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
-    <Flex gap="2" overflow="hidden" ref={ref}>
+    <Flex gap="2" overflow="hidden" alignItems="center" ref={ref}>
       <UserAvatarLink pubkey={event.pubkey} noProxy size="sm" />
       <UserLink pubkey={event.pubkey} isTruncated />
     </Flex>
