@@ -41,6 +41,8 @@ import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import useDVMMetadata from "../../hooks/use-dvm-metadata";
+import DVMParams from "./components/dvm-params";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "hour").unix());
@@ -66,11 +68,14 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const pages = chainJobs(Array.from(Object.values(jobs)));
   const jobChains = flattenJobChain(pages);
 
+  const [params, setParams] = useState<Record<string, string>>({});
   const { requestSignature } = useSigningContext();
   const [requesting, setRequesting] = useState(false);
   const requestNewFeed = async () => {
     try {
       setRequesting(true);
+
+      const paramTags = Object.entries(params).map(([key, value]) => ["param", key, value]);
       const draft: DraftNostrEvent = {
         kind: DVM_CONTENT_DISCOVERY_JOB_KIND,
         created_at: dayjs().unix(),
@@ -78,7 +83,8 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
         tags: [
           ["p", pointer.pubkey],
           ["relays", ...readRelays],
-          ["output", "text/plain"],
+          ["expiration", String(dayjs().add(1, "day").unix())],
+          ...paramTags,
         ],
       };
 
@@ -99,6 +105,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
         <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
           Back
         </Button>
+        <DVMParams pointer={pointer} params={params} onChange={setParams} />
         <Button onClick={requestNewFeed} isLoading={requesting} colorScheme="primary">
           New Feed
         </Button>

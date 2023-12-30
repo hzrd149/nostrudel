@@ -3,8 +3,9 @@ export type ATag = ["a", string] | ["a", string, string];
 export type PTag = ["p", string] | ["p", string, string] | ["p", string, string, string];
 export type RTag = ["r", string] | ["r", string, string];
 export type DTag = ["d"] | ["d", string];
+export type ExpirationTag = ["expiration", string];
 export type EmojiTag = ["emoji", string, string];
-export type Tag = string[] | ETag | PTag | RTag | DTag | ATag;
+export type Tag = string[] | ETag | PTag | RTag | DTag | ATag | ExpirationTag;
 
 export type NostrEvent = {
   id: string;

@@ -13,6 +13,9 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/local/
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
+
+const defaultKinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay, Kind.BadgeAward];
 
 function HomePage() {
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });
@@ -38,8 +41,7 @@ function HomePage() {
 
   const { relays } = useRelaySelectionContext();
   const { listId, filter } = usePeopleListContext();
-
-  const kinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay, Kind.BadgeAward];
+  const { kinds } = useKindSelectionContext();
 
   const timeline = useTimelineLoader(`${listId}-home-feed`, relays, filter ? { ...filter, kinds } : undefined, {
     eventFilter,
@@ -61,7 +63,9 @@ export default function HomeView() {
   return (
     <PeopleListProvider>
       <RelaySelectionProvider>
-        <HomePage />
+        <KindSelectionProvider initKinds={defaultKinds}>
+          <HomePage />
+        </KindSelectionProvider>
       </RelaySelectionProvider>
     </PeopleListProvider>
   );

@@ -1,4 +1,20 @@
-import { Button, Card, CardBody, CardHeader, Code, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CloseButton,
+  Code,
+  Heading,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import {
@@ -39,7 +55,7 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
           ["i", lastJob.request.id, "event"],
           ["p", pointer.pubkey],
           ["relays", ...readRelays],
-          ["output", "text/plain"],
+          ["expiration", String(dayjs().add(1, "day").unix())],
         ],
       };
 
@@ -91,7 +107,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
       </Card>
     );
 
-  const statusType = getJobStatusType(lastJob);
+  const statusType = getJobStatusType(lastJob, pointer.pubkey);
   switch (statusType) {
     case "payment-required":
       const [_, msats, invoice] = statusEvent.tags.find((t) => t[0] === "amount") ?? [];
@@ -99,11 +115,31 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
       return (
         <Card {...cardProps}>
           {cardHeader}
-          <CardBody px="4" pb="4" pt="0">
-            <Heading size="md">{statusEvent.content}</Heading>
+          <CardBody px="4" pb="4" pt="0" gap="2" display="flex" flexDirection="column">
+            <Heading size="sm">{statusEvent.content}</Heading>
             {invoice && <InlineInvoiceCard paymentRequest={invoice} />}
           </CardBody>
         </Card>
+      );
+    case "processing":
+      return (
+        <Alert status="info" w="auto" {...cardProps}>
+          <AlertIcon boxSize={8} />
+          <Box>
+            <AlertTitle>Processing</AlertTitle>
+            <AlertDescription>{statusEvent.content}</AlertDescription>
+          </Box>
+        </Alert>
+      );
+    case "error":
+      return (
+        <Alert status="error" w="auto" {...cardProps}>
+          <AlertIcon boxSize={8} />
+          <Box>
+            <AlertTitle>Error!</AlertTitle>
+            <AlertDescription>{statusEvent.content}</AlertDescription>
+          </Box>
+        </Alert>
       );
     default:
       return (
