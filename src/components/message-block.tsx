@@ -2,10 +2,10 @@ import { CardProps, Flex } from "@chakra-ui/react";
 
 import useCurrentAccount from "../hooks/use-current-account";
 import { NostrEvent } from "../types/nostr-event";
-import UserAvatar from "./user-avatar";
 import MessageBubble, { MessageBubbleProps } from "./message-bubble";
 import { useThreadsContext } from "../providers/local/thread-provider";
 import ThreadButton from "../views/dms/components/thread-button";
+import UserAvatarLink from "./user-avatar-link";
 
 function MessageBubbleWithThread({ message, showThreadButton = true, ...props }: MessageBubbleProps) {
   const { threads } = useThreadsContext();
@@ -36,7 +36,7 @@ export default function MessageBlock({
   const account = useCurrentAccount()!;
   const isOwn = account.pubkey === lastEvent.pubkey;
 
-  const avatar = <UserAvatar pubkey={lastEvent.pubkey} size="sm" my="1" />;
+  const avatar = <UserAvatarLink pubkey={lastEvent.pubkey} size="sm" my="1" />;
 
   const MessageBubbleComponent = showThreadButton ? MessageBubbleWithThread : MessageBubble;
 
