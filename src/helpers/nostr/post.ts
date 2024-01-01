@@ -19,8 +19,8 @@ function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   }
   return [...tags, tag];
 }
-function AddEtag(tags: Tag[], eventId: string, type?: string, overwrite = false) {
-  const hint = relayHintService.getEventPointerRelayHint(eventId) ?? "";
+function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string, overwrite = false) {
+  const hint = relayHint || relayHintService.getEventPointerRelayHint(eventId) || "";
 
   const tag = type ? ["e", eventId, hint, type] : ["e", eventId, hint];
 
@@ -39,13 +39,15 @@ function AddEtag(tags: Tag[], eventId: string, type?: string, overwrite = false)
 /** adds the "root" and "reply" E tags */
 export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+
   const refs = getReferences(replyTo);
-
-  const rootId = refs.rootId ?? replyTo.id;
+  const rootId = refs.root?.e?.id ?? replyTo.id;
+  const rootRelayHint = refs.root?.e?.relays?.[0];
   const replyId = replyTo.id;
+  const replyRelayHint = relayHintService.getEventPointerRelayHint(replyId);
 
-  updated.tags = AddEtag(updated.tags, rootId, "root", true);
-  updated.tags = AddEtag(updated.tags, replyId, "reply", true);
+  updated.tags = AddEtag(updated.tags, rootId, rootRelayHint, "root", true);
+  updated.tags = AddEtag(updated.tags, replyId, replyRelayHint, "reply", true);
 
   return updated;
 }

@@ -54,7 +54,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
             <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />
             {hasResponded(conversation) && <CheckIcon boxSize={4} color="green.500" />}
           </Flex>
-          {lastReceived === lastMessage && <MessagePreview message={lastReceived} pubkey={lastReceived.pubkey} />}
+          {lastReceived && <MessagePreview message={lastReceived} pubkey={lastReceived.pubkey} />}
         </Flex>
       </CardBody>
       <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}` + location.search} />

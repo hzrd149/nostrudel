@@ -34,9 +34,9 @@ export const ExpandableToggleButton = ({
 const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
   const refs = getReferences(event);
-  const parent = useSingleEvent(refs.replyId);
+  const parent = useSingleEvent(refs.reply?.e?.id);
 
-  const isReplyingToMe = !!refs.replyId && (parent ? parent.pubkey === account.pubkey : true);
+  const isReplyingToMe = !!refs.reply?.e?.id && (parent ? parent.pubkey === account.pubkey : true);
   const isMentioned = isMentionedInContent(event, account.pubkey);
 
   if (isReplyingToMe) return <ReplyNotification event={event} ref={ref} />;

@@ -1,11 +1,12 @@
 import { Kind, nip19, validateEvent } from "nostr-tools";
 
-import { ATag, DraftNostrEvent, isDTag, isETag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
+import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { COMMUNITY_DEFINITION_KIND } from "./communities";
+import { safeDecode } from "../nip19";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -28,7 +29,7 @@ export function getEventUID(event: NostrEvent) {
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   if (event.kind === Kind.Repost) return false;
   // TODO: update this to only look for a "root" or "reply" tag
-  return !!getReferences(event).replyId;
+  return !!getReferences(event).reply;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
@@ -46,116 +47,120 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
  * either with the legacy #[0] syntax or nostr:xxxxx links
  */
 export function getContentTagRefs(content: string, tags: Tag[]) {
-  const indexes = new Set();
-  Array.from(content.matchAll(/#\[(\d+)\]/gi)).forEach((m) => indexes.add(parseInt(m[1])));
+  const foundTags = new Set<Tag>();
 
   const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
   for (const [_, _prefix, link] of linkMatches) {
-    try {
-      const decoded = nip19.decode(link);
+    const decoded = safeDecode(link);
+    if (!decoded) continue;
 
-      let type: string;
-      let id: string;
-      switch (decoded.type) {
-        case "npub":
-          id = decoded.data;
-          type = "p";
-          break;
-        case "nprofile":
-          id = decoded.data.pubkey;
-          type = "p";
-          break;
-        case "note":
-          id = decoded.data;
-          type = "e";
-          break;
-        case "nevent":
-          id = decoded.data.id;
-          type = "e";
-          break;
-      }
+    let type: string;
+    let id: string;
+    switch (decoded.type) {
+      case "npub":
+        id = decoded.data;
+        type = "p";
+        break;
+      case "nprofile":
+        id = decoded.data.pubkey;
+        type = "p";
+        break;
+      case "note":
+        id = decoded.data;
+        type = "e";
+        break;
+      case "nevent":
+        id = decoded.data.id;
+        type = "e";
+        break;
+    }
 
-      let t = tags.find((t) => t[0] === type && t[1] === id);
-      if (t) {
-        let index = tags.indexOf(t);
-        indexes.add(index);
-      }
-    } catch (e) {}
+    let matchingTags = tags.filter((t) => t[0] === type && t[1] === id);
+    for (const t of matchingTags) foundTags.add(t);
   }
 
-  return Array.from(indexes);
+  return Array.from(foundTags);
 }
 
+/**
+ * returns all tags that are referenced in the content
+ */
 export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
   const contentTagRefs = getContentTagRefs(content, tags);
-
-  const newTags: Tag[] = [];
-  for (let i = 0; i < tags.length; i++) {
-    if (contentTagRefs.includes(i) === referenced) {
-      newTags.push(tags[i]);
-    }
-  }
-  return newTags;
+  return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-function isCommunityRefTag(t: Tag): t is ATag {
-  return t.length >= 2 && t[0] === "a" && t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":");
+function eTagToEventPointer(tag: ETag): EventPointer {
+  return { id: tag[1], relays: tag[2] ? [tag[2]] : [] };
+}
+function aTagToAddressPointer(tag: ATag): AddressPointer {
+  const cord = parseCoordinate(tag[1], true, false);
+  if (tag[2]) cord.relays = [tag[2]];
+  return cord;
 }
 
-export type EventReferences = ReturnType<typeof getReferences>;
-export function getReferences(event: NostrEvent | DraftNostrEvent) {
-  const contentTagRefs = getContentTagRefs(event.content, event.tags);
+export function interpretTags(event: NostrEvent | DraftNostrEvent) {
+  const eTags = event.tags.filter(isETag);
+  const aTags = event.tags.filter(isATag);
 
   // find the root and reply tags.
-  // NOTE: Ignore community reference tags since there is another client out there that is marking them as "root"
-  // and it dose not make sense to "reply" to a community
-  const replyTag = event.tags.find((t) => !isCommunityRefTag(t) && t[3] === "reply");
-  const rootTag = event.tags.find((t) => !isCommunityRefTag(t) && t[3] === "root");
-  const mentionTags = event.tags.find((t) => t[3] === "mention");
+  let rootETag = eTags.find((t) => t[3] === "root");
+  let replyETag = eTags.find((t) => t[3] === "reply");
 
-  let replyId = replyTag?.[1];
-  let replyRelay = replyTag?.[2];
-  let rootId = rootTag?.[1];
-  let rootRelay = rootTag?.[2];
+  let rootATag = aTags.find((t) => t[3] === "root");
+  let replyATag = aTags.find((t) => t[3] === "reply");
 
-  if (!rootId || !replyId) {
+  if (!rootETag || !replyETag) {
     // a direct reply dose not need a "reply" reference
     // https://github.com/nostr-protocol/nips/blob/master/10.md
 
     // this is not necessarily to spec. but if there is only one id (root or reply) then assign it to both
     // this handles the cases where a client only set a "reply" tag and no root
-    rootId = replyId = rootId || replyId;
+    rootETag = replyETag = rootETag || replyETag;
+  }
+  if (!rootATag || !replyATag) {
+    rootATag = replyATag = rootATag || replyATag;
   }
 
-  // legacy behavior
-  // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-  const legacyTags = event.tags.filter(isETag).filter((t, i) => {
-    // ignore it if there is a type
-    if (t[3]) return false;
-    const tagIndex = event.tags.indexOf(t);
-    if (contentTagRefs.includes(tagIndex)) return false;
-    return true;
-  });
-  if (!rootId && !replyId && legacyTags.length >= 1) {
-    // console.info(`Using legacy threading behavior for ${event.id}`, event);
+  if (!rootETag && !replyETag) {
+    const contentTagRefs = getContentTagRefs(event.content, eTags);
 
-    // first tag is the root
-    rootId = legacyTags[0][1];
-    // last tag is reply
-    replyId = legacyTags[legacyTags.length - 1][1] ?? rootId;
+    // legacy behavior
+    // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
+    const legacyETags = eTags.filter((t) => {
+      // ignore it if there is a type
+      if (t[3]) return false;
+      if (contentTagRefs.includes(t)) return false;
+      return true;
+    });
+
+    if (legacyETags.length >= 1) {
+      // first tag is the root
+      rootETag = legacyETags[0];
+      // last tag is reply
+      replyETag = legacyETags[legacyETags.length - 1] ?? rootETag;
+    }
   }
 
   return {
-    replyTag,
-    rootTag,
-    mentionTags,
+    root: rootETag || rootATag ? { e: rootETag, a: rootATag } : undefined,
+    reply: replyETag || replyATag ? { e: replyETag, a: replyATag } : undefined,
+  };
+}
 
-    rootId,
-    rootRelay,
-    replyId,
-    replyRelay,
+export type EventReferences = ReturnType<typeof getReferences>;
+export function getReferences(event: NostrEvent | DraftNostrEvent) {
+  const tags = interpretTags(event);
 
-    contentTagRefs,
+  return {
+    root: tags.root && {
+      e: tags.root.e && eTagToEventPointer(tags.root.e),
+      a: tags.root.a && aTagToAddressPointer(tags.root.a),
+    },
+    reply: tags.reply && {
+      e: tags.reply.e && eTagToEventPointer(tags.reply.e),
+      a: tags.reply.a && aTagToAddressPointer(tags.reply.a),
+    },
   };
 }
 

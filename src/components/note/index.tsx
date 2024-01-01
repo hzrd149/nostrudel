@@ -36,7 +36,7 @@ import BookmarkButton from "./components/bookmark-button";
 import useCurrentAccount from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/thread/components/reply-form";
-import { getReferences } from "../../helpers/nostr/events";
+import { getReferences, truncatedId } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
@@ -49,6 +49,57 @@ import NoteProxyLink from "./components/note-proxy-link";
 import { NoteDetailsButton } from "./components/note-details-button";
 import EventInteractionDetailsModal from "../event-interactions-modal";
 import singleEventService from "../../services/single-event";
+import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
+import { nip19 } from "nostr-tools";
+
+function ReplyToE({ pointer }: { pointer: EventPointer }) {
+  const event = useSingleEvent(pointer.id, pointer.relays);
+
+  if (!event) {
+    const nevent = nip19.neventEncode(pointer);
+    return (
+      <Text>
+        Replying to{" "}
+        <Link as={RouterLink} to={`/l/${nevent}`} color="blue.500">
+          {truncatedId(nevent)}
+        </Link>
+      </Text>
+    );
+  }
+
+  return (
+    <>
+      <Text>
+        Replying to <UserLink pubkey={event.pubkey} fontWeight="bold" />
+      </Text>
+      <CompactNoteContent event={event} maxLength={96} isTruncated textOnly />
+    </>
+  );
+}
+function ReplyToA({ pointer }: { pointer: AddressPointer }) {
+  const naddr = nip19.naddrEncode(pointer);
+
+  return (
+    <Text>
+      Replying to{" "}
+      <Link as={RouterLink} to={`/l/${naddr}`} color="blue.500">
+        {truncatedId(naddr)}
+      </Link>
+    </Text>
+  );
+}
+
+function ReplyLine({ event }: { event: NostrEvent }) {
+  const refs = getReferences(event);
+  if (!refs.reply) return null;
+
+  return (
+    <Flex gap="2" fontStyle="italic" alignItems="center" whiteSpace="nowrap">
+      <ReplyIcon />
+      {refs.reply.type === "nevent" ? <ReplyToE pointer={refs.reply.data} /> : <ReplyToA pointer={refs.reply.data} />}
+    </Flex>
+  );
+}
 
 export type NoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -78,9 +129,6 @@ export const Note = React.memo(
     // if there is a parent intersection observer, register this card
     const ref = useRef<HTMLDivElement | null>(null);
     useRegisterIntersectionEntity(ref, event.id);
-
-    const refs = getReferences(event);
-    const repliedTo = useSingleEvent(refs.replyId);
 
     const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
 
@@ -123,15 +171,7 @@ export const Note = React.memo(
                 </Link>
               </Flex>
               <NoteCommunityMetadata event={event} />
-              {showReplyLine && repliedTo && (
-                <Flex gap="2" fontStyle="italic" alignItems="center" whiteSpace="nowrap">
-                  <ReplyIcon />
-                  <Text>
-                    Replying to <UserLink pubkey={repliedTo.pubkey} fontWeight="bold" />
-                  </Text>
-                  <CompactNoteContent event={repliedTo} maxLength={96} isTruncated textOnly />
-                </Flex>
-              )}
+              {showReplyLine && <ReplyLine event={event} />}
             </CardHeader>
             <CardBody p="0">
               <NoteContentWithWarning event={event} />
@@ -160,7 +200,7 @@ export const Note = React.memo(
           </Card>
         </ExpandProvider>
         {replyForm.isOpen && (
-          <ReplyForm item={{ event, replies: [], refs }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+          <ReplyForm item={{ event, replies: [], refs: getReferences(event) }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
         )}
         {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={event} />}
       </TrustProvider>

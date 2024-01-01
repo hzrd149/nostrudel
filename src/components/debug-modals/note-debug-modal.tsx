@@ -2,7 +2,7 @@ import { Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton, Flex } 
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getReferences } from "../../helpers/nostr/events";
+import { getContentTagRefs, getReferences } from "../../helpers/nostr/events";
 import { NostrEvent } from "../../types/nostr-event";
 import RawJson from "./raw-json";
 import RawValue from "./raw-value";
@@ -22,7 +22,8 @@ export default function NoteDebugModal({ event, ...props }: { event: NostrEvent 
             <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
             <RawPre heading="Content" value={event.content} />
             <RawJson heading="JSON" json={event} />
-            <RawJson heading="References" json={getReferences(event)} />
+            <RawJson heading="Thread Tags" json={getReferences(event)} />
+            <RawJson heading="Tags referenced in content" json={getContentTagRefs(event.content, event.tags)} />
           </Flex>
         </ModalBody>
       </ModalContent>

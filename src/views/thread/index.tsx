@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { Button, Heading, Spinner } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import Note from "../../components/note";
-import { getSharableEventAddress, isHexKey } from "../../helpers/nip19";
+import { getSharableEventAddress } from "../../helpers/nip19";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -27,11 +26,11 @@ function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadIte
   if (!focusedPost) return null;
 
   const parentPosts = [];
-  if (focusedPost.reply) {
+  if (focusedPost.replyingTo) {
     let p = focusedPost;
-    while (p.reply) {
-      parentPosts.unshift(p.reply);
-      p = p.reply;
+    while (p.replyingTo) {
+      parentPosts.unshift(p.replyingTo);
+      p = p.replyingTo;
     }
   }
 
@@ -49,10 +48,10 @@ function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadIte
           View full thread ({parentPosts.length - 1})
         </Button>
       )}
-      {focusedPost.reply && (
+      {focusedPost.replyingTo && (
         <Note
-          key={focusedPost.reply.event.id + "-rely"}
-          event={focusedPost.reply.event}
+          key={focusedPost.replyingTo.event.id + "-rely"}
+          event={focusedPost.replyingTo.event}
           hideDrawerButton
           showReplyLine={false}
         />

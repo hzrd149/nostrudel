@@ -1,4 +1,4 @@
-import React, { LegacyRef } from "react";
+import React, { LegacyRef, forwardRef } from "react";
 import { Image, InputProps, Textarea, TextareaProps, Input } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
@@ -85,34 +85,42 @@ function useAutocompleteTriggers() {
 // @ts-ignore
 export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
 
-export function MagicInput({ instanceRef, ...props }: InputProps & { instanceRef?: LegacyRef<RefType> }) {
-  const triggers = useAutocompleteTriggers();
+const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: LegacyRef<RefType> }>(
+  ({ instanceRef, ...props }, ref) => {
+    const triggers = useAutocompleteTriggers();
 
-  return (
-    // @ts-ignore
-    <ReactTextareaAutocomplete<Token, InputProps>
-      {...props}
-      textAreaComponent={Input}
-      ref={instanceRef}
-      loadingComponent={Loading}
-      minChar={0}
-      trigger={triggers}
-    />
-  );
-}
+    return (
+      // @ts-ignore
+      <ReactTextareaAutocomplete<Token, InputProps>
+        {...props}
+        textAreaComponent={Input}
+        ref={instanceRef}
+        loadingComponent={Loading}
+        minChar={0}
+        trigger={triggers}
+        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+      />
+    );
+  },
+);
 
-export default function MagicTextArea({ instanceRef, ...props }: TextareaProps & { instanceRef?: LegacyRef<RefType> }) {
-  const triggers = useAutocompleteTriggers();
+const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instanceRef?: LegacyRef<RefType> }>(
+  ({ instanceRef, ...props }, ref) => {
+    const triggers = useAutocompleteTriggers();
 
-  return (
-    // @ts-ignore
-    <ReactTextareaAutocomplete<Token, TextareaProps>
-      {...props}
-      ref={instanceRef}
-      textAreaComponent={Textarea}
-      loadingComponent={Loading}
-      minChar={0}
-      trigger={triggers}
-    />
-  );
-}
+    return (
+      // @ts-ignore
+      <ReactTextareaAutocomplete<Token, TextareaProps>
+        {...props}
+        ref={instanceRef}
+        textAreaComponent={Textarea}
+        loadingComponent={Loading}
+        minChar={0}
+        trigger={triggers}
+        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+      />
+    );
+  },
+);
+
+export { MagicInput, MagicTextArea as default };

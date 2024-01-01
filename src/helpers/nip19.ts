@@ -52,12 +52,6 @@ export function getSharableEventAddress(event: NostrEvent) {
   }
 }
 
-/** @deprecated use getSharableEventAddress unless required */
-export function getNeventForEventId(eventId: string, maxRelays = 2) {
-  const relays = relayHintService.getEventPointerRelayHints(eventId).slice(0, maxRelays);
-  return nip19.neventEncode({ id: eventId, relays });
-}
-
 export function encodePointer(pointer: DecodeResult) {
   switch (pointer.type) {
     case "naddr":

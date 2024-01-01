@@ -33,8 +33,9 @@ export default function SendMessageForm({
   });
   watch("content");
 
-  const textAreaRef = useRef<RefType | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const autocompleteRef = useRef<RefType | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { onPaste } = useTextAreaUploadFileWithForm(autocompleteRef, getValues, setValue);
 
   const usersInbox = useUserRelays(pubkey)
     .filter((r) => r.mode & RelayMode.READ)
@@ -65,6 +66,9 @@ export default function SendMessageForm({
 
       // add plaintext to decryption context
       getOrCreateContainer(pubkey, encrypted).plaintext.next(values.content);
+
+      // refocus input
+      setTimeout(() => textAreaRef.current?.focus(), 50);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }
@@ -87,7 +91,8 @@ export default function SendMessageForm({
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
             rows={2}
             isRequired
-            instanceRef={(inst) => (textAreaRef.current = inst)}
+            instanceRef={(inst) => (autocompleteRef.current = inst)}
+            ref={textAreaRef}
             onPaste={onPaste}
             onKeyDown={(e) => {
               if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();

@@ -31,8 +31,9 @@ export default function ChannelMessageForm({
   });
   watch("content");
 
-  const textAreaRef = useRef<RefType | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const componentRef = useRef<RefType | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { onPaste } = useTextAreaUploadFileWithForm(componentRef, getValues, setValue);
 
   const sendMessage = handleSubmit(async (values) => {
     try {
@@ -58,6 +59,9 @@ export default function ChannelMessageForm({
       const writeRelays = clientRelaysService.getWriteUrls();
       new NostrPublishAction("Send DM", writeRelays, signed);
       reset();
+
+      // refocus input
+      setTimeout(() => textAreaRef.current?.focus(), 50);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }
@@ -80,7 +84,8 @@ export default function ChannelMessageForm({
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
             rows={2}
             isRequired
-            instanceRef={(inst) => (textAreaRef.current = inst)}
+            instanceRef={(inst) => (componentRef.current = inst)}
+            ref={textAreaRef}
             onPaste={onPaste}
             onKeyDown={(e) => {
               if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();

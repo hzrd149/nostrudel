@@ -11,7 +11,7 @@ export type ThreadItem = {
   /** the thread root, according to this event */
   root?: ThreadItem;
   /** the parent event this is replying to */
-  reply?: ThreadItem;
+  replyingTo?: ThreadItem;
   /** refs from nostr event */
   refs: EventReferences;
   /** direct child replies */
@@ -22,11 +22,11 @@ export type ThreadItem = {
 export function getThreadMembers(item: ThreadItem, omit?: string) {
   const pubkeys = new Set<string>();
 
-  let i = item;
+  let next = item;
   while (true) {
-    if (i.event.pubkey !== omit) pubkeys.add(i.event.pubkey);
-    if (!i.reply) break;
-    else i = i.reply;
+    if (next.event.pubkey !== omit) pubkeys.add(next.event.pubkey);
+    if (!next.replyingTo) break;
+    else next = next.replyingTo;
   }
 
   return Array.from(pubkeys);
@@ -39,9 +39,9 @@ export function buildThread(events: NostrEvent[]) {
   for (const event of events) {
     const refs = getReferences(event);
 
-    if (refs.replyId) {
-      idToChildren[refs.replyId] = idToChildren[refs.replyId] || [];
-      idToChildren[refs.replyId].push(event);
+    if (refs.reply?.type === "nevent") {
+      idToChildren[refs.reply.data.id] = idToChildren[refs.reply.data.id] || [];
+      idToChildren[refs.reply.data.id].push(event);
     }
 
     replies.set(event.id, {
@@ -52,9 +52,9 @@ export function buildThread(events: NostrEvent[]) {
   }
 
   for (const [id, reply] of replies) {
-    reply.root = reply.refs.rootId ? replies.get(reply.refs.rootId) : undefined;
+    reply.root = reply.refs.root?.type === "nevent" ? replies.get(reply.refs.root.data.id) : undefined;
 
-    reply.reply = reply.refs.replyId ? replies.get(reply.refs.replyId) : undefined;
+    reply.replyingTo = reply.refs.reply?.type === "nevent" ? replies.get(reply.refs.reply.data.id) : undefined;
 
     reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
 
