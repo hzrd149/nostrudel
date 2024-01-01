@@ -39,9 +39,9 @@ export function buildThread(events: NostrEvent[]) {
   for (const event of events) {
     const refs = getReferences(event);
 
-    if (refs.reply?.type === "nevent") {
-      idToChildren[refs.reply.data.id] = idToChildren[refs.reply.data.id] || [];
-      idToChildren[refs.reply.data.id].push(event);
+    if (refs.reply?.e) {
+      idToChildren[refs.reply.e.id] = idToChildren[refs.reply.e.id] || [];
+      idToChildren[refs.reply.e.id].push(event);
     }
 
     replies.set(event.id, {
@@ -52,9 +52,9 @@ export function buildThread(events: NostrEvent[]) {
   }
 
   for (const [id, reply] of replies) {
-    reply.root = reply.refs.root?.type === "nevent" ? replies.get(reply.refs.root.data.id) : undefined;
+    reply.root = reply.refs.root?.e ? replies.get(reply.refs.root.e.id) : undefined;
 
-    reply.replyingTo = reply.refs.reply?.type === "nevent" ? replies.get(reply.refs.reply.data.id) : undefined;
+    reply.replyingTo = reply.refs.reply?.e ? replies.get(reply.refs.reply.e.id) : undefined;
 
     reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
 

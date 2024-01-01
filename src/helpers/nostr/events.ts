@@ -145,6 +145,9 @@ export function interpretTags(event: NostrEvent | DraftNostrEvent) {
   return {
     root: rootETag || rootATag ? { e: rootETag, a: rootATag } : undefined,
     reply: replyETag || replyATag ? { e: replyETag, a: replyATag } : undefined,
+  } as {
+    root?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
+    reply?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
   };
 }
 
@@ -161,6 +164,15 @@ export function getReferences(event: NostrEvent | DraftNostrEvent) {
       e: tags.reply.e && eTagToEventPointer(tags.reply.e),
       a: tags.reply.a && aTagToAddressPointer(tags.reply.a),
     },
+  } as {
+    root?:
+      | { e: EventPointer; a: undefined }
+      | { e: undefined; a: AddressPointer }
+      | { e: EventPointer; a: AddressPointer };
+    reply?:
+      | { e: EventPointer; a: undefined }
+      | { e: undefined; a: AddressPointer }
+      | { e: EventPointer; a: AddressPointer };
   };
 }
 

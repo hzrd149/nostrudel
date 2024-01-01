@@ -96,7 +96,7 @@ function ReplyLine({ event }: { event: NostrEvent }) {
   return (
     <Flex gap="2" fontStyle="italic" alignItems="center" whiteSpace="nowrap">
       <ReplyIcon />
-      {refs.reply.type === "nevent" ? <ReplyToE pointer={refs.reply.data} /> : <ReplyToA pointer={refs.reply.data} />}
+      {refs.reply.e ? <ReplyToE pointer={refs.reply.e} /> : <ReplyToA pointer={refs.reply.a} />}
     </Flex>
   );
 }
@@ -200,7 +200,11 @@ export const Note = React.memo(
           </Card>
         </ExpandProvider>
         {replyForm.isOpen && (
-          <ReplyForm item={{ event, replies: [], refs: getReferences(event) }} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+          <ReplyForm
+            item={{ event, replies: [], refs: getReferences(event) }}
+            onCancel={replyForm.onClose}
+            onSubmitted={replyForm.onClose}
+          />
         )}
         {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={event} />}
       </TrustProvider>
