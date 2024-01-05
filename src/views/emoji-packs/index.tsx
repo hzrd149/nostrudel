@@ -76,7 +76,7 @@ export default function EmojiPacksView() {
         <Button as={RouterLink} to="/emojis/browse">
           Find packs
         </Button>
-        <Button as={Link} href="https://emojis-iota.vercel.app/" isExternal rightIcon={<ExternalLinkIcon />} ml="auto">
+        <Button as={Link} href="https://emojito.meme" isExternal rightIcon={<ExternalLinkIcon />} ml="auto">
           Emoji pack manager
         </Button>
         {account && (
