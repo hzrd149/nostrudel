@@ -10,7 +10,7 @@ import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-uploa
 import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { createEmojiTags, ensureNotifyPubkeys, getContentMentions } from "../../../helpers/nostr/post";
+import { createEmojiTags, ensureNotifyPubkeys, getPubkeysMentionedInContent } from "../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 
 export default function ChannelMessageForm({
@@ -46,7 +46,7 @@ export default function ChannelMessageForm({
         created_at: dayjs().unix(),
       };
 
-      const contentMentions = getContentMentions(draft.content);
+      const contentMentions = getPubkeysMentionedInContent(draft.content);
       draft = createEmojiTags(draft, emojis);
       draft = ensureNotifyPubkeys(draft, contentMentions);
 

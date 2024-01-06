@@ -14,7 +14,7 @@ import {
   createEmojiTags,
   ensureNotifyPubkeys,
   finalizeNote,
-  getContentMentions,
+  getPubkeysMentionedInContent,
 } from "../../../helpers/nostr/post";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/global/signing-provider";
@@ -47,7 +47,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kin
       content: "",
     },
   });
-  const contentMentions = getContentMentions(getValues().content);
+  const contentMentions = getPubkeysMentionedInContent(getValues().content);
   const notifyPubkeys = unique([...threadMembers, ...contentMentions]);
 
   watch("content");

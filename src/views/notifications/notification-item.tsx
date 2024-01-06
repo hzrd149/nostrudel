@@ -18,6 +18,7 @@ import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, Repos
 import useSingleEvent from "../../hooks/use-single-event";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import NotificationIconEntry from "./components/notification-icon-entry";
+import { getPubkeysMentionedInContent } from "../../helpers/nostr/post";
 
 export const ExpandableToggleButton = ({
   toggle,
@@ -37,10 +38,13 @@ const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ ev
   const parent = useSingleEvent(refs.reply?.e?.id);
 
   const isReplyingToMe = !!refs.reply?.e?.id && (parent ? parent.pubkey === account.pubkey : true);
+  // is the "p" tag directly mentioned in the content
   const isMentioned = isMentionedInContent(event, account.pubkey);
+  // is the pubkey mentioned in any way in the content
+  const isQuoted = !isMentioned && getPubkeysMentionedInContent(event.content).includes(account.pubkey);
 
   if (isReplyingToMe) return <ReplyNotification event={event} ref={ref} />;
-  else if (isMentioned) return <MentionNotification event={event} ref={ref} />;
+  else if (isMentioned || isQuoted) return <MentionNotification event={event} ref={ref} />;
   else return null;
 });
 const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (

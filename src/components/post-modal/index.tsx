@@ -34,7 +34,7 @@ import {
   createEmojiTags,
   ensureNotifyPubkeys,
   finalizeNote,
-  getContentMentions,
+  getPubkeysMentionedInContent,
   setZapSplit,
 } from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
@@ -126,7 +126,7 @@ export default function PostModal({
       updatedDraft.tags.push(["subject", subject]);
     }
 
-    const contentMentions = getContentMentions(updatedDraft.content);
+    const contentMentions = getPubkeysMentionedInContent(updatedDraft.content);
     updatedDraft = createEmojiTags(updatedDraft, emojis);
     updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
     if (split.length > 0) {
@@ -146,7 +146,7 @@ export default function PostModal({
   });
 
   const canSubmit = getValues().content.length > 0;
-  const mentions = getContentMentions(correctContentMentions(getValues().content));
+  const mentions = getPubkeysMentionedInContent(correctContentMentions(getValues().content));
 
   const previewDraft = useThrottle(getDraft(), 500);
 
