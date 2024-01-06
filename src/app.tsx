@@ -81,7 +81,10 @@ import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
 import LaunchpadView from "./views/launchpad";
 import TracksView from "./views/tracks";
+import VideosView from "./views/videos";
+import VideoDetailsView from "./views/videos/video";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
+const UserVideosTab = lazy(() => import("./views/user/videos"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
 const WotTestView = lazy(() => import("./views/tools/wot-test"));
@@ -224,6 +227,7 @@ const router = createHashRouter([
           { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "tracks", element: <UserTracksTab /> },
+          { path: "videos", element: <UserVideosTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
@@ -258,6 +262,19 @@ const router = createHashRouter([
         children: [
           { path: "threads", element: <ThreadsNotificationsView /> },
           { path: "", element: <NotificationsView /> },
+        ],
+      },
+      {
+        path: "videos",
+        children: [
+          {
+            path: ":naddr",
+            element: <VideoDetailsView />,
+          },
+          {
+            path: "",
+            element: <VideosView />,
+          },
         ],
       },
       {

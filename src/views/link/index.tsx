@@ -7,6 +7,7 @@ import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 
 function NostrLinkPage() {
   const { link } = useParams() as { link?: string };
@@ -37,6 +38,7 @@ function NostrLinkPage() {
       if (decoded.data.kind === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
       if (decoded.data.kind === COMMUNITY_DEFINITION_KIND) return <Navigate to={`/c/${cleanLink}`} replace />;
+      if (decoded.data.kind === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.ChannelCreation) return <Navigate to={`/channels/${cleanLink}`} replace />;
       if (decoded.data.kind === Kind.Text) return <Navigate to={`/n/${cleanLink}`} replace />;
       // if there is no kind redirect to the thread view

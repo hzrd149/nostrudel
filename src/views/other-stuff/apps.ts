@@ -15,6 +15,7 @@ import {
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
 import Users01 from "../../components/icons/users-01";
+import Film02 from "../../components/icons/film-02";
 
 export const internalApps: App[] = [
   {
@@ -37,6 +38,7 @@ export const internalApps: App[] = [
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
+  { title: "Videos", description: "Browse flare videos", icon: Film02, id: "videos", to: "/videos" },
   // { title: "Things", icon: ThingsIcon, id: "things", to: "/things" },
 ];
 
