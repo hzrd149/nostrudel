@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { useThrottle } from "react-use";
 import { Kind } from "nostr-tools";
 import dayjs from "dayjs";
 
@@ -19,13 +20,12 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { unique } from "../../../helpers/array";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { TrustProvider } from "../../../providers/local/trust";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
-import { useThrottle } from "react-use";
+import { unique } from "../../../helpers/array";
 
 export type ReplyFormProps = {
   item: ThreadItem;

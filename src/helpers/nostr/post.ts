@@ -1,5 +1,5 @@
 import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
-import { getMatchEmoji, getMatchHashtag } from "../regexp";
+import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
 import { getReferences } from "./events";
 import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/global/emoji-provider";
@@ -57,7 +57,7 @@ export function ensureNotifyPubkeys(draft: DraftNostrEvent, pubkeys: string[]) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
   for (const pubkey of pubkeys) {
-    updated.tags = addTag(updated.tags, ["p", pubkey], false);
+    updated.tags = addTag(updated.tags, ["p", pubkey, "", "mention"], false);
   }
 
   return updated;
@@ -68,15 +68,31 @@ export function correctContentMentions(content: string) {
 }
 
 export function getContentMentions(content: string) {
-  const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
-  return unique(
-    Array.from(matched)
-      .map((m) => {
-        const parsed = safeDecode(m[1]);
-        return parsed && getPubkeyFromDecodeResult(parsed);
-      })
-      .filter(Boolean) as string[],
-  );
+  const matched = content.matchAll(getMatchNostrLink());
+
+  const pubkeys: string[] = [];
+
+  for (const match of matched) {
+    const decode = safeDecode(match[2]);
+    if (!decode) continue;
+
+    switch (decode.type) {
+      case "npub":
+        pubkeys.push(decode.data);
+        break;
+      case "nprofile":
+        pubkeys.push(decode.data.pubkey);
+        break;
+      case "nevent":
+        if (decode.data.author) pubkeys.push(decode.data.author);
+        break;
+      case "naddr":
+        if (decode.data.pubkey) pubkeys.push(decode.data.pubkey);
+        break;
+    }
+  }
+
+  return unique(pubkeys);
 }
 
 export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
