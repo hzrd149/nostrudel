@@ -18,10 +18,10 @@ import { Kind } from "nostr-tools";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
 import {
-  getEventsFromList,
+  getEventPointersFromList,
   getListDescription,
   getListName,
-  getParsedCordsFromList,
+  getAddressPointersFromList,
   getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
@@ -45,8 +45,8 @@ import SimpleLikeButton from "../../../components/event-reactions/simple-like-bu
 
 export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);
-  const notes = getEventsFromList(list);
-  const coordinates = getParsedCordsFromList(list);
+  const notes = getEventPointersFromList(list);
+  const coordinates = getAddressPointersFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
   const articles = coordinates.filter((cord) => cord.kind === Kind.Article);
   const references = getReferencesFromList(list);

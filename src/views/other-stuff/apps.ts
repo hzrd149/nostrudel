@@ -1,5 +1,6 @@
 import {
   BadgeIcon,
+  BookmarkIcon,
   ChannelsIcon,
   CommunityIcon,
   DirectMessagesIcon,
@@ -36,6 +37,7 @@ export const internalApps: App[] = [
   { title: "Goals", description: "Browse and create goals", icon: GoalIcon, id: "goals", to: "/goals" },
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
+  { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   { title: "Videos", description: "Browse flare videos", icon: Film02, id: "videos", to: "/videos" },

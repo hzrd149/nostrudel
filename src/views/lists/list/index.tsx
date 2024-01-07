@@ -8,10 +8,10 @@ import { ChevronLeftIcon } from "../../../components/icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import {
-  getEventsFromList,
+  getEventPointersFromList,
   getListDescription,
   getListName,
-  getParsedCordsFromList,
+  getAddressPointersFromList,
   getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
@@ -46,8 +46,8 @@ function ListPage({ list }: { list: NostrEvent }) {
   const description = getListDescription(list);
   const isAuthor = account?.pubkey === list.pubkey;
   const people = getPubkeysFromList(list);
-  const notes = getEventsFromList(list);
-  const coordinates = getParsedCordsFromList(list);
+  const notes = getEventPointersFromList(list);
+  const coordinates = getAddressPointersFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
   const articles = coordinates.filter((cord) => cord.kind === Kind.Article);
   const references = getReferencesFromList(list);

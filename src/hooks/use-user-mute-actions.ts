@@ -14,7 +14,7 @@ import useAsyncErrorHandler from "./use-async-error-handler";
 import useCurrentAccount from "./use-current-account";
 import useUserMuteList from "./use-user-mute-list";
 
-export default function useUserMuteFunctions(pubkey: string) {
+export default function useUserMuteActions(pubkey: string) {
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });

@@ -7,7 +7,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
-import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
+import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../../providers/route/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../../helpers/nostr/lists";
@@ -22,7 +22,7 @@ function Countdown({ time }: { time: number }) {
 }
 
 function UserCard({ pubkey }: { pubkey: string }) {
-  const { isMuted, mute, unmute, expiration } = useUserMuteFunctions(pubkey);
+  const { isMuted, mute, unmute, expiration } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
 
   let buttons: ReactNode | null = null;

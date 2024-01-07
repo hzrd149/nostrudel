@@ -12,7 +12,7 @@ import {
   ExtendedIntersectionObserverEntry,
   useIntersectionObserver,
 } from "../../../providers/local/intersection-observer";
-import GenericTimelineNote from "./generic-timeline-note";
+import TimelineItem from "./timeline-item";
 
 const NOTE_BUFFER = 5;
 const timelineNoteMinHeightCache = new WeakMap<TimelineLoader, Record<string, Record<string, number>>>();
@@ -156,7 +156,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
         </Box>
       )}
       {notes.map((note) => (
-        <GenericTimelineNote
+        <TimelineItem
           key={note.id}
           event={note}
           visible={note.created_at <= maxDate}

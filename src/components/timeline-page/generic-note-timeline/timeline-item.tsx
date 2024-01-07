@@ -15,15 +15,7 @@ import { getEventUID, isReply } from "../../../helpers/nostr/events";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
 
-function GenericTimelineNote({
-  event,
-  visible,
-  minHeight,
-}: {
-  event: NostrEvent;
-  visible: boolean;
-  minHeight?: number;
-}) {
+function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
@@ -61,4 +53,4 @@ function GenericTimelineNote({
   );
 }
 
-export default memo(GenericTimelineNote);
+export default memo(TimelineItem);

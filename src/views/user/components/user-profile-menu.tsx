@@ -23,7 +23,7 @@ import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { truncatedId } from "../../../helpers/nostr/events";
-import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
+import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
 
 export const UserProfileMenu = ({
@@ -37,7 +37,7 @@ export const UserProfileMenu = ({
   const userRelays = useUserRelays(pubkey);
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
-  const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
+  const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
 
   const loginAsUser = () => {
     const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];

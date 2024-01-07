@@ -1,4 +1,6 @@
-import { BOOKMARK_LIST_KIND, getEventsFromList } from "../helpers/nostr/lists";
+import { useMemo } from "react";
+
+import { BOOKMARK_LIST_KIND, getAddressPointersFromList, getEventPointersFromList } from "../helpers/nostr/lists";
 import { RequestOptions } from "../services/replaceable-event-requester";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
@@ -9,7 +11,8 @@ export default function userUserBookmarksList(pubkey?: string, relays: string[] 
 
   const list = useReplaceableEvent(key ? { kind: BOOKMARK_LIST_KIND, pubkey: key } : undefined, relays, opts);
 
-  const pointers = list ? getEventsFromList(list) : [];
+  const addressPointers = useMemo(() => (list ? getAddressPointersFromList(list) : []), [list]);
+  const eventPointers = useMemo(() => (list ? getEventPointersFromList(list) : []), [list]);
 
-  return { list, pointers };
+  return { list, addressPointers, eventPointers };
 }

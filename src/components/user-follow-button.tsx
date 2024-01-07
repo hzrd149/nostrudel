@@ -33,7 +33,7 @@ import useUserContactList from "../hooks/use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
-import useUserMuteFunctions from "../hooks/use-user-mute-functions";
+import useUserMuteActions from "../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../providers/route/mute-modal-provider";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
@@ -118,7 +118,7 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
-  const { isMuted, unmute } = useUserMuteFunctions(pubkey);
+  const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
 
   const isFollowing = isPubkeyInList(contacts, pubkey);

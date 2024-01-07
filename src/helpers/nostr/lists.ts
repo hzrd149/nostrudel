@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { Kind, nip19 } from "nostr-tools";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
@@ -60,7 +59,7 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEv
 export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
-export function getEventsFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
+export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
   return event.tags.filter(isETag).map((t) => (t[2] ? { id: t[1], relays: [t[2]] } : { id: t[1] }));
 }
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
@@ -69,8 +68,8 @@ export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
 export function getCoordinatesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
-export function getParsedCordsFromList(event: NostrEvent | DraftNostrEvent) {
-  const pointers: AddressPointer[] = [];
+export function getAddressPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.AddressPointer[] {
+  const pointers: nip19.AddressPointer[] = [];
 
   for (const tag of event.tags) {
     if (!tag[1]) continue;

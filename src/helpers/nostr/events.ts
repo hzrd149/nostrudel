@@ -5,7 +5,6 @@ import { RelayConfig, RelayMode } from "../../classes/relay";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
-import { COMMUNITY_DEFINITION_KIND } from "./communities";
 import { safeDecode } from "../nip19";
 
 export function truncatedId(str: string, keep = 6) {
@@ -16,6 +15,22 @@ export function truncatedId(str: string, keep = 6) {
 // based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
 export function isReplaceable(kind: number) {
   return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || kind === 41 || (kind >= 10000 && kind < 20000);
+}
+
+export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
+  if (isReplaceable(event.kind)) {
+    if (Object.hasOwn(pointer, "pubkey")) {
+      const p = pointer as AddressPointer;
+      const d = event.tags.find(isDTag)?.[1];
+      return event.pubkey === p.pubkey && event.kind === p.kind && d === p.identifier;
+    }
+  } else {
+    if (Object.hasOwn(pointer, "id")) {
+      const p = pointer as EventPointer;
+      return p.id === event.id;
+    }
+  }
+  return false;
 }
 
 // used to get a unique Id for each event, should take into account replaceable events

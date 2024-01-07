@@ -83,6 +83,7 @@ import LaunchpadView from "./views/launchpad";
 import TracksView from "./views/tracks";
 import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
+import BookmarksView from "./views/bookmarks";
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
 
@@ -316,6 +317,13 @@ const router = createHashRouter([
           { path: "", element: <ListsHomeView /> },
           { path: "browse", element: <BrowseListView /> },
           { path: ":addr", element: <ListView /> },
+        ],
+      },
+      {
+        path: "bookmarks",
+        children: [
+          { path: ":pubkey", element: <BookmarksView /> },
+          { path: "", element: <BookmarksView /> },
         ],
       },
       {

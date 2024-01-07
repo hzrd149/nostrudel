@@ -2,7 +2,7 @@ import { ChainedDVMJob, getEventIdsFromJobs } from "../../../helpers/nostr/dvm";
 import FeedStatus from "./feed-status";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useSingleEvents from "../../../hooks/use-single-events";
-import GenericTimelineNote from "../../../components/timeline-page/generic-note-timeline/generic-timeline-note";
+import TimelineItem from "../../../components/timeline-page/generic-note-timeline/timeline-item";
 
 function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
   const eventIds = getEventIdsFromJobs(chain);
@@ -11,7 +11,7 @@ function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
   return (
     <>
       {events.map((event) => (
-        <GenericTimelineNote event={event} visible />
+        <TimelineItem event={event} visible />
       ))}
     </>
   );

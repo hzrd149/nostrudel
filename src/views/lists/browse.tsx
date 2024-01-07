@@ -8,7 +8,7 @@ import {
   MUTE_LIST_KIND,
   NOTE_LIST_KIND,
   PEOPLE_LIST_KIND,
-  getEventsFromList,
+  getEventPointersFromList,
   getListName,
   getPubkeysFromList,
 } from "../../helpers/nostr/lists";
@@ -30,7 +30,7 @@ function BrowseListPage() {
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (event.kind !== listKind) return false;
-      if (!showEmpty.isOpen && getPubkeysFromList(event).length === 0 && getEventsFromList(event).length === 0)
+      if (!showEmpty.isOpen && getPubkeysFromList(event).length === 0 && getEventPointersFromList(event).length === 0)
         return false;
 
       if (
