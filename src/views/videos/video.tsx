@@ -1,8 +1,8 @@
-import { Box, ButtonGroup, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex, Heading, Spinner, Tag, Text } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import {
-  getVideoDuration,
+  FLARE_VIDEO_KIND,
   getVideoImages,
   getVideoSummary,
   getVideoTitle,
@@ -21,14 +21,38 @@ import SimpleLikeButton from "../../components/event-reactions/simple-like-butto
 import SimpleDislikeButton from "../../components/event-reactions/simple-dislike-button";
 import { ErrorBoundary } from "../../components/error-boundary";
 import QuoteRepostButton from "../../components/note/components/quote-repost-button";
-import RepostButton from "../../components/note/components/repost-button";
+import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useSubject from "../../hooks/use-subject";
+import VideoCard from "./components/video-card";
+import { getEventUID } from "../../helpers/nostr/events";
+import UserName from "../../components/user-name";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+
+function VideoRecommendations({ video }: { video: NostrEvent }) {
+  const readRelays = useReadRelayUrls();
+  const timeline = useTimelineLoader(video.pubkey + "-videos", readRelays, {
+    authors: [video.pubkey],
+    kinds: [FLARE_VIDEO_KIND],
+  });
+  const videos = useSubject(timeline.timeline);
+
+  return (
+    <>
+      {videos.slice(0, 8).map((v) => (
+        <VideoCard key={getEventUID(v)} video={v} />
+      ))}
+    </>
+  );
+}
 
 function VideoDetailsPage({ video }: { video: NostrEvent }) {
   const title = getVideoTitle(video);
   const { thumb, image } = getVideoImages(video);
-  const duration = getVideoDuration(video);
   const summary = getVideoSummary(video);
   const url = getVideoUrl(video);
+
+  const showSideBar = useBreakpointValue({ base: false, xl: true });
 
   return (
     <VerticalPageLayout>
@@ -58,8 +82,22 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
           <Text mt="2" whiteSpace="pre-line">
             {summary}
           </Text>
+          <Flex gap="2" wrap="wrap">
+            {video.tags
+              .filter((t) => t[0] === "t")
+              .map((tag) => (
+                <Tag key={tag[1]}>{tag[1]}</Tag>
+              ))}
+          </Flex>
         </Flex>
-        <Flex gap="2" direction="column" w="sm" flexShrink={0}></Flex>
+        {showSideBar && (
+          <Flex gap="2" direction="column" w="sm" flexShrink={0}>
+            <Heading size="sm">
+              Other videos by <UserName pubkey={video.pubkey} />:
+            </Heading>
+            <VideoRecommendations video={video} />
+          </Flex>
+        )}
       </Flex>
     </VerticalPageLayout>
   );

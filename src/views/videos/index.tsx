@@ -52,7 +52,7 @@ function VideosPage() {
 
 export default function VideosView() {
   return (
-    <PeopleListProvider initList="global">
+    <PeopleListProvider initList="following">
       <RelaySelectionProvider>
         <VideosPage />
       </RelaySelectionProvider>
