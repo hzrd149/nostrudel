@@ -28,6 +28,7 @@ import VideoCard from "./components/video-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import UserName from "../../components/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import SimpleBookmarkButton from "../../components/simple-bookmark-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelayUrls();
@@ -75,6 +76,7 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
             <UserDnsIdentityIcon pubkey={video.pubkey} onlyIcon />
             <UserFollowButton pubkey={video.pubkey} size="sm" />
             <ButtonGroup ml="auto" size="sm" variant="ghost">
+              <SimpleBookmarkButton event={video} aria-label="Bookmark video" title="Bookmark video" />
               <QuoteRepostButton event={video} />
             </ButtonGroup>
             <VideoMenu video={video} aria-label="More options" size="sm" />

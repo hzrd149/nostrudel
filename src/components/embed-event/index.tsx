@@ -38,6 +38,8 @@ import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents
 import EmbeddedTorrent from "./event-types/embedded-torrent";
 import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
 import EmbeddedChannel from "./event-types/embedded-channel";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -82,6 +84,8 @@ export function EmbedEvent({
       return <EmbeddedTorrent torrent={event} {...cardProps} />;
     case TORRENT_COMMENT_KIND:
       return <EmbeddedTorrentComment comment={event} {...cardProps} />;
+    case FLARE_VIDEO_KIND:
+      return <EmbeddedFlareVideo video={event} {...cardProps} />;
     case Kind.ChannelCreation:
       return <EmbeddedChannel channel={event} {...cardProps} />;
   }

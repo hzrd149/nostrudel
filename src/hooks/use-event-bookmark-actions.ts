@@ -73,6 +73,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
+    setLoading(false);
   }, [event, requestSignature, bookmarkList, isBookmarked]);
 
   const toggleBookmark = useCallback(async () => {

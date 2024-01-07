@@ -105,10 +105,10 @@ export function filterTagsByContentRefs(content: string, tags: Tag[], referenced
   return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-function eTagToEventPointer(tag: ETag): EventPointer {
+export function eTagToEventPointer(tag: ETag): EventPointer {
   return { id: tag[1], relays: tag[2] ? [tag[2]] : [] };
 }
-function aTagToAddressPointer(tag: ATag): AddressPointer {
+export function aTagToAddressPointer(tag: ATag): AddressPointer {
   const cord = parseCoordinate(tag[1], true, false);
   if (tag[2]) cord.relays = [tag[2]];
   return cord;
