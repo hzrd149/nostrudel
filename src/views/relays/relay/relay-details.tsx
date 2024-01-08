@@ -1,4 +1,19 @@
-import { Button, Card, Flex, Heading, Text, useColorModeValue, useForceUpdate, useTheme } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  Flex,
+  Heading,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useColorModeValue,
+  useTheme,
+} from "@chakra-ui/react";
 
 import {
   Chart as ChartJS,
@@ -14,17 +29,17 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line, Pie } from "react-chartjs-2";
-import dayjs from "dayjs";
 import _throttle from "lodash.throttle";
 
 import { useAppTitle } from "../../../hooks/use-app-title";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { NostrEvent } from "../../../types/nostr-event";
 import { groupByTime } from "../../../helpers/notification";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
 import NostrRequest from "../../../classes/nostr-request";
 import { sortByDate } from "../../../helpers/nostr/events";
+import { NostrQuery } from "../../../types/nostr-query";
 
 ChartJS.register(
   ArcElement,
@@ -39,16 +54,32 @@ ChartJS.register(
   Tooltip,
 );
 
-function buildPieChartData(events: NostrEvent[]) {
-  const countByKind: Record<number, number> = {};
+function getMinMaxTime(events: NostrEvent[], timeBlock = 60 * 60) {
+  let minDate = Infinity;
+  let maxDate = -Infinity;
 
   for (const event of events) {
-    if (countByKind[event.kind] === undefined) countByKind[event.kind] = 0;
-    countByKind[event.kind]++;
+    if (event.created_at < minDate) minDate = Math.floor(event.created_at / timeBlock) * timeBlock;
+    if (event.created_at > maxDate) maxDate = Math.ceil(event.created_at / timeBlock) * timeBlock;
   }
 
-  const sortedKinds = Object.entries(countByKind)
-    .map(([kind, count]) => ({ kind, count }))
+  return { minDate, maxDate };
+}
+
+function groupByKind(events: NostrEvent[]) {
+  const byKind: Record<number, NostrEvent[]> = {};
+  for (const event of events) {
+    byKind[event.kind] = byKind[event.kind] || [];
+    byKind[event.kind].push(event);
+  }
+  return byKind;
+}
+
+function buildPieChartData(events: NostrEvent[]) {
+  const byKind = groupByKind(events);
+
+  const sortedKinds = Object.entries(byKind)
+    .map(([kind, events]) => ({ kind, count: events.length }))
     .sort((a, b) => b.count - a.count);
 
   const data: ChartData<"pie", number[], string> = {
@@ -58,6 +89,16 @@ function buildPieChartData(events: NostrEvent[]) {
 
   return data;
 }
+function buildTableData(events: NostrEvent[]) {
+  const byKind = groupByKind(events);
+
+  const sortedKinds = Object.entries(byKind)
+    .map(([kind, events]) => ({ kind, count: events.length }))
+    .sort((a, b) => b.count - a.count);
+
+  return sortedKinds;
+}
+
 function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartData<"line", number[], string> {
   let minDate = Infinity;
   let maxDate = -Infinity;
@@ -107,38 +148,77 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const token = theme.semanticTokens.colors["chakra-body-text"];
   const color = useColorModeValue(token._light, token._dark) as string;
 
-  const update = useForceUpdate();
+  const [_, update] = useState<Object>();
   const store = useMemo(() => new EventStore(), []);
 
-  useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const loadMore = useCallback(() => {
+    setLoading(true);
     const request = new NostrRequest([relay]);
     request.onEvent.subscribe(store.addEvent, store);
-    const throttle = _throttle(update, 100);
+    const throttle = _throttle(() => update({}), 100);
     request.onEvent.subscribe(() => throttle());
-    request.start({ limit: 500 });
-  }, [relay, update]);
+    request.onComplete.then(() => setLoading(false));
+
+    const query: NostrQuery = { limit: 500 };
+    const last = store.getLastEvent();
+    if (last) query.until = last.created_at;
+    request.start(query);
+  }, [relay, update, store]);
+
+  useEffect(() => loadMore(), [relay, loadMore]);
 
   const events = Array.from(store.events.values()).sort(sortByDate);
+
+  const pieChartData = buildPieChartData(events);
+  const tableData = buildTableData(events);
 
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
         <Text>Events loaded: {events.length}</Text>
+        <Button size="sm" onClick={loadMore} isLoading={loading}>
+          Load more
+        </Button>
       </Flex>
-      <Flex wrap="wrap" gap="4">
-        <Card p="2" maxW="sm">
+      <Flex wrap="wrap" gap="4" alignItems="flex-start">
+        <Card p="2" w="50%">
           <Heading size="sm">Events by kind</Heading>
           <Pie
-            data={buildPieChartData(events)}
+            data={pieChartData}
             options={{
               color,
+              plugins: { colors: { forceOverride: true } },
             }}
           />
         </Card>
-        <Card p="2" w="full" aspectRatio={16 / 9}>
-          <Heading size="sm">Event kinds over time</Heading>
-          <Line data={buildLineChartData(events)} options={{ color, responsive: true }} />
+        <Card p="2" minW="xs">
+          <TableContainer>
+            <Table size="sm">
+              <Thead>
+                <Tr>
+                  <Th isNumeric>Kind</Th>
+                  <Th isNumeric>Count</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {tableData.map(({ kind, count }) => (
+                  <Tr>
+                    <Td isNumeric>{kind}</Td>
+                    <Td isNumeric>{count}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Card>
+        {/* <Card p="2" w="full" aspectRatio={16 / 9}>
+          <Heading size="sm">Event kinds over time</Heading>
+          <Line
+            data={buildLineChartData(events, 60)}
+            options={{ color, responsive: true, plugins: { colors: { forceOverride: true } } }}
+          />
+        </Card> */}
       </Flex>
     </VerticalPageLayout>
   );
