@@ -80,10 +80,10 @@ import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
 import LaunchpadView from "./views/launchpad";
-import TracksView from "./views/tracks";
 import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
+const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
 
