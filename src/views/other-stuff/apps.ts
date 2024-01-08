@@ -17,6 +17,7 @@ import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
 import Users01 from "../../components/icons/users-01";
 import Film02 from "../../components/icons/film-02";
+import MessageQuestionSquare from "../../components/icons/message-question-square";
 
 export const internalApps: App[] = [
   {
@@ -80,6 +81,13 @@ export const internalTools: App[] = [
     icon: ShieldOff,
     id: "dm-timeline",
     to: "/tools/dm-timeline",
+  },
+  {
+    title: "Unknown Events",
+    description: "A timeline of unknown events",
+    icon: MessageQuestionSquare,
+    id: "unknown",
+    to: "/tools/unknown",
   },
   { title: "WoT Test", description: "Just a test for now", icon: Users01, id: "wot-test", to: "/tools/wot-test" },
 ];

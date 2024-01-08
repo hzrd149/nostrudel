@@ -61,7 +61,9 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
               View Raw
             </Button>
           </Flex>
-          <Box whiteSpace="pre-wrap">{content}</Box>
+          <Box whiteSpace="pre-wrap" noOfLines={5}>
+            {content}
+          </Box>
         </CardBody>
       </Card>
       {debugModal.isOpen && <NoteDebugModal isOpen={debugModal.isOpen} onClose={debugModal.onClose} event={event} />}

@@ -1,6 +1,6 @@
 import { ReactNode, memo, useRef } from "react";
 import { Kind } from "nostr-tools";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, BreadcrumbLink, Text } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
@@ -14,6 +14,8 @@ import { useRegisterIntersectionEntity } from "../../../providers/local/intersec
 import { getEventUID, isReply } from "../../../helpers/nostr/events";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
+import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/flare";
+import EmbeddedFlareVideo from "../../embed-event/event-types/embedded-flare-video";
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -38,6 +40,9 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       break;
     case Kind.BadgeAward:
       content = <BadgeAwardCard award={event} />;
+      break;
+    case FLARE_VIDEO_KIND:
+      content = <EmbeddedFlareVideo video={event} />;
       break;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;
