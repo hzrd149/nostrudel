@@ -19,7 +19,7 @@ import {
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
-import { useKeyPressEvent, useLocalStorage } from "react-use";
+import { useLocalStorage } from "react-use";
 import ZapModal from "../event-zap-modal";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Package from "../icons/package";

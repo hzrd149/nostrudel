@@ -199,7 +199,7 @@ export default class Relay {
       }
     } catch (e) {
       console.log(`Relay: Failed to parse event from ${this.url}`);
-      console.log(event.data);
+      console.log(event.data, e);
     }
   }
 }

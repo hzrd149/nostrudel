@@ -18,7 +18,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import NotificationItem from "./notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
 import { NostrEvent } from "../../types/nostr-event";
-import { groupByDay } from "../../helpers/notification";
+import { groupByTime } from "../../helpers/notification";
 import DayGroup from "./components/day-group";
 import { useThrottle } from "react-use";
 import TimelineLoader from "../../classes/timeline-loader";
@@ -75,7 +75,7 @@ const NotificationsTimeline = memo(
         }),
       [throttledEvents, peoplePubkeys, showReplies, showMentions, showReactions, showReposts, showZaps],
     );
-    const sortedDays = useMemo(() => groupByDay(filteredEvents), [filteredEvents]);
+    const sortedDays = useMemo(() => groupByTime(filteredEvents), [filteredEvents]);
 
     return (
       <>

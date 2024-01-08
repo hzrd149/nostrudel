@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { useParams } from "react-router-dom";
 import {
   Button,
@@ -25,6 +26,7 @@ import PeopleListProvider from "../../../providers/local/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
+const RelayDetailsTab = lazy(() => import("./relay-details"));
 
 function RelayPage({ relay }: { relay: string }) {
   const { info } = useRelayInfo(relay);
@@ -69,6 +71,7 @@ function RelayPage({ relay }: { relay: string }) {
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>
           <Tab>Notes</Tab>
+          <Tab>Details</Tab>
         </TabList>
 
         <TabPanels>
@@ -86,6 +89,9 @@ function RelayPage({ relay }: { relay: string }) {
           </TabPanel>
           <TabPanel py="2" px="0">
             <RelayNotes relay={relay} />
+          </TabPanel>
+          <TabPanel py="2" px="0">
+            <RelayDetailsTab relay={relay} />
           </TabPanel>
         </TabPanels>
       </Tabs>

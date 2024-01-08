@@ -46,7 +46,7 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
   );
 }
 
-export default function FeedsCard({...props}: Omit<CardProps,'children'>) {
+export default function FeedsCard({ ...props }: Omit<CardProps, "children">) {
   const account = useCurrentAccount();
   const contacts = useUserContactList(account?.pubkey);
   const myLists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);

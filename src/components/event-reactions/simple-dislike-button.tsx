@@ -8,7 +8,10 @@ import ReactionGroupButton from "./reaction-group-button";
 import { useAddReaction } from "./common-hooks";
 import { ButtonProps } from "@chakra-ui/react";
 
-export default function SimpleDislikeButton({ event, ...props }: Omit<ButtonProps, "children"> & { event: NostrEvent }) {
+export default function SimpleDislikeButton({
+  event,
+  ...props
+}: Omit<ButtonProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();
   const reactions = useEventReactions(event.id) ?? [];
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);

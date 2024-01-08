@@ -1,14 +1,14 @@
-import dayjs from "dayjs";
-
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { getReferences, sortByDate } from "./nostr/events";
 
-export function groupByDay(events: NostrEvent[]) {
+const DAY_IN_SECONDS = 60 * 60 * 24;
+
+export function groupByTime(events: NostrEvent[], time = DAY_IN_SECONDS) {
   const grouped = new SuperMap<number, NostrEvent[]>(() => []);
   for (const event of events) {
-    const day = dayjs.unix(event.created_at).startOf("day").unix();
-    grouped.get(day).push(event);
+    const slot = Math.floor(event.created_at / time) * time;
+    grouped.get(slot).push(event);
   }
 
   return Array.from(grouped.entries()).sort((a, b) => b[0] - a[0]);
