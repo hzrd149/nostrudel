@@ -10,6 +10,7 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { FormProvider, useForm } from "react-hook-form";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import VersionButton from "../../components/version-button";
+import PostSettings from "./post-settings";
 
 export default function SettingsView() {
   const toast = useToast();
@@ -37,6 +38,7 @@ export default function SettingsView() {
       <FormProvider {...form}>
         <Accordion defaultIndex={[0]} allowMultiple>
           <DisplaySettings />
+          <PostSettings />
           <PerformanceSettings />
           <PrivacySettings />
           <LightningSettings />

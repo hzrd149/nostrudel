@@ -17,6 +17,12 @@ import {
   IconButton,
   FormLabel,
   FormControl,
+  FormHelperText,
+  Link,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -48,6 +54,8 @@ import useCacheForm from "../../hooks/use-cache-form";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
 import { useThrottle } from "react-use";
+import MinePOW from "../mine-pow";
+import useAppSettings from "../../hooks/use-app-settings";
 
 type FormValues = {
   subject: string;
@@ -56,6 +64,7 @@ type FormValues = {
   nsfwReason: string;
   community: string;
   split: EventSplit;
+  difficulty: number;
 };
 
 export type PostModalProps = {
@@ -75,9 +84,11 @@ export default function PostModal({
 }: Omit<ModalProps, "children"> & PostModalProps) {
   const toast = useToast();
   const account = useCurrentAccount()!;
+  const { noteDifficulty } = useAppSettings();
   const { requestSignature } = useSigningContext();
   const additionalRelays = useAdditionalRelayContext();
   const writeRelays = useWriteRelayUrls(additionalRelays);
+  const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
@@ -90,6 +101,7 @@ export default function PostModal({
       nsfwReason: "",
       community: initCommunity,
       split: [] as EventSplit,
+      difficulty: noteDifficulty || 0,
     },
     mode: "all",
   });
@@ -97,6 +109,7 @@ export default function PostModal({
   watch("nsfw");
   watch("nsfwReason");
   watch("split");
+  watch("difficulty");
 
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
@@ -135,14 +148,19 @@ export default function PostModal({
     return updatedDraft;
   }, [getValues, emojis]);
 
-  const submit = handleSubmit(async () => {
+  const publish = async (draft = getDraft()) => {
     try {
-      const signed = await requestSignature(getDraft());
+      const signed = await requestSignature(draft);
       const pub = new NostrPublishAction("Post", writeRelays, signed);
       setPublishAction(pub);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
+  };
+  const submit = handleSubmit(async (values) => {
+    if (values.difficulty > 0) {
+      setMiningTarget(values.difficulty);
+    } else publish();
   });
 
   const canSubmit = getValues().content.length > 0;
@@ -159,6 +177,18 @@ export default function PostModal({
             Close
           </Button>
         </>
+      );
+    }
+
+    if (miningTarget) {
+      return (
+        <MinePOW
+          draft={{ ...getDraft(), pubkey: account.pubkey }}
+          targetPOW={miningTarget}
+          onCancel={() => setMiningTarget(0)}
+          onSkip={publish}
+          onComplete={publish}
+        />
       );
     }
 
@@ -242,6 +272,28 @@ export default function PostModal({
                   <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
                 )}
               </Flex>
+              <FormControl>
+                <FormLabel>POW Difficulty ({getValues().difficulty})</FormLabel>
+                <Slider
+                  aria-label="difficulty"
+                  value={getValues("difficulty")}
+                  onChange={(v) => setValue("difficulty", v)}
+                  min={0}
+                  max={40}
+                  step={1}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <FormHelperText>
+                  The number of leading 0's in the event id. see{" "}
+                  <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
+                    NIP-13
+                  </Link>
+                </FormHelperText>
+              </FormControl>
             </Flex>
             <Flex direction="column" gap="2" flex={1}>
               <ZapSplitCreator

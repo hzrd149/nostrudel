@@ -59,7 +59,7 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
     <VerticalPageLayout>
       <Flex gap="4">
         <Flex direction="column" gap="2" flexGrow={1}>
-          <Box as="video" src={url} w="full" controls poster={image || thumb} />
+          <Box as="video" src={url} w="full" maxH="95vh" controls poster={image || thumb} />
           <Flex gap="2" overflow="hidden">
             <Heading size="md" my="2" isTruncated>
               {title}
