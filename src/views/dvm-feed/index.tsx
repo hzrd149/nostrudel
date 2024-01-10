@@ -1,4 +1,4 @@
-import { SimpleGrid } from "@chakra-ui/react";
+import { Heading, Link, SimpleGrid, Text } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import DVMCard from "./components/dvm-card";
@@ -20,6 +20,13 @@ function DVMFeedHomePage() {
 
   return (
     <VerticalPageLayout>
+      <Heading size="md">DVM Feeds</Heading>
+      <Text>
+        Learn more about data vending machines here:{" "}
+        <Link href="https://www.data-vending-machines.org/" isExternal color="blue.500">
+          https://www.data-vending-machines.org/
+        </Link>
+      </Text>
       <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
         {DMVs.map((appData) => (
           <DVMCard key={appData.id} appData={appData} to={`/dvm/${getEventCoordinate(appData)}`} />
