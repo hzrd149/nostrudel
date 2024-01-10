@@ -1,4 +1,4 @@
-import { Button } from "@getalby/bitcoin-connect-react";
+import { Button as BitcoinConnectButton } from "@getalby/bitcoin-connect-react";
 import {
   Flex,
   FormControl,
@@ -35,7 +35,7 @@ export default function LightningSettings() {
           </h2>
           <AccordionPanel>
             <Flex direction="column" gap="4">
-              {isExpanded && <Button />}
+              {isExpanded && <BitcoinConnectButton />}
               <FormControl>
                 <Flex alignItems="center">
                   <FormLabel htmlFor="autoPayWithWebLN" mb="0">

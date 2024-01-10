@@ -2248,30 +2248,30 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.1.1.tgz#4e9a719d8f6ab3ee860566466c3e788784f7853a"
-  integrity sha512-4RWe+aVOgzGoMuxYvSDrG5i4j0736eZ3tuygggpuVSN7x3jBHiMYLv2v3SGsTQbAwN9yv4jhmM2L9emd6XXwFg==
+"@getalby/bitcoin-connect-react@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.2.0.tgz#0c1416abf6057755a56972a9cb5df5b4d816b672"
+  integrity sha512-8O4BPbpBeXlGAKF1kW4CXTleCupzBW87NUYc64OfXpXPQZXbTQLLXPXNZU+dsvtbYpbEXG3jIJgjcfAVOHuZew==
   dependencies:
-    "@getalby/bitcoin-connect" "^3.1.0"
+    "@getalby/bitcoin-connect" "^3.2.0"
 
-"@getalby/bitcoin-connect@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.1.0.tgz#7546bf200943a665cc8d28dc6cbc3ed9828ff178"
-  integrity sha512-AH/iK1HbKeW0Jl29leQZa9wclGLAPEaCVLgohjfZ2W42mrCxmOXFnXbaYYQyMwhLdXgrt2M6u7yyDY1zWH43pw==
+"@getalby/bitcoin-connect@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.2.0.tgz#9fe12fb847224410ea0389182470de778fa13f35"
+  integrity sha512-0lxqOCJ4JVPZOBYvTUaLVXz5bbXYKoFGXA4+A99VAmywn9pQJkaZ7Q4k2TQcFi+U2r5l1xjX9bnjiMUDpM+NJg==
   dependencies:
     "@getalby/lightning-tools" "^5.0.0"
-    "@getalby/sdk" "^3.0.0"
+    "@getalby/sdk" "^3.2.3"
     "@lightninglabs/lnc-web" "^0.2.8-alpha"
     qrcode-generator "^1.4.4"
-    zustand "^4.4.1"
+    zustand "^4.4.7"
 
 "@getalby/lightning-tools@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.0.tgz#eefe1fc1ecf28582d6c922c9e22dc28bf3af27c6"
   integrity sha512-j3x90CGclpyZTHJRVWvA95jQniu5A+xqvmJNPSkXyzYCdJiFG5oZFWNwC0N+q7Oa8cTvp7wB7FdDqxH+Le0/Nw==
 
-"@getalby/sdk@^3.0.0":
+"@getalby/sdk@^3.2.3":
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/@getalby/sdk/-/sdk-3.2.3.tgz#3031d64e935feea879b969da0a17ee05800fba1d"
   integrity sha512-8eIqg1vEH2CdkNoHsIlL5q2bKLvLR+XiSWK2RQnTAB+Z0CNlVW2jRM8JxxeubHnKBDTiBrBMkPqBIAhQqc8now==
@@ -7197,7 +7197,7 @@ zustand@^3.5.13, zustand@^3.7.1:
   resolved "https://registry.yarnpkg.com/zustand/-/zustand-3.7.2.tgz#7b44c4f4a5bfd7a8296a3957b13e1c346f42514d"
   integrity sha512-PIJDIZKtokhof+9+60cpockVOq05sJzHCriyvaLBmEJixseQ1a5Kdov6fWZfWOu5SK9c+FhH1jU0tntLxRJYMA==
 
-zustand@^4.4.1:
+zustand@^4.4.7:
   version "4.4.7"
   resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.4.7.tgz#355406be6b11ab335f59a66d2cf9815e8f24038c"
   integrity sha512-QFJWJMdlETcI69paJwhSMJz7PPWjVP8Sjhclxmxmxv/RYI7ZOvR5BHX+ktH0we9gTWQMxcne8q1OY8xxz604gw==
