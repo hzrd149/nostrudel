@@ -3,6 +3,12 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
 
+// setup bitcoin connect
+import { onConnected } from "@getalby/bitcoin-connect-react";
+onConnected((provider) => {
+  if (!window.webln) window.webln = provider;
+});
+
 // setup dayjs
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
