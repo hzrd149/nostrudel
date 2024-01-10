@@ -51,6 +51,7 @@ import EventInteractionDetailsModal from "../event-interactions-modal";
 import singleEventService from "../../services/single-event";
 import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { nip19 } from "nostr-tools";
+import POWIcon from "../pow-icon";
 
 function ReplyToE({ pointer }: { pointer: EventPointer }) {
   const event = useSingleEvent(pointer.id, pointer.relays);
@@ -156,6 +157,7 @@ export const Note = React.memo(
                 <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
                 <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
                 <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+                <POWIcon event={event} boxSize={5} />
                 <Flex grow={1} />
                 {showSignatureVerification && <EventVerificationIcon event={event} />}
                 {!hideDrawerButton && (

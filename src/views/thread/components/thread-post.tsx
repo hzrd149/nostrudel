@@ -40,6 +40,7 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
+import POWIcon from "../../../components/pow-icon";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -78,6 +79,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <POWIcon event={post.event} boxSize={5} />
       <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
