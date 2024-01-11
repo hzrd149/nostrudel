@@ -126,7 +126,7 @@ export default function PostSettings() {
               maxW="xs"
             />
             <FormHelperText>
-              <span>Setting this will restrict the width of app on desktop</span>
+              <span>How much Proof of work to mine when writing notes. setting this to 0 will disable it</span>
             </FormHelperText>
           </FormControl>
         </Flex>
