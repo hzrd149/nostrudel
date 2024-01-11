@@ -1,15 +1,16 @@
 import { Card, CardProps, Heading, IconButton, LinkBox, LinkOverlayProps, Text, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, To } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { CodeIcon } from "../../../components/icons";
 import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { DVMAvatarLink } from "./dvm-avatar";
-import { getEventAddressPointer } from "../../../helpers/nostr/events";
+import { getEventAddressPointer, getEventUID } from "../../../helpers/nostr/events";
 import { DVMName } from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 
 export default function DVMCard({
   appData,
@@ -21,9 +22,12 @@ export default function DVMCard({
   const debugModal = useDisclosure();
   const pointer: AddressPointer = useMemo(() => getEventAddressPointer(appData), [appData]);
 
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, getEventUID(appData));
+
   return (
     <>
-      <Card as={LinkBox} display="block" p="4" {...props}>
+      <Card as={LinkBox} display="block" p="4" ref={ref} {...props}>
         <IconButton
           onClick={debugModal.onOpen}
           icon={<CodeIcon />}

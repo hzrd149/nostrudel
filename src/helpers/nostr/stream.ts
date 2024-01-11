@@ -41,7 +41,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
   const goal = stream.tags.find((t) => t[0] === "goal")?.[1];
   const identifier = stream.tags.find((t) => t[0] === "d")?.[1];
 
-  if (!identifier) throw new Error("missing identifier");
+  if (!identifier) throw new Error("Missing Identifier");
 
   let relays = stream.tags.find((t) => t[0] === "relays");
   // remove the first "relays" element

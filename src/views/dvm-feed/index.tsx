@@ -8,6 +8,8 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { getEventCoordinate } from "../../helpers/nostr/events";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function DVMFeedHomePage() {
   const readRelays = useReadRelayUrls();
@@ -18,6 +20,8 @@ function DVMFeedHomePage() {
 
   const DMVs = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "web"));
 
+  const callback = useTimelineCurserIntersectionCallback(timeline);
+
   return (
     <VerticalPageLayout>
       <Heading size="md">DVM Feeds</Heading>
@@ -27,11 +31,13 @@ function DVMFeedHomePage() {
           https://www.data-vending-machines.org/
         </Link>
       </Text>
-      <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
-        {DMVs.map((appData) => (
-          <DVMCard key={appData.id} appData={appData} to={`/dvm/${getEventCoordinate(appData)}`} />
-        ))}
-      </SimpleGrid>
+      <IntersectionObserverProvider callback={callback}>
+        <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
+          {DMVs.map((appData) => (
+            <DVMCard key={appData.id} appData={appData} to={`/dvm/${getEventCoordinate(appData)}`} />
+          ))}
+        </SimpleGrid>
+      </IntersectionObserverProvider>
     </VerticalPageLayout>
   );
 }

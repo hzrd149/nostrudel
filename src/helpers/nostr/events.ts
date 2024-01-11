@@ -244,7 +244,7 @@ export function parseCoordinate(a: string, requireD = false, silent = true): Cus
     if (silent) return null;
     else throw new Error("Missing pubkey");
   }
-  if (requireD && !d) {
+  if (requireD && d === undefined) {
     if (silent) return null;
     else throw new Error("Missing identifier");
   }
