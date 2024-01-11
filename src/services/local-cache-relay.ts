@@ -3,9 +3,21 @@ import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "./relay-pool";
 import _throttle from "lodash.throttle";
 
-const enabled = !!window.CACHE_RELAY_ENABLED;
-const url = new URL("/cache-relay", location.href);
+const params = new URLSearchParams(location.search);
+
+const paramRelay = params.get("cacheRelay");
+// save the cache relay to localStorage
+if (paramRelay) {
+  localStorage.setItem("cacheRelay", paramRelay);
+  params.delete("cacheRelay");
+  if (params.size === 0) location.search = params.toString();
+}
+
+const storedCacheRelayURL = localStorage.getItem("cacheRelay");
+const url = (storedCacheRelayURL && new URL(storedCacheRelayURL)) || new URL("/cache-relay", location.href);
 url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+
+export const CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("cacheRelay");
 export const LOCAL_CACHE_RELAY = url.toString();
 
 const wroteEvents = new Set<string>();
@@ -28,14 +40,14 @@ function report() {
 }
 
 function addToQueue(e: NostrEvent) {
-  if (!enabled) return;
+  if (!CACHE_RELAY_ENABLED) return;
   if (!wroteEvents.has(e.id)) {
     wroteEvents.add(e.id);
     writeQueue.push(e);
   }
 }
 
-if (enabled) {
+if (CACHE_RELAY_ENABLED) {
   log("Enabled");
   relayPoolService.onRelayCreated.subscribe((relay) => {
     if (relay.url !== LOCAL_CACHE_RELAY) {
@@ -45,15 +57,15 @@ if (enabled) {
 }
 
 const localCacheRelayService = {
-  enabled,
+  enabled: CACHE_RELAY_ENABLED,
   addToQueue,
 };
 
 setInterval(() => {
-  if (enabled) flush();
+  if (CACHE_RELAY_ENABLED) flush();
 }, 1000);
 setInterval(() => {
-  if (enabled) report();
+  if (CACHE_RELAY_ENABLED) report();
 }, 1000 * 10);
 
 if (import.meta.env.DEV) {
