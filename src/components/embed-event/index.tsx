@@ -1,7 +1,7 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
-import { CardProps } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
+import { CardProps, Spinner } from "@chakra-ui/react";
+import { kinds, nip19 } from "nostr-tools";
 
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -51,46 +51,50 @@ export function EmbedEvent({
   goalProps,
   ...cardProps
 }: Omit<CardProps, "children"> & { event: NostrEvent } & EmbedProps) {
-  switch (event.kind) {
-    case Kind.Text:
-      return <EmbeddedNote event={event} {...cardProps} />;
-    case Kind.Reaction:
-      return <EmbeddedReaction event={event} {...cardProps} />;
-    case Kind.EncryptedDirectMessage:
-      return <EmbeddedDM dm={event} {...cardProps} />;
-    case STREAM_KIND:
-      return <EmbeddedStream event={event} {...cardProps} />;
-    case GOAL_KIND:
-      return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
-    case EMOJI_PACK_KIND:
-      return <EmbeddedEmojiPack pack={event} {...cardProps} />;
-    case PEOPLE_LIST_KIND:
-    case NOTE_LIST_KIND:
-    case BOOKMARK_LIST_KIND:
-    case COMMUNITIES_LIST_KIND:
-    case CHANNELS_LIST_KIND:
-      return <EmbeddedList list={event} {...cardProps} />;
-    case Kind.Article:
-      return <EmbeddedArticle article={event} {...cardProps} />;
-    case Kind.BadgeDefinition:
-      return <EmbeddedBadge badge={event} {...cardProps} />;
-    case STREAM_CHAT_MESSAGE_KIND:
-      return <EmbeddedStreamMessage message={event} {...cardProps} />;
-    case COMMUNITY_DEFINITION_KIND:
-      return <EmbeddedCommunity community={event} {...cardProps} />;
-    case STEMSTR_TRACK_KIND:
-      return <EmbeddedStemstrTrack track={event} {...cardProps} />;
-    case TORRENT_KIND:
-      return <EmbeddedTorrent torrent={event} {...cardProps} />;
-    case TORRENT_COMMENT_KIND:
-      return <EmbeddedTorrentComment comment={event} {...cardProps} />;
-    case FLARE_VIDEO_KIND:
-      return <EmbeddedFlareVideo video={event} {...cardProps} />;
-    case Kind.ChannelCreation:
-      return <EmbeddedChannel channel={event} {...cardProps} />;
-  }
+  const renderContent = () => {
+    switch (event.kind) {
+      case kinds.ShortTextNote:
+        return <EmbeddedNote event={event} {...cardProps} />;
+      case kinds.Reaction:
+        return <EmbeddedReaction event={event} {...cardProps} />;
+      case kinds.EncryptedDirectMessage:
+        return <EmbeddedDM dm={event} {...cardProps} />;
+      case STREAM_KIND:
+        return <EmbeddedStream event={event} {...cardProps} />;
+      case GOAL_KIND:
+        return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
+      case EMOJI_PACK_KIND:
+        return <EmbeddedEmojiPack pack={event} {...cardProps} />;
+      case PEOPLE_LIST_KIND:
+      case NOTE_LIST_KIND:
+      case BOOKMARK_LIST_KIND:
+      case COMMUNITIES_LIST_KIND:
+      case CHANNELS_LIST_KIND:
+        return <EmbeddedList list={event} {...cardProps} />;
+      case kinds.LongFormArticle:
+        return <EmbeddedArticle article={event} {...cardProps} />;
+      case kinds.BadgeDefinition:
+        return <EmbeddedBadge badge={event} {...cardProps} />;
+      case STREAM_CHAT_MESSAGE_KIND:
+        return <EmbeddedStreamMessage message={event} {...cardProps} />;
+      case COMMUNITY_DEFINITION_KIND:
+        return <EmbeddedCommunity community={event} {...cardProps} />;
+      case STEMSTR_TRACK_KIND:
+        return <EmbeddedStemstrTrack track={event} {...cardProps} />;
+      case TORRENT_KIND:
+        return <EmbeddedTorrent torrent={event} {...cardProps} />;
+      case TORRENT_COMMENT_KIND:
+        return <EmbeddedTorrentComment comment={event} {...cardProps} />;
+      case FLARE_VIDEO_KIND:
+        return <EmbeddedFlareVideo video={event} {...cardProps} />;
+      case kinds.ChannelCreation:
+        return <EmbeddedChannel channel={event} {...cardProps} />;
+    }
 
-  return <EmbeddedUnknown event={event} {...cardProps} />;
+    return <EmbeddedUnknown event={event} {...cardProps} />;
+  };
+
+  return <Suspense fallback={<Spinner />}>{renderContent()}</Suspense>;
 }
 
 export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {

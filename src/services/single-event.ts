@@ -1,11 +1,13 @@
 import _throttle from "lodash.throttle";
+import { SimpleSubscription } from "nostr-idb";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import localCacheRelayService, { LOCAL_CACHE_RELAY, localCacheRelay } from "./local-cache-relay";
+import { addEventToCache } from "./db/cache";
 
 const RELAY_REQUEST_BATCH_TIME = 1000;
 
@@ -27,11 +29,18 @@ class SingleEventService {
 
   handleEvent(event: NostrEvent) {
     this.cache.get(event.id).next(event);
+    addEventToCache(event);
   }
 
   private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
   batchRequests() {
     if (this.pending.size === 0) return;
+
+    // load events from local cache relay
+    const sub: SimpleSubscription = localCacheRelay.subscribe([{ ids: Array.from(this.pending.keys()) }], {
+      onevent: (e) => this.handleEvent(e),
+      oneose: () => sub.close(),
+    });
 
     const idsFromRelays: Record<string, string[]> = {};
     for (const [id, relays] of this.pending) {

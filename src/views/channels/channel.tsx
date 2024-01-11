@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -61,7 +61,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     `${channel.id}-chat-messages`,
     relays,
     {
-      kinds: [Kind.ChannelMessage],
+      kinds: [kinds.ChannelMessage],
       "#e": [channel.id],
     },
     { eventFilter },

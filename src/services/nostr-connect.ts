@@ -1,4 +1,4 @@
-import { finishEvent, generatePrivateKey, getPublicKey, nip04, nip19 } from "nostr-tools";
+import { finalizeEvent, generateSecretKey, getPublicKey, nip04, nip19 } from "nostr-tools";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
@@ -10,6 +10,7 @@ import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
 import { truncatedId } from "../helpers/nostr/events";
 import { NostrConnectAccount } from "./account";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 export enum NostrConnectMethod {
   Connect = "connect",
@@ -60,8 +61,8 @@ export class NostrConnectClient {
     this.pubkey = pubkey;
     this.relays = relays;
 
-    this.secretKey = secretKey || generatePrivateKey();
-    this.publicKey = getPublicKey(this.secretKey);
+    this.secretKey = secretKey || bytesToHex(generateSecretKey());
+    this.publicKey = getPublicKey(hexToBytes(this.secretKey));
 
     this.sub.onEvent.subscribe(this.handleEvent, this);
     this.sub.setQueryMap(createSimpleQueryMap(this.relays, { kinds: [24133], "#p": [this.publicKey] }));
@@ -99,14 +100,14 @@ export class NostrConnectClient {
   }
 
   private createEvent(content: string) {
-    return finishEvent(
+    return finalizeEvent(
       {
         kind: 24133,
         created_at: dayjs().unix(),
         tags: [["p", this.pubkey]],
         content,
       },
-      this.secretKey,
+      hexToBytes(this.secretKey),
     );
   }
   private async makeRequest<T extends NostrConnectMethod>(

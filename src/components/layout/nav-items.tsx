@@ -49,6 +49,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
+  else if (location.pathname.startsWith("/r/")) active = "relays";
   else if (location.pathname.startsWith("/lists")) active = "lists";
   else if (location.pathname.startsWith("/communities")) active = "communities";
   else if (location.pathname.startsWith("/channels")) active = "channels";

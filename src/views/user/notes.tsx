@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { isReply, isRepost, truncatedId } from "../../helpers/nostr/events";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
@@ -35,7 +35,7 @@ export default function UserNotesTab() {
     readRelays,
     {
       authors: [pubkey],
-      kinds: [Kind.Text, Kind.Repost, Kind.Article, STREAM_KIND, 2],
+      kinds: [kinds.ShortTextNote, kinds.Repost, kinds.LongFormArticle, STREAM_KIND, 2],
     },
     { eventFilter },
   );

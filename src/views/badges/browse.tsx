@@ -1,5 +1,5 @@
 import { Flex, SimpleGrid } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -19,7 +19,7 @@ function BadgesBrowsePage() {
   const timeline = useTimelineLoader(
     `${listId}-badges`,
     readRelays,
-    filter ? { ...filter, kinds: [Kind.BadgeDefinition] } : undefined,
+    filter ? { ...filter, kinds: [kinds.BadgeDefinition] } : undefined,
   );
 
   const lists = useSubject(timeline.timeline);

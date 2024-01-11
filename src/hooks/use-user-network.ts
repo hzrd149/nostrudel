@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserContactList from "./use-user-contact-list";
@@ -34,7 +34,7 @@ export default function useUserNetwork(pubkey: string, additionalRelays: string[
 
   const subjects = useMemo(() => {
     return contactsPubkeys.map((person) =>
-      replaceableEventLoaderService.requestEvent(readRelays, Kind.Contacts, person.pubkey),
+      replaceableEventLoaderService.requestEvent(readRelays, kinds.Contacts, person.pubkey),
     );
   }, [contactsPubkeys, readRelays.join("|")]);
 

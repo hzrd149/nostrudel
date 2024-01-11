@@ -1,4 +1,4 @@
-import { validateEvent } from "nostr-tools";
+import { kinds, validateEvent } from "nostr-tools";
 import { NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
 import { getMatchLink, getMatchNostrLink } from "../regexp";
 import { ReactionGroup } from "./reactions";
@@ -6,8 +6,8 @@ import { parseCoordinate } from "./events";
 
 /** @deprecated */
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
-export const COMMUNITY_DEFINITION_KIND = 34550;
-export const COMMUNITY_APPROVAL_KIND = 4550;
+export const COMMUNITY_DEFINITION_KIND = kinds.CommunityDefinition;
+export const COMMUNITY_APPROVAL_KIND = kinds.CommunityPostApproval;
 
 export function getCommunityName(community: NostrEvent) {
   const name = community.tags.find(isDTag)?.[1];

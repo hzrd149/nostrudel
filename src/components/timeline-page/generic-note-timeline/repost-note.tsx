@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Flex, Heading, Link, SkeletonText, Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { isETag, NostrEvent } from "../../../types/nostr-event";
@@ -60,7 +60,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
         </Flex>
         {!note ? (
           <SkeletonText />
-        ) : note.kind === Kind.Text ? (
+        ) : note.kind === kinds.ShortTextNote ? (
           // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
           <Note event={note} showReplyButton registerIntersectionEntity={false} />
         ) : (

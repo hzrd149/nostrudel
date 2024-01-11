@@ -15,13 +15,15 @@ import {
   InputRightElement,
   Link,
 } from "@chakra-ui/react";
+import { generateSecretKey, getPublicKey, nip19 } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
+
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { isHex, normalizeToHexPubkey, safeDecode } from "../../helpers/nip19";
+import { isHex, safeDecode } from "../../helpers/nip19";
 import accountService from "../../services/account";
-import { generatePrivateKey, getPublicKey, nip19 } from "nostr-tools";
 import signingService from "../../services/signing";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 export default function LoginNsecView() {
   const navigate = useNavigate();
@@ -36,9 +38,9 @@ export default function LoginNsecView() {
   const [npub, setNpub] = useState("");
 
   const generateNewKey = useCallback(() => {
-    const hex = generatePrivateKey();
+    const hex = generateSecretKey();
     const pubkey = getPublicKey(hex);
-    setHexKey(hex);
+    setHexKey(bytesToHex(hex));
     setInputValue(nip19.nsecEncode(hex));
     setNpub(nip19.npubEncode(pubkey));
     setShow(true);
@@ -53,11 +55,11 @@ export default function LoginNsecView() {
         if (isHex(e.target.value)) hex = e.target.value;
         else {
           const decode = safeDecode(e.target.value);
-          if (decode && decode.type === "nsec") hex = decode.data;
+          if (decode && decode.type === "nsec") hex = bytesToHex(decode.data);
         }
 
         if (hex) {
-          const pubkey = getPublicKey(hex);
+          const pubkey = getPublicKey(hexToBytes(hex));
           setHexKey(hex);
           setNpub(nip19.npubEncode(pubkey));
           setError(false);
@@ -75,7 +77,7 @@ export default function LoginNsecView() {
     e.preventDefault();
 
     if (!hexKey) return;
-    const pubkey = getPublicKey(hexKey);
+    const pubkey = getPublicKey(hexToBytes(hexKey));
 
     const encrypted = await signingService.encryptSecKey(hexKey);
     accountService.addAccount({ type: "local", pubkey, relays: [relayUrl], ...encrypted, readonly: false });

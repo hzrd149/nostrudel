@@ -13,7 +13,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import type { AddressPointer } from "nostr-tools/lib/types/nip19";
 
@@ -34,7 +34,7 @@ function buildRepost(event: NostrEvent): DraftNostrEvent {
   tags.push(["e", event.id, hint ?? ""]);
 
   return {
-    kind: Kind.Repost,
+    kind: kinds.Repost,
     tags,
     content: JSON.stringify(event),
     created_at: dayjs().unix(),

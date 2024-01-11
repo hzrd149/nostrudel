@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Text } from "@chakra-ui/react";
 import { useAsync } from "react-use";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { parseKind0Event } from "../../helpers/user-metadata";
@@ -13,7 +14,6 @@ import UserLink from "../../components/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { Kind } from "nostr-tools";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -57,7 +57,7 @@ export default function ProfileSearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-profile-search`,
     searchRelays,
-    search ? { search: search, kinds: [Kind.Metadata], ...filter } : undefined,
+    search ? { search: search, kinds: [kinds.Metadata], ...filter } : undefined,
   );
 
   const profiles = useSubject(timeline?.timeline) ?? [];

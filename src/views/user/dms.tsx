@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -69,9 +69,9 @@ export default function UserDMsTab() {
   const timeline = useTimelineLoader(pubkey + "-articles", readRelays, [
     {
       authors: [pubkey],
-      kinds: [Kind.EncryptedDirectMessage],
+      kinds: [kinds.EncryptedDirectMessage],
     },
-    { "#p": [pubkey], kinds: [Kind.EncryptedDirectMessage] },
+    { "#p": [pubkey], kinds: [kinds.EncryptedDirectMessage] },
   ]);
 
   const dms = useSubject(timeline.timeline);

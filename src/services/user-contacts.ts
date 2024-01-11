@@ -1,3 +1,5 @@
+import { kinds } from "nostr-tools";
+
 import { isPTag, NostrEvent } from "../types/nostr-event";
 import { safeJson } from "../helpers/parse";
 import SuperMap from "../classes/super-map";
@@ -5,7 +7,6 @@ import Subject from "../classes/subject";
 import { RelayConfig, RelayMode } from "../classes/relay";
 import { normalizeRelayConfigs } from "../helpers/relay";
 import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
-import { Kind } from "nostr-tools";
 
 export type UserContacts = {
   pubkey: string;
@@ -58,7 +59,7 @@ class UserContactsService {
   requestContacts(pubkey: string, relays: string[], opts?: RequestOptions) {
     const sub = this.subjects.get(pubkey);
 
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.Contacts, pubkey, undefined, opts);
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
 
     sub.connectWithHandler(requestSub, (event, next) => next(parseContacts(event)));
 

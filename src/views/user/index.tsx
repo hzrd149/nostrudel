@@ -25,12 +25,11 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
-import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -98,7 +97,7 @@ const UserView = () => {
     "wss://relay.stemstr.app",
     ...readRelays,
   ]);
-  const hasArticles = useEventExists({ kinds: [Kind.Article], authors: [pubkey] }, readRelays);
+  const hasArticles = useEventExists({ kinds: [kinds.LongFormArticle], authors: [pubkey] }, readRelays);
   const hasStreams = useEventExists({ kinds: [STREAM_KIND], authors: [pubkey] }, [
     "wss://relay.snort.social",
     "wss://nos.lol",

@@ -9,11 +9,10 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
-import { getEventRelays } from "../../services/event-relays";
 import { getZapSplits } from "../../helpers/nostr/zaps";
 import { unique } from "../../helpers/array";
 import { RelayMode } from "../../classes/relay";
@@ -76,7 +75,7 @@ async function getPayRequestForPubkey(
 
   // create zap request
   const zapRequest: DraftNostrEvent = {
-    kind: Kind.ZapRequest,
+    kind: kinds.ZapRequest,
     created_at: dayjs().unix(),
     content: comment ?? "",
     tags: [

@@ -1,6 +1,6 @@
 import { ReactNode, forwardRef, memo, useMemo, useRef } from "react";
 import { AvatarGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
-import { Kind, nip18, nip25 } from "nostr-tools";
+import { kinds, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
@@ -86,7 +86,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
   if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 
   const reactedEvent = useSingleEvent(pointer.id, pointer.relays);
-  if (reactedEvent?.kind === Kind.EncryptedDirectMessage) return null;
+  if (reactedEvent?.kind === kinds.EncryptedDirectMessage) return null;
 
   return (
     <NotificationIconEntry ref={ref} icon={<Heart boxSize={8} color="red.400" />}>
@@ -156,18 +156,18 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
 
   let content: ReactNode | null = null;
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
     case TORRENT_COMMENT_KIND:
-    case Kind.Article:
+    case kinds.LongFormArticle:
       content = <NoteNotification event={event} ref={ref} />;
       break;
-    case Kind.Reaction:
+    case kinds.Reaction:
       content = <ReactionNotification event={event} ref={ref} />;
       break;
-    case Kind.Repost:
+    case kinds.Repost:
       content = <RepostNotification event={event} ref={ref} />;
       break;
-    case Kind.Zap:
+    case kinds.Zap:
       content = <ZapNotification event={event} ref={ref} />;
       break;
     default:

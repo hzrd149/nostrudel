@@ -1,4 +1,4 @@
-import { Kind, nip19, validateEvent } from "nostr-tools";
+import { kinds, validateEvent } from "nostr-tools";
 
 import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { RelayConfig, RelayMode } from "../../classes/relay";
@@ -12,9 +12,8 @@ export function truncatedId(str: string, keep = 6) {
   return str.substring(0, keep) + "..." + str.substring(str.length - keep);
 }
 
-// based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
 export function isReplaceable(kind: number) {
-  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || kind === 41 || (kind >= 10000 && kind < 20000);
+  return kinds.isReplaceableKind(kind) || kinds.isParameterizedReplaceableKind(kind);
 }
 
 export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
@@ -42,7 +41,7 @@ export function getEventUID(event: NostrEvent) {
 }
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === Kind.Repost) return false;
+  if (event.kind === kinds.Repost) return false;
   // TODO: update this to only look for a "root" or "reply" tag
   return !!getReferences(event).reply;
 }
@@ -51,7 +50,7 @@ export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === Kind.Repost) return true;
+  if (event.kind === kinds.Repost) return true;
 
   const match = event.content.match(getMatchNostrLink());
   return match && match[0].length === event.content.length;

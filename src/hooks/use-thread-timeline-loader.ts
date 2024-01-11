@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useSubject from "./use-subject";
 import useSingleEvent from "./use-single-event";
@@ -12,7 +12,7 @@ import { unique } from "../helpers/array";
 export default function useThreadTimelineLoader(
   focusedEvent: NostrEvent | undefined,
   relays: string[],
-  kind: number = Kind.Text,
+  kind: number = kinds.ShortTextNote,
 ) {
   const refs = focusedEvent && getReferences(focusedEvent);
   const rootId = refs?.root?.e?.id || focusedEvent?.id;

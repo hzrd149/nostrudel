@@ -167,7 +167,9 @@ class ReplaceableEventLoaderService {
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      if (saveToCache) this.saveToCache(cord, event);
+      if (saveToCache) {
+        this.saveToCache(cord, event);
+      }
     }
   }
 

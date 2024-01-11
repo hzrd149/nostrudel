@@ -13,7 +13,7 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
@@ -48,7 +48,7 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
-  const articles = coordinates.filter((cord) => cord.kind === Kind.Article);
+  const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);
   const references = getReferencesFromList(list);
 
   return (

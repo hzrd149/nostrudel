@@ -20,7 +20,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Event, Kind } from "nostr-tools";
+import { Event, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -80,7 +80,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       }
 
       const draft = {
-        kind: Kind.EventDeletion,
+        kind: kinds.EventDeletion,
         tags,
         content: reason,
         created_at: dayjs().unix(),

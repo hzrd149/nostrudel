@@ -1,3 +1,5 @@
+import { CacheRelay, openDB } from "nostr-idb";
+import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "./relay-pool";
@@ -19,6 +21,15 @@ url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
 
 export const CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("cacheRelay");
 export const LOCAL_CACHE_RELAY = url.toString();
+
+export const localCacheDatabase = await openDB();
+export const localCacheRelay = CACHE_RELAY_ENABLED ? new Relay(LOCAL_CACHE_RELAY) : new CacheRelay(localCacheDatabase);
+
+await localCacheRelay.connect();
+
+setInterval(() => {
+  if (!localCacheRelay.connected) localCacheRelay.connect();
+}, 1000 * 5);
 
 const wroteEvents = new Set<string>();
 const writeQueue: NostrEvent[] = [];

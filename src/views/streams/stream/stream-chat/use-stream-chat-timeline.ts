@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { getEventUID } from "../../../../helpers/nostr/events";
 import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../helpers/nostr/stream";
@@ -30,14 +30,14 @@ export default function useStreamChatTimeline(stream: ParsedStream) {
   const query = useMemo(() => {
     const streamQuery: NostrQuery = {
       "#a": [getATag(stream)],
-      kinds: [STREAM_CHAT_MESSAGE_KIND, Kind.Zap],
+      kinds: [STREAM_CHAT_MESSAGE_KIND, kinds.Zap],
     };
 
     if (goal) {
       return [
         streamQuery,
         // also get zaps to goal
-        { "#e": [goal.id], kinds: [Kind.Zap] },
+        { "#e": [goal.id], kinds: [kinds.Zap] },
       ];
     }
     return streamQuery;

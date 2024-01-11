@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { NostrEvent } from "../../../types/nostr-event";
@@ -34,7 +34,7 @@ export type ReplyFormProps = {
   onSubmitted?: (event: NostrEvent) => void;
 };
 
-export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = Kind.Text }: ReplyFormProps) {
+export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const toast = useToast();
   const account = useCurrentAccount();
   const emojis = useContextEmojis();

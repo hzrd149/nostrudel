@@ -1,5 +1,5 @@
 import db from "./db";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import { NostrEvent } from "../types/nostr-event";
@@ -26,7 +26,7 @@ class UserMetadataService {
   }
   requestMetadata(pubkey: string, relays: string[], opts: RequestOptions = {}) {
     const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.Metadata, pubkey, undefined, opts);
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;
   }

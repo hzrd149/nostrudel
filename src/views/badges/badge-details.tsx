@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import {
   Button,
   Flex,
@@ -89,7 +89,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const coordinate = getEventCoordinate(badge);
   const awardsTimeline = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
-    kinds: [Kind.BadgeAward],
+    kinds: [kinds.BadgeAward],
   });
 
   if (!badge) return <Spinner />;

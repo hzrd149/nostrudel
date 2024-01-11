@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { NoteLink } from "../../components/note-link";
 import UserLink from "../../components/user-link";
@@ -55,11 +55,11 @@ export default function UserReportsTab() {
   const timeline = useTimelineLoader(`${pubkey}-reports`, contextRelays, [
     {
       authors: [pubkey],
-      kinds: [Kind.Report],
+      kinds: [kinds.Report],
     },
     {
       "#p": [pubkey],
-      kinds: [Kind.Report],
+      kinds: [kinds.Report],
     },
   ]);
 

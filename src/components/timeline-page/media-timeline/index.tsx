@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
 import TimelineLoader from "../../../classes/timeline-loader";
@@ -45,7 +45,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: PhotoWithEvent[] = [];
 
     for (const event of events) {
-      if (event.kind === Kind.Repost) continue;
+      if (event.kind === kinds.Repost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;

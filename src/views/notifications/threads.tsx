@@ -1,5 +1,5 @@
 import { MouseEventHandler, useCallback, useMemo, useRef } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -29,7 +29,7 @@ import IntersectionObserverProvider, {
 import { getEventUID } from "../../helpers/nostr/events";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 
-const THREAD_KINDS = [Kind.Text, TORRENT_COMMENT_KIND];
+const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
   const navigate = useNavigateInDrawer();

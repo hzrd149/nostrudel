@@ -1,7 +1,8 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { generatePrivateKey, getPublicKey } from "nostr-tools";
+import { generateSecretKey, getPublicKey } from "nostr-tools";
+import { bytesToHex } from "@noble/hashes/utils";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -32,8 +33,8 @@ function Warning() {
   const createAnonAccount = async () => {
     setLoading(true);
     try {
-      const secKey = generatePrivateKey();
-      const encrypted = await signingService.encryptSecKey(secKey);
+      const secKey = generateSecretKey();
+      const encrypted = await signingService.encryptSecKey(bytesToHex(secKey));
       const pubkey = getPublicKey(secKey);
       accountService.addAccount({ type: "local", ...encrypted, pubkey, readonly: false });
       accountService.switchAccount(pubkey);

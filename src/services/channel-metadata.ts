@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
@@ -105,7 +105,7 @@ class ChannelMetadataRelayLoader {
     if (needsUpdate) {
       if (this.requested.size > 0) {
         const query: NostrQuery = {
-          kinds: [Kind.ChannelMetadata],
+          kinds: [kinds.ChannelMetadata],
           "#e": Array.from(this.requested.keys()),
         };
 

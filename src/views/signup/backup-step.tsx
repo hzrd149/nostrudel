@@ -15,6 +15,7 @@ import { containerProps } from "./common";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import styled from "@emotion/styled";
 import { useState } from "react";
+import { hexToBytes } from "@noble/hashes/utils";
 
 const Blockquote = styled.figure`
   padding: var(--chakra-sizes-2) var(--chakra-sizes-4);
@@ -48,7 +49,7 @@ const Blockquote = styled.figure`
 `;
 
 export default function BackupStep({ secretKey, onConfirm }: { secretKey: string; onConfirm: () => void }) {
-  const nsec = nip19.nsecEncode(secretKey);
+  const nsec = nip19.nsecEncode(hexToBytes(secretKey));
 
   const [confirmed, setConfirmed] = useState(false);
   const [last4, setLast4] = useState("");

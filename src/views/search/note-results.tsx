@@ -1,4 +1,4 @@
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -14,7 +14,7 @@ export default function NoteSearchResults({ search }: { search: string }) {
   const timeline = useTimelineLoader(
     `${listId ?? "global"}-${search}-note-search`,
     searchRelays,
-    search ? { search: search, kinds: [Kind.Text], ...filter } : undefined,
+    search ? { search: search, kinds: [kinds.ShortTextNote], ...filter } : undefined,
   );
 
   const callback = useTimelineCurserIntersectionCallback(timeline);

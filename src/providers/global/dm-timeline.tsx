@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -7,7 +7,6 @@ import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 
 type DMTimelineContextType = {
   timeline?: TimelineLoader;
@@ -40,8 +39,8 @@ export default function DMTimelineProvider({ children }: PropsWithChildren) {
     inbox,
     account?.pubkey
       ? [
-          { authors: [account.pubkey], kinds: [Kind.EncryptedDirectMessage] },
-          { "#p": [account.pubkey], kinds: [Kind.EncryptedDirectMessage] },
+          { authors: [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
+          { "#p": [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
         ]
       : undefined,
     { eventFilter },
