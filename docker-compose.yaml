@@ -6,6 +6,8 @@ volumes:
 services:
   relay:
     image: scsibug/nostr-rs-relay:0.8.13
+    ports:
+      - 5000:8080
     volumes:
       - data:/usr/src/app/db
   app:

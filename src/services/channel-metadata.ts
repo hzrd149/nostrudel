@@ -12,7 +12,7 @@ import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
 import { getChannelPointer } from "../helpers/nostr/channel";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -231,7 +231,7 @@ class ChannelMetadataService {
     const sub = this.metadata.get(channelId);
 
     const relayUrls = Array.from(relays);
-    if (localCacheRelayService.enabled) {
+    if (LOCAL_CACHE_RELAY_ENABLED) {
       relayUrls.unshift(LOCAL_CACHE_RELAY);
     }
     for (const relay of relayUrls) {

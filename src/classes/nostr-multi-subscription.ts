@@ -1,15 +1,11 @@
 import { nanoid } from "nanoid";
-import stringify from "json-stringify-deterministic";
 
 import { Subject } from "./subject";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingRequest, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
 import Relay, { IncomingEvent } from "./relay";
 import relayPoolService from "../services/relay-pool";
-
-function isFilterEqual(a: NostrRequestFilter, b: NostrRequestFilter) {
-  return stringify(a) === stringify(b);
-}
+import { isFilterEqual } from "../helpers/nostr/filter";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
