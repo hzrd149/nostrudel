@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 import {
   Group,
   Mesh,
@@ -29,7 +30,6 @@ import RelaySelectionButton from "../../components/relay-selection/relay-selecti
 import { useDebounce } from "react-use";
 import useSubject from "../../hooks/use-subject";
 import { ChevronLeftIcon } from "../../components/icons";
-import { useNavigate } from "react-router-dom";
 
 type NodeType = { id: string; image?: string; name?: string };
 
@@ -57,7 +57,7 @@ function NetworkDMGraphPage() {
       request.onEvent.subscribe(store.addEvent, store);
       request.start({
         authors: contactsPubkeys,
-        kinds: [Kind.EncryptedDirectMessage],
+        kinds: [kinds.EncryptedDirectMessage],
         since,
         until,
       });

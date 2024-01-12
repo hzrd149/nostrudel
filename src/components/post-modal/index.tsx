@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
@@ -124,7 +124,7 @@ export default function PostModal({
 
     let updatedDraft = finalizeNote({
       content: content,
-      kind: Kind.Text,
+      kind: kinds.ShortTextNote,
       tags: [],
       created_at: dayjs().unix(),
     });

@@ -2,7 +2,6 @@ import { getPublicKey, nip19 } from "nostr-tools";
 
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
 import { isReplaceable } from "./nostr/events";
-import { DecodeResult } from "nostr-tools/lib/types/nip19";
 import relayHintService from "../services/event-relay-hint";
 
 export function isHex(str?: string) {
@@ -52,7 +51,7 @@ export function getSharableEventAddress(event: NostrEvent) {
   }
 }
 
-export function encodePointer(pointer: DecodeResult) {
+export function encodePointer(pointer: nip19.DecodeResult) {
   switch (pointer.type) {
     case "naddr":
       return nip19.naddrEncode(pointer.data);
@@ -71,7 +70,7 @@ export function encodePointer(pointer: DecodeResult) {
   }
 }
 
-export function getPointerFromTag(tag: Tag): DecodeResult | null {
+export function getPointerFromTag(tag: Tag): nip19.DecodeResult | null {
   if (isETag(tag)) {
     if (!tag[1]) return null;
     return {

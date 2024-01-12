@@ -1,4 +1,4 @@
-import { Kind, nip25 } from "nostr-tools";
+import { kinds, nip25 } from "nostr-tools";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
@@ -25,7 +25,7 @@ class EventReactionsService {
   }
 
   handleEvent(event: NostrEvent) {
-    if (event.kind !== Kind.Reaction) return;
+    if (event.kind !== kinds.Reaction) return;
     const pointer = nip25.getReactedEventPointer(event);
     if (!pointer?.id) return;
 
@@ -51,7 +51,7 @@ class EventReactionsService {
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
       const request = new NostrRequest([relay]);
       request.onEvent.subscribe(this.handleEvent, this);
-      request.start({ "#e": ids, kinds: [Kind.Reaction] });
+      request.start({ "#e": ids, kinds: [kinds.Reaction] });
     }
     this.pending.clear();
   }

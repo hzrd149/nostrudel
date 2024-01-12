@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -41,7 +41,14 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
     account?.pubkey
       ? {
           "#p": [account.pubkey],
-          kinds: [Kind.Text, Kind.Repost, Kind.Reaction, Kind.Zap, TORRENT_COMMENT_KIND, Kind.Article],
+          kinds: [
+            kinds.ShortTextNote,
+            kinds.Repost,
+            kinds.Reaction,
+            kinds.Zap,
+            TORRENT_COMMENT_KIND,
+            kinds.LongFormArticle,
+          ],
         }
       : undefined,
     { eventFilter },

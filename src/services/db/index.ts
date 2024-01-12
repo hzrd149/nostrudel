@@ -1,6 +1,9 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
+import { clearDB } from "nostr-idb";
+
 import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7 } from "./schema";
 import { logger } from "../../helpers/debug";
+import { localCacheDatabase } from "../local-cache-relay";
 
 const log = logger.extend("Database");
 
@@ -169,6 +172,9 @@ const db = await openDB<SchemaV6>(dbName, version, {
 log("Open");
 
 export async function clearCacheData() {
+  log("Clearing nostr-idb");
+  await clearDB(localCacheDatabase);
+
   log("Clearing replaceableEvents");
   await db.clear("replaceableEvents");
 
@@ -195,6 +201,7 @@ export async function deleteDatabase() {
   db.close();
   log("Deleting");
   await deleteDB(dbName);
+  await deleteDB("events");
   window.location.reload();
 }
 

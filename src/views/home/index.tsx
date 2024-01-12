@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { Flex, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { isReply, isRepost } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -15,7 +15,7 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
 
-const defaultKinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay, Kind.BadgeAward];
+const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.LongFormArticle, kinds.RecommendRelay, kinds.BadgeAward];
 
 function HomePage() {
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });

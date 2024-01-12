@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 
 import {
   getCommunityRelays as getCommunityRelays,
@@ -52,7 +52,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const communityRelays = getCommunityRelays(community);
   const readRelays = useReadRelayUrls(communityRelays);
   const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
-    kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
+    kinds: [kinds.ShortTextNote, kinds.Repost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],
   });
 

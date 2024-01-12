@@ -1,4 +1,4 @@
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
@@ -27,7 +27,7 @@ class EventZapsService {
   }
 
   handleEvent(event: NostrEvent) {
-    if (event.kind !== Kind.Zap) return;
+    if (event.kind !== kinds.Zap) return;
     const eventUID = event.tags.find(isETag)?.[1] ?? event.tags.find(isATag)?.[1];
     if (!eventUID) return;
 
@@ -58,10 +58,10 @@ class EventZapsService {
 
       const queries: NostrRequestFilter = [];
       if (eventIds.length > 0) {
-        queries.push({ "#e": eventIds, kinds: [Kind.Zap] });
+        queries.push({ "#e": eventIds, kinds: [kinds.Zap] });
       }
       if (coordinates.length > 0) {
-        queries.push({ "#a": coordinates, kinds: [Kind.Zap] });
+        queries.push({ "#a": coordinates, kinds: [kinds.Zap] });
       }
 
       request.start(queries);

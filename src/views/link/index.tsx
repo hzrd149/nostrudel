@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import { Navigate, useParams } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
@@ -36,11 +36,11 @@ function NostrLinkPage() {
       if (decoded.data.kind === EMOJI_PACK_KIND) return <Navigate to={`/emojis/${cleanLink}`} replace />;
       if (decoded.data.kind === NOTE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
       if (decoded.data.kind === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${cleanLink}`} replace />;
-      if (decoded.data.kind === Kind.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
+      if (decoded.data.kind === kinds.BadgeDefinition) return <Navigate to={`/badges/${cleanLink}`} replace />;
       if (decoded.data.kind === COMMUNITY_DEFINITION_KIND) return <Navigate to={`/c/${cleanLink}`} replace />;
       if (decoded.data.kind === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${cleanLink}`} replace />;
-      if (decoded.data.kind === Kind.ChannelCreation) return <Navigate to={`/channels/${cleanLink}`} replace />;
-      if (decoded.data.kind === Kind.Text) return <Navigate to={`/n/${cleanLink}`} replace />;
+      if (decoded.data.kind === kinds.ChannelCreation) return <Navigate to={`/channels/${cleanLink}`} replace />;
+      if (decoded.data.kind === kinds.ShortTextNote) return <Navigate to={`/n/${cleanLink}`} replace />;
       // if there is no kind redirect to the thread view
       return <Navigate to={`/n/${cleanLink}`} replace />;
   }

@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -16,7 +16,7 @@ export default function UserArticlesTab() {
 
   const timeline = useTimelineLoader(pubkey + "-articles", readRelays, {
     authors: [pubkey],
-    kinds: [Kind.Article],
+    kinds: [kinds.LongFormArticle],
   });
 
   const articles = useSubject(timeline.timeline);

@@ -1,6 +1,6 @@
 import { ReactNode, memo, useRef } from "react";
-import { Kind } from "nostr-tools";
-import { Box, BreadcrumbLink, Text } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
+import { Box, Text } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
@@ -23,22 +23,22 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
 
   let content: ReactNode | null = null;
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
       content = isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
       break;
-    case Kind.Repost:
+    case kinds.Repost:
       content = <RepostNote event={event} />;
       break;
-    case Kind.Article:
+    case kinds.LongFormArticle:
       content = <ArticleNote article={event} />;
       break;
     case STREAM_KIND:
       content = <StreamNote event={event} />;
       break;
-    case Kind.RecommendRelay:
+    case kinds.RecommendRelay:
       content = <RelayRecommendation event={event} />;
       break;
-    case Kind.BadgeAward:
+    case kinds.BadgeAward:
       content = <BadgeAwardCard award={event} />;
       break;
     case FLARE_VIDEO_KIND:

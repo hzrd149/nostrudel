@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { ExternalLinkIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -33,7 +33,7 @@ function BadgesPage() {
     readRelays,
     {
       "#p": filter?.authors,
-      kinds: [Kind.BadgeAward],
+      kinds: [kinds.BadgeAward],
     },
     { eventFilter },
   );

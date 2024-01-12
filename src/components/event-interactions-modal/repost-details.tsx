@@ -1,5 +1,5 @@
-import { Button, Flex, SimpleGrid, SimpleGridProps, Text, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { Flex, Text } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
 import UserAvatarLink from "../user-avatar-link";
@@ -11,7 +11,7 @@ import Timestamp from "../timestamp";
 
 export default function RepostDetails({ event }: { event: NostrEvent }) {
   const readRelays = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${event.id}-reposts`, readRelays, { kinds: [Kind.Repost], "#e": [event.id] });
+  const timeline = useTimelineLoader(`${event.id}-reposts`, readRelays, { kinds: [kinds.Repost], "#e": [event.id] });
 
   const reposts = useSubject(timeline.timeline);
 

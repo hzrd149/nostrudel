@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
@@ -49,7 +49,7 @@ function ListPage({ list }: { list: NostrEvent }) {
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
-  const articles = coordinates.filter((cord) => cord.kind === Kind.Article);
+  const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);
   const references = getReferencesFromList(list);
 
   return (

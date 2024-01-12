@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
@@ -34,7 +34,7 @@ function useListCoordinate(listId: ListId) {
   const account = useCurrentAccount();
 
   return useMemo(() => {
-    if (listId === "following") return account ? `${Kind.Contacts}:${account.pubkey}` : undefined;
+    if (listId === "following") return account ? `${kinds.Contacts}:${account.pubkey}` : undefined;
     if (listId === "global") return undefined;
     return listId;
   }, [listId, account]);

@@ -1,4 +1,4 @@
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import dayjs from "dayjs";
 import { getEventCoordinate, isReplaceable } from "./events";
@@ -27,7 +27,7 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
     ["p", event.pubkey],
   ];
   const draft: DraftNostrEvent = {
-    kind: Kind.Reaction,
+    kind: kinds.Reaction,
     content: url ? ":" + emoji + ":" : emoji,
     tags: isReplaceable(event.kind) ? [...tags, ["a", getEventCoordinate(event)]] : tags,
     created_at: dayjs().unix(),

@@ -1,6 +1,6 @@
 import stringify from "json-stringify-deterministic";
 import { NostrQuery, NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "../../services/local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "../../services/local-cache-relay";
 
 export function addQueryToFilter(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {
@@ -9,8 +9,11 @@ export function addQueryToFilter(filter: NostrRequestFilter, query: NostrQuery) 
   return { ...filter, ...query };
 }
 
+export function stringifyFilter(filter: NostrRequestFilter) {
+  return stringify(filter);
+}
 export function isFilterEqual(a: NostrRequestFilter, b: NostrRequestFilter) {
-  return stringify(a) === stringify(b);
+  return stringifyFilter(a) === stringifyFilter(b);
 }
 
 export function mapQueryMap(queryMap: RelayQueryMap, fn: (filter: NostrRequestFilter) => NostrRequestFilter) {
@@ -23,7 +26,7 @@ export function createSimpleQueryMap(relays: string[], filter: NostrRequestFilte
   const map: RelayQueryMap = {};
 
   // if the local cache relay is enabled, also ask it
-  if (localCacheRelayService.enabled) {
+  if (LOCAL_CACHE_RELAY_ENABLED) {
     map[LOCAL_CACHE_RELAY] = filter;
   }
 

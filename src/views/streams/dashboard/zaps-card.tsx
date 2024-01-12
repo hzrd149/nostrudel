@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Flex } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useSubject from "../../../hooks/use-subject";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
@@ -15,7 +15,7 @@ function ZapsCard({ stream }: { stream: ParsedStream }) {
   const zapMessages = streamChatTimeline.events.getSortedEvents().filter((event) => {
     if (stream.starts && event.created_at < stream.starts) return false;
     if (stream.ends && event.created_at > stream.ends) return false;
-    if (event.kind !== Kind.Zap) return false;
+    if (event.kind !== kinds.Zap) return false;
     return true;
   });
 

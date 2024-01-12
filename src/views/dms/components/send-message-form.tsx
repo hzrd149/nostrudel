@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
@@ -47,7 +47,7 @@ export default function SendMessageForm({
       const encrypted = await requestEncrypt(values.content, pubkey);
 
       const event: DraftNostrEvent = {
-        kind: Kind.EncryptedDirectMessage,
+        kind: kinds.EncryptedDirectMessage,
         content: encrypted,
         tags: [["p", pubkey]],
         created_at: dayjs().unix(),

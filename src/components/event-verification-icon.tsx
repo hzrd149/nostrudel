@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { verifySignature } from "nostr-tools";
+import { verifyEvent } from "nostr-tools";
 
 import { NostrEvent } from "../types/nostr-event";
 import { CheckIcon, VerificationFailed } from "./icons";
@@ -9,7 +9,7 @@ function EventVerificationIcon({ event }: { event: NostrEvent }) {
   const { showSignatureVerification } = useAppSettings();
   if (!showSignatureVerification) return null;
 
-  if (!verifySignature(event)) {
+  if (!verifyEvent(event)) {
     return <VerificationFailed color="red.500" />;
   }
   return <CheckIcon color="green.500" />;

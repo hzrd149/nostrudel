@@ -1,6 +1,6 @@
-import { Kind, nip19 } from "nostr-tools";
-import { Box, Card, CardBody, CardHeader, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { useCallback } from "react";
+import { kinds } from "nostr-tools";
+import { Flex } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
@@ -11,7 +11,6 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import { useCallback, useRef } from "react";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -32,7 +31,7 @@ function ChannelsHomePage() {
   const timeline = useTimelineLoader(
     `${listId}-channels`,
     relays,
-    filter ? { ...filter, kinds: [Kind.ChannelCreation] } : undefined,
+    filter ? { ...filter, kinds: [kinds.ChannelCreation] } : undefined,
     { eventFilter },
   );
   const channels = useSubject(timeline.timeline);

@@ -255,7 +255,9 @@ class RelayScoreboardService {
 
 const relayScoreboardService = new RelayScoreboardService();
 
-relayScoreboardService.loadStats();
+setTimeout(() => {
+  relayScoreboardService.loadStats();
+}, 0);
 
 setInterval(() => {
   relayScoreboardService.saveStats();

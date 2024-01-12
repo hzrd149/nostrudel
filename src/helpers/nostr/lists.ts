@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
@@ -15,7 +15,7 @@ export const NOTE_LIST_KIND = 30001;
 export const BOOKMARK_LIST_SET_KIND = 30003;
 
 export function getListName(event: NostrEvent) {
-  if (event.kind === Kind.Contacts) return "Following";
+  if (event.kind === kinds.Contacts) return "Following";
   if (event.kind === MUTE_LIST_KIND) return "Mute";
   if (event.kind === PIN_LIST_KIND) return "Pins";
   if (event.kind === BOOKMARK_LIST_KIND) return "Bookmarks";
@@ -38,7 +38,7 @@ export function isJunkList(event: NostrEvent) {
 }
 export function isSpecialListKind(kind: number) {
   return (
-    kind === Kind.Contacts ||
+    kind === kinds.Contacts ||
     kind === MUTE_LIST_KIND ||
     kind === PIN_LIST_KIND ||
     kind === BOOKMARK_LIST_KIND ||
@@ -93,7 +93,7 @@ export function createEmptyContactList(): DraftNostrEvent {
     created_at: dayjs().unix(),
     content: "",
     tags: [],
-    kind: Kind.Contacts,
+    kind: kinds.Contacts,
   };
 }
 

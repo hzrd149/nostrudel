@@ -1,6 +1,6 @@
 import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { Event, Kind } from "nostr-tools";
+import { Event, kinds } from "nostr-tools";
 
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -33,7 +33,7 @@ export default function UserFollowersTab() {
 
   const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],
-    kinds: [Kind.Contacts],
+    kinds: [kinds.Contacts],
   });
 
   const lists = useSubject(timeline.timeline);

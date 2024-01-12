@@ -1,5 +1,6 @@
-import { Kind } from "nostr-tools";
 import React from "react";
+import { kinds } from "nostr-tools";
+
 import { ErrorBoundary } from "../../components/error-boundary";
 import useSubject from "../../hooks/use-subject";
 import StreamNote from "../../components/timeline-page/generic-note-timeline/stream-note";
@@ -10,7 +11,7 @@ import { NostrEvent } from "../../types/nostr-event";
 
 const RenderEvent = React.memo(({ event, focused }: { event: NostrEvent; focused?: boolean }) => {
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
       return <Note event={event} variant={focused ? "elevated" : undefined} />;
     case STREAM_KIND:
       return <StreamNote event={event} />;

@@ -1,12 +1,11 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
-import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
 import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
-import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -74,12 +73,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const myInbox = useReadRelayUrls();
   const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
     {
-      kinds: [Kind.EncryptedDirectMessage],
+      kinds: [kinds.EncryptedDirectMessage],
       "#p": [account.pubkey],
       authors: [pubkey],
     },
     {
-      kinds: [Kind.EncryptedDirectMessage],
+      kinds: [kinds.EncryptedDirectMessage],
       "#p": [pubkey],
       authors: [account.pubkey],
     },

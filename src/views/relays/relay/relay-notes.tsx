@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { isReply, isRepost } from "../../../helpers/nostr/events";
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -10,7 +10,6 @@ import TimelinePage, { useTimelinePageEventFilter } from "../../../components/ti
 import TimelineViewTypeButtons from "../../../components/timeline-page/timeline-view-type";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import { usePeopleListContext } from "../../../providers/local/people-list-provider";
-import { NostrRequestFilter } from "../../../types/nostr-query";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
 
@@ -20,7 +19,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
   const showReposts = useDisclosure({ defaultIsOpen: true });
 
   const { filter } = usePeopleListContext();
-  const kinds = [Kind.Text];
+  const k = [kinds.ShortTextNote];
 
   const timelineEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
@@ -33,7 +32,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
     },
     [timelineEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
-  const timeline = useTimelineLoader(`${relay}-notes`, [relay], filter ? { ...filter, kinds } : undefined, {
+  const timeline = useTimelineLoader(`${relay}-notes`, [relay], filter ? { ...filter, kinds: k } : undefined, {
     eventFilter,
   });
 

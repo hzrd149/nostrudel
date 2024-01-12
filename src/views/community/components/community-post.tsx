@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent, isETag } from "../../../types/nostr-event";
 import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr/communities";
@@ -175,9 +175,9 @@ export function CommunityRepostPost({
 
 export default function CommunityPost({ event, ...props }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
       return <CommunityTextPost event={event} {...props} />;
-    case Kind.Repost:
+    case kinds.Repost:
       return <CommunityRepostPost event={event} {...props} />;
   }
   return null;

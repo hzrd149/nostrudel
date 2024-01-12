@@ -11,7 +11,10 @@ import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import deleteEventService from "../services/delete-events";
-import { addQueryToFilter, isFilterEqual, mapQueryMap } from "../helpers/nostr/filter";
+import { addQueryToFilter, isFilterEqual, mapQueryMap, stringifyFilter } from "../helpers/nostr/filter";
+import { localCacheRelay } from "../services/local-cache-relay";
+import { SimpleSubscription } from "nostr-idb";
+import { Filter } from "nostr-tools";
 
 const BLOCK_SIZE = 100;
 
@@ -106,6 +109,7 @@ export default class TimelineLoader {
   name: string;
   private log: Debugger;
   private subscription: NostrMultiSubscription;
+  private cacheSubscription?: SimpleSubscription;
 
   private blockLoaders = new Map<string, RelayBlockLoader>();
 
@@ -131,12 +135,12 @@ export default class TimelineLoader {
       this.timeline.next(this.events.getSortedEvents().filter((e) => filter(e, this.events)));
     } else this.timeline.next(this.events.getSortedEvents());
   }
-  private handleEvent(event: NostrEvent) {
+  private handleEvent(event: NostrEvent, cache = true) {
     // if this is a replaceable event, mirror it over to the replaceable event service
-    if (isReplaceable(event.kind)) {
-      replaceableEventLoaderService.handleEvent(event);
-    }
+    if (isReplaceable(event.kind)) replaceableEventLoaderService.handleEvent(event);
+
     this.events.addEvent(event);
+    if (cache) localCacheRelay.publish(event);
   }
   private handleDeleteEvent(deleteEvent: NostrEvent) {
     const cord = deleteEvent.tags.find(isATag)?.[1];
@@ -156,6 +160,21 @@ export default class TimelineLoader {
     this.events.disconnect(loader.events);
     loader.onBlockFinish.unsubscribe(this.updateLoading, this);
     loader.onBlockFinish.unsubscribe(this.updateComplete, this);
+  }
+
+  private loadQueriesFromCache(queryMap: RelayQueryMap) {
+    const queries: Record<string, Filter[]> = {};
+    for (const [url, filters] of Object.entries(queryMap)) {
+      const key = stringifyFilter(filters);
+      if (!queries[key]) queries[key] = Array.isArray(filters) ? filters : [filters];
+    }
+
+    for (const filters of Object.values(queries)) {
+      const sub: SimpleSubscription = localCacheRelay.subscribe(filters, {
+        onevent: (e) => this.handleEvent(e, false),
+        oneose: () => sub.close(),
+      });
+    }
   }
 
   setQueryMap(queryMap: RelayQueryMap) {
@@ -189,6 +208,9 @@ export default class TimelineLoader {
     }
 
     this.queryMap = queryMap;
+
+    // load all filters from cache relay
+    this.loadQueriesFromCache(queryMap);
 
     // update the subscription query map and add limit
     this.subscription.setQueryMap(

@@ -1,4 +1,4 @@
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { isRTag, NostrEvent } from "../types/nostr-event";
 import { RelayConfig } from "../classes/relay";
@@ -30,7 +30,7 @@ class UserRelaysService {
   }
   requestRelays(pubkey: string, relays: string[], opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.RelayList, pubkey, undefined, opts);
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
 
     // also fetch the relays from the users contacts
@@ -49,9 +49,9 @@ class UserRelaysService {
     const sub = this.subjects.get(pubkey);
 
     // load from cache
-    await replaceableEventLoaderService.loadFromCache(createCoordinate(Kind.RelayList, pubkey));
+    await replaceableEventLoaderService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
 
-    const requestSub = replaceableEventLoaderService.getEvent(Kind.RelayList, pubkey);
+    const requestSub = replaceableEventLoaderService.getEvent(kinds.RelayList, pubkey);
     sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
   }
 

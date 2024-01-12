@@ -1,6 +1,6 @@
 import { Button, Flex } from "@chakra-ui/react";
 import { memo, useCallback, useRef } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -49,11 +49,11 @@ export function DMTimelinePage() {
       ? [
           {
             ...filter,
-            kinds: [Kind.EncryptedDirectMessage],
+            kinds: [kinds.EncryptedDirectMessage],
           },
-          { "#p": filter.authors, kinds: [Kind.EncryptedDirectMessage] },
+          { "#p": filter.authors, kinds: [kinds.EncryptedDirectMessage] },
         ]
-      : { kinds: [Kind.EncryptedDirectMessage] },
+      : { kinds: [kinds.EncryptedDirectMessage] },
     { eventFilter },
   );
 

@@ -1,6 +1,7 @@
 import { memo, useRef } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
@@ -12,7 +13,6 @@ import BadgeMenu from "./badge-menu";
 import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import Timestamp from "../../../components/timestamp";
 import useEventCount from "../../../hooks/use-event-count";
-import { Kind } from "nostr-tools";
 
 function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);
@@ -23,7 +23,7 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(badge));
 
-  const timesAwarded = useEventCount({ kinds: [Kind.BadgeAward], "#a": [getEventCoordinate(badge)] });
+  const timesAwarded = useEventCount({ kinds: [kinds.BadgeAward], "#a": [getEventCoordinate(badge)] });
 
   return (
     <Card ref={ref} variant="outline" {...props}>

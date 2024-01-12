@@ -12,7 +12,7 @@ import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED, localCacheRelay } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -33,7 +33,7 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
-const RELAY_REQUEST_BATCH_TIME = 1000;
+const RELAY_REQUEST_BATCH_TIME = 500;
 
 /** This class is ued to batch requests to a single relay */
 class ReplaceableEventRelayLoader {
@@ -167,7 +167,9 @@ class ReplaceableEventLoaderService {
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      if (saveToCache) this.saveToCache(cord, event);
+      if (saveToCache) {
+        this.saveToCache(cord, event);
+      }
     }
   }
 
@@ -223,6 +225,8 @@ class ReplaceableEventLoaderService {
     this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
     const transaction = db.transaction("replaceableEvents", "readwrite");
     for (const [cord, event] of this.writeCacheQueue) {
+      localCacheRelay.publish(event);
+      // TODO: remove this
       transaction.objectStore("replaceableEvents").put({ addr: cord, event, created: dayjs().unix() });
     }
     this.writeCacheQueue.clear();
@@ -234,6 +238,7 @@ class ReplaceableEventLoaderService {
     this.writeToCacheThrottle();
   }
 
+  /** @deprecated */
   async pruneDatabaseCache() {
     const keys = await db.getAllKeysFromIndex(
       "replaceableEvents",
@@ -255,7 +260,8 @@ class ReplaceableEventLoaderService {
     const sub = this.events.get(cord);
 
     const relayUrls = Array.from(relays);
-    if (localCacheRelayService.enabled) relayUrls.unshift(LOCAL_CACHE_RELAY);
+    // TODO: use localCacheRelay instead
+    if (LOCAL_CACHE_RELAY_ENABLED) relayUrls.unshift(LOCAL_CACHE_RELAY);
 
     for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
@@ -40,7 +40,7 @@ export default function ChannelMessageForm({
       if (!values.content) return;
 
       let draft: DraftNostrEvent = {
-        kind: Kind.ChannelMessage,
+        kind: kinds.ChannelMessage,
         content: values.content,
         tags: [["e", channel.id]],
         created_at: dayjs().unix(),

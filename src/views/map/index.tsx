@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Button, Flex } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import ngeohash from "ngeohash";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -123,7 +123,7 @@ export default function MapView() {
   const timeline = useTimelineLoader(
     "geo-events",
     readRelays,
-    cells.length > 0 ? { "#g": cells, kinds: [Kind.Text] } : undefined,
+    cells.length > 0 ? { "#g": cells, kinds: [kinds.ShortTextNote] } : undefined,
   );
 
   const setCellsFromMap = useCallback(() => {

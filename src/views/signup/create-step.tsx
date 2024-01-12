@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { generatePrivateKey, finishEvent, Kind, getPublicKey } from "nostr-tools";
-import { Avatar, Box, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { getPublicKey, generateSecretKey, finalizeEvent, kinds } from "nostr-tools";
+import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { bytesToHex } from "@noble/hashes/utils";
+import dayjs from "dayjs";
 
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { containerProps } from "./common";
-import dayjs from "dayjs";
 import { nostrBuildUploadImage } from "../../helpers/nostr-build";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import accountService from "../../services/account";
@@ -41,18 +42,18 @@ export default function CreateStep({
   const createProfile = async () => {
     setLoading(true);
     try {
-      const hex = generatePrivateKey();
+      const hex = generateSecretKey();
 
       const uploaded = profileImage
-        ? await nostrBuildUploadImage(profileImage, async (draft) => finishEvent(draft, hex))
+        ? await nostrBuildUploadImage(profileImage, async (draft) => finalizeEvent(draft, hex))
         : undefined;
 
       // create profile
-      const kind0 = finishEvent(
+      const kind0 = finalizeEvent(
         {
           content: JSON.stringify({ ...metadata, picture: uploaded?.url }),
           created_at: dayjs().unix(),
-          kind: Kind.Metadata,
+          kind: kinds.Metadata,
           tags: [],
         },
         hex,
@@ -62,14 +63,14 @@ export default function CreateStep({
 
       // login
       const pubkey = getPublicKey(hex);
-      const encrypted = await signingService.encryptSecKey(hex);
+      const encrypted = await signingService.encryptSecKey(bytesToHex(hex));
       accountService.addAccount({ type: "local", pubkey, relays, ...encrypted, readonly: false });
       accountService.switchAccount(pubkey);
 
       // set relays
       await clientRelaysService.postUpdatedRelays(relays.map((url) => ({ url, mode: RelayMode.ALL })));
 
-      onSubmit(hex);
+      onSubmit(bytesToHex(hex));
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

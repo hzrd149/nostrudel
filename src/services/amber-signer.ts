@@ -1,4 +1,4 @@
-import { getEventHash, nip19, verifySignature } from "nostr-tools";
+import { getEventHash, nip19, verifyEvent } from "nostr-tools";
 
 import createDefer, { Deferred } from "../classes/deferred";
 import { getPubkeyFromDecodeResult, isHex, isHexKey } from "../helpers/nip19";
@@ -78,7 +78,7 @@ async function signEvent(draft: DraftNostrEvent & { pubkey: string }): Promise<N
   if (!isHex(sig)) throw new Error("Expected hex signature");
 
   const event: NostrEvent = { ...draftWithId, sig };
-  if (!verifySignature(event)) throw new Error("Invalid signature");
+  if (!verifyEvent(event)) throw new Error("Invalid signature");
   return event;
 }
 

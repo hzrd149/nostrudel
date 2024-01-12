@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 import { Button, ButtonGroup, Flex, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
@@ -61,15 +61,15 @@ const NotificationsTimeline = memo(
     const filteredEvents = useMemo(
       () =>
         throttledEvents.filter((e) => {
-          if (peoplePubkeys && e.kind !== Kind.Zap && !peoplePubkeys.includes(e.pubkey)) return false;
+          if (peoplePubkeys && e.kind !== kinds.Zap && !peoplePubkeys.includes(e.pubkey)) return false;
 
-          if (e.kind === Kind.Text) {
+          if (e.kind === kinds.ShortTextNote) {
             if (!showReplies && isReply(e)) return false;
             if (!showMentions && !isReply(e)) return false;
           }
-          if (!showReactions && e.kind === Kind.Reaction) return false;
-          if (!showReposts && e.kind === Kind.Repost) return false;
-          if (!showZaps && e.kind === Kind.Zap) return false;
+          if (!showReactions && e.kind === kinds.Reaction) return false;
+          if (!showReposts && e.kind === kinds.Repost) return false;
+          if (!showZaps && e.kind === kinds.Zap) return false;
 
           return true;
         }),
