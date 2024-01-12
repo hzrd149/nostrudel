@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
+import { Filter } from "nostr-tools";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
@@ -14,7 +15,7 @@ import deleteEventService from "../services/delete-events";
 import { addQueryToFilter, isFilterEqual, mapQueryMap, stringifyFilter } from "../helpers/nostr/filter";
 import { localCacheRelay } from "../services/local-cache-relay";
 import { SimpleSubscription } from "nostr-idb";
-import { Filter } from "nostr-tools";
+import { relayRequest } from "../helpers/relay";
 
 const BLOCK_SIZE = 100;
 
@@ -170,9 +171,8 @@ export default class TimelineLoader {
     }
 
     for (const filters of Object.values(queries)) {
-      const sub: SimpleSubscription = localCacheRelay.subscribe(filters, {
-        onevent: (e) => this.handleEvent(e, false),
-        oneose: () => sub.close(),
+      relayRequest(localCacheRelay, filters).then((events) => {
+        for (const e of events) this.handleEvent(e, false);
       });
     }
   }
