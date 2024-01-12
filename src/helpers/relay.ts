@@ -2,7 +2,8 @@ import { SimpleRelay, SimpleSubscription, SimpleSubscriptionOptions } from "nost
 import { RelayConfig } from "../classes/relay";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { safeRelayUrl } from "./url";
-import { Filter, NostrEvent } from "nostr-tools";
+import { Filter } from "nostr-tools";
+import { NostrEvent } from "../types/nostr-event";
 
 export function normalizeRelayConfigs(relays: RelayConfig[]) {
   const seen: string[] = [];

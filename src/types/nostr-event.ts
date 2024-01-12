@@ -1,3 +1,5 @@
+import type { NostrEvent as NostrToolsNostrEvent } from "nostr-tools";
+
 export type ETag = ["e", string] | ["e", string, string] | ["e", string, string, string];
 export type ATag = ["a", string] | ["a", string, string] | ["e", string, string, string];
 export type PTag = ["p", string] | ["p", string, string] | ["p", string, string, string];
@@ -7,14 +9,8 @@ export type ExpirationTag = ["expiration", string];
 export type EmojiTag = ["emoji", string, string];
 export type Tag = string[] | ETag | PTag | RTag | DTag | ATag | ExpirationTag;
 
-export type NostrEvent = {
-  id: string;
-  pubkey: string;
-  created_at: number;
-  kind: number;
+export type NostrEvent = Omit<NostrToolsNostrEvent, "tags"> & {
   tags: Tag[];
-  content: string;
-  sig: string;
 };
 export type CountResponse = {
   count: number;
