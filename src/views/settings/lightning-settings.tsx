@@ -17,6 +17,16 @@ import { LightningIcon } from "../../components/icons";
 import { useFormContext } from "react-hook-form";
 import { AppSettings } from "../../services/settings/migrations";
 
+import {init, onConnected} from '@getalby/bitcoin-connect';
+
+init({
+  appName: "noStrudel",
+})
+
+onConnected((provider) => {
+  window.webln = provider;
+});
+
 export default function LightningSettings() {
   const { register, formState } = useFormContext<AppSettings>();
 
