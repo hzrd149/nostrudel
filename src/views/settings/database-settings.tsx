@@ -60,7 +60,7 @@ export default function DatabaseSettings() {
       </h2>
       <AccordionPanel>
         <DatabaseStats />
-        <ButtonGroup>
+        <ButtonGroup mt="2">
           <Button onClick={handleClearData} isLoading={clearing} isDisabled={clearing}>
             Clear cache data
           </Button>
