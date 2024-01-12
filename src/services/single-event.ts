@@ -1,5 +1,4 @@
 import _throttle from "lodash.throttle";
-import { SimpleSubscription } from "nostr-idb";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
@@ -7,12 +6,15 @@ import SuperMap from "../classes/super-map";
 import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 import { localCacheRelay } from "./local-cache-relay";
+import { relayRequest } from "../helpers/relay";
+import { logger } from "../helpers/debug";
 
 const RELAY_REQUEST_BATCH_TIME = 500;
 
 class SingleEventService {
   private cache = new SuperMap<string, Subject<NostrEvent>>(() => new Subject());
   pending = new Map<string, string[]>();
+  log = logger.extend("SingleEvent");
 
   requestEvent(id: string, relays: string[]) {
     const subject = this.cache.get(id);
@@ -32,17 +34,26 @@ class SingleEventService {
   }
 
   private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
-  batchRequests() {
+  async batchRequests() {
     if (this.pending.size === 0) return;
 
-    // load events from local cache relay
-    const sub: SimpleSubscription = localCacheRelay.subscribe([{ ids: Array.from(this.pending.keys()) }], {
-      onevent: (e) => this.handleEvent(e, false),
-      oneose: () => sub.close(),
-    });
+    const ids = Array.from(this.pending.keys());
+    const loaded: string[] = [];
+
+    // load from cache relay
+    const fromCache = await relayRequest(localCacheRelay, [{ ids }]);
+
+    for (const e of fromCache) {
+      this.handleEvent(e, false);
+      loaded.push(e.id);
+    }
+
+    if (loaded.length > 0) this.log(`Loaded ${loaded.length} from cache instead of relays`);
 
     const idsFromRelays: Record<string, string[]> = {};
     for (const [id, relays] of this.pending) {
+      if (loaded.includes(id)) continue;
+
       for (const relay of relays) {
         idsFromRelays[relay] = idsFromRelays[relay] ?? [];
         idsFromRelays[relay].push(id);
