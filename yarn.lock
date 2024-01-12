@@ -2248,28 +2248,28 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.2.0.tgz#0c1416abf6057755a56972a9cb5df5b4d816b672"
-  integrity sha512-8O4BPbpBeXlGAKF1kW4CXTleCupzBW87NUYc64OfXpXPQZXbTQLLXPXNZU+dsvtbYpbEXG3jIJgjcfAVOHuZew==
+"@getalby/bitcoin-connect-react@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.2.1.tgz#988dc7b806e38981131b71ab1302436564499973"
+  integrity sha512-SeOaIFbEDQL3SAu/uips/djXMbii+zFKTGJi1yvuaV16mf+Iu+F61SwDNV5ZIim3S/0UHLvLesIseelpdsgDMA==
   dependencies:
-    "@getalby/bitcoin-connect" "^3.2.0"
+    "@getalby/bitcoin-connect" "^3.2.1"
 
-"@getalby/bitcoin-connect@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.2.0.tgz#9fe12fb847224410ea0389182470de778fa13f35"
-  integrity sha512-0lxqOCJ4JVPZOBYvTUaLVXz5bbXYKoFGXA4+A99VAmywn9pQJkaZ7Q4k2TQcFi+U2r5l1xjX9bnjiMUDpM+NJg==
+"@getalby/bitcoin-connect@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.2.1.tgz#828518d530cf00115267e58fa4f26c73223aa21a"
+  integrity sha512-mpfiqcPVSvWtAD/dDSb6iRHf2JE7BxoD7NDTN6/+2fmL9CzWPCZ+nxUl9WN9+hdM2d6q1zdAqWHm2SLhCrYJsQ==
   dependencies:
-    "@getalby/lightning-tools" "^5.0.0"
+    "@getalby/lightning-tools" "^5.0.1"
     "@getalby/sdk" "^3.2.3"
     "@lightninglabs/lnc-web" "^0.2.8-alpha"
     qrcode-generator "^1.4.4"
     zustand "^4.4.7"
 
-"@getalby/lightning-tools@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.0.tgz#eefe1fc1ecf28582d6c922c9e22dc28bf3af27c6"
-  integrity sha512-j3x90CGclpyZTHJRVWvA95jQniu5A+xqvmJNPSkXyzYCdJiFG5oZFWNwC0N+q7Oa8cTvp7wB7FdDqxH+Le0/Nw==
+"@getalby/lightning-tools@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.1.tgz#08a974bcdf3d98a86ff9909df838360ee67174c8"
+  integrity sha512-xoBfBYMQrJqwryU9fAYGIW6dzWRpdsAw8rroqTROba2bHdYT0ZvGnt4tjqXUhRswopR2X+wp1QeeWHZNL9A0Kg==
 
 "@getalby/sdk@^3.2.3":
   version "3.2.3"

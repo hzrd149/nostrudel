@@ -4,7 +4,8 @@ import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
 
 // setup bitcoin connect
-import { onConnected } from "@getalby/bitcoin-connect-react";
+import { init, onConnected } from "@getalby/bitcoin-connect-react";
+init({ appName: "noStrudel" });
 onConnected((provider) => {
   if (!window.webln) window.webln = provider;
 });
