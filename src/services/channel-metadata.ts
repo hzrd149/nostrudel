@@ -214,6 +214,7 @@ class ChannelMetadataService {
   async pruneDatabaseCache() {
     const keys = await db.getAllKeysFromIndex(
       "channelMetadata",
+      // @ts-ignore
       "created",
       IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
     );
