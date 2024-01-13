@@ -126,3 +126,5 @@ export interface SchemaV7 extends Omit<SchemaV6, "account"> {
     value: Account;
   };
 }
+
+export interface SchemaV8 extends Omit<SchemaV7, "replaceableEvents"> {}

@@ -10,9 +10,10 @@ import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate, parseCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
 import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED, localCacheRelay } from "./local-cache-relay";
+import { relayRequest } from "../helpers/relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -182,25 +183,36 @@ class ReplaceableEventLoaderService {
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
-    let read = 0;
-    const transaction = db.transaction("replaceableEvents", "readonly");
-    for (const [cord, promise] of this.readFromCachePromises) {
-      transaction
-        .objectStore("replaceableEvents")
-        .get(cord)
-        .then((cached) => {
-          if (cached?.event) {
-            this.handleEvent(cached.event, false);
-            promise.resolve(true);
-            read++;
-          }
-          promise.resolve(false);
-        });
+    const kindFilters: Record<number, NostrQuery> = {};
+    for (const [cord] of this.readFromCachePromises) {
+      const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
+      const kind = parseInt(kindStr);
+      kindFilters[kind] = kindFilters[kind] || { kinds: [kind] };
+
+      const arr = (kindFilters[kind].authors = kindFilters[kind].authors || []);
+      arr.push(pubkey);
+
+      if (d) {
+        const arr = (kindFilters[kind]["#d"] = kindFilters[kind]["#d"] || []);
+        arr.push(d);
+      }
     }
+    const filters = Array.from(Object.values(kindFilters));
+
+    const events = await relayRequest(localCacheRelay, filters);
+    for (const event of events) {
+      this.handleEvent(event, false);
+      const cord = getEventCoordinate(event);
+      const promise = this.readFromCachePromises.get(cord);
+      if (promise) promise.resolve(true);
+      this.readFromCachePromises.delete(cord);
+    }
+
+    // resolve remaining promises
+    for (const [_, promise] of this.readFromCachePromises) promise.resolve();
     this.readFromCachePromises.clear();
-    transaction.commit();
-    await transaction.done;
-    if (read) this.dbLog(`Read ${read} events from database`);
+
+    if (events.length > 0) this.dbLog(`Read ${events.length} events from database`);
   }
   private loadCacheDedupe = new Map<string, Promise<boolean>>();
   loadFromCache(cord: string) {
@@ -223,36 +235,12 @@ class ReplaceableEventLoaderService {
     if (this.writeCacheQueue.size === 0) return;
 
     this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
-    for (const [cord, event] of this.writeCacheQueue) {
-      localCacheRelay.publish(event);
-      // TODO: remove this
-      transaction.objectStore("replaceableEvents").put({ addr: cord, event, created: dayjs().unix() });
-    }
+    for (const [_, event] of this.writeCacheQueue) localCacheRelay.publish(event);
     this.writeCacheQueue.clear();
-    transaction.commit();
-    await transaction.done;
   }
   private async saveToCache(cord: string, event: NostrEvent) {
     this.writeCacheQueue.set(cord, event);
     this.writeToCacheThrottle();
-  }
-
-  /** @deprecated */
-  async pruneDatabaseCache() {
-    const keys = await db.getAllKeysFromIndex(
-      "replaceableEvents",
-      "created",
-      IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
-    );
-
-    if (keys.length === 0) return;
-    this.dbLog(`Pruning ${keys.length} expired events from database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
-    for (const key of keys) {
-      transaction.store.delete(key);
-    }
-    await transaction.commit();
   }
 
   private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
@@ -296,14 +284,6 @@ class ReplaceableEventLoaderService {
 }
 
 const replaceableEventLoaderService = new ReplaceableEventLoaderService();
-
-replaceableEventLoaderService.pruneDatabaseCache();
-setInterval(
-  () => {
-    replaceableEventLoaderService.pruneDatabaseCache();
-  },
-  1000 * 60 * 60,
-);
 
 if (import.meta.env.DEV) {
   //@ts-ignore
