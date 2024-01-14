@@ -32,9 +32,10 @@ function buildRepost(event: NostrEvent): DraftNostrEvent {
   const hint = relayHintService.getEventRelayHint(event);
   const tags: NostrEvent["tags"] = [];
   tags.push(["e", event.id, hint ?? ""]);
+  tags.push(["k", String(event.kind)]);
 
   return {
-    kind: kinds.Repost,
+    kind: event.kind === kinds.ShortTextNote ? kinds.Repost : kinds.GenericRepost,
     tags,
     content: JSON.stringify(event),
     created_at: dayjs().unix(),

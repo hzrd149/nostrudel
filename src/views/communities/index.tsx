@@ -109,7 +109,7 @@ function CommunitiesHomePage() {
     readRelays,
     communityCoordinates.length > 0
       ? {
-          kinds: [kinds.ShortTextNote, kinds.Repost, COMMUNITY_APPROVAL_KIND],
+          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
           "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
         }
       : undefined,

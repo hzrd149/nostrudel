@@ -11,7 +11,10 @@ import Timestamp from "../timestamp";
 
 export default function RepostDetails({ event }: { event: NostrEvent }) {
   const readRelays = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${event.id}-reposts`, readRelays, { kinds: [kinds.Repost], "#e": [event.id] });
+  const timeline = useTimelineLoader(`${event.id}-reposts`, readRelays, {
+    kinds: [kinds.Repost, kinds.GenericRepost],
+    "#e": [event.id],
+  });
 
   const reposts = useSubject(timeline.timeline);
 

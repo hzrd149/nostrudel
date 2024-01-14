@@ -41,7 +41,7 @@ export function getEventUID(event: NostrEvent) {
 }
 
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === kinds.Repost) return false;
+  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
   // TODO: update this to only look for a "root" or "reply" tag
   return !!getReferences(event).reply;
 }
@@ -50,7 +50,7 @@ export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey
 }
 
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === kinds.Repost) return true;
+  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return true;
 
   const match = event.content.match(getMatchNostrLink());
   return match && match[0].length === event.content.length;

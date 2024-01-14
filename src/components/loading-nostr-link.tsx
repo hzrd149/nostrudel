@@ -24,7 +24,7 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
                 Pubkey: <UserLink pubkey={link.data.author} />
               </Text>
             )}
-            {link.data.relays && <Text>Relays: {link.data.relays.join(", ")}</Text>}
+            {link.data.relays && link.data.relays.length > 0 && <Text>Relays: {link.data.relays.join(", ")}</Text>}
           </>
         );
       case "npub":
@@ -33,7 +33,7 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
         return (
           <>
             <Text>Pubkey: {link.data.pubkey}</Text>
-            {link.data.relays && <Text>Relays: {link.data.relays.join(", ")}</Text>}
+            {link.data.relays && link.data.relays.length > 0 && <Text>Relays: {link.data.relays.join(", ")}</Text>}
           </>
         );
       case "naddr":

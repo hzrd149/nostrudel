@@ -45,6 +45,7 @@ const commonTimelineKinds = [
   kinds.ShortTextNote,
   kinds.LongFormArticle,
   kinds.Repost,
+  kinds.GenericRepost,
   kinds.Reaction,
   kinds.BadgeAward,
   kinds.BadgeDefinition,

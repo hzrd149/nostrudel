@@ -15,7 +15,14 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
 
-const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.LongFormArticle, kinds.RecommendRelay, kinds.BadgeAward];
+const defaultKinds = [
+  kinds.ShortTextNote,
+  kinds.Repost,
+  kinds.GenericRepost,
+  kinds.LongFormArticle,
+  kinds.RecommendRelay,
+  kinds.BadgeAward,
+];
 
 function HomePage() {
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });

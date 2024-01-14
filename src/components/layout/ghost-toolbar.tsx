@@ -23,6 +23,7 @@ const kindColors: Record<number, FlexProps["bg"]> = {
   [kinds.RecommendRelay]: "pink",
   [kinds.EncryptedDirectMessage]: "orange.500",
   [kinds.Repost]: "yellow",
+  [kinds.GenericRepost]: "yellow",
   [kinds.Reaction]: "green.500",
   [kinds.LongFormArticle]: "purple.500",
 };

@@ -45,7 +45,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: PhotoWithEvent[] = [];
 
     for (const event of events) {
-      if (event.kind === kinds.Repost) continue;
+      if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;

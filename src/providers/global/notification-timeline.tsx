@@ -44,6 +44,7 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
           kinds: [
             kinds.ShortTextNote,
             kinds.Repost,
+            kinds.GenericRepost,
             kinds.Reaction,
             kinds.Zap,
             TORRENT_COMMENT_KIND,

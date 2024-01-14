@@ -18,7 +18,7 @@ import { parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 import LoadingNostrLink from "../../loading-nostr-link";
 
-export default function RepostNote({ event }: { event: NostrEvent }) {
+export default function RepostEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 

@@ -179,6 +179,8 @@ export default function CommunityPost({ event, ...props }: Omit<CardProps, "chil
       return <CommunityTextPost event={event} {...props} />;
     case kinds.Repost:
       return <CommunityRepostPost event={event} {...props} />;
+    case kinds.GenericRepost:
+      return <CommunityRepostPost event={event} {...props} />;
   }
   return null;
 }

@@ -11,7 +11,7 @@ import IntersectionObserverProvider, {
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotificationTimeline } from "../../providers/global/notification-timeline";
-import { getEventUID, isReply } from "../../helpers/nostr/events";
+import { getEventUID, isReply, isRepost } from "../../helpers/nostr/events";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -68,7 +68,7 @@ const NotificationsTimeline = memo(
             if (!showMentions && !isReply(e)) return false;
           }
           if (!showReactions && e.kind === kinds.Reaction) return false;
-          if (!showReposts && e.kind === kinds.Repost) return false;
+          if (!showReposts && (e.kind === kinds.Repost || e.kind === kinds.GenericRepost)) return false;
           if (!showZaps && e.kind === kinds.Zap) return false;
 
           return true;

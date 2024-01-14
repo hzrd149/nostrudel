@@ -52,7 +52,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const communityRelays = getCommunityRelays(community);
   const readRelays = useReadRelayUrls(communityRelays);
   const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
-    kinds: [kinds.ShortTextNote, kinds.Repost, COMMUNITY_APPROVAL_KIND],
+    kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],
   });
 
