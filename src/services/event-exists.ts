@@ -11,12 +11,6 @@ import { NostrEvent } from "../types/nostr-event";
 import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-cache-relay";
 
 function hashFilter(filter: NostrRequestFilter) {
-  // const encoder = new TextEncoder();
-  // const data = encoder.encode(stringify(filter));
-  // const hash = await window.crypto.subtle.digest("SHA-256", data);
-  // const hashArray = Array.from(new Uint8Array(hash));
-  // const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  // return hashHex;
   return stringify(filter);
 }
 

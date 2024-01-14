@@ -51,22 +51,22 @@ export function getSharableEventAddress(event: NostrEvent) {
   }
 }
 
-export function encodePointer(pointer: nip19.DecodeResult) {
-  switch (pointer.type) {
+export function encodeDecodeResult(result: nip19.DecodeResult) {
+  switch (result.type) {
     case "naddr":
-      return nip19.naddrEncode(pointer.data);
+      return nip19.naddrEncode(result.data);
     case "nprofile":
-      return nip19.nprofileEncode(pointer.data);
+      return nip19.nprofileEncode(result.data);
     case "nevent":
-      return nip19.neventEncode(pointer.data);
+      return nip19.neventEncode(result.data);
     case "nrelay":
-      return nip19.nrelayEncode(pointer.data);
+      return nip19.nrelayEncode(result.data);
     case "nsec":
-      return nip19.nsecEncode(pointer.data);
+      return nip19.nsecEncode(result.data);
     case "npub":
-      return nip19.npubEncode(pointer.data);
+      return nip19.npubEncode(result.data);
     case "note":
-      return nip19.noteEncode(pointer.data);
+      return nip19.noteEncode(result.data);
   }
 }
 

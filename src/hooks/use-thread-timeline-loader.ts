@@ -15,17 +15,17 @@ export default function useThreadTimelineLoader(
   kind: number = kinds.ShortTextNote,
 ) {
   const refs = focusedEvent && getReferences(focusedEvent);
-  const rootId = refs?.root?.e?.id || focusedEvent?.id;
+  const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent?.id });
 
-  const readRelays = unique([...relays, ...(refs?.root?.e?.relays ?? [])]);
+  const readRelays = unique([...relays, ...(rootPointer?.relays ?? [])]);
 
-  const timelineId = `${rootId}-replies`;
+  const timelineId = `${rootPointer?.id}-replies`;
   const timeline = useTimelineLoader(
     timelineId,
     readRelays,
-    rootId
+    rootPointer
       ? {
-          "#e": [rootId],
+          "#e": [rootPointer.id],
           kinds: [kind],
         }
       : undefined,
@@ -38,7 +38,7 @@ export default function useThreadTimelineLoader(
     for (const e of events) singleEventService.handleEvent(e);
   }, [events]);
 
-  const rootEvent = useSingleEvent(refs?.root?.e?.id, refs?.root?.e?.relays);
+  const rootEvent = useSingleEvent(rootPointer?.id, rootPointer?.relays);
   const allEvents = useMemo(() => {
     const arr = Array.from(events);
     if (focusedEvent) arr.push(focusedEvent);
@@ -46,5 +46,5 @@ export default function useThreadTimelineLoader(
     return arr;
   }, [events, rootEvent, focusedEvent]);
 
-  return { events: allEvents, rootEvent, rootId, timeline };
+  return { events: allEvents, rootEvent, rootPointer, timeline };
 }

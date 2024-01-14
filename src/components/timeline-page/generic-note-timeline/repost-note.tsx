@@ -1,39 +1,37 @@
 import { useRef } from "react";
-import { Flex, Heading, Link, SkeletonText, Text } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { kinds, nip18 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import { isETag, NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "../../../types/nostr-event";
 import { Note } from "../../note";
 import NoteMenu from "../../note/note-menu";
 import UserAvatar from "../../user-avatar";
 import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
 import UserLink from "../../user-link";
 import { TrustProvider } from "../../../providers/local/trust";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
+import LoadingNostrLink from "../../loading-nostr-link";
 
 export default function RepostNote({ event }: { event: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
-
   const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 
-  const [_, eventId, relay] = event.tags.find(isETag) ?? [];
-  const readRelays = useReadRelayUrls(relay ? [relay] : []);
-
-  const loadedNote = useSingleEvent(eventId, readRelays);
+  const pointer = nip18.getRepostedEventPointer(event);
+  const loadedNote = useSingleEvent(pointer?.id, pointer?.relays);
   const note = hardCodedNote || loadedNote;
 
   const communityCoordinate = getEventCommunityPointer(event);
 
-  if (note && muteFilter(note)) return;
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, event.id);
+
+  if ((note && muteFilter(note)) || !pointer) return null;
 
   return (
     <TrustProvider event={event}>
@@ -59,7 +57,7 @@ export default function RepostNote({ event }: { event: NostrEvent }) {
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" ml="auto" />
         </Flex>
         {!note ? (
-          <SkeletonText />
+          <LoadingNostrLink link={{ type: "nevent", data: pointer }} />
         ) : note.kind === kinds.ShortTextNote ? (
           // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
           <Note event={note} showReplyButton registerIntersectionEntity={false} />

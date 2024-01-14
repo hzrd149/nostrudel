@@ -16,6 +16,10 @@ export function isFilterEqual(a: NostrRequestFilter, b: NostrRequestFilter) {
   return stringifyFilter(a) === stringifyFilter(b);
 }
 
+export function isQueryMapEqual(a: RelayQueryMap, b: RelayQueryMap) {
+  return stringify(a) === stringify(b);
+}
+
 export function mapQueryMap(queryMap: RelayQueryMap, fn: (filter: NostrRequestFilter) => NostrRequestFilter) {
   const newMap: RelayQueryMap = {};
   for (const [relay, filter] of Object.entries(queryMap)) newMap[relay] = fn(filter);

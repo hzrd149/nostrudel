@@ -12,7 +12,13 @@ import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import deleteEventService from "../services/delete-events";
-import { addQueryToFilter, isFilterEqual, mapQueryMap, stringifyFilter } from "../helpers/nostr/filter";
+import {
+  addQueryToFilter,
+  isFilterEqual,
+  isQueryMapEqual,
+  mapQueryMap,
+  stringifyFilter,
+} from "../helpers/nostr/filter";
 import { localCacheRelay } from "../services/local-cache-relay";
 import { SimpleSubscription } from "nostr-idb";
 import { relayRequest } from "../helpers/relay";
@@ -178,7 +184,7 @@ export default class TimelineLoader {
   }
 
   setQueryMap(queryMap: RelayQueryMap) {
-    if (isFilterEqual(this.queryMap, queryMap)) return;
+    if (isQueryMapEqual(this.queryMap, queryMap)) return;
 
     this.log("set query map", queryMap);
 

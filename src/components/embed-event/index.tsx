@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
-import { CardProps, Spinner } from "@chakra-ui/react";
+import { Button, CardProps, Spinner } from "@chakra-ui/react";
 import { kinds, nip19 } from "nostr-tools";
 
 import EmbeddedNote from "./event-types/embedded-note";
@@ -40,6 +40,7 @@ import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
 import EmbeddedChannel from "./event-types/embedded-channel";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
+import LoadingNostrLink from "../loading-nostr-link";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -101,17 +102,17 @@ export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult
   switch (pointer.type) {
     case "note": {
       const event = useSingleEvent(pointer.data);
-      if (event === undefined) return <NoteLink noteId={pointer.data} />;
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nevent": {
       const event = useSingleEvent(pointer.data.id, pointer.data.relays);
-      if (event === undefined) return <NoteLink noteId={pointer.data.id} />;
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "naddr": {
-      const event = useReplaceableEvent(pointer.data);
-      if (!event) return <span>{nip19.naddrEncode(pointer.data)}</span>;
+      const event = useReplaceableEvent(pointer.data, pointer.data.relays);
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nrelay":

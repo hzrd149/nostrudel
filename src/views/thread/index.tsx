@@ -1,9 +1,9 @@
-import { useMemo } from "react";
-import { Button, Heading, Spinner } from "@chakra-ui/react";
+import { ReactNode, useMemo } from "react";
+import { Card, Flex, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import Note from "../../components/note";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
@@ -13,12 +13,57 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import LoadingNostrLink from "../../components/loading-nostr-link";
+import UserName from "../../components/user-name";
+import { getSharableEventAddress } from "../../helpers/nip19";
+import UserAvatarLink from "../../components/user-avatar-link";
+import { ReplyIcon } from "../../components/icons";
 
-function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadItem>; rootId: string; focusId: string }) {
-  const isRoot = rootId === focusId;
+function CollapsedReplies({
+  pointer,
+  thread,
+  root,
+}: {
+  pointer: nip19.EventPointer;
+  thread: Map<string, ThreadItem>;
+  root: nip19.EventPointer;
+}) {
+  const post = thread.get(pointer.id);
+  if (!post) return <LoadingNostrLink link={{ type: "nevent", data: pointer }} />;
+
+  let reply: ReactNode = null;
+  if (post.refs.reply?.e && post.refs.reply.e.id !== root.id) {
+    reply = <CollapsedReplies pointer={post.refs.reply.e} thread={thread} root={root} />;
+  }
+
+  return (
+    <>
+      {reply}
+      <Card gap="2" overflow="hidden" px="2" display="flex" flexDirection="row" p="2">
+        <UserAvatarLink pubkey={post.event.pubkey} size="xs" />
+        <UserName pubkey={post.event.pubkey} fontWeight="bold" />
+        {root.id !== pointer.id && <ReplyIcon />}
+        <Link as={RouterLink} to={`/n/${getSharableEventAddress(post.event)}`} isTruncated>
+          {post.event.content}
+        </Link>
+      </Card>
+    </>
+  );
+}
+
+function ThreadPage({
+  thread,
+  rootPointer,
+  focusId,
+}: {
+  thread: Map<string, ThreadItem>;
+  rootPointer: nip19.EventPointer;
+  focusId: string;
+}) {
+  const isRoot = rootPointer.id === focusId;
 
   const focusedPost = thread.get(focusId);
-  const rootPost = thread.get(rootId);
+  const rootPost = thread.get(rootPointer.id);
   if (isRoot && rootPost) {
     return <ThreadPost post={rootPost} initShowReplies focusId={focusId} />;
   }
@@ -34,29 +79,22 @@ function ThreadPage({ thread, rootId, focusId }: { thread: Map<string, ThreadIte
     }
   }
 
+  const grandparentPointer = focusedPost.replyingTo?.refs.reply?.e;
+
   return (
     <>
-      {parentPosts.length > 1 && (
-        <Button
-          variant="outline"
-          size="lg"
-          h="4rem"
-          w="full"
-          as={RouterLink}
-          to={`/n/${getSharableEventAddress(parentPosts[0].event)}`}
-        >
-          View full thread ({parentPosts.length - 1})
-        </Button>
+      {rootPointer && focusedPost.refs.reply?.e?.id !== rootPointer.id && (
+        <CollapsedReplies pointer={rootPointer} thread={thread} root={rootPointer} />
       )}
-      {focusedPost.replyingTo && (
-        <Note
-          key={focusedPost.replyingTo.event.id + "-rely"}
-          event={focusedPost.replyingTo.event}
-          hideDrawerButton
-          showReplyLine={false}
-        />
+      {grandparentPointer && grandparentPointer.id !== rootPointer.id && (
+        <CollapsedReplies pointer={grandparentPointer} thread={thread} root={rootPointer} />
       )}
-      <ThreadPost key={focusedPost.event.id} post={focusedPost} initShowReplies focusId={focusId} />
+      {focusedPost.replyingTo ? (
+        <Note event={focusedPost.replyingTo.event} hideDrawerButton showReplyLine={false} />
+      ) : (
+        focusedPost.refs.reply?.e && <LoadingNostrLink link={{ type: "nevent", data: focusedPost.refs.reply.e }} />
+      )}
+      <ThreadPost post={focusedPost} initShowReplies focusId={focusId} />
     </>
   );
 }
@@ -66,7 +104,7 @@ export default function ThreadView() {
   const readRelays = useReadRelayUrls(pointer.relays);
 
   const focusedEvent = useSingleEvent(pointer.id, pointer.relays);
-  const { rootId, events, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
+  const { rootPointer, events, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
   const thread = useMemo(() => buildThread(events), [events]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
@@ -74,15 +112,16 @@ export default function ThreadView() {
   return (
     <VerticalPageLayout px={{ base: 0, md: "2" }}>
       {!focusedEvent && (
-        <Heading mx="auto" my="4">
-          <Spinner /> Loading note
-        </Heading>
+        <>
+          <Heading my="4">
+            <Spinner /> Loading note
+          </Heading>
+          <LoadingNostrLink link={{ type: "nevent", data: pointer }} />
+        </>
       )}
       <IntersectionObserverProvider callback={callback}>
-        {focusedEvent && rootId ? (
-          <ThreadPage thread={thread} rootId={rootId} focusId={focusedEvent.id} />
-        ) : (
-          <Spinner />
+        {focusedEvent && rootPointer && (
+          <ThreadPage thread={thread} rootPointer={rootPointer} focusId={focusedEvent.id} />
         )}
       </IntersectionObserverProvider>
     </VerticalPageLayout>

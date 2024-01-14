@@ -26,7 +26,7 @@ import ListFeedButton from "../components/list-feed-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
-import { encodePointer } from "../../../helpers/nip19";
+import { encodeDecodeResult } from "../../../helpers/nip19";
 import useSingleEvent from "../../../hooks/use-single-event";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
@@ -136,7 +136,7 @@ function ListPage({ list }: { list: NostrEvent }) {
             <Flex gap="2" direction="column">
               {articles.map((pointer) => {
                 const decode: DecodeResult = { type: "naddr", data: pointer };
-                return <EmbedEventPointer key={encodePointer(decode)} pointer={decode} />;
+                return <EmbedEventPointer key={encodeDecodeResult(decode)} pointer={decode} />;
               })}
             </Flex>
           </>

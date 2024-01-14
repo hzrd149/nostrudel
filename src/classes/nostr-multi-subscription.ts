@@ -5,7 +5,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingRequest, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
 import Relay, { IncomingEvent } from "./relay";
 import relayPoolService from "../services/relay-pool";
-import { isFilterEqual } from "../helpers/nostr/filter";
+import { isFilterEqual, isQueryMapEqual } from "../helpers/nostr/filter";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -58,7 +58,7 @@ export default class NostrMultiSubscription {
   }
 
   setQueryMap(queryMap: RelayQueryMap) {
-    if (isFilterEqual(this.queryMap, queryMap)) return;
+    if (isQueryMapEqual(this.queryMap, queryMap)) return;
 
     // add and remove relays
     for (const url of Object.keys(queryMap)) {
