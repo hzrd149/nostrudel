@@ -11,6 +11,7 @@ import {
   Flex,
   IconButton,
   Link,
+  TagCloseButton,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -107,6 +108,7 @@ function EventTag({ tag }: { tag: Tag }) {
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const debugModal = useDisclosure();
+  const tags = useDisclosure();
   const address = getSharableEventAddress(event);
 
   const alt = event.tags.find((t) => t[0] === "alt")?.[1];
@@ -158,11 +160,20 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
           <Box whiteSpace="pre-wrap" noOfLines={3}>
             {content}
           </Box>
-          <Flex direction="column" gap="1" px="2" my="2">
-            {event.tags.map((tag, i) => (
-              <EventTag key={i} tag={tag} />
-            ))}
-          </Flex>
+          {event.tags.length > 0 && (
+            <>
+              <Button variant="link" color="GrayText" fontFamily="monospace" onClick={tags.onToggle}>
+                [{tags.isOpen ? "-" : "+"}] Tags ({event.tags.length})
+              </Button>
+              {tags.isOpen && (
+                <Flex direction="column" gap="1" px="2" my="2">
+                  {event.tags.map((tag, i) => (
+                    <EventTag key={i} tag={tag} />
+                  ))}
+                </Flex>
+              )}
+            </>
+          )}
         </CardBody>
       </Card>
       {debugModal.isOpen && <NoteDebugModal isOpen={debugModal.isOpen} onClose={debugModal.onClose} event={event} />}
