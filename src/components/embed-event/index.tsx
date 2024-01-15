@@ -41,6 +41,7 @@ import EmbeddedChannel from "./event-types/embedded-channel";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
 import LoadingNostrLink from "../loading-nostr-link";
+import EmbeddedRepost from "./event-types/embedded-repost";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -90,6 +91,9 @@ export function EmbedEvent({
         return <EmbeddedFlareVideo video={event} {...cardProps} />;
       case kinds.ChannelCreation:
         return <EmbeddedChannel channel={event} {...cardProps} />;
+      case kinds.Repost:
+      case kinds.GenericRepost:
+        return <EmbeddedRepost repost={event} {...cardProps} />;
     }
 
     return <EmbeddedUnknown event={event} {...cardProps} />;
