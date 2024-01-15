@@ -5,7 +5,7 @@ import useSubject from "./use-subject";
 import useSingleEvent from "./use-single-event";
 import singleEventService from "../services/single-event";
 import useTimelineLoader from "./use-timeline-loader";
-import { getReferences } from "../helpers/nostr/events";
+import { getThreadReferences } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 import { unique } from "../helpers/array";
 
@@ -14,7 +14,7 @@ export default function useThreadTimelineLoader(
   relays: string[],
   kind: number = kinds.ShortTextNote,
 ) {
-  const refs = focusedEvent && getReferences(focusedEvent);
+  const refs = focusedEvent && getThreadReferences(focusedEvent);
   const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent?.id });
 
   const readRelays = unique([...relays, ...(rootPointer?.relays ?? [])]);

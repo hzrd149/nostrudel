@@ -36,7 +36,7 @@ import BookmarkButton from "./components/bookmark-button";
 import useCurrentAccount from "../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../views/thread/components/reply-form";
-import { getReferences, truncatedId } from "../../helpers/nostr/events";
+import { getThreadReferences, truncatedId } from "../../helpers/nostr/events";
 import Timestamp from "../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../helpers/nip19";
@@ -91,7 +91,7 @@ function ReplyToA({ pointer }: { pointer: AddressPointer }) {
 }
 
 function ReplyLine({ event }: { event: NostrEvent }) {
-  const refs = getReferences(event);
+  const refs = getThreadReferences(event);
   if (!refs.reply) return null;
 
   return (
@@ -203,7 +203,7 @@ export const Note = React.memo(
         </ExpandProvider>
         {replyForm.isOpen && (
           <ReplyForm
-            item={{ event, replies: [], refs: getReferences(event) }}
+            item={{ event, replies: [], refs: getThreadReferences(event) }}
             onCancel={replyForm.onClose}
             onSubmitted={replyForm.onClose}
           />

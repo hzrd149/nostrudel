@@ -11,7 +11,7 @@ import { TrustProvider } from "../../../providers/local/trust";
 import Timestamp from "../../timestamp";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import { getReferences } from "../../../helpers/nostr/events";
+import { getThreadReferences } from "../../../helpers/nostr/events";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
@@ -24,7 +24,7 @@ export default function EmbeddedTorrentComment({
 }: Omit<CardProps, "children"> & { comment: NostrEvent }) {
   const navigate = useNavigateInDrawer();
   const { showSignatureVerification } = useSubject(appSettings);
-  const refs = getReferences(comment);
+  const refs = getThreadReferences(comment);
   const torrent = useSingleEvent(refs.root?.e?.id, refs.root?.e?.relays);
   const linkToTorrent = refs.root?.e && `/torrents/${nip19.neventEncode(refs.root.e)}`;
 

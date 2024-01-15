@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { EventReferences, getReferences } from "./nostr/events";
+import { EventReferences, getThreadReferences } from "./nostr/events";
 
 export function countReplies(replies: ThreadItem[]): number {
   return replies.reduce((c, item) => c + countReplies(item.replies), 0) + replies.length;
@@ -37,7 +37,7 @@ export function buildThread(events: NostrEvent[]) {
 
   const replies = new Map<string, ThreadItem>();
   for (const event of events) {
-    const refs = getReferences(event);
+    const refs = getThreadReferences(event);
 
     if (refs.reply?.e) {
       idToChildren[refs.reply.e.id] = idToChildren[refs.reply.e.id] || [];

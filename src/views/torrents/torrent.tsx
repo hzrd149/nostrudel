@@ -41,7 +41,7 @@ import TorrentMenu from "./components/torrent-menu";
 import QuoteRepostButton from "../../components/note/components/quote-repost-button";
 import TorrentComments from "./components/torrents-comments";
 import ReplyForm from "../thread/components/reply-form";
-import { getReferences } from "../../helpers/nostr/events";
+import { getThreadReferences } from "../../helpers/nostr/events";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 
@@ -127,7 +127,7 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
       </Flex>
       {replyForm.isOpen && (
         <ReplyForm
-          item={{ event: torrent, refs: getReferences(torrent), replies: [] }}
+          item={{ event: torrent, refs: getThreadReferences(torrent), replies: [] }}
           onCancel={replyForm.onClose}
           onSubmitted={replyForm.onClose}
           replyKind={TORRENT_COMMENT_KIND}

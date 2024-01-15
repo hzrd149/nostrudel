@@ -7,7 +7,7 @@ import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../providers/local/intersection-observer";
 import { parseZapEvent } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getEventUID, getReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
+import { getEventUID, getThreadReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -34,7 +34,7 @@ export const ExpandableToggleButton = ({
 
 const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
-  const refs = getReferences(event);
+  const refs = getThreadReferences(event);
   const parent = useSingleEvent(refs.reply?.e?.id);
 
   const isReplyingToMe = !!refs.reply?.e?.id && (parent ? parent.pubkey === account.pubkey : true);

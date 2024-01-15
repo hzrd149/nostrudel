@@ -6,6 +6,7 @@ import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
+import { getEventUID } from "nostr-idb";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -32,18 +33,10 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
   return false;
 }
 
-// used to get a unique Id for each event, should take into account replaceable events
-export function getEventUID(event: NostrEvent) {
-  if (isReplaceable(event.kind)) {
-    return getEventCoordinate(event);
-  }
-  return event.id;
-}
-
 export function isReply(event: NostrEvent | DraftNostrEvent) {
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
   // TODO: update this to only look for a "root" or "reply" tag
-  return !!getReferences(event).reply;
+  return !!getThreadReferences(event).reply;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
@@ -96,24 +89,13 @@ export function getContentTagRefs(content: string, tags: Tag[]) {
   return Array.from(foundTags);
 }
 
-/**
- * returns all tags that are referenced in the content
- */
+/** returns all tags that are referenced in the content */
 export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
   const contentTagRefs = getContentTagRefs(content, tags);
   return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-export function eTagToEventPointer(tag: ETag): EventPointer {
-  return { id: tag[1], relays: tag[2] ? [tag[2]] : [] };
-}
-export function aTagToAddressPointer(tag: ATag): AddressPointer {
-  const cord = parseCoordinate(tag[1], true, false);
-  if (tag[2]) cord.relays = [tag[2]];
-  return cord;
-}
-
-export function interpretTags(event: NostrEvent | DraftNostrEvent) {
+export function interpretThreadTags(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
   const aTags = event.tags.filter(isATag);
 
@@ -165,9 +147,9 @@ export function interpretTags(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export type EventReferences = ReturnType<typeof getReferences>;
-export function getReferences(event: NostrEvent | DraftNostrEvent) {
-  const tags = interpretTags(event);
+export type EventReferences = ReturnType<typeof getThreadReferences>;
+export function getThreadReferences(event: NostrEvent | DraftNostrEvent) {
+  const tags = interpretThreadTags(event);
 
   return {
     root: tags.root && {
@@ -205,6 +187,7 @@ export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
+
 export function getEventAddressPointer(event: NostrEvent): AddressPointer {
   const { kind, pubkey } = event;
   if (!isReplaceable(kind)) throw new Error("Event is not replaceable");
@@ -212,10 +195,22 @@ export function getEventAddressPointer(event: NostrEvent): AddressPointer {
   if (!identifier) throw new Error("Missing identifier");
   return { kind, pubkey, identifier };
 }
-export function pointerToATag(pointer: AddressPointer): ATag {
+
+export function eTagToEventPointer(tag: ETag): EventPointer {
+  return { id: tag[1], relays: tag[2] ? [tag[2]] : [] };
+}
+export function aTagToAddressPointer(tag: ATag): AddressPointer {
+  const cord = parseCoordinate(tag[1], true, false);
+  if (tag[2]) cord.relays = [tag[2]];
+  return cord;
+}
+export function addressPointerToATag(pointer: AddressPointer): ATag {
   const relay = pointer.relays?.[0];
   const coordinate = `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
   return relay ? ["a", coordinate, relay] : ["a", coordinate];
+}
+export function eventPointerToETag(pointer: EventPointer): ETag {
+  return pointer.relays?.length ? ["e", pointer.id, pointer.relays[0]] : ["e", pointer.id];
 }
 
 export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
@@ -270,3 +265,5 @@ export function parseHardcodedNoteContent(event: NostrEvent) {
 export function sortByDate(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;
 }
+
+export { getEventUID };

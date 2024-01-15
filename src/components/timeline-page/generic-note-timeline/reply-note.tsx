@@ -3,11 +3,11 @@ import { memo, useRef } from "react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import Note from "../../note";
+import { getEventUID } from "nostr-idb";
 
 function ReplyNote({ event }: { event: NostrEvent }) {
-  // if there is a parent intersection observer, register this card
   const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  useRegisterIntersectionEntity(ref, getEventUID(event));
 
   return (
     <div ref={ref}>

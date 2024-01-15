@@ -45,15 +45,19 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
     },
     [cachedLocationKey, timeline],
   );
+
+  const [pinDate, setPinDate] = useState(getCachedNumber("pin") ?? events[NOTE_BUFFER]?.created_at ?? 0);
+
   const [maxDate, setMaxDate] = useState(getCachedNumber("max") ?? Infinity);
-  const [minDate, setMinDate] = useState(getCachedNumber("min") ?? events[NOTE_BUFFER]?.created_at ?? -Infinity);
+  const [minDate, setMinDate] = useState(getCachedNumber("min") ?? events[NOTE_BUFFER]?.created_at ?? 0);
 
   // reset the latest and minDate when timeline changes
   useEffect(() => {
     setLatest(dayjs().unix());
     setMaxDate(getCachedNumber("max") ?? Infinity);
-    setMinDate(getCachedNumber("min") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? 0);
-  }, [timeline, setMinDate, setLatest, getCachedNumber]);
+    setPinDate(getCachedNumber("min") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? 0);
+    setPinDate(getCachedNumber("pin") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? 0);
+  }, [timeline, setPinDate, setLatest, getCachedNumber]);
 
   const updateNoteMinHeight = useCallback(
     (id: string, element: Element) => {
@@ -78,7 +82,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
 
       let max: number = -Infinity;
       let min: number = Infinity;
-      let preload = NOTE_BUFFER;
+      let minBuffer = NOTE_BUFFER;
       let foundVisible = false;
       for (const event of timeline.timeline.value) {
         if (event.created_at > latest) continue;
@@ -87,7 +91,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
         if (!isIntersecting) {
           if (foundVisible) {
             // found an event below the view
-            if (preload-- < 0) break;
+            if (minBuffer-- < 0) break;
             if (event.created_at < min) min = event.created_at;
           } else {
             // found an event above the view
@@ -97,15 +101,20 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
           // found visible event
           foundVisible = true;
 
+          // find the event that is x indexes back
           const bufferEvent = timeline.timeline.value[timeline.timeline.value.indexOf(event) - NOTE_BUFFER];
           if (bufferEvent && bufferEvent.created_at > max) max = bufferEvent.created_at;
         }
       }
 
       if (min !== Infinity) {
-        setMinDate((v) => {
+        setCachedNumber("min", min);
+        setMinDate(min);
+
+        // only set the pin date if its less than before (the timeline only get longer)
+        setPinDate((v) => {
           const value = Math.min(v, min);
-          setCachedNumber("min", value);
+          setCachedNumber("pin", value);
           return value;
         });
       }
@@ -123,8 +132,9 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
       intersectionSubject.unsubscribe(listener);
     };
   }, [
-    setMinDate,
+    setPinDate,
     setMaxDate,
+    setMinDate,
     intersectionSubject,
     intersectionEntryCache,
     updateNoteMinHeight,
@@ -137,7 +147,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
   const notes: NostrEvent[] = [];
   for (const note of events) {
     if (note.created_at > latest) newNotes.push(note);
-    else if (note.created_at >= minDate) notes.push(note);
+    else if (note.created_at >= pinDate) notes.push(note);
   }
 
   return (
@@ -159,7 +169,7 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
         <TimelineItem
           key={note.id}
           event={note}
-          visible={note.created_at <= maxDate}
+          visible={note.created_at <= maxDate && note.created_at >= minDate}
           minHeight={getCachedNumber(getEventUID(note))}
         />
       ))}

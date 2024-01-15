@@ -1,6 +1,6 @@
 import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
-import { getReferences } from "./events";
+import { getThreadReferences } from "./events";
 import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
@@ -40,7 +40,7 @@ function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string
 export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
-  const refs = getReferences(replyTo);
+  const refs = getThreadReferences(replyTo);
   const rootId = refs.root?.e?.id ?? replyTo.id;
   const rootRelayHint = refs.root?.e?.relays?.[0];
   const replyId = replyTo.id;
