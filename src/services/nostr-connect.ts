@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
 import NostrMultiSubscription from "../classes/nostr-multi-subscription";
-import { getPubkeyFromDecodeResult, isHexKey } from "../helpers/nip19";
+import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
 import { createSimpleQueryMap } from "../helpers/nostr/filter";
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
@@ -11,6 +11,7 @@ import createDefer, { Deferred } from "../classes/deferred";
 import { truncatedId } from "../helpers/nostr/events";
 import { NostrConnectAccount } from "./account";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { normalizeRelayURL } from "../helpers/relay";
 
 export enum NostrConnectMethod {
   Connect = "connect",
@@ -181,12 +182,24 @@ class NostrConnectService {
 
     return client;
   }
+  fromBunkerAddress(address: string) {
+    const parts = address.replace("bunker://", "").split("@");
+    if (parts.length !== 2) throw new Error("Invalid bunker address");
+    const pubkey = normalizeToHexPubkey(parts[0]);
+    const pathRelay = normalizeRelayURL("wss://" + parts[1]);
+    if (!pubkey || !isHexKey(pubkey)) throw new Error("Missing pubkey");
+
+    return this.getClient(pubkey) || this.createClient(pubkey, [pathRelay]);
+  }
   fromBunkerURI(uri: string) {
     const url = new URL(uri);
 
-    const pubkey = url.pathname.replace(/^\/\//, "");
+    const pathParts = url.pathname.replace(/^\/\//, "").split("@");
+    const pubkey = pathParts[0];
+    const pathRelay = pathParts[1] as string | undefined;
     if (!isHexKey(pubkey)) throw new Error("Invalid connection URI");
     const relays = url.searchParams.getAll("relay");
+    if (pathRelay) relays.push(pathRelay);
     if (relays.length === 0) throw new Error("Missing relays");
 
     return this.getClient(pubkey) || this.createClient(pubkey, relays);

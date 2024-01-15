@@ -18,7 +18,9 @@ export default function LoginNostrConnectView() {
       setLoading("Connecting...");
       let client: NostrConnectClient;
       if (uri.startsWith("bunker://")) {
-        client = nostrConnectService.fromBunkerURI(uri);
+        if (uri.includes("@")) client = nostrConnectService.fromBunkerAddress(uri);
+        else client = nostrConnectService.fromBunkerURI(uri);
+
         await client.connect();
       } else if (uri.startsWith("npub")) {
         client = nostrConnectService.fromNsecBunkerToken(uri);
