@@ -38,6 +38,8 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import useCurrentAccount from "../../../hooks/use-current-account";
 import RawJson from "../../../components/debug-modals/raw-json";
 import { RelayShareButton } from "./relay-share-button";
+import useRelayStats from "../../../hooks/use-relay-stats";
+import { getNetwork } from "../../../helpers/nostr/relay-stats";
 
 const B = styled.span`
   font-weight: bold;
@@ -52,6 +54,7 @@ export const Metadata = ({ name, children }: { name: string } & PropsWithChildre
 
 export function RelayMetadata({ url, extended }: { url: string; extended?: boolean }) {
   const { info } = useRelayInfo(url);
+  const { stats } = useRelayStats(url);
 
   return (
     <Box>
@@ -66,6 +69,7 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
       )}
       {extended && (
         <>
+          {stats && <Metadata name="Network">{getNetwork(stats)}</Metadata>}
           <Metadata name="Software">{info?.software}</Metadata>
           <Metadata name="Version">{info?.version}</Metadata>
         </>

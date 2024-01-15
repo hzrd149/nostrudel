@@ -14,7 +14,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 
-import { safeRelayUrl } from "../../../helpers/url";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../components/relay-card";
 import SupportedNIPs from "../components/supported-nips";
@@ -26,6 +25,7 @@ import PeopleListProvider from "../../../providers/local/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
+import { safeRelayUrl } from "../../../helpers/relay";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 
 function RelayPage({ relay }: { relay: string }) {
@@ -104,7 +104,6 @@ export default function RelayView() {
   if (!relay) return <>No relay url</>;
 
   const safeUrl = safeRelayUrl(relay);
-
   if (!safeUrl) return <>Bad relay url</>;
 
   return (

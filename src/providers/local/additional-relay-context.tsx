@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { unique } from "../../helpers/array";
-import { safeRelayUrl } from "../../helpers/url";
+import { safeRelayUrls } from "../../helpers/relay";
 
 export const RelayContext = React.createContext<string[]>([]);
 
@@ -18,7 +18,7 @@ export function AdditionalRelayProvider({
   extend?: boolean;
 }) {
   const parentRelays = useAdditionalRelayContext();
-  const safeUrls = (extend ? [...parentRelays, ...relays] : relays).map(safeRelayUrl).filter(Boolean) as string[];
+  const safeUrls = safeRelayUrls(extend ? [...parentRelays, ...relays] : relays);
 
   return <RelayContext.Provider value={unique(safeUrls)}>{children}</RelayContext.Provider>;
 }

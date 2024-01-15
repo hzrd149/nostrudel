@@ -1,7 +1,7 @@
 import Relay from "../classes/relay";
 import Subject from "../classes/subject";
 import { logger } from "../helpers/debug";
-import { normalizeRelayUrl } from "../helpers/url";
+import { normalizeRelayURL } from "../helpers/relay";
 
 export class RelayPoolService {
   relays = new Map<string, Relay>();
@@ -14,7 +14,7 @@ export class RelayPoolService {
     return Array.from(this.relays.values());
   }
   getRelayClaims(url: string) {
-    const normalized = normalizeRelayUrl(url);
+    const normalized = normalizeRelayURL(url);
     if (!this.relayClaims.has(normalized)) {
       this.relayClaims.set(normalized, new Set());
     }
@@ -22,7 +22,7 @@ export class RelayPoolService {
   }
 
   requestRelay(url: string, connect = true) {
-    const normalized = normalizeRelayUrl(url);
+    const normalized = normalizeRelayURL(url);
     if (!this.relays.has(normalized)) {
       const newRelay = new Relay(normalized);
       this.relays.set(normalized, newRelay);
@@ -65,11 +65,11 @@ export class RelayPoolService {
 
   // id can be anything
   addClaim(url: string, id: any) {
-    const normalized = normalizeRelayUrl(url);
+    const normalized = normalizeRelayURL(url);
     this.getRelayClaims(normalized).add(id);
   }
   removeClaim(url: string, id: any) {
-    const normalized = normalizeRelayUrl(url);
+    const normalized = normalizeRelayURL(url);
     this.getRelayClaims(normalized).delete(id);
   }
 

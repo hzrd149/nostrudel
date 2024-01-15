@@ -19,9 +19,6 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Radio,
-  RadioGroup,
-  Stack,
   Text,
   Textarea,
   useToast,
@@ -36,11 +33,11 @@ import Upload01 from "../../../components/icons/upload-01";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { RelayUrlInput } from "../../../components/relay-url-input";
-import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import NpubAutocomplete from "../../../components/npub-autocomplete";
 import { normalizeToHexPubkey } from "../../../helpers/nip19";
 import { safeUrl } from "../../../helpers/parse";
+import { safeRelayUrl } from "../../../helpers/relay";
 
 function RemoveButton({ ...props }: IconButtonProps) {
   return <IconButton icon={<TrashIcon />} size="sm" colorScheme="red" variant="ghost" ml="auto" {...props} />;

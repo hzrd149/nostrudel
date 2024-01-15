@@ -23,11 +23,11 @@ import { useState } from "react";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
-import { safeRelayUrl } from "../../../helpers/url";
 import { useDebounce } from "react-use";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { CodeIcon } from "../../../components/icons";
 import { Metadata } from "./relay-card";
+import { safeRelayUrl } from "../../../helpers/relay";
 
 function RelayDetails({ url, debug }: { url: string; debug?: boolean }) {
   const { info } = useRelayInfo(url);

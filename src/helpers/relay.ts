@@ -1,9 +1,48 @@
 import { SimpleRelay, SimpleSubscription, SimpleSubscriptionOptions } from "nostr-idb";
 import { RelayConfig } from "../classes/relay";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
-import { safeRelayUrl } from "./url";
 import { Filter } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
+
+export function validateRelayURL(relay: string) {
+  if (relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
+  const url = new URL(relay);
+  if (url.protocol !== "wss:" && url.protocol !== "ws:") throw new Error("Incorrect protocol");
+  return url;
+}
+export function isValidRelayURL(relay: string) {
+  try {
+    validateRelayURL(relay);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function normalizeRelayURL(relayUrl: string) {
+  const url = validateRelayURL(relayUrl);
+  url.pathname = url.pathname.replace(/\/+/g, "/");
+  if ((url.port === "80" && url.protocol === "ws:") || (url.port === "443" && url.protocol === "wss:")) url.port = "";
+  url.searchParams.sort();
+  url.hash = "";
+  return url.toString();
+}
+export function safeNormalizeRelayURL(relayUrl: string) {
+  try {
+    return normalizeRelayURL(relayUrl);
+  } catch (e) {
+    return null;
+  }
+}
+
+// TODO: move these to helpers/relay
+export function safeRelayUrl(relayUrl: string) {
+  if (isValidRelayURL(relayUrl)) return new URL(relayUrl).toString();
+  return null;
+}
+export function safeRelayUrls(urls: string[]): string[] {
+  return urls.map(safeRelayUrl).filter(Boolean) as string[];
+}
 
 export function normalizeRelayConfigs(relays: RelayConfig[]) {
   const seen: string[] = [];

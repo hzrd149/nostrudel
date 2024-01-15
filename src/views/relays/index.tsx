@@ -5,13 +5,13 @@ import { Button, Divider, Flex, Heading, Input, SimpleGrid, Spacer, Switch, useD
 
 import { useClientRelays } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
-import { safeRelayUrl } from "../../helpers/url";
 import AddCustomRelayModal from "./components/add-custom-modal";
 import RelayCard from "./components/relay-card";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
 import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { isValidRelayURL } from "../../helpers/relay";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
@@ -24,7 +24,7 @@ export default function RelaysView() {
     .getRelays()
     .filter((r) => !clientRelays.includes(r.url))
     .map((r) => r.url)
-    .filter(safeRelayUrl);
+    .filter(isValidRelayURL);
 
   const { value: onlineRelays = [] } = useAsync(async () =>
     fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),

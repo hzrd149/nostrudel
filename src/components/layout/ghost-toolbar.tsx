@@ -16,7 +16,7 @@ import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { safeRelayUrls } from "../../helpers/url";
+import { safeRelayUrls } from "../../helpers/relay";
 
 const kindColors: Record<number, FlexProps["bg"]> = {
   [kinds.ShortTextNote]: "blue.500",

@@ -18,9 +18,9 @@ import {
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import { RelayFavicon } from "../relay-favicon";
 import { RelayUrlInput } from "../relay-url-input";
-import { normalizeRelayUrl } from "../../helpers/url";
 import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
+import { normalizeRelayURL } from "../../helpers/relay";
 
 function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
   const [url, setUrl] = useState("");
@@ -32,7 +32,7 @@ function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
       onSubmit={(e) => {
         try {
           e.preventDefault();
-          onSubmit(normalizeRelayUrl(url));
+          onSubmit(normalizeRelayURL(url));
           setUrl("");
         } catch (err) {
           if (err instanceof Error) {

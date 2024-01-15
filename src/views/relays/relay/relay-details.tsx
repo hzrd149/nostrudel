@@ -28,7 +28,7 @@ import {
   LinearScale,
   CategoryScale,
 } from "chart.js";
-import { Line, Pie } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 import _throttle from "lodash.throttle";
 
 import { useAppTitle } from "../../../hooks/use-app-title";

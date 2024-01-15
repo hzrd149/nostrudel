@@ -3,10 +3,9 @@ import _throttle from "lodash.throttle";
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
-import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
 import { localCacheRelay } from "./local-cache-relay";
-import { relayRequest } from "../helpers/relay";
+import { relayRequest, safeRelayUrls } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 
 const RELAY_REQUEST_BATCH_TIME = 500;
@@ -20,8 +19,8 @@ class SingleEventService {
     const subject = this.cache.get(id);
     if (subject.value) return subject;
 
-    const newUrls = safeRelayUrls(relays);
-    this.pending.set(id, this.pending.get(id)?.concat(newUrls) ?? newUrls);
+    relays = safeRelayUrls(relays);
+    this.pending.set(id, this.pending.get(id)?.concat(relays) ?? relays);
     this.batchRequestsThrottle();
 
     return subject;
