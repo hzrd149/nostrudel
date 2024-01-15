@@ -127,7 +127,6 @@ export const Note = React.memo(
     const replyForm = useDisclosure();
     const detailsModal = useDisclosure();
 
-    // if there is a parent intersection observer, register this card
     const ref = useRef<HTMLDivElement | null>(null);
     useRegisterIntersectionEntity(ref, event.id);
 

@@ -26,6 +26,7 @@ import PeopleListSelection from "../../../components/people-list-selection/peopl
 import { RelayFavicon } from "../../../components/relay-favicon";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { safeRelayUrl } from "../../../helpers/relay";
+import RelayUsersTab from "./relay-users";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 
 function RelayPage({ relay }: { relay: string }) {
@@ -71,6 +72,7 @@ function RelayPage({ relay }: { relay: string }) {
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>
           <Tab>Notes</Tab>
+          <Tab>Users</Tab>
           <Tab>Details</Tab>
         </TabList>
 
@@ -89,6 +91,9 @@ function RelayPage({ relay }: { relay: string }) {
           </TabPanel>
           <TabPanel py="2" px="0">
             <RelayNotes relay={relay} />
+          </TabPanel>
+          <TabPanel py="2" px="0">
+            <RelayUsersTab relay={relay} />
           </TabPanel>
           <TabPanel py="2" px="0">
             <RelayDetailsTab relay={relay} />

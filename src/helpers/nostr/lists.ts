@@ -3,6 +3,7 @@ import { kinds, nip19 } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./events";
+import { getRelayVariations, safeRelayUrls } from "../relay";
 
 export const MUTE_LIST_KIND = 10000;
 export const PIN_LIST_KIND = 10001;
@@ -65,6 +66,10 @@ export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): n
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
+export function getRelaysFromList(event: NostrEvent | DraftNostrEvent) {
+  if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
+  else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
+}
 export function getCoordinatesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
@@ -83,6 +88,10 @@ export function getAddressPointersFromList(event: NostrEvent | DraftNostrEvent):
   return pointers;
 }
 
+export function isRelayInList(list: NostrEvent, relay: string) {
+  const relays = getRelaysFromList(list);
+  return getRelayVariations(relay).some((r) => relays.includes(r));
+}
 export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
   if (!pubkey || !list) return false;
   return list.tags.some((t) => t[0] === "p" && t[1] === pubkey);

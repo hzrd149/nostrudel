@@ -63,8 +63,9 @@ export default function RelaysView() {
 
       {discoveredRelays.length > 0 && !isSearching && (
         <>
-          <Divider />
-          <Heading size="lg">Discovered Relays</Heading>
+          <Heading size="lg" my="2">
+            Discovered Relays
+          </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {discoveredRelays.map((url) => (
               <ErrorBoundary>

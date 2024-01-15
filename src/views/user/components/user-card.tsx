@@ -1,18 +1,13 @@
-import { Flex, FlexProps, Heading, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { nip19 } from "nostr-tools";
+import { Flex, FlexProps } from "@chakra-ui/react";
 
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
-import UserAvatar from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import { UserFollowButton } from "../../../components/user-follow-button";
+import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user-avatar-link";
 
 export type UserCardProps = { pubkey: string; relay?: string } & Omit<FlexProps, "children">;
 
 export const UserCard = ({ pubkey, relay, ...props }: UserCardProps) => {
-  const metadata = useUserMetadata(pubkey, relay ? [relay] : []);
-
   return (
     <Flex
       borderWidth="1px"
@@ -26,13 +21,9 @@ export const UserCard = ({ pubkey, relay, ...props }: UserCardProps) => {
       alignItems="center"
       {...props}
     >
-      <UserAvatar pubkey={pubkey} />
+      <UserAvatarLink pubkey={pubkey} />
       <Flex direction="column" flex={1} overflow="hidden">
-        <Link as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}`}>
-          <Heading size="sm" whiteSpace="nowrap" isTruncated>
-            {getUserDisplayName(metadata, pubkey)}
-          </Heading>
-        </Link>
+        <UserLink pubkey={pubkey} fontWeight="bold" />
         <UserDnsIdentityIcon pubkey={pubkey} />
       </Flex>
       <UserFollowButton pubkey={pubkey} size="sm" variant="outline" flexShrink={0} />

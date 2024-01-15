@@ -1,8 +1,16 @@
 import { SimpleRelay, SimpleSubscription, SimpleSubscriptionOptions } from "nostr-idb";
+import { Filter } from "nostr-tools";
+
 import { RelayConfig } from "../classes/relay";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
-import { Filter } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
+
+// NOTE: only use this for equality checks and querying
+export function getRelayVariations(relay: string) {
+  if (relay.endsWith("/")) {
+    return [relay.slice(0, -1), relay];
+  } else return [relay, relay + "/"];
+}
 
 export function validateRelayURL(relay: string) {
   if (relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
@@ -37,8 +45,11 @@ export function safeNormalizeRelayURL(relayUrl: string) {
 
 // TODO: move these to helpers/relay
 export function safeRelayUrl(relayUrl: string) {
-  if (isValidRelayURL(relayUrl)) return new URL(relayUrl).toString();
-  return null;
+  try {
+    return validateRelayURL(relayUrl).toString();
+  } catch (e) {
+    return null;
+  }
 }
 export function safeRelayUrls(urls: string[]): string[] {
   return urls.map(safeRelayUrl).filter(Boolean) as string[];

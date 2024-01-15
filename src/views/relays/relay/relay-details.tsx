@@ -203,7 +203,7 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
               </Thead>
               <Tbody>
                 {tableData.map(({ kind, count }) => (
-                  <Tr>
+                  <Tr key={kind}>
                     <Td isNumeric>{kind}</Td>
                     <Td isNumeric>{count}</Td>
                   </Tr>

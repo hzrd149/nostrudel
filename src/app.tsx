@@ -70,6 +70,7 @@ import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import RelayReviewsView from "./views/relays/reviews";
 import PopularRelaysView from "./views/relays/popular";
+import BrowseRelaySetsView from "./views/relays/browse-sets";
 import UserDMsTab from "./views/user/dms";
 import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
@@ -256,6 +257,7 @@ const router = createHashRouter([
           { path: "", element: <RelaysView /> },
           { path: "popular", element: <PopularRelaysView /> },
           { path: "reviews", element: <RelayReviewsView /> },
+          { path: "sets", element: <BrowseRelaySetsView /> },
         ],
       },
       { path: "r/:relay", element: <RelayView /> },
