@@ -46,18 +46,22 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
     [cachedLocationKey, timeline],
   );
 
-  const [pinDate, setPinDate] = useState(getCachedNumber("pin") ?? events[NOTE_BUFFER]?.created_at ?? 0);
+  const [pinDate, setPinDate] = useState(getCachedNumber("pin") ?? events[NOTE_BUFFER]?.created_at ?? Infinity);
 
   const [maxDate, setMaxDate] = useState(getCachedNumber("max") ?? Infinity);
-  const [minDate, setMinDate] = useState(getCachedNumber("min") ?? events[NOTE_BUFFER]?.created_at ?? 0);
+  const [minDate, setMinDate] = useState(getCachedNumber("min") ?? events[NOTE_BUFFER]?.created_at ?? Infinity);
+
+  if (pinDate === Infinity && events.length > 0) setPinDate(events[NOTE_BUFFER]?.created_at);
+  if (minDate === Infinity && events.length > 0) setMinDate(events[NOTE_BUFFER]?.created_at);
 
   // reset the latest and minDate when timeline changes
   useEffect(() => {
     setLatest(dayjs().unix());
+    setPinDate(getCachedNumber("pin") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? Infinity);
+
     setMaxDate(getCachedNumber("max") ?? Infinity);
-    setPinDate(getCachedNumber("min") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? 0);
-    setPinDate(getCachedNumber("pin") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? 0);
-  }, [timeline, setPinDate, setLatest, getCachedNumber]);
+    setMinDate(getCachedNumber("min") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? Infinity);
+  }, [timeline, setPinDate, setMinDate, setMaxDate, setLatest, getCachedNumber]);
 
   const updateNoteMinHeight = useCallback(
     (id: string, element: Element) => {
