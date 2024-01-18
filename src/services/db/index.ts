@@ -1,5 +1,5 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
-import { clearDB } from "nostr-idb";
+import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8 } from "./schema";
 import { logger } from "../../helpers/debug";
@@ -203,7 +203,7 @@ export async function deleteDatabase() {
   db.close();
   log("Deleting");
   await deleteDB(dbName);
-  await deleteDB("events");
+  await nostrIDBDelete();
   window.location.reload();
 }
 

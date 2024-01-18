@@ -1,4 +1,4 @@
-import { CacheRelay, openDB } from "nostr-idb";
+import { CacheRelay, openDB, pruneLastUsed } from "nostr-idb";
 import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import _throttle from "lodash.throttle";
@@ -35,15 +35,26 @@ function createRelay() {
 
 export const localCacheRelay = createRelay();
 
+function pruneLocalDatabase() {
+  if (localCacheRelay instanceof CacheRelay) {
+    pruneLastUsed(localCacheRelay.db, 20_000);
+  }
+}
 // connect without waiting
 localCacheRelay.connect().then(() => {
   log("Connected");
+
+  pruneLocalDatabase();
 });
 
 // keep the relay connection alive
 setInterval(() => {
   if (!localCacheRelay.connected) localCacheRelay.connect().then(() => log("Reconnected"));
 }, 1000 * 5);
+
+setInterval(() => {
+  pruneLocalDatabase();
+}, 1000 * 60);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

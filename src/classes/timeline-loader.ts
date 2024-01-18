@@ -20,8 +20,8 @@ import {
   stringifyFilter,
 } from "../helpers/nostr/filter";
 import { localCacheRelay } from "../services/local-cache-relay";
-import { SimpleSubscription } from "nostr-idb";
 import { relayRequest } from "../helpers/relay";
+import { Subscription } from "nostr-idb";
 
 const BLOCK_SIZE = 100;
 
@@ -116,7 +116,7 @@ export default class TimelineLoader {
   name: string;
   private log: Debugger;
   private subscription: NostrMultiSubscription;
-  private cacheSubscription?: SimpleSubscription;
+  private cacheSubscription?: Subscription;
 
   private blockLoaders = new Map<string, RelayBlockLoader>();
 

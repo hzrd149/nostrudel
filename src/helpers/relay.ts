@@ -1,4 +1,4 @@
-import { SimpleRelay, SimpleSubscription, SimpleSubscriptionOptions } from "nostr-idb";
+import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
 import { Filter } from "nostr-tools";
 
 import { RelayConfig } from "../classes/relay";
@@ -106,10 +106,10 @@ export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<st
   return filtersByRelay;
 }
 
-export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SimpleSubscriptionOptions = {}) {
+export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SubscriptionOptions = {}) {
   return new Promise<NostrEvent[]>((res) => {
     const events: NostrEvent[] = [];
-    const sub: SimpleSubscription = relay.subscribe(filters, {
+    const sub = relay.subscribe(filters, {
       ...opts,
       onevent: (e) => events.push(e),
       oneose: () => {
