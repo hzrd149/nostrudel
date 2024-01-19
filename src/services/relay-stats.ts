@@ -6,7 +6,7 @@ import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import relayInfoService from "./relay-info";
 import { normalizeRelayURL } from "../helpers/relay";
-import { localCacheRelay } from "./local-cache-relay";
+import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
 
 const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";
@@ -18,7 +18,7 @@ class RelayStatsService {
 
   constructor() {
     // load all stats from cache and subscribe to future ones
-    localCacheRelay.subscribe([{ kinds: [SELF_REPORTED_KIND, MONITOR_STATS_KIND] }], {
+    localRelay.subscribe([{ kinds: [SELF_REPORTED_KIND, MONITOR_STATS_KIND] }], {
       onevent: (e) => this.handleEvent(e, false),
     });
   }
@@ -34,12 +34,12 @@ class RelayStatsService {
     if (event.kind === SELF_REPORTED_KIND) {
       if (!sub.value || event.created_at > sub.value.created_at) {
         sub.next(event);
-        if (cache) localCacheRelay.publish(event);
+        if (cache) localRelay.publish(event);
       }
     } else if (event.kind === MONITOR_STATS_KIND) {
       if (!sub.value || event.created_at > sub.value.created_at) {
         sub.next(event);
-        if (cache) localCacheRelay.publish(event);
+        if (cache) localRelay.publish(event);
       }
     }
   }

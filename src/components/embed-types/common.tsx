@@ -6,7 +6,12 @@ import OpenGraphLink from "../open-graph-link";
 export function renderGenericUrl(match: URL) {
   return (
     <Link href={match.toString()} isExternal color="blue.500">
-      {match.toString()}
+      {match.protocol +
+        "//" +
+        match.host +
+        match.pathname +
+        (match.search && match.search.length < 20 ? "?" + match.search : "") +
+        (match.hash.length < 20 ? match.hash : "")}
     </Link>
   );
 }

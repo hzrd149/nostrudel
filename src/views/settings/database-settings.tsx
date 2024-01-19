@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useAsync } from "react-use";
 import {
   Button,
   AccordionItem,
@@ -8,17 +9,19 @@ import {
   AccordionIcon,
   ButtonGroup,
   Text,
+  Input,
 } from "@chakra-ui/react";
-import { useAsync } from "react-use";
-import { countEvents, countEventsByKind } from "nostr-idb";
+import { addEvents, countEvents, countEventsByKind, getEventUID, updateUsed } from "nostr-idb";
+import stringify from "json-stringify-deterministic";
 
 import { clearCacheData, deleteDatabase } from "../../services/db";
 import { DatabaseIcon } from "../../components/icons";
-import { localCacheDatabase } from "../../services/local-cache-relay";
+import { localDatabase } from "../../services/local-relay";
+import { NostrEvent } from "../../types/nostr-event";
 
 function DatabaseStats() {
-  const { value: count } = useAsync(async () => await countEvents(localCacheDatabase), []);
-  const { value: kinds } = useAsync(async () => await countEventsByKind(localCacheDatabase), []);
+  const { value: count } = useAsync(async () => await countEvents(localDatabase), []);
+  const { value: kinds } = useAsync(async () => await countEventsByKind(localDatabase), []);
 
   return (
     <>
@@ -28,6 +31,49 @@ function DatabaseStats() {
           .map(([kind, count]) => `${kind} (${count})`)
           .join(", ")}
       </Text>
+    </>
+  );
+}
+
+function ImportButton() {
+  const ref = useRef<HTMLInputElement | null>(null);
+  const [importing, setImporting] = useState(false);
+  const importFile = (file: File) => {
+    setImporting(true);
+    const reader = new FileReader();
+    reader.readAsText(file, "utf8");
+    reader.onload = async () => {
+      if (typeof reader.result !== "string") return;
+      const lines = reader.result.split("\n");
+      const events: NostrEvent[] = [];
+      for (const line of lines) {
+        try {
+          const event = JSON.parse(line) as NostrEvent;
+          events.push(event);
+        } catch (e) {}
+      }
+      await addEvents(localDatabase, events);
+      await updateUsed(
+        localDatabase,
+        events.map((e) => getEventUID(e)),
+      );
+      alert(`Imported ${events.length} events`);
+      setImporting(false);
+    };
+  };
+
+  return (
+    <>
+      <Input
+        hidden
+        type="file"
+        accept=".jsonl"
+        onChange={(e) => e.target.files?.[0] && importFile(e.target.files[0])}
+        ref={ref}
+      />
+      <Button onClick={() => ref.current?.click()} isLoading={importing}>
+        Import events
+      </Button>
     </>
   );
 }
@@ -47,6 +93,19 @@ export default function DatabaseSettings() {
     setDeleting(false);
   };
 
+  const [exporting, setExporting] = useState(false);
+  const exportDatabase = async () => {
+    setExporting(true);
+    const rows = await localDatabase.getAll("events");
+    const lines = rows.map((row) => stringify(row.event));
+    const file = new File(lines, "noStrudel-export.jsonl", {
+      type: "application/jsonl",
+    });
+    const url = URL.createObjectURL(file);
+    window.open(url);
+    setExporting(false);
+  };
+
   return (
     <AccordionItem>
       <h2>
@@ -61,10 +120,14 @@ export default function DatabaseSettings() {
       <AccordionPanel>
         <DatabaseStats />
         <ButtonGroup mt="2">
-          <Button onClick={handleClearData} isLoading={clearing} isDisabled={clearing}>
-            Clear cache data
+          <Button onClick={handleClearData} isLoading={clearing}>
+            Clear cache
           </Button>
-          <Button colorScheme="red" onClick={handleDeleteDatabase} isLoading={deleting} isDisabled={deleting}>
+          <ImportButton />
+          <Button onClick={exportDatabase} isLoading={exporting}>
+            Export database
+          </Button>
+          <Button colorScheme="red" onClick={handleDeleteDatabase} isLoading={deleting}>
             Delete database
           </Button>
         </ButtonGroup>

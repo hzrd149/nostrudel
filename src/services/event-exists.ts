@@ -8,7 +8,7 @@ import relayScoreboardService from "./relay-scoreboard";
 import { logger } from "../helpers/debug";
 import { matchFilter, matchFilters } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-relay";
 
 function hashFilter(filter: NostrRequestFilter) {
   return stringify(filter);

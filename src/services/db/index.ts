@@ -3,7 +3,7 @@ import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8 } from "./schema";
 import { logger } from "../../helpers/debug";
-import { localCacheDatabase } from "../local-cache-relay";
+import { localDatabase } from "../local-relay";
 
 const log = logger.extend("Database");
 
@@ -178,7 +178,7 @@ log("Open");
 
 export async function clearCacheData() {
   log("Clearing nostr-idb");
-  await clearDB(localCacheDatabase);
+  await clearDB(localDatabase);
 
   log("Clearing channelMetadata");
   await db.clear("channelMetadata");

@@ -12,7 +12,7 @@ import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate, parseCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED, localCacheRelay } from "./local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED, localRelay } from "./local-relay";
 import { relayRequest } from "../helpers/relay";
 
 type Pubkey = string;
@@ -199,7 +199,7 @@ class ReplaceableEventLoaderService {
     }
     const filters = Array.from(Object.values(kindFilters));
 
-    const events = await relayRequest(localCacheRelay, filters);
+    const events = await relayRequest(localRelay, filters);
     for (const event of events) {
       this.handleEvent(event, false);
       const cord = getEventCoordinate(event);
@@ -235,7 +235,7 @@ class ReplaceableEventLoaderService {
     if (this.writeCacheQueue.size === 0) return;
 
     this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
-    for (const [_, event] of this.writeCacheQueue) localCacheRelay.publish(event);
+    for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
     this.writeCacheQueue.clear();
   }
   private async saveToCache(cord: string, event: NostrEvent) {
@@ -248,7 +248,7 @@ class ReplaceableEventLoaderService {
     const sub = this.events.get(cord);
 
     const relayUrls = Array.from(relays);
-    // TODO: use localCacheRelay instead
+    // TODO: use localRelay instead
     if (LOCAL_CACHE_RELAY_ENABLED) relayUrls.unshift(LOCAL_CACHE_RELAY);
 
     for (const relay of relayUrls) {

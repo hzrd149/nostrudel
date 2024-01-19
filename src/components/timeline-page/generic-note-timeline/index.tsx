@@ -18,7 +18,7 @@ const NOTE_BUFFER = 5;
 const timelineNoteMinHeightCache = new WeakMap<TimelineLoader, Record<string, Record<string, number>>>();
 
 function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
-  const events = useThrottle(useSubject(timeline.timeline), 100);
+  const events = useSubject(timeline.timeline);
   const [latest, setLatest] = useState(() => dayjs().unix());
 
   const location = useLocation();

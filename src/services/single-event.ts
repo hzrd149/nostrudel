@@ -4,7 +4,7 @@ import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
-import { localCacheRelay } from "./local-cache-relay";
+import { localRelay } from "./local-relay";
 import { relayRequest, safeRelayUrls } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 
@@ -29,7 +29,7 @@ class SingleEventService {
   handleEvent(event: NostrEvent, cache = true) {
     this.cache.get(event.id).next(event);
 
-    if (cache) localCacheRelay.publish(event);
+    if (cache) localRelay.publish(event);
   }
 
   private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
@@ -40,7 +40,7 @@ class SingleEventService {
     const loaded: string[] = [];
 
     // load from cache relay
-    const fromCache = await relayRequest(localCacheRelay, [{ ids }]);
+    const fromCache = await relayRequest(localRelay, [{ ids }]);
 
     for (const e of fromCache) {
       this.handleEvent(e, false);

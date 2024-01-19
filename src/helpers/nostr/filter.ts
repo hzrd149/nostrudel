@@ -1,6 +1,6 @@
 import stringify from "json-stringify-deterministic";
 import { NostrQuery, NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "../../services/local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "../../services/local-relay";
 
 export function addQueryToFilter(filter: NostrRequestFilter, query: NostrQuery) {
   if (Array.isArray(filter)) {

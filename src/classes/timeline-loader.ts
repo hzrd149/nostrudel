@@ -19,7 +19,7 @@ import {
   mapQueryMap,
   stringifyFilter,
 } from "../helpers/nostr/filter";
-import { localCacheRelay } from "../services/local-cache-relay";
+import { localRelay } from "../services/local-relay";
 import { relayRequest } from "../helpers/relay";
 import { Subscription } from "nostr-idb";
 
@@ -147,7 +147,7 @@ export default class TimelineLoader {
     if (isReplaceable(event.kind)) replaceableEventLoaderService.handleEvent(event);
 
     this.events.addEvent(event);
-    if (cache) localCacheRelay.publish(event);
+    if (cache) localRelay.publish(event);
   }
   private handleDeleteEvent(deleteEvent: NostrEvent) {
     const cord = deleteEvent.tags.find(isATag)?.[1];
@@ -177,7 +177,7 @@ export default class TimelineLoader {
     }
 
     for (const filters of Object.values(queries)) {
-      relayRequest(localCacheRelay, filters).then((events) => {
+      relayRequest(localRelay, filters).then((events) => {
         for (const e of events) this.handleEvent(e, false);
       });
     }

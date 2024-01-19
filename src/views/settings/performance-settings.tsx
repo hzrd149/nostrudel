@@ -28,12 +28,9 @@ import {
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
 import { PerformanceIcon } from "../../components/icons";
-import { useLocalStorage } from "react-use";
-import { LOCAL_CACHE_RELAY } from "../../services/local-cache-relay";
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();
-  const [localCacheRelay, setLocalCacheRelay] = useLocalStorage<boolean>("enable-cache-relay");
   const cacheDetails = useDisclosure();
 
   return (
@@ -129,7 +126,7 @@ export default function PerformanceSettings() {
                 <ModalCloseButton />
                 <ModalBody px="4" pb="4" pt="0">
                   <Text>
-                    When this is enabled noStrudel will connect to the relay at ws://{"<app domain>"}/cache-relay and
+                    When this is enabled noStrudel will connect to the relay at ws://{"<app domain>"}/local-relay and
                     use it to cache all events it finds.
                   </Text>
                   <Text>

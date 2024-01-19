@@ -3,25 +3,25 @@ import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import _throttle from "lodash.throttle";
 
-const log = logger.extend(`LocalCacheRelay`);
+const log = logger.extend(`LocalRelay`);
 const params = new URLSearchParams(location.search);
 
-const paramRelay = params.get("cacheRelay");
+const paramRelay = params.get("localRelay");
 // save the cache relay to localStorage
 if (paramRelay) {
-  localStorage.setItem("cacheRelay", paramRelay);
-  params.delete("cacheRelay");
+  localStorage.setItem("localRelay", paramRelay);
+  params.delete("localRelay");
   if (params.size === 0) location.search = params.toString();
 }
 
-const storedCacheRelayURL = localStorage.getItem("cacheRelay");
-const url = (storedCacheRelayURL && new URL(storedCacheRelayURL)) || new URL("/cache-relay", location.href);
+const storedCacheRelayURL = localStorage.getItem("localRelay");
+const url = (storedCacheRelayURL && new URL(storedCacheRelayURL)) || new URL("/local-relay", location.href);
 url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
 
-export const LOCAL_CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("cacheRelay");
+export const LOCAL_CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("localRelay");
 export const LOCAL_CACHE_RELAY = url.toString();
 
-export const localCacheDatabase = await openDB();
+export const localDatabase = await openDB();
 
 function createRelay() {
   if (LOCAL_CACHE_RELAY_ENABLED) {
@@ -29,19 +29,19 @@ function createRelay() {
     return new Relay(LOCAL_CACHE_RELAY);
   } else {
     log(`Using IndexedDB`);
-    return new CacheRelay(localCacheDatabase);
+    return new CacheRelay(localDatabase, { maxEvents: 10000 });
   }
 }
 
-export const localCacheRelay = createRelay();
+export const localRelay = createRelay();
 
 function pruneLocalDatabase() {
-  if (localCacheRelay instanceof CacheRelay) {
-    pruneLastUsed(localCacheRelay.db, 20_000);
+  if (localRelay instanceof CacheRelay) {
+    pruneLastUsed(localRelay.db, 20_000);
   }
 }
 // connect without waiting
-localCacheRelay.connect().then(() => {
+localRelay.connect().then(() => {
   log("Connected");
 
   pruneLocalDatabase();
@@ -49,7 +49,7 @@ localCacheRelay.connect().then(() => {
 
 // keep the relay connection alive
 setInterval(() => {
-  if (!localCacheRelay.connected) localCacheRelay.connect().then(() => log("Reconnected"));
+  if (!localRelay.connected) localRelay.connect().then(() => log("Reconnected"));
 }, 1000 * 5);
 
 setInterval(() => {
@@ -58,5 +58,7 @@ setInterval(() => {
 
 if (import.meta.env.DEV) {
   //@ts-ignore
-  window.localCacheRelay = localCacheRelay;
+  window.localDatabase = localDatabase;
+  //@ts-ignore
+  window.localRelay = localRelay;
 }

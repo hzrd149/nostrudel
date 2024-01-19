@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, BoxProps } from "@chakra-ui/react";
+import React, { Suspense } from "react";
+import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
@@ -90,9 +90,11 @@ export const NoteContents = React.memo(
 
     return (
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" {...props}>
-          {content}
-        </Box>
+        <Suspense fallback={<Spinner />}>
+          <Box whiteSpace="pre-wrap" {...props}>
+            {content}
+          </Box>
+        </Suspense>
       </LightboxProvider>
     );
   },

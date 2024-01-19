@@ -6,7 +6,7 @@ if [ -n "$CACHE_RELAY" ]; then
   echo "Cache relay set to $CACHE_RELAY"
   sed -i 's/CACHE_RELAY_ENABLED = false/CACHE_RELAY_ENABLED = true/g' /usr/share/nginx/html/index.html
   CACHE_RELAY_PROXY="
-    location /cache-relay {
+    location /local-relay {
       proxy_pass http://$CACHE_RELAY/;
       proxy_http_version 1.1;
       proxy_set_header Upgrade \$http_upgrade;

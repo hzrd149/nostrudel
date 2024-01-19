@@ -12,7 +12,7 @@ import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
 import { getChannelPointer } from "../helpers/nostr/channel";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-cache-relay";
+import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-relay";
 
 type Pubkey = string;
 type Relay = string;
