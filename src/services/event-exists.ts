@@ -8,7 +8,6 @@ import relayScoreboardService from "./relay-scoreboard";
 import { logger } from "../helpers/debug";
 import { matchFilter, matchFilters } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "./local-relay";
 
 function hashFilter(filter: NostrRequestFilter) {
   return stringify(filter);
@@ -36,10 +35,7 @@ class EventExistsService {
     if (!this.filters.has(key)) this.filters.set(key, filter);
 
     if (sub.value !== true) {
-      const relayUrls = Array.from(relays);
-      if (LOCAL_CACHE_RELAY_ENABLED) relayUrls.unshift(LOCAL_CACHE_RELAY);
-
-      for (const url of relayUrls) {
+      for (const url of relays) {
         if (!asked.has(url) && !pending.has(url)) {
           pending.add(url);
         }

@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
+import { Filter } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
@@ -8,11 +9,10 @@ import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
-import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
-import { getEventCoordinate, parseCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED, localRelay } from "./local-relay";
+import { localRelay } from "./local-relay";
 import { relayRequest } from "../helpers/relay";
 
 type Pubkey = string;
@@ -183,7 +183,7 @@ class ReplaceableEventLoaderService {
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
-    const kindFilters: Record<number, NostrQuery> = {};
+    const kindFilters: Record<number, Filter> = {};
     for (const [cord] of this.readFromCachePromises) {
       const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
       const kind = parseInt(kindStr);
@@ -247,11 +247,7 @@ class ReplaceableEventLoaderService {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
-    const relayUrls = Array.from(relays);
-    // TODO: use localRelay instead
-    if (LOCAL_CACHE_RELAY_ENABLED) relayUrls.unshift(LOCAL_CACHE_RELAY);
-
-    for (const relay of relayUrls) {
+    for (const relay of relays) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
 
       sub.connectWithHandler(request, (event, next, current) => {

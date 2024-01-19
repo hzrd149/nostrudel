@@ -4,8 +4,8 @@ import { logger } from "../helpers/debug";
 import _throttle from "lodash.throttle";
 
 const log = logger.extend(`LocalRelay`);
-const params = new URLSearchParams(location.search);
 
+const params = new URLSearchParams(location.search);
 const paramRelay = params.get("localRelay");
 // save the cache relay to localStorage
 if (paramRelay) {
@@ -18,7 +18,9 @@ const storedCacheRelayURL = localStorage.getItem("localRelay");
 const url = (storedCacheRelayURL && new URL(storedCacheRelayURL)) || new URL("/local-relay", location.href);
 url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
 
+/** @deprecated */
 export const LOCAL_CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("localRelay");
+/** @deprecated */
 export const LOCAL_CACHE_RELAY = url.toString();
 
 export const localDatabase = await openDB();

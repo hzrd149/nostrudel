@@ -1,8 +1,8 @@
 import stringify from "json-stringify-deterministic";
-import { NostrQuery, NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
-import { LOCAL_CACHE_RELAY, LOCAL_CACHE_RELAY_ENABLED } from "../../services/local-relay";
+import { NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
+import { Filter } from "nostr-tools";
 
-export function addQueryToFilter(filter: NostrRequestFilter, query: NostrQuery) {
+export function addQueryToFilter(filter: NostrRequestFilter, query: Filter) {
   if (Array.isArray(filter)) {
     return filter.map((f) => ({ ...f, ...query }));
   }
@@ -28,13 +28,6 @@ export function mapQueryMap(queryMap: RelayQueryMap, fn: (filter: NostrRequestFi
 
 export function createSimpleQueryMap(relays: string[], filter: NostrRequestFilter) {
   const map: RelayQueryMap = {};
-
-  // if the local cache relay is enabled, also ask it
-  if (LOCAL_CACHE_RELAY_ENABLED) {
-    map[LOCAL_CACHE_RELAY] = filter;
-  }
-
   for (const relay of relays) map[relay] = filter;
-
   return map;
 }
