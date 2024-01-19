@@ -27,8 +27,6 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       content = isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
       break;
     case kinds.Repost:
-      content = <RepostEvent event={event} />;
-      break;
     case kinds.GenericRepost:
       content = <RepostEvent event={event} />;
       break;

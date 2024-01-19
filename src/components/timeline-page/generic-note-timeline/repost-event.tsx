@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { kinds, nip18 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
@@ -18,7 +18,7 @@ import { parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 import LoadingNostrLink from "../../loading-nostr-link";
 
-export default function RepostEvent({ event }: { event: NostrEvent }) {
+function RepostEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 
@@ -68,3 +68,5 @@ export default function RepostEvent({ event }: { event: NostrEvent }) {
     </TrustProvider>
   );
 }
+
+export default memo(RepostEvent);
