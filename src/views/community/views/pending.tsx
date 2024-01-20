@@ -21,10 +21,10 @@ import { CheckIcon } from "../../../components/icons";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 import CommunityPost from "../components/community-post";
 import { RouterContext } from "../community-home";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
+import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
 
 type PendingProps = {
   event: NostrEvent;

@@ -5,7 +5,7 @@ import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
-import { relayRequest, safeRelayUrls } from "../helpers/relay";
+import { relayRequest } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 
 const RELAY_REQUEST_BATCH_TIME = 500;
@@ -15,12 +15,11 @@ class SingleEventService {
   pending = new Map<string, string[]>();
   log = logger.extend("SingleEvent");
 
-  requestEvent(id: string, relays: string[]) {
+  requestEvent(id: string, relays: Iterable<string>) {
     const subject = this.cache.get(id);
     if (subject.value) return subject;
 
-    relays = safeRelayUrls(relays);
-    this.pending.set(id, this.pending.get(id)?.concat(relays) ?? relays);
+    this.pending.set(id, this.pending.get(id)?.concat(Array.from(relays)) ?? Array.from(relays));
     this.batchRequestsThrottle();
 
     return subject;

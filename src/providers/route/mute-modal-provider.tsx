@@ -69,7 +69,7 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
       draft = muteListAddPubkey(draft, pubkey, expiration);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Mute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Mute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
       onClose();
     } catch (e) {
@@ -139,7 +139,7 @@ function UnmuteHandler() {
       draft = pruneExpiredPubkeys(draft);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
       return true;
     } catch (e) {
@@ -186,7 +186,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
       draft = pruneExpiredPubkeys(draft);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
       onClose();
     } catch (e) {
@@ -204,7 +204,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
       }
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Extend mute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Extend mute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
       onClose();
     } catch (e) {
@@ -219,7 +219,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
       draft = muteListRemovePubkey(draft, pubkey);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -233,7 +233,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
       draft = muteListAddPubkey(draft, pubkey, expiration);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Extend mute", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Extend mute", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

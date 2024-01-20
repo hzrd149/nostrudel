@@ -4,7 +4,7 @@ import { RequestOptions } from "../services/replaceable-event-requester";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useUserCommunitiesList(pubkey?: string, relays: string[] = [], opts?: RequestOptions) {
+export default function useUserCommunitiesList(pubkey?: string, relays?: Iterable<string>, opts?: RequestOptions) {
   const account = useCurrentAccount();
   const key = pubkey ?? account?.pubkey;
 

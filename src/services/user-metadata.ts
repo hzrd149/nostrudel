@@ -24,7 +24,7 @@ class UserMetadataService {
   getSubject(pubkey: string) {
     return this.parsedSubjects.get(pubkey);
   }
-  requestMetadata(pubkey: string, relays: string[], opts: RequestOptions = {}) {
+  requestMetadata(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
     const sub = this.parsedSubjects.get(pubkey);
     const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));

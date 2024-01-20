@@ -1,44 +1,53 @@
 import { kinds } from "nostr-tools";
 
-import { isRTag, NostrEvent } from "../types/nostr-event";
-import { RelayConfig } from "../classes/relay";
-import { parseRTag } from "../helpers/nostr/events";
+import { NostrEvent } from "../types/nostr-event";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
-import { normalizeRelayConfigs } from "../helpers/relay";
 import userContactsService from "./user-contacts";
 import replaceableEventLoaderService, { createCoordinate, RequestOptions } from "./replaceable-event-requester";
+import RelaySet from "../classes/relay-set";
+import { RelayMode } from "../classes/relay";
 
-export type ParsedUserRelays = {
+export type UserMailboxes = {
   pubkey: string;
-  relays: RelayConfig[];
+  relays: RelaySet;
+  inbox: RelaySet;
+  outbox: RelaySet;
   created_at: number;
 };
 
-function parseRelaysEvent(event: NostrEvent): ParsedUserRelays {
+function nip65ToUserMailboxes(event: NostrEvent): UserMailboxes {
   return {
     pubkey: event.pubkey,
-    relays: normalizeRelayConfigs(event.tags.filter(isRTag).map(parseRTag)),
+    relays: RelaySet.fromNIP65Event(event),
+    inbox: RelaySet.fromNIP65Event(event, RelayMode.READ),
+    outbox: RelaySet.fromNIP65Event(event, RelayMode.WRITE),
     created_at: event.created_at,
   };
 }
 
-class UserRelaysService {
-  private subjects = new SuperMap<string, Subject<ParsedUserRelays>>(() => new Subject<ParsedUserRelays>());
-  getRelays(pubkey: string) {
+class UserMailboxesService {
+  private subjects = new SuperMap<string, Subject<UserMailboxes>>(() => new Subject<UserMailboxes>());
+  getMailboxes(pubkey: string) {
     return this.subjects.get(pubkey);
   }
-  requestRelays(pubkey: string, relays: string[], opts: RequestOptions = {}) {
+  requestMailboxes(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
     const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
-    sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
+    sub.connectWithHandler(requestSub, (event, next) => next(nip65ToUserMailboxes(event)));
 
     // also fetch the relays from the users contacts
     const contactsSub = userContactsService.requestContacts(pubkey, relays, opts);
     sub.connectWithHandler(contactsSub, (contacts, next, value) => {
       // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
-      if (contacts.relays.length > 0 && !value) {
-        next({ pubkey: contacts.pubkey, relays: contacts.relays, created_at: contacts.created_at });
+      if (contacts.relays.size > 0 && !value) {
+        next({
+          pubkey: contacts.pubkey,
+          relays: contacts.relays,
+          inbox: contacts.inbox,
+          outbox: contacts.outbox,
+          created_at: contacts.created_at,
+        });
       }
     });
 
@@ -52,7 +61,7 @@ class UserRelaysService {
     await replaceableEventLoaderService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
 
     const requestSub = replaceableEventLoaderService.getEvent(kinds.RelayList, pubkey);
-    sub.connectWithHandler(requestSub, (event, next) => next(parseRelaysEvent(event)));
+    sub.connectWithHandler(requestSub, (event, next) => next(nip65ToUserMailboxes(event)));
   }
 
   receiveEvent(event: NostrEvent) {
@@ -60,11 +69,11 @@ class UserRelaysService {
   }
 }
 
-const userRelaysService = new UserRelaysService();
+const userMailboxesService = new UserMailboxesService();
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.userRelaysService = userRelaysService;
+  window.userMailboxesService = userMailboxesService;
 }
 
-export default userRelaysService;
+export default userMailboxesService;

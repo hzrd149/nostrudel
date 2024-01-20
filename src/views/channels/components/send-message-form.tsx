@@ -56,7 +56,7 @@ export default function ChannelMessageForm({
 
       setLoadingMessage("Signing...");
       const signed = await requestSignature(draft);
-      const writeRelays = clientRelaysService.getWriteUrls();
+      const writeRelays = clientRelaysService.outbox.urls;
       new NostrPublishAction("Send DM", writeRelays, signed);
       reset();
 

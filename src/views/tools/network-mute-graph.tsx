@@ -25,7 +25,7 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 
-export function useUsersMuteLists(pubkeys: string[], additionalRelays: string[] = []) {
+export function useUsersMuteLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const muteListSubjects = useMemo(() => {
     return pubkeys.map((pubkey) => replaceableEventLoaderService.requestEvent(readRelays, MUTE_LIST_KIND, pubkey));

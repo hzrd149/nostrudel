@@ -119,7 +119,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
     };
 
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Update emoji pack", clientRelaysService.getWriteUrls(), signed);
+    const pub = new NostrPublishAction("Update emoji pack", clientRelaysService.outbox.urls, signed);
     replaceableEventLoaderService.handleEvent(signed);
     setEditing(false);
   };

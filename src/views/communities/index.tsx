@@ -38,7 +38,6 @@ import {
   getCommunityName,
 } from "../../helpers/nostr/communities";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { unique } from "../../helpers/array";
 import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService, { createCoordinate } from "../../services/replaceable-event-requester";
 import { getImageSize } from "../../helpers/image";
@@ -52,6 +51,7 @@ import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import RelaySet from "../../classes/relay-set";
 
 function CommunitiesHomePage() {
   const toast = useToast();
@@ -92,7 +92,7 @@ function CommunitiesHomePage() {
       const signed = await requestSignature(draft);
       new NostrPublishAction(
         "Create Community",
-        unique([...clientRelaysService.getWriteUrls(), ...values.relays]),
+        RelaySet.from(clientRelaysService.writeRelays.value, values.relays),
         signed,
       );
 

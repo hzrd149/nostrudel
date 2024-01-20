@@ -3,6 +3,7 @@ import { getPublicKey, nip19 } from "nostr-tools";
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
 import { isReplaceable } from "./nostr/events";
 import relayHintService from "../services/event-relay-hint";
+import { safeRelayUrls } from "./relay";
 
 export function isHex(str?: string) {
   if (str?.match(/^[0-9a-f]+$/i)) return true;
@@ -15,7 +16,10 @@ export function isHexKey(key?: string) {
 
 export function safeDecode(str: string) {
   try {
-    return nip19.decode(str);
+    const result = nip19.decode(str);
+    if ((result.type === "nevent" || result.type === "nprofile" || result.type === "naddr") && result.data.relays)
+      result.data.relays = safeRelayUrls(result.data.relays);
+    return result;
   } catch (e) {}
 }
 

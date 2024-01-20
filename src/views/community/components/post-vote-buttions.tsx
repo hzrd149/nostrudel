@@ -36,7 +36,7 @@ export default function PostVoteButtons({ event, ...props }: Omit<CardProps, "ch
 
         const signed = await requestSignature(draft);
         if (signed) {
-          const writeRelays = clientRelaysService.getWriteUrls();
+          const writeRelays = clientRelaysService.outbox.urls;
           new NostrPublishAction("Reaction", unique([...writeRelays, ...additionalRelays]), signed);
           eventReactionsService.handleEvent(signed);
         }

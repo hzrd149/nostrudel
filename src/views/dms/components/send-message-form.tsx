@@ -8,12 +8,14 @@ import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 import clientRelaysService from "../../../services/client-relays";
-import { unique } from "../../../helpers/array";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { useUserRelays } from "../../../hooks/use-user-relays";
-import { RelayMode } from "../../../classes/relay";
 import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import userMailboxesService from "../../../services/user-mailboxes";
+import accountService from "../../../services/account";
+import RelaySet from "../../../classes/relay-set";
 
 export default function SendMessageForm({
   pubkey,
@@ -37,9 +39,7 @@ export default function SendMessageForm({
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const { onPaste } = useTextAreaUploadFileWithForm(autocompleteRef, getValues, setValue);
 
-  const usersInbox = useUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
+  const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
     try {
       if (!values.content) return;
@@ -59,8 +59,8 @@ export default function SendMessageForm({
 
       setLoadingMessage("Signing...");
       const signed = await requestSignature(event);
-      const writeRelays = clientRelaysService.getWriteUrls();
-      const relays = unique([...writeRelays, ...usersInbox]);
+      const relays = RelaySet.from(clientRelaysService.outbox);
+      if (userMailboxes?.inbox) relays.merge(userMailboxes.inbox);
       new NostrPublishAction("Send DM", relays, signed);
       reset();
 

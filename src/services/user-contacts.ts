@@ -4,32 +4,35 @@ import { isPTag, NostrEvent } from "../types/nostr-event";
 import { safeJson } from "../helpers/parse";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
-import { RelayConfig, RelayMode } from "../classes/relay";
-import { normalizeRelayConfigs } from "../helpers/relay";
 import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
+import RelaySet from "../classes/relay-set";
 
 export type UserContacts = {
   pubkey: string;
-  relays: RelayConfig[];
+  relays: RelaySet;
+  inbox: RelaySet;
+  outbox: RelaySet;
   contacts: string[];
   contactRelay: Record<string, string | undefined>;
   created_at: number;
 };
 
 type RelayJson = Record<string, { read: boolean; write: boolean }>;
-function relayJsonToRelayConfig(relayJson: RelayJson): RelayConfig[] {
-  try {
-    return Array.from(Object.entries(relayJson)).map(([url, opts]) => ({
-      url,
-      mode: (opts.write ? RelayMode.WRITE : 0) | (opts.read ? RelayMode.READ : 0),
-    }));
-  } catch (e) {}
-  return [];
+function relayJsonToMailboxes(relayJson: RelayJson) {
+  const relays = new RelaySet();
+  const inbox = new RelaySet();
+  const outbox = new RelaySet();
+  for (const [url, opts] of Object.entries(relayJson)) {
+    relays.add(url);
+    if (opts.write) outbox.add(url);
+    if (opts.read) inbox.add(url);
+  }
+  return { relays, inbox, outbox };
 }
 
 function parseContacts(event: NostrEvent): UserContacts {
   const relayJson = safeJson(event.content, {}) as RelayJson;
-  const relays = normalizeRelayConfigs(relayJsonToRelayConfig(relayJson));
+  const { relays, inbox, outbox } = relayJsonToMailboxes(relayJson);
 
   const pubkeys = event.tags.filter(isPTag).map((tag) => tag[1]);
   const contactRelay = event.tags.filter(isPTag).reduce(
@@ -45,6 +48,8 @@ function parseContacts(event: NostrEvent): UserContacts {
   return {
     pubkey: event.pubkey,
     relays,
+    inbox,
+    outbox,
     contacts: pubkeys,
     contactRelay,
     created_at: event.created_at,
@@ -56,7 +61,7 @@ class UserContactsService {
   getSubject(pubkey: string) {
     return this.subjects.get(pubkey);
   }
-  requestContacts(pubkey: string, relays: string[], opts?: RequestOptions) {
+  requestContacts(pubkey: string, relays: Iterable<string>, opts?: RequestOptions) {
     const sub = this.subjects.get(pubkey);
 
     const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);

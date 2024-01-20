@@ -8,7 +8,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CloseButton,
   Code,
   Heading,
   Spinner,
@@ -27,21 +26,18 @@ import { InlineInvoiceCard } from "../../../components/inline-invoice-card";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import { unique } from "../../../helpers/array";
 import clientRelaysService from "../../../services/client-relays";
-import { useUserRelays } from "../../../hooks/use-user-relays";
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
-import { RelayMode } from "../../../classes/relay";
 import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import RelaySet from "../../../classes/relay-set";
 
 function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
-  const dvmRelays = useUserRelays(pointer.pubkey)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
+  const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
   const readRelays = useReadRelayUrls();
 
   const lastJob = chain[chain.length - 1];
@@ -60,7 +56,7 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
       };
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Next Page", unique([...clientRelaysService.getWriteUrls(), ...dvmRelays]), signed);
+      new NostrPublishAction("Next Page", RelaySet.from(clientRelaysService.outbox, dvmRelays), signed);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

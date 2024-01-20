@@ -201,8 +201,8 @@ class RelayScoreboardService {
     return score;
   }
 
-  getRankedRelays(customRelays?: string[]) {
-    const relays = customRelays ?? this.getRelays();
+  getRankedRelays(urls?: Iterable<string>) {
+    const relays = (urls && Array.from(urls)) ?? this.getRelays();
     const relayScores = new Map<string, number>();
 
     for (const relay of relays) {

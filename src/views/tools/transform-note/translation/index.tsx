@@ -57,7 +57,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
       };
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Request Translation", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Request Translation", clientRelaysService.outbox.urls, signed);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

@@ -30,7 +30,7 @@ export default function NoteMenu({
   const translationsModal = useDisclosure();
 
   const broadcast = useCallback(() => {
-    const missingRelays = clientRelaysService.getWriteUrls();
+    const missingRelays = clientRelaysService.outbox.urls;
     const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
     pub.onResult.subscribe((result) => {
       if (result.status) handleEventFromRelay(result.relay, event);

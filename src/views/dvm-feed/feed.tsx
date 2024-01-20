@@ -31,7 +31,6 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import { useUserRelays } from "../../hooks/use-user-relays";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
@@ -41,8 +40,9 @@ import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import useDVMMetadata from "../../hooks/use-dvm-metadata";
 import DVMParams from "./components/dvm-params";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import RelaySet from "../../classes/relay-set";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "hour").unix());
@@ -51,7 +51,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const account = useCurrentAccount()!;
   const debugModal = useDisclosure();
 
-  const dvmRelays = useUserRelays(pointer.pubkey).map((r) => r.url);
+  const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
   const readRelays = useReadRelayUrls(dvmRelays);
   const timeline = useTimelineLoader(`${pointer.kind}:${pointer.pubkey}:${pointer.identifier}-jobs`, readRelays, [
     { authors: [account.pubkey], "#p": [pointer.pubkey], kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND], since },
@@ -89,7 +89,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
       };
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Request Feed", unique([...clientRelaysService.getWriteUrls(), ...dvmRelays]), signed);
+      new NostrPublishAction("Request Feed", RelaySet.from(clientRelaysService.outbox, dvmRelays), signed);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

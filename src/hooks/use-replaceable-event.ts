@@ -7,7 +7,7 @@ import useSubject from "./use-subject";
 
 export default function useReplaceableEvent(
   cord: string | CustomAddressPointer | undefined,
-  additionalRelays: string[] = [],
+  additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelayUrls(additionalRelays);
@@ -21,7 +21,7 @@ export default function useReplaceableEvent(
       parsed.identifier,
       opts,
     );
-  }, [cord, readRelays.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
+  }, [cord, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
   return useSubject(sub);
 }

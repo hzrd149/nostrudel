@@ -17,7 +17,7 @@ type Options = {
 
 export default function useTimelineLoader(
   key: string,
-  relays: string[],
+  relays: Iterable<string>,
   query: NostrRequestFilter | undefined,
   opts?: Options,
 ) {
@@ -28,7 +28,7 @@ export default function useTimelineLoader(
       timeline.setQueryMap(createSimpleQueryMap(relays, query));
       timeline.open();
     } else timeline.close();
-  }, [timeline, JSON.stringify(query), relays.join("|")]);
+  }, [timeline, JSON.stringify(query), Array.from(relays).join("|")]);
 
   useEffect(() => {
     timeline.setEventFilter(opts?.eventFilter);

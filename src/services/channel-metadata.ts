@@ -228,7 +228,7 @@ class ChannelMetadataService {
     await transaction.commit();
   }
 
-  private requestChannelMetadataFromRelays(relays: string[], channelId: string) {
+  private requestChannelMetadataFromRelays(relays: Iterable<string>, channelId: string) {
     const sub = this.metadata.get(channelId);
 
     const relayUrls = Array.from(relays);
@@ -249,7 +249,7 @@ class ChannelMetadataService {
     return sub;
   }
 
-  requestMetadata(relays: string[], channelId: string, opts: RequestOptions = {}) {
+  requestMetadata(relays: Iterable<string>, channelId: string, opts: RequestOptions = {}) {
     const sub = this.metadata.get(channelId);
 
     if (!sub.value) {

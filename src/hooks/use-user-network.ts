@@ -9,7 +9,7 @@ import useSubjects from "./use-subjects";
 import userMetadataService from "../services/user-metadata";
 import { Kind0ParsedContent } from "../helpers/user-metadata";
 
-export function useUsersMetadata(pubkeys: string[], additionalRelays: string[] = []) {
+export function useUsersMetadata(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const metadataSubjects = useMemo(() => {
     return pubkeys.map((pubkey) => userMetadataService.requestMetadata(pubkey, readRelays));
@@ -27,7 +27,7 @@ export function useUsersMetadata(pubkeys: string[], additionalRelays: string[] =
   return metadataDir;
 }
 
-export default function useUserNetwork(pubkey: string, additionalRelays: string[] = []) {
+export default function useUserNetwork(pubkey: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const contacts = useUserContactList(pubkey);
   const contactsPubkeys = contacts ? getPubkeysFromList(contacts) : [];
@@ -36,7 +36,7 @@ export default function useUserNetwork(pubkey: string, additionalRelays: string[
     return contactsPubkeys.map((person) =>
       replaceableEventLoaderService.requestEvent(readRelays, kinds.Contacts, person.pubkey),
     );
-  }, [contactsPubkeys, readRelays.join("|")]);
+  }, [contactsPubkeys, readRelays.urls.join("|")]);
 
   const lists = useSubjects(subjects);
   const metadata = useUsersMetadata(lists.map((list) => list.pubkey).concat(pubkey));
@@ -44,7 +44,7 @@ export default function useUserNetwork(pubkey: string, additionalRelays: string[
   return { lists, contacts, metadata };
 }
 
-export function useNetworkConnectionCount(pubkey: string, additionalRelays: string[] = []) {
+export function useNetworkConnectionCount(pubkey: string, additionalRelays?: Iterable<string>) {
   const { lists, contacts } = useUserNetwork(pubkey, additionalRelays);
   const contactsPubkeys = contacts ? getPubkeysFromList(contacts) : [];
 

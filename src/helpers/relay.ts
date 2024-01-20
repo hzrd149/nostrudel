@@ -1,7 +1,6 @@
 import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
 import { Filter } from "nostr-tools";
 
-import { RelayConfig } from "../classes/relay";
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
 import { NostrEvent } from "../types/nostr-event";
 
@@ -53,18 +52,6 @@ export function safeRelayUrl(relayUrl: string) {
 }
 export function safeRelayUrls(urls: string[]): string[] {
   return urls.map(safeRelayUrl).filter(Boolean) as string[];
-}
-
-export function normalizeRelayConfigs(relays: RelayConfig[]) {
-  const seen: string[] = [];
-  return relays.reduce((newArr, r) => {
-    const safeUrl = safeRelayUrl(r.url);
-    if (safeUrl && !seen.includes(safeUrl)) {
-      seen.push(safeUrl);
-      newArr.push({ ...r, url: safeUrl });
-    }
-    return newArr;
-  }, [] as RelayConfig[]);
 }
 
 export function splitNostrFilterByPubkeys(

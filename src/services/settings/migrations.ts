@@ -5,6 +5,7 @@ import { safeJson } from "../../helpers/parse";
 export type AppSettingsV0 = {
   version: 0;
   colorMode: ColorModeWithSystem;
+  defaultRelays: string[];
   blurImages: boolean;
   autoShowMedia: boolean;
   proxyUserMedia: boolean;
@@ -32,6 +33,7 @@ export type AppSettingsV3 = Omit<AppSettingsV2, "version"> & { version: 3; quick
 export type AppSettingsV4 = Omit<AppSettingsV3, "version"> & { version: 4; loadOpenGraphData: boolean };
 export type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideUsernames: boolean };
 export type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
+export type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; defaultRelays: string[] };
 
 export function isV0(settings: { version: number }): settings is AppSettingsV0 {
   return settings.version === undefined || settings.version === 0;
@@ -61,9 +63,9 @@ export const defaultSettings: AppSettings = {
   version: 6,
   theme: "default",
   colorMode: "system",
+  defaultRelays: ["wss://relay.damus.io", "wss://nostr.wine", "wss://nos.lol", "wss://welcome.nostr.wine"],
   maxPageWidth: "none",
   blurImages: true,
-  // nostr:nevent1qqsxvkjgpc6zhydj4rxjpl0frev7hmgynruq027mujdgy2hwjypaqfspzpmhxue69uhkummnw3ezuamfdejszythwden5te0dehhxarjw4jjucm0d5sfntd0
   hideUsernames: false,
   autoShowMedia: true,
   proxyUserMedia: false,

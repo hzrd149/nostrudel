@@ -78,7 +78,7 @@ export default function RelaySelectionModal({
           />
           <CheckboxGroup value={newSelected} onChange={(urls) => setSelected(urls.map(String))}>
             <Flex direction="column" gap="2" mb="2">
-              {relays.map((url) => (
+              {relays.urls.map((url) => (
                 <Checkbox key={url} value={url}>
                   <RelayFavicon relay={url} size="xs" /> {url}
                 </Checkbox>
@@ -87,7 +87,7 @@ export default function RelaySelectionModal({
           </CheckboxGroup>
 
           <ButtonGroup>
-            <Button onClick={() => setSelected(relays)} size="sm">
+            <Button onClick={() => setSelected(Array.from(relays))} size="sm">
               All
             </Button>
             <Button onClick={() => setSelected([])} size="sm">

@@ -10,7 +10,6 @@ import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -24,6 +23,7 @@ import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import { useUserInbox } from "../../hooks/use-user-mailboxes";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -70,8 +70,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
-  const myInbox = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
+  const readRelays = useUserInbox(account.pubkey);
+  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, readRelays, [
     {
       kinds: [kinds.EncryptedDirectMessage],
       "#p": [account.pubkey],

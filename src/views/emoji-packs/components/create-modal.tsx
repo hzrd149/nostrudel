@@ -45,7 +45,7 @@ export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalPr
 
     try {
       const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Create emoji pack", clientRelaysService.getWriteUrls(), signed);
+      const pub = new NostrPublishAction("Create emoji pack", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
       navigate(`/emojis/${getSharableEventAddress(signed)}`);
     } catch (e) {

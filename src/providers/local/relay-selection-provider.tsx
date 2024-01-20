@@ -22,8 +22,8 @@ export function useRelaySelectionRelays() {
 }
 
 export type RelaySelectionProviderProps = PropsWithChildren & {
-  overrideDefault?: string[];
-  additionalDefaults?: string[];
+  overrideDefault?: Iterable<string>;
+  additionalDefaults?: Iterable<string>;
 };
 
 export default function RelaySelectionProvider({
@@ -34,13 +34,13 @@ export default function RelaySelectionProvider({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const userReadRelays = useReadRelayUrls();
+  const readRelays = useReadRelayUrls();
   const relays = useMemo(() => {
-    if (location.state?.relays) return location.state.relays;
-    if (overrideDefault) return overrideDefault;
-    if (additionalDefaults) return unique([...userReadRelays, ...additionalDefaults]);
-    return userReadRelays;
-  }, [location.state?.relays, overrideDefault, userReadRelays.join("|"), additionalDefaults]);
+    if (location.state?.relays) return location.state.relays as string[];
+    if (overrideDefault) return Array.from(overrideDefault);
+    if (additionalDefaults) return unique([...readRelays, ...additionalDefaults]);
+    return readRelays.urls;
+  }, [location.state?.relays, overrideDefault, readRelays.urls.join("|"), additionalDefaults]);
 
   const setSelected = useCallback(
     (relays: string[]) => {

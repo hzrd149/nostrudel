@@ -71,7 +71,7 @@ export default function CommunityEditModal({
       const signed = await requestSignature(draft);
       new NostrPublishAction(
         "Update Community",
-        unique([...clientRelaysService.getWriteUrls(), ...values.relays]),
+        unique([...clientRelaysService.outbox.urls, ...values.relays]),
         signed,
       );
 

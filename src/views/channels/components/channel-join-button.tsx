@@ -39,11 +39,7 @@ export default function ChannelJoinButton({
 
       const signed = await requestSignature(draft);
 
-      new NostrPublishAction(
-        isSubscribed ? "Leave Channel" : "Join Channel",
-        clientRelaysService.getWriteUrls(),
-        signed,
-      );
+      new NostrPublishAction(isSubscribed ? "Leave Channel" : "Join Channel", clientRelaysService.outbox.urls, signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

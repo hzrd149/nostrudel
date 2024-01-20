@@ -5,12 +5,12 @@ import { useReadRelayUrls } from "./use-client-relays";
 import useSubject from "./use-subject";
 import { parseZapEvent } from "../helpers/nostr/zaps";
 
-export default function useEventZaps(eventUID: string, additionalRelays: string[] = [], alwaysRequest = true) {
-  const relays = useReadRelayUrls(additionalRelays);
+export default function useEventZaps(eventUID: string, additionalRelays?: Iterable<string>, alwaysRequest = true) {
+  const readRelays = useReadRelayUrls(additionalRelays);
 
   const subject = useMemo(
-    () => eventZapsService.requestZaps(eventUID, relays, alwaysRequest),
-    [eventUID, relays.join("|"), alwaysRequest],
+    () => eventZapsService.requestZaps(eventUID, readRelays, alwaysRequest),
+    [eventUID, readRelays.urls.join("|"), alwaysRequest],
   );
 
   const events = useSubject(subject) || [];

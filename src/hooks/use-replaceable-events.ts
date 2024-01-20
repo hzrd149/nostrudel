@@ -9,7 +9,7 @@ import useSubjects from "./use-subjects";
 
 export default function useReplaceableEvents(
   coordinates: string[] | CustomAddressPointer[] | undefined,
-  additionalRelays: string[] = [],
+  additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelayUrls(additionalRelays);
@@ -30,7 +30,7 @@ export default function useReplaceableEvents(
       );
     }
     return subs;
-  }, [coordinates, readRelays.join("|")]);
+  }, [coordinates, readRelays.urls.join("|")]);
 
   return useSubjects(subs);
 }

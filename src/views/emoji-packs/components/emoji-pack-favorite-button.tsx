@@ -38,7 +38,7 @@ export default function EmojiPackFavoriteButton({
       const signed = await requestSignature(draft);
       const pub = new NostrPublishAction(
         isFavorite ? "Unfavorite Emoji pack" : "Favorite emoji pack",
-        clientRelaysService.getWriteUrls(),
+        clientRelaysService.outbox.urls,
         signed,
       );
       replaceableEventLoaderService.handleEvent(signed);

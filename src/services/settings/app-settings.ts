@@ -25,7 +25,7 @@ export async function replaceSettings(newSettings: AppSettings) {
     const draft = userAppSettings.buildAppSettingsEvent(newSettings);
     const signed = await signingService.requestSignature(draft, account);
     userAppSettings.receiveEvent(signed);
-    new NostrPublishAction("Update Settings", clientRelaysService.getWriteUrls(), signed);
+    new NostrPublishAction("Update Settings", clientRelaysService.outbox.urls, signed);
   }
 }
 
@@ -44,20 +44,20 @@ accountService.current.subscribe(() => {
     log("Loaded user settings from local storage");
   }
 
-  const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), {
+  const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.inbox.urls, {
     alwaysRequest: true,
   });
   appSettings.next(defaultSettings);
   appSettings.connect(subject);
 });
 
-clientRelaysService.relays.subscribe(() => {
-  // relays changed, look for settings again
-  const account = accountService.current.value;
+// clientRelaysService.relays.subscribe(() => {
+//   // relays changed, look for settings again
+//   const account = accountService.current.value;
 
-  if (account) {
-    userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getReadUrls(), { alwaysRequest: true });
-  }
-});
+//   if (account) {
+//     userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.getInboxURLs(), { alwaysRequest: true });
+//   }
+// });
 
 export default appSettings;

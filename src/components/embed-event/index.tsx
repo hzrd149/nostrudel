@@ -1,11 +1,10 @@
 import { Suspense, lazy } from "react";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
-import { Button, CardProps, Spinner } from "@chakra-ui/react";
-import { kinds, nip19 } from "nostr-tools";
+import { CardProps, Spinner } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
-import { NoteLink } from "../note-link";
 import { NostrEvent } from "../../types/nostr-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";

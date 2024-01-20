@@ -119,7 +119,7 @@ export default function NewTorrentView() {
       };
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Publish Torrent", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Publish Torrent", clientRelaysService.outbox.urls, signed);
 
       navigate(`/torrents/${nip19.noteEncode(signed.id)}`);
     } catch (e) {

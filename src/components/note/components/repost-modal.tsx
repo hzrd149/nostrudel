@@ -67,7 +67,7 @@ export default function RepostModal({
         ]);
       }
       const signed = await requestSignature(draftRepost);
-      const pub = new NostrPublishAction("Repost", clientRelaysService.getWriteUrls(), signed);
+      const pub = new NostrPublishAction("Repost", clientRelaysService.outbox.urls, signed);
       await pub.onComplete;
       onClose();
     } catch (e) {

@@ -26,7 +26,7 @@ export function mapQueryMap(queryMap: RelayQueryMap, fn: (filter: NostrRequestFi
   return newMap;
 }
 
-export function createSimpleQueryMap(relays: string[], filter: NostrRequestFilter) {
+export function createSimpleQueryMap(relays: Iterable<string>, filter: NostrRequestFilter) {
   const map: RelayQueryMap = {};
   for (const relay of relays) map[relay] = filter;
   return map;

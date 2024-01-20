@@ -44,7 +44,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
       };
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction("Request Reading", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction("Request Reading", clientRelaysService.outbox.urls, signed);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

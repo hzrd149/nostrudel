@@ -51,7 +51,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
-      const writeRelays = clientRelaysService.getWriteUrls();
+      const writeRelays = clientRelaysService.outbox.urls;
 
       setLoading(true);
       try {
@@ -127,13 +127,13 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const handleFollow = useAsyncErrorHandler(async () => {
     const draft = listAddPerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Follow", clientRelaysService.getWriteUrls(), signed);
+    const pub = new NostrPublishAction("Follow", clientRelaysService.outbox.urls, signed);
     replaceableEventLoaderService.handleEvent(signed);
   }, [contacts, requestSignature]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Unfollow", clientRelaysService.getWriteUrls(), signed);
+    const pub = new NostrPublishAction("Unfollow", clientRelaysService.outbox.urls, signed);
     replaceableEventLoaderService.handleEvent(signed);
   }, [contacts, requestSignature]);
 

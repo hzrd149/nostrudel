@@ -27,7 +27,6 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import signingService from "../../services/signing";
 import createDefer, { Deferred } from "../../classes/deferred";
 import useEventRelays from "../../hooks/use-event-relays";
-import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/events";
@@ -35,6 +34,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import { Tag } from "../../types/nostr-event";
 import deleteEventService from "../../services/delete-events";
 import { EmbedEvent } from "../../components/embed-event";
+import { useWriteRelayUrls } from "../../hooks/use-client-relays";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -86,7 +86,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
         created_at: dayjs().unix(),
       };
       const signed = await signingService.requestSignature(draft, account);
-      const pub = new NostrPublishAction("Delete", writeRelays, signed);
+      new NostrPublishAction("Delete", writeRelays, signed);
       deleteEventService.handleEvent(signed);
       defer?.resolve();
     } catch (e) {
@@ -137,7 +137,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
                   </AccordionButton>
                   <AccordionPanel>
                     <Flex wrap="wrap" gap="2" py="2">
-                      {writeRelays.map((url) => (
+                      {writeRelays.urls.map((url) => (
                         <Box alignItems="center" key={url} px="2" borderRadius="lg" display="flex" borderWidth="1px">
                           <RelayFavicon relay={url} size="2xs" mr="2" />
                           <Text isTruncated>{url}</Text>

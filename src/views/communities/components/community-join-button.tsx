@@ -43,7 +43,7 @@ export default function CommunityJoinButton({
 
       const signed = await requestSignature(draft);
 
-      new NostrPublishAction(isSubscribed ? "Unsubscribe" : "Subscribe", clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction(isSubscribed ? "Unsubscribe" : "Subscribe", clientRelaysService.outbox.urls, signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

@@ -27,7 +27,7 @@ export default function useUserMuteActions(pubkey: string) {
     draft = pruneExpiredPubkeys(draft);
 
     const signed = await requestSignature(draft);
-    new NostrPublishAction("Mute", clientRelaysService.getWriteUrls(), signed);
+    new NostrPublishAction("Mute", clientRelaysService.outbox.urls, signed);
     replaceableEventLoaderService.handleEvent(signed);
   }, [requestSignature, muteList]);
   const unmute = useAsyncErrorHandler(async () => {
@@ -35,7 +35,7 @@ export default function useUserMuteActions(pubkey: string) {
     draft = pruneExpiredPubkeys(draft);
 
     const signed = await requestSignature(draft);
-    new NostrPublishAction("Unmute", clientRelaysService.getWriteUrls(), signed);
+    new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
     replaceableEventLoaderService.handleEvent(signed);
   }, [requestSignature, muteList]);
 

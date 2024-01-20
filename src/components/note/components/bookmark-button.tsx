@@ -48,7 +48,7 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
-      const writeRelays = clientRelaysService.getWriteUrls();
+      const writeRelays = clientRelaysService.outbox.urls;
 
       setLoading(true);
       try {

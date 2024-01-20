@@ -1,4 +1,4 @@
-import { Link, Text, Tooltip } from "@chakra-ui/react";
+import { Link, Tooltip } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";

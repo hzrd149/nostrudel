@@ -33,11 +33,9 @@ import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelayUrls } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { RelayMode } from "../../classes/relay";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { useUserRelays } from "../../hooks/use-user-relays";
 import Header from "./components/header";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useEventExists from "../../hooks/use-event-exists";
@@ -46,6 +44,7 @@ import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -67,16 +66,10 @@ const tabs = [
   { label: "Muted by", path: "muted-by" },
 ];
 
-function useUserTopRelays(pubkey: string, count: number = 4) {
-  const readRelays = useReadRelayUrls();
-  // get user relays
-  const userRelays = useUserRelays(pubkey, readRelays)
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url);
-  // merge the users relays with client relays
-  if (userRelays.length === 0) return readRelays;
-  const sorted = relayScoreboardService.getRankedRelays(userRelays);
-
+function useUserBestOutbox(pubkey: string, count: number = 4) {
+  const mailbox = useUserMailboxes(pubkey);
+  const relays = useReadRelayUrls(mailbox?.outbox);
+  const sorted = relayScoreboardService.getRankedRelays(relays);
   return !count ? sorted : sorted.slice(0, count);
 }
 
@@ -84,7 +77,7 @@ const UserView = () => {
   const { pubkey, relays: pointerRelays = [] } = useParamsProfilePointer();
   const navigate = useNavigate();
   const [relayCount, setRelayCount] = useState(4);
-  const userTopRelays = useUserTopRelays(pubkey, relayCount);
+  const userTopRelays = useUserBestOutbox(pubkey, relayCount);
   const relayModal = useDisclosure();
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 

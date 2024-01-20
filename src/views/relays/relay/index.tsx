@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
-import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../components/relay-card";
+import { RelayDebugButton, RelayMetadata } from "../components/relay-card";
 import SupportedNIPs from "../components/supported-nips";
 import { ExternalLinkIcon } from "../../../components/icons";
 import RelayReviewForm from "./relay-review-form";
@@ -63,7 +63,7 @@ function RelayPage({ relay }: { relay: string }) {
           >
             More info
           </Button>
-          <RelayJoinAction url={relay} />
+          {/* <RelayJoinAction url={relay} /> */}
         </ButtonGroup>
       </Flex>
       <RelayMetadata url={relay} extended />

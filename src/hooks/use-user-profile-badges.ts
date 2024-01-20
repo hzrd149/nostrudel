@@ -7,7 +7,7 @@ import useSingleEvents from "./use-single-events";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 
-export default function useUserProfileBadges(pubkey: string, additionalRelays: string[] = []) {
+export default function useUserProfileBadges(pubkey: string, additionalRelays?: Iterable<string>) {
   const profileBadgesEvent = useReplaceableEvent(
     {
       pubkey,

@@ -243,7 +243,7 @@ class ReplaceableEventLoaderService {
     this.writeToCacheThrottle();
   }
 
-  private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
+  private requestEventFromRelays(relays: Iterable<string>, kind: number, pubkey: string, d?: string) {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
@@ -261,7 +261,7 @@ class ReplaceableEventLoaderService {
     return sub;
   }
 
-  requestEvent(relays: string[], kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
+  requestEvent(relays: Iterable<string>, kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 

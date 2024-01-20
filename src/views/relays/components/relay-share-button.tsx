@@ -17,7 +17,7 @@ export function RelayShareButton({
 
   const recommendRelay = useCallback(async () => {
     try {
-      const writeRelays = clientRelaysService.getWriteUrls();
+      const writeRelays = clientRelaysService.outbox.urls;
 
       const draft: DraftNostrEvent = {
         kind: 2,

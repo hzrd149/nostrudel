@@ -28,7 +28,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
     : eventPointers.some((p) => p.id === event.id);
 
   const removeBookmark = useCallback(async () => {
-    const writeRelays = clientRelaysService.getWriteUrls();
+    const writeRelays = clientRelaysService.outbox.urls;
 
     setLoading(true);
     try {
@@ -53,7 +53,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
   }, [event, requestSignature, bookmarkList, isBookmarked]);
 
   const addBookmark = useCallback(async () => {
-    const writeRelays = clientRelaysService.getWriteUrls();
+    const writeRelays = clientRelaysService.outbox.urls;
 
     setLoading(true);
     try {

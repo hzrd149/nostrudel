@@ -41,7 +41,7 @@ export default function AddReactionButton({
 
       const signed = await requestSignature(draft);
       if (signed) {
-        const writeRelays = clientRelaysService.getWriteUrls();
+        const writeRelays = clientRelaysService.outbox.urls;
         new NostrPublishAction("Reaction", writeRelays, signed);
         eventReactionsService.handleEvent(signed);
         setPopover.off();

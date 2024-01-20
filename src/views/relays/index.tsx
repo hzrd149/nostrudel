@@ -1,9 +1,8 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Divider, Flex, Heading, Input, SimpleGrid, Spacer, Switch, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
 
-import { useClientRelays } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
 import AddCustomRelayModal from "./components/add-custom-modal";
 import RelayCard from "./components/relay-card";
@@ -12,6 +11,7 @@ import { RelayMode } from "../../classes/relay";
 import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { isValidRelayURL } from "../../helpers/relay";
+import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
@@ -19,10 +19,11 @@ export default function RelaysView() {
   const isSearching = deboundedSearch.length > 2;
   const addRelayModal = useDisclosure();
 
-  const clientRelays = useClientRelays().map((r) => r.url);
+  const readRelays = useReadRelayUrls();
+  const writeRelays = useWriteRelayUrls();
   const discoveredRelays = relayPoolService
     .getRelays()
-    .filter((r) => !clientRelays.includes(r.url))
+    .filter((r) => !readRelays.has(r.url) && !writeRelays.has(r.url))
     .map((r) => r.url)
     .filter(isValidRelayURL);
 
@@ -32,11 +33,11 @@ export default function RelaysView() {
 
   const filteredRelays = useMemo(() => {
     if (isSearching) {
-      return onlineRelays.filter((url) => url.includes(deboundedSearch));
+      return onlineRelays.filter((url) => url.toLowerCase().includes(deboundedSearch.toLowerCase()));
     }
 
-    return clientRelays;
-  }, [isSearching, deboundedSearch, onlineRelays, clientRelays]);
+    return [...readRelays];
+  }, [isSearching, deboundedSearch, onlineRelays, readRelays]);
 
   return (
     <VerticalPageLayout>

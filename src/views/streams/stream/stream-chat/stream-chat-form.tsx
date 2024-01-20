@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
 import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
-import { useUserRelays } from "../../../../hooks/use-user-relays";
-import { RelayMode } from "../../../../classes/relay";
 import { unique } from "../../../../helpers/array";
 import { useSigningContext } from "../../../../providers/global/signing-provider";
 import NostrPublishAction from "../../../../classes/nostr-publish-action";
@@ -14,14 +12,13 @@ import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
+import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
   const emojis = useContextEmojis();
   const streamRelays = useRelaySelectionRelays();
-  const hostReadRelays = useUserRelays(stream.host)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
+  const hostReadRelays = useUserInbox(stream.host);
 
   const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);
 

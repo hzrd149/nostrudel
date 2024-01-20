@@ -16,7 +16,7 @@ export default function NoteDebugModal({ event, ...props }: { event: NostrEvent 
   const [loading, setLoading] = useState(false);
   const broadcast = useCallback(() => {
     setLoading(true);
-    const relays = clientRelaysService.getWriteUrls();
+    const relays = clientRelaysService.outbox.urls;
     const pub = new NostrPublishAction("Broadcast", relays, event, 5000);
     pub.onComplete.then(() => setLoading(false));
   }, []);

@@ -24,7 +24,6 @@ export type IncomingEOSE = {
   subId: string;
   relay: Relay;
 };
-// NIP-20
 export type IncomingCommandResult = {
   type: "OK";
   eventId: string;
@@ -39,7 +38,6 @@ export enum RelayMode {
   WRITE = 2,
   ALL = 1 | 2,
 }
-export type RelayConfig = { url: string; mode: RelayMode };
 
 const CONNECTION_TIMEOUT = 1000 * 30;
 
@@ -53,7 +51,6 @@ export default class Relay {
   onEOSE = new Subject<IncomingEOSE>(undefined, false);
   onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
   ws?: WebSocket;
-  mode: RelayMode = RelayMode.ALL;
 
   private connectionTimer?: () => void;
   private ejectTimer?: () => void;
@@ -61,9 +58,8 @@ export default class Relay {
   private subscriptionResTimer = new Map<string, () => void>();
   private queue: NostrOutgoingMessage[] = [];
 
-  constructor(url: string, mode: RelayMode = RelayMode.ALL) {
+  constructor(url: string) {
     this.url = url;
-    this.mode = mode;
   }
 
   open() {
@@ -112,16 +108,14 @@ export default class Relay {
     this.ws.onmessage = this.handleMessage.bind(this);
   }
   send(json: NostrOutgoingMessage) {
-    if (this.mode & RelayMode.WRITE) {
-      if (this.connected) {
-        this.ws?.send(JSON.stringify(json));
+    if (this.connected) {
+      this.ws?.send(JSON.stringify(json));
 
-        // record start time
-        if (json[0] === "REQ" || json[0] === "COUNT") {
-          this.startSubResTimer(json[1]);
-        }
-      } else this.queue.push(json);
-    }
+      // record start time
+      if (json[0] === "REQ" || json[0] === "COUNT") {
+        this.startSubResTimer(json[1]);
+      }
+    } else this.queue.push(json);
   }
   close() {
     this.ws?.close();
@@ -171,8 +165,6 @@ export default class Relay {
   handleMessage(event: MessageEvent<string>) {
     // skip empty events
     if (!event.data) return;
-
-    if (!(this.mode & RelayMode.READ)) return;
 
     try {
       const data: RawIncomingNostrEvent = JSON.parse(event.data);

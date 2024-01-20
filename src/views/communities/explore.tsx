@@ -17,7 +17,7 @@ import { parseCoordinate } from "../../helpers/nostr/events";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
-export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays: string[] = []) {
+export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const communityListsSubjects = useMemo(() => {
     return pubkeys.map((pubkey) =>

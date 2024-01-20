@@ -45,7 +45,7 @@ export default function ListFavoriteButton({
       setLoading(true);
       const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
       const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Favorite list", clientRelaysService.getWriteUrls(), signed);
+      const pub = new NostrPublishAction("Favorite list", clientRelaysService.outbox.urls, signed);
       replaceableEventLoaderService.handleEvent(signed);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

@@ -12,7 +12,7 @@ class EventReactionsService {
   subjects = new SuperMap<eventId, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
   pending = new SuperMap<eventId, Set<relay>>(() => new Set());
 
-  requestReactions(eventId: string, relays: relay[], alwaysRequest = true) {
+  requestReactions(eventId: string, relays: Iterable<string>, alwaysRequest = true) {
     const subject = this.subjects.get(eventId);
 
     if (!subject.value || alwaysRequest) {

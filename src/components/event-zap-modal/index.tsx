@@ -15,11 +15,10 @@ import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
 import { getZapSplits } from "../../helpers/nostr/zaps";
 import { unique } from "../../helpers/array";
-import { RelayMode } from "../../classes/relay";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/events";
 import { EmbedProps } from "../embed-event";
-import userRelaysService from "../../services/user-relays";
+import userMailboxesService from "../../services/user-mailboxes";
 import InputStep from "./input-step";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import userMetadataService from "../../services/user-metadata";
@@ -62,15 +61,10 @@ async function getPayRequestForPubkey(
   }
 
   const userInbox = relayScoreboardService
-    .getRankedRelays(
-      userRelaysService
-        .getRelays(pubkey)
-        .value?.relays.filter((r) => r.mode & RelayMode.READ)
-        .map((r) => r.url) ?? [],
-    )
+    .getRankedRelays(userMailboxesService.getMailboxes(pubkey).value?.inbox)
     .slice(0, 4);
   const eventRelays = event ? relayHintService.getEventRelayHints(event, 4) : [];
-  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.getWriteUrls()).slice(0, 4);
+  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.outbox.urls).slice(0, 4);
   const additional = relayScoreboardService.getRankedRelays(additionalRelays);
 
   // create zap request

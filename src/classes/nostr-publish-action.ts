@@ -23,9 +23,9 @@ export default class NostrPublishAction {
 
   private remaining = new Set<Relay>();
 
-  constructor(label: string, relays: string[], event: NostrEvent, timeout: number = 5000) {
+  constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 5000) {
     this.label = label;
-    this.relays = relays;
+    this.relays = Array.from(relays);
     this.event = event;
 
     for (const url of relays) {

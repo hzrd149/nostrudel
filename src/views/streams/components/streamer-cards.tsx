@@ -1,16 +1,5 @@
 import { useMemo } from "react";
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  CardProps,
-  Flex,
-  Heading,
-  Image,
-  LinkBox,
-  LinkOverlay,
-} from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOverlay } from "@chakra-ui/react";
 
 import { useReadRelayUrls } from "../../../hooks/use-client-relays";
 import { useRelaySelectionRelays } from "../../../providers/local/relay-selection-provider";
@@ -24,10 +13,10 @@ import OpenGraphCard from "../../../components/open-graph-card";
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;
 
-function useStreamerCardsCords(pubkey: string, relays: string[]) {
+function useStreamerCardsCords(pubkey: string, relays: Iterable<string>) {
   const sub = useMemo(
     () => replaceableEventLoaderService.requestEvent(relays, STREAMER_CARDS_TYPE, pubkey),
-    [pubkey, relays.join("|")],
+    [pubkey, relays],
   );
   const streamerCards = useSubject(sub);
 

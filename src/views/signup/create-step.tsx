@@ -10,9 +10,8 @@ import { nostrBuildUploadImage } from "../../helpers/nostr-build";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
-import clientRelaysService from "../../services/client-relays";
-import { RelayMode } from "../../classes/relay";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import { DraftNostrEvent } from "../../types/nostr-event";
 
 export default function CreateStep({
   metadata,
@@ -68,7 +67,14 @@ export default function CreateStep({
       accountService.switchAccount(pubkey);
 
       // set relays
-      await clientRelaysService.postUpdatedRelays(relays.map((url) => ({ url, mode: RelayMode.ALL })));
+      const draft: DraftNostrEvent = {
+        kind: kinds.RelayList,
+        content: "",
+        tags: relays.map((url) => ["r", url]),
+        created_at: dayjs().unix(),
+      };
+      const signed = finalizeEvent(draft, hex);
+      new NostrPublishAction("Set Mailbox Relays", relays, signed);
 
       onSubmit(bytesToHex(hex));
     } catch (e) {

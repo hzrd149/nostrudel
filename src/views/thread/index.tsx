@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from "react";
-import { Card, Flex, Heading, Link, Spinner } from "@chakra-ui/react";
+import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 

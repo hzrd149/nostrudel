@@ -1,36 +1,24 @@
-import dayjs from "dayjs";
-
-import { unique } from "../helpers/array";
-import { DraftNostrEvent, RTag } from "../types/nostr-event";
 import accountService from "./account";
-import { RelayConfig, RelayMode } from "../classes/relay";
-import userRelaysService, { ParsedUserRelays } from "./user-relays";
-import { Connection, PersistentSubject, Subject } from "../classes/subject";
-import signingService from "./signing";
+import { RelayMode } from "../classes/relay";
+import userMailboxesService, { UserMailboxes } from "./user-mailboxes";
+import { PersistentSubject, Subject } from "../classes/subject";
 import { logger } from "../helpers/debug";
-import NostrPublishAction from "../classes/nostr-publish-action";
-import { COMMON_CONTACT_RELAY } from "../const";
+import appSettings from "./settings/app-settings";
+import RelaySet from "../classes/relay-set";
+import { safeUrl } from "../helpers/parse";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
-const DEFAULT_RELAYS = [
-  { url: "wss://relay.damus.io", mode: RelayMode.READ },
-  { url: "wss://nostr.wine", mode: RelayMode.READ },
-  { url: "wss://relay.snort.social", mode: RelayMode.READ },
-  { url: "wss://nos.lol", mode: RelayMode.READ },
-  { url: "wss://purplerelay.com", mode: RelayMode.READ },
-];
-
-const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], RelayConfig[] | undefined> = (
-  userRelays,
-  next,
-) => next(userRelays.relays);
+// const userRelaysToRelayConfig: Connection<ParsedUserRelays, RelayConfig[], RelayConfig[] | undefined> = (
+//   userRelays,
+//   next,
+// ) => next(userRelays.relays);
 
 class ClientRelayService {
-  // bootstrapRelays = new Set<string>();
-  relays = new PersistentSubject<RelayConfig[]>([]);
-  writeRelays = new PersistentSubject<RelayConfig[]>([]);
-  readRelays = new PersistentSubject<RelayConfig[]>([]);
+  readRelays = new PersistentSubject(new RelaySet());
+  writeRelays = new PersistentSubject(new RelaySet());
+  // outbox = new PersistentSubject(new RelaySet());
+  // inbox = new PersistentSubject(new RelaySet());
 
   log = logger.extend("ClientRelays");
 
@@ -38,127 +26,96 @@ class ClientRelayService {
     accountService.loading.subscribe(this.handleAccountChange, this);
     accountService.current.subscribe(this.handleAccountChange, this);
 
+    appSettings.subscribe(this.handleSettingsChange, this);
+
     // set the read and write relays
-    this.relays.subscribe((relays) => {
-      this.log("Got new relay list", relays);
-      this.writeRelays.next(relays.filter((r) => r.mode & RelayMode.WRITE));
-      this.readRelays.next(relays.filter((r) => r.mode & RelayMode.READ));
-    });
+    // this.relays.subscribe((relays) => {
+    //   this.log("Got new relay list", relays);
+    //   this.outbox.next(relays.filter((r) => r.mode & RelayMode.WRITE));
+    //   this.inbox.next(relays.filter((r) => r.mode & RelayMode.READ));
+    // });
   }
 
-  private userRequestRelaySubject: Subject<ParsedUserRelays> | undefined;
+  addRelay(url: string, mode: RelayMode) {
+    if (mode & RelayMode.WRITE) this.writeRelays.next(this.writeRelays.value.clone().add(url));
+    if (mode & RelayMode.READ) this.readRelays.next(this.readRelays.value.clone().add(url));
+  }
+  removeRelay(url: string, mode: RelayMode) {
+    if (mode & RelayMode.WRITE) {
+      const next = this.writeRelays.value.clone();
+      next.delete(url);
+      this.writeRelays.next(next);
+    }
+    if (mode & RelayMode.READ) {
+      const next = this.readRelays.value.clone();
+      next.delete(url);
+      this.readRelays.next(next);
+    }
+  }
+
+  private handleSettingsChange() {
+    this.readRelays.next(RelaySet.from(appSettings.value.defaultRelays));
+    this.writeRelays.next(new RelaySet());
+  }
+
+  private userRelaySub: Subject<UserMailboxes> | undefined;
   private handleAccountChange() {
+    // skip if account is loading
     if (accountService.loading.value) return;
 
     // disconnect the relay list subject
-    if (this.userRequestRelaySubject) {
-      this.relays.disconnect(this.userRequestRelaySubject);
-      this.userRequestRelaySubject = undefined;
-    }
+    // if (this.userRelaySub) {
+    // this.relays.disconnect(this.userRelaySub);
+    // this.userRelaySub.unsubscribe(this.handleUserRelays, this);
+    // this.userRelaySub = undefined;
+    // }
 
     const account = accountService.current.value;
-    if (!account) {
-      this.log("No account, using default relays");
-      this.relays.next(DEFAULT_RELAYS);
-      return;
-    }
-
-    // clear relays
-    this.relays.next([]);
+    if (!account) return;
 
     // connect the relay subject with the account relay subject
-    this.userRequestRelaySubject = userRelaysService.getRelays(account.pubkey);
-    this.relays.connectWithHandler(this.userRequestRelaySubject, userRelaysToRelayConfig);
+    // this.userRelaySub = userMailboxesService.requestMailboxes(account.pubkey, [COMMON_CONTACT_RELAY]);
+    // this.userRelaySub.subscribe(this.handleUserRelays, this);
+    // this.relays.connectWithHandler(this.userRelaySub, userRelaysToRelayConfig);
 
     // load the relays from cache
-    if (!userRelaysService.getRelays(account.pubkey).value) {
-      this.log("Load users relay list from cache");
-      userRelaysService.loadFromCache(account.pubkey).then(() => {
-        if (this.relays.value.length === 0) {
-          const bootstrapRelays = account.relays ?? [COMMON_CONTACT_RELAY];
+    // if (!userRelaysService.getRelays(account.pubkey).value) {
+    //   this.log("Load users relay list from cache");
+    //   userRelaysService.loadFromCache(account.pubkey).then(() => {
+    //     if (this.relays.value.length === 0) {
+    //       const bootstrapRelays = account.relays ?? [COMMON_CONTACT_RELAY];
 
-          this.log("Loading relay list from bootstrap relays", bootstrapRelays);
-          userRelaysService.requestRelays(account.pubkey, bootstrapRelays, { alwaysRequest: true });
-        }
-      });
-    }
+    //       this.log("Loading relay list from bootstrap relays", bootstrapRelays);
+    //       userRelaysService.requestRelays(account.pubkey, bootstrapRelays, { alwaysRequest: true });
+    //     }
+    //   });
+    // }
 
     // double check for new relay notes
-    setTimeout(() => {
-      if (this.relays.value.length === 0) return;
+    // setTimeout(() => {
+    //   if (this.relays.value.length === 0) return;
 
-      this.log("Requesting latest relay list from relays");
-      userRelaysService.requestRelays(account.pubkey, this.getWriteUrls(), { alwaysRequest: true });
-    }, 5000);
+    //   this.log("Requesting latest relay list from relays");
+    //   userRelaysService.requestRelays(account.pubkey, this.getOutboxURLs(), { alwaysRequest: true });
+    // }, 5000);
   }
 
-  /** @deprecated */
-  async addRelay(url: string, mode: RelayMode) {
-    this.log(`Adding ${url} relay`);
-    if (!this.relays.value.some((r) => r.url === url)) {
-      const newRelays = [...this.relays.value, { url, mode }];
-      await this.postUpdatedRelays(newRelays);
-    }
+  // private handleUserRelays(userRelays: UserMailboxes) {
+  //   if (userRelays.pubkey === accountService.current.value?.pubkey) {
+  //     this.inbox.next(userRelays.mailboxes.filter(RelayMode.READ));
+  //     this.outbox.next(userRelays.mailboxes.filter(RelayMode.WRITE));
+  //   }
+  // }
+
+  get outbox() {
+    const account = accountService.current.value;
+    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.outbox ?? this.writeRelays.value;
+    return this.writeRelays.value;
   }
-  /** @deprecated */
-  async updateRelay(url: string, mode: RelayMode) {
-    this.log(`Updating ${url} relay`);
-    if (this.relays.value.some((r) => r.url === url)) {
-      const newRelays = this.relays.value.map((r) => (r.url === url ? { url, mode } : r));
-      await this.postUpdatedRelays(newRelays);
-    }
-  }
-  /** @deprecated */
-  async removeRelay(url: string) {
-    this.log(`Removing ${url} relay`);
-    if (this.relays.value.some((r) => r.url === url)) {
-      const newRelays = this.relays.value.filter((r) => r.url !== url);
-      await this.postUpdatedRelays(newRelays);
-    }
-  }
-
-  /** @deprecated */
-  async postUpdatedRelays(newRelays: RelayConfig[]) {
-    const rTags: RTag[] = newRelays.map((r) => {
-      switch (r.mode) {
-        case RelayMode.READ:
-          return ["r", r.url, "read"];
-        case RelayMode.WRITE:
-          return ["r", r.url, "write"];
-        case RelayMode.ALL:
-        default:
-          return ["r", r.url];
-      }
-    });
-
-    const draft: DraftNostrEvent = {
-      kind: 10002,
-      tags: rTags,
-      content: "",
-      created_at: dayjs().unix(),
-    };
-
-    const newRelayUrls = newRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    const oldRelayUrls = this.relays.value.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    const writeUrls = unique([...oldRelayUrls, ...newRelayUrls, COMMON_CONTACT_RELAY]);
-
-    const current = accountService.current.value;
-    if (!current) throw new Error("no account");
-    const signed = await signingService.requestSignature(draft, current);
-
-    const pub = new NostrPublishAction("Update Relays", writeUrls, signed);
-
-    // pass new event to the user relay service
-    userRelaysService.receiveEvent(signed);
-
-    await pub.onComplete;
-  }
-
-  getWriteUrls() {
-    return this.relays.value?.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-  }
-  getReadUrls() {
-    return this.relays.value?.filter((r) => r.mode & RelayMode.READ).map((r) => r.url);
+  get inbox() {
+    const account = accountService.current.value;
+    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.inbox ?? this.readRelays.value;
+    return this.readRelays.value;
   }
 }
 

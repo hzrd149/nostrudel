@@ -25,7 +25,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
   const handleRemoveFromList = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(list, pubkey);
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Remove from list", clientRelaysService.getWriteUrls(), signed);
+    const pub = new NostrPublishAction("Remove from list", clientRelaysService.outbox.urls, signed);
   }, [list, requestSignature]);
 
   return (

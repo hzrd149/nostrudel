@@ -6,7 +6,7 @@ import useSubject from "./use-subject";
 import useTimelineLoader from "./use-timeline-loader";
 import { NostrEvent } from "../types/nostr-event";
 
-export default function useUserLists(pubkey?: string, additionalRelays: string[] = []) {
+export default function useUserLists(pubkey?: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelayUrls(additionalRelays);
   const eventFilter = useCallback((event: NostrEvent) => {
     return !isJunkList(event);

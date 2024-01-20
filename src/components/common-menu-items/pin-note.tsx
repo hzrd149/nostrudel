@@ -35,7 +35,7 @@ export default function PinNoteMenuItem({ event }: { event: NostrEvent }) {
       else draft = listAddEvent(draft, event.id);
 
       const signed = await requestSignature(draft);
-      new NostrPublishAction(label, clientRelaysService.getWriteUrls(), signed);
+      new NostrPublishAction(label, clientRelaysService.outbox.urls, signed);
       setLoading(false);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

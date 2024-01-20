@@ -14,7 +14,7 @@ class EventZapsService {
   subjects = new SuperMap<eventUID, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
   pending = new SuperMap<eventUID, Set<relay>>(() => new Set());
 
-  requestZaps(eventUID: eventUID, relays: relay[], alwaysRequest = true) {
+  requestZaps(eventUID: eventUID, relays: Iterable<string>, alwaysRequest = true) {
     const subject = this.subjects.get(eventUID);
 
     if (!subject.value || alwaysRequest) {

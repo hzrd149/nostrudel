@@ -1,12 +1,12 @@
 import { kinds, validateEvent } from "nostr-tools";
 
-import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
-import { RelayConfig, RelayMode } from "../../classes/relay";
+import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { getEventUID } from "nostr-idb";
+import { safeRelayUrls } from "../relay";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -33,20 +33,34 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
   return false;
 }
 
+const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | DraftNostrEvent) {
+  // @ts-ignore
+  if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
+
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
-  // TODO: update this to only look for a "root" or "reply" tag
-  return !!getThreadReferences(event).reply;
+  const isReply = !!getThreadReferences(event).reply;
+  // @ts-ignore
+  event[isReplySymbol] = isReply;
+  return isReply;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
+const isRepostSymbol = Symbol("isRepost");
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
+  // @ts-ignore
+  if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
+
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return true;
 
   const match = event.content.match(getMatchNostrLink());
-  return match && match[0].length === event.content.length;
+  const isRepost = !!match && match[0].length === event.content.length;
+
+  // @ts-ignore
+  event[isRepostSymbol] = isRepost;
+  return isRepost;
 }
 
 /**
@@ -172,17 +186,6 @@ export function getThreadReferences(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export function parseRTag(tag: RTag): RelayConfig {
-  switch (tag[2]) {
-    case "write":
-      return { url: tag[1], mode: RelayMode.WRITE };
-    case "read":
-      return { url: tag[1], mode: RelayMode.READ };
-    default:
-      return { url: tag[1], mode: RelayMode.ALL };
-  }
-}
-
 export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
@@ -197,11 +200,11 @@ export function getEventAddressPointer(event: NostrEvent): AddressPointer {
 }
 
 export function eTagToEventPointer(tag: ETag): EventPointer {
-  return { id: tag[1], relays: tag[2] ? [tag[2]] : [] };
+  return { id: tag[1], relays: tag[2] ? safeRelayUrls([tag[2]]) : [] };
 }
 export function aTagToAddressPointer(tag: ATag): AddressPointer {
   const cord = parseCoordinate(tag[1], true, false);
-  if (tag[2]) cord.relays = [tag[2]];
+  if (tag[2]) cord.relays = safeRelayUrls([tag[2]]);
   return cord;
 }
 export function addressPointerToATag(pointer: AddressPointer): ATag {

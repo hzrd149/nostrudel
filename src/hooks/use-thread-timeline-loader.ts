@@ -11,7 +11,7 @@ import { unique } from "../helpers/array";
 
 export default function useThreadTimelineLoader(
   focusedEvent: NostrEvent | undefined,
-  relays: string[],
+  relays: Iterable<string>,
   kind: number = kinds.ShortTextNote,
 ) {
   const refs = focusedEvent && getThreadReferences(focusedEvent);

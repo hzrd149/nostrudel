@@ -4,17 +4,21 @@ import { useReadRelayUrls } from "./use-client-relays";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 
-export default function useEventsReactions(eventIds: string[], additionalRelays: string[] = [], alwaysRequest = true) {
-  const relays = useReadRelayUrls(additionalRelays);
+export default function useEventsReactions(
+  eventIds: string[],
+  additionalRelays?: Iterable<string>,
+  alwaysRequest = true,
+) {
+  const readRelays = useReadRelayUrls(additionalRelays);
 
   // get subjects
   const subjects = useMemo(() => {
     const dir: Record<string, Subject<NostrEvent[]>> = {};
     for (const eventId of eventIds) {
-      dir[eventId] = eventReactionsService.requestReactions(eventId, relays, alwaysRequest);
+      dir[eventId] = eventReactionsService.requestReactions(eventId, readRelays, alwaysRequest);
     }
     return dir;
-  }, [eventIds, relays.join("|"), alwaysRequest]);
+  }, [eventIds, readRelays.urls.join("|"), alwaysRequest]);
 
   // get values out of subjects
   const reactions: Record<string, NostrEvent[]> = {};

@@ -1,18 +1,16 @@
 import { useMemo } from "react";
 import { nip19 } from "nostr-tools";
 
-import { RelayMode } from "../classes/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
-import { useUserRelays } from "./use-user-relays";
+import useUserMailboxes from "./use-user-mailboxes";
 
+/** @deprecated */
 export function useSharableProfileId(pubkey: string, relayCount = 2) {
-  const userRelays = useUserRelays(pubkey);
+  const mailboxes = useUserMailboxes(pubkey);
 
   return useMemo(() => {
-    const writeUrls = userRelays.filter((r) => r.mode & RelayMode.WRITE).map((r) => r.url);
-    const ranked = relayScoreboardService.getRankedRelays(writeUrls);
+    const ranked = relayScoreboardService.getRankedRelays(mailboxes?.outbox.urls);
     const onlyTwo = ranked.slice(0, relayCount);
-
     return onlyTwo.length > 0 ? nip19.nprofileEncode({ pubkey, relays: onlyTwo }) : nip19.npubEncode(pubkey);
-  }, [userRelays]);
+  }, [mailboxes]);
 }

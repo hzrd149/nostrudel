@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
 import { Filter } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
@@ -129,13 +130,14 @@ export default class TimelineLoader {
     this.subscription.onEvent.subscribe(this.handleEvent, this);
 
     // update the timeline when there are new events
-    this.events.onEvent.subscribe(this.updateTimeline, this);
-    this.events.onDelete.subscribe(this.updateTimeline, this);
-    this.events.onClear.subscribe(this.updateTimeline, this);
+    this.events.onEvent.subscribe(this.throttleUpdateTimeline, this);
+    this.events.onDelete.subscribe(this.throttleUpdateTimeline, this);
+    this.events.onClear.subscribe(this.throttleUpdateTimeline, this);
 
     deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
+  private throttleUpdateTimeline = _throttle(this.updateTimeline, 10);
   private updateTimeline() {
     if (this.eventFilter) {
       const filter = this.eventFilter;

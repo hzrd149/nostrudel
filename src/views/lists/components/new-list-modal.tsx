@@ -54,7 +54,7 @@ export default function NewListModal({
         kind: values.kind,
       };
       const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Create list", clientRelaysService.getWriteUrls(), signed);
+      const pub = new NostrPublishAction("Create list", clientRelaysService.outbox.urls, signed);
 
       if (onCreated) onCreated(signed);
     } catch (e) {
