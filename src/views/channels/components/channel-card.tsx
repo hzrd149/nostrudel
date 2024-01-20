@@ -23,7 +23,7 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import singleEventService from "../../../services/single-event";
 
 export default function ChannelCard({
@@ -31,7 +31,7 @@ export default function ChannelCard({
   additionalRelays,
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const { metadata } = useChannelMetadata(channel.id, readRelays);
 
   const ref = useRef<HTMLDivElement | null>(null);

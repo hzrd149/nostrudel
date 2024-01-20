@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
@@ -20,7 +20,7 @@ function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
   const showClosed = useDisclosure();
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       const closed = getGoalClosedDate(event);

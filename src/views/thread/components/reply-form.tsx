@@ -18,7 +18,7 @@ import {
 } from "../../../helpers/nostr/post";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/global/signing-provider";
-import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
+import { useWriteRelays } from "../../../hooks/use-client-relays";
 import NostrPublishAction from "../../../classes/nostr-publish-action";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
@@ -39,7 +39,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   const account = useCurrentAccount();
   const emojis = useContextEmojis();
   const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelayUrls();
+  const writeRelays = useWriteRelays();
 
   const threadMembers = useMemo(() => getThreadMembers(item, account?.pubkey), [item, account?.pubkey]);
   const { setValue, getValues, watch, handleSubmit } = useForm({

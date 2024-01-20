@@ -41,7 +41,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import replaceableEventLoaderService, { createCoordinate } from "../../services/replaceable-event-requester";
 import { getImageSize } from "../../helpers/image";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
@@ -60,7 +60,7 @@ function CommunitiesHomePage() {
   const account = useCurrentAccount()!;
   const createModal = useDisclosure();
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const { pointers: communityCoordinates } = useUserCommunitiesList(account.pubkey, readRelays, {
     alwaysRequest: true,
   });

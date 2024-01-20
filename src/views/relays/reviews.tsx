@@ -1,7 +1,7 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import RelayReviewNote from "./components/relay-review-note";
@@ -14,7 +14,7 @@ import { ChevronLeftIcon } from "../../components/icons";
 
 function RelayReviewsPage() {
   const navigate = useNavigate();
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const { filter } = usePeopleListContext();
   const timeline = useTimelineLoader(

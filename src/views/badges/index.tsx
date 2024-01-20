@@ -8,7 +8,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -27,7 +27,7 @@ function BadgesPage() {
     },
     [muteFilter],
   );
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${listId}-lists`,
     readRelays,

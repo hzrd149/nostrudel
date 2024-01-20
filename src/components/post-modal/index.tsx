@@ -30,7 +30,7 @@ import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { useWriteRelays } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
@@ -87,7 +87,7 @@ export default function PostModal({
   const { noteDifficulty } = useAppSettings();
   const { requestSignature } = useSigningContext();
   const additionalRelays = useAdditionalRelayContext();
-  const writeRelays = useWriteRelayUrls(additionalRelays);
+  const writeRelays = useWriteRelays(additionalRelays);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();

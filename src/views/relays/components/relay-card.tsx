@@ -170,7 +170,6 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           {/* <RelayModeAction url={url} /> */}
 
           <RelayShareButton relay={url} ml="auto" size="sm" />
-          <RelayDebugButton url={url} size="sm" title="Show raw NIP-11 metadata" />
         </CardFooter>
       </Card>
     </>

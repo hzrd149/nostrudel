@@ -13,7 +13,7 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getEventUID } from "../../../helpers/nostr/events";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
 import RelaySelectionProvider from "../../../providers/local/relay-selection-provider";
 import UsersCard from "./users-card";
@@ -70,7 +70,7 @@ function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
 function StreamModerationPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const timeline = useTimelineLoader(account.pubkey + "-streams", readRelays, [
     {

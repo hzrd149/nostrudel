@@ -24,7 +24,7 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import CommunityPost from "../components/community-post";
 import { RouterContext } from "../community-home";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
+import { useWriteRelays } from "../../../hooks/use-client-relays";
 
 type PendingProps = {
   event: NostrEvent;
@@ -40,7 +40,7 @@ function ModPendingPost({ event, community, approvals }: PendingProps) {
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   const communityRelays = getCommunityRelays(community);
-  const writeRelays = useWriteRelayUrls(communityRelays);
+  const writeRelays = useWriteRelays(communityRelays);
   const [loading, setLoading] = useState(false);
   const approve = useCallback(async () => {
     setLoading(true);

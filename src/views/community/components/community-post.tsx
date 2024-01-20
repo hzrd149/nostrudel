@@ -27,7 +27,7 @@ import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/e
 import UserLink from "../../../components/user-link";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSingleEvent from "../../../hooks/use-single-event";
 import CommunityPostMenu from "./community-post-menu";
 
@@ -129,7 +129,7 @@ export function CommunityRepostPost({
   const encodedRepost = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
-  const readRelays = useReadRelayUrls(relay ? [relay] : []);
+  const readRelays = useReadRelays(relay ? [relay] : []);
 
   const loadedRepost = useSingleEvent(eventId, readRelays);
   const repost = encodedRepost || loadedRepost;

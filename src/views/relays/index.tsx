@@ -11,7 +11,7 @@ import { RelayMode } from "../../classes/relay";
 import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { isValidRelayURL } from "../../helpers/relay";
-import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
@@ -19,8 +19,8 @@ export default function RelaysView() {
   const isSearching = deboundedSearch.length > 2;
   const addRelayModal = useDisclosure();
 
-  const readRelays = useReadRelayUrls();
-  const writeRelays = useWriteRelayUrls();
+  const readRelays = useReadRelays();
+  const writeRelays = useWriteRelays();
   const discoveredRelays = relayPoolService
     .getRelays()
     .filter((r) => !readRelays.has(r.url) && !writeRelays.has(r.url))

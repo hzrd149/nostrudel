@@ -34,7 +34,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import { Tag } from "../../types/nostr-event";
 import deleteEventService from "../../services/delete-events";
 import { EmbedEvent } from "../../components/embed-event";
-import { useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { useWriteRelays } from "../../hooks/use-client-relays";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -59,7 +59,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const [reason, setReason] = useState("");
 
   const eventRelays = useEventRelays(event && getEventUID(event));
-  const writeRelays = useWriteRelayUrls(eventRelays);
+  const writeRelays = useWriteRelays(eventRelays);
 
   const deleteEvent = useCallback((event: Event) => {
     setEvent(event);

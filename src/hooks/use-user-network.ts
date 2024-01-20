@@ -4,13 +4,13 @@ import { kinds } from "nostr-tools";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserContactList from "./use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import useSubjects from "./use-subjects";
 import userMetadataService from "../services/user-metadata";
 import { Kind0ParsedContent } from "../helpers/user-metadata";
 
 export function useUsersMetadata(pubkeys: string[], additionalRelays?: Iterable<string>) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const metadataSubjects = useMemo(() => {
     return pubkeys.map((pubkey) => userMetadataService.requestMetadata(pubkey, readRelays));
   }, [pubkeys]);
@@ -28,7 +28,7 @@ export function useUsersMetadata(pubkeys: string[], additionalRelays?: Iterable<
 }
 
 export default function useUserNetwork(pubkey: string, additionalRelays?: Iterable<string>) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const contacts = useUserContactList(pubkey);
   const contactsPubkeys = contacts ? getPubkeysFromList(contacts) : [];
 

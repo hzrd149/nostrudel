@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import eventReactionsService from "../services/event-reactions";
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 
@@ -9,7 +9,7 @@ export default function useEventsReactions(
   additionalRelays?: Iterable<string>,
   alwaysRequest = true,
 ) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
 
   // get subjects
   const subjects = useMemo(() => {

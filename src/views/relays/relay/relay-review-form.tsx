@@ -2,7 +2,7 @@ import { Button, Flex, FlexProps, Heading, Textarea, useToast } from "@chakra-ui
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
-import { useWriteRelayUrls } from "../../../hooks/use-client-relays";
+import { useWriteRelays } from "../../../hooks/use-client-relays";
 import StarRating from "../../../components/star-rating";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
@@ -16,7 +16,7 @@ export default function RelayReviewForm({
 }: { onClose: () => void; relay: string } & Omit<FlexProps, "children">) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelayUrls();
+  const writeRelays = useWriteRelays();
   const { register, getValues, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       quality: 0.6,

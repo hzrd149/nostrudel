@@ -10,7 +10,7 @@ import "leaflet.locatecontrol";
 
 import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 import { debounce } from "../../helpers/function";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -119,7 +119,7 @@ export default function MapView() {
 
   const [cells, setCells] = useState<string[]>([]);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     "geo-events",
     readRelays,

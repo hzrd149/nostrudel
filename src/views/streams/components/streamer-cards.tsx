@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOverlay } from "@chakra-ui/react";
 
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useRelaySelectionRelays } from "../../../providers/local/relay-selection-provider";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useSubject from "../../../hooks/use-subject";
@@ -25,7 +25,7 @@ function useStreamerCardsCords(pubkey: string, relays: Iterable<string>) {
 
 function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string } & CardProps) {
   const contextRelays = useRelaySelectionRelays();
-  const readRelays = useReadRelayUrls(relay ? [...contextRelays, relay] : contextRelays);
+  const readRelays = useReadRelays(relay ? [...contextRelays, relay] : contextRelays);
 
   const card = useReplaceableEvent(cord, readRelays);
   if (!card || card.kind !== STREAMER_CARD_TYPE) return null;
@@ -62,7 +62,7 @@ function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string 
 
 export default function StreamerCards({ pubkey, ...props }: Omit<CardProps, "children"> & { pubkey: string }) {
   const contextRelays = useRelaySelectionRelays();
-  const readRelays = useReadRelayUrls(contextRelays);
+  const readRelays = useReadRelays(contextRelays);
 
   const cardCords = useStreamerCardsCords(pubkey, readRelays);
 

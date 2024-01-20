@@ -9,7 +9,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
@@ -77,7 +77,7 @@ export function UnknownTimelinePage() {
     },
     [clientMuteFilter],
   );
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(`${listId ?? "global"}-unknown-feed`, readRelays, filter, { eventFilter });
 
   const events = useSubject(timeline.timeline);

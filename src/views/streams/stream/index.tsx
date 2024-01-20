@@ -21,7 +21,7 @@ import { nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
 
 import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../../helpers/nostr/stream";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
@@ -243,7 +243,7 @@ export default function StreamView() {
 
   if (!naddr) return <Navigate replace to="/streams" />;
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const [streamRelays, setStreamRelays] = useState<string[]>([]);
 
   const subject = useMemo(() => {

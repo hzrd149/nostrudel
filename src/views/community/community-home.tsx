@@ -23,7 +23,7 @@ import Hourglass03 from "../../components/icons/hourglass-03";
 import VerticalCommunityDetails from "./components/vertical-community-details";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import HorizontalCommunityDetails from "./components/horizonal-community-details";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
 import { WritingIcon } from "../../components/icons";
@@ -50,7 +50,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const verticalLayout = useBreakpointValue({ base: true, xl: false });
 
   const communityRelays = getCommunityRelays(community);
-  const readRelays = useReadRelayUrls(communityRelays);
+  const readRelays = useReadRelays(communityRelays);
   const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
     kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],

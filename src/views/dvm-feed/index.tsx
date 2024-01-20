@@ -4,7 +4,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import DVMCard from "./components/dvm-card";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { getEventCoordinate } from "../../helpers/nostr/events";
@@ -12,7 +12,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function DVMFeedHomePage() {
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader("content-discovery-dvms", readRelays, {
     kinds: [31990],
     "#k": [String(DVM_CONTENT_DISCOVERY_JOB_KIND)],

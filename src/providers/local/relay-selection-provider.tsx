@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { unique } from "../../helpers/array";
 
 type RelaySelectionContextType = {
@@ -34,7 +34,7 @@ export default function RelaySelectionProvider({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const relays = useMemo(() => {
     if (location.state?.relays) return location.state.relays as string[];
     if (overrideDefault) return Array.from(overrideDefault);

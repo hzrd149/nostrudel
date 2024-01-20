@@ -21,7 +21,7 @@ import SimpleLikeButton from "../../components/event-reactions/simple-like-butto
 import SimpleDislikeButton from "../../components/event-reactions/simple-dislike-button";
 import { ErrorBoundary } from "../../components/error-boundary";
 import QuoteRepostButton from "../../components/note/components/quote-repost-button";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import VideoCard from "./components/video-card";
@@ -31,7 +31,7 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(video.pubkey + "-videos", readRelays, {
     authors: [video.pubkey],
     kinds: [FLARE_VIDEO_KIND],

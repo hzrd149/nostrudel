@@ -6,7 +6,7 @@ import { nip19 } from "nostr-tools";
 import Note from "../../components/note";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { ThreadItem, buildThread } from "../../helpers/thread";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -101,7 +101,7 @@ function ThreadPage({
 
 export default function ThreadView() {
   const pointer = useParamsEventPointer("id");
-  const readRelays = useReadRelayUrls(pointer.relays);
+  const readRelays = useReadRelays(pointer.relays);
 
   const focusedEvent = useSingleEvent(pointer.id, pointer.relays);
   const { rootPointer, events, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);

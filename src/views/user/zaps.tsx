@@ -13,7 +13,7 @@ import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent, isATag, isETag, isPTag } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider, {
@@ -83,7 +83,7 @@ const UserZapsTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const [filter, setFilter] = useState("both");
   const contextRelays = useAdditionalRelayContext();
-  const relays = useReadRelayUrls(contextRelays);
+  const relays = useReadRelays(contextRelays);
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {

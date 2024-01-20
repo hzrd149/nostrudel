@@ -18,7 +18,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
-import { useReadRelayUrls, useWriteRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
@@ -189,8 +189,8 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const writeRelays = useWriteRelayUrls([COMMON_CONTACT_RELAY]);
-  const readRelays = useReadRelayUrls();
+  const writeRelays = useWriteRelays([COMMON_CONTACT_RELAY]);
+  const readRelays = useReadRelays();
   const toast = useToast();
   const account = useCurrentAccount()!;
   const metadata = useUserMetadata(account.pubkey, readRelays, { alwaysRequest: true });

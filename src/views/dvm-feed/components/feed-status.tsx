@@ -27,7 +27,7 @@ import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import clientRelaysService from "../../../services/client-relays";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
@@ -38,7 +38,7 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const lastJob = chain[chain.length - 1];
   const requestNextPage = async () => {

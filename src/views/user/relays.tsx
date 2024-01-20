@@ -2,7 +2,7 @@ import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
@@ -58,7 +58,7 @@ const UserRelaysTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const mailboxes = useUserMailboxes(pubkey);
 
-  const readRelays = useReadRelayUrls(mailboxes?.outbox);
+  const readRelays = useReadRelays(mailboxes?.outbox);
   const timeline = useTimelineLoader(`${pubkey}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],

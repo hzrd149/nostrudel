@@ -14,7 +14,7 @@ import {
 
 import { NostrEvent } from "../../../types/nostr-event";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
 import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
@@ -44,7 +44,7 @@ export default function CommunityMembersModal({
   ...props
 }: Omit<ModalProps, "children"> & { community: NostrEvent }) {
   const communityCoordinate = getEventCoordinate(community);
-  const readRelays = useReadRelayUrls(getCommunityRelays(community));
+  const readRelays = useReadRelays(getCommunityRelays(community));
   const timeline = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
     { "#a": [communityCoordinate], kinds: [COMMUNITIES_LIST_KIND] },
   ]);

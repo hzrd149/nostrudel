@@ -30,7 +30,7 @@ import clientRelaysService from "../../services/client-relays";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
@@ -52,7 +52,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const debugModal = useDisclosure();
 
   const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
-  const readRelays = useReadRelayUrls(dvmRelays);
+  const readRelays = useReadRelays(dvmRelays);
   const timeline = useTimelineLoader(`${pointer.kind}:${pointer.pubkey}:${pointer.identifier}-jobs`, readRelays, [
     { authors: [account.pubkey], "#p": [pointer.pubkey], kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND], since },
     {

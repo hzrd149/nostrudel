@@ -2,7 +2,7 @@ import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Event, kinds } from "nostr-tools";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -29,7 +29,7 @@ function FollowerItem({ event }: { event: Event }) {
 
 export default function UserFollowersTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],

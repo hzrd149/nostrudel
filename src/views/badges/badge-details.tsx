@@ -22,7 +22,7 @@ import { EventRelays } from "../../components/note/note-relays";
 import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import BadgeMenu from "./components/badge-menu";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
@@ -85,7 +85,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const image = getBadgeImage(badge);
   const description = getBadgeDescription(badge);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const coordinate = getEventCoordinate(badge);
   const awardsTimeline = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],

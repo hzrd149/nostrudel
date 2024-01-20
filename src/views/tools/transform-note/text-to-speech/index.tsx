@@ -3,7 +3,7 @@ import { Button, Flex, Select, useToast } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
 
-import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { getEventUID } from "../../../../helpers/nostr/events";
 import {
@@ -28,7 +28,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
   const account = useCurrentAccount();
 
   const [lang, setLang] = useState(navigator.language.split("-")[0] ?? "en");
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const requestReading = useCallback(async () => {
     try {
       const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);

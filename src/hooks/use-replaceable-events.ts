@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
 import Subject from "../classes/subject";
@@ -12,7 +12,7 @@ export default function useReplaceableEvents(
   additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const subs = useMemo(() => {
     if (!coordinates) return undefined;
     const subs: Subject<NostrEvent>[] = [];

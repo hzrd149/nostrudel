@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
@@ -23,7 +23,7 @@ export default function CommunityFindByNameView() {
     return <Navigate to={`/c/${decoded.data.identifier}/${decoded.data.pubkey}`} replace />;
   }
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const eventFilter = useCallback((event: NostrEvent) => {
     return validateCommunity(event);
   }, []);

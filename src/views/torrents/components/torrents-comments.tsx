@@ -2,7 +2,7 @@ import { memo, useMemo, useRef, useState } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -157,7 +157,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
 });
 
 export default function TorrentComments({ torrent }: { torrent: NostrEvent }) {
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, TORRENT_COMMENT_KIND);
 
   const thread = useMemo(() => buildThread(events), [events]);

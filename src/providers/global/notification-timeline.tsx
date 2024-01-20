@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { kinds } from "nostr-tools";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
@@ -24,7 +24,7 @@ export function useNotificationTimeline() {
 
 export default function NotificationTimelineProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
-  const inbox = useReadRelayUrls();
+  const inbox = useReadRelays();
 
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(

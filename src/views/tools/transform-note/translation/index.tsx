@@ -18,7 +18,7 @@ import codes from "iso-language-codes";
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { getEventUID } from "../../../../helpers/nostr/events";
-import { useReadRelayUrls } from "../../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useSubject from "../../../../hooks/use-subject";
 import { useSigningContext } from "../../../../providers/global/signing-provider";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
@@ -40,7 +40,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
   const toast = useToast();
 
   const [lang, setLang] = useState(navigator.language.split("-")[0] ?? "en");
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const requestTranslation = useCallback(async () => {
     try {
       const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);

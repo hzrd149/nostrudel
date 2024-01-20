@@ -16,7 +16,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useSubjects from "../../hooks/use-subjects";
 import useUserContactList from "../../hooks/use-user-contact-list";
@@ -29,7 +29,7 @@ import UserAvatar from "../../components/user-avatar";
 import { RelayMetadata, RelayPaidTag } from "./components/relay-card";
 
 function usePopularContactsRelays(list?: NostrEvent) {
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const subs = list
     ? getPubkeysFromList(list).map((p) => userMailboxesService.requestMailboxes(p.pubkey, readRelays))
     : [];

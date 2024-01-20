@@ -3,7 +3,7 @@ import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/reac
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import {
   MUTE_LIST_KIND,
   NOTE_LIST_KIND,
@@ -42,7 +42,7 @@ function BrowseListPage() {
     },
     [showEmpty.isOpen, showMute.isOpen, listKind],
   );
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${listId}-lists`,
     readRelays,

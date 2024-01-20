@@ -12,7 +12,7 @@ import UserAvatar from "../user-avatar";
 import UserLink from "../user-link";
 import { GhostIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { getSharableEventAddress } from "../../helpers/nip19";
@@ -96,7 +96,7 @@ export default function GhostToolbar() {
   const account = useCurrentAccount()!;
   const isGhost = useSubject(accountService.isGhost);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const [since] = useState(dayjs().subtract(6, "hours").unix());
 
   const timeline = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, { since, authors: [account.pubkey] });

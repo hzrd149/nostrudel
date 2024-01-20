@@ -31,7 +31,7 @@ import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 import { unique } from "../../helpers/array";
@@ -68,7 +68,7 @@ const tabs = [
 
 function useUserBestOutbox(pubkey: string, count: number = 4) {
   const mailbox = useUserMailboxes(pubkey);
-  const relays = useReadRelayUrls(mailbox?.outbox);
+  const relays = useReadRelays(mailbox?.outbox);
   const sorted = relayScoreboardService.getRankedRelays(relays);
   return !count ? sorted : sorted.slice(0, count);
 }

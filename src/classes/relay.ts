@@ -1,7 +1,7 @@
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
-import { Subject } from "./subject";
+import { PersistentSubject, Subject } from "./subject";
 
 export type IncomingEvent = {
   type: "EVENT";
@@ -43,6 +43,7 @@ const CONNECTION_TIMEOUT = 1000 * 30;
 
 export default class Relay {
   url: string;
+  status = new PersistentSubject<number>(WebSocket.CLOSED);
   onOpen = new Subject<Relay>(undefined, false);
   onClose = new Subject<Relay>(undefined, false);
   onEvent = new Subject<IncomingEvent>(undefined, false);
@@ -88,6 +89,7 @@ export default class Relay {
     this.ws.onopen = () => {
       window.clearTimeout(connectionTimeout);
       this.onOpen.next(this);
+      this.status.next(this.ws!.readyState);
 
       this.ejectTimer = relayScoreboardService.relayEjectTime.get(this.url).createTimer();
       if (this.connectionTimer) {
@@ -99,6 +101,7 @@ export default class Relay {
     };
     this.ws.onclose = () => {
       this.onClose.next(this);
+      this.status.next(this.ws!.readyState);
 
       if (!this.intentionalClose && this.ejectTimer) {
         this.ejectTimer();
