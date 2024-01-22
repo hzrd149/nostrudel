@@ -43,7 +43,7 @@ function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
       gap="2"
       mb="4"
     >
-      <RelayUrlInput value={url} onChange={(v) => setUrl(v)} />
+      <RelayUrlInput value={url} onChange={(e) => setUrl(e.target.value)} />
       <Button type="submit">Add</Button>
     </Flex>
   );

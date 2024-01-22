@@ -142,7 +142,7 @@ export default function LoginNsecView() {
           placeholder="wss://nostr.example.com"
           isRequired
           value={relayUrl}
-          onChange={(url) => setRelayUrl(url)}
+          onChange={(e) => setRelayUrl(e.target.value)}
         />
         <FormHelperText>The first relay to connect to.</FormHelperText>
       </FormControl>

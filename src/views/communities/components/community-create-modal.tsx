@@ -305,7 +305,7 @@ export default function CommunityCreateModal({
               ))}
             </Flex>
             <Flex gap="2">
-              <RelayUrlInput value={relayInput} onChange={(v) => setRelayInput(v)} />
+              <RelayUrlInput value={relayInput} onChange={(e) => setRelayInput(e.target.value)} />
               <Button isDisabled={!relayInput} onClick={addRelay}>
                 Add
               </Button>

@@ -2,7 +2,6 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
-import { useThrottle } from "react-use";
 
 import useSubject from "../../../hooks/use-subject";
 import TimelineLoader from "../../../classes/timeline-loader";
