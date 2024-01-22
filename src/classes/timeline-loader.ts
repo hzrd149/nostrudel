@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import { Filter } from "nostr-tools";
+import { Filter, matchFilters } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
@@ -79,6 +79,7 @@ export class RelayBlockLoader {
   }
 
   private handleEvent(event: NostrEvent) {
+    if (!matchFilters(Array.isArray(this.filter) ? this.filter : [this.filter], event)) return;
     return this.events.addEvent(event);
   }
 
@@ -117,7 +118,6 @@ export default class TimelineLoader {
   name: string;
   private log: Debugger;
   private subscription: NostrMultiSubscription;
-  private cacheSubscription?: Subscription;
 
   private blockLoaders = new Map<string, RelayBlockLoader>();
 

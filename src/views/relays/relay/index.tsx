@@ -27,6 +27,7 @@ import { RelayFavicon } from "../../../components/relay-favicon";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { safeRelayUrl } from "../../../helpers/relay";
 import RelayUsersTab from "./relay-users";
+import RelayListButton from "../../../components/relay-list-button";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 
 function RelayPage({ relay }: { relay: string }) {
@@ -55,15 +56,7 @@ function RelayPage({ relay }: { relay: string }) {
         </Heading>
         <ButtonGroup size={["sm", "md"]}>
           <RelayDebugButton url={relay} ml="auto" />
-          <Button
-            as="a"
-            href={`https://nostr.watch/relay/${new URL(relay).host}`}
-            target="_blank"
-            rightIcon={<ExternalLinkIcon />}
-          >
-            More info
-          </Button>
-          {/* <RelayJoinAction url={relay} /> */}
+          {/* <RelayListButton relay={relay} aria-label="Add to set" /> */}
         </ButtonGroup>
       </Flex>
       <RelayMetadata url={relay} extended />

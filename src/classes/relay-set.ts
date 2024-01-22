@@ -1,4 +1,5 @@
-import { safeRelayUrl, safeRelayUrls } from "../helpers/relay";
+import { getRelaysFromMailbox } from "../helpers/nostr/mailbox";
+import { safeRelayUrl } from "../helpers/relay";
 import relayPoolService from "../services/relay-pool";
 import { NostrEvent } from "../types/nostr-event";
 import { RelayMode } from "./relay";
@@ -32,16 +33,10 @@ export default class RelaySet extends Set<string> {
   }
 
   static fromNIP65Event(event: NostrEvent, mode: RelayMode = RelayMode.ALL) {
-    const set = new RelaySet();
-    for (const tag of event.tags) {
-      if (tag[0] === "r" && tag[1]) {
-        const url = safeRelayUrl(tag[1]);
-        if (!url) continue;
-        if (tag[2] === "write" && mode & RelayMode.WRITE) set.add(url);
-        else if (tag[2] === "read" && mode & RelayMode.READ) set.add(url);
-        else set.add(url);
-      }
-    }
-    return set;
+    return new RelaySet(
+      getRelaysFromMailbox(event)
+        .filter((r) => r.mode & mode)
+        .map((r) => r.url),
+    );
   }
 }

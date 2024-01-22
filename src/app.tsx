@@ -84,6 +84,7 @@ import LaunchpadView from "./views/launchpad";
 import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
+import MailboxesView from "./views/mailboxes";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -267,6 +268,10 @@ const router = createHashRouter([
           { path: "threads", element: <ThreadsNotificationsView /> },
           { path: "", element: <NotificationsView /> },
         ],
+      },
+      {
+        path: "mailboxes",
+        children: [{ path: "", element: <MailboxesView /> }],
       },
       {
         path: "videos",

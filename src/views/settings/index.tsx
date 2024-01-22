@@ -36,7 +36,7 @@ export default function SettingsView() {
   return (
     <VerticalPageLayout as="form" onSubmit={saveSettings}>
       <FormProvider {...form}>
-        <Accordion defaultIndex={[0]} allowMultiple>
+        <Accordion defaultIndex={[]} allowMultiple>
           <DisplaySettings />
           <PostSettings />
           <PerformanceSettings />

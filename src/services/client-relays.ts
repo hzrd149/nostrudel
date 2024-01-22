@@ -50,14 +50,12 @@ class ClientRelayService {
     localStorage.setItem("write-relays", this.writeRelays.value.urls.join(","));
   }
 
-  /** @deprecated */
   get outbox() {
     const account = accountService.current.value;
     if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.outbox ?? this.writeRelays.value;
     return this.writeRelays.value;
   }
 
-  /** @deprecated */
   get inbox() {
     const account = accountService.current.value;
     if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.inbox ?? this.readRelays.value;

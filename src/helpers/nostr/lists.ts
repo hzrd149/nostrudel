@@ -66,6 +66,7 @@ export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): n
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
+/** @deprecated */
 export function getRelaysFromList(event: NostrEvent | DraftNostrEvent) {
   if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
   else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);

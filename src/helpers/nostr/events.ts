@@ -7,6 +7,7 @@ import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { getEventUID } from "nostr-idb";
 import { safeRelayUrls } from "../relay";
+import dayjs from "dayjs";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -267,6 +268,15 @@ export function parseHardcodedNoteContent(event: NostrEvent) {
 
 export function sortByDate(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;
+}
+
+export function cloneEvent(event?: NostrEvent): DraftNostrEvent {
+  return {
+    kind: kinds.RelayList,
+    created_at: dayjs().unix(),
+    content: event?.content || "",
+    tags: event?.tags ? Array.from(event.tags) : [],
+  };
 }
 
 export { getEventUID };

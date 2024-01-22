@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Button,
   Drawer,
@@ -10,20 +11,20 @@ import {
   Flex,
   Heading,
   IconButton,
-  Switch,
+  Link,
   Text,
 } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import { CloseIcon } from "@chakra-ui/icons";
+import { Link as RouterLink } from "react-router-dom";
+
 import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
-import { useMemo } from "react";
 import relayPoolService from "../../services/relay-pool";
 import useSubject from "../../hooks/use-subject";
 import { RelayUrlInput } from "../relay-url-input";
-import { useForm } from "react-hook-form";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
 import RelaySet from "../../classes/relay-set";
-import { CloseIcon } from "@chakra-ui/icons";
-import Circle from "../icons/circle";
 import { safeRelayUrl } from "../../helpers/relay";
 import UploadCloud01 from "../icons/upload-cloud-01";
 import { RelayFavicon } from "../relay-favicon";
@@ -54,10 +55,11 @@ function RelayControl({ url }: { url: string }) {
   return (
     <Flex gap="2" alignItems="center">
       <RelayFavicon relay={url} size="xs" outline="2px solid" outlineColor={color} />
-      <Text fontFamily="monospace" fontSize="md" flexGrow={1} isTruncated title={url}>
+      <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`}>
         {url}
-      </Text>
+      </Link>
       <IconButton
+        ml="auto"
         aria-label="Toggle Write"
         icon={<UploadCloud01 />}
         size="sm"

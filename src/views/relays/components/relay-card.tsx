@@ -169,7 +169,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           {/* <RelayJoinAction url={url} size="sm" /> */}
           {/* <RelayModeAction url={url} /> */}
 
-          <RelayShareButton relay={url} ml="auto" size="sm" />
+          {/* <RelayShareButton relay={url} ml="auto" size="sm" /> */}
         </CardFooter>
       </Card>
     </>

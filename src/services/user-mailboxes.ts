@@ -10,6 +10,7 @@ import { RelayMode } from "../classes/relay";
 
 export type UserMailboxes = {
   pubkey: string;
+  event: NostrEvent | null;
   relays: RelaySet;
   inbox: RelaySet;
   outbox: RelaySet;
@@ -19,6 +20,7 @@ export type UserMailboxes = {
 function nip65ToUserMailboxes(event: NostrEvent): UserMailboxes {
   return {
     pubkey: event.pubkey,
+    event,
     relays: RelaySet.fromNIP65Event(event),
     inbox: RelaySet.fromNIP65Event(event, RelayMode.READ),
     outbox: RelaySet.fromNIP65Event(event, RelayMode.WRITE),
@@ -43,6 +45,7 @@ class UserMailboxesService {
       if (contacts.relays.size > 0 && !value) {
         next({
           pubkey: contacts.pubkey,
+          event: null,
           relays: contacts.relays,
           inbox: contacts.inbox,
           outbox: contacts.outbox,
