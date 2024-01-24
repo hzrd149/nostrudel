@@ -64,8 +64,6 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
     setMinDate(getCachedNumber("min") ?? timeline.timeline.value[NOTE_BUFFER]?.created_at ?? Infinity);
   }, [timeline, setPinDate, setMinDate, setMaxDate, setLatest, getCachedNumber]);
 
-  console.log(minDate, pinDate);
-
   const updateNoteMinHeight = useCallback(
     (id: string, element: Element) => {
       const rect = element.getBoundingClientRect();

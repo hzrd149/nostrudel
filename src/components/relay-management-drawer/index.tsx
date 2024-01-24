@@ -89,7 +89,7 @@ function AddRelayForm() {
   const submit = handleSubmit((values) => {
     const url = safeRelayUrl(values.url);
     if (!url) return;
-    clientRelaysService.addRelay(url, RelayMode.READ);
+    clientRelaysService.addRelay(url, RelayMode.ALL);
     reset();
   });
 

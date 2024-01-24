@@ -56,6 +56,7 @@ import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-f
 import { useThrottle } from "react-use";
 import MinePOW from "../mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
+import { ErrorBoundary } from "../error-boundary";
 
 type FormValues = {
   subject: string;
@@ -213,9 +214,11 @@ export default function PostModal({
           <Box>
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
-              <TrustProvider trust>
-                <NoteContents event={previewDraft} />
-              </TrustProvider>
+              <ErrorBoundary>
+                <TrustProvider trust>
+                  <NoteContents event={previewDraft} />
+                </TrustProvider>
+              </ErrorBoundary>
             </Box>
           </Box>
         )}

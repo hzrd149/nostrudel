@@ -87,7 +87,7 @@ function AddRelayForm({ onSubmit }: { onSubmit: (url: string) => void }) {
 function MailboxesPage() {
   const toast = useToast();
   const account = useCurrentAccount()!;
-  const { inbox, outbox, event } = useUserMailboxes(account.pubkey) || {};
+  const { inbox, outbox, event } = useUserMailboxes(account.pubkey, { alwaysRequest: true }) || {};
 
   const { requestSignature } = useSigningContext();
   const addRelay = useCallback(
