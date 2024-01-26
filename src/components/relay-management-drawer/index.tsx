@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Button,
   Drawer,
@@ -12,22 +12,27 @@ import {
   Heading,
   IconButton,
   Link,
-  Text,
+  Select,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 
 import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
 import relayPoolService from "../../services/relay-pool";
 import useSubject from "../../hooks/use-subject";
-import { RelayUrlInput } from "../relay-url-input";
 import clientRelaysService from "../../services/client-relays";
 import { RelayMode } from "../../classes/relay";
 import RelaySet from "../../classes/relay-set";
-import { safeRelayUrl } from "../../helpers/relay";
 import UploadCloud01 from "../icons/upload-cloud-01";
 import { RelayFavicon } from "../relay-favicon";
+import useUserRelaySets from "../../hooks/use-user-relay-sets";
+import useCurrentAccount from "../../hooks/use-current-account";
+import { getListName } from "../../helpers/nostr/lists";
+import { getEventCoordinate } from "../../helpers/nostr/events";
+import AddRelayForm from "./add-relay-form";
+import { SaveRelaySetForm } from "./save-relay-set-form";
 
 function RelayControl({ url }: { url: string }) {
   const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
@@ -79,29 +84,34 @@ function RelayControl({ url }: { url: string }) {
   );
 }
 
-function AddRelayForm() {
-  const { register, handleSubmit, reset } = useForm({
-    defaultValues: {
-      url: "",
-    },
-  });
-
-  const submit = handleSubmit((values) => {
-    const url = safeRelayUrl(values.url);
-    if (!url) return;
-    clientRelaysService.addRelay(url, RelayMode.ALL);
-    reset();
-  });
-
+function SelectRelaySet({
+  value,
+  onChange,
+  relaySets,
+}: {
+  relaySets: NostrEvent[];
+  value?: string;
+  onChange: (cord: string) => void;
+}) {
   return (
-    <Flex as="form" display="flex" gap="2" onSubmit={submit}>
-      <RelayUrlInput {...register("url")} placeholder="wss://relay.example.com" />
-      <Button type="submit">Add</Button>
-    </Flex>
+    <Select
+      size="sm"
+      borderRadius="md"
+      placeholder="Custom Relays"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {relaySets.map((set) => (
+        <option key={set.id} value={getEventCoordinate(set)}>
+          {getListName(set)}
+        </option>
+      ))}
+    </Select>
   );
 }
 
 export default function RelayManagementDrawer({ isOpen, onClose, ...props }: Omit<DrawerProps, "children">) {
+  const account = useCurrentAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
 
@@ -111,8 +121,63 @@ export default function RelayManagementDrawer({ isOpen, onClose, ...props }: Omi
     .map((r) => r.url)
     .sort();
 
+  const save = useDisclosure();
+  const [selected, setSelected] = useState<string>();
+  const relaySets = useUserRelaySets(account?.pubkey);
+
+  const changeSet = (cord: string) => {
+    setSelected(cord);
+
+    const set = relaySets.find((s) => getEventCoordinate(s) === cord);
+    if (set) {
+      clientRelaysService.setRelaysFromRelaySet(set);
+    }
+  };
+
+  const renderContent = () => {
+    if (save.isOpen) {
+      return (
+        <>
+          <SaveRelaySetForm
+            relaySet={relaySets.find((s) => getEventCoordinate(s) === selected)}
+            onCancel={save.onClose}
+            onSaved={(set) => {
+              save.onClose();
+              setSelected(getEventCoordinate(set));
+            }}
+            writeRelays={clientRelaysService.writeRelays.value}
+            readRelays={clientRelaysService.readRelays.value}
+          />
+        </>
+      );
+    }
+    return (
+      <>
+        <Flex gap="2">
+          <SelectRelaySet relaySets={relaySets} value={selected} onChange={changeSet} />
+          <Button size="sm" colorScheme="primary" onClick={save.onOpen}>
+            Save
+          </Button>
+        </Flex>
+        {sorted.map((url) => (
+          <RelayControl key={url} url={url} />
+        ))}
+        <AddRelayForm
+          onSubmit={(url) => {
+            clientRelaysService.addRelay(url, RelayMode.ALL);
+            setSelected(undefined);
+          }}
+        />
+        {/* <Heading size="sm">Other Relays</Heading>
+        {others.map((url) => (
+          <RelayControl key={url} url={url} />
+        ))} */}
+      </>
+    );
+  };
+
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md" {...props}>
+    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md" closeOnEsc={false} {...props}>
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
@@ -121,14 +186,7 @@ export default function RelayManagementDrawer({ isOpen, onClose, ...props }: Omi
         </DrawerHeader>
 
         <DrawerBody px={{ base: 2, md: 4 }} pb="2" pt="0" display="flex" gap="2" flexDir="column">
-          <AddRelayForm />
-          {sorted.map((url) => (
-            <RelayControl key={url} url={url} />
-          ))}
-          <Heading size="sm">Other Relays</Heading>
-          {others.map((url) => (
-            <RelayControl key={url} url={url} />
-          ))}
+          {renderContent()}
         </DrawerBody>
       </DrawerContent>
     </Drawer>

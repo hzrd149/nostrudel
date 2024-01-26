@@ -4,6 +4,7 @@ import userMailboxesService from "./user-mailboxes";
 import { PersistentSubject } from "../classes/subject";
 import { logger } from "../helpers/debug";
 import RelaySet from "../classes/relay-set";
+import { NostrEvent } from "nostr-tools";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
@@ -43,6 +44,10 @@ class ClientRelayService {
     }
 
     this.saveRelays();
+  }
+  setRelaysFromRelaySet(event: NostrEvent) {
+    this.writeRelays.next(RelaySet.fromNIP65Event(event, RelayMode.WRITE));
+    this.readRelays.next(RelaySet.fromNIP65Event(event, RelayMode.READ));
   }
 
   saveRelays() {

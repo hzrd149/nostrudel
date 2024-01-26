@@ -8,6 +8,7 @@ import { safeDecode } from "../nip19";
 import { getEventUID } from "nostr-idb";
 import { safeRelayUrls } from "../relay";
 import dayjs from "dayjs";
+import { nanoid } from "nanoid";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -270,13 +271,29 @@ export function sortByDate(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;
 }
 
-export function cloneEvent(event?: NostrEvent): DraftNostrEvent {
+/** create a copy of the event with a new created_at  */
+export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): DraftNostrEvent {
   return {
-    kind: kinds.RelayList,
+    kind: event?.kind ?? kind,
     created_at: dayjs().unix(),
-    content: event?.content || "",
+    content: event?.content ?? "",
     tags: event?.tags ? Array.from(event.tags) : [],
   };
+}
+
+/** ensure an event has a d tag */
+export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
+  if (!draft.tags.some(isDTag)) {
+    draft.tags.push(["d", d]);
+  }
+}
+
+export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, value: string) {
+  if (draft.tags.some((t) => t[0] === tagName)) {
+    draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));
+  } else {
+    draft.tags.push([tagName, value]);
+  }
 }
 
 export { getEventUID };

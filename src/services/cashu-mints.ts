@@ -69,10 +69,14 @@ class P2PKCashuWallet extends CashuWallet {
         JSON.stringify([
           "P2PK",
           {
-            nonce: bytesToHex(randomBytes(16)),
+            // NOTE: the order is very important for the token to work with nutshell
+            // This can be removed when nutshell no longer re-encodes the secret when checking the sig
             data: pubkey,
+            nonce: bytesToHex(randomBytes(16)),
           },
-        ]),
+        ])
+          .replaceAll(/,/g, ", ")
+          .replaceAll(/:/g, ": "),
       );
       secrets.push(secret);
       const { B_, r } = blindMessage(secret, deterministicR);

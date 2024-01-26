@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { kinds, nip19 } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
-import { parseCoordinate } from "./events";
+import { parseCoordinate, replaceOrAddSimpleTag } from "./events";
 import { getRelayVariations, safeRelayUrls } from "../relay";
 
 export const MUTE_LIST_KIND = 10000;
@@ -27,8 +27,14 @@ export function getListName(event: NostrEvent) {
     event.tags.find(isDTag)?.[1]
   );
 }
+export function setListName(draft: DraftNostrEvent, name: string) {
+  replaceOrAddSimpleTag(draft, "name", name);
+}
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
+}
+export function setListDescription(draft: DraftNostrEvent, description: string) {
+  replaceOrAddSimpleTag(draft, "description", description);
 }
 
 export function isJunkList(event: NostrEvent) {

@@ -1,3 +1,4 @@
+import { kinds } from "nostr-tools";
 import { RelayMode } from "../../classes/relay";
 import { DraftNostrEvent, NostrEvent, RTag, Tag, isRTag } from "../../types/nostr-event";
 import { safeRelayUrl } from "../relay";
@@ -38,7 +39,7 @@ export function getRelaysFromMailbox(list: NostrEvent | DraftNostrEvent): { url:
 }
 
 export function addRelayModeToMailbox(list: NostrEvent | undefined, relay: string, mode: RelayMode): DraftNostrEvent {
-  let draft = cloneEvent(list);
+  let draft = cloneEvent(kinds.RelayList, list);
   draft.tags = cleanRTags(draft.tags);
 
   const existing = draft.tags.find((t) => t[0] === "r" && t[1] === relay) as RTag;
@@ -53,7 +54,7 @@ export function removeRelayModeFromMailbox(
   relay: string,
   mode: RelayMode,
 ): DraftNostrEvent {
-  let draft = cloneEvent(list);
+  let draft = cloneEvent(kinds.RelayList, list);
   draft.tags = cleanRTags(draft.tags);
 
   const existing = draft.tags.find((t) => t[0] === "r" && t[1] === relay) as RTag;
@@ -65,4 +66,13 @@ export function removeRelayModeFromMailbox(
     }
   }
   return draft;
+}
+
+export function createRTagsFromRelaySets(readRelays: Iterable<string>, writeRelays: Iterable<string>) {
+  const relays: Record<string, number> = {};
+  for (const r of readRelays) relays[r] = (relays[r] ?? 0) | RelayMode.READ;
+  for (const r of writeRelays) relays[r] = (relays[r] ?? 0) | RelayMode.WRITE;
+  console.log(relays);
+
+  return Object.entries(relays).map(([url, mode]) => createRelayTag(url, mode));
 }
