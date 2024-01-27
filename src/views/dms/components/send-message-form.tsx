@@ -54,9 +54,7 @@ export default function SendMessageForm({
     }
 
     setLoadingMessage("Signing...");
-    const relays = RelaySet.from(clientRelaysService.outbox);
-    if (userMailboxes?.inbox) relays.merge(userMailboxes.inbox);
-    const pub = await publish("Send DM", draft, relays);
+    const pub = await publish("Send DM", draft, userMailboxes?.inbox);
 
     if (pub) {
       reset();

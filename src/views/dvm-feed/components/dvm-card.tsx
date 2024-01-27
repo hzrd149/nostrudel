@@ -1,16 +1,15 @@
-import { Card, CardProps, Heading, IconButton, LinkBox, LinkOverlayProps, Text, useDisclosure } from "@chakra-ui/react";
+import { Card, CardProps, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
 import { Link as RouterLink, To } from "react-router-dom";
 import { useMemo, useRef } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { CodeIcon } from "../../../components/icons";
-import NoteDebugModal from "../../../components/debug-modals/note-debug-modal";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { DVMAvatarLink } from "./dvm-avatar";
 import { getEventAddressPointer, getEventUID } from "../../../helpers/nostr/events";
 import { DVMName } from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 
 export default function DVMCard({
   appData,
@@ -19,7 +18,6 @@ export default function DVMCard({
   ...props
 }: Omit<CardProps, "children"> & { appData: NostrEvent; to: To; onClick?: LinkOverlayProps["onClick"] }) {
   const metadata = JSON.parse(appData.content);
-  const debugModal = useDisclosure();
   const pointer: AddressPointer = useMemo(() => getEventAddressPointer(appData), [appData]);
 
   const ref = useRef<HTMLDivElement | null>(null);
@@ -28,15 +26,7 @@ export default function DVMCard({
   return (
     <>
       <Card as={LinkBox} display="block" p="4" ref={ref} {...props}>
-        <IconButton
-          onClick={debugModal.onOpen}
-          icon={<CodeIcon />}
-          aria-label="View Raw"
-          title="View Raw"
-          size="sm"
-          float="right"
-          zIndex={1}
-        />
+        <DebugEventButton size="sm" float="right" zIndex={1} event={appData} />
         <DVMAvatarLink pointer={pointer} w="24" float="left" mr="4" mb="2" />
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={to} onClick={onClick}>
@@ -45,7 +35,6 @@ export default function DVMCard({
         </Heading>
         <Text>{metadata.about}</Text>
       </Card>
-      {debugModal.isOpen && <NoteDebugModal event={appData} isOpen onClose={debugModal.onClose} />}
     </>
   );
 }

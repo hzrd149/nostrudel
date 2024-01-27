@@ -23,7 +23,8 @@ import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
-import { useUserInbox } from "../../hooks/use-user-mailboxes";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import RelaySet from "../../classes/relay-set";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -70,19 +71,24 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
-  const readRelays = useUserInbox(account.pubkey);
-  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, readRelays, [
-    {
-      kinds: [kinds.EncryptedDirectMessage],
-      "#p": [account.pubkey],
-      authors: [pubkey],
-    },
-    {
-      kinds: [kinds.EncryptedDirectMessage],
-      "#p": [pubkey],
-      authors: [account.pubkey],
-    },
-  ]);
+  const otherMailboxes = useUserMailboxes(pubkey);
+  const mailboxes = useUserMailboxes(account.pubkey);
+  const timeline = useTimelineLoader(
+    `${pubkey}-${account.pubkey}-messages`,
+    RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
+    [
+      {
+        kinds: [kinds.EncryptedDirectMessage],
+        "#p": [account.pubkey],
+        authors: [pubkey],
+      },
+      {
+        kinds: [kinds.EncryptedDirectMessage],
+        "#p": [pubkey],
+        authors: [account.pubkey],
+      },
+    ],
+  );
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {

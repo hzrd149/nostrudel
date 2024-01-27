@@ -5,7 +5,7 @@ import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
-import { relayRequest } from "../helpers/relay";
+import { relayRequest, safeRelayUrls } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 
 const RELAY_REQUEST_BATCH_TIME = 500;
@@ -19,7 +19,9 @@ class SingleEventService {
     const subject = this.cache.get(id);
     if (subject.value) return subject;
 
-    this.pending.set(id, this.pending.get(id)?.concat(Array.from(relays)) ?? Array.from(relays));
+    const safeURLs = safeRelayUrls(Array.from(relays));
+
+    this.pending.set(id, this.pending.get(id)?.concat(safeURLs) ?? safeURLs);
     this.batchRequestsThrottle();
 
     return subject;

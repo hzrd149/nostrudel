@@ -55,6 +55,9 @@ import MinePOW from "../mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import RelaySet from "../../classes/relay-set";
+import { isPTag } from "../../types/nostr-event";
+import userMailboxesService from "../../services/user-mailboxes";
 
 type FormValues = {
   subject: string;
@@ -119,21 +122,15 @@ export default function PostModal({
     const { content, nsfw, nsfwReason, community, split, subject } = getValues();
 
     let updatedDraft = finalizeNote({
-      content: content,
+      content: correctContentMentions(content),
       kind: kinds.ShortTextNote,
       tags: [],
       created_at: dayjs().unix(),
     });
 
-    if (nsfw) {
-      updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
-    }
-    if (community) {
-      updatedDraft.tags.push(["a", community]);
-    }
-    if (subject) {
-      updatedDraft.tags.push(["subject", subject]);
-    }
+    if (nsfw) updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
+    if (community) updatedDraft.tags.push(["a", community]);
+    if (subject) updatedDraft.tags.push(["subject", subject]);
 
     const contentMentions = getPubkeysMentionedInContent(updatedDraft.content);
     updatedDraft = createEmojiTags(updatedDraft, emojis);

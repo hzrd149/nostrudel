@@ -17,6 +17,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useNavigate } from "react-router-dom";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -70,7 +71,9 @@ export function DMTimelinePage() {
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         {dms.map((dm) => (
-          <DirectMessage key={dm.id} dm={dm} />
+          <ErrorBoundary key={dm.id}>
+            <DirectMessage dm={dm} />
+          </ErrorBoundary>
         ))}
       </IntersectionObserverProvider>
     </VerticalPageLayout>

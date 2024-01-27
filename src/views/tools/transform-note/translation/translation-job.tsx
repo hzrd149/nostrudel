@@ -1,14 +1,13 @@
-import { Card, CardBody, CardHeader, Flex, IconButton, Spacer, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Flex, Spacer, Spinner, Text } from "@chakra-ui/react";
 import codes from "iso-language-codes";
 
 import { DVMJob, getRequestInputParam } from "../../../../helpers/nostr/dvm";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { CodeIcon } from "../../../../components/icons";
 import Timestamp from "../../../../components/timestamp";
 import UserLink from "../../../../components/user-link";
 import UserAvatarLink from "../../../../components/user-avatar-link";
-import NoteDebugModal from "../../../../components/debug-modals/note-debug-modal";
 import TranslationResponse from "./translation-response";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 
 function getTranslationJobLanguage(request: NostrEvent) {
   const targetLanguage = getRequestInputParam(request, "language", false);
@@ -17,7 +16,6 @@ function getTranslationJobLanguage(request: NostrEvent) {
 
 export default function TranslationJob({ job }: { job: DVMJob }) {
   const lang = getTranslationJobLanguage(job.request);
-  const debug = useDisclosure();
 
   return (
     <>
@@ -30,14 +28,7 @@ export default function TranslationJob({ job }: { job: DVMJob }) {
           </Text>
           <Timestamp timestamp={job.request.created_at} />
           <Spacer />
-          <IconButton
-            icon={<CodeIcon />}
-            aria-label="Show Raw"
-            title="Show Raw"
-            variant="ghost"
-            size="sm"
-            onClick={debug.onOpen}
-          />
+          <DebugEventButton variant="ghost" size="sm" event={job.request} />
         </CardHeader>
         <CardBody px="4" py="4" gap="2" display="flex" flexDirection="column">
           {job.responses.length === 0 && (
@@ -51,7 +42,6 @@ export default function TranslationJob({ job }: { job: DVMJob }) {
           ))}
         </CardBody>
       </Card>
-      {debug.isOpen && <NoteDebugModal isOpen onClose={debug.onClose} event={job.request} />}
     </>
   );
 }

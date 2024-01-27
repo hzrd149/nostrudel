@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, CardProps, IconButton, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/local/trust";
@@ -9,6 +9,7 @@ import DecryptPlaceholder from "../../../views/dms/components/decrypt-placeholde
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import DirectMessageContent from "../../../views/dms/components/direct-message-content";
+import DebugEventButton from "../../debug-modal/debug-event-button";
 
 export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children"> & { dm: NostrEvent }) {
   const account = useCurrentAccount();
@@ -27,6 +28,7 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
           <UserAvatarLink pubkey={receiver} size="xs" />
           <UserLink pubkey={receiver} fontWeight="bold" isTruncated fontSize="lg" />
           <Timestamp timestamp={dm.created_at} />
+          <DebugEventButton event={dm} size="sm" variant="outline" ml="auto" />
         </CardHeader>
         {(sender === account?.pubkey || receiver === account?.pubkey) && (
           <CardBody px="2" pt="0" pb="2">

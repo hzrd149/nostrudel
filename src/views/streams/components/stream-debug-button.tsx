@@ -11,8 +11,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { CodeIcon } from "../../../components/icons";
-import RawValue from "../../../components/debug-modals/raw-value";
-import RawJson from "../../../components/debug-modals/raw-json";
+import RawValue from "../../../components/debug-modal/raw-value";
+import RawJson from "../../../components/debug-modal/raw-json";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 

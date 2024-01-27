@@ -1,14 +1,16 @@
-import { kinds, validateEvent } from "nostr-tools";
+import { EventTemplate, kinds, validateEvent } from "nostr-tools";
 
-import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, NostrEvent, Tag } from "../../types/nostr-event";
+import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { getEventUID } from "nostr-idb";
-import { safeRelayUrls } from "../relay";
+import { safeRelayUrl, safeRelayUrls } from "../relay";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
+import userMailboxesService from "../../services/user-mailboxes";
+import RelaySet from "../../classes/relay-set";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
@@ -66,7 +68,7 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
 }
 
 /**
- * returns an array of tag indexes that are referenced in the content
+ * returns an array of tags that are referenced in the content
  * either with the legacy #[0] syntax or nostr:xxxxx links
  */
 export function getContentTagRefs(content: string, tags: Tag[]) {
@@ -281,6 +283,23 @@ export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): 
   };
 }
 
+/** add missing relay hints for "p" tags */
+export function addPubkeyRelayHints(draft: DraftNostrEvent) {
+  return {
+    ...draft,
+    tags: draft.tags.map((t) => {
+      if (isPTag(t) && !t[2]) {
+        const newTag = [...t];
+        const mailboxes = userMailboxesService.getMailboxes(t[1]).value;
+        // TODO: Pick the best mailbox for the user
+        if (mailboxes) newTag[2] = mailboxes.inbox.urls[0];
+        return newTag;
+      }
+      return t;
+    }),
+  };
+}
+
 /** ensure an event has a d tag */
 export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
   if (!draft.tags.some(isDTag)) {
@@ -294,6 +313,17 @@ export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, v
   } else {
     draft.tags.push([tagName, value]);
   }
+}
+
+export function getAllRelayHints(draft: NostrEvent | EventTemplate) {
+  const hints = new RelaySet();
+  for (const tag of draft.tags) {
+    if ((isPTag(tag) || isETag(tag)) && tag[2]) {
+      const url = safeRelayUrl(tag[2]);
+      if (url) hints.add(url.toString());
+    }
+  }
+  return hints;
 }
 
 export { getEventUID };

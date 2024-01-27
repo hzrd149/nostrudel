@@ -7,7 +7,7 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
-import { isReplaceable } from "../../helpers/nostr/events";
+import { addPubkeyRelayHints, getAllRelayHints, isReplaceable } from "../../helpers/nostr/events";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import eventExistsService from "../../services/event-exists";
 import eventReactionsService from "../../services/event-reactions";
@@ -53,11 +53,15 @@ export default function PublishProvider({ children }: PropsWithChildren) {
           clientRelaysService.writeRelays.value,
           clientRelaysService.outbox,
           additionalRelays,
+          getAllRelayHints(event),
         );
 
         let signed: NostrEvent;
-        if (!Object.hasOwn(event, "sig")) signed = await requestSignature(event);
-        else signed = event as NostrEvent;
+        if (!Object.hasOwn(event, "sig")) {
+          let draft: EventTemplate = event as EventTemplate;
+          draft = addPubkeyRelayHints(draft);
+          signed = await requestSignature(draft);
+        } else signed = event as NostrEvent;
 
         const pub = new NostrPublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));

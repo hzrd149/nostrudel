@@ -2,10 +2,9 @@ import { useCallback } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { BroadcastEventIcon, CodeIcon } from "../icons";
+import { BroadcastEventIcon } from "../icons";
 import { NostrEvent } from "../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
-import NoteDebugModal from "../debug-modals/note-debug-modal";
 import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
 import InfoCircle from "../icons/info-circle";
@@ -18,13 +17,13 @@ import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import Recording02 from "../icons/recording-02";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
 
 export default function NoteMenu({
   event,
   detailsClick,
   ...props
 }: { event: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
-  const debugModal = useDisclosure();
   const translationsModal = useDisclosure();
   const publish = usePublishEvent();
 
@@ -65,14 +64,8 @@ export default function NoteMenu({
             Details
           </MenuItem>
         )}
-        <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
-          View Raw
-        </MenuItem>
+        <DebugEventMenuItem event={event} />
       </CustomMenuIconButton>
-
-      {debugModal.isOpen && (
-        <NoteDebugModal event={event} isOpen={debugModal.isOpen} onClose={debugModal.onClose} size="6xl" />
-      )}
 
       {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={event} />}
     </>

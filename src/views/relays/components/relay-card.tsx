@@ -28,7 +28,7 @@ import { CodeIcon } from "../../../components/icons";
 import UserLink from "../../../components/user-link";
 import UserAvatar from "../../../components/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import RawJson from "../../../components/debug-modals/raw-json";
+import RawJson from "../../../components/debug-modal/raw-json";
 import { RelayShareButton } from "./relay-share-button";
 import useRelayStats from "../../../hooks/use-relay-stats";
 import { getNetwork } from "../../../helpers/nostr/relay-stats";

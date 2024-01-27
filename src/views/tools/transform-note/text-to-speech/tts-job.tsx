@@ -8,7 +8,7 @@ import UserLink from "../../../../components/user-link";
 import Timestamp from "../../../../components/timestamp";
 import { CodeIcon } from "../../../../components/icons";
 import TextToSpeechResponse from "./tts-response";
-import NoteDebugModal from "../../../../components/debug-modals/note-debug-modal";
+import EventDebugModal from "../../../../components/debug-modal/event-debug-modal";
 
 function getTranslationRequestLanguage(request: NostrEvent) {
   const targetLanguage = getRequestInputParam(request, "language", false);
@@ -51,7 +51,7 @@ export default function TextToSpeechJob({ job }: { job: DVMJob }) {
           ))}
         </CardBody>
       </Card>
-      {debug.isOpen && <NoteDebugModal isOpen onClose={debug.onClose} event={job.request} />}
+      {debug.isOpen && <EventDebugModal isOpen onClose={debug.onClose} event={job.request} />}
     </>
   );
 }
