@@ -15,6 +15,8 @@ export default function useRouteStateValue<T extends unknown>(key: string, fallb
   const navigate = useNavigate();
   const location = useLocation();
 
+  const locationRef = useRef(location);
+  locationRef.current = location;
   const stateRef = useRef<Record<string, any>>(location.state ?? {});
   stateRef.current = location.state ?? {};
   const valueRef = useRef<T>(stateRef.current[key] ?? fallback);
@@ -29,16 +31,19 @@ export default function useRouteStateValue<T extends unknown>(key: string, fallb
       } else newState[key] = valueOrSetter;
 
       if (stateRef.current[key] !== newState[key]) {
-        navigate(".", { state: newState, replace });
+        navigate(locationRef.current, { state: newState, replace });
       }
     },
-    [key],
+    [key, navigate],
   );
-  const clearValue = useCallback(() => {
-    const newState = { ...stateRef.current };
-    delete newState[key];
-    navigate(".", newState);
-  }, [key]);
+  const clearValue = useCallback(
+    (replace = true) => {
+      const newState = { ...stateRef.current };
+      delete newState[key];
+      navigate(locationRef.current, { state: newState, replace });
+    },
+    [key, navigate],
+  );
 
   return { value: valueRef.current, setValue, clearValue };
 }
