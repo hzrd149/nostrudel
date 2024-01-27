@@ -11,7 +11,6 @@ import BreakpointProvider from "./breakpoint-provider";
 import DecryptionProvider from "./dycryption-provider";
 import DMTimelineProvider from "./dm-timeline";
 import PublishProvider from "./publish-provider";
-import DebugModalProvider from "./debug-modal-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -24,23 +23,21 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
       <BreakpointProvider>
-        <DebugModalProvider>
-          <SigningProvider>
-            <PublishProvider>
-              <DecryptionProvider>
-                <NotificationTimelineProvider>
-                  <DMTimelineProvider>
-                    <DefaultEmojiProvider>
-                      <UserEmojiProvider>
-                        <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
-                      </UserEmojiProvider>
-                    </DefaultEmojiProvider>
-                  </DMTimelineProvider>
-                </NotificationTimelineProvider>
-              </DecryptionProvider>
-            </PublishProvider>
-          </SigningProvider>
-        </DebugModalProvider>
+        <SigningProvider>
+          <PublishProvider>
+            <DecryptionProvider>
+              <NotificationTimelineProvider>
+                <DMTimelineProvider>
+                  <DefaultEmojiProvider>
+                    <UserEmojiProvider>
+                      <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
+                    </UserEmojiProvider>
+                  </DefaultEmojiProvider>
+                </DMTimelineProvider>
+              </NotificationTimelineProvider>
+            </DecryptionProvider>
+          </PublishProvider>
+        </SigningProvider>
       </BreakpointProvider>
     </ChakraProvider>
   );

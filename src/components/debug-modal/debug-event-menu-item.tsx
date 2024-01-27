@@ -3,7 +3,7 @@ import { MenuItem, MenuItemProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { CodeIcon } from "../icons";
-import { DebugModalContext } from "../../providers/global/debug-modal-provider";
+import { DebugModalContext } from "../../providers/route/debug-modal-provider";
 
 export default function DebugEventMenuItem({
   event,
