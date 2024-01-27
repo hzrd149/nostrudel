@@ -57,6 +57,8 @@ import { useThrottle } from "react-use";
 import MinePOW from "../mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
+import RelaySet from "../../classes/relay-set";
+import clientRelaysService from "../../services/client-relays";
 
 type FormValues = {
   subject: string;
@@ -152,7 +154,7 @@ export default function PostModal({
   const publish = async (draft = getDraft()) => {
     try {
       const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Post", writeRelays, signed);
+      const pub = new NostrPublishAction("Post", RelaySet.from(clientRelaysService.outbox, writeRelays), signed);
       setPublishAction(pub);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
