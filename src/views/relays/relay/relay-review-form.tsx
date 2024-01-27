@@ -1,22 +1,18 @@
-import { Button, Flex, FlexProps, Heading, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Flex, FlexProps, Heading, Textarea } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
-import { useWriteRelays } from "../../../hooks/use-client-relays";
 import StarRating from "../../../components/star-rating";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function RelayReviewForm({
   onClose,
   relay,
   ...props
 }: { onClose: () => void; relay: string } & Omit<FlexProps, "children">) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelays();
+  const publish = usePublishEvent();
   const { register, getValues, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       quality: 0.6,
@@ -27,24 +23,19 @@ export default function RelayReviewForm({
   watch("quality");
 
   const onSubmit = handleSubmit(async (values) => {
-    try {
-      const draft: DraftNostrEvent = {
-        kind: REVIEW_KIND,
-        content: values.content,
-        tags: [
-          ["l", RELAY_REVIEW_LABEL, new URL(relay).host, JSON.stringify({ quality: values.quality })],
-          ["L", RELAY_REVIEW_LABEL_NAMESPACE],
-          ["r", relay],
-        ],
-        created_at: dayjs().unix(),
-      };
+    const draft: DraftNostrEvent = {
+      kind: REVIEW_KIND,
+      content: values.content,
+      tags: [
+        ["l", RELAY_REVIEW_LABEL, new URL(relay).host, JSON.stringify({ quality: values.quality })],
+        ["L", RELAY_REVIEW_LABEL_NAMESPACE],
+        ["r", relay],
+      ],
+      created_at: dayjs().unix(),
+    };
 
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Review Relay", writeRelays, signed);
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    const pub = await publish("Review Relay", draft);
+    if (pub) onClose();
   });
 
   return (

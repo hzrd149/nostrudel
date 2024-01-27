@@ -9,25 +9,22 @@ import {
   Input,
   Link,
   Textarea,
-  useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
-import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
-import signingService from "../../services/signing";
-import userMetadataService from "../../services/user-metadata";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -189,9 +186,8 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 };
 
 export const ProfileEditView = () => {
-  const writeRelays = useWriteRelays([COMMON_CONTACT_RELAY]);
+  const publish = usePublishEvent();
   const readRelays = useReadRelays();
-  const toast = useToast();
   const account = useCurrentAccount()!;
   const metadata = useUserMetadata(account.pubkey, readRelays, { alwaysRequest: true });
 
@@ -209,39 +205,31 @@ export const ProfileEditView = () => {
   );
 
   const handleSubmit = async (data: FormData) => {
-    try {
-      const metadata: Kind0ParsedContent = {
-        name: data.username,
-        picture: data.picture,
-      };
-      if (data.displayName) metadata.display_name = data.displayName;
-      if (data.about) metadata.about = data.about;
-      if (data.website) metadata.website = data.website;
-      if (data.nip05) metadata.nip05 = data.nip05;
+    const metadata: Kind0ParsedContent = {
+      name: data.username,
+      picture: data.picture,
+    };
+    if (data.displayName) metadata.display_name = data.displayName;
+    if (data.about) metadata.about = data.about;
+    if (data.website) metadata.website = data.website;
+    if (data.nip05) metadata.nip05 = data.nip05;
 
-      if (data.lightningAddress) {
-        if (isLNURL(data.lightningAddress)) {
-          metadata.lud06 = data.lightningAddress;
-        } else if (isLightningAddress(data.lightningAddress)) {
-          metadata.lud16 = data.lightningAddress;
-        }
+    if (data.lightningAddress) {
+      if (isLNURL(data.lightningAddress)) {
+        metadata.lud06 = data.lightningAddress;
+      } else if (isLightningAddress(data.lightningAddress)) {
+        metadata.lud16 = data.lightningAddress;
       }
-
-      const draft: DraftNostrEvent = {
-        created_at: dayjs().unix(),
-        kind: 0,
-        content: JSON.stringify(metadata),
-        tags: [],
-      };
-
-      const signed = await signingService.requestSignature(draft, account);
-      const pub = new NostrPublishAction("Update Profile", writeRelays, signed);
-      userMetadataService.receiveEvent(signed);
-
-      await pub.onComplete;
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
+
+    const draft: DraftNostrEvent = {
+      created_at: dayjs().unix(),
+      kind: 0,
+      content: JSON.stringify(metadata),
+      tags: [],
+    };
+
+    await publish("Update Profile", draft, [COMMON_CONTACT_RELAY]);
   };
 
   return <MetadataForm defaultValues={defaultValues} onSubmit={handleSubmit} />;

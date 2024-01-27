@@ -26,6 +26,7 @@ import { TrustProvider } from "../../../providers/local/trust";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -36,10 +37,10 @@ export type ReplyFormProps = {
 
 export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount();
   const emojis = useContextEmojis();
   const { requestSignature } = useSigningContext();
-  const writeRelays = useWriteRelays();
 
   const threadMembers = useMemo(() => getThreadMembers(item, account?.pubkey), [item, account?.pubkey]);
   const { setValue, getValues, watch, handleSubmit } = useForm({
@@ -86,14 +87,9 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   }, [getValues().content, emojis]);
 
   const submit = handleSubmit(async (values) => {
-    try {
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Reply", writeRelays, signed);
+    const pub = await publish("Reply", draft);
 
-      if (onSubmitted) onSubmitted(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    if (pub && onSubmitted) onSubmitted(pub.event);
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);

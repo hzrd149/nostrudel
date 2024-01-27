@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
 import {
   NOTE_LIST_KIND,
@@ -16,13 +12,13 @@ import {
   listAddCoordinate,
   listRemoveCoordinate,
 } from "../../../helpers/nostr/lists";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function ListFavoriteButton({
   list,
   ...props
 }: { list: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const { list: favoriteList } = useFavoriteLists();
   const coordinate = getEventCoordinate(list);
   const isFavorite = favoriteList?.tags.some((t) => t[1] === coordinate);
@@ -41,15 +37,9 @@ export default function ListFavoriteButton({
       tags: [["d", FAVORITE_LISTS_IDENTIFIER]],
     };
 
-    try {
-      setLoading(true);
-      const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Favorite list", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    setLoading(true);
+    const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
+    await publish("Favorite list", draft);
     setLoading(false);
   };
 

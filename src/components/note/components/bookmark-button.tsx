@@ -10,11 +10,9 @@ import {
   MenuList,
   MenuOptionGroup,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import useUserLists from "../../../hooks/use-user-lists";
 import {
   NOTE_LIST_KIND,
@@ -25,18 +23,15 @@ import {
 } from "../../../helpers/nostr/lists";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import clientRelaysService from "../../../services/client-relays";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../../icons";
 import NewListModal from "../../../views/lists/components/new-list-modal";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useEventBookmarkActions from "../../../hooks/use-event-bookmark-actions";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function BookmarkButton({ event, ...props }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const newListModal = useDisclosure();
   const account = useCurrentAccount();
-  const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
 
   const { isLoading: loadingBookmark, toggleBookmark, isBookmarked } = useEventBookmarkActions(event);
@@ -48,32 +43,20 @@ export default function BookmarkButton({ event, ...props }: { event: NostrEvent 
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
-      const writeRelays = clientRelaysService.outbox.urls;
-
       setLoading(true);
-      try {
-        const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getEventCoordinate(list)));
-        const removeFromList = lists.find(
-          (list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)),
-        );
+      const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getEventCoordinate(list)));
+      const removeFromList = lists.find((list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)));
 
-        if (addToList) {
-          const draft = listAddEvent(addToList, event.id);
-          const signed = await requestSignature(draft);
-          const pub = new NostrPublishAction("Add to list", writeRelays, signed);
-          replaceableEventLoaderService.handleEvent(signed);
-        } else if (removeFromList) {
-          const draft = listRemoveEvent(removeFromList, event.id);
-          const signed = await requestSignature(draft);
-          const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
-          replaceableEventLoaderService.handleEvent(signed);
-        }
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      if (addToList) {
+        const draft = listAddEvent(addToList, event.id);
+        await publish("Add to list", draft);
+      } else if (removeFromList) {
+        const draft = listRemoveEvent(removeFromList, event.id);
+        await publish("Remove from list", draft);
       }
       setLoading(false);
     },
-    [lists, event.id, requestSignature],
+    [lists, event.id, publish],
   );
 
   return (

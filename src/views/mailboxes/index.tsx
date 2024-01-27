@@ -26,20 +26,18 @@ import { useCallback } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../helpers/nostr/mailbox";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import { useForm } from "react-hook-form";
 import { safeRelayUrl } from "../../helpers/relay";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const remove = useAsyncErrorHandler(async () => {
     const draft = removeRelayModeFromMailbox(list, relay, mode);
-    const signed = await requestSignature(draft);
-    new NostrPublishAction("Remove relay", clientRelaysService.outbox.urls, signed);
-  }, [relay, mode, list, requestSignature]);
+    await publish("Remove relay", draft);
+  }, [relay, mode, list, publish]);
 
   return (
     <Flex key={relay} gap="2" alignItems="center">

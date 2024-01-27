@@ -6,16 +6,17 @@ import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream
 import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
 import { unique } from "../../../../helpers/array";
 import { useSigningContext } from "../../../../providers/global/signing-provider";
-import NostrPublishAction from "../../../../classes/nostr-publish-action";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
+  const publish = usePublishEvent();
   const emojis = useContextEmojis();
   const streamRelays = useRelaySelectionRelays();
   const hostReadRelays = useUserInbox(stream.host);
@@ -27,16 +28,11 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
     defaultValues: { content: "" },
   });
   const sendMessage = handleSubmit(async (values) => {
-    try {
-      let draft = buildChatMessage(stream, values.content);
-      draft = ensureNotifyContentMentions(draft);
-      draft = createEmojiTags(draft, emojis);
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Send Chat", relays, signed);
-      reset();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    let draft = buildChatMessage(stream, values.content);
+    draft = ensureNotifyContentMentions(draft);
+    draft = createEmojiTags(draft, emojis);
+    const pub = await publish("Send Chat", draft, relays);
+    if (pub) reset();
   });
 
   const textAreaRef = useRef<RefType | null>(null);

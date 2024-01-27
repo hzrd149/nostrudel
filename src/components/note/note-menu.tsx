@@ -6,9 +6,6 @@ import { BroadcastEventIcon, CodeIcon } from "../icons";
 import { NostrEvent } from "../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
 import NoteDebugModal from "../debug-modals/note-debug-modal";
-import clientRelaysService from "../../services/client-relays";
-import { handleEventFromRelay } from "../../services/event-relays";
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
 import InfoCircle from "../icons/info-circle";
@@ -20,6 +17,7 @@ import DeleteEventMenuItem from "../common-menu-items/delete-event";
 import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import Recording02 from "../icons/recording-02";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 export default function NoteMenu({
   event,
@@ -28,13 +26,10 @@ export default function NoteMenu({
 }: { event: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
   const debugModal = useDisclosure();
   const translationsModal = useDisclosure();
+  const publish = usePublishEvent();
 
-  const broadcast = useCallback(() => {
-    const missingRelays = clientRelaysService.outbox.urls;
-    const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
-    pub.onResult.subscribe((result) => {
-      if (result.status) handleEventFromRelay(result.relay, event);
-    });
+  const broadcast = useCallback(async () => {
+    await publish("Broadcast", event);
   }, []);
 
   return (

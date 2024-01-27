@@ -1,5 +1,5 @@
 import { ChangeEventHandler, useCallback } from "react";
-import { Button, ButtonGroup, Divider, Flex, FormControl, FormLabel, Heading, Input, useToast } from "@chakra-ui/react";
+import { Button, ButtonGroup, Divider, Flex, FormControl, FormLabel, Heading, Input } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import useObjectURL from "../../../hooks/use-object-url";
@@ -15,7 +15,6 @@ type FormValues = {
 // example file https://tonybox.net/objects/keystone/keystone.stl
 
 export default function SelectFileStep({ onSubmit }: { onSubmit: (values: FormValues) => void }) {
-  const toast = useToast();
   const { register, getValues, setValue, handleSubmit, watch, resetField } = useForm<FormValues>({
     defaultValues: {
       fileURL: "",
@@ -35,23 +34,16 @@ export default function SelectFileStep({ onSubmit }: { onSubmit: (values: FormVa
   );
 
   const submit = handleSubmit(async (values) => {
-    try {
-      let file: Blob | undefined = values.file;
-      if (!file && values.fileURL) file = await fetch(values.fileURL).then((res) => res.blob());
-      if (!file) throw new Error("Cant access file");
+    let file: Blob | undefined = values.file;
+    if (!file && values.fileURL) file = await fetch(values.fileURL).then((res) => res.blob());
+    if (!file) throw new Error("Cant access file");
 
-      // get file hash
-      const buffer = await file.arrayBuffer();
-      const hash = await window.crypto.subtle.digest("SHA-256", buffer);
-      onSubmit({ hash: arrayBufferToHex(hash), file, fileURL: values.fileURL });
+    // get file hash
+    const buffer = await file.arrayBuffer();
+    const hash = await window.crypto.subtle.digest("SHA-256", buffer);
+    onSubmit({ hash: arrayBufferToHex(hash), file, fileURL: values.fileURL });
 
-      //   const signed = await requestSignature(getDraft());
-      //   const pub = new NostrPublishAction("Post", clientRelaysService.getWriteUrls(), signed);
-    } catch (e) {
-      if (e instanceof Error) {
-        toast({ description: e.message, status: "error" });
-      }
-    }
+    //   const pub = await publish("Post", draft);
   });
 
   const fileObjectURL = useObjectURL(getValues().file);

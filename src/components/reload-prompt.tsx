@@ -4,7 +4,7 @@ import { Alert, AlertIcon, AlertProps, AlertTitle, Button, CloseButton, useToast
 // check for updates every hour
 const intervalMS = 60 * 60 * 1000;
 
-export const ReloadPrompt = (props: Omit<AlertProps, "children" | "status">) => {
+export function ReloadPrompt(props: Omit<AlertProps, "children" | "status">) {
   const toast = useToast();
   const {
     needRefresh: [needRefresh, setNeedRefresh],
@@ -39,4 +39,4 @@ export const ReloadPrompt = (props: Omit<AlertProps, "children" | "status">) => 
       <CloseButton ml="4" onClick={close} />
     </Alert>
   ) : null;
-};
+}

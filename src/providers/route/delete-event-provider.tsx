@@ -18,23 +18,19 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { Event, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
-import useCurrentAccount from "../../hooks/use-current-account";
-import signingService from "../../services/signing";
 import createDefer, { Deferred } from "../../classes/deferred";
 import useEventRelays from "../../hooks/use-event-relays";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/events";
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import { Tag } from "../../types/nostr-event";
-import deleteEventService from "../../services/delete-events";
 import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";
+import { usePublishEvent } from "../global/publish-provider";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -51,8 +47,7 @@ export function useDeleteEventContext() {
 }
 
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
-  const toast = useToast();
-  const account = useCurrentAccount();
+  const publish = usePublishEvent();
   const [isLoading, setLoading] = useState(false);
   const [event, setEvent] = useState<Event>();
   const [defer, setDefer] = useState<Deferred<void>>();
@@ -72,7 +67,6 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const confirm = useCallback(async () => {
     try {
       if (!event) throw new Error("no event");
-      if (!account) throw new Error("not logged in");
       setLoading(true);
       const tags: Tag[] = [["e", event.id]];
       if (isReplaceable(event.kind)) {
@@ -85,12 +79,9 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
         content: reason,
         created_at: dayjs().unix(),
       };
-      const signed = await signingService.requestSignature(draft, account);
-      new NostrPublishAction("Delete", writeRelays, signed);
-      deleteEventService.handleEvent(signed);
+      await publish("Delete", draft, undefined, false);
       defer?.resolve();
     } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
       defer?.reject();
     } finally {
       setLoading(false);
@@ -98,7 +89,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       setEvent(undefined);
       setDefer(undefined);
     }
-  }, [defer, event, account]);
+  }, [defer, event, publish]);
 
   const context = useMemo(
     () => ({

@@ -7,11 +7,11 @@ import dayjs from "dayjs";
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { containerProps } from "./common";
 import { nostrBuildUploadImage } from "../../helpers/nostr-build";
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import { COMMON_CONTACT_RELAY } from "../../const";
 import { DraftNostrEvent } from "../../types/nostr-event";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 export default function CreateStep({
   metadata,
@@ -26,6 +26,7 @@ export default function CreateStep({
   onBack: () => void;
   onSubmit: (secretKey: string) => void;
 }) {
+  const publish = usePublishEvent();
   const toast = useToast();
 
   const [preview, setPreview] = useState("");
@@ -58,7 +59,7 @@ export default function CreateStep({
         hex,
       );
 
-      new NostrPublishAction("Create Profile", [...relays, COMMON_CONTACT_RELAY], kind0);
+      await publish("Create Profile", kind0, [...relays, COMMON_CONTACT_RELAY]);
 
       // login
       const pubkey = getPublicKey(hex);
@@ -74,7 +75,7 @@ export default function CreateStep({
         created_at: dayjs().unix(),
       };
       const signed = finalizeEvent(draft, hex);
-      new NostrPublishAction("Set Mailbox Relays", relays, signed);
+      await publish("Set Mailbox Relays", signed, relays);
 
       onSubmit(bytesToHex(hex));
     } catch (e) {

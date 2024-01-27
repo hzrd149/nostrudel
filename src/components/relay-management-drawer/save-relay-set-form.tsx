@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Input, Textarea, useToast } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import { NostrEvent, kinds } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
@@ -6,9 +6,7 @@ import { getListDescription, getListName, setListDescription, setListName } from
 import { isRTag } from "../../types/nostr-event";
 import { cloneEvent, ensureDTag } from "../../helpers/nostr/events";
 import { createRTagsFromRelaySets } from "../../helpers/nostr/mailbox";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
-import { useSigningContext } from "../../providers/global/signing-provider";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 export function SaveRelaySetForm({
   relaySet,
@@ -23,8 +21,7 @@ export function SaveRelaySetForm({
   writeRelays: Iterable<string>;
   readRelays: Iterable<string>;
 }) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const { register, formState, handleSubmit } = useForm({
     defaultValues: {
       name: relaySet ? getListName(relaySet) ?? "" : "",
@@ -35,21 +32,16 @@ export function SaveRelaySetForm({
   });
 
   const submit = handleSubmit(async (values) => {
-    try {
-      const draft = cloneEvent(kinds.Relaysets, relaySet);
-      ensureDTag(draft);
-      setListName(draft, values.name);
-      setListDescription(draft, values.description);
+    const draft = cloneEvent(kinds.Relaysets, relaySet);
+    ensureDTag(draft);
+    setListName(draft, values.name);
+    setListDescription(draft, values.description);
 
-      draft.tags = draft.tags.filter((t) => !isRTag(t));
-      draft.tags.push(...createRTagsFromRelaySets(readRelays, writeRelays));
+    draft.tags = draft.tags.filter((t) => !isRTag(t));
+    draft.tags.push(...createRTagsFromRelaySets(readRelays, writeRelays));
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Save Relay Set", clientRelaysService.outbox, signed);
-      if (onSaved) onSaved(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    const pub = await publish("Save Relay Set", draft);
+    if (pub && onSaved) onSaved(pub.event);
   });
 
   return (

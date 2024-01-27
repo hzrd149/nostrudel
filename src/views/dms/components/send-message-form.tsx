@@ -3,27 +3,24 @@ import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 
-import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
+import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import userMailboxesService from "../../../services/user-mailboxes";
-import accountService from "../../../services/account";
 import RelaySet from "../../../classes/relay-set";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function SendMessageForm({
   pubkey,
   rootId,
   ...props
 }: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
-  const toast = useToast();
-  const { requestEncrypt, requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
+  const { requestEncrypt } = useSigningContext();
   const { getOrCreateContainer } = useDecryptionContext();
 
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -41,27 +38,27 @@ export default function SendMessageForm({
 
   const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
-    try {
-      if (!values.content) return;
-      setLoadingMessage("Encrypting...");
-      const encrypted = await requestEncrypt(values.content, pubkey);
+    if (!values.content) return;
+    setLoadingMessage("Encrypting...");
+    const encrypted = await requestEncrypt(values.content, pubkey);
 
-      const event: DraftNostrEvent = {
-        kind: kinds.EncryptedDirectMessage,
-        content: encrypted,
-        tags: [["p", pubkey]],
-        created_at: dayjs().unix(),
-      };
+    const draft: DraftNostrEvent = {
+      kind: kinds.EncryptedDirectMessage,
+      content: encrypted,
+      tags: [["p", pubkey]],
+      created_at: dayjs().unix(),
+    };
 
-      if (rootId) {
-        event.tags.push(["e", rootId, "", "root"]);
-      }
+    if (rootId) {
+      draft.tags.push(["e", rootId, "", "root"]);
+    }
 
-      setLoadingMessage("Signing...");
-      const signed = await requestSignature(event);
-      const relays = RelaySet.from(clientRelaysService.outbox);
-      if (userMailboxes?.inbox) relays.merge(userMailboxes.inbox);
-      new NostrPublishAction("Send DM", relays, signed);
+    setLoadingMessage("Signing...");
+    const relays = RelaySet.from(clientRelaysService.outbox);
+    if (userMailboxes?.inbox) relays.merge(userMailboxes.inbox);
+    const pub = await publish("Send DM", draft, relays);
+
+    if (pub) {
       reset();
 
       // add plaintext to decryption context
@@ -69,8 +66,6 @@ export default function SendMessageForm({
 
       // refocus input
       setTimeout(() => textAreaRef.current?.focus(), 50);
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
     }
     setLoadingMessage("");
   });

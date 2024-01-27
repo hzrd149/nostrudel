@@ -15,7 +15,6 @@ import {
   ModalProps,
   SimpleGrid,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
@@ -33,14 +32,12 @@ import {
 } from "../../helpers/nostr/mute-list";
 import { cloneList } from "../../helpers/nostr/lists";
 import { useSigningContext } from "../global/signing-provider";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
 import { ChevronDownIcon } from "../../components/icons";
+import { usePublishEvent } from "../global/publish-provider";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;
@@ -56,25 +53,17 @@ export function useMuteModalContext() {
 
 function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> & { pubkey: string }) {
   const metadata = useUserMetadata(pubkey);
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
 
   const account = useCurrentAccount();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
   const handleClick = async (expiration: number) => {
-    try {
-      // mute user
-      let draft = muteList ? cloneList(muteList) : createEmptyMuteList();
-      draft = pruneExpiredPubkeys(draft);
-      draft = muteListAddPubkey(draft, pubkey, expiration);
+    let draft = muteList ? cloneList(muteList) : createEmptyMuteList();
+    draft = pruneExpiredPubkeys(draft);
+    draft = muteListAddPubkey(draft, pubkey, expiration);
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Mute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    await publish("Mute", draft);
+    onClose();
   };
 
   return (
@@ -126,26 +115,18 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
 }
 
 function UnmuteHandler() {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
-  const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
   const modal = useDisclosure();
 
   const unmuteAll = async () => {
     if (!muteList) return;
-    try {
-      let draft: DraftNostrEvent = cloneList(muteList);
-      draft = pruneExpiredPubkeys(draft);
+    let draft: DraftNostrEvent = cloneList(muteList);
+    draft = pruneExpiredPubkeys(draft);
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-      return true;
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-    return false;
+    const pub = await publish("Unmute", draft);
+    return !!pub;
   };
 
   const check = async () => {
@@ -166,7 +147,7 @@ function UnmuteHandler() {
 }
 
 function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
@@ -181,63 +162,36 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
 
   const unmuteAll = async () => {
     if (!muteList) return;
-    try {
-      let draft: DraftNostrEvent = cloneList(muteList);
-      draft = pruneExpiredPubkeys(draft);
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    let draft: DraftNostrEvent = cloneList(muteList);
+    draft = pruneExpiredPubkeys(draft);
+    const pub = await publish("Unmute", draft);
+    if (pub) onClose();
   };
   const extendAll = async (expiration: number) => {
     if (!muteList) return;
-    try {
-      const expired = getExpiredPubkeys();
-      let draft: DraftNostrEvent = cloneList(muteList);
-      draft = pruneExpiredPubkeys(draft);
-      for (const [pubkey] of expired) {
-        draft = muteListAddPubkey(draft, pubkey, expiration);
-      }
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Extend mute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    const expired = getExpiredPubkeys();
+    let draft: DraftNostrEvent = cloneList(muteList);
+    draft = pruneExpiredPubkeys(draft);
+    for (const [pubkey] of expired) {
+      draft = muteListAddPubkey(draft, pubkey, expiration);
     }
+
+    const pub = await publish("Extend mute", draft);
+    if (pub) onClose();
   };
 
   const unmuteUser = async (pubkey: string) => {
     if (!muteList) return;
-    try {
-      let draft: DraftNostrEvent = cloneList(muteList);
-      draft = muteListRemovePubkey(draft, pubkey);
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Unmute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    let draft: DraftNostrEvent = cloneList(muteList);
+    draft = muteListRemovePubkey(draft, pubkey);
+    await publish("Unmute", draft);
   };
   const extendUser = async (pubkey: string, expiration: number) => {
     if (!muteList) return;
-    try {
-      let draft: DraftNostrEvent = cloneList(muteList);
-      draft = muteListRemovePubkey(draft, pubkey);
-      draft = muteListAddPubkey(draft, pubkey, expiration);
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Extend mute", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    let draft: DraftNostrEvent = cloneList(muteList);
+    draft = muteListRemovePubkey(draft, pubkey);
+    draft = muteListAddPubkey(draft, pubkey, expiration);
+    await publish("Extend mute", draft);
   };
 
   const expiredPubkeys = getExpiredPubkeys().map(([pubkey]) => pubkey);

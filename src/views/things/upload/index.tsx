@@ -1,9 +1,7 @@
 import { useState } from "react";
 import {
   Box,
-  Flex,
   Step,
-  StepDescription,
   StepIcon,
   StepIndicator,
   StepNumber,
@@ -11,11 +9,9 @@ import {
   StepStatus,
   StepTitle,
   Stepper,
-  useToast,
 } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import { useNavigate } from "react-router-dom";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import SelectFileStep from "./select-file-step";
@@ -27,8 +23,6 @@ const steps = [{ title: "Select File" }, { title: "Details" }, { title: "Upload"
 
 export default function ThingUploadView() {
   const navigate = useNavigate();
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
 
   const step = useRouteStateValue("step", 0);
 
@@ -40,14 +34,7 @@ export default function ThingUploadView() {
   const [screenshot, setScreenshot] = useState<Blob>();
 
   const upload = async () => {
-    try {
-      //   const signed = await requestSignature(getDraft());
-      //   const pub = new NostrPublishAction("Post", clientRelaysService.getWriteUrls(), signed);
-    } catch (e) {
-      if (e instanceof Error) {
-        toast({ description: e.message, status: "error" });
-      }
-    }
+    // await publish("Post", draft);
   };
 
   const renderContent = () => {

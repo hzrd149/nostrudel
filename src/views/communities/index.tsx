@@ -15,7 +15,6 @@ import {
   Switch,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -28,7 +27,6 @@ import useUserCommunitiesList from "../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
-import { useSigningContext } from "../../providers/global/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import {
   COMMUNITY_APPROVAL_KIND,
@@ -37,9 +35,7 @@ import {
   getCommunityMods,
   getCommunityName,
 } from "../../helpers/nostr/communities";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
-import replaceableEventLoaderService, { createCoordinate } from "../../services/replaceable-event-requester";
+import { createCoordinate } from "../../services/replaceable-event-requester";
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -51,11 +47,10 @@ import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import RelaySet from "../../classes/relay-set";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function CommunitiesHomePage() {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const createModal = useDisclosure();
@@ -67,41 +62,30 @@ function CommunitiesHomePage() {
   const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(sortByDate);
 
   const createCommunity = async (values: FormValues) => {
-    try {
-      const draft: DraftNostrEvent = {
-        kind: COMMUNITY_DEFINITION_KIND,
-        created_at: dayjs().unix(),
-        content: "",
-        tags: [["d", values.name]],
-      };
+    const draft: DraftNostrEvent = {
+      kind: COMMUNITY_DEFINITION_KIND,
+      created_at: dayjs().unix(),
+      content: "",
+      tags: [["d", values.name]],
+    };
 
-      if (values.description) draft.tags.push(["description", values.description]);
-      if (values.banner) {
-        try {
-          const size = await getImageSize(values.banner);
-          draft.tags.push(["image", values.banner, `${size.width}x${size.height}`]);
-        } catch (e) {
-          draft.tags.push(["image", values.banner]);
-        }
+    if (values.description) draft.tags.push(["description", values.description]);
+    if (values.banner) {
+      try {
+        const size = await getImageSize(values.banner);
+        draft.tags.push(["image", values.banner, `${size.width}x${size.height}`]);
+      } catch (e) {
+        draft.tags.push(["image", values.banner]);
       }
-      for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
-      for (const url of values.relays) draft.tags.push(["relay", url]);
-      for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
-      // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction(
-        "Create Community",
-        RelaySet.from(clientRelaysService.writeRelays.value, values.relays),
-        signed,
-      );
-
-      replaceableEventLoaderService.handleEvent(signed);
-
-      navigate(`/c/${getCommunityName(signed)}/${signed.pubkey}`);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
+    for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
+    for (const url of values.relays) draft.tags.push(["relay", url]);
+    for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
+    // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
+
+    const pub = await publish("Create Community", draft, values.relays, false);
+
+    navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
   const timeline = useTimelineLoader(

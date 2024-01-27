@@ -2,7 +2,6 @@ import db from "./db";
 import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import { NostrEvent } from "../types/nostr-event";
 import { Kind0ParsedContent, getSearchNames, parseKind0Event } from "../helpers/user-metadata";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
@@ -29,10 +28,6 @@ class UserMetadataService {
     const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;
-  }
-
-  receiveEvent(event: NostrEvent) {
-    replaceableEventLoaderService.handleEvent(event);
   }
 
   private writeSearchQueue = new Set<string>();

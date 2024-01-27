@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Box, Button, Flex, useToast } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -18,13 +18,11 @@ import IntersectionObserverProvider, {
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import { CheckIcon } from "../../../components/icons";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import CommunityPost from "../components/community-post";
 import { RouterContext } from "../community-home";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { useWriteRelays } from "../../../hooks/use-client-relays";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 type PendingProps = {
   event: NostrEvent;
@@ -33,38 +31,31 @@ type PendingProps = {
 };
 
 function ModPendingPost({ event, community, approvals }: PendingProps) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
 
   const communityRelays = getCommunityRelays(community);
-  const writeRelays = useWriteRelays(communityRelays);
   const [loading, setLoading] = useState(false);
   const approve = useCallback(async () => {
     setLoading(true);
-    try {
-      const relay = communityRelays[0];
-      const draft: DraftNostrEvent = {
-        kind: COMMUNITY_APPROVAL_KIND,
-        content: JSON.stringify(event),
-        created_at: dayjs().unix(),
-        tags: [
-          relay ? ["a", getEventCoordinate(community), relay] : ["a", getEventCoordinate(community)],
-          ["e", event.id],
-          ["p", event.pubkey],
-          ["k", String(event.kind)],
-        ],
-      };
+    const relay = communityRelays[0];
+    const draft: DraftNostrEvent = {
+      kind: COMMUNITY_APPROVAL_KIND,
+      content: JSON.stringify(event),
+      created_at: dayjs().unix(),
+      tags: [
+        relay ? ["a", getEventCoordinate(community), relay] : ["a", getEventCoordinate(community)],
+        ["e", event.id],
+        ["p", event.pubkey],
+        ["k", String(event.kind)],
+      ],
+    };
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Approve", writeRelays, signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    await publish("Approve", draft);
     setLoading(false);
-  }, [event, requestSignature, writeRelays, setLoading, community]);
+  }, [event, publish, setLoading, community]);
 
   return (
     <Flex direction="column" gap="2" ref={ref}>

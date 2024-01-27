@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useMemo } from "react";
+import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 
 import { SigningProvider } from "./signing-provider";
@@ -10,6 +10,7 @@ import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import DecryptionProvider from "./dycryption-provider";
 import DMTimelineProvider from "./dm-timeline";
+import PublishProvider from "./publish-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -23,17 +24,19 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
       <BreakpointProvider>
         <SigningProvider>
-          <DecryptionProvider>
-            <NotificationTimelineProvider>
-              <DMTimelineProvider>
-                <DefaultEmojiProvider>
-                  <UserEmojiProvider>
-                    <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
-                  </UserEmojiProvider>
-                </DefaultEmojiProvider>
-              </DMTimelineProvider>
-            </NotificationTimelineProvider>
-          </DecryptionProvider>
+          <PublishProvider>
+            <DecryptionProvider>
+              <NotificationTimelineProvider>
+                <DMTimelineProvider>
+                  <DefaultEmojiProvider>
+                    <UserEmojiProvider>
+                      <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
+                    </UserEmojiProvider>
+                  </DefaultEmojiProvider>
+                </DMTimelineProvider>
+              </NotificationTimelineProvider>
+            </DecryptionProvider>
+          </PublishProvider>
         </SigningProvider>
       </BreakpointProvider>
     </ChakraProvider>

@@ -3,24 +3,22 @@ import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 
-import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
-import { useSigningContext } from "../../../providers/global/signing-provider";
+import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
+
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
-import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { createEmojiTags, ensureNotifyPubkeys, getPubkeysMentionedInContent } from "../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function ChannelMessageForm({
   channel,
   rootId,
   ...props
 }: { channel: NostrEvent; rootId?: string } & Omit<FlexProps, "children">) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const { requestSignature } = useSigningContext();
 
   const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
@@ -36,35 +34,29 @@ export default function ChannelMessageForm({
   const { onPaste } = useTextAreaUploadFileWithForm(componentRef, getValues, setValue);
 
   const sendMessage = handleSubmit(async (values) => {
-    try {
-      if (!values.content) return;
+    if (!values.content) return;
 
-      let draft: DraftNostrEvent = {
-        kind: kinds.ChannelMessage,
-        content: values.content,
-        tags: [["e", channel.id]],
-        created_at: dayjs().unix(),
-      };
+    let draft: DraftNostrEvent = {
+      kind: kinds.ChannelMessage,
+      content: values.content,
+      tags: [["e", channel.id]],
+      created_at: dayjs().unix(),
+    };
 
-      const contentMentions = getPubkeysMentionedInContent(draft.content);
-      draft = createEmojiTags(draft, emojis);
-      draft = ensureNotifyPubkeys(draft, contentMentions);
+    const contentMentions = getPubkeysMentionedInContent(draft.content);
+    draft = createEmojiTags(draft, emojis);
+    draft = ensureNotifyPubkeys(draft, contentMentions);
 
-      if (rootId) {
-        draft.tags.push(["e", rootId, "", "root"]);
-      }
-
-      setLoadingMessage("Signing...");
-      const signed = await requestSignature(draft);
-      const writeRelays = clientRelaysService.outbox.urls;
-      new NostrPublishAction("Send DM", writeRelays, signed);
-      reset();
-
-      // refocus input
-      setTimeout(() => textAreaRef.current?.focus(), 50);
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
+    if (rootId) {
+      draft.tags.push(["e", rootId, "", "root"]);
     }
+
+    setLoadingMessage("Signing...");
+    await publish("Send DM", draft, undefined, false);
+    reset();
+
+    // refocus input
+    setTimeout(() => textAreaRef.current?.focus(), 50);
     setLoadingMessage("");
   });
 

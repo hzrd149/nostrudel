@@ -10,7 +10,7 @@ export type PostResultsProps = {
   pub: NostrPublishAction;
 };
 
-export const PublishDetails = ({ pub }: PostResultsProps & Omit<FlexProps, "children">) => {
+export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "children">) {
   const results = useSubject(pub.results);
 
   return (
@@ -33,4 +33,4 @@ export const PublishDetails = ({ pub }: PostResultsProps & Omit<FlexProps, "chil
       ))}
     </Flex>
   );
-};
+}

@@ -27,7 +27,7 @@ export function useSigningContext() {
   return useContext(SigningContext);
 }
 
-export const SigningProvider = ({ children }: { children: React.ReactNode }) => {
+export function SigningProvider({ children }: { children: React.ReactNode }) {
   const toast = useToast();
   const current = useSubject(accountService.current);
 
@@ -59,4 +59,4 @@ export const SigningProvider = ({ children }: { children: React.ReactNode }) => 
   );
 
   return <SigningContext.Provider value={context}>{children}</SigningContext.Provider>;
-};
+}

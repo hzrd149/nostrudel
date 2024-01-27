@@ -19,15 +19,11 @@ import dayjs from "dayjs";
 
 import { EMOJI_PACK_KIND } from "../../../helpers/nostr/emoji-packs";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import { getSharableEventAddress } from "../../../helpers/nip19";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalProps, "children">) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -43,14 +39,8 @@ export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalPr
       tags: [["d", values.title]],
     };
 
-    try {
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Create emoji pack", clientRelaysService.outbox.urls, signed);
-      replaceableEventLoaderService.handleEvent(signed);
-      navigate(`/emojis/${getSharableEventAddress(signed)}`);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    const pub = await publish("Create emoji pack", draft);
+    if (pub) navigate(`/emojis/${getSharableEventAddress(pub.event)}`);
   });
 
   return (

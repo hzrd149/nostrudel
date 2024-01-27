@@ -10,7 +10,6 @@ import {
   ModalOverlay,
   ModalProps,
   Select,
-  useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
@@ -20,10 +19,7 @@ import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { getEventUID } from "../../../../helpers/nostr/events";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useSubject from "../../../../hooks/use-subject";
-import { useSigningContext } from "../../../../providers/global/signing-provider";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
-import NostrPublishAction from "../../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../../services/client-relays";
 import {
   DVM_STATUS_KIND,
   DVM_TRANSLATE_JOB_KIND,
@@ -31,37 +27,32 @@ import {
   groupEventsIntoJobs,
 } from "../../../../helpers/nostr/dvm";
 import useCurrentAccount from "../../../../hooks/use-current-account";
-import { NostrQuery } from "../../../../types/nostr-query";
 import TranslationJob from "./translation-job";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { Filter } from "nostr-tools";
 
 export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
   const account = useCurrentAccount();
-  const { requestSignature } = useSigningContext();
-  const toast = useToast();
+  const publish = usePublishEvent();
 
   const [lang, setLang] = useState(navigator.language.split("-")[0] ?? "en");
   const readRelays = useReadRelays();
   const requestTranslation = useCallback(async () => {
-    try {
-      const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);
-      const draft: DraftNostrEvent = {
-        kind: DVM_TRANSLATE_JOB_KIND,
-        content: "",
-        created_at: dayjs().unix(),
-        tags: [
-          ["i", note.id, "event"],
-          ["param", "language", lang],
-          ["output", "text/plain"],
-          ["relays", ...top8Relays],
-        ],
-      };
+    const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);
+    const draft: DraftNostrEvent = {
+      kind: DVM_TRANSLATE_JOB_KIND,
+      content: "",
+      created_at: dayjs().unix(),
+      tags: [
+        ["i", note.id, "event"],
+        ["param", "language", lang],
+        ["output", "text/plain"],
+        ["relays", ...top8Relays],
+      ],
+    };
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Request Translation", clientRelaysService.outbox.urls, signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
-    }
-  }, [requestSignature, note, readRelays]);
+    await publish("Request Translation", draft);
+  }, [publish, note, readRelays]);
 
   const timeline = useTimelineLoader(
     `${getEventUID(note)}-translations`,
@@ -72,7 +63,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
         "#i": [note.id],
       },
       account && { kinds: [DVM_STATUS_KIND], "#p": [account.pubkey] },
-    ].filter(Boolean) as NostrQuery[],
+    ].filter(Boolean) as Filter[],
   );
 
   const events = useSubject(timeline.timeline);

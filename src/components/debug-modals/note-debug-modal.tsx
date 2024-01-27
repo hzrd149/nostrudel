@@ -9,16 +9,15 @@ import RawJson from "./raw-json";
 import RawValue from "./raw-value";
 import RawPre from "./raw-pre";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import clientRelaysService from "../../services/client-relays";
-import NostrPublishAction from "../../classes/nostr-publish-action";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 export default function NoteDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
+  const publish = usePublishEvent();
   const [loading, setLoading] = useState(false);
-  const broadcast = useCallback(() => {
+  const broadcast = useCallback(async () => {
     setLoading(true);
-    const relays = clientRelaysService.outbox.urls;
-    const pub = new NostrPublishAction("Broadcast", relays, event, 5000);
-    pub.onComplete.then(() => setLoading(false));
+    await publish("Broadcast", event);
+    setLoading(false);
   }, []);
 
   return (

@@ -27,10 +27,6 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";
 import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
 import { EMOJI_PACK_KIND, getEmojisFromPack, getPackName } from "../../helpers/nostr/emoji-packs";
-import { useSigningContext } from "../../providers/global/signing-provider";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user-avatar-link";
@@ -38,6 +34,7 @@ import NoteZapButton from "../../components/note/note-zap-button";
 import QuoteRepostButton from "../../components/note/components/quote-repost-button";
 import Timestamp from "../../components/timestamp";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -86,8 +83,8 @@ function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; o
 function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   const navigate = useNavigate();
   const account = useCurrentAccount();
+  const publish = usePublishEvent();
   const { deleteEvent } = useDeleteEventContext();
-  const { requestSignature } = useSigningContext();
   const [scale, setScale] = useState(10);
 
   const isAuthor = account?.pubkey === pack.pubkey;
@@ -118,10 +115,8 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
       tags: [...pack.tags.filter((t) => t[0] !== "emoji"), ...draftEmojis.map(({ name, url }) => ["emoji", name, url])],
     };
 
-    const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Update emoji pack", clientRelaysService.outbox.urls, signed);
-    replaceableEventLoaderService.handleEvent(signed);
-    setEditing(false);
+    const pub = await publish("Update emoji pack", draft);
+    if (pub) setEditing(false);
   };
 
   return (

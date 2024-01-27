@@ -9,7 +9,6 @@ import {
   MenuItemOption,
   MenuOptionGroup,
   MenuDivider,
-  useToast,
   useDisclosure,
 } from "@chakra-ui/react";
 
@@ -27,17 +26,15 @@ import {
 } from "../helpers/nostr/lists";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import { useSigningContext } from "../providers/global/signing-provider";
-import NostrPublishAction from "../classes/nostr-publish-action";
-import clientRelaysService from "../services/client-relays";
 import useUserContactList from "../hooks/use-user-contact-list";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import useAsyncErrorHandler from "../hooks/use-async-error-handler";
 import NewListModal from "../views/lists/components/new-list-modal";
 import useUserMuteActions from "../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../providers/route/mute-modal-provider";
+import { usePublishEvent } from "../providers/global/publish-provider";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
@@ -50,31 +47,23 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const handleChange = useCallback(
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
-
-      const writeRelays = clientRelaysService.outbox.urls;
-
       setLoading(true);
-      try {
-        const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getEventCoordinate(list)));
-        const removeFromList = lists.find(
-          (list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)),
-        );
 
-        if (addToList) {
-          const draft = listAddPerson(addToList, pubkey);
-          const signed = await requestSignature(draft);
-          const pub = new NostrPublishAction("Add to list", writeRelays, signed);
-        } else if (removeFromList) {
-          const draft = listRemovePerson(removeFromList, pubkey);
-          const signed = await requestSignature(draft);
-          const pub = new NostrPublishAction("Remove from list", writeRelays, signed);
-        }
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
+      const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getEventCoordinate(list)));
+      const removeFromList = lists.find((list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)));
+
+      if (addToList) {
+        const draft = listAddPerson(addToList, pubkey);
+        const signed = await requestSignature(draft);
+        await publish("Add to list", signed);
+      } else if (removeFromList) {
+        const draft = listRemovePerson(removeFromList, pubkey);
+        const signed = await requestSignature(draft);
+        await publish("Remove from list", signed);
       }
       setLoading(false);
     },
-    [lists],
+    [lists, publish, setLoading],
   );
 
   return (
@@ -114,7 +103,8 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
   "onClick" | "isLoading" | "isDisabled"
 >;
 
-export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButtonProps) => {
+export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButtonProps) {
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
   const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
@@ -127,14 +117,12 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
   const handleFollow = useAsyncErrorHandler(async () => {
     const draft = listAddPerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Follow", clientRelaysService.outbox.urls, signed);
-    replaceableEventLoaderService.handleEvent(signed);
+    await publish("Follow", signed);
   }, [contacts, requestSignature]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
-    const pub = new NostrPublishAction("Unfollow", clientRelaysService.outbox.urls, signed);
-    replaceableEventLoaderService.handleEvent(signed);
+    await publish("Unfollow", signed);
   }, [contacts, requestSignature]);
 
   if (showLists) {
@@ -191,4 +179,4 @@ export const UserFollowButton = ({ pubkey, showLists, ...props }: UserFollowButt
       </Button>
     );
   }
-};
+}

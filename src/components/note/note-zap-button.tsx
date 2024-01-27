@@ -28,7 +28,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
 
   const onZapped = () => {
     onClose();
-    eventZapsService.requestZaps(getEventUID(event), clientRelaysService.inbox.urls, true);
+    eventZapsService.requestZaps(getEventUID(event), clientRelaysService.outbox, true);
   };
 
   const total = totalZaps(zaps);

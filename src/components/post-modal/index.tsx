@@ -6,7 +6,6 @@ import {
   ModalBody,
   Flex,
   Button,
-  useToast,
   Box,
   Heading,
   useDisclosure,
@@ -30,8 +29,6 @@ import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { useWriteRelays } from "../../hooks/use-client-relays";
-import { useSigningContext } from "../../providers/global/signing-provider";
 import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/local/trust";
@@ -57,8 +54,7 @@ import { useThrottle } from "react-use";
 import MinePOW from "../mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
-import RelaySet from "../../classes/relay-set";
-import clientRelaysService from "../../services/client-relays";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 type FormValues = {
   subject: string;
@@ -85,12 +81,9 @@ export default function PostModal({
   initCommunity = "",
   requireSubject,
 }: Omit<ModalProps, "children"> & PostModalProps) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const { requestSignature } = useSigningContext();
-  const additionalRelays = useAdditionalRelayContext();
-  const writeRelays = useWriteRelays(additionalRelays);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
@@ -151,19 +144,14 @@ export default function PostModal({
     return updatedDraft;
   }, [getValues, emojis]);
 
-  const publish = async (draft = getDraft()) => {
-    try {
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Post", RelaySet.from(clientRelaysService.outbox, writeRelays), signed);
-      setPublishAction(pub);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+  const publishPost = async (draft = getDraft()) => {
+    const pub = await publish("Post", draft);
+    if (pub) setPublishAction(pub);
   };
   const submit = handleSubmit(async (values) => {
     if (values.difficulty > 0) {
       setMiningTarget(values.difficulty);
-    } else publish();
+    } else publishPost();
   });
 
   const canSubmit = getValues().content.length > 0;
@@ -189,8 +177,8 @@ export default function PostModal({
           draft={{ ...getDraft(), pubkey: account.pubkey }}
           targetPOW={miningTarget}
           onCancel={() => setMiningTarget(0)}
-          onSkip={publish}
-          onComplete={publish}
+          onSkip={publishPost}
+          onComplete={publishPost}
         />
       );
     }

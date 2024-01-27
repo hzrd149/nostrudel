@@ -55,16 +55,16 @@ class ClientRelayService {
     localStorage.setItem("write-relays", this.writeRelays.value.urls.join(","));
   }
 
-  get outbox() {
+  get outbox(): Iterable<string> {
     const account = accountService.current.value;
-    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.outbox ?? this.writeRelays.value;
-    return this.writeRelays.value;
+    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.outbox ?? [];
+    return [];
   }
 
-  get inbox() {
+  get inbox(): Iterable<string> {
     const account = accountService.current.value;
-    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.inbox ?? this.readRelays.value;
-    return this.readRelays.value;
+    if (account) return userMailboxesService.getMailboxes(account.pubkey).value?.inbox ?? [];
+    return [];
   }
 }
 

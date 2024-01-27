@@ -17,15 +17,15 @@ import {
 
 import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import { getEventRelays, handleEventFromRelay } from "../../../services/event-relays";
+import { getEventRelays } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note-link";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import { BroadcastEventIcon } from "../../icons";
 import { getEventUID } from "../../../helpers/nostr/events";
 import Timestamp from "../../timestamp";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 function EventRow({
   event,
@@ -34,6 +34,7 @@ function EventRow({
 }: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
   const sub = useMemo(() => getEventRelays(event.id), [event.id]);
   const seenRelays = useSubject(sub);
+  const publish = usePublishEvent();
 
   const ref = useRef<HTMLTableRowElement | null>(null);
   useRegisterIntersectionEntity(ref, getEventUID(event));
@@ -43,22 +44,10 @@ function EventRow({
   const no = colorMode === "light" ? "red.200" : "red.800";
 
   const [broadcasting, setBroadcasting] = useState(false);
-  const broadcast = () => {
+  const broadcast = async () => {
     setBroadcasting(true);
-    const missingRelays = relays.filter((r) => !seenRelays.includes(r));
-    if (missingRelays.length === 0) return;
-
-    const pub = new NostrPublishAction("Broadcast", missingRelays, event);
-
-    pub.onResult.subscribe((result) => {
-      if (result.status) {
-        handleEventFromRelay(result.relay, event);
-      }
-    });
-
-    pub.onComplete.then(() => {
-      setBroadcasting(false);
-    });
+    await publish("Broadcast", event);
+    setBroadcasting(false);
   };
 
   return (

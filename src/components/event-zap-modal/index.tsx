@@ -64,7 +64,7 @@ async function getPayRequestForPubkey(
     .getRankedRelays(userMailboxesService.getMailboxes(pubkey).value?.inbox)
     .slice(0, 4);
   const eventRelays = event ? relayHintService.getEventRelayHints(event, 4) : [];
-  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.outbox.urls).slice(0, 4);
+  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.outbox).slice(0, 4);
   const additional = relayScoreboardService.getRankedRelays(additionalRelays);
 
   // create zap request
