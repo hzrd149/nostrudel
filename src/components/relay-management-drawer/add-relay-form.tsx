@@ -1,10 +1,13 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, FlexProps } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { safeRelayUrl } from "../../helpers/relay";
 import { RelayUrlInput } from "../relay-url-input";
 
-export default function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
+export default function AddRelayForm({
+  onSubmit,
+  ...props
+}: { onSubmit: (relay: string) => void } & Omit<FlexProps, "children" | "onSubmit">) {
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       url: "",
@@ -19,7 +22,7 @@ export default function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) =
   });
 
   return (
-    <Flex as="form" display="flex" gap="2" onSubmit={submit}>
+    <Flex as="form" display="flex" gap="2" onSubmit={submit} {...props}>
       <RelayUrlInput {...register("url")} placeholder="wss://relay.example.com" size="sm" borderRadius="md" />
       <Button type="submit" size="sm">
         Add

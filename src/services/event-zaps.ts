@@ -1,11 +1,12 @@
-import { kinds } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrRequestFilter } from "../types/nostr-query";
 import { isHexKey } from "../helpers/nip19";
+import { relayRequest } from "../helpers/relay";
+import { localRelay } from "./local-relay";
 
 type eventUID = string;
 type relay = string;
@@ -26,7 +27,7 @@ class EventZapsService {
     return subject;
   }
 
-  handleEvent(event: NostrEvent) {
+  handleEvent(event: NostrEvent, cache = true) {
     if (event.kind !== kinds.Zap) return;
     const eventUID = event.tags.find(isETag)?.[1] ?? event.tags.find(isATag)?.[1];
     if (!eventUID) return;
@@ -37,6 +38,8 @@ class EventZapsService {
     } else if (!subject.value.some((e) => e.id === event.id)) {
       subject.next([...subject.value, event]);
     }
+
+    if (cache) localRelay.publish(event);
   }
 
   batchRequests() {
@@ -56,13 +59,12 @@ class EventZapsService {
       const eventIds = ids.filter(isHexKey);
       const coordinates = ids.filter((id) => id.includes(":"));
 
-      const queries: NostrRequestFilter = [];
-      if (eventIds.length > 0) {
-        queries.push({ "#e": eventIds, kinds: [kinds.Zap] });
-      }
-      if (coordinates.length > 0) {
-        queries.push({ "#a": coordinates, kinds: [kinds.Zap] });
-      }
+      const queries: Filter[] = [];
+      if (eventIds.length > 0) queries.push({ "#e": eventIds, kinds: [kinds.Zap] });
+      if (coordinates.length > 0) queries.push({ "#a": coordinates, kinds: [kinds.Zap] });
+
+      // load from local relay
+      relayRequest(localRelay, queries).then((events) => events.forEach((e) => this.handleEvent(e, false)));
 
       request.start(queries);
     }

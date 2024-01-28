@@ -10,7 +10,7 @@ import replaceableEventLoaderService, { RequestOptions } from "./replaceable-eve
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
 
 class UserMetadataService {
-  private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
+  private metadata = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
     const sub = new Subject<Kind0ParsedContent>();
     sub.subscribe((metadata) => {
       if (metadata) {
@@ -21,10 +21,10 @@ class UserMetadataService {
     return sub;
   });
   getSubject(pubkey: string) {
-    return this.parsedSubjects.get(pubkey);
+    return this.metadata.get(pubkey);
   }
   requestMetadata(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
-    const sub = this.parsedSubjects.get(pubkey);
+    const sub = this.metadata.get(pubkey);
     const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;

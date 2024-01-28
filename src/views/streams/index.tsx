@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Divider, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Divider, Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -19,11 +19,13 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 
 function StreamsPage() {
   useAppTitle("Streams");
   const relays = useRelaySelectionRelays();
   const userMuteFilter = useClientSideMuteFilter();
+  const showEnded = useRouteStateBoolean("ended", false);
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -56,8 +58,11 @@ function StreamsPage() {
 
   return (
     <VerticalPageLayout>
-      <Flex gap="2" wrap="wrap">
+      <Flex gap="2" wrap="wrap" alignItems="center">
         <PeopleListSelection />
+        <Switch checked={showEnded.isOpen} onChange={showEnded.onToggle}>
+          Show Ended
+        </Switch>
         <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
@@ -69,14 +74,18 @@ function StreamsPage() {
             <StreamCard key={stream.event.id} stream={stream} />
           ))}
         </SimpleGrid>
-        <Heading size="lg" mt="4">
-          Ended
-        </Heading>
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
-          {endedStreams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} />
-          ))}
-        </SimpleGrid>
+        {showEnded.isOpen && (
+          <>
+            <Heading size="lg" mt="4">
+              Ended
+            </Heading>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+              {endedStreams.map((stream) => (
+                <StreamCard key={stream.event.id} stream={stream} />
+              ))}
+            </SimpleGrid>
+          </>
+        )}
         <TimelineActionAndStatus timeline={timeline} />
       </IntersectionObserverProvider>
     </VerticalPageLayout>

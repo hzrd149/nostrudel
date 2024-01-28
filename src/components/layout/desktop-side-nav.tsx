@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Avatar, Box, Button, Flex, FlexProps, Heading, LinkOverlay } from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { css } from "@emotion/react";
 
@@ -9,6 +9,9 @@ import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { WritingIcon } from "../icons";
+import useSubject from "../../hooks/use-subject";
+import { offlineMode } from "../../services/offline-mode";
+import WifiOff from "../icons/wifi-off";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -21,6 +24,7 @@ const hideScrollbar = css`
 export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
+  const offline = useSubject(offlineMode);
 
   return (
     <Flex
@@ -44,6 +48,14 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
               noStrudel
             </LinkOverlay>
           </Heading>
+          {offline && (
+            <IconButton
+              aria-label="Disable offline mode"
+              title="Disable offline mode"
+              icon={<WifiOff boxSize={5} color="orange" />}
+              onClick={() => offlineMode.next(false)}
+            />
+          )}
         </Flex>
         {account && (
           <>

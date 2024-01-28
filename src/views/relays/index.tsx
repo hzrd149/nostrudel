@@ -12,12 +12,15 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { isValidRelayURL } from "../../helpers/relay";
 import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
+import { offlineMode } from "../../services/offline-mode";
+import useSubject from "../../hooks/use-subject";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
   const deboundedSearch = useDeferredValue(search);
   const isSearching = deboundedSearch.length > 2;
   const addRelayModal = useDisclosure();
+  const offline = useSubject(offlineMode);
 
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
@@ -43,6 +46,7 @@ export default function RelaysView() {
     <VerticalPageLayout>
       <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
+        {!offline && <Button onClick={() => offlineMode.next(true)}>Offline</Button>}
         <Spacer />
         <Button as={RouterLink} to="/relays/popular">
           Popular Relays

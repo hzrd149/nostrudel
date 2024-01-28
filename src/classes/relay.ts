@@ -1,3 +1,4 @@
+import { offlineMode } from "../services/offline-mode";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
@@ -64,6 +65,8 @@ export default class Relay {
   }
 
   open() {
+    if (offlineMode.value) return;
+
     if (this.okay) return;
     this.intentionalClose = false;
     this.ws = new WebSocket(this.url);
@@ -166,7 +169,6 @@ export default class Relay {
   }
 
   handleMessage(event: MessageEvent<string>) {
-    // skip empty events
     if (!event.data) return;
 
     try {

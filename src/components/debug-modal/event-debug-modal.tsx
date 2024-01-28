@@ -91,7 +91,11 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
             </Section>
 
-            <Section label="Content" p="0" actions={<CopyIconButton aria-label="copy json" text={event.content} />}>
+            <Section
+              label="Content"
+              p="0"
+              actions={<CopyIconButton aria-label="copy json" text={event.content} size="sm" />}
+            >
               <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
                 {event.content}
               </Code>
@@ -99,7 +103,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section
               label="JSON"
               p="0"
-              actions={<CopyIconButton aria-label="copy json" text={JSON.stringify(event)} />}
+              actions={<CopyIconButton aria-label="copy json" text={JSON.stringify(event)} size="sm" />}
             >
               <JsonCode data={event} />
             </Section>

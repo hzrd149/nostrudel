@@ -8,6 +8,14 @@ import { NostrEvent } from "nostr-tools";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
 
+export const recommendedReadRelays = new RelaySet([
+  "wss://relay.damus.io/",
+  "wss://nostr.wine/",
+  "wss://relay.snort.social/",
+  "wss://nos.lol/",
+]);
+export const recommendedWriteRelays = new RelaySet(["wss://relay.damus.io/", "wss://nos.lol/"]);
+
 class ClientRelayService {
   readRelays = new PersistentSubject(new RelaySet());
   writeRelays = new PersistentSubject(new RelaySet());

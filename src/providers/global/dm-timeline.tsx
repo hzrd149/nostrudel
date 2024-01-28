@@ -1,12 +1,12 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { kinds } from "nostr-tools";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useUserInbox } from "../../hooks/use-user-mailboxes";
 
 type DMTimelineContextType = {
   timeline?: TimelineLoader;
@@ -23,7 +23,7 @@ export function useDMTimeline() {
 
 export default function DMTimelineProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
-  const inbox = useReadRelays();
+  const inbox = useUserInbox(account?.pubkey);
 
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(

@@ -1,9 +1,11 @@
-import { kinds, nip25 } from "nostr-tools";
+import { Filter, kinds, nip25 } from "nostr-tools";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
+import { localRelay } from "./local-relay";
+import { relayRequest } from "../helpers/relay";
 
 type eventId = string;
 type relay = string;
@@ -24,7 +26,7 @@ class EventReactionsService {
     return subject;
   }
 
-  handleEvent(event: NostrEvent) {
+  handleEvent(event: NostrEvent, cache = true) {
     if (event.kind !== kinds.Reaction) return;
     const pointer = nip25.getReactedEventPointer(event);
     if (!pointer?.id) return;
@@ -35,6 +37,8 @@ class EventReactionsService {
     } else if (!subject.value.some((e) => e.id === event.id)) {
       subject.next([...subject.value, event]);
     }
+
+    if (cache) localRelay.publish(event);
   }
 
   batchRequests() {
@@ -49,9 +53,14 @@ class EventReactionsService {
     }
 
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
+      const filter: Filter = { "#e": ids, kinds: [kinds.Reaction] };
+
+      // load from local relay
+      relayRequest(localRelay, [filter]).then((events) => events.forEach((e) => this.handleEvent(e)));
+
       const request = new NostrRequest([relay]);
       request.onEvent.subscribe(this.handleEvent, this);
-      request.start({ "#e": ids, kinds: [kinds.Reaction] });
+      request.start(filter);
     }
     this.pending.clear();
   }

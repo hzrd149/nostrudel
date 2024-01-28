@@ -22,7 +22,6 @@ import {
 } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import { relayRequest } from "../helpers/relay";
-import { Subscription } from "nostr-idb";
 
 const BLOCK_SIZE = 100;
 

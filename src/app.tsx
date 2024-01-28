@@ -85,6 +85,7 @@ import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
 import MailboxesView from "./views/mailboxes";
+import RequireReadRelays from "./providers/route/require-read-relays";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));

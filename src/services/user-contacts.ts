@@ -71,12 +71,12 @@ class UserContactsService {
     return sub;
   }
 
+  /** @deprecated */
   receiveEvent(event: NostrEvent) {
     replaceableEventLoaderService.handleEvent(event);
   }
 }
 
-/** @deprecated */
 const userContactsService = new UserContactsService();
 
 if (import.meta.env.DEV) {

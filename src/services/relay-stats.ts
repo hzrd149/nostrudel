@@ -5,7 +5,6 @@ import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import relayInfoService from "./relay-info";
-import { normalizeRelayURL } from "../helpers/relay";
 import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
 
@@ -45,7 +44,6 @@ class RelayStatsService {
   }
 
   requestSelfReported(relay: string) {
-    relay = normalizeRelayURL(relay);
     const sub = this.selfReported.get(relay);
 
     if (sub.value === undefined) {
@@ -62,7 +60,6 @@ class RelayStatsService {
   }
 
   requestMonitorStats(relay: string) {
-    relay = normalizeRelayURL(relay);
     const sub = this.monitorStats.get(relay);
 
     if (sub.value === undefined) {

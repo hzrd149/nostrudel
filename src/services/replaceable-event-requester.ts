@@ -183,8 +183,10 @@ class ReplaceableEventLoaderService {
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
+    const loading = new Map<string, Deferred<boolean>>();
+
     const kindFilters: Record<number, Filter> = {};
-    for (const [cord] of this.readFromCachePromises) {
+    for (const [cord, p] of this.readFromCachePromises) {
       const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
       const kind = parseInt(kindStr);
       kindFilters[kind] = kindFilters[kind] || { kinds: [kind] };
@@ -196,34 +198,35 @@ class ReplaceableEventLoaderService {
         const arr = (kindFilters[kind]["#d"] = kindFilters[kind]["#d"] || []);
         arr.push(d);
       }
+
+      loading.set(cord, p);
     }
     const filters = Array.from(Object.values(kindFilters));
+
+    for (const [cord] of loading) this.readFromCachePromises.delete(cord);
 
     const events = await relayRequest(localRelay, filters);
     for (const event of events) {
       this.handleEvent(event, false);
       const cord = getEventCoordinate(event);
-      const promise = this.readFromCachePromises.get(cord);
+      const promise = loading.get(cord);
       if (promise) promise.resolve(true);
-      this.readFromCachePromises.delete(cord);
+      loading.delete(cord);
     }
 
     // resolve remaining promises
-    for (const [_, promise] of this.readFromCachePromises) promise.resolve();
-    this.readFromCachePromises.clear();
+    for (const [_, promise] of loading) promise.resolve();
 
     if (events.length > 0) this.dbLog(`Read ${events.length} events from database`);
   }
-  private loadCacheDedupe = new Map<string, Promise<boolean>>();
   loadFromCache(cord: string) {
-    const dedupe = this.loadCacheDedupe.get(cord);
+    const dedupe = this.readFromCachePromises.get(cord);
     if (dedupe) return dedupe;
 
     // add to read queue
     const promise = createDefer<boolean>();
     this.readFromCachePromises.set(cord, promise);
 
-    this.loadCacheDedupe.set(cord, promise);
     this.readFromCacheThrottle();
 
     return promise;

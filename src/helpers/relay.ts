@@ -11,13 +11,13 @@ export function getRelayVariations(relay: string) {
   } else return [relay, relay + "/"];
 }
 
-export function validateRelayURL(relay: string) {
-  if (relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
-  const url = new URL(relay);
+export function validateRelayURL(relay: string | URL) {
+  if (typeof relay === "string" && relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
+  const url = typeof relay === "string" ? new URL(relay) : relay;
   if (url.protocol !== "wss:" && url.protocol !== "ws:") throw new Error("Incorrect protocol");
   return url;
 }
-export function isValidRelayURL(relay: string) {
+export function isValidRelayURL(relay: string | URL) {
   try {
     validateRelayURL(relay);
     return true;
@@ -26,6 +26,7 @@ export function isValidRelayURL(relay: string) {
   }
 }
 
+/** @deprecated */
 export function normalizeRelayURL(relayUrl: string) {
   const url = validateRelayURL(relayUrl);
   url.pathname = url.pathname.replace(/\/+/g, "/");
@@ -34,6 +35,8 @@ export function normalizeRelayURL(relayUrl: string) {
   url.hash = "";
   return url.toString();
 }
+
+/** @deprecated */
 export function safeNormalizeRelayURL(relayUrl: string) {
   try {
     return normalizeRelayURL(relayUrl);
@@ -43,7 +46,7 @@ export function safeNormalizeRelayURL(relayUrl: string) {
 }
 
 // TODO: move these to helpers/relay
-export function safeRelayUrl(relayUrl: string) {
+export function safeRelayUrl(relayUrl: string | URL) {
   try {
     return validateRelayURL(relayUrl).toString();
   } catch (e) {
