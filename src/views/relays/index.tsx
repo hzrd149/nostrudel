@@ -14,6 +14,8 @@ import { isValidRelayURL } from "../../helpers/relay";
 import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
 import { offlineMode } from "../../services/offline-mode";
 import useSubject from "../../hooks/use-subject";
+import Wifi from "../../components/icons/wifi";
+import WifiOff from "../../components/icons/wifi-off";
 
 export default function RelaysView() {
   const [search, setSearch] = useState("");
@@ -46,7 +48,9 @@ export default function RelaysView() {
     <VerticalPageLayout>
       <Flex alignItems="center" gap="2" wrap="wrap">
         <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
-        {!offline && <Button onClick={() => offlineMode.next(true)}>Offline</Button>}
+        <Button onClick={() => offlineMode.next(!offline)} leftIcon={offline ? <WifiOff /> : <Wifi />}>
+          {offline ? "Offline" : "Online"}
+        </Button>
         <Spacer />
         <Button as={RouterLink} to="/relays/popular">
           Popular Relays
