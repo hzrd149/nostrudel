@@ -1,7 +1,6 @@
 import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
-import appSettings from "../../services/settings/app-settings";
 import { useTrusted } from "../../providers/local/trust";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { getMatchLink } from "../../helpers/regexp";
@@ -12,6 +11,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import useAppSettings from "../../hooks/use-app-settings";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import useElementBlur from "../../hooks/use-element-blur";
+import { buildImageProxyURL } from "../../helpers/image";
 
 export type TrustImageProps = ImageProps;
 
@@ -41,7 +41,7 @@ export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"
 };
 
 function useImageThumbnail(src?: string) {
-  return appSettings.value.imageProxy ? new URL(`/256,fit/${src}`, appSettings.value.imageProxy).toString() : src;
+  return (src && buildImageProxyURL(src, "256,fit")) ?? src;
 }
 
 export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(

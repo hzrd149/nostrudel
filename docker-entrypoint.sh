@@ -1,11 +1,12 @@
 #!/bin/sh
 set -e
 
-CACHE_RELAY_PROXY=""
+PROXY_PASS_BLOCK=""
+
 if [ -n "$CACHE_RELAY" ]; then
   echo "Cache relay set to $CACHE_RELAY"
   sed -i 's/CACHE_RELAY_ENABLED = false/CACHE_RELAY_ENABLED = true/g' /usr/share/nginx/html/index.html
-  CACHE_RELAY_PROXY="
+  PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
     location /local-relay {
       proxy_pass http://$CACHE_RELAY/;
       proxy_http_version 1.1;
@@ -17,6 +18,32 @@ else
   echo "No cache relay set"
 fi
 
+if [ -n "$CORS_PROXY" ]; then
+  echo "CORS proxy set to $CORS_PROXY"
+  sed -i 's/CORS_PROXY_PATH = ""/CORS_PROXY_PATH = "\/corsproxy"/g' /usr/share/nginx/html/index.html
+  PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
+    location /corsproxy/ {
+      proxy_pass http://$CORS_PROXY;
+      rewrite ^/corsproxy/(.*) /\$1 break;
+    }
+  "
+else
+  echo "No CORS proxy set"
+fi
+
+if [ -n "$IMAGE_PROXY" ]; then
+  echo "Image proxy set to $IMAGE_PROXY"
+  sed -i 's/IMAGE_PROXY_PATH = ""/IMAGE_PROXY_PATH = "\/imageproxy"/g' /usr/share/nginx/html/index.html
+  PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
+    location /imageproxy/ {
+      proxy_pass http://$IMAGE_PROXY;
+      rewrite ^/imageproxy/(.*) /\$1 break;
+    }
+  "
+else
+  echo "No Image proxy set"
+fi
+
 CONF_FILE="/etc/nginx/conf.d/default.conf"
 NGINX_CONF="
 server {
@@ -24,12 +51,12 @@ server {
 
     server_name localhost;
 
+    $PROXY_PASS_BLOCK
+
     location / {
         root /usr/share/nginx/html;
         index index.html index.htm;
     }
-
-    $CACHE_RELAY_PROXY
 
     # Gzip settings
     gzip on;

@@ -242,5 +242,5 @@ export const ThingsIcon = Package;
 export const TorrentIcon = Magnet;
 export const TrackIcon = Recording02;
 
-export const InboxIcon = Download01
-export const OutboxIcon = Upload01
+export const InboxIcon = Download01;
+export const OutboxIcon = Upload01;

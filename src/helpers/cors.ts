@@ -3,7 +3,9 @@ import { convertToUrl } from "./url";
 
 const corsFailedHosts = new Set();
 
-export function createCorsUrl(url: URL | string, corsProxy = appSettings.value.corsProxy) {
+export function createCorsUrl(url: URL | string, corsProxy?: string) {
+  if (!corsProxy && window.CORS_PROXY_PATH) corsProxy = new URL(window.CORS_PROXY_PATH, location.origin).toString();
+  if (!corsProxy && appSettings.value.corsProxy) corsProxy = appSettings.value.corsProxy;
   if (!corsProxy) return url;
 
   if (corsProxy.includes("<url>")) {

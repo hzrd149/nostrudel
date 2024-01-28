@@ -4,17 +4,24 @@ volumes:
   data: {}
 
 services:
+  # cors:
+  #   image: ghcr.io/hzrd149/docker-cors-anywhere:latest
+  imageproxy:
+    image: ghcr.io/willnorris/imageproxy:v0.11.2
   relay:
     image: scsibug/nostr-rs-relay:0.8.13
-    ports:
-      - 5000:8080
     volumes:
       - data:/usr/src/app/db
   app:
     build: .
+    image: ghcr.io/hzrd149/nostrudel:latest
     depends_on:
       - relay
+      # - cors
+      - imageproxy
     environment:
       CACHE_RELAY: relay:8080
+      IMAGE_PROXY: imageproxy:8080
+      # CORS_PROXY: cors:8080
     ports:
       - 8080:80

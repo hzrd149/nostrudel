@@ -1,19 +1,22 @@
 import { forwardRef, memo, useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
-import { useUserMetadata } from "../hooks/use-user-metadata";
 import { useAsync } from "react-use";
 
+import { useUserMetadata } from "../hooks/use-user-metadata";
 import { getIdenticon } from "../helpers/identicon";
 import { safeUrl } from "../helpers/parse";
 import { getUserDisplayName } from "../helpers/user-metadata";
 import useAppSettings from "../hooks/use-app-settings";
 import useCurrentAccount from "../hooks/use-current-account";
+import { buildImageProxyURL } from "../helpers/image";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
 
   return identicon ? <img src={`data:image/svg+xml;base64,${identicon}`} width="100%" /> : null;
 });
+
+const RESIZE_PROFILE_SIZE = 96;
 
 export type UserAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey: string;
@@ -28,17 +31,16 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(({ pubkey,
     if (hideUsernames && pubkey !== account?.pubkey) return undefined;
     if (metadata?.picture) {
       const src = safeUrl(metadata?.picture);
-      if (!noProxy) {
-        if (imageProxy && src) {
-          return new URL(`/96/${src}`, imageProxy).toString();
-        } else if (proxyUserMedia) {
-          const last4 = String(pubkey).slice(pubkey.length - 4, pubkey.length);
-          return `https://media.nostr.band/thumbs/${last4}/${pubkey}-picture-64`;
-        }
+      if (src) {
+        const proxyURL = buildImageProxyURL(src, RESIZE_PROFILE_SIZE);
+        if (proxyURL) return proxyURL;
+      } else if (!noProxy && proxyUserMedia) {
+        const last4 = String(pubkey).slice(pubkey.length - 4, pubkey.length);
+        return `https://media.nostr.band/thumbs/${last4}/${pubkey}-picture-64`;
       }
       return src;
     }
-  }, [metadata?.picture, imageProxy, hideUsernames, account]);
+  }, [metadata?.picture, imageProxy, proxyUserMedia, hideUsernames, account]);
 
   return (
     <Avatar
