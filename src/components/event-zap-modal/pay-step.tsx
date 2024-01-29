@@ -21,7 +21,7 @@ function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) 
 }
 function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: string; onPaid: () => void }) {
   const toast = useToast();
-  const showMore = useDisclosure();
+  const showMore = useDisclosure({ defaultIsOpen: !window.webln });
 
   const payWithWebLn = async () => {
     try {
@@ -39,16 +39,18 @@ function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: 
     <Flex direction="column" gap="2">
       <UserCard pubkey={pubkey}>
         <ButtonGroup size="sm">
-          <Button
-            variant="outline"
-            colorScheme="yellow"
-            size="sm"
-            leftIcon={<LightningIcon />}
-            isDisabled={!window.webln}
-            onClick={payWithWebLn}
-          >
-            Pay
-          </Button>
+          {!!window.webln && (
+            <Button
+              variant="outline"
+              colorScheme="yellow"
+              size="sm"
+              leftIcon={<LightningIcon />}
+              isDisabled={!window.webln}
+              onClick={payWithWebLn}
+            >
+              Pay
+            </Button>
+          )}
           <IconButton
             icon={showMore.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             aria-label="More Options"
@@ -132,17 +134,18 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
           );
         return null;
       })}
-      <Button
-        variant="outline"
-        size="md"
-        leftIcon={<LightningIcon />}
-        colorScheme="yellow"
-        onClick={payAllWithWebLN}
-        isLoading={payingAll}
-        isDisabled={!window.webln}
-      >
-        Pay All
-      </Button>
+      {!!window.webln && (
+        <Button
+          variant="outline"
+          size="md"
+          leftIcon={<LightningIcon />}
+          colorScheme="yellow"
+          onClick={payAllWithWebLN}
+          isLoading={payingAll}
+        >
+          Pay All
+        </Button>
+      )}
     </Flex>
   );
 }

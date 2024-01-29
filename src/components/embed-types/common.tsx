@@ -10,8 +10,8 @@ export function renderGenericUrl(match: URL) {
         "//" +
         match.host +
         match.pathname +
-        (match.search && match.search.length < 20 ? "?" + match.search : "") +
-        (match.hash.length < 20 ? match.hash : "")}
+        (match.search && match.search.length < 120 ? match.search : "") +
+        (match.hash.length < 96 ? match.hash : "")}
     </Link>
   );
 }
