@@ -50,6 +50,7 @@ server {
     listen 80;
 
     server_name localhost;
+    merge_slashes off;
 
     $PROXY_PASS_BLOCK
 
