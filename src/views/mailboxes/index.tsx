@@ -9,7 +9,6 @@ import {
   IconButton,
   Link,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
@@ -29,13 +28,13 @@ import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
 import { useForm } from "react-hook-form";
 import { safeRelayUrl } from "../../helpers/relay";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import RelaySet from "../../classes/relay-set";
+import { COMMON_CONTACT_RELAY } from "../../const";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
   const remove = useAsyncErrorHandler(async () => {
     const draft = removeRelayModeFromMailbox(list, relay, mode);
-    await publish("Remove relay", draft);
+    await publish("Remove relay", draft, [COMMON_CONTACT_RELAY]);
   }, [relay, mode, list, publish]);
 
   return (
@@ -89,7 +88,7 @@ function MailboxesPage() {
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
       const draft = addRelayModeToMailbox(event ?? undefined, relay, mode);
-      await publish("Add Relay", draft, event ? RelaySet.fromNIP65Event(event, RelayMode.ALL) : undefined);
+      await publish("Add Relay", draft, [COMMON_CONTACT_RELAY]);
     },
     [event],
   );
