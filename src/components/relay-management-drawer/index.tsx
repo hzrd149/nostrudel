@@ -60,7 +60,7 @@ function RelayControl({ url }: { url: string }) {
   return (
     <Flex gap="2" alignItems="center">
       <RelayFavicon relay={url} size="xs" outline="2px solid" outlineColor={color} />
-      <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`}>
+      <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
         {url}
       </Link>
       <IconButton

@@ -40,9 +40,9 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
   }, [relay, mode, list, publish]);
 
   return (
-    <Flex key={relay} gap="2" alignItems="center">
+    <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
       <RelayFavicon relay={relay} size="xs" />
-      <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`}>
+      <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} isTruncated>
         {relay}
       </Link>
       <IconButton

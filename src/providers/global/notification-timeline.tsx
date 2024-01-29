@@ -8,6 +8,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
+import { useUserInbox } from "../../hooks/use-user-mailboxes";
 
 type NotificationTimelineContextType = {
   timeline?: TimelineLoader;
@@ -24,7 +25,8 @@ export function useNotificationTimeline() {
 
 export default function NotificationTimelineProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
-  const inbox = useReadRelays();
+  const inbox = useUserInbox(account?.pubkey);
+  const readRelays = useReadRelays(inbox);
 
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -37,7 +39,7 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
 
   const timeline = useTimelineLoader(
     `${account?.pubkey ?? "anon"}-notification`,
-    inbox,
+    readRelays,
     account?.pubkey
       ? {
           "#p": [account.pubkey],
