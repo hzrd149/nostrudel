@@ -26,11 +26,10 @@ import { useCallback } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../helpers/nostr/mailbox";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
-import { useSigningContext } from "../../providers/global/signing-provider";
 import { useForm } from "react-hook-form";
 import { safeRelayUrl } from "../../helpers/relay";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import RelaySet from "../../classes/relay-set";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
@@ -83,22 +82,16 @@ function AddRelayForm({ onSubmit }: { onSubmit: (url: string) => void }) {
 }
 
 function MailboxesPage() {
-  const toast = useToast();
   const account = useCurrentAccount()!;
-  const { inbox, outbox, event } = useUserMailboxes(account.pubkey, { alwaysRequest: true }) || {};
+  const publish = usePublishEvent();
+  const { inbox, outbox, event } = useUserMailboxes(account.pubkey, { alwaysRequest: true, ignoreCache: true }) || {};
 
-  const { requestSignature } = useSigningContext();
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
-      try {
-        const draft = addRelayModeToMailbox(event ?? undefined, relay, mode);
-        const signed = await requestSignature(draft);
-        replaceableEventLoaderService.handleEvent(signed);
-      } catch (e) {
-        if (e instanceof Error) toast({ status: "error", description: e.message });
-      }
+      const draft = addRelayModeToMailbox(event ?? undefined, relay, mode);
+      await publish("Add Relay", draft, event ? RelaySet.fromNIP65Event(event, RelayMode.ALL) : undefined);
     },
-    [event, requestSignature],
+    [event],
   );
 
   return (
