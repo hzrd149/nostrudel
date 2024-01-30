@@ -4,6 +4,7 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  IconButton,
   Image,
   Input,
   Link,
@@ -28,6 +29,7 @@ import { SatelliteCDNFile, getAccount, getAccountAuthToken, uploadFile } from ".
 import FileDeleteButton from "./delete-file-button";
 import { matchSorter } from "match-sorter";
 import ShareFileButton from "./share-file-button";
+import { DownloadIcon, TorrentIcon } from "../../../components/icons";
 
 function FileUploadButton() {
   const toast = useToast();
@@ -83,6 +85,15 @@ function FileRow({ file }: { file: SatelliteCDNFile }) {
         <Td isNumeric>
           <ButtonGroup size="sm" variant="ghost">
             <ShareFileButton file={file} />
+            <IconButton
+              as={Link}
+              href={file.url}
+              icon={<DownloadIcon />}
+              aria-label="Download"
+              download={file.name}
+              isExternal
+            />
+            <IconButton as={Link} href={file.magnet} icon={<TorrentIcon />} aria-label="Open Magnet" isExternal />
             <FileDeleteButton file={file} />
           </ButtonGroup>
         </Td>
@@ -148,6 +159,7 @@ export default function SatelliteCDNView() {
           my="8"
           colorScheme="primary"
           isLoading={loading || isLoadingAccount}
+          autoFocus
         >
           Unlock Account
         </Button>
