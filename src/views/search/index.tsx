@@ -134,7 +134,6 @@ export function SearchPage() {
             Communities
           </Button>
         </ButtonGroup>
-        <RelaySelectionButton ml="auto" size="sm" />
       </Flex>
 
       <Flex direction="column" gap="4">
