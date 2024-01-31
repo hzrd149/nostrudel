@@ -56,7 +56,7 @@ class EventReactionsService {
       const filter: Filter = { "#e": ids, kinds: [kinds.Reaction] };
 
       // load from local relay
-      relayRequest(localRelay, [filter]).then((events) => events.forEach((e) => this.handleEvent(e)));
+      relayRequest(localRelay, [filter]).then((events) => events.forEach((e) => this.handleEvent(e, true)));
 
       const request = new NostrRequest([relay]);
       request.onEvent.subscribe(this.handleEvent, this);

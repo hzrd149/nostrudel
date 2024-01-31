@@ -92,7 +92,7 @@ async function nip04Decrypt(pubkey: string, data: string): Promise<string> {
 }
 
 const amberSignerService = {
-  supported: navigator.userAgent.includes("Android") && navigator.clipboard,
+  supported: navigator.userAgent.includes("Android") && navigator.clipboard && navigator.clipboard.readText,
   getPublicKey,
   signEvent,
   nip04Encrypt,
