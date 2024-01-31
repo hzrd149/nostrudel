@@ -1,5 +1,5 @@
 import React, { LegacyRef, forwardRef } from "react";
-import { Image, InputProps, Textarea, TextareaProps, Input } from "@chakra-ui/react";
+import { Image, InputProps, TextareaProps } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
   TextareaProps as ReactTextareaAutocompleteProps,
@@ -7,7 +7,7 @@ import ReactTextareaAutocomplete, {
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
-import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
+import { matchSorter } from "match-sorter";
 
 import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
