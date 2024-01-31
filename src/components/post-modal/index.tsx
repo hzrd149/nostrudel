@@ -48,16 +48,12 @@ import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
 import { useThrottle } from "react-use";
 import MinePOW from "../mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import RelaySet from "../../classes/relay-set";
-import { isPTag } from "../../types/nostr-event";
-import userMailboxesService from "../../services/user-mailboxes";
 
 type FormValues = {
   subject: string;
