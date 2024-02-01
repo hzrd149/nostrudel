@@ -9,6 +9,8 @@ import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import BackButton from "../../components/back-button";
+import Database01 from "../../components/icons/database-01";
+import { RelayIcon } from "../../components/icons";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -19,7 +21,7 @@ export default function RelaysView() {
 
   const renderContent = () => {
     const nav = (
-      <Flex gap="2" direction="column" minW="xs" overflowY="auto" overflowX="hidden" w={vertical ? "full" : undefined}>
+      <Flex gap="2" direction="column" minW="60" overflowY="auto" overflowX="hidden" w={vertical ? "full" : undefined}>
         <Button
           as={RouterLink}
           variant="outline"
@@ -29,6 +31,7 @@ export default function RelaysView() {
               : undefined
           }
           to="/relays/app"
+          leftIcon={<RelayIcon />}
         >
           App Relays
         </Button>
@@ -37,6 +40,7 @@ export default function RelaysView() {
           variant="outline"
           colorScheme={location.pathname === "/relays/cache" ? "primary" : undefined}
           to="/relays/cache"
+          leftIcon={<Database01 />}
         >
           Cache Relay
         </Button>

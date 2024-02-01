@@ -3,13 +3,14 @@ import { Button, Card, CardBody, CardHeader, Flex, Heading } from "@chakra-ui/re
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import clientRelaysService, { recommendedReadRelays, recommendedWriteRelays } from "../../services/client-relays";
-import AddRelayForm from "../../components/relay-management-drawer/add-relay-form";
+import AddRelayForm from "../../views/relays/app/add-relay-form";
 import { RelayMode } from "../../classes/relay";
 import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 import { safeRelayUrls } from "../../helpers/relay";
 import RelaySet from "../../classes/relay-set";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
+import { useLocation } from "react-router-dom";
 
 const JapaneseRelays = safeRelayUrls([
   "wss://r.kojira.io",
@@ -46,8 +47,9 @@ function RelaySetCard({ label, read, write }: { label: string; read: Iterable<st
 export default function RequireReadRelays({ children }: PropsWithChildren) {
   const readRelays = useReadRelays();
   const offline = useSubject(offlineMode);
+  const location = useLocation();
 
-  if (readRelays.size === 0 && !offline)
+  if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
     return (
       <Flex direction="column" maxW="md" mx="auto" h="full" alignItems="center" justifyContent="center" gap="4">
         <Heading size="md">Looks like you don't have any relays setup</Heading>

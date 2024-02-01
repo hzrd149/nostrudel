@@ -74,9 +74,7 @@ export default function CacheRelayView() {
     <Flex gap="2" direction="column" flex={1}>
       <Flex gap="2" alignItems="center">
         <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg" my="1">
-          Cache Relay
-        </Heading>
+        <Heading size="lg">Cache Relay</Heading>
       </Flex>
       <InternalRelay />
       <NostrRelayTray />
