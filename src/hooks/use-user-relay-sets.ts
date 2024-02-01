@@ -1,10 +1,10 @@
 import { useCallback } from "react";
+import { kinds } from "nostr-tools";
 
 import { useReadRelays } from "./use-client-relays";
 import useSubject from "./use-subject";
 import useTimelineLoader from "./use-timeline-loader";
 import { NostrEvent, isRTag } from "../types/nostr-event";
-import { kinds } from "nostr-tools";
 
 export default function useUserRelaySets(pubkey?: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);

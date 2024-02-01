@@ -86,6 +86,9 @@ import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
 import MailboxesView from "./views/mailboxes";
 import RequireReadRelays from "./providers/route/require-read-relays";
+import CacheRelayView from "./views/relays/cache";
+import RelaySetView from "./views/relays/relay-set";
+import AppRelays from "./views/relays/app";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -255,11 +258,13 @@ const router = createHashRouter([
       { path: "settings", element: <SettingsView /> },
       {
         path: "relays",
+        element: <RelaysView />,
         children: [
-          { path: "", element: <RelaysView /> },
-          { path: "popular", element: <PopularRelaysView /> },
-          { path: "reviews", element: <RelayReviewsView /> },
+          { path: "", element: <AppRelays /> },
+          { path: "app", element: <AppRelays /> },
+          { path: "cache", element: <CacheRelayView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },
+          { path: ":id", element: <RelaySetView /> },
         ],
       },
       { path: "r/:relay", element: <RelayView /> },
