@@ -107,65 +107,6 @@ export default function PerformanceSettings() {
             </Flex>
             <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
           </FormControl>
-          <FormControl>
-            <Flex alignItems="center">
-              <FormLabel htmlFor="localCacheRelay" mb="0">
-                Local Cache Relay
-              </FormLabel>
-              <Switch id="localCacheRelay" isChecked={!!window.CACHE_RELAY_ENABLED} />
-              <Button onClick={cacheDetails.onOpen} variant="link" ml="4">
-                Details
-              </Button>
-            </Flex>
-            <FormHelperText>Enabled: Use a local relay as a cache</FormHelperText>
-
-            <Modal isOpen={cacheDetails.isOpen} onClose={cacheDetails.onClose} size="4xl">
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader p="4">Local cache relay</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody px="4" pb="4" pt="0">
-                  <Text>
-                    When this is enabled noStrudel will connect to the relay at ws://{"<app domain>"}/local-relay and
-                    use it to cache all events it finds.
-                  </Text>
-                  <Text>
-                    For security reasons this can only be enabled when running the docker container and setting the
-                    CACHE_RELAY env variable
-                  </Text>
-                  <Heading size="md" mt="2">
-                    Docker compose example
-                  </Heading>
-                  <Text mt="2">
-                    1. Create a docker-compose.yml file with nostr-rs-relay and noStrudel and set{" "}
-                    <Code>CACHE_RELAY: relay:8080</Code>
-                  </Text>
-                  <Code whiteSpace="pre" w="full">
-                    {`version: "3.7"
-volumes:
-  data: {}
-
-services:
-  relay:
-    image: scsibug/nostr-rs-relay:0.8.13
-    volumes:
-      - data:/data
-  app:
-  image: ghcr.io/hzrd149/nostrudel:latest
-    depends_on:
-      - relay
-    environment:
-      CACHE_RELAY: relay:8080
-    ports:
-      - 8080:80
-`.trim()}
-                  </Code>
-                  <Text mt="2">2. Start docker compose</Text>
-                  <Code>docker compose up</Code>
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </FormControl>
         </Flex>
       </AccordionPanel>
     </AccordionItem>
