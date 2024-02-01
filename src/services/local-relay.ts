@@ -4,8 +4,17 @@ import { logger } from "../helpers/debug";
 import _throttle from "lodash.throttle";
 import { safeRelayUrl } from "../helpers/relay";
 
-export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
+// save the local relay from query params to localStorage
+const params = new URLSearchParams(location.search);
+const paramRelay = params.get("localRelay");
+// save the cache relay to localStorage
+if (paramRelay) {
+  localStorage.setItem("localRelay", paramRelay);
+  params.delete("localRelay");
+  if (params.size === 0) location.search = params.toString();
+}
 
+export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
 export async function checkNostrRelayTray() {
   return new Promise((res) => {
     const test = new Relay(NOSTR_RELAY_TRAY_URL);
@@ -20,48 +29,26 @@ export async function checkNostrRelayTray() {
 }
 
 const log = logger.extend(`LocalRelay`);
-
-const params = new URLSearchParams(location.search);
-const paramRelay = params.get("localRelay");
-// save the cache relay to localStorage
-if (paramRelay) {
-  localStorage.setItem("localRelay", paramRelay);
-  params.delete("localRelay");
-  if (params.size === 0) location.search = params.toString();
-}
-
-const storedCacheRelayURL = localStorage.getItem("localRelay");
-
-/** @deprecated */
-const localRelayURL = (storedCacheRelayURL && new URL(storedCacheRelayURL)) || new URL("/local-relay", location.href);
-localRelayURL.protocol = localRelayURL.protocol === "https:" ? "wss:" : "ws:";
-
-/** @deprecated */
-export const LOCAL_CACHE_RELAY_ENABLED = !!window.CACHE_RELAY_ENABLED || !!localStorage.getItem("localRelay");
-/** @deprecated */
-export const LOCAL_CACHE_RELAY = localRelayURL.toString();
-
 export const localDatabase = await openDB();
 
-function createRelay() {
-  const stored = localStorage.getItem("localRelay");
-  if (!stored || stored.startsWith("nostr-idb://")) {
-    return new CacheRelay(localDatabase, { maxEvents: 10000 });
-  } else if (safeRelayUrl(stored)) {
-    return new Relay(safeRelayUrl(stored)!);
-  } else if (window.CACHE_RELAY_ENABLED) {
-    return new Relay(new URL("/local-relay", location.href).toString());
-  }
-
+// Setup relay
+function createInternalRelay() {
   return new CacheRelay(localDatabase, { maxEvents: 10000 });
+}
+function createRelay() {
+  const localRelayURL = localStorage.getItem("localRelay");
 
-  // if (LOCAL_CACHE_RELAY_ENABLED) {
-  //   log(`Using ${LOCAL_CACHE_RELAY}`);
-  //   return new Relay(LOCAL_CACHE_RELAY);
-  // } else {
-  //   log(`Using IndexedDB`);
-  //   return new CacheRelay(localDatabase, { maxEvents: 10000 });
-  // }
+  if (localRelayURL) {
+    if (localRelayURL.startsWith("nostr-idb://")) {
+      return createInternalRelay();
+    } else if (safeRelayUrl(localRelayURL)) {
+      return new Relay(safeRelayUrl(localRelayURL)!);
+    }
+  } else if (window.CACHE_RELAY_ENABLED) {
+    const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+    return new Relay(new URL(protocol + location.host + "/local-relay").toString());
+  }
+  return createInternalRelay();
 }
 
 async function connectRelay() {
@@ -72,7 +59,7 @@ async function connectRelay() {
     return relay;
   } catch (e) {
     log("Failed to connect to local relay, falling back to internal");
-    return new CacheRelay(localDatabase, { maxEvents: 10000 });
+    return createInternalRelay();
   }
 }
 
