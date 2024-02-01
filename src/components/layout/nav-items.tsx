@@ -54,7 +54,6 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/lists")) active = "lists";
   else if (location.pathname.startsWith("/communities")) active = "communities";
   else if (location.pathname.startsWith("/channels")) active = "channels";
-  else if (location.pathname.startsWith("/mailboxes")) active = "mailboxes";
   else if (location.pathname.startsWith("/c/")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
@@ -160,15 +159,6 @@ export default function NavItems() {
         {...buttonProps}
       >
         Relays
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/mailboxes"
-        leftIcon={<Mail02 boxSize={6} />}
-        colorScheme={active === "mailboxes" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Mailboxes
       </Button>
       <Text position="relative" py="2" color="GrayText">
         Other Stuff

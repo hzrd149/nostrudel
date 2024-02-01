@@ -13,22 +13,23 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import useCurrentAccount from "../../hooks/use-current-account";
-import { InboxIcon } from "../../components/icons";
-import { RelayUrlInput } from "../../components/relay-url-input";
-import { RelayFavicon } from "../../components/relay-favicon";
-import { RelayMode } from "../../classes/relay";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
+import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import { InboxIcon } from "../../../components/icons";
+import { RelayUrlInput } from "../../../components/relay-url-input";
+import { RelayFavicon } from "../../../components/relay-favicon";
+import { RelayMode } from "../../../classes/relay";
 import { useCallback } from "react";
-import { NostrEvent } from "../../types/nostr-event";
-import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../helpers/nostr/mailbox";
-import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
+import { NostrEvent } from "../../../types/nostr-event";
+import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
+import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { useForm } from "react-hook-form";
-import { safeRelayUrl } from "../../helpers/relay";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import { COMMON_CONTACT_RELAY } from "../../const";
+import { safeRelayUrl } from "../../../helpers/relay";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { COMMON_CONTACT_RELAY } from "../../../const";
+import BackButton from "../../../components/back-button";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
@@ -94,8 +95,11 @@ function MailboxesPage() {
   );
 
   return (
-    <VerticalPageLayout>
-      <Heading>Mailboxes</Heading>
+    <Flex direction="column" gap="2">
+      <Flex gap="2" alignItems="center">
+        <BackButton hideFrom="lg" size="sm" />
+        <Heading size="lg">Mailboxes</Heading>
+      </Flex>
       <Card maxW="lg">
         <CardHeader p="4" pb="2" display="flex" gap="2" alignItems="center">
           <InboxIcon boxSize={5} />
@@ -126,7 +130,7 @@ function MailboxesPage() {
           <AddRelayForm onSubmit={(r) => addRelay(r, RelayMode.WRITE)} />
         </CardFooter>
       </Card>
-    </VerticalPageLayout>
+    </Flex>
   );
 }
 

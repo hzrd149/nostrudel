@@ -45,7 +45,7 @@ export default function SettingsView() {
           <DatabaseSettings />
         </Accordion>
       </FormProvider>
-      <Flex gap="4" padding="4" alignItems="center">
+      <Flex gap="4" padding="4" alignItems="center" wrap="wrap">
         <Link isExternal href="https://github.com/hzrd149/nostrudel">
           <GithubIcon /> Github
         </Link>

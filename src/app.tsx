@@ -68,8 +68,6 @@ import CommunityTrendingView from "./views/community/views/trending";
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
-import RelayReviewsView from "./views/relays/reviews";
-import PopularRelaysView from "./views/relays/popular";
 import BrowseRelaySetsView from "./views/relays/browse-sets";
 import UserDMsTab from "./views/user/dms";
 import DMTimelineView from "./views/tools/dm-timeline";
@@ -84,11 +82,10 @@ import LaunchpadView from "./views/launchpad";
 import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
-import MailboxesView from "./views/mailboxes";
-import RequireReadRelays from "./providers/route/require-read-relays";
 import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
+import MailboxesView from "./views/relays/mailboxes";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -263,6 +260,7 @@ const router = createHashRouter([
           { path: "", element: <AppRelays /> },
           { path: "app", element: <AppRelays /> },
           { path: "cache", element: <CacheRelayView /> },
+          { path: "mailboxes", element: <MailboxesView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },
           { path: ":id", element: <RelaySetView /> },
         ],
@@ -274,10 +272,6 @@ const router = createHashRouter([
           { path: "threads", element: <ThreadsNotificationsView /> },
           { path: "", element: <NotificationsView /> },
         ],
-      },
-      {
-        path: "mailboxes",
-        children: [{ path: "", element: <MailboxesView /> }],
       },
       {
         path: "videos",

@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Outlet, Link as RouterLink, useLocation, useMatch } from "react-router-dom";
-import { Button, Divider, Flex, Heading, VStack } from "@chakra-ui/react";
+import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -8,9 +7,9 @@ import useUserRelaySets from "../../hooks/use-user-relay-sets";
 import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import BackButton from "../../components/back-button";
 import Database01 from "../../components/icons/database-01";
 import { RelayIcon } from "../../components/icons";
+import Mail02 from "../../components/icons/mail-02";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -31,7 +30,7 @@ export default function RelaysView() {
               : undefined
           }
           to="/relays/app"
-          leftIcon={<RelayIcon />}
+          leftIcon={<RelayIcon boxSize={6} />}
         >
           App Relays
         </Button>
@@ -40,10 +39,21 @@ export default function RelaysView() {
           variant="outline"
           colorScheme={location.pathname === "/relays/cache" ? "primary" : undefined}
           to="/relays/cache"
-          leftIcon={<Database01 />}
+          leftIcon={<Database01 boxSize={6} />}
         >
           Cache Relay
         </Button>
+        {account && (
+          <Button
+            variant="outline"
+            as={RouterLink}
+            to="/relays/mailboxes"
+            leftIcon={<Mail02 boxSize={6} />}
+            colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
+          >
+            Mailboxes
+          </Button>
+        )}
         {account && (
           <>
             <Heading size="sm" mt="2">
