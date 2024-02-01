@@ -86,6 +86,8 @@ import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
+import LoginNostrAddressView from "./views/signin/address";
+import LoginNostrAddressCreate from "./views/signin/address/create";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -173,6 +175,13 @@ const router = createHashRouter([
       { path: "npub", element: <LoginNpubView /> },
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
+      {
+        path: "address",
+        children: [
+          { path: "", element: <LoginNostrAddressView /> },
+          { path: "create", element: <LoginNostrAddressCreate /> },
+        ],
+      },
       { path: "nostr-connect", element: <LoginNostrConnectView /> },
     ],
   },

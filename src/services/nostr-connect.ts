@@ -1,4 +1,4 @@
-import { finalizeEvent, generateSecretKey, getPublicKey, nip04, nip19 } from "nostr-tools";
+import { finalizeEvent, generateSecretKey, getPublicKey, kinds, nip04, nip19 } from "nostr-tools";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
@@ -11,10 +11,16 @@ import createDefer, { Deferred } from "../classes/deferred";
 import { truncatedId } from "../helpers/nostr/events";
 import { NostrConnectAccount } from "./account";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
-import { normalizeRelayURL } from "../helpers/relay";
+import { safeRelayUrl } from "../helpers/relay";
+import Subject from "../classes/subject";
+
+export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
+  return !!response.error;
+}
 
 export enum NostrConnectMethod {
   Connect = "connect",
+  CreateAccount = "create_account",
   Disconnect = "disconnect",
   GetPublicKey = "get_pubic_key",
   SignEvent = "sign_event",
@@ -23,6 +29,7 @@ export enum NostrConnectMethod {
 }
 type RequestParams = {
   [NostrConnectMethod.Connect]: [string] | [string, string];
+  [NostrConnectMethod.CreateAccount]: [string, string] | [string, string, string];
   [NostrConnectMethod.Disconnect]: [];
   [NostrConnectMethod.GetPublicKey]: [];
   [NostrConnectMethod.SignEvent]: [string];
@@ -31,6 +38,7 @@ type RequestParams = {
 };
 type ResponseResults = {
   [NostrConnectMethod.Connect]: "ack";
+  [NostrConnectMethod.CreateAccount]: string;
   [NostrConnectMethod.Disconnect]: "ack";
   [NostrConnectMethod.GetPublicKey]: string;
   [NostrConnectMethod.SignEvent]: string;
@@ -43,6 +51,11 @@ export type NostrConnectResponse<N extends NostrConnectMethod> = {
   result: ResponseResults[N];
   error?: string;
 };
+export type NostrConnectErrorResponse = {
+  id: string;
+  result: string;
+  error: string;
+};
 
 export class NostrConnectClient {
   sub: NostrMultiSubscription;
@@ -50,27 +63,41 @@ export class NostrConnectClient {
 
   isConnected = false;
   pubkey: string;
+  provider?: string;
   relays: string[];
 
   secretKey: string;
   publicKey: string;
 
+  onAuthURL = new Subject<string>(undefined, false);
+
   supportedMethods: NostrConnectMethod[] | undefined;
 
-  constructor(pubkey: string, relays: string[], secretKey?: string) {
+  constructor(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
     this.sub = new NostrMultiSubscription(`${truncatedId(pubkey)}-nostr-connect`);
     this.pubkey = pubkey;
     this.relays = relays;
+    this.provider = provider;
 
     this.secretKey = secretKey || bytesToHex(generateSecretKey());
     this.publicKey = getPublicKey(hexToBytes(this.secretKey));
 
     this.sub.onEvent.subscribe(this.handleEvent, this);
-    this.sub.setQueryMap(createSimpleQueryMap(this.relays, { kinds: [24133], "#p": [this.publicKey] }));
+    this.sub.setQueryMap(
+      createSimpleQueryMap(this.relays, {
+        kinds: [kinds.NostrConnect, 24134],
+        "#p": [this.publicKey],
+      }),
+    );
+
+    this.log("Secret Key:", this.secretKey);
+    this.log("Public Key:", this.publicKey);
   }
 
-  open() {
+  async open() {
     this.sub.open();
+    await this.sub.waitForConnection();
+    this.log("Connected to relays", this.relays);
   }
   close() {
     this.sub.close();
@@ -78,34 +105,35 @@ export class NostrConnectClient {
 
   private requests = new Map<string, Deferred<any>>();
   async handleEvent(event: NostrEvent) {
-    if (event.kind !== 24133) return;
+    if (this.provider && event.pubkey !== this.provider) return;
 
     const to = event.tags.find(isPTag)?.[1];
     if (!to) return;
 
     try {
-      const responseStr = await nip04.decrypt(this.secretKey, this.pubkey, event.content);
+      const responseStr = await nip04.decrypt(this.secretKey, event.pubkey, event.content);
       const response = JSON.parse(responseStr);
+      this.log("Got Response", response);
       if (response.id) {
         const p = this.requests.get(response.id);
         if (!p) return;
         if (response.error) {
-          this.log(`ERROR: Got error for ${response.id}`, response);
-          p.reject(new Error(response.error));
+          if (response.result === "auth_url") this.onAuthURL.next(response.error);
+          else p.reject(response);
         } else if (response.result) {
-          this.log(response.id, response);
+          this.log(response.id, response.result);
           p.resolve(response.result);
         }
       }
     } catch (e) {}
   }
 
-  private createEvent(content: string) {
+  private createEvent(content: string, target = this.pubkey, kind = kinds.NostrConnect) {
     return finalizeEvent(
       {
-        kind: 24133,
+        kind,
         created_at: dayjs().unix(),
-        tags: [["p", this.pubkey]],
+        tags: [["p", target]],
         content,
       },
       hexToBytes(this.secretKey),
@@ -114,24 +142,64 @@ export class NostrConnectClient {
   private async makeRequest<T extends NostrConnectMethod>(
     method: T,
     params: RequestParams[T],
+    kind = kinds.NostrConnect,
   ): Promise<ResponseResults[T]> {
-    const id = nanoid();
-    const request: NostrConnectRequest<T> = { method, id, params };
+    const id = nanoid(8);
+    const request: NostrConnectRequest<T> = { id, method, params };
     const encrypted = await nip04.encrypt(this.secretKey, this.pubkey, JSON.stringify(request));
-    this.log(`Sending request ${id} (${method}) ${JSON.stringify(params)}`);
-    this.sub.sendAll(this.createEvent(encrypted));
+    const event = this.createEvent(encrypted, this.pubkey, kind);
+    this.log(`Sending request ${id} (${method}) ${JSON.stringify(params)}`, event);
+    this.sub.sendAll(event);
+
+    const p = createDefer<ResponseResults[T]>();
+    this.requests.set(id, p);
+    return p;
+  }
+  private async makeAdminRequest<T extends NostrConnectMethod>(
+    method: T,
+    params: RequestParams[T],
+    kind = 24134,
+  ): Promise<ResponseResults[T]> {
+    if (!this.provider) throw new Error("Missing provider");
+    const id = nanoid(8);
+    const request: NostrConnectRequest<T> = { id, method, params };
+    const encrypted = await nip04.encrypt(this.secretKey, this.provider, JSON.stringify(request));
+    const event = this.createEvent(encrypted, this.provider, kind);
+    this.log(`Sending admin request ${id} (${method}) ${JSON.stringify(params)}`, event);
+    this.sub.sendAll(event);
 
     const p = createDefer<ResponseResults[T]>();
     this.requests.set(id, p);
     return p;
   }
 
-  connect(token?: string) {
-    this.open();
+  async connect(token?: string) {
+    await this.open();
     try {
-      const result = this.makeRequest(NostrConnectMethod.Connect, token ? [this.publicKey, token] : [this.publicKey]);
+      const result = await this.makeRequest(
+        NostrConnectMethod.Connect,
+        token ? [this.publicKey, token] : [this.publicKey],
+      );
       this.isConnected = true;
       return result;
+    } catch (e) {
+      this.isConnected = false;
+      this.close();
+      throw e;
+    }
+  }
+
+  async createAccount(name: string, domain: string, email?: string) {
+    await this.open();
+
+    try {
+      const newPubkey = await this.makeAdminRequest(
+        NostrConnectMethod.CreateAccount,
+        email ? [name, domain, email] : [name, domain],
+      );
+      this.pubkey = newPubkey;
+      this.isConnected = true;
+      return newPubkey;
     } catch (e) {
       this.isConnected = false;
       this.close();
@@ -172,21 +240,26 @@ class NostrConnectService {
     if (!this.clients.includes(client)) this.clients.push(client);
   }
 
-  createClient(pubkey: string, relays: string[], secretKey?: string) {
+  createClient(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
     if (this.getClient(pubkey)) throw new Error("A client for that pubkey already exists");
 
-    const client = new NostrConnectClient(pubkey, relays, secretKey);
+    const client = new NostrConnectClient(pubkey, relays, secretKey, provider);
     client.log = this.log.extend(pubkey);
 
     this.log(`Created client for ${pubkey} using ${relays.join(", ")}`);
 
     return client;
   }
+
+  fromHostedBunker(pubkey: string, relays: string[], provider?: string) {
+    return this.getClient(pubkey) || this.createClient(pubkey, relays, undefined, provider);
+  }
   fromBunkerAddress(address: string) {
     const parts = address.replace("bunker://", "").split("@");
     if (parts.length !== 2) throw new Error("Invalid bunker address");
     const pubkey = normalizeToHexPubkey(parts[0]);
-    const pathRelay = normalizeRelayURL("wss://" + parts[1]);
+    const pathRelay = safeRelayUrl("wss://" + parts[1]);
+    if (!pathRelay) throw new Error("Missing relay");
     if (!pubkey || !isHexKey(pubkey)) throw new Error("Missing pubkey");
 
     return this.getClient(pubkey) || this.createClient(pubkey, [pathRelay]);
@@ -204,7 +277,7 @@ class NostrConnectService {
 
     return this.getClient(pubkey) || this.createClient(pubkey, relays);
   }
-  fromNsecBunkerToken(token: string) {
+  fromBunkerToken(token: string) {
     const [npub, hexToken] = token.split("#");
     const decoded = nip19.decode(npub);
     const pubkey = getPubkeyFromDecodeResult(decoded);

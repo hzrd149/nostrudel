@@ -61,7 +61,7 @@ if (import.meta.env.DEV) {
 // random helper for logging
 export function nameOrPubkey(pubkey: string) {
   const parsed = userMetadataService.getSubject(pubkey).value;
-  return parsed?.name || parsed?.display_name || pubkey;
+  return parsed?.displayName || parsed?.display_name || parsed?.name || pubkey;
 }
 
 export default userMetadataService;

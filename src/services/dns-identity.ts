@@ -14,12 +14,15 @@ export function parseAddress(address: string): { name?: string; domain?: string 
 type IdentityJson = {
   names: Record<string, string | undefined>;
   relays?: Record<string, string[]>;
+  nip46?: Record<string, string[]>;
 };
 export type DnsIdentity = {
   name: string;
   domain: string;
   pubkey: string;
   relays: string[];
+  hasNip46?: boolean;
+  nip46Relays?: string[];
 };
 
 function getIdentityFromJson(name: string, domain: string, json: IdentityJson): DnsIdentity | undefined {
@@ -27,7 +30,9 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
   if (!pubkey) return;
 
   const relays: string[] = json.relays?.[pubkey] ?? [];
-  return { name, domain, pubkey, relays };
+  const hasNip46 = !!json.nip46;
+  const nip46Relays = json.nip46?.[pubkey];
+  return { name, domain, pubkey, relays, nip46Relays, hasNip46 };
 }
 
 class DnsIdentityService {

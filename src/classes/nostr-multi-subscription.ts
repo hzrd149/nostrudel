@@ -125,6 +125,9 @@ export default class NostrMultiSubscription {
 
     return this;
   }
+  waitForConnection(): Promise<void> {
+    return Promise.all(this.relays.map((r) => r.waitForConnection())).then((v) => void 0);
+  }
   close() {
     if (this.state !== NostrMultiSubscription.OPEN) return this;
 

@@ -23,7 +23,7 @@ export default function LoginNostrConnectView() {
 
         await client.connect();
       } else if (uri.startsWith("npub")) {
-        client = nostrConnectService.fromNsecBunkerToken(uri);
+        client = nostrConnectService.fromBunkerToken(uri);
         const [npub, hexToken] = uri.split("#");
         await client.connect(hexToken);
       } else throw new Error("Unknown format");
@@ -44,12 +44,13 @@ export default function LoginNostrConnectView() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
       {loading && <Text fontSize="lg">{loading}</Text>}
       {!loading && (
         <FormControl>
           <FormLabel>Connect URI</FormLabel>
           <Input
+            name="nostr-address"
             placeholder="bunker://<pubkey>?relay=wss://relay.example.com"
             isRequired
             value={uri}

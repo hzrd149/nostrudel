@@ -2,6 +2,7 @@ import { offlineMode } from "../services/offline-mode";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
+import createDefer, { Deferred } from "./deferred";
 import { PersistentSubject, Subject } from "./subject";
 
 export type IncomingEvent = {
@@ -54,6 +55,8 @@ export default class Relay {
   onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
   ws?: WebSocket;
 
+  private connectionPromises: Deferred<void>[] = [];
+
   private connectionTimer?: () => void;
   private ejectTimer?: () => void;
   private intentionalClose = false;
@@ -77,6 +80,9 @@ export default class Relay {
       if (this.connectionTimer) {
         this.connectionTimer();
         this.connectionTimer = undefined;
+
+        for (const p of this.connectionPromises) p.reject();
+        this.connectionPromises = [];
       }
       // relayScoreboardService.relayTimeouts.get(this.url).addIncident();
     }, CONNECTION_TIMEOUT);
@@ -101,6 +107,9 @@ export default class Relay {
       }
 
       this.sendQueued();
+
+      for (const p of this.connectionPromises) p.resolve();
+      this.connectionPromises = [];
     };
     this.ws.onclose = () => {
       this.onClose.next(this);
@@ -127,6 +136,13 @@ export default class Relay {
     this.ws?.close();
     this.intentionalClose = true;
     this.subscriptionResTimer.clear();
+  }
+
+  waitForConnection(): Promise<void> {
+    if (this.connected) return Promise.resolve();
+    const p = createDefer<void>();
+    this.connectionPromises.push(p);
+    return p;
   }
 
   private startSubResTimer(sub: string) {

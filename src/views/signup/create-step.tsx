@@ -88,7 +88,7 @@ export default function CreateStep({
     <Flex gap="4" {...containerProps}>
       <Avatar size="xl" src={preview} />
       <Flex direction="column" alignItems="center">
-        <Heading size="md">{metadata.display_name}</Heading>
+        <Heading size="md">{metadata.displayName}</Heading>
         {metadata.about && <Text>{metadata.about}</Text>}
       </Flex>
       <Button w="full" colorScheme="primary" isLoading={loading} onClick={createProfile} autoFocus>

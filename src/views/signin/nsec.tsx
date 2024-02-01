@@ -85,7 +85,7 @@ export default function LoginNsecView() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
       <Alert status="warning" maxWidth="30rem">
         <AlertIcon />
         <Box>

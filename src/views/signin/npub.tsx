@@ -28,7 +28,7 @@ export default function LoginNpubView() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
       <FormControl>
         <FormLabel>Enter user npub</FormLabel>
         <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />

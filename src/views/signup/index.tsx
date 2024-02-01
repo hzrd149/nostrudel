@@ -33,7 +33,7 @@ export default function SignupView() {
       case "profile":
         return (
           <ProfileImageStep
-            displayName={metadata.display_name}
+            displayName={metadata.displayName}
             onSubmit={(file) => {
               setProfileImage(file);
               navigate("/signup/relays");

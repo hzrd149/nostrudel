@@ -193,7 +193,7 @@ export const ProfileEditView = () => {
 
   const defaultValues = useMemo<FormData>(
     () => ({
-      displayName: metadata?.display_name,
+      displayName: metadata?.displayName || metadata?.display_name,
       username: metadata?.name,
       picture: metadata?.picture,
       about: metadata?.about,
@@ -209,7 +209,7 @@ export const ProfileEditView = () => {
       name: data.username,
       picture: data.picture,
     };
-    if (data.displayName) metadata.display_name = data.displayName;
+    if (data.displayName) metadata.displayName = metadata.display_name = data.displayName;
     if (data.about) metadata.about = data.about;
     if (data.website) metadata.website = data.website;
     if (data.nip05) metadata.nip05 = data.nip05;
