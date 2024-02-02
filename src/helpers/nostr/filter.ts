@@ -1,6 +1,7 @@
 import stringify from "json-stringify-deterministic";
 import { NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
 import { Filter } from "nostr-tools";
+import { safeRelayUrls } from "../relay";
 
 export function addQueryToFilter(filter: NostrRequestFilter, query: Filter) {
   if (Array.isArray(filter)) {
@@ -28,6 +29,6 @@ export function mapQueryMap(queryMap: RelayQueryMap, fn: (filter: NostrRequestFi
 
 export function createSimpleQueryMap(relays: Iterable<string>, filter: NostrRequestFilter) {
   const map: RelayQueryMap = {};
-  for (const relay of relays) map[relay] = filter;
+  for (const relay of safeRelayUrls(relays)) map[relay] = filter;
   return map;
 }

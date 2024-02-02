@@ -9,29 +9,27 @@ import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../../const";
 import { safeRelayUrls } from "../../../helpers/relay";
+import { getMatchSimpleEmail } from "../../../helpers/regexp";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [provider, setProvider] = useState("");
   const [address, setAddress] = useState("");
-  const userSpecifiedDomain = address.includes("@");
 
-  const fullAddress = userSpecifiedDomain ? address || undefined : provider ? address + "@" + provider : undefined;
-
-  const [rootNip05, setRootNip05] = useState<DnsIdentity>();
-  const [nip05, setNip05] = useState<DnsIdentity>();
+  const [nip05, setNip05] = useState<DnsIdentity | null>();
+  const [rootNip05, setRootNip05] = useState<DnsIdentity | null>();
   useDebounce(
     async () => {
-      if (!fullAddress) return setNip05(undefined);
-      let [name, domain] = fullAddress.split("@");
-      if (!name || !domain || !domain.includes(".")) return setNip05(undefined);
-      setNip05(await dnsIdentityService.fetchIdentity(fullAddress));
-      setRootNip05(await dnsIdentityService.fetchIdentity(`_@${domain}`));
+      if (!address) return setNip05(undefined);
+      if (!getMatchSimpleEmail().test(address)) return setNip05(undefined);
+      let [name, domain] = address.split("@");
+      if (!name || !domain) return setNip05(undefined);
+      setNip05((await dnsIdentityService.fetchIdentity(address)) ?? null);
+      setRootNip05((await dnsIdentityService.fetchIdentity(`_@${domain}`)) ?? null);
     },
     300,
-    [fullAddress],
+    [address],
   );
 
   const [loading, setLoading] = useState<string | undefined>();
@@ -44,20 +42,11 @@ export default function LoginNostrAddressView() {
         setLoading("Connecting...");
         const relays = safeRelayUrls(nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays);
         const client = nostrConnectService.fromHostedBunker(nip05.pubkey, relays, rootNip05?.pubkey);
-        client.onAuthURL.subscribe((url) => {
-          window.open(url, "auth", "width=400,height=600,resizable=no,status=no,location=no,toolbar=no,menubar=no");
-        });
         await client.connect();
 
         nostrConnectService.saveClient(client);
-        accountService.addAccount({
-          type: "nostr-connect",
-          signerRelays: client.relays,
-          clientSecretKey: client.secretKey,
-          pubkey: client.pubkey!,
-          readonly: false,
-        });
-        accountService.switchAccount(client.pubkey!);
+        accountService.addFromNostrConnect(client);
+        accountService.switchAccount(client.pubkey);
       } else {
         accountService.addAccount({
           type: "pubkey",
@@ -90,7 +79,7 @@ export default function LoginNostrAddressView() {
         return (
           <Card {...cardProps}>
             <Image w="7" h="7" src={`//${nip05.domain}/favicon.ico`} />
-            <Text fontWeight="bold">{fullAddress}</Text>
+            <Text fontWeight="bold">{address}</Text>
             <Text color="green.500" ml="auto">
               Found provider <CheckIcon boxSize={5} />
             </Text>
@@ -99,22 +88,24 @@ export default function LoginNostrAddressView() {
       } else
         return (
           <Card {...cardProps}>
-            <Text fontWeight="bold">{fullAddress}</Text>
+            <Text fontWeight="bold">{address}</Text>
             <Text color="yellow.500" ml="auto">
               Read-only
             </Text>
           </Card>
         );
-    } else {
+    } else if (nip05 === null) {
       return (
         <Card {...cardProps}>
-          <Text fontWeight="bold">{fullAddress}</Text>
+          <Text fontWeight="bold">{address}</Text>
           <Text color="red.500" ml="auto">
             Cant find identity
           </Text>
         </Card>
       );
     }
+
+    return null;
   };
 
   return (
@@ -138,19 +129,18 @@ export default function LoginNostrAddressView() {
           {renderStatus()}
         </>
       )}
-      <Flex justifyContent="space-between" gap="2" mt="2">
-        <Button variant="link" onClick={() => navigate("../")}>
+      <Flex gap="2" mt="2">
+        <Button variant="link" onClick={() => navigate("../")} mr="auto">
           Back
         </Button>
-        {nip05 ? (
-          <Button colorScheme="primary" ml="auto" type="submit" isLoading={!!loading} isDisabled={!nip05}>
-            Connect
-          </Button>
-        ) : (
-          <Button colorScheme="primary" ml="auto" as={RouterLink} to="/signin/address/create">
+        {!loading && (
+          <Button colorScheme="primary" as={RouterLink} to="/signin/address/create" variant="link" p="2">
             Find Provider
           </Button>
         )}
+        <Button colorScheme="primary" type="submit" isLoading={!!loading} isDisabled={!nip05}>
+          Connect
+        </Button>
       </Flex>
     </Flex>
   );

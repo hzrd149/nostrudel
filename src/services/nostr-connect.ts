@@ -69,8 +69,6 @@ export class NostrConnectClient {
   secretKey: string;
   publicKey: string;
 
-  onAuthURL = new Subject<string>(undefined, false);
-
   supportedMethods: NostrConnectMethod[] | undefined;
 
   constructor(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
@@ -103,6 +101,14 @@ export class NostrConnectClient {
     this.sub.close();
   }
 
+  handleAuthURL(url: string) {
+    const popup = window.open(
+      url,
+      "auth",
+      "width=400,height=600,resizable=no,status=no,location=no,toolbar=no,menubar=no",
+    );
+  }
+
   private requests = new Map<string, Deferred<any>>();
   async handleEvent(event: NostrEvent) {
     if (this.provider && event.pubkey !== this.provider) return;
@@ -118,8 +124,13 @@ export class NostrConnectClient {
         const p = this.requests.get(response.id);
         if (!p) return;
         if (response.error) {
-          if (response.result === "auth_url") this.onAuthURL.next(response.error);
-          else p.reject(response);
+          if (response.result === "auth_url") {
+            try {
+              await this.handleAuthURL(response.error);
+            } catch (e) {
+              p.reject(e);
+            }
+          } else p.reject(response);
         } else if (response.result) {
           this.log(response.id, response.result);
           p.resolve(response.result);

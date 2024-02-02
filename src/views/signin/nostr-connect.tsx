@@ -29,13 +29,7 @@ export default function LoginNostrConnectView() {
       } else throw new Error("Unknown format");
 
       nostrConnectService.saveClient(client);
-      accountService.addAccount({
-        type: "nostr-connect",
-        signerRelays: client.relays,
-        clientSecretKey: client.secretKey,
-        pubkey: client.pubkey,
-        readonly: false,
-      });
+      accountService.addFromNostrConnect(client);
       accountService.switchAccount(client.pubkey);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

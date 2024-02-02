@@ -27,6 +27,7 @@ import dnsIdentityService from "../../../services/dns-identity";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
+import { safeRelayUrls } from "../../../helpers/relay";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as Kind0ParsedContent;
@@ -66,7 +67,7 @@ export default function LoginNostrAddressCreate() {
   const [name, setName] = useState("");
   const providers = useNip05Providers();
   const [selected, setSelected] = useState<NostrEvent>();
-  const metadata = useUserMetadata(selected?.pubkey);
+  const userMetadata = useUserMetadata(selected?.pubkey);
 
   const createAccount: React.FormEventHandler<HTMLDivElement> = async (e) => {
     e.preventDefault();
@@ -74,31 +75,25 @@ export default function LoginNostrAddressCreate() {
 
     try {
       setLoading("Creating...");
-      if (!metadata) throw new Error("Cant verify provider");
+      const providerMetadata = JSON.parse(selected.content) as Kind0ParsedContent;
+      const metadata: Kind0ParsedContent = { ...userMetadata, ...providerMetadata };
       if (!metadata.nip05) throw new Error("Provider missing nip05 address");
       const nip05 = await dnsIdentityService.fetchIdentity(metadata.nip05);
       if (!nip05 || nip05.pubkey !== selected.pubkey) throw new Error("Invalid provider");
       if (nip05.name !== "_") throw new Error("Provider dose not own the domain");
       if (!nip05.hasNip46) throw new Error("Provider dose not support NIP-46");
+      const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays);
+      if (relays.length === 0) throw new Error("Cant find providers relays");
 
-      const client = nostrConnectService.createClient("", nip05.nip46Relays || nip05.relays, undefined, nip05.pubkey);
-      client.onAuthURL.subscribe((url) => {
-        window.open(url, "auth", "width=400,height=600,resizable=no,status=no,location=no,toolbar=no,menubar=no");
-      });
+      const client = nostrConnectService.createClient("", relays, undefined, nip05.pubkey);
 
-      const newPubkey = await client.createAccount(name, nip05.domain);
-
+      const createPromise = client.createAccount(name, nip05.domain);
+      await createPromise;
       await client.connect();
 
       nostrConnectService.saveClient(client);
-      accountService.addAccount({
-        type: "nostr-connect",
-        signerRelays: client.relays,
-        clientSecretKey: client.secretKey,
-        pubkey: client.pubkey,
-        readonly: false,
-      });
-      accountService.switchAccount(client.pubkey!);
+      accountService.addFromNostrConnect(client);
+      accountService.switchAccount(client.pubkey);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

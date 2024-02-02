@@ -53,8 +53,8 @@ export function safeRelayUrl(relayUrl: string | URL) {
     return null;
   }
 }
-export function safeRelayUrls(urls: string[]): string[] {
-  return urls.map(safeRelayUrl).filter(Boolean) as string[];
+export function safeRelayUrls(urls: Iterable<string>): string[] {
+  return Array.from(urls).map(safeRelayUrl).filter(Boolean) as string[];
 }
 
 export function splitNostrFilterByPubkeys(
