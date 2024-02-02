@@ -7,9 +7,7 @@ import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { NostrEvent } from "../../types/nostr-event";
 import useChannelMetadata from "../../hooks/use-channel-metadata";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import { ChevronLeftIcon } from "../../components/icons";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
 import ChannelJoinButton from "./components/channel-join-button";
 import ChannelMenu from "./components/channel-menu";
@@ -25,6 +23,7 @@ import ChannelMessageBlock from "./components/channel-message-block";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
   const messages = useSubject(timeline.timeline);
@@ -45,7 +44,7 @@ const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; 
 
 function ChannelPage({ channel }: { channel: NostrEvent }) {
   const navigate = useNavigate();
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
   const { metadata } = useChannelMetadata(channel.id, relays);
   const drawer = useDisclosure();
 
@@ -76,7 +75,6 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
             <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
               Back
             </Button>
-            <RelaySelectionButton hideBelow="lg" />
             <Heading hideBelow="lg" size="lg">
               {metadata?.name}
             </Heading>
@@ -116,9 +114,7 @@ export default function ChannelView() {
 
   return (
     <ErrorBoundary>
-      <RelaySelectionProvider>
-        <ChannelPage channel={channel} />
-      </RelaySelectionProvider>
+      <ChannelPage channel={channel} />
     </ErrorBoundary>
   );
 }

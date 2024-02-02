@@ -3,7 +3,6 @@ import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
-import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
 import { unique } from "../../../../helpers/array";
 import { useSigningContext } from "../../../../providers/global/signing-provider";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
@@ -13,12 +12,14 @@ import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay-context";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const streamRelays = useRelaySelectionRelays();
+  const streamRelays = useReadRelays(useAdditionalRelayContext());
   const hostReadRelays = useUserInbox(stream.host);
 
   const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);

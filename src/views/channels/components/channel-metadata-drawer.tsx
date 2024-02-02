@@ -25,11 +25,12 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 import UserLink from "../../../components/user-link";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user-avatar";
-import { useRelaySelectionContext } from "../../../providers/local/relay-selection-provider";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
 import { CHANNELS_LIST_KIND } from "../../../helpers/nostr/lists";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   return (
@@ -40,7 +41,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
     </Card>
   );
 }
-function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: string[] }) {
+function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: Iterable<string> }) {
   const timeline = useTimelineLoader(`${channel.id}-members`, relays, {
     kinds: [CHANNELS_LIST_KIND],
     "#e": [channel.id],
@@ -67,7 +68,7 @@ export default function ChannelMetadataDrawer({
   ...props
 }: Omit<DrawerProps, "children"> & { channel: NostrEvent }) {
   const { metadata } = useChannelMetadata(channel.id);
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays(useAdditionalRelayContext());
 
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} {...props}>

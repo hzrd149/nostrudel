@@ -30,7 +30,7 @@ export default function ChannelCard({
   channel,
   additionalRelays,
   ...props
-}: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
+}: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: Iterable<string> }) {
   const readRelays = useReadRelays(additionalRelays);
   const { metadata } = useChannelMetadata(channel.id, readRelays);
 

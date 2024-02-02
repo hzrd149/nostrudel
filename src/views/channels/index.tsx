@@ -3,21 +3,20 @@ import { kinds } from "nostr-tools";
 import { Flex } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import ChannelCard from "./components/channel-card";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function ChannelsHomePage() {
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
   const { filter, listId } = usePeopleListContext();
 
   const clientMuteFilter = useClientSideMuteFilter();
@@ -42,7 +41,6 @@ function ChannelsHomePage() {
     <VerticalPageLayout>
       <Flex gap="2">
         <PeopleListSelection />
-        <RelaySelectionButton />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         {channels.map((channel) => (
@@ -57,10 +55,8 @@ function ChannelsHomePage() {
 
 export default function ChannelsHomeView() {
   return (
-    <RelaySelectionProvider>
-      <PeopleListProvider>
-        <ChannelsHomePage />
-      </PeopleListProvider>
-    </RelaySelectionProvider>
+    <PeopleListProvider>
+      <ChannelsHomePage />
+    </PeopleListProvider>
   );
 }

@@ -4,9 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -16,10 +14,11 @@ import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import VideoCard from "./components/video-card";
 import { getEventUID } from "../../helpers/nostr/events";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function VideosPage() {
   const { listId, filter } = usePeopleListContext();
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
 
   const timeline = useTimelineLoader(`${listId}-videos`, relays, filter && { kinds: [FLARE_VIDEO_KIND], ...filter });
 
@@ -30,10 +29,6 @@ function VideosPage() {
     <VerticalPageLayout>
       <Flex gap="2">
         <PeopleListSelection />
-        <RelaySelectionButton />
-        <Button as={RouterLink} colorScheme="primary" ml="auto" leftIcon={<Upload01 />} to="/things/upload">
-          New Thing
-        </Button>
       </Flex>
 
       <IntersectionObserverProvider callback={callback}>
@@ -53,9 +48,7 @@ function VideosPage() {
 export default function VideosView() {
   return (
     <PeopleListProvider initList="following">
-      <RelaySelectionProvider>
-        <VideosPage />
-      </RelaySelectionProvider>
+      <VideosPage />
     </PeopleListProvider>
   );
 }

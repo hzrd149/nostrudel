@@ -36,7 +36,7 @@ async function getPayRequestForPubkey(
   event: NostrEvent | undefined,
   amount: number,
   comment?: string,
-  additionalRelays?: string[],
+  additionalRelays?: Iterable<string>,
 ): Promise<PayRequest> {
   const metadata = userMetadataService.getSubject(pubkey).value;
   const address = metadata?.lud16 || metadata?.lud06;
@@ -106,7 +106,7 @@ async function getPayRequestsForEvent(
   amount: number,
   comment?: string,
   fallbackPubkey?: string,
-  additionalRelays?: string[],
+  additionalRelays?: Iterable<string>,
 ) {
   const splits = getZapSplits(event, fallbackPubkey);
 
@@ -133,7 +133,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   allowComment?: boolean;
   showEmbed?: boolean;
   embedProps?: EmbedProps;
-  additionalRelays?: string[];
+  additionalRelays?: Iterable<string>;
   onZapped: () => void;
 };
 

@@ -5,14 +5,15 @@ import { getEventUID } from "../../../../helpers/nostr/events";
 import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRelaySelectionRelays } from "../../../../providers/local/relay-selection-provider";
 import useStreamGoal from "../../../../hooks/use-stream-goal";
 import { NostrQuery } from "../../../../types/nostr-query";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay-context";
 
 export default function useStreamChatTimeline(stream: ParsedStream) {
-  const streamRelays = useRelaySelectionRelays();
+  const streamRelays = useReadRelays(useAdditionalRelayContext());
 
   const hostMuteFilter = useUserMuteFilter(stream.host, [], { alwaysRequest: true });
   const muteFilter = useClientSideMuteFilter();

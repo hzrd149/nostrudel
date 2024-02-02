@@ -6,7 +6,6 @@ import { SEARCH_RELAYS } from "../../const";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
 import { CommunityIcon, CopyToClipboardIcon, NotesIcon } from "../../components/icons";
-import RelaySelectionProvider from "../../providers/local/relay-selection-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import User01 from "../../components/icons/user-01";
 import Feather from "../../components/icons/feather";
@@ -19,6 +18,7 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import QRCodeScannerButton from "../../components/qr-code-scanner-button";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 
 export function SearchPage() {
   const navigate = useNavigate();
@@ -147,10 +147,10 @@ export function SearchPage() {
 
 export default function SearchView() {
   return (
-    <RelaySelectionProvider overrideDefault={SEARCH_RELAYS}>
+    <AdditionalRelayProvider relays={SEARCH_RELAYS}>
       <PeopleListProvider initList="global">
         <SearchPage />
       </PeopleListProvider>
-    </RelaySelectionProvider>
+    </AdditionalRelayProvider>
   );
 }

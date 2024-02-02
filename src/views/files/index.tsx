@@ -10,9 +10,7 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { TrustProvider, useTrusted } from "../../providers/local/trust";
 import BlurredImage from "../../components/blured-image";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { UserAvatarLink } from "../../components/user-avatar-link";
 import UserLink from "../../components/user-link";
 import MimeTypePicker from "./mime-type-picker";
@@ -24,6 +22,7 @@ import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
 } from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function ImageFile({ event }: { event: NostrEvent }) {
   const parsed = parseImageFile(event);
@@ -112,7 +111,7 @@ function FileType({ event }: { event: NostrEvent }) {
 
 function FilesPage() {
   const { listId, filter } = usePeopleListContext();
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>(IMAGE_TYPES);
 
@@ -131,7 +130,6 @@ function FilesPage() {
       <Flex gap="2">
         <PeopleListSelection />
         <MimeTypePicker selected={selectedTypes} onChange={(v) => setSelectedTypes(v)} />
-        <RelaySelectionButton ml="auto" />
       </Flex>
 
       <IntersectionObserverProvider callback={callback}>
@@ -151,9 +149,7 @@ function FilesPage() {
 export default function FilesView() {
   return (
     <PeopleListProvider>
-      <RelaySelectionProvider>
-        <FilesPage />
-      </RelaySelectionProvider>
+      <FilesPage />
     </PeopleListProvider>
   );
 }

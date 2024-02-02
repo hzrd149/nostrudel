@@ -1,5 +1,6 @@
 import React, { LegacyRef, forwardRef } from "react";
-import { Image, InputProps, Textarea, TextareaProps } from "@chakra-ui/react";
+// NOTE: Do not remove Textarea or Input from the imports. they are used
+import { Image, InputProps, Textarea, Input, TextareaProps } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
   TextareaProps as ReactTextareaAutocompleteProps,

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Divider, Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -7,8 +7,6 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -20,10 +18,12 @@ import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 
 function StreamsPage() {
   useAppTitle("Streams");
-  const relays = useRelaySelectionRelays();
+  const relays = useReadRelays(useAdditionalRelayContext()).urls;
   const userMuteFilter = useClientSideMuteFilter();
   const showEnded = useRouteStateBoolean("ended", false);
 
@@ -63,7 +63,6 @@ function StreamsPage() {
         <Switch checked={showEnded.isOpen} onChange={showEnded.onToggle}>
           Show Ended
         </Switch>
-        <RelaySelectionButton ml="auto" />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         <Heading size="lg" mt="2">
@@ -93,12 +92,12 @@ function StreamsPage() {
 }
 export default function StreamsView() {
   return (
-    <RelaySelectionProvider
-      additionalDefaults={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
+    <AdditionalRelayProvider
+      relays={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
     >
       <PeopleListProvider>
         <StreamsPage />
       </PeopleListProvider>
-    </RelaySelectionProvider>
+    </AdditionalRelayProvider>
   );
 }

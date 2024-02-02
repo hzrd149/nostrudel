@@ -4,8 +4,6 @@ import { getEventUID } from "nostr-idb";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -15,6 +13,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { getListName, getRelaysFromList } from "../../helpers/nostr/lists";
 import { RelayFavicon } from "../../components/relay-favicon";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function RelaySetCard({ set }: { set: NostrEvent }) {
   const name = getListName(set);
@@ -35,7 +34,7 @@ function RelaySetCard({ set }: { set: NostrEvent }) {
 }
 
 function BrowseRelaySetsPage() {
-  const relays = useRelaySelectionRelays();
+  const relays = useReadRelays();
   const { filter } = usePeopleListContext();
   const timeline = useTimelineLoader("relay-sets", relays, filter && { kinds: [kinds.Relaysets], ...filter }, {
     eventFilter: (e) => getRelaysFromList(e).length > 0,
@@ -47,7 +46,6 @@ function BrowseRelaySetsPage() {
   return (
     <VerticalPageLayout>
       <Flex gap="2" wrap="wrap">
-        <RelaySelectionButton />
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
@@ -62,10 +60,8 @@ function BrowseRelaySetsPage() {
 
 export default function BrowseRelaySetsView() {
   return (
-    <RelaySelectionProvider>
-      <PeopleListProvider>
-        <BrowseRelaySetsPage />
-      </PeopleListProvider>
-    </RelaySelectionProvider>
+    <PeopleListProvider>
+      <BrowseRelaySetsPage />
+    </PeopleListProvider>
   );
 }

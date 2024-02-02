@@ -31,11 +31,8 @@ import StreamSummaryContent from "../components/stream-summary-content";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import StreamDebugButton from "../components/stream-debug-button";
 import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import useSubject from "../../../hooks/use-subject";
-import RelaySelectionButton from "../../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider from "../../../providers/local/relay-selection-provider";
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import StreamSatsPerMinute from "../components/stream-sats-per-minute";
@@ -50,6 +47,8 @@ import StreamGoal from "../components/stream-goal";
 import StreamShareButton from "../components/stream-share-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 
 function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   useAppTitle(stream.title);
@@ -96,8 +95,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
         <StreamStatusBadge stream={stream} fontSize="lg" />
         <Spacer />
         <StreamShareButton stream={stream} title="Share stream" />
-        <RelaySelectionButton display={{ base: "none", md: "block" }} />
-        <StreamDebugButton stream={stream} variant="ghost" />
+        <DebugEventButton event={stream.event} variant="ghost" />
         <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
       </Flex>
       <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
@@ -278,10 +276,10 @@ export default function StreamView() {
   if (!stream) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
-    <RelaySelectionProvider additionalDefaults={streamRelays}>
+    <AdditionalRelayProvider relays={streamRelays}>
       <UserEmojiProvider pubkey={stream.host}>
         {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
       </UserEmojiProvider>
-    </RelaySelectionProvider>
+    </AdditionalRelayProvider>
   );
 }

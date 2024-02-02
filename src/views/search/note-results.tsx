@@ -1,14 +1,14 @@
 import { kinds } from "nostr-tools";
 
-import { useRelaySelectionRelays } from "../../providers/local/relay-selection-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "../../components/timeline-page/generic-note-timeline";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 
 export default function NoteSearchResults({ search }: { search: string }) {
-  const searchRelays = useRelaySelectionRelays();
+  const searchRelays = useAdditionalRelayContext();
   const { listId, filter } = usePeopleListContext();
 
   const timeline = useTimelineLoader(

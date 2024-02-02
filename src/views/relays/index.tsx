@@ -54,7 +54,7 @@ export default function RelaysView() {
             Mailboxes
           </Button>
         )}
-        {account && (
+        {/* {account && (
           <>
             <Heading size="sm" mt="2">
               Relay Sets
@@ -70,7 +70,7 @@ export default function RelaysView() {
               </Button>
             ))}
           </>
-        )}
+        )} */}
       </Flex>
     );
     if (vertical) {

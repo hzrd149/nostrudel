@@ -58,7 +58,6 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
-  else if (location.pathname.startsWith("/things")) active = "things";
   else if (location.pathname.startsWith("/settings")) active = "settings";
   else if (location.pathname.startsWith("/tools")) active = "tools";
   else if (location.pathname.startsWith("/search")) active = "search";

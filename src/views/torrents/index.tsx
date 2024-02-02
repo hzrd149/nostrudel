@@ -6,9 +6,7 @@ import { bytesToHex } from "@noble/hashes/utils";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { NostrEvent } from "../../types/nostr-event";
@@ -23,6 +21,7 @@ import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import CategorySelect from "./components/category-select";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function Warning() {
   const navigate = useNavigate();
@@ -60,7 +59,7 @@ function Warning() {
 
 function TorrentsPage() {
   const { filter, listId } = usePeopleListContext();
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
   const tagsParam = useRouteSearchValue("tags");
   const tags = tagsParam.value?.split(",") ?? [];
 
@@ -100,7 +99,6 @@ function TorrentsPage() {
     <VerticalPageLayout>
       {!!account && <Warning />}
       <Flex gap="2">
-        <RelaySelectionButton />
         <PeopleListSelection />
         <CategorySelect maxW="xs" value={tags.join(",")} onChange={handleTagsChange} />
         <Spacer />
@@ -135,10 +133,8 @@ function TorrentsPage() {
 
 export default function TorrentsView() {
   return (
-    <RelaySelectionProvider>
-      <PeopleListProvider>
-        <TorrentsPage />
-      </PeopleListProvider>
-    </RelaySelectionProvider>
+    <PeopleListProvider>
+      <TorrentsPage />
+    </PeopleListProvider>
   );
 }

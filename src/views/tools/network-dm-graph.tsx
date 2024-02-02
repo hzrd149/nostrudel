@@ -25,18 +25,17 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
 import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/local/relay-selection-provider";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { useDebounce } from "react-use";
 import useSubject from "../../hooks/use-subject";
 import { ChevronLeftIcon } from "../../components/icons";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 type NodeType = { id: string; image?: string; name?: string };
 
 function NetworkDMGraphPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
 
   const contacts = useUserContactList(account.pubkey);
   const contactsPubkeys = useMemo(
@@ -123,7 +122,6 @@ function NetworkDMGraphPage() {
           onChange={(e) => setSince(dayjs(e.target.value).unix())}
         />
         <Text>Showing all direct messages between contacts in the last {dayjs.unix(since).fromNow(true)}</Text>
-        <RelaySelectionButton ml="auto" />
       </Flex>
       <Box overflow="hidden" flex={1}>
         <AutoSizer>
@@ -170,9 +168,7 @@ function NetworkDMGraphPage() {
 export default function NetworkDMGraphView() {
   return (
     <RequireCurrentAccount>
-      <RelaySelectionProvider>
-        <NetworkDMGraphPage />
-      </RelaySelectionProvider>
+      <NetworkDMGraphPage />
     </RequireCurrentAccount>
   );
 }

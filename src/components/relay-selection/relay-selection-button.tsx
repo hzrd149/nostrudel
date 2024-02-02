@@ -3,6 +3,7 @@ import { ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { RelayIcon } from "../icons";
 import RelayManagementDrawer from "../relay-management-drawer";
 
+/** @deprecated */
 export default function RelaySelectionButton({ ...props }: ButtonProps) {
   const relaysModal = useDisclosure();
   return (

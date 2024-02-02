@@ -15,7 +15,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
-import RelaySelectionProvider from "../../../providers/local/relay-selection-provider";
+import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
 import UsersCard from "./users-card";
 import ZapsCard from "./zaps-card";
 import ChatCard from "./chat-card";
@@ -105,9 +105,9 @@ function StreamModerationPage() {
         </Select>
       </Flex>
       {selected && (
-        <RelaySelectionProvider additionalDefaults={selected.relays ?? []}>
+        <AdditionalRelayProvider relays={selected.relays ?? []}>
           <StreamModerationDashboard stream={selected} />
-        </RelaySelectionProvider>
+        </AdditionalRelayProvider>
       )}
     </Flex>
   );
