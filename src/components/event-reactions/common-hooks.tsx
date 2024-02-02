@@ -16,7 +16,7 @@ export function useAddReaction(event: NostrEvent, grouped: ReactionGroup[]) {
 
       const draft = draftEventReaction(event, emoji, url);
 
-      publish("Reaction", draft);
+      await publish("Reaction", draft);
     },
     [grouped, account, publish],
   );

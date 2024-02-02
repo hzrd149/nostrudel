@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { NostrEvent } from "../../types/nostr-event";
 import useEventReactions from "../../hooks/use-event-reactions";
@@ -13,6 +13,7 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);
 
   const addReaction = useAddReaction(event, grouped);
+  const [loading, setLoading] = useState<string>();
 
   if (grouped.length === 0) return null;
 
@@ -27,7 +28,11 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
           emoji={group.emoji}
           url={group.url}
           count={group.pubkeys.length}
-          onClick={() => addReaction(group.emoji, group.url)}
+          isLoading={loading === group.emoji}
+          onClick={() => {
+            setLoading(group.emoji);
+            addReaction(group.emoji, group.url).finally(() => setLoading(undefined));
+          }}
           colorScheme={account && group.pubkeys.includes(account?.pubkey) ? "primary" : undefined}
         />
       ))}

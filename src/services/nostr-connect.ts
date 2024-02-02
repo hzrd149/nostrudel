@@ -87,9 +87,6 @@ export class NostrConnectClient {
         "#p": [this.publicKey],
       }),
     );
-
-    this.log("Secret Key:", this.secretKey);
-    this.log("Public Key:", this.publicKey);
   }
 
   async open() {
@@ -119,11 +116,11 @@ export class NostrConnectClient {
     try {
       const responseStr = await nip04.decrypt(this.secretKey, event.pubkey, event.content);
       const response = JSON.parse(responseStr);
-      this.log("Got Response", response);
       if (response.id) {
         const p = this.requests.get(response.id);
         if (!p) return;
         if (response.error) {
+          this.log("Got Error", response.id, response.result, response.error);
           if (response.result === "auth_url") {
             try {
               await this.handleAuthURL(response.error);
@@ -132,7 +129,7 @@ export class NostrConnectClient {
             }
           } else p.reject(response);
         } else if (response.result) {
-          this.log(response.id, response.result);
+          this.log("Got Response", response.id, response.result);
           p.resolve(response.result);
         }
       }
