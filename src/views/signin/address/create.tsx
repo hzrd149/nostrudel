@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
   Button,
   Card,
   CardBody,
@@ -9,6 +14,7 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Link,
   LinkBox,
   Tag,
   Text,
@@ -28,6 +34,7 @@ import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";
+import { safeJson } from "../../../helpers/parse";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as Kind0ParsedContent;
@@ -68,6 +75,10 @@ export default function LoginNostrAddressCreate() {
   const providers = useNip05Providers();
   const [selected, setSelected] = useState<NostrEvent>();
   const userMetadata = useUserMetadata(selected?.pubkey);
+  const providerMetadata = useMemo<Kind0ParsedContent | undefined>(
+    () => selected && safeJson(selected.content, undefined),
+    [selected],
+  );
 
   const createAccount: React.FormEventHandler<HTMLDivElement> = async (e) => {
     e.preventDefault();
@@ -75,7 +86,6 @@ export default function LoginNostrAddressCreate() {
 
     try {
       setLoading("Creating...");
-      const providerMetadata = JSON.parse(selected.content) as Kind0ParsedContent;
       const metadata: Kind0ParsedContent = { ...userMetadata, ...providerMetadata };
       if (!metadata.nip05) throw new Error("Provider missing nip05 address");
       const nip05 = await dnsIdentityService.fetchIdentity(metadata.nip05);
@@ -109,10 +119,15 @@ export default function LoginNostrAddressCreate() {
 
       return (
         <>
-          <Flex gap="2" alignItems="center">
-            <MetadataAvatar metadata={metadata} size="sm" />
-            <Heading size="sm">{metadata.displayName || metadata.name}</Heading>
-          </Flex>
+          <div>
+            <Flex gap="2" alignItems="center">
+              <MetadataAvatar metadata={metadata} size="sm" />
+              <Heading size="sm">{metadata.displayName || metadata.name}</Heading>
+            </Flex>
+            <Link href={providerMetadata?.website || userMetadata?.website} isExternal color="blue.500">
+              {providerMetadata?.website || userMetadata?.website}
+            </Link>
+          </div>
           <InputGroup>
             <Input name="name" isRequired value={name} onChange={(e) => setName(e.target.value)} />
             <InputRightAddon as="button" onClick={() => setSelected(undefined)} cursor="pointer">

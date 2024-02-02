@@ -6,6 +6,7 @@ import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import QRCodeScannerButton from "../../components/qr-code-scanner-button";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();
@@ -31,7 +32,10 @@ export default function LoginNpubView() {
     <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
       <FormControl>
         <FormLabel>Enter user npub</FormLabel>
-        <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
+        <Flex gap="2">
+          <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
+          <QRCodeScannerButton onData={(v) => setNpub(v)} />
+        </Flex>
         <FormHelperText>
           Enter any npub you want.{" "}
           <Link isExternal href="https://nostr.directory" color="blue.500" target="_blank">

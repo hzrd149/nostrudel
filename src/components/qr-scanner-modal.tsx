@@ -2,11 +2,8 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, Moda
 import { useState } from "react";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
 
-export default function QrScannerModal({
-  isOpen,
-  onClose,
-  onData,
-}: { onData: (text: string) => void } & Pick<ModalProps, "isOpen" | "onClose">) {
+export type QrScannerModalProps = { onData: (text: string) => void } & Pick<ModalProps, "isOpen" | "onClose">;
+export default function QrScannerModal({ isOpen, onClose, onData }: QrScannerModalProps) {
   const [stopStream, setStopStream] = useState(false);
   const handleClose = () => {
     // Stop the QR Reader stream (fixes issue where the browser freezes when closing the modal) and then dismiss the modal one tick later
@@ -18,7 +15,7 @@ export default function QrScannerModal({
     <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody>
+        <ModalBody p="2">
           <BarcodeScannerComponent
             stopStream={stopStream}
             onUpdate={(err, result) => {
@@ -31,7 +28,7 @@ export default function QrScannerModal({
           />
         </ModalBody>
 
-        <ModalFooter>
+        <ModalFooter px="2" pb="2" pt="0">
           <Button onClick={handleClose}>Cancel</Button>
         </ModalFooter>
       </ModalContent>

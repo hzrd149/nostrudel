@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { Button, ButtonGroup, Flex, IconButton, Input, Link, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, IconButton, Input, Link } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { SEARCH_RELAYS } from "../../const";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
-import { CommunityIcon, CopyToClipboardIcon, NotesIcon, QrCodeIcon } from "../../components/icons";
-import QrScannerModal from "../../components/qr-scanner-modal";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
+import { CommunityIcon, CopyToClipboardIcon, NotesIcon } from "../../components/icons";
 import RelaySelectionProvider from "../../providers/local/relay-selection-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import User01 from "../../components/icons/user-01";
@@ -20,10 +18,10 @@ import PeopleListProvider from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import QRCodeScannerButton from "../../components/qr-code-scanner-button";
 
 export function SearchPage() {
   const navigate = useNavigate();
-  const qrScannerModal = useDisclosure();
 
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
@@ -82,12 +80,10 @@ export function SearchPage() {
 
   return (
     <VerticalPageLayout>
-      <QrScannerModal isOpen={qrScannerModal.isOpen} onClose={qrScannerModal.onClose} onData={handleSearchText} />
-
       <form onSubmit={handleSubmit}>
         <Flex gap="2" wrap="wrap">
           <Flex gap="2" grow={1}>
-            <IconButton onClick={qrScannerModal.onOpen} icon={<QrCodeIcon />} aria-label="Qr Scanner" />
+            <QRCodeScannerButton onData={handleSearchText} />
             {!!navigator.clipboard?.readText && (
               <IconButton onClick={readClipboard} icon={<CopyToClipboardIcon />} aria-label="Read clipboard" />
             )}

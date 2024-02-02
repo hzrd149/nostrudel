@@ -1,9 +1,20 @@
 import { useState } from "react";
-import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Text, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  IconButton,
+  Input,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import accountService from "../../services/account";
 import nostrConnectService, { NostrConnectClient } from "../../services/nostr-connect";
+import QRCodeScannerButton from "../../components/qr-code-scanner-button";
 
 export default function LoginNostrConnectView() {
   const navigate = useNavigate();
@@ -42,15 +53,19 @@ export default function LoginNostrConnectView() {
       {loading && <Text fontSize="lg">{loading}</Text>}
       {!loading && (
         <FormControl>
-          <FormLabel>Connect URI</FormLabel>
-          <Input
-            name="nostr-address"
-            placeholder="bunker://<pubkey>?relay=wss://relay.example.com"
-            isRequired
-            value={uri}
-            onChange={(e) => setUri(e.target.value)}
-            autoComplete="off"
-          />
+          <FormLabel htmlFor="input">Connect URI</FormLabel>
+          <Flex gap="2">
+            <Input
+              id="nostr-connect"
+              name="nostr-connect"
+              placeholder="bunker://<pubkey>?relay=wss://relay.example.com"
+              isRequired
+              value={uri}
+              onChange={(e) => setUri(e.target.value)}
+              autoComplete="off"
+            />
+            <QRCodeScannerButton onData={(v) => setUri(v)} />
+          </Flex>
           <FormHelperText>A bunker connect URI</FormHelperText>
         </FormControl>
       )}

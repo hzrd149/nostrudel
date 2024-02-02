@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Center } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
@@ -72,8 +72,8 @@ export default function SignupView() {
   };
 
   return (
-    <Center w="full" h="full">
+    <Flex direction="column" alignItems="center" gap="2" w="full" px="4" py="10">
       {renderStep()}
-    </Center>
+    </Flex>
   );
 }
