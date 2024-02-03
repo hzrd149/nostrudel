@@ -15,7 +15,9 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
         </Heading>
         <KeyboardShortcut letter="i" requireMeta ml="auto" onPress={() => navigate("/notifications")} />
       </CardHeader>
-      <CardBody overflowX="auto" overflowY="hidden" pt="0" display="flex" gap="4"></CardBody>
+      <CardBody overflowX="auto" overflowY="hidden" pt="0" display="flex" gap="4">
+        <h1>Nothing here yet</h1>
+      </CardBody>
     </Card>
   );
 }
