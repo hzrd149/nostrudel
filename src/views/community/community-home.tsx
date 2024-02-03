@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 
 import {
   getCommunityRelays as getCommunityRelays,
@@ -15,19 +15,19 @@ import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user-avatar-link";
 import UserLink from "../../components/user-link";
-import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 
 import TrendUp01 from "../../components/icons/trend-up-01";
 import Clock from "../../components/icons/clock";
 import Hourglass03 from "../../components/icons/hourglass-03";
 import VerticalCommunityDetails from "./components/vertical-community-details";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import HorizontalCommunityDetails from "./components/horizonal-community-details";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
 import { WritingIcon } from "../../components/icons";
-import { PostModalContext } from "../../providers/post-modal-provider";
+import { PostModalContext } from "../../providers/route/post-modal-provider";
 import CommunityEditModal from "./components/community-edit-modal";
 import TimelineLoader from "../../classes/timeline-loader";
 import useSubject from "../../hooks/use-subject";
@@ -50,9 +50,9 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const verticalLayout = useBreakpointValue({ base: true, xl: false });
 
   const communityRelays = getCommunityRelays(community);
-  const readRelays = useReadRelayUrls(communityRelays);
+  const readRelays = useReadRelays(communityRelays);
   const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
-    kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
+    kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],
   });
 

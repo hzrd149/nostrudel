@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import dayjs from "dayjs";
-import { Button, ButtonProps, useToast } from "@chakra-ui/react";
+import { Button, ButtonProps } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../../types/nostr-event";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
@@ -8,46 +8,34 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { getCommunityName } from "../../../helpers/nostr/communities";
 import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { useSigningContext } from "../../../providers/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function CommunityJoinButton({
   community,
   ...props
 }: Omit<ButtonProps, "children"> & { community: NostrEvent }) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount();
   const { list, pointers } = useUserCommunitiesList(account?.pubkey);
-  const { requestSignature } = useSigningContext();
 
   const isSubscribed = pointers.find(
     (cord) => cord.identifier === getCommunityName(community) && cord.pubkey === community.pubkey,
   );
 
   const handleClick = useCallback(async () => {
-    try {
-      const favList = {
-        kind: COMMUNITIES_LIST_KIND,
-        content: list?.content ?? "",
-        created_at: dayjs().unix(),
-        tags: list?.tags.filter((t) => !isDTag(t)) ?? [],
-      };
+    const favList = {
+      kind: COMMUNITIES_LIST_KIND,
+      content: list?.content ?? "",
+      created_at: dayjs().unix(),
+      tags: list?.tags.filter((t) => !isDTag(t)) ?? [],
+    };
 
-      let draft: DraftNostrEvent;
-      if (isSubscribed) {
-        draft = listRemoveCoordinate(favList, getEventCoordinate(community));
-      } else {
-        draft = listAddCoordinate(favList, getEventCoordinate(community));
-      }
+    let draft: DraftNostrEvent;
+    if (isSubscribed) draft = listRemoveCoordinate(favList, getEventCoordinate(community));
+    else draft = listAddCoordinate(favList, getEventCoordinate(community));
 
-      const signed = await requestSignature(draft);
-
-      new NostrPublishAction(isSubscribed ? "Unsubscribe" : "Subscribe", clientRelaysService.getWriteUrls(), signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  }, [isSubscribed, list, community, requestSignature, toast]);
+    await publish(isSubscribed ? "Unsubscribe" : "Subscribe", draft);
+  }, [isSubscribed, list, community, publish]);
 
   return (
     <Button

@@ -23,12 +23,12 @@ import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import Timestamp from "../../../components/timestamp";
-import { Thread, useThreadsContext } from "./thread-provider";
+import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
 import ThreadButton from "./thread-button";
-import MessageBlock from "./message-block";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
-import { useDecryptionContext } from "../../../providers/dycryption-provider";
+import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import DirectMessageBlock from "./direct-message-block";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
@@ -82,9 +82,9 @@ function ThreadMessages({ thread, pubkey }: { thread: Thread; pubkey: string }) 
   return (
     <>
       <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column" gap="2">
-        {thread.root && <MessageBlock messages={[thread.root]} showThreadButton={false} />}
+        {thread.root && <DirectMessageBlock messages={[thread.root]} showThreadButton={false} />}
         {grouped.map((group) => (
-          <MessageBlock key={group.id} messages={group.events} showThreadButton={false} />
+          <DirectMessageBlock key={group.id} messages={group.events} showThreadButton={false} />
         ))}
       </Flex>
       <SendMessageForm flexShrink={0} pubkey={pubkey} rootId={thread.rootId} />

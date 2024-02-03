@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import { Kind, nip19 } from "nostr-tools";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { kinds, nip19 } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
-import { parseCoordinate } from "./events";
+import { parseCoordinate, replaceOrAddSimpleTag } from "./events";
+import { getRelayVariations, safeRelayUrls } from "../relay";
 
 export const MUTE_LIST_KIND = 10000;
 export const PIN_LIST_KIND = 10001;
@@ -16,7 +16,7 @@ export const NOTE_LIST_KIND = 30001;
 export const BOOKMARK_LIST_SET_KIND = 30003;
 
 export function getListName(event: NostrEvent) {
-  if (event.kind === Kind.Contacts) return "Following";
+  if (event.kind === kinds.Contacts) return "Following";
   if (event.kind === MUTE_LIST_KIND) return "Mute";
   if (event.kind === PIN_LIST_KIND) return "Pins";
   if (event.kind === BOOKMARK_LIST_KIND) return "Bookmarks";
@@ -27,8 +27,14 @@ export function getListName(event: NostrEvent) {
     event.tags.find(isDTag)?.[1]
   );
 }
+export function setListName(draft: DraftNostrEvent, name: string) {
+  replaceOrAddSimpleTag(draft, "name", name);
+}
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
+}
+export function setListDescription(draft: DraftNostrEvent, description: string) {
+  replaceOrAddSimpleTag(draft, "description", description);
 }
 
 export function isJunkList(event: NostrEvent) {
@@ -39,7 +45,7 @@ export function isJunkList(event: NostrEvent) {
 }
 export function isSpecialListKind(kind: number) {
   return (
-    kind === Kind.Contacts ||
+    kind === kinds.Contacts ||
     kind === MUTE_LIST_KIND ||
     kind === PIN_LIST_KIND ||
     kind === BOOKMARK_LIST_KIND ||
@@ -60,17 +66,22 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEv
 export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
-export function getEventsFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
+export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
   return event.tags.filter(isETag).map((t) => (t[2] ? { id: t[1], relays: [t[2]] } : { id: t[1] }));
 }
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
+/** @deprecated */
+export function getRelaysFromList(event: NostrEvent | DraftNostrEvent) {
+  if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
+  else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
+}
 export function getCoordinatesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
-export function getParsedCordsFromList(event: NostrEvent | DraftNostrEvent) {
-  const pointers: AddressPointer[] = [];
+export function getAddressPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.AddressPointer[] {
+  const pointers: nip19.AddressPointer[] = [];
 
   for (const tag of event.tags) {
     if (!tag[1]) continue;
@@ -84,6 +95,10 @@ export function getParsedCordsFromList(event: NostrEvent | DraftNostrEvent) {
   return pointers;
 }
 
+export function isRelayInList(list: NostrEvent, relay: string) {
+  const relays = getRelaysFromList(list);
+  return getRelayVariations(relay).some((r) => relays.includes(r));
+}
 export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
   if (!pubkey || !list) return false;
   return list.tags.some((t) => t[0] === "p" && t[1] === pubkey);
@@ -94,7 +109,7 @@ export function createEmptyContactList(): DraftNostrEvent {
     created_at: dayjs().unix(),
     content: "",
     tags: [],
-    kind: Kind.Contacts,
+    kind: kinds.Contacts,
   };
 }
 

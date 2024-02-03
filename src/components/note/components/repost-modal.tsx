@@ -11,30 +11,28 @@ import {
   ModalProps,
   SimpleGrid,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import type { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { EmbedEvent } from "../../embed-event";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
-import { useSigningContext } from "../../../providers/signing-provider";
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../icons";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { createCoordinate } from "../../../services/replaceable-event-requester";
 import relayHintService from "../../../services/event-relay-hint";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 function buildRepost(event: NostrEvent): DraftNostrEvent {
   const hint = relayHintService.getEventRelayHint(event);
   const tags: NostrEvent["tags"] = [];
   tags.push(["e", event.id, hint ?? ""]);
+  tags.push(["k", String(event.kind)]);
 
   return {
-    kind: Kind.Repost,
+    kind: event.kind === kinds.ShortTextNote ? kinds.Repost : kinds.GenericRepost,
     tags,
     content: JSON.stringify(event),
     created_at: dayjs().unix(),
@@ -48,30 +46,23 @@ export default function RepostModal({
   ...props
 }: Omit<ModalProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const showCommunities = useDisclosure();
   const { pointers } = useUserCommunitiesList(account?.pubkey);
 
   const [loading, setLoading] = useState(false);
   const repost = async (communityPointer?: AddressPointer) => {
-    try {
-      setLoading(true);
-      const draftRepost = buildRepost(event);
-      if (communityPointer) {
-        draftRepost.tags.push([
-          "a",
-          createCoordinate(communityPointer.kind, communityPointer.pubkey, communityPointer.identifier),
-          relayHintService.getAddressPointerRelayHint(communityPointer) ?? "",
-        ]);
-      }
-      const signed = await requestSignature(draftRepost);
-      const pub = new NostrPublishAction("Repost", clientRelaysService.getWriteUrls(), signed);
-      await pub.onComplete;
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
+    setLoading(true);
+    const draft = buildRepost(event);
+    if (communityPointer) {
+      draft.tags.push([
+        "a",
+        createCoordinate(communityPointer.kind, communityPointer.pubkey, communityPointer.identifier),
+        relayHintService.getAddressPointerRelayHint(communityPointer) ?? "",
+      ]);
     }
+    await publish("Repost", draft);
+    onClose();
     setLoading(false);
   };
 

@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { AvatarGroup, Button, Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { PointerCommunityCard } from "./components/community-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubjects from "../../hooks/use-subjects";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import { COMMUNITIES_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
@@ -17,8 +17,8 @@ import { parseCoordinate } from "../../helpers/nostr/events";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
-export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays: string[] = []) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
+  const readRelays = useReadRelays(additionalRelays);
   const communityListsSubjects = useMemo(() => {
     return pubkeys.map((pubkey) =>
       replaceableEventLoaderService.requestEvent(readRelays, COMMUNITIES_LIST_KIND, pubkey),

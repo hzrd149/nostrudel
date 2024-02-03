@@ -47,9 +47,9 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
         </LinkOverlay>
         <Text mb="2">{summary}</Text>
         {article.tags
-          .filter((t) => t[0] === "t")
-          .map(([_, hashtag]) => (
-            <Tag mr="2" mb="2">
+          .filter((t) => t[0] === "t" && t[1])
+          .map(([_, hashtag]: string[], i) => (
+            <Tag key={hashtag + i} mr="2" mb="2">
               #{hashtag}
             </Tag>
           ))}

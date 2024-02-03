@@ -1,4 +1,3 @@
-import { Kind } from "nostr-tools";
 import { useMemo } from "react";
 import {
   Button,
@@ -13,12 +12,11 @@ import {
   Flex,
   Heading,
   Link,
-  SimpleGrid,
   Switch,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -29,7 +27,6 @@ import useUserCommunitiesList from "../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
-import { useSigningContext } from "../../providers/signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import {
   COMMUNITY_APPROVAL_KIND,
@@ -38,73 +35,57 @@ import {
   getCommunityMods,
   getCommunityName,
 } from "../../helpers/nostr/communities";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { unique } from "../../helpers/array";
-import clientRelaysService from "../../services/client-relays";
-import replaceableEventLoaderService, { createCoordinate } from "../../services/replaceable-event-requester";
+import { createCoordinate } from "../../services/replaceable-event-requester";
 import { getImageSize } from "../../helpers/image";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
-import { getEventCoordinate } from "../../helpers/nostr/events";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function CommunitiesHomePage() {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const createModal = useDisclosure();
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const { pointers: communityCoordinates } = useUserCommunitiesList(account.pubkey, readRelays, {
     alwaysRequest: true,
   });
-  const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(
-    (a, b) => b.created_at - a.created_at,
-  );
+  const communities = useReplaceableEvents(communityCoordinates, readRelays).sort(sortByDate);
 
   const createCommunity = async (values: FormValues) => {
-    try {
-      const draft: DraftNostrEvent = {
-        kind: COMMUNITY_DEFINITION_KIND,
-        created_at: dayjs().unix(),
-        content: "",
-        tags: [["d", values.name]],
-      };
+    const draft: DraftNostrEvent = {
+      kind: COMMUNITY_DEFINITION_KIND,
+      created_at: dayjs().unix(),
+      content: "",
+      tags: [["d", values.name]],
+    };
 
-      if (values.description) draft.tags.push(["description", values.description]);
-      if (values.banner) {
-        try {
-          const size = await getImageSize(values.banner);
-          draft.tags.push(["image", values.banner, `${size.width}x${size.height}`]);
-        } catch (e) {
-          draft.tags.push(["image", values.banner]);
-        }
+    if (values.description) draft.tags.push(["description", values.description]);
+    if (values.banner) {
+      try {
+        const size = await getImageSize(values.banner);
+        draft.tags.push(["image", values.banner, `${size.width}x${size.height}`]);
+      } catch (e) {
+        draft.tags.push(["image", values.banner]);
       }
-      for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
-      for (const url of values.relays) draft.tags.push(["relay", url]);
-      for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
-      // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
-
-      const signed = await requestSignature(draft);
-      new NostrPublishAction(
-        "Create Community",
-        unique([...clientRelaysService.getWriteUrls(), ...values.relays]),
-        signed,
-      );
-
-      replaceableEventLoaderService.handleEvent(signed);
-
-      navigate(`/c/${getCommunityName(signed)}/${signed.pubkey}`);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
+    for (const pubkey of values.mods) draft.tags.push(["p", pubkey, "", "moderator"]);
+    for (const url of values.relays) draft.tags.push(["relay", url]);
+    for (const [url, name] of values.links) draft.tags.push(name ? ["r", url, name] : ["r", url]);
+    // if (values.ranking) draft.tags.push(["rank_mode", values.ranking]);
+
+    const pub = await publish("Create Community", draft, values.relays, false);
+
+    navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
   const timeline = useTimelineLoader(
@@ -112,7 +93,7 @@ function CommunitiesHomePage() {
     readRelays,
     communityCoordinates.length > 0
       ? {
-          kinds: [Kind.Text, Kind.Repost, COMMUNITY_APPROVAL_KIND],
+          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
           "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
         }
       : undefined,
@@ -183,7 +164,7 @@ function CommunitiesHomePage() {
             </Flex>
           </Flex>
         ) : (
-          <Center aspectRatio={3 / 4} flexDirection="column" gap="4">
+          <Center py="20" flexDirection="column" gap="4">
             <Heading size="md">No communities :(</Heading>
             <Text>
               go find a cool one to join.{" "}

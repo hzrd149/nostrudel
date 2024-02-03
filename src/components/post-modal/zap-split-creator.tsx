@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { AddIcon } from "../icons";
-import { normalizeToHex } from "../../helpers/nip19";
+import { normalizeToHexPubkey } from "../../helpers/nip19";
 import UserAvatar from "../user-avatar";
 import UserLink from "../user-link";
 import NpubAutocomplete from "../npub-autocomplete";
@@ -30,7 +30,7 @@ export function fillRemainingPercent(split: EventSplit, pubkey: string) {
 }
 
 function validateNpub(input: string) {
-  const pubkey = normalizeToHex(input);
+  const pubkey = normalizeToHexPubkey(input);
   if (!pubkey) {
     return "Invalid npub";
   }
@@ -55,7 +55,7 @@ function AddUserForm({
 
   const submit = handleSubmit((values) => {
     try {
-      const pubkey = normalizeToHex(values.pubkey);
+      const pubkey = normalizeToHexPubkey(values.pubkey);
       if (!pubkey) throw new Error("Invalid npub");
       const percent = values.percent / 100;
       onSubmit({ pubkey, percent });

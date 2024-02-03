@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
@@ -12,7 +12,6 @@ import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
 import { getChannelPointer } from "../helpers/nostr/channel";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -105,7 +104,7 @@ class ChannelMetadataRelayLoader {
     if (needsUpdate) {
       if (this.requested.size > 0) {
         const query: NostrQuery = {
-          kinds: [Kind.ChannelMetadata],
+          kinds: [kinds.ChannelMetadata],
           "#e": Array.from(this.requested.keys()),
         };
 
@@ -214,6 +213,7 @@ class ChannelMetadataService {
   async pruneDatabaseCache() {
     const keys = await db.getAllKeysFromIndex(
       "channelMetadata",
+      // @ts-ignore
       "created",
       IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
     );
@@ -227,13 +227,10 @@ class ChannelMetadataService {
     await transaction.commit();
   }
 
-  private requestChannelMetadataFromRelays(relays: string[], channelId: string) {
+  private requestChannelMetadataFromRelays(relays: Iterable<string>, channelId: string) {
     const sub = this.metadata.get(channelId);
 
     const relayUrls = Array.from(relays);
-    if (localCacheRelayService.enabled) {
-      relayUrls.unshift(LOCAL_CACHE_RELAY);
-    }
     for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestMetadata(channelId);
 
@@ -248,7 +245,7 @@ class ChannelMetadataService {
     return sub;
   }
 
-  requestMetadata(relays: string[], channelId: string, opts: RequestOptions = {}) {
+  requestMetadata(relays: Iterable<string>, channelId: string, opts: RequestOptions = {}) {
     const sub = this.metadata.get(channelId);
 
     if (!sub.value) {

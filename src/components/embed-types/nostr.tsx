@@ -1,4 +1,4 @@
-import { Link } from "@chakra-ui/react";
+import { Link, Tooltip } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
@@ -7,6 +7,7 @@ import UserLink from "../user-link";
 import { getMatchHashtag, getMatchNostrLink, stripInvisibleChar } from "../../helpers/regexp";
 import { safeDecode } from "../../helpers/nip19";
 import { EmbedEventPointer } from "../embed-event";
+import { NIP_NAMES } from "../../views/relays/components/supported-nips";
 
 // nostr:nevent1qqsthg2qlxp9l7egtwa92t8lusm7pjknmjwa75ctrrpcjyulr9754fqpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq36amnwvaz7tmwdaehgu3dwp6kytnhv4kxcmmjv3jhytnwv46q2qg5q9
 // nostr:nevent1qqsq3wc73lqxd70lg43m5rul57d4mhcanttjat56e30yx5zla48qzlspz9mhxue69uhkummnw3e82efwvdhk6qgdwaehxw309ahx7uewd3hkcq5hsum
@@ -89,6 +90,29 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
         );
       }
 
+      return null;
+    },
+  });
+}
+
+export function embedNipDefinitions(content: EmbedableContent) {
+  return embedJSX(content, {
+    name: "nip-definition",
+    regexp: /nip-?(\d\d)/gi,
+    render: (match) => {
+      if (NIP_NAMES[match[1]]) {
+        return (
+          <Tooltip label={NIP_NAMES[match[1]]} aria-label="NIP Definition">
+            <Link
+              isExternal
+              href={`https://github.com/nostr-protocol/nips/blob/master/${match[1]}.md`}
+              textDecoration="underline"
+            >
+              {match[0]}
+            </Link>
+          </Tooltip>
+        );
+      }
       return null;
     },
   });

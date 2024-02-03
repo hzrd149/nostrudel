@@ -3,38 +3,57 @@ import _throttle from "lodash.throttle";
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
-import { safeRelayUrls } from "../helpers/url";
 import { NostrEvent } from "../types/nostr-event";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import { localRelay } from "./local-relay";
+import { relayRequest, safeRelayUrls } from "../helpers/relay";
+import { logger } from "../helpers/debug";
 
-const RELAY_REQUEST_BATCH_TIME = 1000;
+const RELAY_REQUEST_BATCH_TIME = 500;
 
 class SingleEventService {
   private cache = new SuperMap<string, Subject<NostrEvent>>(() => new Subject());
   pending = new Map<string, string[]>();
+  log = logger.extend("SingleEvent");
 
-  requestEvent(id: string, relays: string[]) {
+  requestEvent(id: string, relays: Iterable<string>) {
     const subject = this.cache.get(id);
     if (subject.value) return subject;
 
-    const newUrls = safeRelayUrls(relays);
-    if (localCacheRelayService.enabled) newUrls.push(LOCAL_CACHE_RELAY);
-    this.pending.set(id, this.pending.get(id)?.concat(newUrls) ?? newUrls);
+    const safeURLs = safeRelayUrls(Array.from(relays));
+
+    this.pending.set(id, this.pending.get(id)?.concat(safeURLs) ?? safeURLs);
     this.batchRequestsThrottle();
 
     return subject;
   }
 
-  handleEvent(event: NostrEvent) {
+  handleEvent(event: NostrEvent, cache = true) {
     this.cache.get(event.id).next(event);
+
+    if (cache) localRelay.publish(event);
   }
 
   private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
-  batchRequests() {
+  async batchRequests() {
     if (this.pending.size === 0) return;
+
+    const ids = Array.from(this.pending.keys());
+    const loaded: string[] = [];
+
+    // load from cache relay
+    const fromCache = await relayRequest(localRelay, [{ ids }]);
+
+    for (const e of fromCache) {
+      this.handleEvent(e, false);
+      loaded.push(e.id);
+    }
+
+    if (loaded.length > 0) this.log(`Loaded ${loaded.length} from cache instead of relays`);
 
     const idsFromRelays: Record<string, string[]> = {};
     for (const [id, relays] of this.pending) {
+      if (loaded.includes(id)) continue;
+
       for (const relay of relays) {
         idsFromRelays[relay] = idsFromRelays[relay] ?? [];
         idsFromRelays[relay].push(id);

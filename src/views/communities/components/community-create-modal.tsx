@@ -19,9 +19,6 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  Radio,
-  RadioGroup,
-  Stack,
   Text,
   Textarea,
   useToast,
@@ -34,13 +31,13 @@ import UserLink from "../../../components/user-link";
 import { TrashIcon } from "../../../components/icons";
 import Upload01 from "../../../components/icons/upload-01";
 import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import { RelayUrlInput } from "../../../components/relay-url-input";
-import { safeRelayUrl } from "../../../helpers/url";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import NpubAutocomplete from "../../../components/npub-autocomplete";
-import { normalizeToHex } from "../../../helpers/nip19";
+import { normalizeToHexPubkey } from "../../../helpers/nip19";
 import { safeUrl } from "../../../helpers/parse";
+import { safeRelayUrl } from "../../../helpers/relay";
 
 function RemoveButton({ ...props }: IconButtonProps) {
   return <IconButton icon={<TrashIcon />} size="sm" colorScheme="red" variant="ghost" ml="auto" {...props} />;
@@ -123,7 +120,7 @@ export default function CommunityCreateModal({
   const [modInput, setModInput] = useState("");
   const addMod = () => {
     if (!modInput) return;
-    const pubkey = normalizeToHex(modInput);
+    const pubkey = normalizeToHexPubkey(modInput);
     if (pubkey) {
       setValue("mods", getValues("mods").concat(pubkey));
     }
@@ -308,7 +305,7 @@ export default function CommunityCreateModal({
               ))}
             </Flex>
             <Flex gap="2">
-              <RelayUrlInput value={relayInput} onChange={(v) => setRelayInput(v)} />
+              <RelayUrlInput value={relayInput} onChange={(e) => setRelayInput(e.target.value)} />
               <Button isDisabled={!relayInput} onClick={addRelay}>
                 Add
               </Button>

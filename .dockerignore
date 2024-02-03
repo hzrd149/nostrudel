@@ -1,0 +1,8 @@
+node_modules
+dist
+.github
+.vscode
+.changeset
+scripts
+screenshots
+relay

@@ -5,10 +5,10 @@ export type MenuIconButtonProps = IconButtonProps & {
   children: MenuListProps["children"];
 };
 
-export function CustomMenuIconButton({ children, ...props }: MenuIconButtonProps) {
+export function CustomMenuIconButton({ children, icon, ...props }: MenuIconButtonProps) {
   return (
     <Menu isLazy>
-      <MenuButton as={IconButton} icon={<MoreIcon />} {...props} />
+      <MenuButton as={IconButton} icon={icon || <MoreIcon />} {...props} />
       <MenuList zIndex={100}>{children}</MenuList>
     </Menu>
   );

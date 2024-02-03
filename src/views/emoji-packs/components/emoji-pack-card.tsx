@@ -17,7 +17,7 @@ import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";

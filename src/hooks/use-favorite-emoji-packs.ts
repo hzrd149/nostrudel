@@ -7,7 +7,7 @@ export const FAVORITE_LISTS_IDENTIFIER = "nostrudel-favorite-lists";
 
 export default function useFavoriteEmojiPacks(
   pubkey?: string,
-  additionalRelays: string[] = [],
+  additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
   const account = useCurrentAccount();

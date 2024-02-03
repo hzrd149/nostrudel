@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
 import { EmbedEventPointer } from "../embed-event";
 import appSettings from "../../services/settings/app-settings";
+import { STEMSTR_RELAY } from "../../helpers/nostr/stemstr";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
@@ -121,7 +122,7 @@ export function renderStemstrUrl(match: URL) {
   const [_, base, id] = match.pathname.split("/");
   if (base !== "thread" || id.length !== 64) return null;
 
-  return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: ["wss://relay.stemstr.app"] } }} />;
+  return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: [STEMSTR_RELAY] } }} />;
 }
 
 export function renderSoundCloudUrl(match: URL) {

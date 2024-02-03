@@ -1,27 +1,26 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
-import { Button, Flex, FlexProps, Heading, useToast } from "@chakra-ui/react";
-import { useSigningContext } from "../../../providers/signing-provider";
+import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 import clientRelaysService from "../../../services/client-relays";
-import { unique } from "../../../helpers/array";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import { useUserRelays } from "../../../hooks/use-user-relays";
-import { RelayMode } from "../../../classes/relay";
-import { useDecryptionContext } from "../../../providers/dycryption-provider";
+import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import RelaySet from "../../../classes/relay-set";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function SendMessageForm({
   pubkey,
   rootId,
   ...props
 }: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
-  const toast = useToast();
-  const { requestEncrypt, requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
+  const { requestEncrypt } = useSigningContext();
   const { getOrCreateContainer } = useDecryptionContext();
 
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -33,40 +32,38 @@ export default function SendMessageForm({
   });
   watch("content");
 
-  const textAreaRef = useRef<RefType | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const autocompleteRef = useRef<RefType | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { onPaste } = useTextAreaUploadFileWithForm(autocompleteRef, getValues, setValue);
 
-  const usersInbox = useUserRelays(pubkey)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
+  const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
-    try {
-      if (!values.content) return;
-      setLoadingMessage("Encrypting...");
-      const encrypted = await requestEncrypt(values.content, pubkey);
+    if (!values.content) return;
+    setLoadingMessage("Encrypting...");
+    const encrypted = await requestEncrypt(values.content, pubkey);
 
-      const event: DraftNostrEvent = {
-        kind: Kind.EncryptedDirectMessage,
-        content: encrypted,
-        tags: [["p", pubkey]],
-        created_at: dayjs().unix(),
-      };
+    const draft: DraftNostrEvent = {
+      kind: kinds.EncryptedDirectMessage,
+      content: encrypted,
+      tags: [["p", pubkey]],
+      created_at: dayjs().unix(),
+    };
 
-      if (rootId) {
-        event.tags.push(["e", rootId, "", "root"]);
-      }
+    if (rootId) {
+      draft.tags.push(["e", rootId, "", "root"]);
+    }
 
-      setLoadingMessage("Signing...");
-      const signed = await requestSignature(event);
-      const writeRelays = clientRelaysService.getWriteUrls();
-      const relays = unique([...writeRelays, ...usersInbox]);
-      new NostrPublishAction("Send DM", relays, signed);
+    setLoadingMessage("Signing...");
+    const pub = await publish("Send DM", draft, userMailboxes?.inbox);
+
+    if (pub) {
       reset();
 
       // add plaintext to decryption context
       getOrCreateContainer(pubkey, encrypted).plaintext.next(values.content);
-    } catch (e) {
-      if (e instanceof Error) toast({ status: "error", description: e.message });
+
+      // refocus input
+      setTimeout(() => textAreaRef.current?.focus(), 50);
     }
     setLoadingMessage("");
   });
@@ -87,7 +84,8 @@ export default function SendMessageForm({
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
             rows={2}
             isRequired
-            instanceRef={(inst) => (textAreaRef.current = inst)}
+            instanceRef={(inst) => (autocompleteRef.current = inst)}
+            ref={textAreaRef}
             onPaste={onPaste}
             onKeyDown={(e) => {
               if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();

@@ -1,16 +1,16 @@
 import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { ExternalLinkIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -27,13 +27,13 @@ function BadgesPage() {
     },
     [muteFilter],
   );
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${listId}-lists`,
     readRelays,
     {
       "#p": filter?.authors,
-      kinds: [Kind.BadgeAward],
+      kinds: [kinds.BadgeAward],
     },
     { eventFilter },
   );

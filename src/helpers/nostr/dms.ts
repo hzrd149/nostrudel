@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { NostrEvent, isPTag } from "../../types/nostr-event";
+import { sortByDate } from "./events";
 
 export function getDMSender(event: NostrEvent) {
   return event.pubkey;
@@ -10,8 +11,56 @@ export function getDMRecipient(event: NostrEvent) {
   return pubkey;
 }
 
+export type UnknownConversation = { pubkeys: [string, string]; messages: NostrEvent[] };
+export type KnownConversation = UnknownConversation & { myself: string; correspondent: string };
+
+export function groupIntoConversations(messages: NostrEvent[]) {
+  const conversations: Record<string, UnknownConversation> = {};
+
+  for (const message of messages) {
+    try {
+      const sender = getDMSender(message);
+      const recipient = getDMRecipient(message);
+
+      const pubkeys = sender > recipient ? [sender, recipient] : [recipient, sender];
+      const key = pubkeys.join("-");
+
+      conversations[key] = conversations[key] || { pubkeys, messages: [] };
+
+      conversations[key].messages.push(message);
+    } catch (e) {}
+  }
+
+  return Object.values(conversations);
+}
+
+export function getCorrespondent(conversion: UnknownConversation, myself: string) {
+  return myself === conversion.pubkeys[0] ? conversion.pubkeys[1] : conversion.pubkeys[0];
+}
+
+export function identifyConversation(conversations: UnknownConversation, myself: string): KnownConversation {
+  const correspondent = getCorrespondent(conversations, myself);
+  return { ...conversations, myself, correspondent };
+}
+
+export function hasResponded(conversion: KnownConversation) {
+  const latestReceived = conversion.messages.find((m) => getDMSender(m) === conversion.correspondent);
+  const latestSent = conversion.messages.find((m) => getDMSender(m) === conversion.myself);
+
+  if (latestReceived && latestSent && latestSent.created_at > latestReceived.created_at) return false;
+  return true;
+}
+
+export function sortConversationsByLastReceived(conversations: KnownConversation[]) {
+  return conversations.sort((a, b) => {
+    const aLatest = a.messages.find((m) => getDMSender(m) === a.correspondent) || a.messages[0];
+    const bLatest = b.messages.find((m) => getDMSender(m) === b.correspondent) || b.messages[0];
+    return bLatest.created_at - aLatest.created_at;
+  });
+}
+
 export function groupMessages(messages: NostrEvent[], minutes = 5, ascending = false) {
-  const sorted = messages.sort((a, b) => b.created_at - a.created_at);
+  const sorted = messages.sort(sortByDate);
 
   const groups: { id: string; pubkey: string; events: NostrEvent[] }[] = [];
   for (const message of sorted) {

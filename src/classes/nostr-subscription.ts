@@ -19,7 +19,7 @@ export default class NostrSubscription {
   onEvent = new Subject<NostrEvent>();
   onEOSE = new Subject<IncomingEOSE>();
 
-  constructor(relayUrl: string, query?: NostrRequestFilter, name?: string) {
+  constructor(relayUrl: string | URL, query?: NostrRequestFilter, name?: string) {
     this.id = nanoid();
     this.query = query;
     this.name = name;

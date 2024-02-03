@@ -1,15 +1,11 @@
 import { nanoid } from "nanoid";
-import stringify from "json-stringify-deterministic";
 
 import { Subject } from "./subject";
 import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingRequest, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
 import Relay, { IncomingEvent } from "./relay";
 import relayPoolService from "../services/relay-pool";
-
-function isFilterEqual(a: NostrRequestFilter, b: NostrRequestFilter) {
-  return stringify(a) === stringify(b);
-}
+import { isFilterEqual, isQueryMapEqual } from "../helpers/nostr/filter";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -62,7 +58,7 @@ export default class NostrMultiSubscription {
   }
 
   setQueryMap(queryMap: RelayQueryMap) {
-    if (isFilterEqual(this.queryMap, queryMap)) return;
+    if (isQueryMapEqual(this.queryMap, queryMap)) return;
 
     // add and remove relays
     for (const url of Object.keys(queryMap)) {
@@ -128,6 +124,9 @@ export default class NostrMultiSubscription {
     this.updateRelayQueries();
 
     return this;
+  }
+  waitForConnection(): Promise<void> {
+    return Promise.all(this.relays.map((r) => r.waitForConnection())).then((v) => void 0);
   }
   close() {
     if (this.state !== NostrMultiSubscription.OPEN) return this;

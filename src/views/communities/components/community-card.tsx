@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 import UserAvatarLink from "../../../components/user-avatar-link";

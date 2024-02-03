@@ -1,15 +1,11 @@
 import { PropsWithChildren } from "react";
 import {
   Box,
-  Button,
-  ButtonProps,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   CardProps,
-  Checkbox,
-  CheckboxProps,
   Flex,
   Heading,
   IconButton,
@@ -31,13 +27,11 @@ import { RelayFavicon } from "../../../components/relay-favicon";
 import { CodeIcon } from "../../../components/icons";
 import UserLink from "../../../components/user-link";
 import UserAvatar from "../../../components/user-avatar";
-import { useClientRelays } from "../../../hooks/use-client-relays";
-import clientRelaysService from "../../../services/client-relays";
-import { RelayMode } from "../../../classes/relay";
 import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import RawJson from "../../../components/debug-modals/raw-json";
+import RawJson from "../../../components/debug-modal/raw-json";
 import { RelayShareButton } from "./relay-share-button";
+import useRelayStats from "../../../hooks/use-relay-stats";
+import { getNetwork } from "../../../helpers/nostr/relay-stats";
 
 const B = styled.span`
   font-weight: bold;
@@ -52,6 +46,7 @@ export const Metadata = ({ name, children }: { name: string } & PropsWithChildre
 
 export function RelayMetadata({ url, extended }: { url: string; extended?: boolean }) {
   const { info } = useRelayInfo(url);
+  const { stats } = useRelayStats(url);
 
   return (
     <Box>
@@ -66,6 +61,7 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
       )}
       {extended && (
         <>
+          {stats && <Metadata name="Network">{getNetwork(stats)}</Metadata>}
           <Metadata name="Software">{info?.software}</Metadata>
           <Metadata name="Version">{info?.version}</Metadata>
         </>
@@ -74,52 +70,52 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
   );
 }
 
-export function RelayJoinAction({ url, ...props }: { url: string } & Omit<ButtonProps, "children" | "onClick">) {
-  const account = useCurrentAccount();
-  const clientRelays = useClientRelays();
-  const relayConfig = clientRelays.find((r) => r.url === url);
+// export function RelayJoinAction({ url, ...props }: { url: string } & Omit<ButtonProps, "children" | "onClick">) {
+//   const account = useCurrentAccount();
+//   const clientRelays = useClientRelays();
+//   const relayConfig = clientRelays.find((r) => r.url === url);
 
-  return relayConfig ? (
-    <Button
-      colorScheme="red"
-      variant="outline"
-      onClick={() => clientRelaysService.removeRelay(url)}
-      isDisabled={!account}
-      {...props}
-    >
-      Leave
-    </Button>
-  ) : (
-    <Button
-      colorScheme="green"
-      onClick={() => clientRelaysService.addRelay(url, RelayMode.ALL)}
-      isDisabled={!account}
-      {...props}
-    >
-      Join
-    </Button>
-  );
-}
+//   return relayConfig ? (
+//     <Button
+//       colorScheme="red"
+//       variant="outline"
+//       onClick={() => clientRelaysService.removeRelay(url)}
+//       isDisabled={!account}
+//       {...props}
+//     >
+//       Leave
+//     </Button>
+//   ) : (
+//     <Button
+//       colorScheme="green"
+//       onClick={() => clientRelaysService.addRelay(url, RelayMode.ALL)}
+//       isDisabled={!account}
+//       {...props}
+//     >
+//       Join
+//     </Button>
+//   );
+// }
 
-export function RelayModeAction({
-  url,
-  ...props
-}: { url: string } & Omit<CheckboxProps, "children" | "isChecked" | "onChange">) {
-  const clientRelays = useClientRelays();
-  const relayConfig = clientRelays.find((r) => r.url === url);
+// export function RelayModeAction({
+//   url,
+//   ...props
+// }: { url: string } & Omit<CheckboxProps, "children" | "isChecked" | "onChange">) {
+//   const clientRelays = useClientRelays();
+//   const relayConfig = clientRelays.find((r) => r.url === url);
 
-  return relayConfig ? (
-    <Checkbox
-      isChecked={!!(relayConfig.mode & RelayMode.WRITE)}
-      onChange={(e) => {
-        clientRelaysService.updateRelay(relayConfig.url, e.target.checked ? RelayMode.WRITE : RelayMode.READ);
-      }}
-      {...props}
-    >
-      Write
-    </Checkbox>
-  ) : null;
-}
+//   return relayConfig ? (
+//     <Checkbox
+//       isChecked={!!(relayConfig.mode & RelayMode.WRITE)}
+//       onChange={(e) => {
+//         clientRelaysService.updateRelay(relayConfig.url, e.target.checked ? RelayMode.WRITE : RelayMode.READ);
+//       }}
+//       {...props}
+//     >
+//       Write
+//     </Checkbox>
+//   ) : null;
+// }
 
 export function RelayDebugButton({ url, ...props }: { url: string } & Omit<IconButtonProps, "icon" | "aria-label">) {
   const { info } = useRelayInfo(url);
@@ -170,11 +166,10 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
           <RelayMetadata url={url} />
         </CardBody>
         <CardFooter p="2" as={Flex} gap="2">
-          <RelayJoinAction url={url} size="sm" />
-          <RelayModeAction url={url} />
+          {/* <RelayJoinAction url={url} size="sm" /> */}
+          {/* <RelayModeAction url={url} /> */}
 
-          <RelayShareButton relay={url} ml="auto" size="sm" />
-          <RelayDebugButton url={url} size="sm" title="Show raw NIP-11 metadata" />
+          {/* <RelayShareButton relay={url} ml="auto" size="sm" /> */}
         </CardFooter>
       </Card>
     </>

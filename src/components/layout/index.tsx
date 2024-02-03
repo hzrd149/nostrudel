@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { Box, Container, Flex, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useKeyPressEvent } from "react-use";
+import React from "react";
+import { Box, Container, Flex, Spacer } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../error-boundary";
 import { ReloadPrompt } from "../reload-prompt";
@@ -9,26 +8,11 @@ import MobileBottomNav from "./mobile-bottom-nav";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import GhostToolbar from "./ghost-toolbar";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
-import SearchModal from "../search-modal";
-import { useLocation } from "react-router-dom";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const isGhost = useSubject(accountService.isGhost);
-  const searchModal = useDisclosure();
-
-  useKeyPressEvent("k", (e) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      searchModal.onOpen();
-    }
-  });
-
-  const location = useLocation();
-  useEffect(() => {
-    searchModal.onClose();
-  }, [location.pathname]);
 
   return (
     <>
@@ -64,7 +48,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Spacer display={["none", null, "block"]} />
       </Flex>
       {isGhost && <GhostToolbar />}
-      {searchModal.isOpen && <SearchModal isOpen onClose={searchModal.onClose} />}
     </>
   );
 }

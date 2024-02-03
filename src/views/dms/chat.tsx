@@ -1,29 +1,30 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, Card, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
-import { UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
 import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user-avatar";
 import UserLink from "../../components/user-link";
-import { isHexKey } from "../../helpers/nip19";
 import useSubject from "../../hooks/use-subject";
-import RequireCurrentAccount from "../../providers/require-current-account";
-import MessageBlock from "./components/message-block";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import { useDecryptionContext } from "../../providers/dycryption-provider";
+import { useDecryptionContext } from "../../providers/global/dycryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
-import ThreadsProvider from "./components/thread-provider";
+import ThreadsProvider from "../../providers/local/thread-provider";
 import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
+import DirectMessageBlock from "./components/direct-message-block";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import RelaySet from "../../classes/relay-set";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -37,7 +38,7 @@ const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
   return (
     <>
       {grouped.map((group) => (
-        <MessageBlock key={group.id} messages={group.events} reverse />
+        <DirectMessageBlock key={group.id} messages={group.events} reverse />
       ))}
     </>
   );
@@ -70,19 +71,24 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
-  const myInbox = useReadRelayUrls();
-  const timeline = useTimelineLoader(`${pubkey}-${account.pubkey}-messages`, myInbox, [
-    {
-      kinds: [Kind.EncryptedDirectMessage],
-      "#p": [account.pubkey],
-      authors: [pubkey],
-    },
-    {
-      kinds: [Kind.EncryptedDirectMessage],
-      "#p": [pubkey],
-      authors: [account.pubkey],
-    },
-  ]);
+  const otherMailboxes = useUserMailboxes(pubkey);
+  const mailboxes = useUserMailboxes(account.pubkey);
+  const timeline = useTimelineLoader(
+    `${pubkey}-${account.pubkey}-messages`,
+    RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
+    [
+      {
+        kinds: [kinds.EncryptedDirectMessage],
+        "#p": [account.pubkey],
+        authors: [pubkey],
+      },
+      {
+        kinds: [kinds.EncryptedDirectMessage],
+        "#p": [pubkey],
+        authors: [account.pubkey],
+      },
+    ],
+  );
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
@@ -142,25 +148,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   );
 }
 
-function useUserPointer() {
-  const { pubkey } = useParams() as { pubkey: string };
-
-  if (isHexKey(pubkey)) return { pubkey, relays: [] };
-  const pointer = nip19.decode(pubkey);
-
-  switch (pointer.type) {
-    case "npub":
-      return { pubkey: pointer.data as string, relays: [] };
-    case "nprofile":
-      const d = pointer.data as nip19.ProfilePointer;
-      return { pubkey: d.pubkey, relays: d.relays ?? [] };
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
-  }
-}
-
 export default function DirectMessageChatView() {
-  const { pubkey } = useUserPointer();
+  const { pubkey } = useParamsProfilePointer();
 
   return (
     <RequireCurrentAccount>

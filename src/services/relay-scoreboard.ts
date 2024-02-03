@@ -201,8 +201,8 @@ class RelayScoreboardService {
     return score;
   }
 
-  getRankedRelays(customRelays?: string[]) {
-    const relays = customRelays ?? this.getRelays();
+  getRankedRelays(urls?: Iterable<string>) {
+    const relays = (urls && Array.from(urls)) ?? this.getRelays();
     const relayScores = new Map<string, number>();
 
     for (const relay of relays) {
@@ -255,11 +255,13 @@ class RelayScoreboardService {
 
 const relayScoreboardService = new RelayScoreboardService();
 
-relayScoreboardService.loadStats();
+setTimeout(() => {
+  relayScoreboardService.loadStats();
+}, 0);
 
 setInterval(() => {
   relayScoreboardService.saveStats();
-}, 1000 * 5);
+}, 1000 * 30);
 
 if (import.meta.env.DEV) {
   // @ts-ignore

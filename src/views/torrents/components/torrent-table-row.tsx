@@ -7,8 +7,8 @@ import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../../components/timestamp";
 import UserLink from "../../../components/user-link";
 import Magnet from "../../../components/icons/magnet";
-import { getNeventForEventId } from "../../../helpers/nip19";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { getSharableEventAddress } from "../../../helpers/nip19";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { formatBytes } from "../../../helpers/number";
 import NoteZapButton from "../../../components/note/note-zap-button";
@@ -58,7 +58,7 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
           ))}
       </Td>
       <Td>
-        <Link as={RouterLink} to={`/torrents/${getNeventForEventId(torrent.id)}`} isTruncated maxW="lg">
+        <Link as={RouterLink} to={`/torrents/${getSharableEventAddress(torrent)}`} isTruncated maxW="lg">
           {getTorrentTitle(torrent)}
         </Link>
       </Td>

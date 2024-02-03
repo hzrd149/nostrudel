@@ -1,9 +1,12 @@
-import { Kind, nip25 } from "nostr-tools";
+import { Filter, kinds, nip25 } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
+import { localRelay } from "./local-relay";
+import { relayRequest } from "../helpers/relay";
 
 type eventId = string;
 type relay = string;
@@ -12,7 +15,7 @@ class EventReactionsService {
   subjects = new SuperMap<eventId, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
   pending = new SuperMap<eventId, Set<relay>>(() => new Set());
 
-  requestReactions(eventId: string, relays: relay[], alwaysRequest = true) {
+  requestReactions(eventId: string, relays: Iterable<string>, alwaysRequest = true) {
     const subject = this.subjects.get(eventId);
 
     if (!subject.value || alwaysRequest) {
@@ -20,12 +23,13 @@ class EventReactionsService {
         this.pending.get(eventId).add(relay);
       }
     }
+    this.throttleBatchRequest();
 
     return subject;
   }
 
-  handleEvent(event: NostrEvent) {
-    if (event.kind !== Kind.Reaction) return;
+  handleEvent(event: NostrEvent, cache = true) {
+    if (event.kind !== kinds.Reaction) return;
     const pointer = nip25.getReactedEventPointer(event);
     if (!pointer?.id) return;
 
@@ -35,10 +39,23 @@ class EventReactionsService {
     } else if (!subject.value.some((e) => e.id === event.id)) {
       subject.next([...subject.value, event]);
     }
+
+    if (cache) localRelay.publish(event);
   }
 
+  throttleBatchRequest = _throttle(this.batchRequests, 2000);
   batchRequests() {
     if (this.pending.size === 0) return;
+
+    // load events from cache
+    const uids = Array.from(this.pending.keys());
+    const ids = uids.filter((id) => !id.includes(":"));
+    const cords = uids.filter((id) => id.includes(":"));
+    const filters: Filter[] = [];
+    if (ids.length > 0) filters.push({ "#e": ids, kinds: [kinds.Reaction] });
+    if (cords.length > 0) filters.push({ "#a": cords, kinds: [kinds.Reaction] });
+    if (filters.length > 0)
+      relayRequest(localRelay, filters).then((events) => events.forEach((e) => this.handleEvent(e, false)));
 
     const idsFromRelays: Record<relay, eventId[]> = {};
     for (const [id, relays] of this.pending) {
@@ -49,9 +66,17 @@ class EventReactionsService {
     }
 
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const request = new NostrRequest([relay]);
-      request.onEvent.subscribe(this.handleEvent, this);
-      request.start({ "#e": ids, kinds: [Kind.Reaction] });
+      const eventIds = ids.filter((id) => !id.includes(":"));
+      const coordinates = ids.filter((id) => id.includes(":"));
+      const filters: Filter[] = [];
+      if (eventIds.length > 0) filters.push({ "#e": eventIds, kinds: [kinds.Reaction] });
+      if (coordinates.length > 0) filters.push({ "#a": coordinates, kinds: [kinds.Reaction] });
+
+      if (filters.length > 0) {
+        const request = new NostrRequest([relay]);
+        request.onEvent.subscribe(this.handleEvent, this);
+        request.start(filters);
+      }
     }
     this.pending.clear();
   }
@@ -59,8 +84,9 @@ class EventReactionsService {
 
 const eventReactionsService = new EventReactionsService();
 
-setInterval(() => {
-  eventReactionsService.batchRequests();
-}, 1000 * 2);
+if (import.meta.env.DEV) {
+  //@ts-expect-error
+  window.eventReactionsService = eventReactionsService;
+}
 
 export default eventReactionsService;

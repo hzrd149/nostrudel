@@ -1,14 +1,11 @@
 import { useCallback } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
-import { BroadcastEventIcon, CodeIcon } from "../icons";
+import { BroadcastEventIcon } from "../icons";
 import { NostrEvent } from "../../types/nostr-event";
 import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
-import NoteDebugModal from "../debug-modals/note-debug-modal";
-import clientRelaysService from "../../services/client-relays";
-import { handleEventFromRelay } from "../../services/event-relays";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import NoteTranslationModal from "../note-translation-modal";
+import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
 import InfoCircle from "../icons/info-circle";
 import PinNoteMenuItem from "../common-menu-items/pin-note";
@@ -17,21 +14,21 @@ import OpenInAppMenuItem from "../common-menu-items/open-in-app";
 import MuteUserMenuItem from "../common-menu-items/mute-user";
 import DeleteEventMenuItem from "../common-menu-items/delete-event";
 import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
+import { getSharableEventAddress } from "../../helpers/nip19";
+import Recording02 from "../icons/recording-02";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
 
 export default function NoteMenu({
   event,
   detailsClick,
   ...props
 }: { event: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
-  const debugModal = useDisclosure();
   const translationsModal = useDisclosure();
+  const publish = usePublishEvent();
 
-  const broadcast = useCallback(() => {
-    const missingRelays = clientRelaysService.getWriteUrls();
-    const pub = new NostrPublishAction("Broadcast", missingRelays, event, 5000);
-    pub.onResult.subscribe((result) => {
-      if (result.status) handleEventFromRelay(result.relay, event);
-    });
+  const broadcast = useCallback(async () => {
+    await publish("Broadcast", event);
   }, []);
 
   return (
@@ -42,26 +39,33 @@ export default function NoteMenu({
         <CopyEmbedCodeMenuItem event={event} />
         <MuteUserMenuItem event={event} />
         <DeleteEventMenuItem event={event} />
+
+        <MenuItem
+          as={RouterLink}
+          icon={<Recording02 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=tts`}
+        >
+          Text to speech
+        </MenuItem>
+        <MenuItem
+          as={RouterLink}
+          icon={<Translate01 />}
+          to={`/tools/transform/${getSharableEventAddress(event)}?tab=translation`}
+        >
+          Translate
+        </MenuItem>
+
+        <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
+          Broadcast
+        </MenuItem>
+        <PinNoteMenuItem event={event} />
         {detailsClick && (
           <MenuItem onClick={detailsClick} icon={<InfoCircle />}>
             Details
           </MenuItem>
         )}
-        <MenuItem onClick={translationsModal.onOpen} icon={<Translate01 />}>
-          Translations
-        </MenuItem>
-        <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
-          Broadcast
-        </MenuItem>
-        <PinNoteMenuItem event={event} />
-        <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
-          View Raw
-        </MenuItem>
+        <DebugEventMenuItem event={event} />
       </CustomMenuIconButton>
-
-      {debugModal.isOpen && (
-        <NoteDebugModal event={event} isOpen={debugModal.isOpen} onClose={debugModal.onClose} size="6xl" />
-      )}
 
       {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={event} />}
     </>

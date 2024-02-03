@@ -1,36 +1,63 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
+import { useMemo, useRef } from "react";
+import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user-avatar";
-import { getUserDisplayName } from "../../helpers/user-metadata";
 import useSubject from "../../hooks/use-subject";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
-import directMessagesService from "../../services/direct-messages";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import Timestamp from "../../components/timestamp";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import useCurrentAccount from "../../hooks/use-current-account";
+import { KnownConversation, groupIntoConversations, hasResponded, identifyConversation } from "../../helpers/nostr/dms";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import { useDMTimeline } from "../../providers/global/dm-timeline";
+import UserName from "../../components/user-name";
+import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
+import { NostrEvent } from "../../types/nostr-event";
+import { CheckIcon } from "../../components/icons";
+import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
 
-function ContactCard({ pubkey }: { pubkey: string }) {
-  const subject = useMemo(() => directMessagesService.getUserMessages(pubkey), [pubkey]);
-  const messages = useSubject(subject);
-  const metadata = useUserMetadata(pubkey);
+function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
+  const ref = useRef<HTMLParagraphElement | null>(null);
+  useRegisterIntersectionEntity(ref, message.id);
+
+  const { plaintext } = useDecryptionContainer(pubkey, message.content);
+  return (
+    <Text isTruncated ref={ref}>
+      {plaintext || "<Encrypted>"}
+    </Text>
+  );
+}
+
+function ConversationCard({ conversation }: { conversation: KnownConversation }) {
   const location = useLocation();
-  const latestMessage = messages[0];
+  const lastReceived = conversation.messages.find((m) => m.pubkey === conversation.correspondent);
+  const lastMessage = conversation.messages[0];
+
+  const ref = useRef<HTMLDivElement | null>(null);
+  useRegisterIntersectionEntity(ref, lastMessage.id);
 
   return (
-    <LinkBox as={Card} size="sm">
+    <LinkBox as={Card} size="sm" ref={ref}>
       <CardBody display="flex" gap="2" overflow="hidden">
-        <UserAvatar pubkey={pubkey} />
+        <UserAvatar pubkey={conversation.correspondent} />
         <Flex direction="column" gap="1" overflow="hidden" flex={1}>
-          <Text flex={1}>{getUserDisplayName(metadata, pubkey)}</Text>
-          {latestMessage && <Timestamp flexShrink={0} timestamp={latestMessage.created_at} />}
+          <Flex gap="2" alignItems="center" overflow="hidden">
+            <UserName pubkey={conversation.correspondent} isTruncated />
+            <UserDnsIdentityIcon onlyIcon pubkey={conversation.correspondent} />
+            <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />
+            {hasResponded(conversation) && <CheckIcon boxSize={4} color="green.500" />}
+          </Flex>
+          {lastReceived && <MessagePreview message={lastReceived} pubkey={lastReceived.pubkey} />}
         </Flex>
       </CardBody>
-      <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}` + location.search} />
+      <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}` + location.search} />
     </LinkBox>
   );
 }
@@ -38,32 +65,23 @@ function ContactCard({ pubkey }: { pubkey: string }) {
 function DirectMessagesPage() {
   const params = useParams();
   const { people } = usePeopleListContext();
-  const [from, setFrom] = useState(dayjs().subtract(2, "days").unix());
-  const conversations = useSubject(directMessagesService.conversations);
 
-  useEffect(() => directMessagesService.loadDateRange(from), [from]);
+  const account = useCurrentAccount()!;
+  const timeline = useDMTimeline();
 
-  const [loading, setLoading] = useState(false);
-  const loadMore = () => {
-    setLoading(true);
-    setFrom((date) => dayjs(date).subtract(2, "days").unix());
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  };
+  const messages = useSubject(timeline.timeline);
+  const conversations = useMemo(() => {
+    const conversations = groupIntoConversations(messages).map((c) => identifyConversation(c, account.pubkey));
+    const filtered = conversations.filter((conversation) =>
+      people ? people.some((p) => p.pubkey === conversation.correspondent) : true,
+    );
 
-  const sortedConversations = useMemo(() => {
-    return Array.from(conversations)
-      .filter((pubkey) => (people ? people.some((p) => p.pubkey === pubkey) : true))
-      .sort((a, b) => {
-        const latestA = directMessagesService.getUserMessages(a).value[0]?.created_at ?? 0;
-        const latestB = directMessagesService.getUserMessages(b).value[0]?.created_at ?? 0;
-
-        return latestB - latestA;
-      });
-  }, [conversations, people]);
+    return filtered.sort((a, b) => b.messages[0].created_at - a.messages[0].created_at);
+  }, [messages, people, account.pubkey]);
 
   const isChatOpen = !!params.pubkey;
+
+  const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <Flex gap="4" h={{ base: "calc(100vh - 3.5rem)", md: "100vh" }} overflow="hidden">
@@ -78,15 +96,14 @@ function DirectMessagesPage() {
         hideBelow={!isChatOpen ? undefined : "xl"}
       >
         <Flex gap="2">
-          {/* <Input type="search" placeholder="Search" /> */}
           <PeopleListSelection flexShrink={0} />
         </Flex>
-        {sortedConversations.map((pubkey) => (
-          <ContactCard key={pubkey} pubkey={pubkey} />
-        ))}
-        <Button onClick={loadMore} isLoading={loading} flexShrink={0}>
-          Load More
-        </Button>
+        <IntersectionObserverProvider callback={callback}>
+          {conversations.map((conversation) => (
+            <ConversationCard key={conversation.pubkeys.join("-")} conversation={conversation} />
+          ))}
+        </IntersectionObserverProvider>
+        <TimelineActionAndStatus timeline={timeline} />
       </Flex>
       <Flex gap="2" direction="column" flex={1} hideBelow={!isChatOpen ? "xl" : undefined} overflow="hidden">
         <Outlet />

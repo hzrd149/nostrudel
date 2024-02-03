@@ -1,11 +1,12 @@
-import { Kind } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrRequestFilter } from "../types/nostr-query";
-import { isHexKey } from "../helpers/nip19";
+import { relayRequest } from "../helpers/relay";
+import { localRelay } from "./local-relay";
 
 type eventUID = string;
 type relay = string;
@@ -14,7 +15,7 @@ class EventZapsService {
   subjects = new SuperMap<eventUID, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
   pending = new SuperMap<eventUID, Set<relay>>(() => new Set());
 
-  requestZaps(eventUID: eventUID, relays: relay[], alwaysRequest = true) {
+  requestZaps(eventUID: eventUID, relays: Iterable<string>, alwaysRequest = true) {
     const subject = this.subjects.get(eventUID);
 
     if (!subject.value || alwaysRequest) {
@@ -22,12 +23,13 @@ class EventZapsService {
         this.pending.get(eventUID).add(relay);
       }
     }
+    this.throttleBatchRequest();
 
     return subject;
   }
 
-  handleEvent(event: NostrEvent) {
-    if (event.kind !== Kind.Zap) return;
+  handleEvent(event: NostrEvent, cache = true) {
+    if (event.kind !== kinds.Zap) return;
     const eventUID = event.tags.find(isETag)?.[1] ?? event.tags.find(isATag)?.[1];
     if (!eventUID) return;
 
@@ -37,10 +39,23 @@ class EventZapsService {
     } else if (!subject.value.some((e) => e.id === event.id)) {
       subject.next([...subject.value, event]);
     }
+
+    if (cache) localRelay.publish(event);
   }
 
+  throttleBatchRequest = _throttle(this.batchRequests, 2000);
   batchRequests() {
     if (this.pending.size === 0) return;
+
+    // load events from cache
+    const uids = Array.from(this.pending.keys());
+    const ids = uids.filter((id) => !id.includes(":"));
+    const cords = uids.filter((id) => id.includes(":"));
+    const filters: Filter[] = [];
+    if (ids.length > 0) filters.push({ "#e": ids, kinds: [kinds.Zap] });
+    if (cords.length > 0) filters.push({ "#a": cords, kinds: [kinds.Zap] });
+    if (filters.length > 0)
+      relayRequest(localRelay, filters).then((events) => events.forEach((e) => this.handleEvent(e, false)));
 
     const idsFromRelays: Record<relay, eventUID[]> = {};
     for (const [id, relays] of this.pending) {
@@ -51,20 +66,17 @@ class EventZapsService {
     }
 
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const request = new NostrRequest([relay]);
-      request.onEvent.subscribe(this.handleEvent, this);
-      const eventIds = ids.filter(isHexKey);
+      const eventIds = ids.filter((id) => !id.includes(":"));
       const coordinates = ids.filter((id) => id.includes(":"));
+      const filter: Filter[] = [];
+      if (eventIds.length > 0) filter.push({ "#e": eventIds, kinds: [kinds.Zap] });
+      if (coordinates.length > 0) filter.push({ "#a": coordinates, kinds: [kinds.Zap] });
 
-      const queries: NostrRequestFilter = [];
-      if (eventIds.length > 0) {
-        queries.push({ "#e": eventIds, kinds: [Kind.Zap] });
+      if (filter.length > 0) {
+        const request = new NostrRequest([relay]);
+        request.onEvent.subscribe(this.handleEvent, this);
+        request.start(filter);
       }
-      if (coordinates.length > 0) {
-        queries.push({ "#a": coordinates, kinds: [Kind.Zap] });
-      }
-
-      request.start(queries);
     }
     this.pending.clear();
   }
@@ -76,9 +88,5 @@ if (import.meta.env.DEV) {
   // @ts-ignore
   window.eventZapsService = eventZapsService;
 }
-
-setInterval(() => {
-  eventZapsService.batchRequests();
-}, 1000 * 2);
 
 export default eventZapsService;

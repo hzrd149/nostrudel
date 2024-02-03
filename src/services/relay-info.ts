@@ -1,6 +1,7 @@
 import db from "./db";
 import { fetchWithCorsFallback } from "../helpers/cors";
 import { isHexKey } from "../helpers/nip19";
+import { validateRelayURL } from "../helpers/relay";
 
 export type RelayInformationDocument = {
   name: string;
@@ -22,7 +23,7 @@ function sanitizeInfo(info: RelayInformationDocument) {
 }
 
 async function fetchInfo(relay: string) {
-  const url = new URL(relay);
+  const url = validateRelayURL(relay);
   url.protocol = url.protocol === "ws:" ? "http" : "https";
 
   const infoDoc = await fetchWithCorsFallback(url, { headers: { Accept: "application/nostr+json" } }).then(
@@ -39,11 +40,12 @@ async function fetchInfo(relay: string) {
 
 const memoryCache = new Map<string, RelayInformationDocument>();
 async function getInfo(relay: string) {
-  if (memoryCache.has(relay)) return memoryCache.get(relay)!;
+  const url = validateRelayURL(relay).toString();
+  if (memoryCache.has(url)) return memoryCache.get(url)!;
 
-  const cached = await db.get("relayInfo", relay);
+  const cached = await db.get("relayInfo", url);
   if (cached) {
-    memoryCache.set(relay, cached);
+    memoryCache.set(url, cached);
     return cached as RelayInformationDocument;
   }
 

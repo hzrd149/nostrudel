@@ -8,7 +8,6 @@ import Code01 from "./icons/code-01";
 import DistributeSpacingVertical from "./icons/distribute-spacing-vertical";
 import Grid01 from "./icons/grid-01";
 import Microscope from "./icons/microscope";
-import Server04 from "./icons/server-04";
 import ChevronDown from "./icons/chevron-down";
 import ChevronUp from "./icons/chevron-up";
 import ChevronLeft from "./icons/chevron-left";
@@ -63,6 +62,11 @@ import ReverseLeft from "./icons/reverse-left";
 import Pin01 from "./icons/pin-01";
 import Translate01 from "./icons/translate-01";
 import MessageChatSquare from "./icons/message-chat-square";
+import Package from "./icons/package";
+import Magnet from "./icons/magnet";
+import Recording02 from "./icons/recording-02";
+import Upload01 from "./icons/upload-01";
+import Modem02 from "./icons/modem-02";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -90,7 +94,7 @@ export const ChevronLeftIcon = ChevronLeft;
 export const ChevronRightIcon = ChevronRight;
 
 export const LightningIcon = Zap;
-export const RelayIcon = Server04;
+export const RelayIcon = Modem02;
 export const BroadcastEventIcon = Share07;
 export const ShareIcon = Share07;
 export const PinIcon = Pin01;
@@ -232,7 +236,11 @@ export const WalletIcon = Wallet02;
 export const DownloadIcon = Download01;
 
 export const TranslateIcon = Translate01;
-
 export const ChannelsIcon = MessageChatSquare;
-
 export const ThreadIcon = MessageChatSquare;
+export const ThingsIcon = Package;
+export const TorrentIcon = Magnet;
+export const TrackIcon = Recording02;
+
+export const InboxIcon = Download01;
+export const OutboxIcon = Upload01;

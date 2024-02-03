@@ -4,7 +4,7 @@ import { Navigate, Link as RouterLink } from "react-router-dom";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventUID } from "../../helpers/nostr/events";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
@@ -14,7 +14,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 function UserGoalsManagerPage() {
   const account = useCurrentAccount()!;
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${account.pubkey}-goals`,
     readRelays,

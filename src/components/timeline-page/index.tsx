@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
 import TimelineLoader from "../../classes/timeline-loader";
@@ -11,6 +11,7 @@ import TimelineActionAndStatus from "./timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -34,8 +35,8 @@ export default function TimelinePage({
 }: { timeline: TimelineLoader; header?: React.ReactNode } & Omit<FlexProps, "children" | "direction" | "gap">) {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  const [params, setParams] = useSearchParams();
-  const mode = (params.get("view") as TimelineViewType) ?? "timeline";
+  const viewParam = useRouteSearchValue("view", "timeline");
+  const mode = (viewParam.value as TimelineViewType) ?? "timeline";
 
   const renderTimeline = () => {
     switch (mode) {

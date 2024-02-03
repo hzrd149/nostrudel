@@ -6,7 +6,7 @@ import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getGoalClosedDate, getGoalName } from "../../../helpers/nostr/goal";
 import GoalMenu from "./goal-menu";

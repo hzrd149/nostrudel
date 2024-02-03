@@ -1,20 +1,19 @@
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakra-ui/react";
 
-import { useUserRelays } from "../../hooks/use-user-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { truncatedId } from "../../helpers/nostr/events";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { RelayDebugButton, RelayJoinAction, RelayMetadata } from "../relays/components/relay-card";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { RelayDebugButton, RelayMetadata } from "../relays/components/relay-card";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useRelayInfo } from "../../hooks/use-relay-info";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { RelayShareButton } from "../relays/components/relay-share-button";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
   const { info } = useRelayInfo(url);
@@ -37,7 +36,7 @@ function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
         <Button as={RouterLink} to={`/global?relay=${url}`} size="sm">
           Notes
         </Button>
-        <RelayJoinAction url={url} size="sm" />
+        {/* <RelayJoinAction url={url} size="sm" /> */}
       </Flex>
       <RelayMetadata url={url} />
       {reviews.length > 0 && (
@@ -57,9 +56,9 @@ function getRelayReviews(url: string, events: NostrEvent[]) {
 
 const UserRelaysTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const userRelays = useUserRelays(pubkey);
+  const mailboxes = useUserMailboxes(pubkey);
 
-  const readRelays = useReadRelayUrls(userRelays.map((r) => r.url));
+  const readRelays = useReadRelays(mailboxes?.outbox);
   const timeline = useTimelineLoader(`${pubkey}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
@@ -72,21 +71,36 @@ const UserRelaysTab = () => {
 
   const otherReviews = reviews.filter((e) => {
     const url = e.tags.find((t) => t[0] === "r")?.[1];
-    return !userRelays.some((r) => r.url === url);
+    return url && !mailboxes?.relays.has(url);
   });
 
   return (
     <IntersectionObserverProvider callback={callback}>
+      <Heading size="lg" ml="2" mt="2">
+        Inboxes
+      </Heading>
       <VStack divider={<StackDivider />} py="2" align="stretch">
-        {userRelays.map((relayConfig) => (
+        {mailboxes?.inbox.urls.map((url) => (
           <ErrorBoundary>
-            <Relay key={relayConfig.url} url={relayConfig.url} reviews={getRelayReviews(relayConfig.url, reviews)} />
+            <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
+          </ErrorBoundary>
+        ))}
+      </VStack>
+      <Heading size="lg" ml="2" mt="2">
+        Outboxes
+      </Heading>
+      <VStack divider={<StackDivider />} py="2" align="stretch">
+        {mailboxes?.outbox.urls.map((url) => (
+          <ErrorBoundary>
+            <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
           </ErrorBoundary>
         ))}
       </VStack>
       {otherReviews.length > 0 && (
         <>
-          <Heading>Other Reviews</Heading>
+          <Heading size="lg" ml="2" mt="2">
+            Reviews
+          </Heading>
           <Flex direction="column" gap="2" pb="8">
             {otherReviews.map((event) => (
               <RelayReviewNote key={event.id} event={event} />

@@ -1,10 +1,9 @@
-import { bech32 } from "bech32";
 import { getPublicKey, nip19 } from "nostr-tools";
 
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
 import { isReplaceable } from "./nostr/events";
-import { DecodeResult } from "nostr-tools/lib/types/nip19";
 import relayHintService from "../services/event-relay-hint";
+import { safeRelayUrls } from "./relay";
 
 export function isHex(str?: string) {
   if (str?.match(/^[0-9a-f]+$/i)) return true;
@@ -15,39 +14,12 @@ export function isHexKey(key?: string) {
   return false;
 }
 
-/** @deprecated */
-export function isBech32Key(bech32String: string) {
-  try {
-    const { prefix } = bech32.decode(bech32String.toLowerCase());
-    if (!prefix) return false;
-    if (!isHexKey(bech32ToHex(bech32String))) return false;
-  } catch (error) {
-    return false;
-  }
-  return true;
-}
-
-/** @deprecated */
-export function bech32ToHex(bech32String: string) {
-  try {
-    const { words } = bech32.decode(bech32String);
-    return toHexString(new Uint8Array(bech32.fromWords(words)));
-  } catch (error) {}
-  return "";
-}
-
-/** @deprecated */
-export function toHexString(buffer: Uint8Array) {
-  return buffer.reduce((s, byte) => {
-    let hex = byte.toString(16);
-    if (hex.length === 1) hex = "0" + hex;
-    return s + hex;
-  }, "");
-}
-
 export function safeDecode(str: string) {
   try {
-    return nip19.decode(str);
+    const result = nip19.decode(str);
+    if ((result.type === "nevent" || result.type === "nprofile" || result.type === "naddr") && result.data.relays)
+      result.data.relays = safeRelayUrls(result.data.relays);
+    return result;
   } catch (e) {}
 }
 
@@ -64,11 +36,11 @@ export function getPubkeyFromDecodeResult(result?: nip19.DecodeResult) {
   }
 }
 
-/** @deprecated */
-export function normalizeToHex(hex: string) {
+export function normalizeToHexPubkey(hex: string) {
   if (isHexKey(hex)) return hex;
-  if (isBech32Key(hex)) return bech32ToHex(hex);
-  return null;
+  const decode = safeDecode(hex);
+  if (!decode) return null;
+  return getPubkeyFromDecodeResult(decode) ?? null;
 }
 
 export function getSharableEventAddress(event: NostrEvent) {
@@ -83,32 +55,26 @@ export function getSharableEventAddress(event: NostrEvent) {
   }
 }
 
-/** @deprecated use getSharableEventAddress unless required */
-export function getNeventForEventId(eventId: string, maxRelays = 2) {
-  const relays = relayHintService.getEventPointerRelayHints(eventId).slice(0, maxRelays);
-  return nip19.neventEncode({ id: eventId, relays });
-}
-
-export function encodePointer(pointer: DecodeResult) {
-  switch (pointer.type) {
+export function encodeDecodeResult(result: nip19.DecodeResult) {
+  switch (result.type) {
     case "naddr":
-      return nip19.naddrEncode(pointer.data);
+      return nip19.naddrEncode(result.data);
     case "nprofile":
-      return nip19.nprofileEncode(pointer.data);
+      return nip19.nprofileEncode(result.data);
     case "nevent":
-      return nip19.neventEncode(pointer.data);
+      return nip19.neventEncode(result.data);
     case "nrelay":
-      return nip19.nrelayEncode(pointer.data);
+      return nip19.nrelayEncode(result.data);
     case "nsec":
-      return nip19.nsecEncode(pointer.data);
+      return nip19.nsecEncode(result.data);
     case "npub":
-      return nip19.npubEncode(pointer.data);
+      return nip19.npubEncode(result.data);
     case "note":
-      return nip19.noteEncode(pointer.data);
+      return nip19.noteEncode(result.data);
   }
 }
 
-export function getPointerFromTag(tag: Tag): DecodeResult | null {
+export function getPointerFromTag(tag: Tag): nip19.DecodeResult | null {
   if (isETag(tag)) {
     if (!tag[1]) return null;
     return {

@@ -15,12 +15,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { RelayFavicon } from "../relay-favicon";
 import { RelayUrlInput } from "../relay-url-input";
-import { normalizeRelayUrl } from "../../helpers/url";
 import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
+import { normalizeRelayURL } from "../../helpers/relay";
 
 function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
   const [url, setUrl] = useState("");
@@ -32,7 +32,7 @@ function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
       onSubmit={(e) => {
         try {
           e.preventDefault();
-          onSubmit(normalizeRelayUrl(url));
+          onSubmit(normalizeRelayURL(url));
           setUrl("");
         } catch (err) {
           if (err instanceof Error) {
@@ -43,7 +43,7 @@ function AddRelayForm({ onSubmit }: { onSubmit: (relay: string) => void }) {
       gap="2"
       mb="4"
     >
-      <RelayUrlInput value={url} onChange={(v) => setUrl(v)} />
+      <RelayUrlInput value={url} onChange={(e) => setUrl(e.target.value)} />
       <Button type="submit">Add</Button>
     </Flex>
   );
@@ -61,7 +61,7 @@ export default function RelaySelectionModal({
   onClose: () => void;
 }) {
   const [newSelected, setSelected] = useState<string[]>(selected);
-  const relays = useReadRelayUrls([...selected, ...newSelected, ...Array.from(manuallyAddedRelays)]);
+  const relays = useReadRelays([...selected, ...newSelected, ...Array.from(manuallyAddedRelays)]);
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -78,7 +78,7 @@ export default function RelaySelectionModal({
           />
           <CheckboxGroup value={newSelected} onChange={(urls) => setSelected(urls.map(String))}>
             <Flex direction="column" gap="2" mb="2">
-              {relays.map((url) => (
+              {relays.urls.map((url) => (
                 <Checkbox key={url} value={url}>
                   <RelayFavicon relay={url} size="xs" /> {url}
                 </Checkbox>
@@ -87,7 +87,7 @@ export default function RelaySelectionModal({
           </CheckboxGroup>
 
           <ButtonGroup>
-            <Button onClick={() => setSelected(relays)} size="sm">
+            <Button onClick={() => setSelected(Array.from(relays))} size="sm">
               All
             </Button>
             <Button onClick={() => setSelected([])} size="sm">

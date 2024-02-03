@@ -1,11 +1,14 @@
-import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
-import { getMatchEmoji, getMatchHashtag } from "../regexp";
-import { getReferences } from "./events";
+import { DraftNostrEvent, NostrEvent, Tag, isETag, isPTag } from "../../types/nostr-event";
+import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
+import { addPubkeyRelayHints, getThreadReferences } from "./events";
 import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
-import { Emoji } from "../../providers/emoji-provider";
+import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
 import relayHintService from "../../services/event-relay-hint";
+import { EventTemplate } from "nostr-tools";
+import RelaySet from "../../classes/relay-set";
+import userMailboxesService from "../../services/user-mailboxes";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -19,8 +22,8 @@ function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   }
   return [...tags, tag];
 }
-function AddEtag(tags: Tag[], eventId: string, type?: string, overwrite = false) {
-  const hint = relayHintService.getEventPointerRelayHint(eventId) ?? "";
+function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string, overwrite = false) {
+  const hint = relayHint || relayHintService.getEventPointerRelayHint(eventId) || "";
 
   const tag = type ? ["e", eventId, hint, type] : ["e", eventId, hint];
 
@@ -39,13 +42,15 @@ function AddEtag(tags: Tag[], eventId: string, type?: string, overwrite = false)
 /** adds the "root" and "reply" E tags */
 export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
-  const refs = getReferences(replyTo);
 
-  const rootId = refs.rootId ?? replyTo.id;
+  const refs = getThreadReferences(replyTo);
+  const rootId = refs.root?.e?.id ?? replyTo.id;
+  const rootRelayHint = refs.root?.e?.relays?.[0];
   const replyId = replyTo.id;
+  const replyRelayHint = relayHintService.getEventPointerRelayHint(replyId);
 
-  updated.tags = AddEtag(updated.tags, rootId, "root", true);
-  updated.tags = AddEtag(updated.tags, replyId, "reply", true);
+  updated.tags = AddEtag(updated.tags, rootId, rootRelayHint, "root", true);
+  updated.tags = AddEtag(updated.tags, replyId, replyRelayHint, "reply", true);
 
   return updated;
 }
@@ -55,7 +60,7 @@ export function ensureNotifyPubkeys(draft: DraftNostrEvent, pubkeys: string[]) {
   const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
   for (const pubkey of pubkeys) {
-    updated.tags = addTag(updated.tags, ["p", pubkey], false);
+    updated.tags = addTag(updated.tags, ["p", pubkey, "", "mention"], false);
   }
 
   return updated;
@@ -65,20 +70,36 @@ export function correctContentMentions(content: string) {
   return content.replace(/(\s|^)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "$1nostr:$2");
 }
 
-export function getContentMentions(content: string) {
-  const matched = content.matchAll(/nostr:(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi);
-  return unique(
-    Array.from(matched)
-      .map((m) => {
-        const parsed = safeDecode(m[1]);
-        return parsed && getPubkeyFromDecodeResult(parsed);
-      })
-      .filter(Boolean) as string[],
-  );
+export function getPubkeysMentionedInContent(content: string) {
+  const matched = content.matchAll(getMatchNostrLink());
+
+  const pubkeys: string[] = [];
+
+  for (const match of matched) {
+    const decode = safeDecode(match[2]);
+    if (!decode) continue;
+
+    switch (decode.type) {
+      case "npub":
+        pubkeys.push(decode.data);
+        break;
+      case "nprofile":
+        pubkeys.push(decode.data.pubkey);
+        break;
+      case "nevent":
+        if (decode.data.author) pubkeys.push(decode.data.author);
+        break;
+      case "naddr":
+        if (decode.data.pubkey) pubkeys.push(decode.data.pubkey);
+        break;
+    }
+  }
+
+  return unique(pubkeys);
 }
 
 export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
-  const mentions = getContentMentions(draft.content);
+  const mentions = getPubkeysMentionedInContent(draft.content);
   return mentions.length > 0 ? ensureNotifyPubkeys(draft, mentions) : draft;
 }
 
@@ -126,5 +147,6 @@ export function finalizeNote(draft: DraftNostrEvent) {
   let updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
+  updated = addPubkeyRelayHints(updated);
   return updated;
 }

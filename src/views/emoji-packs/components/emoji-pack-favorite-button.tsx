@@ -1,24 +1,20 @@
 import { useState } from "react";
-import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { useSigningContext } from "../../../providers/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
 import { USER_EMOJI_LIST_KIND } from "../../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
 import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function EmojiPackFavoriteButton({
   pack,
   ...props
 }: { pack: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const favoritePacks = useFavoriteEmojiPacks();
   const coordinate = getEventCoordinate(pack);
   const isFavorite = favoritePacks?.tags.some((t) => t[1] === coordinate);
@@ -32,19 +28,9 @@ export default function EmojiPackFavoriteButton({
       tags: [],
     };
 
-    try {
-      setLoading(true);
-      const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction(
-        isFavorite ? "Unfavorite Emoji pack" : "Favorite emoji pack",
-        clientRelaysService.getWriteUrls(),
-        signed,
-      );
-      replaceableEventLoaderService.handleEvent(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    setLoading(true);
+    const draft = isFavorite ? listRemoveCoordinate(prev, coordinate) : listAddCoordinate(prev, coordinate);
+    await publish(isFavorite ? "Unfavorite Emoji pack" : "Favorite emoji pack", draft);
     setLoading(false);
   };
 

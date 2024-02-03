@@ -1,7 +1,8 @@
 import Relay from "../classes/relay";
 import Subject from "../classes/subject";
 import { logger } from "../helpers/debug";
-import { normalizeRelayUrl } from "../helpers/url";
+import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
+import { offlineMode } from "./offline-mode";
 
 export class RelayPoolService {
   relays = new Map<string, Relay>();
@@ -13,23 +14,25 @@ export class RelayPoolService {
   getRelays() {
     return Array.from(this.relays.values());
   }
-  getRelayClaims(url: string) {
-    const normalized = normalizeRelayUrl(url);
-    if (!this.relayClaims.has(normalized)) {
-      this.relayClaims.set(normalized, new Set());
+  getRelayClaims(url: string | URL) {
+    url = validateRelayURL(url);
+    const key = url.toString();
+    if (!this.relayClaims.has(key)) {
+      this.relayClaims.set(key, new Set());
     }
-    return this.relayClaims.get(normalized) as Set<any>;
+    return this.relayClaims.get(key) as Set<any>;
   }
 
-  requestRelay(url: string, connect = true) {
-    const normalized = normalizeRelayUrl(url);
-    if (!this.relays.has(normalized)) {
-      const newRelay = new Relay(normalized);
-      this.relays.set(normalized, newRelay);
+  requestRelay(url: string | URL, connect = true) {
+    url = validateRelayURL(url);
+    const key = url.toString();
+    if (!this.relays.has(key)) {
+      const newRelay = new Relay(key);
+      this.relays.set(key, newRelay);
       this.onRelayCreated.next(newRelay);
     }
 
-    const relay = this.relays.get(normalized) as Relay;
+    const relay = this.relays.get(key) as Relay;
     if (connect && !relay.okay) {
       try {
         relay.open();
@@ -50,6 +53,8 @@ export class RelayPoolService {
     }
   }
   reconnectRelays() {
+    if (offlineMode.value) return;
+
     for (const [url, relay] of this.relays.entries()) {
       const claims = this.getRelayClaims(url).size;
       if (!relay.okay && claims > 0) {
@@ -64,13 +69,15 @@ export class RelayPoolService {
   }
 
   // id can be anything
-  addClaim(url: string, id: any) {
-    const normalized = normalizeRelayUrl(url);
-    this.getRelayClaims(normalized).add(id);
+  addClaim(url: string | URL, id: any) {
+    url = validateRelayURL(url);
+    const key = url.toString();
+    this.getRelayClaims(key).add(id);
   }
-  removeClaim(url: string, id: any) {
-    const normalized = normalizeRelayUrl(url);
-    this.getRelayClaims(normalized).delete(id);
+  removeClaim(url: string | URL, id: any) {
+    url = validateRelayURL(url);
+    const key = url.toString();
+    this.getRelayClaims(key).delete(id);
   }
 
   get connectedCount() {
@@ -94,6 +101,14 @@ setInterval(() => {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     relayPoolService.reconnectRelays();
+  }
+});
+
+offlineMode.subscribe((offline) => {
+  if (offline) {
+    for (const [_, relay] of relayPoolService.relays) {
+      relay.close();
+    }
   }
 });
 

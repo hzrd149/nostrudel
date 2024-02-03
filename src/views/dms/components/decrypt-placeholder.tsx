@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
 
 import { UnlockIcon } from "../../../components/icons";
-import { useDecryptionContainer } from "../../../providers/dycryption-provider";
+import { useDecryptionContainer } from "../../../providers/global/dycryption-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import { NostrEvent } from "../../../types/nostr-event";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 
 export default function DecryptPlaceholder({
   children,
@@ -39,7 +40,8 @@ export default function DecryptPlaceholder({
       <Alert status="error">
         <AlertIcon />
         <AlertDescription>{error.message}</AlertDescription>
-        <Button isLoading={loading} leftIcon={<UnlockIcon />} onClick={decrypt} size="sm" ml="auto">
+        <DebugEventButton event={message} size="sm" ml="auto" mr="2" />
+        <Button isLoading={loading} leftIcon={<UnlockIcon />} onClick={decrypt} size="sm">
           Try again
         </Button>
       </Alert>

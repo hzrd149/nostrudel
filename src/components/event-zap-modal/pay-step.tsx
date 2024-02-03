@@ -1,5 +1,5 @@
 import { useMount } from "react-use";
-import { Alert, Box, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosure, useToast } from "@chakra-ui/react";
+import { Alert, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosure, useToast } from "@chakra-ui/react";
 
 import { PayRequest } from ".";
 import UserAvatar from "../user-avatar";
@@ -13,9 +13,7 @@ function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) 
   return (
     <Flex gap="2" alignItems="center" overflow="hidden">
       <UserAvatar pubkey={pubkey} size="md" />
-      <Box>
-        <UserLink pubkey={pubkey} fontWeight="bold" />
-      </Box>
+      <UserLink pubkey={pubkey} fontWeight="bold" isTruncated />
       <Spacer />
       {children}
     </Flex>
@@ -23,7 +21,7 @@ function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) 
 }
 function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: string; onPaid: () => void }) {
   const toast = useToast();
-  const showMore = useDisclosure();
+  const showMore = useDisclosure({ defaultIsOpen: !window.webln });
 
   const payWithWebLn = async () => {
     try {
@@ -41,16 +39,18 @@ function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: 
     <Flex direction="column" gap="2">
       <UserCard pubkey={pubkey}>
         <ButtonGroup size="sm">
-          <Button
-            variant="outline"
-            colorScheme="yellow"
-            size="sm"
-            leftIcon={<LightningIcon />}
-            isDisabled={!window.webln}
-            onClick={payWithWebLn}
-          >
-            Pay
-          </Button>
+          {!!window.webln && (
+            <Button
+              variant="outline"
+              colorScheme="yellow"
+              size="sm"
+              leftIcon={<LightningIcon />}
+              isDisabled={!window.webln}
+              onClick={payWithWebLn}
+            >
+              Pay
+            </Button>
+          )}
           <IconButton
             icon={showMore.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             aria-label="More Options"
@@ -134,17 +134,18 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
           );
         return null;
       })}
-      <Button
-        variant="outline"
-        size="md"
-        leftIcon={<LightningIcon />}
-        colorScheme="yellow"
-        onClick={payAllWithWebLN}
-        isLoading={payingAll}
-        isDisabled={!window.webln}
-      >
-        Pay All
-      </Button>
+      {!!window.webln && (
+        <Button
+          variant="outline"
+          size="md"
+          leftIcon={<LightningIcon />}
+          colorScheme="yellow"
+          onClick={payAllWithWebLN}
+          isLoading={payingAll}
+        >
+          Pay All
+        </Button>
+      )}
     </Flex>
   );
 }

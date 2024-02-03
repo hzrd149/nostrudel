@@ -6,7 +6,6 @@ import {
   ModalBody,
   Flex,
   Button,
-  useToast,
   Box,
   Heading,
   useDisclosure,
@@ -17,36 +16,44 @@ import {
   IconButton,
   FormLabel,
   FormControl,
+  FormHelperText,
+  Link,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { useWriteRelayUrls } from "../../hooks/use-client-relays";
-import { useSigningContext } from "../../providers/signing-provider";
 import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
-import { TrustProvider } from "../../providers/trust";
+import { TrustProvider } from "../../providers/local/trust";
 import {
   correctContentMentions,
   createEmojiTags,
   ensureNotifyPubkeys,
   finalizeNote,
-  getContentMentions,
+  getPubkeysMentionedInContent,
   setZapSplit,
 } from "../../helpers/nostr/post";
 import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
-import { useContextEmojis } from "../../providers/emoji-provider";
+import { useContextEmojis } from "../../providers/global/emoji-provider";
 import CommunitySelect from "./community-select";
 import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
+import { useThrottle } from "react-use";
+import MinePOW from "../mine-pow";
+import useAppSettings from "../../hooks/use-app-settings";
+import { ErrorBoundary } from "../error-boundary";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 type FormValues = {
   subject: string;
@@ -55,6 +62,7 @@ type FormValues = {
   nsfwReason: string;
   community: string;
   split: EventSplit;
+  difficulty: number;
 };
 
 export type PostModalProps = {
@@ -72,11 +80,10 @@ export default function PostModal({
   initCommunity = "",
   requireSubject,
 }: Omit<ModalProps, "children"> & PostModalProps) {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const account = useCurrentAccount()!;
-  const { requestSignature } = useSigningContext();
-  const additionalRelays = useAdditionalRelayContext();
-  const writeRelays = useWriteRelayUrls(additionalRelays);
+  const { noteDifficulty } = useAppSettings();
+  const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<NostrPublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
@@ -89,6 +96,7 @@ export default function PostModal({
       nsfwReason: "",
       community: initCommunity,
       split: [] as EventSplit,
+      difficulty: noteDifficulty || 0,
     },
     mode: "all",
   });
@@ -96,6 +104,7 @@ export default function PostModal({
   watch("nsfw");
   watch("nsfwReason");
   watch("split");
+  watch("difficulty");
 
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
@@ -109,23 +118,17 @@ export default function PostModal({
     const { content, nsfw, nsfwReason, community, split, subject } = getValues();
 
     let updatedDraft = finalizeNote({
-      content: content,
-      kind: Kind.Text,
+      content: correctContentMentions(content),
+      kind: kinds.ShortTextNote,
       tags: [],
       created_at: dayjs().unix(),
     });
 
-    if (nsfw) {
-      updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
-    }
-    if (community) {
-      updatedDraft.tags.push(["a", community]);
-    }
-    if (subject) {
-      updatedDraft.tags.push(["subject", subject]);
-    }
+    if (nsfw) updatedDraft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
+    if (community) updatedDraft.tags.push(["a", community]);
+    if (subject) updatedDraft.tags.push(["subject", subject]);
 
-    const contentMentions = getContentMentions(updatedDraft.content);
+    const contentMentions = getPubkeysMentionedInContent(updatedDraft.content);
     updatedDraft = createEmojiTags(updatedDraft, emojis);
     updatedDraft = ensureNotifyPubkeys(updatedDraft, contentMentions);
     if (split.length > 0) {
@@ -134,18 +137,20 @@ export default function PostModal({
     return updatedDraft;
   }, [getValues, emojis]);
 
-  const submit = handleSubmit(async () => {
-    try {
-      const signed = await requestSignature(getDraft());
-      const pub = new NostrPublishAction("Post", writeRelays, signed);
-      setPublishAction(pub);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+  const publishPost = async (draft = getDraft()) => {
+    const pub = await publish("Post", draft);
+    if (pub) setPublishAction(pub);
+  };
+  const submit = handleSubmit(async (values) => {
+    if (values.difficulty > 0) {
+      setMiningTarget(values.difficulty);
+    } else publishPost();
   });
 
   const canSubmit = getValues().content.length > 0;
-  const mentions = getContentMentions(correctContentMentions(getValues().content));
+  const mentions = getPubkeysMentionedInContent(correctContentMentions(getValues().content));
+
+  const previewDraft = useThrottle(getDraft(), 500);
 
   const renderContent = () => {
     if (publishAction) {
@@ -156,6 +161,18 @@ export default function PostModal({
             Close
           </Button>
         </>
+      );
+    }
+
+    if (miningTarget) {
+      return (
+        <MinePOW
+          draft={{ ...getDraft(), pubkey: account.pubkey }}
+          targetPOW={miningTarget}
+          onCancel={() => setMiningTarget(0)}
+          onSkip={publishPost}
+          onComplete={publishPost}
+        />
       );
     }
 
@@ -176,13 +193,15 @@ export default function PostModal({
             if (e.ctrlKey && e.key === "Enter") submit();
           }}
         />
-        {getValues().content.length > 0 && (
+        {previewDraft.content.length > 0 && (
           <Box>
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
-              <TrustProvider trust>
-                <NoteContents event={getDraft()} />
-              </TrustProvider>
+              <ErrorBoundary>
+                <TrustProvider trust>
+                  <NoteContents event={previewDraft} />
+                </TrustProvider>
+              </ErrorBoundary>
             </Box>
           </Box>
         )}
@@ -239,6 +258,28 @@ export default function PostModal({
                   <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
                 )}
               </Flex>
+              <FormControl>
+                <FormLabel>POW Difficulty ({getValues().difficulty})</FormLabel>
+                <Slider
+                  aria-label="difficulty"
+                  value={getValues("difficulty")}
+                  onChange={(v) => setValue("difficulty", v)}
+                  min={0}
+                  max={40}
+                  step={1}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <FormHelperText>
+                  The number of leading 0's in the event id. see{" "}
+                  <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
+                    NIP-13
+                  </Link>
+                </FormHelperText>
+              </FormControl>
             </Flex>
             <Flex direction="column" gap="2" flex={1}>
               <ZapSplitCreator

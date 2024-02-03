@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 
 import { nostrBuildUploadImage } from "../helpers/nostr-build";
 import { RefType } from "../components/magic-textarea";
-import { useSigningContext } from "../providers/signing-provider";
+import { useSigningContext } from "../providers/global/signing-provider";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 
 export function useTextAreaUploadFileWithForm(
@@ -42,8 +42,22 @@ export default function useTextAreaUploadFile(
         const content = getText();
         const position = ref.current?.getCaretPosition();
         if (position !== undefined) {
-          setText(content.slice(0, position) + imageUrl + " " + content.slice(position));
-        } else setText(content + imageUrl + " ");
+          let inject = imageUrl;
+
+          // add a space before
+          if (position >= 1 && content.slice(position - 1, position) !== " ") inject = " " + inject;
+          // add a space after
+          if (position < content.length && content.slice(position, position + 1) !== " ") inject = inject + " ";
+
+          setText(content.slice(0, position) + inject + content.slice(position));
+        } else {
+          let inject = imageUrl;
+
+          // add a space before if there isn't one
+          if (content.slice(content.length - 1) !== " ") inject = " " + inject;
+
+          setText(content + inject + " ");
+        }
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }

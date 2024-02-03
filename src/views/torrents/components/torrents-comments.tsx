@@ -2,11 +2,13 @@ import { memo, useMemo, useRef, useState } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import {
   Alert,
@@ -26,11 +28,11 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import NoteReactions from "../../../components/note/components/note-reactions";
 import { ReplyIcon } from "../../../components/icons";
-import ReplyForm from "../../note/components/reply-form";
+import ReplyForm from "../../thread/components/reply-form";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
@@ -155,7 +157,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
 });
 
 export default function TorrentComments({ torrent }: { torrent: NostrEvent }) {
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, TORRENT_COMMENT_KIND);
 
   const thread = useMemo(() => buildThread(events), [events]);

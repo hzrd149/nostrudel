@@ -18,20 +18,20 @@ import {
 
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import UserLink from "../../../components/user-link";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import singleEventService from "../../../services/single-event";
 
 export default function ChannelCard({
   channel,
   additionalRelays,
   ...props
-}: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+}: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: Iterable<string> }) {
+  const readRelays = useReadRelays(additionalRelays);
   const { metadata } = useChannelMetadata(channel.id, readRelays);
 
   const ref = useRef<HTMLDivElement | null>(null);

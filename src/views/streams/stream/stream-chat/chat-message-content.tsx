@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { EmbedableContent, embedUrls } from "../../../../helpers/embeds";
 import {
   embedEmoji,
+  embedNipDefinitions,
   embedNostrHashtags,
   embedNostrLinks,
   embedNostrMentions,
@@ -24,6 +25,7 @@ const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
     c = embedNostrLinks(c);
     c = embedNostrMentions(c, event);
     c = embedNostrHashtags(c, event);
+    c = embedNipDefinitions(c);
     c = embedEmoji(c, event);
 
     return c;

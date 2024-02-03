@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertIcon, AlertProps, AlertTitle, Button, Spacer } from "@chakra-ui/react";
 
-import { useExpand } from "../providers/expanded";
-import { useBreakpointValue } from "../providers/breakpoint-provider";
+import { useExpand } from "../providers/local/expanded";
+import { useBreakpointValue } from "../providers/global/breakpoint-provider";
 
 export default function SensitiveContentWarning({ description }: { description?: string } & AlertProps) {
   const expand = useExpand();

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
@@ -14,19 +14,19 @@ import {
 } from "three";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { MUTE_LIST_KIND, getPubkeysFromList, isPubkeyInList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import replaceableEventLoaderService from "../../services/replaceable-event-requester";
 import useSubjects from "../../hooks/use-subjects";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 
-export function useUsersMuteLists(pubkeys: string[], additionalRelays: string[] = []) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+export function useUsersMuteLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
+  const readRelays = useReadRelays(additionalRelays);
   const muteListSubjects = useMemo(() => {
     return pubkeys.map((pubkey) => replaceableEventLoaderService.requestEvent(readRelays, MUTE_LIST_KIND, pubkey));
   }, [pubkeys]);

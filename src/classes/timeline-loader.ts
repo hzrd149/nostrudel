@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
+import { Filter, matchFilters } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
@@ -11,9 +13,17 @@ import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
 import deleteEventService from "../services/delete-events";
-import { addQueryToFilter, isFilterEqual, mapQueryMap } from "../helpers/nostr/filter";
+import {
+  addQueryToFilter,
+  isFilterEqual,
+  isQueryMapEqual,
+  mapQueryMap,
+  stringifyFilter,
+} from "../helpers/nostr/filter";
+import { localRelay } from "../services/local-relay";
+import { relayRequest } from "../helpers/relay";
 
-const BLOCK_SIZE = 30;
+const BLOCK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
@@ -28,7 +38,7 @@ export class RelayBlockLoader {
   /** set to true when the next block produces 0 events */
   complete = false;
 
-  onBlockFinish = new Subject<void>();
+  onBlockFinish = new Subject<number>();
 
   constructor(relay: string, filter: NostrRequestFilter, log?: Debugger) {
     this.relay = relay;
@@ -57,18 +67,18 @@ export class RelayBlockLoader {
     });
     request.onComplete.then(() => {
       this.loading = false;
-      this.log(`Got ${gotEvents} events`);
       if (gotEvents === 0) {
         this.complete = true;
         this.log("Complete");
-      }
-      this.onBlockFinish.next();
+      } else this.log(`Got ${gotEvents} events`);
+      this.onBlockFinish.next(gotEvents);
     });
 
     request.start(filter);
   }
 
   private handleEvent(event: NostrEvent) {
+    if (!matchFilters(Array.isArray(this.filter) ? this.filter : [this.filter], event)) return;
     return this.events.addEvent(event);
   }
 
@@ -119,25 +129,26 @@ export default class TimelineLoader {
     this.subscription.onEvent.subscribe(this.handleEvent, this);
 
     // update the timeline when there are new events
-    this.events.onEvent.subscribe(this.updateTimeline, this);
-    this.events.onDelete.subscribe(this.updateTimeline, this);
-    this.events.onClear.subscribe(this.updateTimeline, this);
+    this.events.onEvent.subscribe(this.throttleUpdateTimeline, this);
+    this.events.onDelete.subscribe(this.throttleUpdateTimeline, this);
+    this.events.onClear.subscribe(this.throttleUpdateTimeline, this);
 
     deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
   }
 
+  private throttleUpdateTimeline = _throttle(this.updateTimeline, 10);
   private updateTimeline() {
     if (this.eventFilter) {
       const filter = this.eventFilter;
       this.timeline.next(this.events.getSortedEvents().filter((e) => filter(e, this.events)));
     } else this.timeline.next(this.events.getSortedEvents());
   }
-  private handleEvent(event: NostrEvent) {
+  private handleEvent(event: NostrEvent, cache = true) {
     // if this is a replaceable event, mirror it over to the replaceable event service
-    if (isReplaceable(event.kind)) {
-      replaceableEventLoaderService.handleEvent(event);
-    }
+    if (isReplaceable(event.kind)) replaceableEventLoaderService.handleEvent(event);
+
     this.events.addEvent(event);
+    if (cache) localRelay.publish(event);
   }
   private handleDeleteEvent(deleteEvent: NostrEvent) {
     const cord = deleteEvent.tags.find(isATag)?.[1];
@@ -159,8 +170,22 @@ export default class TimelineLoader {
     loader.onBlockFinish.unsubscribe(this.updateComplete, this);
   }
 
+  private loadQueriesFromCache(queryMap: RelayQueryMap) {
+    const queries: Record<string, Filter[]> = {};
+    for (const [url, filters] of Object.entries(queryMap)) {
+      const key = stringifyFilter(filters);
+      if (!queries[key]) queries[key] = Array.isArray(filters) ? filters : [filters];
+    }
+
+    for (const filters of Object.values(queries)) {
+      relayRequest(localRelay, filters).then((events) => {
+        for (const e of events) this.handleEvent(e, false);
+      });
+    }
+  }
+
   setQueryMap(queryMap: RelayQueryMap) {
-    if (isFilterEqual(this.queryMap, queryMap)) return;
+    if (isQueryMapEqual(this.queryMap, queryMap)) return;
 
     this.log("set query map", queryMap);
 
@@ -190,6 +215,9 @@ export default class TimelineLoader {
     }
 
     this.queryMap = queryMap;
+
+    // load all filters from cache relay
+    this.loadQueriesFromCache(queryMap);
 
     // update the subscription query map and add limit
     this.subscription.setQueryMap(

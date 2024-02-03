@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
 import TimelineLoader from "../../../classes/timeline-loader";
@@ -8,12 +8,12 @@ import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
 import { EmbeddedImageProps, GalleryImage } from "../../embed-types";
-import { TrustProvider } from "../../../providers/trust";
+import { TrustProvider } from "../../../providers/local/trust";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventUID } from "../../../helpers/nostr/events";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useRef<HTMLImageElement | null>(null);
@@ -45,7 +45,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     var images: PhotoWithEvent[] = [];
 
     for (const event of events) {
-      if (event.kind === Kind.Repost) continue;
+      if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
       let i = 0;

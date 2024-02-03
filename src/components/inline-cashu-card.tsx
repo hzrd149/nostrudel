@@ -1,11 +1,13 @@
+import { useAsync } from "react-use";
 import { useEffect, useState } from "react";
 import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link } from "@chakra-ui/react";
-import { getDecodedToken, Token } from "@cashu/cashu-ts";
+import { getDecodedToken, Token, CashuMint } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "./copy-icon-button";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 import useCurrentAccount from "../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "./icons";
+import { getMint } from "../services/cashu-mints";
 
 function RedeemButton({ token }: { token: string }) {
   const account = useCurrentAccount()!;
@@ -26,6 +28,15 @@ export default function InlineCachuCard({ token, ...props }: Omit<CardProps, "ch
   const account = useCurrentAccount();
 
   const [cashu, setCashu] = useState<Token>();
+  const { value: spendable } = useAsync(async () => {
+    if (!cashu) return;
+    for (const token of cashu.token) {
+      const mint = await getMint(token.mint);
+      const spent = await mint.check({ proofs: token.proofs.map((p) => ({ secret: p.secret })) });
+      if (spent.spendable.some((v) => v === false)) return false;
+    }
+    return true;
+  }, [cashu]);
 
   useEffect(() => {
     if (!token.startsWith("cashuA") || token.length < 10) return;
@@ -42,7 +53,9 @@ export default function InlineCachuCard({ token, ...props }: Omit<CardProps, "ch
     <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4" flexWrap="wrap" {...props}>
       <ECashIcon boxSize={10} color="green.500" />
       <Box>
-        <Heading size="md">{amount} Cashu sats</Heading>
+        <Heading size="md" textDecoration={spendable === false ? "line-through" : undefined}>
+          {amount} Cashu sats{spendable === false ? " (Spent)" : ""}
+        </Heading>
         {cashu && <small>Mint: {new URL(cashu.token[0].mint).hostname}</small>}
       </Box>
       {cashu.memo && <Box>Memo: {cashu.memo}</Box>}

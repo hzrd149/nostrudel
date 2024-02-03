@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { Flex, useDisclosure } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { useCallback, useEffect } from "react";
+import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { isReply, isRepost } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -8,11 +8,20 @@ import { NostrEvent } from "../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
+import { useReadRelays } from "../../hooks/use-client-relays";
+
+const defaultKinds = [
+  kinds.ShortTextNote,
+  kinds.Repost,
+  kinds.GenericRepost,
+  kinds.LongFormArticle,
+  kinds.RecommendRelay,
+  kinds.BadgeAward,
+];
 
 function HomePage() {
   const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });
@@ -36,10 +45,9 @@ function HomePage() {
     [timelinePageEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
 
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
   const { listId, filter } = usePeopleListContext();
-
-  const kinds = [Kind.Text, Kind.Repost, Kind.Article, Kind.RecommendRelay, Kind.BadgeAward];
+  const { kinds } = useKindSelectionContext();
 
   const timeline = useTimelineLoader(`${listId}-home-feed`, relays, filter ? { ...filter, kinds } : undefined, {
     eventFilter,
@@ -49,7 +57,7 @@ function HomePage() {
     <Flex gap="2" wrap="wrap" alignItems="center">
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
-      <RelaySelectionButton ml="auto" />
+      <Spacer />
       <TimelineViewTypeButtons />
     </Flex>
   );
@@ -60,9 +68,9 @@ function HomePage() {
 export default function HomeView() {
   return (
     <PeopleListProvider>
-      <RelaySelectionProvider>
+      <KindSelectionProvider initKinds={defaultKinds}>
         <HomePage />
-      </RelaySelectionProvider>
+      </KindSelectionProvider>
     </PeopleListProvider>
   );
 }

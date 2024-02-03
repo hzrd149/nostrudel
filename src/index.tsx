@@ -1,7 +1,15 @@
 import "./polyfill";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
-import { GlobalProviders } from "./providers";
+import { GlobalProviders } from "./providers/global";
+import "./services/user-event-sync";
+
+// setup bitcoin connect
+import { init, onConnected } from "@getalby/bitcoin-connect-react";
+init({ appName: "noStrudel" });
+onConnected((provider) => {
+  if (!window.webln) window.webln = provider;
+});
 
 // setup dayjs
 import dayjs from "dayjs";

@@ -16,12 +16,12 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
-import { useClientRelays, useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useSubjects from "../../hooks/use-subjects";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import RequireCurrentAccount from "../../providers/require-current-account";
-import userRelaysService from "../../services/user-relays";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
+import userMailboxesService from "../../services/user-mailboxes";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ChevronLeftIcon } from "../../components/icons";
@@ -29,13 +29,15 @@ import UserAvatar from "../../components/user-avatar";
 import { RelayMetadata, RelayPaidTag } from "./components/relay-card";
 
 function usePopularContactsRelays(list?: NostrEvent) {
-  const readRelays = useReadRelayUrls();
-  const subs = list ? getPubkeysFromList(list).map((p) => userRelaysService.requestRelays(p.pubkey, readRelays)) : [];
+  const readRelays = useReadRelays();
+  const subs = list
+    ? getPubkeysFromList(list).map((p) => userMailboxesService.requestMailboxes(p.pubkey, readRelays))
+    : [];
   const contactsRelays = useSubjects(subs);
 
   const relayScore: Record<string, string[]> = {};
   for (const { relays, pubkey } of contactsRelays) {
-    for (const { url } of relays) {
+    for (const url of relays) {
       relayScore[url] = relayScore[url] || [];
       relayScore[url].push(pubkey);
     }
@@ -76,10 +78,7 @@ function PopularRelaysPage() {
   const account = useCurrentAccount();
   const contacts = useUserContactList(account?.pubkey);
 
-  const clientRelays = useClientRelays().map((r) => r.url);
-  const popularRelays = usePopularContactsRelays(contacts).filter(
-    (r) => !clientRelays.includes(r.url) && r.pubkeys.length > 1,
-  );
+  const popularRelays = usePopularContactsRelays(contacts).filter((r) => r.pubkeys.length > 1);
 
   return (
     <VerticalPageLayout>

@@ -9,18 +9,16 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
-import { getEventRelays } from "../../services/event-relays";
 import { getZapSplits } from "../../helpers/nostr/zaps";
 import { unique } from "../../helpers/array";
-import { RelayMode } from "../../classes/relay";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/events";
 import { EmbedProps } from "../embed-event";
-import userRelaysService from "../../services/user-relays";
+import userMailboxesService from "../../services/user-mailboxes";
 import InputStep from "./input-step";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import userMetadataService from "../../services/user-metadata";
@@ -38,7 +36,7 @@ async function getPayRequestForPubkey(
   event: NostrEvent | undefined,
   amount: number,
   comment?: string,
-  additionalRelays?: string[],
+  additionalRelays?: Iterable<string>,
 ): Promise<PayRequest> {
   const metadata = userMetadataService.getSubject(pubkey).value;
   const address = metadata?.lud16 || metadata?.lud06;
@@ -63,20 +61,15 @@ async function getPayRequestForPubkey(
   }
 
   const userInbox = relayScoreboardService
-    .getRankedRelays(
-      userRelaysService
-        .getRelays(pubkey)
-        .value?.relays.filter((r) => r.mode & RelayMode.READ)
-        .map((r) => r.url) ?? [],
-    )
+    .getRankedRelays(userMailboxesService.getMailboxes(pubkey).value?.inbox)
     .slice(0, 4);
   const eventRelays = event ? relayHintService.getEventRelayHints(event, 4) : [];
-  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.getWriteUrls()).slice(0, 4);
+  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.outbox).slice(0, 4);
   const additional = relayScoreboardService.getRankedRelays(additionalRelays);
 
   // create zap request
   const zapRequest: DraftNostrEvent = {
-    kind: Kind.ZapRequest,
+    kind: kinds.ZapRequest,
     created_at: dayjs().unix(),
     content: comment ?? "",
     tags: [
@@ -113,7 +106,7 @@ async function getPayRequestsForEvent(
   amount: number,
   comment?: string,
   fallbackPubkey?: string,
-  additionalRelays?: string[],
+  additionalRelays?: Iterable<string>,
 ) {
   const splits = getZapSplits(event, fallbackPubkey);
 
@@ -140,7 +133,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   allowComment?: boolean;
   showEmbed?: boolean;
   embedProps?: EmbedProps;
-  additionalRelays?: string[];
+  additionalRelays?: Iterable<string>;
   onZapped: () => void;
 };
 

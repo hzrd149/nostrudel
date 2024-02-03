@@ -24,6 +24,7 @@ import { COMMON_CONTACT_RELAY } from "../../const";
 import accountService from "../../services/account";
 import serialPortService from "../../services/serial-port";
 import amberSignerService from "../../services/amber-signer";
+import { AtIcon } from "../../components/icons";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -109,14 +110,14 @@ export default function LoginStartView() {
   if (loading) return <Spinner />;
 
   return (
-    <Flex direction="column" gap="2" flexShrink={0} alignItems="center">
+    <>
       {window.nostr && (
-        <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="sm" colorScheme="primary">
+        <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="full" colorScheme="primary">
           Sign in with extension
         </Button>
       )}
-      <Button as={RouterLink} to="./nostr-connect" state={location.state} w="sm" colorScheme="blue">
-        Nostr Connect (NIP-46)
+      <Button as={RouterLink} to="./address" state={location.state} w="full" colorScheme="blue" leftIcon={<AtIcon />}>
+        Nostr Address
       </Button>
       {serialPortService.supported && (
         <ButtonGroup colorScheme="purple">
@@ -151,27 +152,24 @@ export default function LoginStartView() {
       <Button
         variant="link"
         onClick={advanced.onToggle}
-        mt="2"
-        w="sm"
+        py="2"
+        w="full"
         rightIcon={advanced.isOpen ? <ChevronUp /> : <ChevronDown />}
       >
         Show Advanced
       </Button>
       {advanced.isOpen && (
         <>
-          <Button as={RouterLink} to="./nip05" state={location.state} w="sm">
-            DNS ID
-            <Badge ml="2" colorScheme="blue">
-              read-only
-            </Badge>
+          <Button as={RouterLink} to="./nostr-connect" state={location.state} w="full">
+            Nostr Connect / Bunker
           </Button>
-          <Button as={RouterLink} to="./npub" state={location.state} w="sm">
+          <Button as={RouterLink} to="./npub" state={location.state} w="full">
             Public key (npub)
             <Badge ml="2" colorScheme="blue">
               read-only
             </Badge>
           </Button>
-          <Button as={RouterLink} to="./nsec" state={location.state} w="sm">
+          <Button as={RouterLink} to="./nsec" state={location.state} w="full">
             Secret key (nsec)
           </Button>
         </>
@@ -179,9 +177,17 @@ export default function LoginStartView() {
       <Text fontWeight="bold" mt="4">
         Don't have an account?
       </Text>
-      <Button as={RouterLink} to="/signup" state={location.state}>
+      <Button
+        as={RouterLink}
+        to="/signup"
+        state={location.state}
+        colorScheme="primary"
+        variant="outline"
+        maxW="xs"
+        w="full"
+      >
         Sign up
       </Button>
-    </Flex>
+    </>
   );
 }

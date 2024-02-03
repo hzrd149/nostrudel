@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 import {
   Group,
   Mesh,
@@ -16,7 +17,7 @@ import {
 } from "three";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/require-current-account";
+import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
@@ -24,19 +25,17 @@ import { useUserMetadata } from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
 import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
 import { useDebounce } from "react-use";
 import useSubject from "../../hooks/use-subject";
 import { ChevronLeftIcon } from "../../components/icons";
-import { useNavigate } from "react-router-dom";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 type NodeType = { id: string; image?: string; name?: string };
 
 function NetworkDMGraphPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
-  const { relays } = useRelaySelectionContext();
+  const relays = useReadRelays();
 
   const contacts = useUserContactList(account.pubkey);
   const contactsPubkeys = useMemo(
@@ -57,7 +56,7 @@ function NetworkDMGraphPage() {
       request.onEvent.subscribe(store.addEvent, store);
       request.start({
         authors: contactsPubkeys,
-        kinds: [Kind.EncryptedDirectMessage],
+        kinds: [kinds.EncryptedDirectMessage],
         since,
         until,
       });
@@ -123,7 +122,6 @@ function NetworkDMGraphPage() {
           onChange={(e) => setSince(dayjs(e.target.value).unix())}
         />
         <Text>Showing all direct messages between contacts in the last {dayjs.unix(since).fromNow(true)}</Text>
-        <RelaySelectionButton ml="auto" />
       </Flex>
       <Box overflow="hidden" flex={1}>
         <AutoSizer>
@@ -170,9 +168,7 @@ function NetworkDMGraphPage() {
 export default function NetworkDMGraphView() {
   return (
     <RequireCurrentAccount>
-      <RelaySelectionProvider>
-        <NetworkDMGraphPage />
-      </RelaySelectionProvider>
+      <NetworkDMGraphPage />
     </RequireCurrentAccount>
   );
 }

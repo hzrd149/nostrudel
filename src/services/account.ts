@@ -1,5 +1,6 @@
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
+import { NostrConnectClient } from "./nostr-connect";
 import { AppSettings } from "./settings/migrations";
 
 type CommonAccount = {
@@ -101,6 +102,15 @@ class AccountService {
     }
 
     db.put("accounts", account);
+  }
+  addFromNostrConnect(client: NostrConnectClient) {
+    this.addAccount({
+      type: "nostr-connect",
+      signerRelays: client.relays,
+      clientSecretKey: client.secretKey,
+      pubkey: client.pubkey,
+      readonly: false,
+    });
   }
   removeAccount(pubkey: string) {
     this.accounts.next(this.accounts.value.filter((acc) => acc.pubkey !== pubkey));

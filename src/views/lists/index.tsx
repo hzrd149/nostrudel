@@ -1,6 +1,6 @@
 import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
@@ -20,7 +20,7 @@ import {
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
-function ListsPage() {
+function ListsHomePage() {
   const account = useCurrentAccount()!;
   const lists = useUserLists(account.pubkey);
   const { lists: favoriteLists } = useFavoriteLists();
@@ -55,7 +55,7 @@ function ListsPage() {
         Special lists
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-        <ListCard cord={`${Kind.Contacts}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.Contacts}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${COMMUNITIES_LIST_KIND}:${account.pubkey}`} hideCreator />
@@ -109,7 +109,7 @@ function ListsPage() {
   );
 }
 
-export default function ListsView() {
+export default function ListsHomeView() {
   const account = useCurrentAccount();
-  return account ? <ListsPage /> : <Navigate to="/lists/browse" />;
+  return account ? <ListsHomePage /> : <Navigate to="/lists/browse" />;
 }

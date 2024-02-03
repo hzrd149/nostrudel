@@ -14,11 +14,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useAsync } from "react-use";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { readablizeSats } from "../../../helpers/bolt11";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
-import { useAdditionalRelayContext } from "../../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import Timestamp from "../../../components/timestamp";
@@ -29,7 +29,7 @@ export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {
   const contacts = useUserContactList(pubkey, contextRelays);
 
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
-  const followerCount = useEventCount({ "#p": [pubkey], kinds: [Kind.Contacts] });
+  const followerCount = useEventCount({ "#p": [pubkey], kinds: [kinds.Contacts] });
 
   return (
     <Accordion allowMultiple>

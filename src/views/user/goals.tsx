@@ -1,11 +1,11 @@
 import { useOutletContext } from "react-router-dom";
 import { Flex, SimpleGrid } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { getEventUID } from "../../helpers/nostr/events";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import GoalCard from "../goals/components/goal-card";

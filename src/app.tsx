@@ -5,16 +5,16 @@ import { css, Global } from "@emotion/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
-import { PageProviders } from "./providers";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 
 import HomeView from "./views/home/index";
+import DVMFeedHomeView from "./views/dvm-feed/index";
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 import HashTagView from "./views/hashtag";
-import ThreadView from "./views/note";
+import ThreadView from "./views/thread";
 import NotificationsView from "./views/notifications";
 import DirectMessagesView from "./views/dms";
 import DirectMessageChatView from "./views/dms/chat";
@@ -41,8 +41,8 @@ import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
 const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
-import ListsView from "./views/lists";
-import ListDetailsView from "./views/lists/list-details";
+import ListsHomeView from "./views/lists";
+import ListView from "./views/lists/list";
 import BrowseListView from "./views/lists/browse";
 
 import EmojiPacksBrowseView from "./views/emoji-packs/browse";
@@ -68,20 +68,36 @@ import CommunityTrendingView from "./views/community/views/trending";
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
-import RelayReviewsView from "./views/relays/reviews";
-import PopularRelaysView from "./views/relays/popular";
+import BrowseRelaySetsView from "./views/relays/browse-sets";
 import UserDMsTab from "./views/user/dms";
-import DMFeedView from "./views/tools/dm-feed";
-import ContentDiscoveryView from "./views/tools/content-discovery";
-import ContentDiscoveryDVMView from "./views/tools/content-discovery/dvm";
+import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
+import ThreadsNotificationsView from "./views/notifications/threads";
+import DVMFeedView from "./views/dvm-feed/feed";
+import TransformNoteView from "./views/tools/transform-note";
+import SatelliteCDNView from "./views/tools/satellite-cdn";
+import OtherStuffView from "./views/other-stuff";
+import { RouteProviders } from "./providers/route";
+import LaunchpadView from "./views/launchpad";
+import VideosView from "./views/videos";
+import VideoDetailsView from "./views/videos/video";
+import BookmarksView from "./views/bookmarks";
+import CacheRelayView from "./views/relays/cache";
+import RelaySetView from "./views/relays/relay-set";
+import AppRelays from "./views/relays/app";
+import MailboxesView from "./views/relays/mailboxes";
+import LoginNostrAddressView from "./views/signin/address";
+import LoginNostrAddressCreate from "./views/signin/address/create";
+const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
+const UserVideosTab = lazy(() => import("./views/user/videos"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
-const NetworkView = lazy(() => import("./views/tools/network"));
-const StreamModerationView = lazy(() => import("./views/tools/stream-moderation"));
+const WotTestView = lazy(() => import("./views/tools/wot-test"));
+const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
+const UnknownTimelineView = lazy(() => import("./views/tools/unknown-event-feed"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -126,14 +142,24 @@ const RootPage = () => {
   useSetColorMode();
 
   return (
-    <PageProviders>
+    <RouteProviders>
       <Layout>
         <ScrollRestoration />
         <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>
       </Layout>
-    </PageProviders>
+    </RouteProviders>
+  );
+};
+const NoLayoutPage = () => {
+  return (
+    <RouteProviders>
+      <ScrollRestoration />
+      <Suspense fallback={<Spinner />}>
+        <Outlet />
+      </Suspense>
+    </RouteProviders>
   );
 };
 
@@ -146,49 +172,57 @@ const router = createHashRouter([
       { path: "npub", element: <LoginNpubView /> },
       { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
+      {
+        path: "address",
+        children: [
+          { path: "", element: <LoginNostrAddressView /> },
+          { path: "create", element: <LoginNostrAddressCreate /> },
+        ],
+      },
       { path: "nostr-connect", element: <LoginNostrConnectView /> },
     ],
   },
   {
     path: "signup",
+    element: <NoLayoutPage />,
     children: [
       {
         path: "",
-        element: (
-          <PageProviders>
-            <SignupView />
-          </PageProviders>
-        ),
+        element: <SignupView />,
       },
       {
         path: ":step",
-        element: (
-          <PageProviders>
-            <SignupView />
-          </PageProviders>
-        ),
+        element: <SignupView />,
       },
     ],
   },
   {
-    path: "streams/:naddr",
+    path: "streams/moderation",
     element: (
-      <PageProviders>
-        <StreamView />
-      </PageProviders>
+      <RouteProviders>
+        <StreamModerationView />
+      </RouteProviders>
     ),
   },
   {
-    path: "tools/stream-moderation",
+    path: "streams/:naddr",
     element: (
-      <PageProviders>
-        <StreamModerationView />
-      </PageProviders>
+      <RouteProviders>
+        <StreamView />
+      </RouteProviders>
     ),
   },
   {
     path: "map",
     element: <MapView />,
+  },
+  {
+    path: "launchpad",
+    element: (
+      <RouteProviders>
+        <LaunchpadView />
+      </RouteProviders>
+    ),
   },
   {
     path: "/",
@@ -204,6 +238,7 @@ const router = createHashRouter([
           { path: "articles", element: <UserArticlesTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "tracks", element: <UserTracksTab /> },
+          { path: "videos", element: <UserVideosTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "likes", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
@@ -222,17 +257,48 @@ const router = createHashRouter([
         path: "/n/:id",
         element: <ThreadView />,
       },
+      { path: "other-stuff", element: <OtherStuffView /> },
       { path: "settings", element: <SettingsView /> },
       {
         path: "relays",
+        element: <RelaysView />,
         children: [
-          { path: "", element: <RelaysView /> },
-          { path: "popular", element: <PopularRelaysView /> },
-          { path: "reviews", element: <RelayReviewsView /> },
+          { path: "", element: <AppRelays /> },
+          { path: "app", element: <AppRelays /> },
+          { path: "cache", element: <CacheRelayView /> },
+          { path: "mailboxes", element: <MailboxesView /> },
+          { path: "sets", element: <BrowseRelaySetsView /> },
+          { path: ":id", element: <RelaySetView /> },
         ],
       },
       { path: "r/:relay", element: <RelayView /> },
-      { path: "notifications", element: <NotificationsView /> },
+      {
+        path: "notifications",
+        children: [
+          { path: "threads", element: <ThreadsNotificationsView /> },
+          { path: "", element: <NotificationsView /> },
+        ],
+      },
+      {
+        path: "videos",
+        children: [
+          {
+            path: ":naddr",
+            element: <VideoDetailsView />,
+          },
+          {
+            path: "",
+            element: <VideosView />,
+          },
+        ],
+      },
+      {
+        path: "dvm",
+        children: [
+          { path: ":addr", element: <DVMFeedView /> },
+          { path: "", element: <DVMFeedHomeView /> },
+        ],
+      },
       { path: "search", element: <SearchView /> },
       {
         path: "dm",
@@ -244,25 +310,28 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
-          {
-            path: "content-discovery",
-            children: [
-              { path: "", element: <ContentDiscoveryView /> },
-              { path: ":pubkey", element: <ContentDiscoveryDVMView /> },
-            ],
-          },
-          { path: "network", element: <NetworkView /> },
+          { path: "wot-test", element: <WotTestView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
-          { path: "dm-feed", element: <DMFeedView /> },
+          { path: "dm-timeline", element: <DMTimelineView /> },
+          { path: "transform/:id", element: <TransformNoteView /> },
+          { path: "satellite-cdn", element: <SatelliteCDNView /> },
+          { path: "unknown", element: <UnknownTimelineView /> },
         ],
       },
       {
         path: "lists",
         children: [
-          { path: "", element: <ListsView /> },
+          { path: "", element: <ListsHomeView /> },
           { path: "browse", element: <BrowseListView /> },
-          { path: ":addr", element: <ListDetailsView /> },
+          { path: ":addr", element: <ListView /> },
+        ],
+      },
+      {
+        path: "bookmarks",
+        children: [
+          { path: ":pubkey", element: <BookmarksView /> },
+          { path: "", element: <BookmarksView /> },
         ],
       },
       {
@@ -330,6 +399,10 @@ const router = createHashRouter([
       {
         path: "streams",
         element: <StreamsView />,
+      },
+      {
+        path: "tracks",
+        element: <TracksView />,
       },
       { path: "l/:link", element: <NostrLinkView /> },
       { path: "t/:hashtag", element: <HashTagView /> },

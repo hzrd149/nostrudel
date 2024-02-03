@@ -3,9 +3,10 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useT
 import { useNavigate } from "react-router-dom";
 
 import { RelayUrlInput } from "../../components/relay-url-input";
-import { normalizeToHex } from "../../helpers/nip19";
+import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import QRCodeScannerButton from "../../components/qr-code-scanner-button";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function LoginNpubView() {
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
 
-    const pubkey = normalizeToHex(npub);
+    const pubkey = normalizeToHexPubkey(npub);
     if (!pubkey) {
       return toast({ status: "error", title: "Invalid npub" });
     }
@@ -28,10 +29,13 @@ export default function LoginNpubView() {
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} minWidth="350" w="full">
+    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
       <FormControl>
         <FormLabel>Enter user npub</FormLabel>
-        <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
+        <Flex gap="2">
+          <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
+          <QRCodeScannerButton onData={(v) => setNpub(v)} />
+        </Flex>
         <FormHelperText>
           Enter any npub you want.{" "}
           <Link isExternal href="https://nostr.directory" color="blue.500" target="_blank">
@@ -45,7 +49,7 @@ export default function LoginNpubView() {
           placeholder="wss://nostr.example.com"
           isRequired
           value={relayUrl}
-          onChange={(url) => setRelayUrl(url)}
+          onChange={(e) => setRelayUrl(e.target.value)}
         />
         <FormHelperText>The first relay to connect to.</FormHelperText>
       </FormControl>

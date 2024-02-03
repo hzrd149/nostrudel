@@ -1,11 +1,10 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
-import { CardProps } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
+import { CardProps, Spinner } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
-import { NoteLink } from "../note-link";
 import { NostrEvent } from "../../types/nostr-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
@@ -38,6 +37,10 @@ import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents
 import EmbeddedTorrent from "./event-types/embedded-torrent";
 import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
 import EmbeddedChannel from "./event-types/embedded-channel";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
+import LoadingNostrLink from "../loading-nostr-link";
+import EmbeddedRepost from "./event-types/embedded-repost";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -49,61 +52,70 @@ export function EmbedEvent({
   goalProps,
   ...cardProps
 }: Omit<CardProps, "children"> & { event: NostrEvent } & EmbedProps) {
-  switch (event.kind) {
-    case Kind.Text:
-      return <EmbeddedNote event={event} {...cardProps} />;
-    case Kind.Reaction:
-      return <EmbeddedReaction event={event} {...cardProps} />;
-    case Kind.EncryptedDirectMessage:
-      return <EmbeddedDM dm={event} {...cardProps} />;
-    case STREAM_KIND:
-      return <EmbeddedStream event={event} {...cardProps} />;
-    case GOAL_KIND:
-      return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
-    case EMOJI_PACK_KIND:
-      return <EmbeddedEmojiPack pack={event} {...cardProps} />;
-    case PEOPLE_LIST_KIND:
-    case NOTE_LIST_KIND:
-    case BOOKMARK_LIST_KIND:
-    case COMMUNITIES_LIST_KIND:
-    case CHANNELS_LIST_KIND:
-      return <EmbeddedList list={event} {...cardProps} />;
-    case Kind.Article:
-      return <EmbeddedArticle article={event} {...cardProps} />;
-    case Kind.BadgeDefinition:
-      return <EmbeddedBadge badge={event} {...cardProps} />;
-    case STREAM_CHAT_MESSAGE_KIND:
-      return <EmbeddedStreamMessage message={event} {...cardProps} />;
-    case COMMUNITY_DEFINITION_KIND:
-      return <EmbeddedCommunity community={event} {...cardProps} />;
-    case STEMSTR_TRACK_KIND:
-      return <EmbeddedStemstrTrack track={event} {...cardProps} />;
-    case TORRENT_KIND:
-      return <EmbeddedTorrent torrent={event} {...cardProps} />;
-    case TORRENT_COMMENT_KIND:
-      return <EmbeddedTorrentComment comment={event} {...cardProps} />;
-    case Kind.ChannelCreation:
-      return <EmbeddedChannel channel={event} {...cardProps} />;
-  }
+  const renderContent = () => {
+    switch (event.kind) {
+      case kinds.ShortTextNote:
+        return <EmbeddedNote event={event} {...cardProps} />;
+      case kinds.Reaction:
+        return <EmbeddedReaction event={event} {...cardProps} />;
+      case kinds.EncryptedDirectMessage:
+        return <EmbeddedDM dm={event} {...cardProps} />;
+      case STREAM_KIND:
+        return <EmbeddedStream event={event} {...cardProps} />;
+      case GOAL_KIND:
+        return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
+      case EMOJI_PACK_KIND:
+        return <EmbeddedEmojiPack pack={event} {...cardProps} />;
+      case PEOPLE_LIST_KIND:
+      case NOTE_LIST_KIND:
+      case BOOKMARK_LIST_KIND:
+      case COMMUNITIES_LIST_KIND:
+      case CHANNELS_LIST_KIND:
+        return <EmbeddedList list={event} {...cardProps} />;
+      case kinds.LongFormArticle:
+        return <EmbeddedArticle article={event} {...cardProps} />;
+      case kinds.BadgeDefinition:
+        return <EmbeddedBadge badge={event} {...cardProps} />;
+      case STREAM_CHAT_MESSAGE_KIND:
+        return <EmbeddedStreamMessage message={event} {...cardProps} />;
+      case COMMUNITY_DEFINITION_KIND:
+        return <EmbeddedCommunity community={event} {...cardProps} />;
+      case STEMSTR_TRACK_KIND:
+        return <EmbeddedStemstrTrack track={event} {...cardProps} />;
+      case TORRENT_KIND:
+        return <EmbeddedTorrent torrent={event} {...cardProps} />;
+      case TORRENT_COMMENT_KIND:
+        return <EmbeddedTorrentComment comment={event} {...cardProps} />;
+      case FLARE_VIDEO_KIND:
+        return <EmbeddedFlareVideo video={event} {...cardProps} />;
+      case kinds.ChannelCreation:
+        return <EmbeddedChannel channel={event} {...cardProps} />;
+      case kinds.Repost:
+      case kinds.GenericRepost:
+        return <EmbeddedRepost repost={event} {...cardProps} />;
+    }
 
-  return <EmbeddedUnknown event={event} {...cardProps} />;
+    return <EmbeddedUnknown event={event} {...cardProps} />;
+  };
+
+  return <Suspense fallback={<Spinner />}>{renderContent()}</Suspense>;
 }
 
 export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {
   switch (pointer.type) {
     case "note": {
       const event = useSingleEvent(pointer.data);
-      if (event === undefined) return <NoteLink noteId={pointer.data} />;
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nevent": {
       const event = useSingleEvent(pointer.data.id, pointer.data.relays);
-      if (event === undefined) return <NoteLink noteId={pointer.data.id} />;
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "naddr": {
-      const event = useReplaceableEvent(pointer.data);
-      if (!event) return <span>{nip19.naddrEncode(pointer.data)}</span>;
+      const event = useReplaceableEvent(pointer.data, pointer.data.relays);
+      if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
     case "nrelay":

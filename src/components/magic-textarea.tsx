@@ -1,5 +1,6 @@
-import React, { LegacyRef } from "react";
-import { Image, InputProps, Textarea, TextareaProps, Input } from "@chakra-ui/react";
+import React, { LegacyRef, forwardRef } from "react";
+// NOTE: Do not remove Textarea or Input from the imports. they are used
+import { Image, InputProps, Textarea, Input, TextareaProps } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
   TextareaProps as ReactTextareaAutocompleteProps,
@@ -7,11 +8,12 @@ import ReactTextareaAutocomplete, {
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
-import { matchSorter } from "match-sorter/dist/match-sorter.esm.js";
+import { matchSorter } from "match-sorter";
 
-import { Emoji, useContextEmojis } from "../providers/emoji-provider";
-import { useUserSearchDirectoryContext } from "../providers/user-directory-provider";
+import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
+import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user-avatar";
+import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -36,7 +38,8 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
   } else if (isPersonToken(entity)) {
     return (
       <span>
-        <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}
+        <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
+        <UserDnsIdentityIcon pubkey={entity.pubkey} onlyIcon />
       </span>
     );
   } else return null;
@@ -83,34 +86,42 @@ function useAutocompleteTriggers() {
 // @ts-ignore
 export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
 
-export function MagicInput({ instanceRef, ...props }: InputProps & { instanceRef?: LegacyRef<RefType> }) {
-  const triggers = useAutocompleteTriggers();
+const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: LegacyRef<RefType> }>(
+  ({ instanceRef, ...props }, ref) => {
+    const triggers = useAutocompleteTriggers();
 
-  return (
-    // @ts-ignore
-    <ReactTextareaAutocomplete<Token, InputProps>
-      {...props}
-      textAreaComponent={Input}
-      ref={instanceRef}
-      loadingComponent={Loading}
-      minChar={0}
-      trigger={triggers}
-    />
-  );
-}
+    return (
+      // @ts-ignore
+      <ReactTextareaAutocomplete<Token, InputProps>
+        {...props}
+        textAreaComponent={Input}
+        ref={instanceRef}
+        loadingComponent={Loading}
+        minChar={0}
+        trigger={triggers}
+        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+      />
+    );
+  },
+);
 
-export default function MagicTextArea({ instanceRef, ...props }: TextareaProps & { instanceRef?: LegacyRef<RefType> }) {
-  const triggers = useAutocompleteTriggers();
+const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instanceRef?: LegacyRef<RefType> }>(
+  ({ instanceRef, ...props }, ref) => {
+    const triggers = useAutocompleteTriggers();
 
-  return (
-    // @ts-ignore
-    <ReactTextareaAutocomplete<Token, TextareaProps>
-      {...props}
-      ref={instanceRef}
-      textAreaComponent={Textarea}
-      loadingComponent={Loading}
-      minChar={0}
-      trigger={triggers}
-    />
-  );
-}
+    return (
+      // @ts-ignore
+      <ReactTextareaAutocomplete<Token, TextareaProps>
+        {...props}
+        ref={instanceRef}
+        textAreaComponent={Textarea}
+        loadingComponent={Loading}
+        minChar={0}
+        trigger={triggers}
+        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+      />
+    );
+  },
+);
+
+export { MagicInput, MagicTextArea as default };

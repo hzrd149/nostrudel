@@ -5,7 +5,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { getBadgeAwardBadge, getBadgeAwardPubkeys, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID } from "../../../helpers/nostr/events";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserLink from "../../../components/user-link";

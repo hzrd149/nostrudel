@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="auto">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,7 +20,11 @@
       content="https://repository-images.githubusercontent.com/581644549/d5eec580-ba3d-41e8-87db-58c313bf3f45"
     />
 
-    %VITE_ANALYTICS_SCRIPT%
+    <script>
+      window.CACHE_RELAY_ENABLED = false;
+      window.IMAGE_PROXY_PATH = "";
+      window.CORS_PROXY_PATH = "";
+    </script>
   </head>
   <body>
     <div id="root"></div>

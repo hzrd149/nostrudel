@@ -4,7 +4,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import AddReactionButton from "./add-reaction-button";
 import EventReactionButtons from "../../event-reactions/event-reactions";
 import useEventReactions from "../../../hooks/use-event-reactions";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 export default function NoteReactions({ event, ...props }: Omit<ButtonGroupProps, "children"> & { event: NostrEvent }) {
   const reactions = useEventReactions(event.id) ?? [];

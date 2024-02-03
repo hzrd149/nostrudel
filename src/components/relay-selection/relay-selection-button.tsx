@@ -1,21 +1,22 @@
-import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
+import { ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
 
 import { RelayIcon } from "../icons";
-import { useRelaySelectionContext } from "../../providers/relay-selection-provider";
-import RelaySelectionModal from "./relay-selection-modal";
+import RelayManagementDrawer from "../relay-management-drawer";
 
+/** @deprecated */
 export default function RelaySelectionButton({ ...props }: ButtonProps) {
   const relaysModal = useDisclosure();
-  const { setSelected, relays } = useRelaySelectionContext();
-
   return (
     <>
-      <Button leftIcon={<RelayIcon />} onClick={relaysModal.onOpen} {...props}>
-        {relays.length} {relays.length === 1 ? "Relay" : "Relays"}
-      </Button>
-      {relaysModal.isOpen && (
-        <RelaySelectionModal selected={relays} onSubmit={setSelected} onClose={relaysModal.onClose} />
-      )}
+      <IconButton
+        icon={<RelayIcon />}
+        onClick={relaysModal.onOpen}
+        aria-label="Relays"
+        title="Relays"
+        variant="ghost"
+        {...props}
+      />
+      <RelayManagementDrawer isOpen={relaysModal.isOpen} onClose={relaysModal.onClose} />
     </>
   );
 }

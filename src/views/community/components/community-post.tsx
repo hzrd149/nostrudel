@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent, isETag } from "../../../types/nostr-event";
 import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr/communities";
@@ -22,12 +22,12 @@ import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { CompactNoteContent } from "../../../components/compact-note-content";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/events";
 import UserLink from "../../../components/user-link";
 import UserAvatarLink from "../../../components/user-avatar-link";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSingleEvent from "../../../hooks/use-single-event";
 import CommunityPostMenu from "./community-post-menu";
 
@@ -129,7 +129,7 @@ export function CommunityRepostPost({
   const encodedRepost = parseHardcodedNoteContent(event);
 
   const [_, eventId, relay] = event.tags.find(isETag) ?? [];
-  const readRelays = useReadRelayUrls(relay ? [relay] : []);
+  const readRelays = useReadRelays(relay ? [relay] : []);
 
   const loadedRepost = useSingleEvent(eventId, readRelays);
   const repost = encodedRepost || loadedRepost;
@@ -175,9 +175,11 @@ export function CommunityRepostPost({
 
 export default function CommunityPost({ event, ...props }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
       return <CommunityTextPost event={event} {...props} />;
-    case Kind.Repost:
+    case kinds.Repost:
+      return <CommunityRepostPost event={event} {...props} />;
+    case kinds.GenericRepost:
       return <CommunityRepostPost event={event} {...props} />;
   }
   return null;

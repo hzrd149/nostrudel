@@ -8,7 +8,7 @@ import UserLink from "../../user-link";
 import UserAvatar from "../../user-avatar";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import Timestamp from "../../timestamp";
-import { useBreakpointValue } from "../../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const stream = parseStreamEvent(event);

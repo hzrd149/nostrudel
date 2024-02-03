@@ -1,13 +1,13 @@
-import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
+import { MenuItem, useToast } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
 import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
 import { NostrEvent } from "../../../types/nostr-event";
-import { CodeIcon, CopyToClipboardIcon } from "../../../components/icons";
-import CommunityPostDebugModal from "../../../components/debug-modals/community-post-debug-modal";
+import { CopyToClipboardIcon } from "../../../components/icons";
 import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
+import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 
 export default function CommunityPostMenu({
   event,
@@ -15,7 +15,6 @@ export default function CommunityPostMenu({
   ...props
 }: Omit<MenuIconButtonProps, "children"> & { event: NostrEvent; approvals: NostrEvent[] }) {
   const toast = useToast();
-  const debugModal = useDisclosure();
 
   return (
     <>
@@ -33,20 +32,8 @@ export default function CommunityPostMenu({
           Copy Note ID
         </MenuItem>
         <DeleteEventMenuItem event={event} label="Delete Post" />
-        <MenuItem onClick={debugModal.onOpen} icon={<CodeIcon />}>
-          View Raw
-        </MenuItem>
+        <DebugEventMenuItem event={event} />
       </CustomMenuIconButton>
-
-      {debugModal.isOpen && (
-        <CommunityPostDebugModal
-          event={event}
-          isOpen={debugModal.isOpen}
-          onClose={debugModal.onClose}
-          size="6xl"
-          approvals={approvals}
-        />
-      )}
     </>
   );
 }

@@ -1,8 +1,7 @@
 import db from "./db";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import { NostrEvent } from "../types/nostr-event";
 import { Kind0ParsedContent, getSearchNames, parseKind0Event } from "../helpers/user-metadata";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
@@ -11,7 +10,7 @@ import replaceableEventLoaderService, { RequestOptions } from "./replaceable-eve
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
 
 class UserMetadataService {
-  private parsedSubjects = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
+  private metadata = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
     const sub = new Subject<Kind0ParsedContent>();
     sub.subscribe((metadata) => {
       if (metadata) {
@@ -22,17 +21,13 @@ class UserMetadataService {
     return sub;
   });
   getSubject(pubkey: string) {
-    return this.parsedSubjects.get(pubkey);
+    return this.metadata.get(pubkey);
   }
-  requestMetadata(pubkey: string, relays: string[], opts: RequestOptions = {}) {
-    const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, Kind.Metadata, pubkey, undefined, opts);
+  requestMetadata(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
+    const sub = this.metadata.get(pubkey);
+    const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     sub.connectWithHandler(requestSub, (event, next) => next(parseKind0Event(event)));
     return sub;
-  }
-
-  receiveEvent(event: NostrEvent) {
-    replaceableEventLoaderService.handleEvent(event);
   }
 
   private writeSearchQueue = new Set<string>();
@@ -66,7 +61,7 @@ if (import.meta.env.DEV) {
 // random helper for logging
 export function nameOrPubkey(pubkey: string) {
   const parsed = userMetadataService.getSubject(pubkey).value;
-  return parsed?.name || parsed?.display_name || pubkey;
+  return parsed?.displayName || parsed?.display_name || parsed?.name || pubkey;
 }
 
 export default userMetadataService;

@@ -1,12 +1,15 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7 } from "./schema";
+import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
+
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8 } from "./schema";
 import { logger } from "../../helpers/debug";
+import { localDatabase } from "../local-relay";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 7;
-const db = await openDB<SchemaV6>(dbName, version, {
+const version = 8;
+const db = await openDB<SchemaV8>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -69,10 +72,10 @@ const db = await openDB<SchemaV6>(dbName, version, {
       v2.deleteObjectStore("settings");
 
       // create new replaceable event object store
-      const settings = v3.createObjectStore("replaceableEvents", {
+      const replaceableEvents = v3.createObjectStore("replaceableEvents", {
         keyPath: "addr",
       });
-      settings.createIndex("created", "created");
+      replaceableEvents.createIndex("created", "created");
     }
 
     if (oldVersion < 4) {
@@ -163,14 +166,19 @@ const db = await openDB<SchemaV6>(dbName, version, {
           }
         });
     }
+
+    if (oldVersion < 8) {
+      const v7 = db as unknown as IDBPDatabase<SchemaV7>;
+      v7.deleteObjectStore("replaceableEvents");
+    }
   },
 });
 
 log("Open");
 
 export async function clearCacheData() {
-  log("Clearing replaceableEvents");
-  await db.clear("replaceableEvents");
+  log("Clearing nostr-idb");
+  await clearDB(localDatabase);
 
   log("Clearing channelMetadata");
   await db.clear("channelMetadata");
@@ -195,6 +203,7 @@ export async function deleteDatabase() {
   db.close();
   log("Deleting");
   await deleteDB(dbName);
+  await nostrIDBDelete();
   window.location.reload();
 }
 

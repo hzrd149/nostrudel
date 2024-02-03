@@ -2,7 +2,7 @@ import { SimpleGrid, Spinner } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 
 import { UserCard } from "./components/user-card";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 

@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Kind, nip19 } from "nostr-tools";
+import { useNavigate } from "react-router-dom";
+import { kinds } from "nostr-tools";
 import {
   Button,
   Flex,
@@ -22,8 +22,8 @@ import { EventRelays } from "../../components/note/note-relays";
 import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import BadgeMenu from "./components/badge-menu";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
@@ -35,6 +35,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import BadgeAwardCard from "./components/badge-award-card";
 import TimelineLoader from "../../classes/timeline-loader";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
   const awards = useSubject(timeline.timeline);
@@ -84,11 +85,11 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const image = getBadgeImage(badge);
   const description = getBadgeDescription(badge);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const coordinate = getEventCoordinate(badge);
   const awardsTimeline = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
-    kinds: [Kind.BadgeAward],
+    kinds: [kinds.BadgeAward],
   });
 
   if (!badge) return <Spinner />;
@@ -154,15 +155,8 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   );
 }
 
-function useBadgeCoordinate() {
-  const { naddr } = useParams() as { naddr: string };
-  const parsed = nip19.decode(naddr);
-  if (parsed.type !== "naddr") throw new Error(`Unknown type ${parsed.type}`);
-  return parsed.data;
-}
-
 export default function BadgeDetailsView() {
-  const pointer = useBadgeCoordinate();
+  const pointer = useParamsAddressPointer("naddr");
   const badge = useReplaceableEvent(pointer);
 
   if (!badge) return <Spinner />;

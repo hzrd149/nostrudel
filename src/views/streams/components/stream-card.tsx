@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import UserAvatar from "../../../components/user-avatar";
 import UserLink from "../../../components/user-link";
 import StreamStatusBadge from "./status-badge";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import { getEventUID } from "../../../helpers/nostr/events";
 import StreamHashtags from "./stream-hashtags";

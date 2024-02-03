@@ -5,12 +5,9 @@ import {
   EditableInput,
   EditablePreview,
   Flex,
-  FormControl,
-  FormLabel,
   IconButton,
   Input,
   Spacer,
-  useDisclosure,
   useEditableControls,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
@@ -21,15 +18,15 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply, isRepost } from "../../helpers/nostr/events";
 import { CheckIcon, EditIcon } from "../../components/icons";
 import { NostrEvent } from "../../types/nostr-event";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
-import RelaySelectionProvider, { useRelaySelectionRelays } from "../../providers/relay-selection-provider";
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -53,10 +50,10 @@ function HashTagPage() {
 
   useAppTitle("#" + hashtag);
 
-  const showReplies = useDisclosure({ defaultIsOpen: true });
-  const showReposts = useDisclosure({ defaultIsOpen: true });
+  const showReplies = useRouteStateBoolean("show-replies", true);
+  const showReposts = useRouteStateBoolean("show-reposts", true);
 
-  const readRelays = useRelaySelectionRelays();
+  const readRelays = useReadRelays().urls;
 
   const { listId, filter } = usePeopleListContext();
   const timelinePageEventFilter = useTimelinePageEventFilter();
@@ -100,7 +97,6 @@ function HashTagPage() {
         <EditableControls />
       </Editable>
       <PeopleListSelection />
-      <RelaySelectionButton />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
       <TimelineViewTypeButtons />
@@ -112,10 +108,8 @@ function HashTagPage() {
 
 export default function HashTagView() {
   return (
-    <RelaySelectionProvider>
-      <PeopleListProvider initList="global">
-        <HashTagPage />
-      </PeopleListProvider>
-    </RelaySelectionProvider>
+    <PeopleListProvider initList="global">
+      <HashTagPage />
+    </PeopleListProvider>
   );
 }

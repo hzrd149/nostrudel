@@ -40,7 +40,7 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
               if (render === null) continue;
 
               if (typeof render !== "string" && !render.props.key) {
-                render = cloneElement(render, { key: embed.name + match[0] });
+                render = cloneElement(render, { key: embed.name + match[0] + match.index });
               }
 
               newContent.push(before, render);

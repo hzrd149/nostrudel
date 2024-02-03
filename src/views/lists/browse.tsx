@@ -1,19 +1,20 @@
 import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import {
   MUTE_LIST_KIND,
   NOTE_LIST_KIND,
   PEOPLE_LIST_KIND,
-  getEventsFromList,
+  getEventPointersFromList,
   getListName,
   getPubkeysFromList,
 } from "../../helpers/nostr/lists";
 import { useCallback, useState } from "react";
 import { NostrEvent } from "../../types/nostr-event";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import ListCard from "./components/list-card";
@@ -29,7 +30,7 @@ function BrowseListPage() {
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (event.kind !== listKind) return false;
-      if (!showEmpty.isOpen && getPubkeysFromList(event).length === 0 && getEventsFromList(event).length === 0)
+      if (!showEmpty.isOpen && getPubkeysFromList(event).length === 0 && getEventPointersFromList(event).length === 0)
         return false;
 
       if (
@@ -41,7 +42,7 @@ function BrowseListPage() {
     },
     [showEmpty.isOpen, showMute.isOpen, listKind],
   );
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${listId}-lists`,
     readRelays,

@@ -5,10 +5,12 @@ import { Link as RouterLink, useOutletContext } from "react-router-dom";
 import UserAvatarLink from "../../components/user-avatar-link";
 import UserLink from "../../components/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { getEventUID } from "../../helpers/nostr/events";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -43,7 +45,7 @@ const User = memo(({ pubkey, lists }: { pubkey: string; lists: NostrEvent[] }) =
 export default function UserMutedByTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(`${pubkey}-muted-by`, readRelays, [
     { kinds: [MUTE_LIST_KIND], "#p": [pubkey] },
     { kinds: [PEOPLE_LIST_KIND], "#d": ["mute"], "#p": [pubkey] },

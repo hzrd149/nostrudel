@@ -1,28 +1,25 @@
-import { PropsWithChildren, ReactNode, forwardRef, memo, useMemo, useRef } from "react";
-import { AvatarGroup, Box, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
-import { Kind, nip18, nip25 } from "nostr-tools";
+import { ReactNode, forwardRef, memo, useMemo, useRef } from "react";
+import { AvatarGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
+import { kinds, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../providers/local/intersection-observer";
 import { parseZapEvent } from "../../helpers/nostr/zaps";
 import { readablizeSats } from "../../helpers/bolt11";
-import { getEventUID, getReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
+import { getEventUID, getThreadReferences, isMentionedInContent, parseCoordinate } from "../../helpers/nostr/events";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import EmbeddedUnknown from "../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { TrustProvider } from "../../providers/trust";
+import { TrustProvider } from "../../providers/local/trust";
 import Heart from "../../components/icons/heart";
 import UserAvatarLink from "../../components/user-avatar-link";
 import { AtIcon, ChevronDownIcon, ChevronUpIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";
 import useSingleEvent from "../../hooks/use-single-event";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
+import NotificationIconEntry from "./components/notification-icon-entry";
+import { getPubkeysMentionedInContent } from "../../helpers/nostr/post";
 
-const IconBox = ({ children }: PropsWithChildren) => (
-  <Box px="2" pb="2">
-    {children}
-  </Box>
-);
 export const ExpandableToggleButton = ({
   toggle,
   ...props
@@ -37,39 +34,30 @@ export const ExpandableToggleButton = ({
 
 const NoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
-  const refs = getReferences(event);
-  const parent = useSingleEvent(refs.replyId);
+  const refs = getThreadReferences(event);
+  const parent = useSingleEvent(refs.reply?.e?.id);
 
-  const isReplyingToMe = !!refs.replyId && (parent ? parent.pubkey === account.pubkey : true);
+  const isReplyingToMe = !!refs.reply?.e?.id && (parent ? parent.pubkey === account.pubkey : true);
+  // is the "p" tag directly mentioned in the content
   const isMentioned = isMentionedInContent(event, account.pubkey);
+  // is the pubkey mentioned in any way in the content
+  const isQuoted = !isMentioned && getPubkeysMentionedInContent(event.content).includes(account.pubkey);
 
   if (isReplyingToMe) return <ReplyNotification event={event} ref={ref} />;
-  else if (isMentioned) return <MentionNotification event={event} ref={ref} />;
+  else if (isMentioned || isQuoted) return <MentionNotification event={event} ref={ref} />;
   else return null;
 });
 const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (
-  <Flex gap="2" ref={ref}>
-    <IconBox>
-      <ReplyIcon boxSize={8} color="green.400" />
-    </IconBox>
-    <Flex direction="column" w="full" gap="2">
-      <EmbedEvent event={event} />
-    </Flex>
-  </Flex>
+  <NotificationIconEntry ref={ref} icon={<ReplyIcon boxSize={8} color="green.400" />}>
+    <EmbedEvent event={event} />
+  </NotificationIconEntry>
 ));
 
-const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
-  return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <AtIcon boxSize={8} color="purple.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <EmbedEvent event={event} />
-      </Flex>
-    </Flex>
-  );
-});
+const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => (
+  <NotificationIconEntry ref={ref} icon={<AtIcon boxSize={8} color="purple.400" />}>
+    <EmbedEvent event={event} />
+  </NotificationIconEntry>
+));
 
 const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
   const account = useCurrentAccount()!;
@@ -79,20 +67,15 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ 
   if (pointer?.author !== account.pubkey) return null;
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <RepostIcon boxSize={8} color="blue.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={event.pubkey} />
-          </AvatarGroup>
-          <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
-        </Flex>
-        {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    <NotificationIconEntry ref={ref} icon={<RepostIcon boxSize={8} color="blue.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={event.pubkey} />
+        </AvatarGroup>
+        <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
       </Flex>
-    </Flex>
+      {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    </NotificationIconEntry>
   );
 });
 
@@ -103,25 +86,20 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
   if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 
   const reactedEvent = useSingleEvent(pointer.id, pointer.relays);
-  if (reactedEvent?.kind === Kind.EncryptedDirectMessage) return null;
+  if (reactedEvent?.kind === kinds.EncryptedDirectMessage) return null;
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <Heart boxSize={8} color="red.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={event.pubkey} />
-          </AvatarGroup>
-          <Text fontSize="xl">{event.content}</Text>
-          <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
-          {/* <Timestamp timestamp={event.created_at} ml="auto" /> */}
-        </Flex>
-        {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    <NotificationIconEntry ref={ref} icon={<Heart boxSize={8} color="red.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={event.pubkey} />
+        </AvatarGroup>
+        <Text fontSize="xl">{event.content}</Text>
+        <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />
+        {/* <Timestamp timestamp={event.created_at} ml="auto" /> */}
       </Flex>
-    </Flex>
+      {expanded.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+    </NotificationIconEntry>
   );
 });
 
@@ -158,22 +136,17 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
   }
 
   return (
-    <Flex gap="2" ref={ref}>
-      <IconBox>
-        <LightningIcon boxSize={8} color="yellow.400" />
-      </IconBox>
-      <Flex direction="column" w="full" gap="2">
-        <Flex gap="2" alignItems="center">
-          <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={zap.request.pubkey} />
-          </AvatarGroup>
-          <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
-          {zap.request.content && <Text>{zap.request.content}</Text>}
-          {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
-        </Flex>
-        {expanded.isOpen && eventJSX}
+    <NotificationIconEntry ref={ref} icon={<LightningIcon boxSize={8} color="yellow.400" />}>
+      <Flex gap="2" alignItems="center">
+        <AvatarGroup size="sm">
+          <UserAvatarLink pubkey={zap.request.pubkey} />
+        </AvatarGroup>
+        <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
+        {zap.request.content && <Text>{zap.request.content}</Text>}
+        {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
       </Flex>
-    </Flex>
+      {expanded.isOpen && eventJSX}
+    </NotificationIconEntry>
   );
 });
 
@@ -183,18 +156,18 @@ const NotificationItem = ({ event }: { event: NostrEvent }) => {
 
   let content: ReactNode | null = null;
   switch (event.kind) {
-    case Kind.Text:
+    case kinds.ShortTextNote:
     case TORRENT_COMMENT_KIND:
-    case Kind.Article:
+    case kinds.LongFormArticle:
       content = <NoteNotification event={event} ref={ref} />;
       break;
-    case Kind.Reaction:
+    case kinds.Reaction:
       content = <ReactionNotification event={event} ref={ref} />;
       break;
-    case Kind.Repost:
+    case kinds.Repost:
       content = <RepostNotification event={event} ref={ref} />;
       break;
-    case Kind.Zap:
+    case kinds.Zap:
       content = <ZapNotification event={event} ref={ref} />;
       break;
     default:

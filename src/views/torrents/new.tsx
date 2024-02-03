@@ -28,13 +28,11 @@ import { sha1 } from "@noble/hashes/sha1";
 import { BencodeValue, decode, encode } from "../../lib/bencode";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { Category, TORRENT_KIND, torrentCatagories } from "../../helpers/nostr/torrents";
-import { useBreakpointValue } from "../../providers/breakpoint-provider";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import { useSigningContext } from "../../providers/signing-provider";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import clientRelaysService from "../../services/client-relays";
 import { useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function RadioCard(props: UseRadioProps & PropsWithChildren) {
   const { getInputProps, getRadioProps } = useRadio(props);
@@ -62,9 +60,8 @@ function RadioCard(props: UseRadioProps & PropsWithChildren) {
 }
 
 export default function NewTorrentView() {
-  const toast = useToast();
+  const publish = usePublishEvent();
   const navigate = useNavigate();
-  const { requestSignature } = useSigningContext();
   const torrentFileInput = useRef<HTMLInputElement | null>(null);
 
   const smallLayout = useBreakpointValue({ base: true, lg: false });
@@ -105,26 +102,21 @@ export default function NewTorrentView() {
   };
 
   const onSubmit = handleSubmit(async (values) => {
-    try {
-      const draft: DraftNostrEvent = {
-        kind: TORRENT_KIND,
-        content: values.description,
-        tags: [
-          ["title", values.title],
-          ["btih", values.btih],
-          ...values.tags.map((v) => ["t", v]),
-          ...values.files.map((f) => ["file", f.name, String(f.size)]),
-        ],
-        created_at: dayjs().unix(),
-      };
+    const draft: DraftNostrEvent = {
+      kind: TORRENT_KIND,
+      content: values.description,
+      tags: [
+        ["title", values.title],
+        ["btih", values.btih],
+        ...values.tags.map((v) => ["t", v]),
+        ...values.files.map((f) => ["file", f.name, String(f.size)]),
+      ],
+      created_at: dayjs().unix(),
+    };
 
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Publish Torrent", clientRelaysService.getWriteUrls(), signed);
+    const pub = await publish("Publish Torrent", draft);
 
-      navigate(`/torrents/${nip19.noteEncode(signed.id)}`);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    if (pub) navigate(`/torrents/${nip19.noteEncode(pub.event.id)}`);
   });
 
   const { getRootProps, getRadioProps } = useRadioGroup({

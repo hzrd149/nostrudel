@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { isVideoURL } from "../../helpers/url";
 import useAppSettings from "../../hooks/use-app-settings";
 import useElementBlur from "../../hooks/use-element-blur";
-import { useTrusted } from "../../providers/trust";
+import { useTrusted } from "../../providers/local/trust";
 
 const StyledVideo = styled.video`
   max-width: 30rem;

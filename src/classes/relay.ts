@@ -1,7 +1,9 @@
+import { offlineMode } from "../services/offline-mode";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
-import { Subject } from "./subject";
+import createDefer, { Deferred } from "./deferred";
+import { PersistentSubject, Subject } from "./subject";
 
 export type IncomingEvent = {
   type: "EVENT";
@@ -24,7 +26,6 @@ export type IncomingEOSE = {
   subId: string;
   relay: Relay;
 };
-// NIP-20
 export type IncomingCommandResult = {
   type: "OK";
   eventId: string;
@@ -39,12 +40,12 @@ export enum RelayMode {
   WRITE = 2,
   ALL = 1 | 2,
 }
-export type RelayConfig = { url: string; mode: RelayMode };
 
 const CONNECTION_TIMEOUT = 1000 * 30;
 
 export default class Relay {
   url: string;
+  status = new PersistentSubject<number>(WebSocket.CLOSED);
   onOpen = new Subject<Relay>(undefined, false);
   onClose = new Subject<Relay>(undefined, false);
   onEvent = new Subject<IncomingEvent>(undefined, false);
@@ -53,7 +54,8 @@ export default class Relay {
   onEOSE = new Subject<IncomingEOSE>(undefined, false);
   onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
   ws?: WebSocket;
-  mode: RelayMode = RelayMode.ALL;
+
+  private connectionPromises: Deferred<void>[] = [];
 
   private connectionTimer?: () => void;
   private ejectTimer?: () => void;
@@ -61,12 +63,13 @@ export default class Relay {
   private subscriptionResTimer = new Map<string, () => void>();
   private queue: NostrOutgoingMessage[] = [];
 
-  constructor(url: string, mode: RelayMode = RelayMode.ALL) {
+  constructor(url: string) {
     this.url = url;
-    this.mode = mode;
   }
 
   open() {
+    if (offlineMode.value) return;
+
     if (this.okay) return;
     this.intentionalClose = false;
     this.ws = new WebSocket(this.url);
@@ -77,6 +80,9 @@ export default class Relay {
       if (this.connectionTimer) {
         this.connectionTimer();
         this.connectionTimer = undefined;
+
+        for (const p of this.connectionPromises) p.reject();
+        this.connectionPromises = [];
       }
       // relayScoreboardService.relayTimeouts.get(this.url).addIncident();
     }, CONNECTION_TIMEOUT);
@@ -92,6 +98,7 @@ export default class Relay {
     this.ws.onopen = () => {
       window.clearTimeout(connectionTimeout);
       this.onOpen.next(this);
+      this.status.next(this.ws!.readyState);
 
       this.ejectTimer = relayScoreboardService.relayEjectTime.get(this.url).createTimer();
       if (this.connectionTimer) {
@@ -100,9 +107,13 @@ export default class Relay {
       }
 
       this.sendQueued();
+
+      for (const p of this.connectionPromises) p.resolve();
+      this.connectionPromises = [];
     };
     this.ws.onclose = () => {
       this.onClose.next(this);
+      this.status.next(this.ws!.readyState);
 
       if (!this.intentionalClose && this.ejectTimer) {
         this.ejectTimer();
@@ -112,21 +123,26 @@ export default class Relay {
     this.ws.onmessage = this.handleMessage.bind(this);
   }
   send(json: NostrOutgoingMessage) {
-    if (this.mode & RelayMode.WRITE) {
-      if (this.connected) {
-        this.ws?.send(JSON.stringify(json));
+    if (this.connected) {
+      this.ws?.send(JSON.stringify(json));
 
-        // record start time
-        if (json[0] === "REQ" || json[0] === "COUNT") {
-          this.startSubResTimer(json[1]);
-        }
-      } else this.queue.push(json);
-    }
+      // record start time
+      if (json[0] === "REQ" || json[0] === "COUNT") {
+        this.startSubResTimer(json[1]);
+      }
+    } else this.queue.push(json);
   }
   close() {
     this.ws?.close();
     this.intentionalClose = true;
     this.subscriptionResTimer.clear();
+  }
+
+  waitForConnection(): Promise<void> {
+    if (this.connected) return Promise.resolve();
+    const p = createDefer<void>();
+    this.connectionPromises.push(p);
+    return p;
   }
 
   private startSubResTimer(sub: string) {
@@ -169,10 +185,7 @@ export default class Relay {
   }
 
   handleMessage(event: MessageEvent<string>) {
-    // skip empty events
     if (!event.data) return;
-
-    if (!(this.mode & RelayMode.READ)) return;
 
     try {
       const data: RawIncomingNostrEvent = JSON.parse(event.data);
@@ -199,7 +212,7 @@ export default class Relay {
       }
     } catch (e) {
       console.log(`Relay: Failed to parse event from ${this.url}`);
-      console.log(event.data);
+      console.log(event.data, e);
     }
   }
 }

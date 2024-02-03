@@ -1,20 +1,20 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import RelayReviewNote from "./components/relay-review-note";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ChevronLeftIcon } from "../../components/icons";
 
 function RelayReviewsPage() {
   const navigate = useNavigate();
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const { filter } = usePeopleListContext();
   const timeline = useTimelineLoader(

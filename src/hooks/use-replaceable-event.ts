@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
-import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
 import useSubject from "./use-subject";
 
 export default function useReplaceableEvent(
-  cord: string | CustomEventPointer | undefined,
-  additionalRelays: string[] = [],
+  cord: string | CustomAddressPointer | undefined,
+  additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const sub = useMemo(() => {
     const parsed = typeof cord === "string" ? parseCoordinate(cord) : cord;
     if (!parsed) return;
@@ -21,7 +21,7 @@ export default function useReplaceableEvent(
       parsed.identifier,
       opts,
     );
-  }, [cord, readRelays.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
+  }, [cord, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
   return useSubject(sub);
 }

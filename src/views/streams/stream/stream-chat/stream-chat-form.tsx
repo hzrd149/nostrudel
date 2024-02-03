@@ -3,25 +3,24 @@ import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
-import { useRelaySelectionRelays } from "../../../../providers/relay-selection-provider";
-import { useUserRelays } from "../../../../hooks/use-user-relays";
-import { RelayMode } from "../../../../classes/relay";
 import { unique } from "../../../../helpers/array";
-import { useSigningContext } from "../../../../providers/signing-provider";
-import NostrPublishAction from "../../../../classes/nostr-publish-action";
+import { useSigningContext } from "../../../../providers/global/signing-provider";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
-import { useContextEmojis } from "../../../../providers/emoji-provider";
+import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
 import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
+import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay-context";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
+  const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const streamRelays = useRelaySelectionRelays();
-  const hostReadRelays = useUserRelays(stream.host)
-    .filter((r) => r.mode & RelayMode.READ)
-    .map((r) => r.url);
+  const streamRelays = useReadRelays(useAdditionalRelayContext());
+  const hostReadRelays = useUserInbox(stream.host);
 
   const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);
 
@@ -30,16 +29,11 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
     defaultValues: { content: "" },
   });
   const sendMessage = handleSubmit(async (values) => {
-    try {
-      let draft = buildChatMessage(stream, values.content);
-      draft = ensureNotifyContentMentions(draft);
-      draft = createEmojiTags(draft, emojis);
-      const signed = await requestSignature(draft);
-      new NostrPublishAction("Send Chat", relays, signed);
-      reset();
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    let draft = buildChatMessage(stream, values.content);
+    draft = ensureNotifyContentMentions(draft);
+    draft = createEmojiTags(draft, emojis);
+    const pub = await publish("Send Chat", draft, relays);
+    if (pub) reset();
   });
 
   const textAreaRef = useRef<RefType | null>(null);

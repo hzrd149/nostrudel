@@ -17,14 +17,13 @@ import {
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/user-metadata";
-import { useUserRelays } from "../../../hooks/use-user-relays";
-import { RelayMode } from "../../../classes/relay";
-import UserDebugModal from "../../../components/debug-modals/user-debug-modal";
+import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { truncatedId } from "../../../helpers/nostr/events";
-import useUserMuteFunctions from "../../../hooks/use-user-mute-functions";
+import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
+import userMailboxesService from "../../../services/user-mailboxes";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -34,18 +33,17 @@ export const UserProfileMenu = ({
   const toast = useToast();
   const account = useCurrentAccount();
   const metadata = useUserMetadata(pubkey);
-  const userRelays = useUserRelays(pubkey);
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
-  const { isMuted, mute, unmute } = useUserMuteFunctions(pubkey);
+  const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
 
   const loginAsUser = () => {
-    const readRelays = userRelays.filter((r) => r.mode === RelayMode.READ).map((r) => r.url) ?? [];
+    const relays = userMailboxesService.getMailboxes(pubkey).value?.outbox.urls;
     if (!accountService.hasAccount(pubkey)) {
       accountService.addAccount({
         type: "pubkey",
         pubkey,
-        relays: readRelays,
+        relays,
         readonly: true,
       });
     }

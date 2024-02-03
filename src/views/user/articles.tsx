@@ -1,10 +1,10 @@
 import { useOutletContext } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -16,7 +16,7 @@ export default function UserArticlesTab() {
 
   const timeline = useTimelineLoader(pubkey + "-articles", readRelays, {
     authors: [pubkey],
-    kinds: [Kind.Article],
+    kinds: [kinds.LongFormArticle],
   });
 
   const articles = useSubject(timeline.timeline);

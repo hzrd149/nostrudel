@@ -1,91 +1,89 @@
-import { useDeferredValue, useMemo, useState } from "react";
-import { useAsync } from "react-use";
-import { Link as RouterLink } from "react-router-dom";
-import { Button, Divider, Flex, Heading, Input, SimpleGrid, Spacer, Switch, useDisclosure } from "@chakra-ui/react";
+import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 
-import { useClientRelays } from "../../hooks/use-client-relays";
-import relayPoolService from "../../services/relay-pool";
-import { safeRelayUrl } from "../../helpers/url";
-import AddCustomRelayModal from "./components/add-custom-modal";
-import RelayCard from "./components/relay-card";
-import clientRelaysService from "../../services/client-relays";
-import { RelayMode } from "../../classes/relay";
-import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import useCurrentAccount from "../../hooks/use-current-account";
+import useUserRelaySets from "../../hooks/use-user-relay-sets";
+import { getListName } from "../../helpers/nostr/lists";
+import { getEventCoordinate } from "../../helpers/nostr/events";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import Database01 from "../../components/icons/database-01";
+import { RelayIcon } from "../../components/icons";
+import Mail02 from "../../components/icons/mail-02";
 
 export default function RelaysView() {
-  const [search, setSearch] = useState("");
-  const deboundedSearch = useDeferredValue(search);
-  const isSearching = deboundedSearch.length > 2;
-  const addRelayModal = useDisclosure();
+  const account = useCurrentAccount();
+  const relaySets = useUserRelaySets(account?.pubkey, undefined);
+  const vertical = useBreakpointValue({ base: true, lg: false });
 
-  const clientRelays = useClientRelays().map((r) => r.url);
-  const discoveredRelays = relayPoolService
-    .getRelays()
-    .filter((r) => !clientRelays.includes(r.url))
-    .map((r) => r.url)
-    .filter(safeRelayUrl);
+  const location = useLocation();
 
-  const { value: onlineRelays = [] } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
-  );
-
-  const filteredRelays = useMemo(() => {
-    if (isSearching) {
-      return onlineRelays.filter((url) => url.includes(deboundedSearch));
-    }
-
-    return clientRelays;
-  }, [isSearching, deboundedSearch, onlineRelays, clientRelays]);
-
-  return (
-    <VerticalPageLayout>
-      <Flex alignItems="center" gap="2" wrap="wrap">
-        <Input type="search" placeholder="search" value={search} onChange={(e) => setSearch(e.target.value)} w="auto" />
-        <Spacer />
-        <Button as={RouterLink} to="/relays/popular">
-          Popular Relays
+  const renderContent = () => {
+    const nav = (
+      <Flex gap="2" direction="column" minW="60" overflowY="auto" overflowX="hidden" w={vertical ? "full" : undefined}>
+        <Button
+          as={RouterLink}
+          variant="outline"
+          colorScheme={
+            (location.pathname === "/relays" && !vertical) || location.pathname === "/relays/app"
+              ? "primary"
+              : undefined
+          }
+          to="/relays/app"
+          leftIcon={<RelayIcon boxSize={6} />}
+        >
+          App Relays
         </Button>
-        <Button as={RouterLink} to="/relays/reviews">
-          Browse Reviews
+        <Button
+          as={RouterLink}
+          variant="outline"
+          colorScheme={location.pathname === "/relays/cache" ? "primary" : undefined}
+          to="/relays/cache"
+          leftIcon={<Database01 boxSize={6} />}
+        >
+          Cache Relay
         </Button>
-        <Button colorScheme="primary" onClick={addRelayModal.onOpen}>
-          Add Custom
-        </Button>
-      </Flex>
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        {filteredRelays.map((url) => (
-          <ErrorBoundary>
-            <RelayCard key={url} url={url} variant="outline" />
-          </ErrorBoundary>
-        ))}
-      </SimpleGrid>
-
-      {discoveredRelays.length > 0 && !isSearching && (
-        <>
-          <Divider />
-          <Heading size="lg">Discovered Relays</Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-            {discoveredRelays.map((url) => (
-              <ErrorBoundary>
-                <RelayCard key={url} url={url} variant="outline" />
-              </ErrorBoundary>
+        {account && (
+          <Button
+            variant="outline"
+            as={RouterLink}
+            to="/relays/mailboxes"
+            leftIcon={<Mail02 boxSize={6} />}
+            colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
+          >
+            Mailboxes
+          </Button>
+        )}
+        {/* {account && (
+          <>
+            <Heading size="sm" mt="2">
+              Relay Sets
+            </Heading>
+            {relaySets.map((set) => (
+              <Button
+                as={RouterLink}
+                variant="outline"
+                colorScheme={location.pathname.endsWith(getEventCoordinate(set)) ? "primary" : undefined}
+                to={`/relays/${getEventCoordinate(set)}`}
+              >
+                {getListName(set)}
+              </Button>
             ))}
-          </SimpleGrid>
-        </>
-      )}
+          </>
+        )} */}
+      </Flex>
+    );
+    if (vertical) {
+      if (location.pathname !== "/relays") return <Outlet />;
+      else return nav;
+    } else
+      return (
+        <Flex gap="2" maxH="100vh" overflow="hidden">
+          {nav}
+          <Outlet />
+        </Flex>
+      );
+  };
 
-      {addRelayModal.isOpen && (
-        <AddCustomRelayModal
-          isOpen
-          onClose={addRelayModal.onClose}
-          size="2xl"
-          onSubmit={(url) => {
-            clientRelaysService.addRelay(url, RelayMode.ALL);
-            addRelayModal.onClose();
-          }}
-        />
-      )}
-    </VerticalPageLayout>
-  );
+  return <VerticalPageLayout>{renderContent()}</VerticalPageLayout>;
 }

@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, BoxProps } from "@chakra-ui/react";
+import React, { Suspense } from "react";
+import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../helpers/embeds";
@@ -24,9 +24,13 @@ import {
   embedCashuTokens,
   renderStemstrUrl,
   renderSoundCloudUrl,
+  renderSimpleXLink,
+  renderRedditUrl,
+  embedNipDefinitions,
 } from "../embed-types";
 import { LightboxProvider } from "../lightbox-provider";
-import { renderRedditUrl } from "../embed-types/reddit";
+import { renderModelUrl } from "../embed-types/model";
+import { renderAudioUrl } from "../embed-types/audio";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -36,6 +40,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
 
   // common
   content = embedUrls(content, [
+    renderSimpleXLink,
     renderYoutubeUrl,
     renderTwitterUrl,
     renderRedditUrl,
@@ -48,6 +53,8 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderAudioUrl,
+    renderModelUrl,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 
@@ -61,6 +68,7 @@ function buildContents(event: NostrEvent | DraftNostrEvent, simpleLinks = false)
   content = embedNostrLinks(content);
   content = embedNostrMentions(content, event);
   content = embedNostrHashtags(content, event);
+  content = embedNipDefinitions(content);
   content = embedEmoji(content, event);
 
   return content;
@@ -82,9 +90,11 @@ export const NoteContents = React.memo(
 
     return (
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" {...props}>
-          {content}
-        </Box>
+        <Suspense fallback={<Spinner />}>
+          <Box whiteSpace="pre-wrap" {...props}>
+            {content}
+          </Box>
+        </Suspense>
       </LightboxProvider>
     );
   },

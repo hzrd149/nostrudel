@@ -1,191 +1,254 @@
-import { Kind, nip19, validateEvent } from "nostr-tools";
+import { EventTemplate, kinds, validateEvent } from "nostr-tools";
 
-import { ATag, DraftNostrEvent, isDTag, isETag, isPTag, NostrEvent, RTag, Tag } from "../../types/nostr-event";
-import { RelayConfig, RelayMode } from "../../classes/relay";
+import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
+import { safeDecode } from "../nip19";
+import { getEventUID } from "nostr-idb";
+import { safeRelayUrl, safeRelayUrls } from "../relay";
+import dayjs from "dayjs";
+import { nanoid } from "nanoid";
+import userMailboxesService from "../../services/user-mailboxes";
+import RelaySet from "../../classes/relay-set";
 
 export function truncatedId(str: string, keep = 6) {
   if (str.length < keep * 2 + 3) return str;
   return str.substring(0, keep) + "..." + str.substring(str.length - keep);
 }
 
-// based on replaceable kinds from https://github.com/nostr-protocol/nips/blob/master/01.md#kinds
 export function isReplaceable(kind: number) {
-  return (kind >= 30000 && kind < 40000) || kind === 0 || kind === 3 || kind === 41 || (kind >= 10000 && kind < 20000);
+  return kinds.isReplaceableKind(kind) || kinds.isParameterizedReplaceableKind(kind);
 }
 
-// used to get a unique Id for each event, should take into account replaceable events
-export function getEventUID(event: NostrEvent) {
+export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
   if (isReplaceable(event.kind)) {
-    return getEventCoordinate(event);
+    if (Object.hasOwn(pointer, "pubkey")) {
+      const p = pointer as AddressPointer;
+      const d = event.tags.find(isDTag)?.[1];
+      return event.pubkey === p.pubkey && event.kind === p.kind && d === p.identifier;
+    }
+  } else {
+    if (Object.hasOwn(pointer, "id")) {
+      const p = pointer as EventPointer;
+      return p.id === event.id;
+    }
   }
-  return event.id;
+  return false;
 }
 
+const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === Kind.Repost) return false;
-  return !!getReferences(event).replyId;
+  // @ts-ignore
+  if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
+
+  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
+  const isReply = !!getThreadReferences(event).reply;
+  // @ts-ignore
+  event[isReplySymbol] = isReply;
+  return isReply;
 }
 export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
+const isRepostSymbol = Symbol("isRepost");
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  if (event.kind === Kind.Repost) return true;
+  // @ts-ignore
+  if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
+
+  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return true;
 
   const match = event.content.match(getMatchNostrLink());
-  return match && match[0].length === event.content.length;
+  const isRepost = !!match && match[0].length === event.content.length;
+
+  // @ts-ignore
+  event[isRepostSymbol] = isRepost;
+  return isRepost;
 }
 
 /**
- * returns an array of tag indexes that are referenced in the content
+ * returns an array of tags that are referenced in the content
  * either with the legacy #[0] syntax or nostr:xxxxx links
  */
 export function getContentTagRefs(content: string, tags: Tag[]) {
-  const indexes = new Set();
-  Array.from(content.matchAll(/#\[(\d+)\]/gi)).forEach((m) => indexes.add(parseInt(m[1])));
+  const foundTags = new Set<Tag>();
 
   const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
   for (const [_, _prefix, link] of linkMatches) {
-    try {
-      const decoded = nip19.decode(link);
+    const decoded = safeDecode(link);
+    if (!decoded) continue;
 
-      let type: string;
-      let id: string;
-      switch (decoded.type) {
-        case "npub":
-          id = decoded.data;
-          type = "p";
-          break;
-        case "nprofile":
-          id = decoded.data.pubkey;
-          type = "p";
-          break;
-        case "note":
-          id = decoded.data;
-          type = "e";
-          break;
-        case "nevent":
-          id = decoded.data.id;
-          type = "e";
-          break;
-      }
+    let type: string;
+    let id: string;
+    switch (decoded.type) {
+      case "npub":
+        id = decoded.data;
+        type = "p";
+        break;
+      case "nprofile":
+        id = decoded.data.pubkey;
+        type = "p";
+        break;
+      case "note":
+        id = decoded.data;
+        type = "e";
+        break;
+      case "nevent":
+        id = decoded.data.id;
+        type = "e";
+        break;
+    }
 
-      let t = tags.find((t) => t[0] === type && t[1] === id);
-      if (t) {
-        let index = tags.indexOf(t);
-        indexes.add(index);
-      }
-    } catch (e) {}
+    let matchingTags = tags.filter((t) => t[0] === type && t[1] === id);
+    for (const t of matchingTags) foundTags.add(t);
   }
 
-  return Array.from(indexes);
+  return Array.from(foundTags);
 }
 
+/** returns all tags that are referenced in the content */
 export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
   const contentTagRefs = getContentTagRefs(content, tags);
-
-  const newTags: Tag[] = [];
-  for (let i = 0; i < tags.length; i++) {
-    if (contentTagRefs.includes(i) === referenced) {
-      newTags.push(tags[i]);
-    }
-  }
-  return newTags;
+  return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-export type EventReferences = ReturnType<typeof getReferences>;
-export function getReferences(event: NostrEvent | DraftNostrEvent) {
+export function interpretThreadTags(event: NostrEvent | DraftNostrEvent) {
   const eTags = event.tags.filter(isETag);
-  const pTags = event.tags.filter(isPTag);
+  const aTags = event.tags.filter(isATag);
 
-  const events = eTags.map((t) => t[1]);
-  const contentTagRefs = getContentTagRefs(event.content, event.tags);
+  // find the root and reply tags.
+  let rootETag = eTags.find((t) => t[3] === "root");
+  let replyETag = eTags.find((t) => t[3] === "reply");
 
-  const replyTag = eTags.find((t) => t[3] === "reply");
-  const rootTag = eTags.find((t) => t[3] === "root");
+  let rootATag = aTags.find((t) => t[3] === "root");
+  let replyATag = aTags.find((t) => t[3] === "reply");
 
-  let replyId = replyTag?.[1];
-  let replyRelay = replyTag?.[2];
-  let rootId = rootTag?.[1];
-  let rootRelay = rootTag?.[2];
-
-  if (!rootId || !replyId) {
+  if (!rootETag || !replyETag) {
     // a direct reply dose not need a "reply" reference
     // https://github.com/nostr-protocol/nips/blob/master/10.md
 
     // this is not necessarily to spec. but if there is only one id (root or reply) then assign it to both
     // this handles the cases where a client only set a "reply" tag and no root
-    rootId = replyId = rootId || replyId;
+    rootETag = replyETag = rootETag || replyETag;
+  }
+  if (!rootATag || !replyATag) {
+    rootATag = replyATag = rootATag || replyATag;
   }
 
-  // legacy behavior
-  // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-  const legacyTags = eTags.filter((t, i) => {
-    // ignore it if there is a third piece of data
-    if (t[3]) return false;
-    const tagIndex = event.tags.indexOf(t);
-    if (contentTagRefs.includes(tagIndex)) return false;
-    return true;
-  });
-  if (!rootId && !replyId && legacyTags.length >= 1) {
-    // console.info(`Using legacy threading behavior for ${event.id}`, event);
+  if (!rootETag && !replyETag) {
+    const contentTagRefs = getContentTagRefs(event.content, eTags);
 
-    // first tag is the root
-    rootId = legacyTags[0][1];
-    // last tag is reply
-    replyId = legacyTags[legacyTags.length - 1][1] ?? rootId;
+    // legacy behavior
+    // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
+    const legacyETags = eTags.filter((t) => {
+      // ignore it if there is a type
+      if (t[3]) return false;
+      if (contentTagRefs.includes(t)) return false;
+      return true;
+    });
+
+    if (legacyETags.length >= 1) {
+      // first tag is the root
+      rootETag = legacyETags[0];
+      // last tag is reply
+      replyETag = legacyETags[legacyETags.length - 1] ?? rootETag;
+    }
   }
 
   return {
-    events,
-    rootId,
-    rootRelay,
-    replyId,
-    replyRelay,
-    contentTagRefs,
+    root: rootETag || rootATag ? { e: rootETag, a: rootATag } : undefined,
+    reply: replyETag || replyATag ? { e: replyETag, a: replyATag } : undefined,
+  } as {
+    root?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
+    reply?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
   };
 }
 
-export function parseRTag(tag: RTag): RelayConfig {
-  switch (tag[2]) {
-    case "write":
-      return { url: tag[1], mode: RelayMode.WRITE };
-    case "read":
-      return { url: tag[1], mode: RelayMode.READ };
-    default:
-      return { url: tag[1], mode: RelayMode.ALL };
-  }
+export type EventReferences = ReturnType<typeof getThreadReferences>;
+export function getThreadReferences(event: NostrEvent | DraftNostrEvent) {
+  const tags = interpretThreadTags(event);
+
+  return {
+    root: tags.root && {
+      e: tags.root.e && eTagToEventPointer(tags.root.e),
+      a: tags.root.a && aTagToAddressPointer(tags.root.a),
+    },
+    reply: tags.reply && {
+      e: tags.reply.e && eTagToEventPointer(tags.reply.e),
+      a: tags.reply.a && aTagToAddressPointer(tags.reply.a),
+    },
+  } as {
+    root?:
+      | { e: EventPointer; a: undefined }
+      | { e: undefined; a: AddressPointer }
+      | { e: EventPointer; a: AddressPointer };
+    reply?:
+      | { e: EventPointer; a: undefined }
+      | { e: undefined; a: AddressPointer }
+      | { e: EventPointer; a: AddressPointer };
+  };
 }
 
 export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
-export function pointerToATag(pointer: AddressPointer): ATag {
+
+export function getEventAddressPointer(event: NostrEvent): AddressPointer {
+  const { kind, pubkey } = event;
+  if (!isReplaceable(kind)) throw new Error("Event is not replaceable");
+  const identifier = event.tags.find(isDTag)?.[1];
+  if (!identifier) throw new Error("Missing identifier");
+  return { kind, pubkey, identifier };
+}
+
+export function eTagToEventPointer(tag: ETag): EventPointer {
+  return { id: tag[1], relays: tag[2] ? safeRelayUrls([tag[2]]) : [] };
+}
+export function aTagToAddressPointer(tag: ATag): AddressPointer {
+  const cord = parseCoordinate(tag[1], true, false);
+  if (tag[2]) cord.relays = safeRelayUrls([tag[2]]);
+  return cord;
+}
+export function addressPointerToATag(pointer: AddressPointer): ATag {
   const relay = pointer.relays?.[0];
   const coordinate = `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
   return relay ? ["a", coordinate, relay] : ["a", coordinate];
 }
+export function eventPointerToETag(pointer: EventPointer): ETag {
+  return pointer.relays?.length ? ["e", pointer.id, pointer.relays[0]] : ["e", pointer.id];
+}
 
-export type CustomEventPointer = Omit<AddressPointer, "identifier"> & {
+export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
   identifier?: string;
 };
 
-export function parseCoordinate(a: string): CustomEventPointer | null;
-export function parseCoordinate(a: string, requireD: false): CustomEventPointer | null;
-export function parseCoordinate(a: string, requireD: true): AddressPointer;
-export function parseCoordinate(a: string, requireD = false): CustomEventPointer | null {
+export function parseCoordinate(a: string): CustomAddressPointer | null;
+export function parseCoordinate(a: string, requireD: false): CustomAddressPointer | null;
+export function parseCoordinate(a: string, requireD: true): AddressPointer | null;
+export function parseCoordinate(a: string, requireD: false, silent: false): CustomAddressPointer;
+export function parseCoordinate(a: string, requireD: true, silent: false): AddressPointer;
+export function parseCoordinate(a: string, requireD: true, silent: true): AddressPointer | null;
+export function parseCoordinate(a: string, requireD: false, silent: true): CustomAddressPointer | null;
+export function parseCoordinate(a: string, requireD = false, silent = true): CustomAddressPointer | null {
   const parts = a.split(":") as (string | undefined)[];
   const kind = parts[0] && parseInt(parts[0]);
   const pubkey = parts[1];
   const d = parts[2];
 
-  if (!kind) return null;
-  if (!pubkey) return null;
-  if (requireD && !d) return null;
+  if (!kind) {
+    if (silent) return null;
+    else throw new Error("Missing kind");
+  }
+  if (!pubkey) {
+    if (silent) return null;
+    else throw new Error("Missing pubkey");
+  }
+  if (requireD && d === undefined) {
+    if (silent) return null;
+    else throw new Error("Missing identifier");
+  }
 
   return {
     kind,
@@ -205,3 +268,62 @@ export function parseHardcodedNoteContent(event: NostrEvent) {
 
   return (json as NostrEvent) ?? null;
 }
+
+export function sortByDate(a: NostrEvent, b: NostrEvent) {
+  return b.created_at - a.created_at;
+}
+
+/** create a copy of the event with a new created_at  */
+export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): DraftNostrEvent {
+  return {
+    kind: event?.kind ?? kind,
+    created_at: dayjs().unix(),
+    content: event?.content ?? "",
+    tags: event?.tags ? Array.from(event.tags) : [],
+  };
+}
+
+/** add missing relay hints for "p" tags */
+export function addPubkeyRelayHints(draft: DraftNostrEvent) {
+  return {
+    ...draft,
+    tags: draft.tags.map((t) => {
+      if (isPTag(t) && !t[2]) {
+        const newTag = [...t];
+        const mailboxes = userMailboxesService.getMailboxes(t[1]).value;
+        // TODO: Pick the best mailbox for the user
+        if (mailboxes) newTag[2] = mailboxes.inbox.urls[0];
+        return newTag;
+      }
+      return t;
+    }),
+  };
+}
+
+/** ensure an event has a d tag */
+export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
+  if (!draft.tags.some(isDTag)) {
+    draft.tags.push(["d", d]);
+  }
+}
+
+export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, value: string) {
+  if (draft.tags.some((t) => t[0] === tagName)) {
+    draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));
+  } else {
+    draft.tags.push([tagName, value]);
+  }
+}
+
+export function getAllRelayHints(draft: NostrEvent | EventTemplate) {
+  const hints = new RelaySet();
+  for (const tag of draft.tags) {
+    if ((isPTag(tag) || isETag(tag)) && tag[2]) {
+      const url = safeRelayUrl(tag[2]);
+      if (url) hints.add(url.toString());
+    }
+  }
+  return hints;
+}
+
+export { getEventUID };

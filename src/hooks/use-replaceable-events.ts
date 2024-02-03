@@ -1,18 +1,18 @@
 import { useMemo } from "react";
 
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import replaceableEventLoaderService, { RequestOptions } from "../services/replaceable-event-requester";
-import { CustomEventPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
 import Subject from "../classes/subject";
 import { NostrEvent } from "../types/nostr-event";
 import useSubjects from "./use-subjects";
 
 export default function useReplaceableEvents(
-  coordinates: string[] | CustomEventPointer[] | undefined,
-  additionalRelays: string[] = [],
+  coordinates: string[] | CustomAddressPointer[] | undefined,
+  additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
 ) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const subs = useMemo(() => {
     if (!coordinates) return undefined;
     const subs: Subject<NostrEvent>[] = [];
@@ -30,7 +30,7 @@ export default function useReplaceableEvents(
       );
     }
     return subs;
-  }, [coordinates, readRelays.join("|")]);
+  }, [coordinates, readRelays.urls.join("|")]);
 
   return useSubjects(subs);
 }

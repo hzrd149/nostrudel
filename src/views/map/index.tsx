@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Button, Flex } from "@chakra-ui/react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import ngeohash from "ngeohash";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -10,7 +10,7 @@ import "leaflet.locatecontrol";
 
 import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 import { debounce } from "../../helpers/function";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
@@ -18,6 +18,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import MapTimeline from "./timeline";
 
 import iconUrl from "./marker-icon.svg";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 const pinIcon = L.icon({ iconUrl, iconSize: [32, 32], iconAnchor: [16, 32] });
 
 function getPrecision(zoom: number) {
@@ -118,11 +119,11 @@ export default function MapView() {
 
   const [cells, setCells] = useState<string[]>([]);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     "geo-events",
     readRelays,
-    cells.length > 0 ? { "#g": cells, kinds: [Kind.Text] } : undefined,
+    cells.length > 0 ? { "#g": cells, kinds: [kinds.ShortTextNote] } : undefined,
   );
 
   const setCellsFromMap = useCallback(() => {

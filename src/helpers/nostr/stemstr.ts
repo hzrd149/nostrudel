@@ -1,5 +1,6 @@
 import { NostrEvent } from "../../types/nostr-event";
 
+export const STEMSTR_RELAY = "wss://relay.stemstr.app";
 export const STEMSTR_TRACK_KIND = 1808;
 
 export function getSha256Hash(track: NostrEvent) {

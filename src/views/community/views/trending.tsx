@@ -10,7 +10,7 @@ import {
 } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import useEventsReactions from "../../../hooks/use-events-reactions";

@@ -1,16 +1,16 @@
 import { Flex } from "@chakra-ui/react";
 
 import { RELAY_REVIEW_LABEL } from "../../../helpers/nostr/reviews";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSubject from "../../../hooks/use-subject";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RelayReviewNote from "../components/relay-review-note";
 import { useAppTitle } from "../../../hooks/use-app-title";
-import { usePeopleListContext } from "../../../providers/people-list-provider";
+import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 
 export default function RelayReviews({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Reviews`);
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
 
   const { filter } = usePeopleListContext();
   const timeline = useTimelineLoader(

@@ -1,13 +1,12 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
-import { generatePrivateKey, getPublicKey } from "nostr-tools";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { generateSecretKey, getPublicKey } from "nostr-tools";
+import { bytesToHex } from "@noble/hashes/utils";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import RelaySelectionProvider, { useRelaySelectionContext } from "../../providers/relay-selection-provider";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
-import RelaySelectionButton from "../../components/relay-selection/relay-selection-button";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { NostrEvent } from "../../types/nostr-event";
@@ -15,12 +14,14 @@ import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
 import useSubject from "../../hooks/use-subject";
 import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import CategorySelect from "./components/category-select";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function Warning() {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ function Warning() {
   const createAnonAccount = async () => {
     setLoading(true);
     try {
-      const secKey = generatePrivateKey();
-      const encrypted = await signingService.encryptSecKey(secKey);
+      const secKey = generateSecretKey();
+      const encrypted = await signingService.encryptSecKey(bytesToHex(secKey));
       const pubkey = getPublicKey(secKey);
       accountService.addAccount({ type: "local", ...encrypted, pubkey, readonly: false });
       accountService.switchAccount(pubkey);
@@ -58,18 +59,16 @@ function Warning() {
 
 function TorrentsPage() {
   const { filter, listId } = usePeopleListContext();
-  const { relays } = useRelaySelectionContext();
-  const [params, setParams] = useSearchParams();
-  const tags = params.get("tags")?.split(",") ?? [];
+  const relays = useReadRelays();
+  const tagsParam = useRouteSearchValue("tags");
+  const tags = tagsParam.value?.split(",") ?? [];
 
   const handleTagsChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     (e) => {
-      const newParams = new URLSearchParams(params);
-      if (e.target.value) newParams.set("tags", e.target.value);
-      else newParams.delete("tags");
-      setParams(newParams, { replace: true });
+      if (e.target.value) tagsParam.setValue(e.target.value);
+      else tagsParam.clearValue();
     },
-    [params],
+    [tagsParam.setValue, tagsParam.clearValue],
   );
 
   const muteFilter = useClientSideMuteFilter();
@@ -100,7 +99,6 @@ function TorrentsPage() {
     <VerticalPageLayout>
       {!!account && <Warning />}
       <Flex gap="2">
-        <RelaySelectionButton />
         <PeopleListSelection />
         <CategorySelect maxW="xs" value={tags.join(",")} onChange={handleTagsChange} />
         <Spacer />
@@ -135,10 +133,8 @@ function TorrentsPage() {
 
 export default function TorrentsView() {
   return (
-    <RelaySelectionProvider>
-      <PeopleListProvider>
-        <TorrentsPage />
-      </PeopleListProvider>
-    </RelaySelectionProvider>
+    <PeopleListProvider>
+      <TorrentsPage />
+    </PeopleListProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { nip04, getPublicKey, finishEvent } from "nostr-tools";
+import { nip04, getPublicKey, finalizeEvent } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
@@ -6,6 +6,7 @@ import db from "./db";
 import serialPortService from "./serial-port";
 import amberSignerService from "./amber-signer";
 import nostrConnectService from "./nostr-connect";
+import { hexToBytes } from "@noble/hashes/utils";
 
 const decryptedKeys = new Map<string, string>();
 
@@ -54,7 +55,7 @@ class SigningService {
     const encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encode.encode(secKey));
 
     // add key to cache
-    decryptedKeys.set(getPublicKey(secKey), secKey);
+    decryptedKeys.set(getPublicKey(hexToBytes(secKey)), secKey);
 
     return {
       secKey: encrypted,
@@ -91,8 +92,8 @@ class SigningService {
     switch (account.type) {
       case "local": {
         const secKey = await this.decryptSecKey(account);
-        const tmpDraft = { ...draft, pubkey: getPublicKey(secKey) };
-        const event = finishEvent(tmpDraft, secKey) as NostrEvent;
+        const tmpDraft = { ...draft, pubkey: getPublicKey(hexToBytes(secKey)) };
+        const event = finalizeEvent(tmpDraft, hexToBytes(secKey)) as NostrEvent;
         return event;
       }
       case "extension":

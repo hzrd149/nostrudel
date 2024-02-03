@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
+import { Filter } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
@@ -8,11 +9,11 @@ import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
 import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
-import db from "./db";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import createDefer, { Deferred } from "../classes/deferred";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import { localRelay } from "./local-relay";
+import { relayRequest } from "../helpers/relay";
 
 type Pubkey = string;
 type Relay = string;
@@ -33,7 +34,7 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
-const RELAY_REQUEST_BATCH_TIME = 1000;
+const RELAY_REQUEST_BATCH_TIME = 500;
 
 /** This class is ued to batch requests to a single relay */
 class ReplaceableEventRelayLoader {
@@ -167,7 +168,9 @@ class ReplaceableEventLoaderService {
     const current = sub.value;
     if (!current || event.created_at > current.created_at) {
       sub.next(event);
-      if (saveToCache) this.saveToCache(cord, event);
+      if (saveToCache) {
+        this.saveToCache(cord, event);
+      }
     }
   }
 
@@ -180,36 +183,50 @@ class ReplaceableEventLoaderService {
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
 
-    let read = 0;
-    const transaction = db.transaction("replaceableEvents", "readonly");
-    for (const [cord, promise] of this.readFromCachePromises) {
-      transaction
-        .objectStore("replaceableEvents")
-        .get(cord)
-        .then((cached) => {
-          if (cached?.event) {
-            this.handleEvent(cached.event, false);
-            promise.resolve(true);
-            read++;
-          }
-          promise.resolve(false);
-        });
+    const loading = new Map<string, Deferred<boolean>>();
+
+    const kindFilters: Record<number, Filter> = {};
+    for (const [cord, p] of this.readFromCachePromises) {
+      const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
+      const kind = parseInt(kindStr);
+      kindFilters[kind] = kindFilters[kind] || { kinds: [kind] };
+
+      const arr = (kindFilters[kind].authors = kindFilters[kind].authors || []);
+      arr.push(pubkey);
+
+      if (d) {
+        const arr = (kindFilters[kind]["#d"] = kindFilters[kind]["#d"] || []);
+        arr.push(d);
+      }
+
+      loading.set(cord, p);
     }
-    this.readFromCachePromises.clear();
-    transaction.commit();
-    await transaction.done;
-    if (read) this.dbLog(`Read ${read} events from database`);
+    const filters = Object.values(kindFilters);
+
+    for (const [cord] of loading) this.readFromCachePromises.delete(cord);
+
+    const events = await relayRequest(localRelay, filters);
+    for (const event of events) {
+      this.handleEvent(event, false);
+      const cord = getEventCoordinate(event);
+      const promise = loading.get(cord);
+      if (promise) promise.resolve(true);
+      loading.delete(cord);
+    }
+
+    // resolve remaining promises
+    for (const [_, promise] of loading) promise.resolve();
+
+    if (events.length > 0) this.dbLog(`Read ${events.length} events from database`);
   }
-  private loadCacheDedupe = new Map<string, Promise<boolean>>();
   loadFromCache(cord: string) {
-    const dedupe = this.loadCacheDedupe.get(cord);
+    const dedupe = this.readFromCachePromises.get(cord);
     if (dedupe) return dedupe;
 
     // add to read queue
     const promise = createDefer<boolean>();
     this.readFromCachePromises.set(cord, promise);
 
-    this.loadCacheDedupe.set(cord, promise);
     this.readFromCacheThrottle();
 
     return promise;
@@ -221,43 +238,19 @@ class ReplaceableEventLoaderService {
     if (this.writeCacheQueue.size === 0) return;
 
     this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
-    for (const [cord, event] of this.writeCacheQueue) {
-      transaction.objectStore("replaceableEvents").put({ addr: cord, event, created: dayjs().unix() });
-    }
+    for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
     this.writeCacheQueue.clear();
-    transaction.commit();
-    await transaction.done;
   }
   private async saveToCache(cord: string, event: NostrEvent) {
     this.writeCacheQueue.set(cord, event);
     this.writeToCacheThrottle();
   }
 
-  async pruneDatabaseCache() {
-    const keys = await db.getAllKeysFromIndex(
-      "replaceableEvents",
-      "created",
-      IDBKeyRange.upperBound(dayjs().subtract(1, "week").unix()),
-    );
-
-    if (keys.length === 0) return;
-    this.dbLog(`Pruning ${keys.length} expired events from database`);
-    const transaction = db.transaction("replaceableEvents", "readwrite");
-    for (const key of keys) {
-      transaction.store.delete(key);
-    }
-    await transaction.commit();
-  }
-
-  private requestEventFromRelays(relays: string[], kind: number, pubkey: string, d?: string) {
+  private requestEventFromRelays(relays: Iterable<string>, kind: number, pubkey: string, d?: string) {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
-    const relayUrls = Array.from(relays);
-    if (localCacheRelayService.enabled) relayUrls.unshift(LOCAL_CACHE_RELAY);
-
-    for (const relay of relayUrls) {
+    for (const relay of relays) {
       const request = this.loaders.get(relay).requestEvent(kind, pubkey, d);
 
       sub.connectWithHandler(request, (event, next, current) => {
@@ -271,7 +264,7 @@ class ReplaceableEventLoaderService {
     return sub;
   }
 
-  requestEvent(relays: string[], kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
+  requestEvent(relays: Iterable<string>, kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
     const cord = createCoordinate(kind, pubkey, d);
     const sub = this.events.get(cord);
 
@@ -290,14 +283,6 @@ class ReplaceableEventLoaderService {
 }
 
 const replaceableEventLoaderService = new ReplaceableEventLoaderService();
-
-replaceableEventLoaderService.pruneDatabaseCache();
-setInterval(
-  () => {
-    replaceableEventLoaderService.pruneDatabaseCache();
-  },
-  1000 * 60 * 60,
-);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

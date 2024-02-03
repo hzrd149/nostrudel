@@ -8,7 +8,7 @@ import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon"
 import StarRating from "../../../components/star-rating";
 import { safeJson } from "../../../helpers/parse";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/intersection-observer";
+import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import { Metadata } from "./relay-card";
 import { getEventUID } from "../../../helpers/nostr/events";

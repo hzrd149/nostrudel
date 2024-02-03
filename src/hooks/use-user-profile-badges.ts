@@ -1,4 +1,4 @@
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useReplaceableEvent from "./use-replaceable-event";
 import { PROFILE_BADGES_IDENTIFIER, parseProfileBadges } from "../helpers/nostr/badges";
@@ -7,15 +7,21 @@ import useSingleEvents from "./use-single-events";
 import { getEventCoordinate } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
 
-export default function useUserProfileBadges(pubkey: string, additionalRelays: string[] = []) {
-  const profileBadgesEvent = useReplaceableEvent({
-    pubkey,
-    kind: Kind.ProfileBadge,
-    identifier: PROFILE_BADGES_IDENTIFIER,
-  });
+export default function useUserProfileBadges(pubkey: string, additionalRelays?: Iterable<string>) {
+  const profileBadgesEvent = useReplaceableEvent(
+    {
+      pubkey,
+      kind: kinds.ProfileBadges,
+      identifier: PROFILE_BADGES_IDENTIFIER,
+    },
+    additionalRelays,
+  );
   const parsed = profileBadgesEvent ? parseProfileBadges(profileBadgesEvent) : [];
 
-  const badges = useReplaceableEvents(parsed.map((b) => b.badgeCord));
+  const badges = useReplaceableEvents(
+    parsed.map((b) => b.badgeCord),
+    additionalRelays,
+  );
   const awardEvents = useSingleEvents(parsed.map((b) => b.awardEventId));
 
   const final: { badge: NostrEvent; award: NostrEvent }[] = [];

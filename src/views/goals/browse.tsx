@@ -2,11 +2,11 @@ import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
-import PeopleListProvider, { usePeopleListContext } from "../../providers/people-list-provider";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/intersection-observer";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
@@ -20,7 +20,7 @@ function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
   const showClosed = useDisclosure();
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       const closed = getGoalClosedDate(event);

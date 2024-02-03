@@ -1,17 +1,19 @@
 import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { NoteLink } from "../../components/note-link";
 import UserLink from "../../components/user-link";
 import { filterTagsByContentRefs, getEventUID } from "../../helpers/nostr/events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, { useRegisterIntersectionEntity } from "../../providers/intersection-observer";
+import IntersectionObserverProvider, {
+  useRegisterIntersectionEntity,
+} from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
@@ -53,11 +55,11 @@ export default function UserReportsTab() {
   const timeline = useTimelineLoader(`${pubkey}-reports`, contextRelays, [
     {
       authors: [pubkey],
-      kinds: [Kind.Report],
+      kinds: [kinds.Report],
     },
     {
       "#p": [pubkey],
-      kinds: [Kind.Report],
+      kinds: [kinds.Report],
     },
   ]);
 

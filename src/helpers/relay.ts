@@ -1,17 +1,60 @@
-import { RelayConfig } from "../classes/relay";
-import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
-import { safeRelayUrl } from "./url";
+import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
+import { Filter } from "nostr-tools";
 
-export function normalizeRelayConfigs(relays: RelayConfig[]) {
-  const seen: string[] = [];
-  return relays.reduce((newArr, r) => {
-    const safeUrl = safeRelayUrl(r.url);
-    if (safeUrl && !seen.includes(safeUrl)) {
-      seen.push(safeUrl);
-      newArr.push({ ...r, url: safeUrl });
-    }
-    return newArr;
-  }, [] as RelayConfig[]);
+import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
+import { NostrEvent } from "../types/nostr-event";
+
+// NOTE: only use this for equality checks and querying
+export function getRelayVariations(relay: string) {
+  if (relay.endsWith("/")) {
+    return [relay.slice(0, -1), relay];
+  } else return [relay, relay + "/"];
+}
+
+export function validateRelayURL(relay: string | URL) {
+  if (typeof relay === "string" && relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
+  const url = typeof relay === "string" ? new URL(relay) : relay;
+  if (url.protocol !== "wss:" && url.protocol !== "ws:") throw new Error("Incorrect protocol");
+  return url;
+}
+export function isValidRelayURL(relay: string | URL) {
+  try {
+    validateRelayURL(relay);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** @deprecated */
+export function normalizeRelayURL(relayUrl: string) {
+  const url = validateRelayURL(relayUrl);
+  url.pathname = url.pathname.replace(/\/+/g, "/");
+  if ((url.port === "80" && url.protocol === "ws:") || (url.port === "443" && url.protocol === "wss:")) url.port = "";
+  url.searchParams.sort();
+  url.hash = "";
+  return url.toString();
+}
+
+/** @deprecated */
+export function safeNormalizeRelayURL(relayUrl: string) {
+  try {
+    return normalizeRelayURL(relayUrl);
+  } catch (e) {
+    return null;
+  }
+}
+
+// TODO: move these to helpers/relay
+export function safeRelayUrl(relayUrl: string | URL) {
+  try {
+    return validateRelayURL(relayUrl).toString();
+  } catch (e) {
+    return null;
+  }
+}
+export function safeRelayUrls(urls: Iterable<string>): string[] {
+  return Array.from(urls).map(safeRelayUrl).filter(Boolean) as string[];
 }
 
 export function splitNostrFilterByPubkeys(
@@ -51,4 +94,19 @@ export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<st
   }
 
   return filtersByRelay;
+}
+
+export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SubscriptionOptions = {}) {
+  return new Promise<NostrEvent[]>((res) => {
+    const events: NostrEvent[] = [];
+    const sub = relay.subscribe(filters, {
+      ...opts,
+      onevent: (e) => events.push(e),
+      oneose: () => {
+        sub.close();
+        res(events);
+      },
+      onclose: () => res(events),
+    });
+  });
 }

@@ -8,14 +8,14 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
-import { useReadRelayUrls } from "../../../hooks/use-client-relays";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 
 export default function EmbeddedChannel({
   channel,
   additionalRelays,
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+  const readRelays = useReadRelays(additionalRelays);
   const { metadata } = useChannelMetadata(channel.id, readRelays);
 
   if (!channel || !metadata) return null;

@@ -8,15 +8,10 @@ import relayScoreboardService from "./relay-scoreboard";
 import { logger } from "../helpers/debug";
 import { matchFilter, matchFilters } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
-import localCacheRelayService, { LOCAL_CACHE_RELAY } from "./local-cache-relay";
+import { relayRequest } from "../helpers/relay";
+import { localRelay } from "./local-relay";
 
 function hashFilter(filter: NostrRequestFilter) {
-  // const encoder = new TextEncoder();
-  // const data = encoder.encode(stringify(filter));
-  // const hash = await window.crypto.subtle.digest("SHA-256", data);
-  // const hashArray = Array.from(new Uint8Array(hash));
-  // const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  // return hashHex;
   return stringify(filter);
 }
 
@@ -42,14 +37,17 @@ class EventExistsService {
     if (!this.filters.has(key)) this.filters.set(key, filter);
 
     if (sub.value !== true) {
-      const relayUrls = Array.from(relays);
-      if (localCacheRelayService.enabled) relayUrls.unshift(LOCAL_CACHE_RELAY);
-
-      for (const url of relayUrls) {
-        if (!asked.has(url) && !pending.has(url)) {
-          pending.add(url);
+      relayRequest(localRelay, Array.isArray(filter) ? filter : [filter]).then((cached) => {
+        if (cached.length > 0) {
+          for (const e of cached) this.handleEvent(e, false);
+        } else {
+          for (const url of relays) {
+            if (!asked.has(url) && !pending.has(url)) {
+              pending.add(url);
+            }
+          }
         }
-      }
+      });
     }
 
     return sub;
@@ -82,13 +80,15 @@ class EventExistsService {
     }
   }
 
-  handleEvent(event: NostrEvent) {
+  handleEvent(event: NostrEvent, cache = true) {
     for (const [key, filter] of this.filters) {
       const doseMatch = Array.isArray(filter) ? matchFilters(filter, event) : matchFilter(filter, event);
       if (doseMatch && this.answers.get(key).value !== true) {
         this.answers.get(key).next(true);
       }
     }
+
+    if (cache) localRelay.publish(event);
   }
 }
 

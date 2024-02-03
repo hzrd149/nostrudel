@@ -1,16 +1,16 @@
 import { useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserContactList from "./use-user-contact-list";
 import replaceableEventLoaderService from "../services/replaceable-event-requester";
-import { useReadRelayUrls } from "./use-client-relays";
+import { useReadRelays } from "./use-client-relays";
 import useSubjects from "./use-subjects";
 import userMetadataService from "../services/user-metadata";
 import { Kind0ParsedContent } from "../helpers/user-metadata";
 
-export function useUsersMetadata(pubkeys: string[], additionalRelays: string[] = []) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+export function useUsersMetadata(pubkeys: string[], additionalRelays?: Iterable<string>) {
+  const readRelays = useReadRelays(additionalRelays);
   const metadataSubjects = useMemo(() => {
     return pubkeys.map((pubkey) => userMetadataService.requestMetadata(pubkey, readRelays));
   }, [pubkeys]);
@@ -27,16 +27,16 @@ export function useUsersMetadata(pubkeys: string[], additionalRelays: string[] =
   return metadataDir;
 }
 
-export default function useUserNetwork(pubkey: string, additionalRelays: string[] = []) {
-  const readRelays = useReadRelayUrls(additionalRelays);
+export default function useUserNetwork(pubkey: string, additionalRelays?: Iterable<string>) {
+  const readRelays = useReadRelays(additionalRelays);
   const contacts = useUserContactList(pubkey);
   const contactsPubkeys = contacts ? getPubkeysFromList(contacts) : [];
 
   const subjects = useMemo(() => {
     return contactsPubkeys.map((person) =>
-      replaceableEventLoaderService.requestEvent(readRelays, Kind.Contacts, person.pubkey),
+      replaceableEventLoaderService.requestEvent(readRelays, kinds.Contacts, person.pubkey),
     );
-  }, [contactsPubkeys, readRelays.join("|")]);
+  }, [contactsPubkeys, readRelays.urls.join("|")]);
 
   const lists = useSubjects(subjects);
   const metadata = useUsersMetadata(lists.map((list) => list.pubkey).concat(pubkey));
@@ -44,7 +44,7 @@ export default function useUserNetwork(pubkey: string, additionalRelays: string[
   return { lists, contacts, metadata };
 }
 
-export function useNetworkConnectionCount(pubkey: string, additionalRelays: string[] = []) {
+export function useNetworkConnectionCount(pubkey: string, additionalRelays?: Iterable<string>) {
   const { lists, contacts } = useUserNetwork(pubkey, additionalRelays);
   const contactsPubkeys = contacts ? getPubkeysFromList(contacts) : [];
 

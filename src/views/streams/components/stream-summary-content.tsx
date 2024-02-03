@@ -3,6 +3,7 @@ import { ParsedStream } from "../../../helpers/nostr/stream";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import {
   embedEmoji,
+  embedNipDefinitions,
   embedNostrHashtags,
   embedNostrLinks,
   embedNostrMentions,
@@ -23,6 +24,7 @@ export default function StreamSummaryContent({ stream, ...props }: BoxProps & { 
     c = embedNostrLinks(c);
     c = embedNostrMentions(c, stream.event);
     c = embedNostrHashtags(c, stream.event);
+    c = embedNipDefinitions(c);
     c = embedEmoji(c, stream.event);
 
     return c;

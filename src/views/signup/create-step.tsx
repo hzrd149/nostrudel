@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { generatePrivateKey, finishEvent, Kind, getPublicKey } from "nostr-tools";
-import { Avatar, Box, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { getPublicKey, generateSecretKey, finalizeEvent, kinds } from "nostr-tools";
+import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { bytesToHex } from "@noble/hashes/utils";
+import dayjs from "dayjs";
 
 import { Kind0ParsedContent } from "../../helpers/user-metadata";
 import { containerProps } from "./common";
-import dayjs from "dayjs";
 import { nostrBuildUploadImage } from "../../helpers/nostr-build";
-import NostrPublishAction from "../../classes/nostr-publish-action";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
-import clientRelaysService from "../../services/client-relays";
-import { RelayMode } from "../../classes/relay";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import { DraftNostrEvent } from "../../types/nostr-event";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 export default function CreateStep({
   metadata,
@@ -26,6 +26,7 @@ export default function CreateStep({
   onBack: () => void;
   onSubmit: (secretKey: string) => void;
 }) {
+  const publish = usePublishEvent();
   const toast = useToast();
 
   const [preview, setPreview] = useState("");
@@ -41,35 +42,42 @@ export default function CreateStep({
   const createProfile = async () => {
     setLoading(true);
     try {
-      const hex = generatePrivateKey();
+      const hex = generateSecretKey();
 
       const uploaded = profileImage
-        ? await nostrBuildUploadImage(profileImage, async (draft) => finishEvent(draft, hex))
+        ? await nostrBuildUploadImage(profileImage, async (draft) => finalizeEvent(draft, hex))
         : undefined;
 
       // create profile
-      const kind0 = finishEvent(
+      const kind0 = finalizeEvent(
         {
           content: JSON.stringify({ ...metadata, picture: uploaded?.url }),
           created_at: dayjs().unix(),
-          kind: Kind.Metadata,
+          kind: kinds.Metadata,
           tags: [],
         },
         hex,
       );
 
-      new NostrPublishAction("Create Profile", [...relays, COMMON_CONTACT_RELAY], kind0);
+      await publish("Create Profile", kind0, [...relays, COMMON_CONTACT_RELAY]);
 
       // login
       const pubkey = getPublicKey(hex);
-      const encrypted = await signingService.encryptSecKey(hex);
+      const encrypted = await signingService.encryptSecKey(bytesToHex(hex));
       accountService.addAccount({ type: "local", pubkey, relays, ...encrypted, readonly: false });
       accountService.switchAccount(pubkey);
 
       // set relays
-      await clientRelaysService.postUpdatedRelays(relays.map((url) => ({ url, mode: RelayMode.ALL })));
+      const draft: DraftNostrEvent = {
+        kind: kinds.RelayList,
+        content: "",
+        tags: relays.map((url) => ["r", url]),
+        created_at: dayjs().unix(),
+      };
+      const signed = finalizeEvent(draft, hex);
+      await publish("Set Mailbox Relays", signed, relays);
 
-      onSubmit(hex);
+      onSubmit(bytesToHex(hex));
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
@@ -80,7 +88,7 @@ export default function CreateStep({
     <Flex gap="4" {...containerProps}>
       <Avatar size="xl" src={preview} />
       <Flex direction="column" alignItems="center">
-        <Heading size="md">{metadata.display_name}</Heading>
+        <Heading size="md">{metadata.displayName}</Heading>
         {metadata.about && <Text>{metadata.about}</Text>}
       </Flex>
       <Button w="full" colorScheme="primary" isLoading={loading} onClick={createProfile} autoFocus>

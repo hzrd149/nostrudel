@@ -1,28 +1,31 @@
 import { useEffect, useMemo } from "react";
-import { Kind } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import useSubject from "./use-subject";
 import useSingleEvent from "./use-single-event";
 import singleEventService from "../services/single-event";
 import useTimelineLoader from "./use-timeline-loader";
-import { getReferences } from "../helpers/nostr/events";
+import { getThreadReferences } from "../helpers/nostr/events";
 import { NostrEvent } from "../types/nostr-event";
+import { unique } from "../helpers/array";
 
 export default function useThreadTimelineLoader(
   focusedEvent: NostrEvent | undefined,
-  relays: string[],
-  kind: number = Kind.Text,
+  relays: Iterable<string>,
+  kind: number = kinds.ShortTextNote,
 ) {
-  const refs = focusedEvent && getReferences(focusedEvent);
-  const rootId = refs ? refs.rootId || focusedEvent.id : undefined;
+  const refs = focusedEvent && getThreadReferences(focusedEvent);
+  const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent?.id });
 
-  const timelineId = `${rootId}-replies`;
+  const readRelays = unique([...relays, ...(rootPointer?.relays ?? [])]);
+
+  const timelineId = `${rootPointer?.id}-replies`;
   const timeline = useTimelineLoader(
     timelineId,
-    relays,
-    rootId
+    readRelays,
+    rootPointer
       ? {
-          "#e": [rootId],
+          "#e": [rootPointer.id],
           kinds: [kind],
         }
       : undefined,
@@ -35,10 +38,13 @@ export default function useThreadTimelineLoader(
     for (const e of events) singleEventService.handleEvent(e);
   }, [events]);
 
-  const rootEvent = useSingleEvent(rootId, refs?.rootRelay ? [refs.rootRelay] : []);
+  const rootEvent = useSingleEvent(rootPointer?.id, rootPointer?.relays);
   const allEvents = useMemo(() => {
-    return rootEvent ? [...events, rootEvent] : events;
-  }, [events, rootEvent]);
+    const arr = Array.from(events);
+    if (focusedEvent) arr.push(focusedEvent);
+    if (rootEvent && focusedEvent && rootEvent.id !== focusedEvent.id) arr.push(rootEvent);
+    return arr;
+  }, [events, rootEvent, focusedEvent]);
 
-  return { events: allEvents, rootEvent, rootId, timeline };
+  return { events: allEvents, rootEvent, rootPointer, timeline };
 }

@@ -25,20 +25,17 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Kind, nip19 } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
-import { Outlet, useMatches, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/user-metadata";
-import { isHexKey } from "../../helpers/nip19";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { RelayMode } from "../../classes/relay";
-import { AdditionalRelayProvider } from "../../providers/additional-relay-context";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
-import { useUserRelays } from "../../hooks/use-user-relays";
 import Header from "./components/header";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useEventExists from "../../hooks/use-event-exists";
@@ -46,6 +43,8 @@ import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -59,6 +58,7 @@ const tabs = [
   { label: "Relays", path: "relays" },
   { label: "Goals", path: "goals" },
   { label: "Tracks", path: "tracks" },
+  { label: "Videos", path: "videos" },
   { label: "Emojis", path: "emojis" },
   { label: "Torrents", path: "torrents" },
   { label: "Reports", path: "reports" },
@@ -66,40 +66,18 @@ const tabs = [
   { label: "Muted by", path: "muted-by" },
 ];
 
-function useUserPointer() {
-  const { pubkey } = useParams() as { pubkey: string };
-  if (isHexKey(pubkey)) return { pubkey, relays: [] };
-  const pointer = nip19.decode(pubkey);
-
-  switch (pointer.type) {
-    case "npub":
-      return { pubkey: pointer.data as string, relays: [] };
-    case "nprofile":
-      const d = pointer.data as nip19.ProfilePointer;
-      return { pubkey: d.pubkey, relays: d.relays ?? [] };
-    default:
-      throw new Error(`Unknown type ${pointer.type}`);
-  }
-}
-
-function useUserTopRelays(pubkey: string, count: number = 4) {
-  const readRelays = useReadRelayUrls();
-  // get user relays
-  const userRelays = useUserRelays(pubkey, readRelays)
-    .filter((r) => r.mode & RelayMode.WRITE)
-    .map((r) => r.url);
-  // merge the users relays with client relays
-  if (userRelays.length === 0) return readRelays;
-  const sorted = relayScoreboardService.getRankedRelays(userRelays);
-
+function useUserBestOutbox(pubkey: string, count: number = 4) {
+  const mailbox = useUserMailboxes(pubkey);
+  const relays = useReadRelays(mailbox?.outbox);
+  const sorted = relayScoreboardService.getRankedRelays(relays);
   return !count ? sorted : sorted.slice(0, count);
 }
 
 const UserView = () => {
-  const { pubkey, relays: pointerRelays } = useUserPointer();
+  const { pubkey, relays: pointerRelays = [] } = useParamsProfilePointer();
   const navigate = useNavigate();
   const [relayCount, setRelayCount] = useState(4);
-  const userTopRelays = useUserTopRelays(pubkey, relayCount);
+  const userTopRelays = useUserBestOutbox(pubkey, relayCount);
   const relayModal = useDisclosure();
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
@@ -112,7 +90,7 @@ const UserView = () => {
     "wss://relay.stemstr.app",
     ...readRelays,
   ]);
-  const hasArticles = useEventExists({ kinds: [Kind.Article], authors: [pubkey] }, readRelays);
+  const hasArticles = useEventExists({ kinds: [kinds.LongFormArticle], authors: [pubkey] }, readRelays);
   const hasStreams = useEventExists({ kinds: [STREAM_KIND], authors: [pubkey] }, [
     "wss://relay.snort.social",
     "wss://nos.lol",

@@ -13,15 +13,12 @@ import {
   ModalOverlay,
   ModalProps,
   Select,
-  useToast,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../../helpers/nostr/lists";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { useSigningContext } from "../../../providers/signing-provider";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
-import clientRelaysService from "../../../services/client-relays";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export type NewListModalProps = Omit<ModalProps, "children"> & {
   onCreated?: (list: NostrEvent) => void;
@@ -36,8 +33,7 @@ export default function NewListModal({
   allowSelectKind = true,
   ...props
 }: NewListModalProps) {
-  const toast = useToast();
-  const { requestSignature } = useSigningContext();
+  const publish = usePublishEvent();
   const { handleSubmit, register, formState } = useForm({
     defaultValues: {
       kind: initKind || PEOPLE_LIST_KIND,
@@ -46,20 +42,15 @@ export default function NewListModal({
   });
 
   const submit = handleSubmit(async (values) => {
-    try {
-      const draft: DraftNostrEvent = {
-        content: "",
-        created_at: dayjs().unix(),
-        tags: [["d", values.name]],
-        kind: values.kind,
-      };
-      const signed = await requestSignature(draft);
-      const pub = new NostrPublishAction("Create list", clientRelaysService.getWriteUrls(), signed);
+    const draft: DraftNostrEvent = {
+      content: "",
+      created_at: dayjs().unix(),
+      tags: [["d", values.name]],
+      kind: values.kind,
+    };
+    const pub = await publish("Create list", draft);
 
-      if (onCreated) onCreated(signed);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
+    if (pub && onCreated) onCreated(pub.event);
   });
 
   return (

@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { EMOJI_PACK_KIND, getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import useSubject from "../../hooks/use-subject";
@@ -18,7 +18,7 @@ function UserEmojiPackMangerPage() {
   const account = useCurrentAccount()!;
 
   const favoritePacks = useFavoriteEmojiPacks(account.pubkey);
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const timeline = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
     readRelays,
@@ -76,7 +76,7 @@ export default function EmojiPacksView() {
         <Button as={RouterLink} to="/emojis/browse">
           Find packs
         </Button>
-        <Button as={Link} href="https://emojis-iota.vercel.app/" isExternal rightIcon={<ExternalLinkIcon />} ml="auto">
+        <Button as={Link} href="https://emojito.meme" isExternal rightIcon={<ExternalLinkIcon />} ml="auto">
           Emoji pack manager
         </Button>
         {account && (

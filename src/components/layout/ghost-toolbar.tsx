@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Box, Card, CloseButton, Divider, Flex, FlexProps, Spacer, Text } from "@chakra-ui/react";
-import { Kind, nip18, nip19, nip25 } from "nostr-tools";
+import { kinds, nip18, nip19, nip25 } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
 import { useInterval } from "react-use";
 import dayjs from "dayjs";
@@ -12,31 +12,32 @@ import UserAvatar from "../user-avatar";
 import UserLink from "../user-link";
 import { GhostIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelayUrls } from "../../hooks/use-client-relays";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { safeRelayUrls } from "../../helpers/url";
+import { safeRelayUrls } from "../../helpers/relay";
 
 const kindColors: Record<number, FlexProps["bg"]> = {
-  [Kind.Text]: "blue.500",
-  [Kind.RecommendRelay]: "pink",
-  [Kind.EncryptedDirectMessage]: "orange.500",
-  [Kind.Repost]: "yellow",
-  [Kind.Reaction]: "green.500",
-  [Kind.Article]: "purple.500",
+  [kinds.ShortTextNote]: "blue.500",
+  [kinds.RecommendRelay]: "pink",
+  [kinds.EncryptedDirectMessage]: "orange.500",
+  [kinds.Repost]: "yellow",
+  [kinds.GenericRepost]: "yellow",
+  [kinds.Reaction]: "green.500",
+  [kinds.LongFormArticle]: "purple.500",
 };
 
 function EventChunk({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
   const navigate = useNavigate();
   const handleClick = useCallback(() => {
     switch (event.kind) {
-      case Kind.Reaction: {
+      case kinds.Reaction: {
         const pointer = nip25.getReactedEventPointer(event);
         if (pointer) navigate(`/l/${nip19.neventEncode(pointer)}`);
         return;
       }
-      case Kind.Repost: {
+      case kinds.Repost: {
         const pointer = nip18.getRepostedEventPointer(event);
         if (pointer?.relays) pointer.relays = safeRelayUrls(pointer.relays);
         if (pointer) navigate(`/l/${nip19.neventEncode(pointer)}`);
@@ -48,11 +49,11 @@ function EventChunk({ event, ...props }: { event: NostrEvent } & Omit<FlexProps,
 
   const getTitle = () => {
     switch (event.kind) {
-      case Kind.Text:
+      case kinds.ShortTextNote:
         return "Note";
-      case Kind.Reaction:
+      case kinds.Reaction:
         return "Reaction";
-      case Kind.EncryptedDirectMessage:
+      case kinds.EncryptedDirectMessage:
         return "Direct Message";
     }
   };
@@ -95,7 +96,7 @@ export default function GhostToolbar() {
   const account = useCurrentAccount()!;
   const isGhost = useSubject(accountService.isGhost);
 
-  const readRelays = useReadRelayUrls();
+  const readRelays = useReadRelays();
   const [since] = useState(dayjs().subtract(6, "hours").unix());
 
   const timeline = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, { since, authors: [account.pubkey] });
