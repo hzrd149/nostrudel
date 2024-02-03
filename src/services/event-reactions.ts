@@ -1,4 +1,5 @@
 import { Filter, kinds, nip25 } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
@@ -22,6 +23,7 @@ class EventReactionsService {
         this.pending.get(eventId).add(relay);
       }
     }
+    this.throttleBatchRequest();
 
     return subject;
   }
@@ -41,8 +43,19 @@ class EventReactionsService {
     if (cache) localRelay.publish(event);
   }
 
+  throttleBatchRequest = _throttle(this.batchRequests, 2000);
   batchRequests() {
     if (this.pending.size === 0) return;
+
+    // load events from cache
+    const uids = Array.from(this.pending.keys());
+    const ids = uids.filter((id) => !id.includes(":"));
+    const cords = uids.filter((id) => id.includes(":"));
+    const filters: Filter[] = [];
+    if (ids.length > 0) filters.push({ "#e": ids, kinds: [kinds.Reaction] });
+    if (cords.length > 0) filters.push({ "#a": cords, kinds: [kinds.Reaction] });
+    if (filters.length > 0)
+      relayRequest(localRelay, filters).then((events) => events.forEach((e) => this.handleEvent(e, false)));
 
     const idsFromRelays: Record<relay, eventId[]> = {};
     for (const [id, relays] of this.pending) {
@@ -53,14 +66,17 @@ class EventReactionsService {
     }
 
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const filter: Filter = { "#e": ids, kinds: [kinds.Reaction] };
+      const eventIds = ids.filter((id) => !id.includes(":"));
+      const coordinates = ids.filter((id) => id.includes(":"));
+      const filters: Filter[] = [];
+      if (eventIds.length > 0) filters.push({ "#e": eventIds, kinds: [kinds.Reaction] });
+      if (coordinates.length > 0) filters.push({ "#a": coordinates, kinds: [kinds.Reaction] });
 
-      // load from local relay
-      relayRequest(localRelay, [filter]).then((events) => events.forEach((e) => this.handleEvent(e, true)));
-
-      const request = new NostrRequest([relay]);
-      request.onEvent.subscribe(this.handleEvent, this);
-      request.start(filter);
+      if (filters.length > 0) {
+        const request = new NostrRequest([relay]);
+        request.onEvent.subscribe(this.handleEvent, this);
+        request.start(filters);
+      }
     }
     this.pending.clear();
   }
@@ -68,8 +84,9 @@ class EventReactionsService {
 
 const eventReactionsService = new EventReactionsService();
 
-setInterval(() => {
-  eventReactionsService.batchRequests();
-}, 1000 * 2);
+if (import.meta.env.DEV) {
+  //@ts-expect-error
+  window.eventReactionsService = eventReactionsService;
+}
 
 export default eventReactionsService;

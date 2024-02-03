@@ -114,15 +114,20 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   const isFollowing = isPubkeyInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
 
+  const [loading, setLoading] = useState(false);
   const handleFollow = useAsyncErrorHandler(async () => {
+    setLoading(true);
     const draft = listAddPerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     await publish("Follow", signed);
+    setLoading(false);
   }, [contacts, requestSignature]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
+    setLoading(true);
     const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     await publish("Unfollow", signed);
+    setLoading(false);
   }, [contacts, requestSignature]);
 
   if (showLists) {
@@ -139,11 +144,11 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
         </MenuButton>
         <MenuList>
           {isFollowing ? (
-            <MenuItem onClick={handleUnfollow} icon={<UnfollowIcon />} isDisabled={isDisabled}>
+            <MenuItem onClick={handleUnfollow} icon={<UnfollowIcon />} isDisabled={isDisabled || loading}>
               Unfollow
             </MenuItem>
           ) : (
-            <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled}>
+            <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled || loading}>
               Follow
             </MenuItem>
           )}
@@ -168,13 +173,27 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
     );
   } else if (isFollowing) {
     return (
-      <Button onClick={handleUnfollow} colorScheme="primary" icon={<UnfollowIcon />} isDisabled={isDisabled} {...props}>
+      <Button
+        onClick={handleUnfollow}
+        colorScheme="primary"
+        icon={<UnfollowIcon />}
+        isDisabled={isDisabled}
+        isLoading={loading}
+        {...props}
+      >
         Unfollow
       </Button>
     );
   } else {
     return (
-      <Button onClick={handleFollow} colorScheme="primary" icon={<FollowIcon />} isDisabled={isDisabled} {...props}>
+      <Button
+        onClick={handleFollow}
+        colorScheme="primary"
+        icon={<FollowIcon />}
+        isDisabled={isDisabled}
+        isLoading={loading}
+        {...props}
+      >
         Follow
       </Button>
     );

@@ -164,7 +164,7 @@ function CommunitiesHomePage() {
             </Flex>
           </Flex>
         ) : (
-          <Center aspectRatio={3 / 4} flexDirection="column" gap="4">
+          <Center py="20" flexDirection="column" gap="4">
             <Heading size="md">No communities :(</Heading>
             <Text>
               go find a cool one to join.{" "}

@@ -201,7 +201,7 @@ class ReplaceableEventLoaderService {
 
       loading.set(cord, p);
     }
-    const filters = Array.from(Object.values(kindFilters));
+    const filters = Object.values(kindFilters);
 
     for (const [cord] of loading) this.readFromCachePromises.delete(cord);
 

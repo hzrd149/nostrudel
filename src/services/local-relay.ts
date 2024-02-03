@@ -65,20 +65,10 @@ async function connectRelay() {
 
 export const localRelay = await connectRelay();
 
-function pruneLocalDatabase() {
-  if (localRelay instanceof CacheRelay) {
-    pruneLastUsed(localRelay.db, 20_000);
-  }
-}
-
 // keep the relay connection alive
 setInterval(() => {
   if (!localRelay.connected) localRelay.connect().then(() => log("Reconnected"));
 }, 1000 * 5);
-
-setInterval(() => {
-  pruneLocalDatabase();
-}, 1000 * 60);
 
 if (import.meta.env.DEV) {
   //@ts-ignore
