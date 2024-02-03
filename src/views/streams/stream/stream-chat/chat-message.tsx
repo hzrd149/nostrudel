@@ -19,7 +19,7 @@ function ChatMessage({ event, stream }: { event: NostrEvent; stream: ParsedStrea
       <Box>
         <Box overflow="hidden" maxH="lg" ref={ref}>
           <UserAvatar pubkey={event.pubkey} size="xs" display="inline-block" mr="2" />
-          <Text as="span" fontWeight="bold" color={event.pubkey === stream.host ? "rgb(248, 56, 217)" : "cyan"}>
+          <Text as="span" fontWeight="bold" color={event.pubkey === stream.host ? "rgb(248, 56, 217)" : "cyan.500"}>
             <UserLink pubkey={event.pubkey} />
             {": "}
           </Text>
