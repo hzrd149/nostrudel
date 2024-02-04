@@ -8,7 +8,7 @@ import "./services/user-event-sync";
 import { init, onConnected } from "@getalby/bitcoin-connect-react";
 init({ appName: "noStrudel" });
 onConnected((provider) => {
-  if (!window.webln) window.webln = provider;
+  window.webln = provider;
 });
 
 // setup dayjs

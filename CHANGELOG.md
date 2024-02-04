@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.38.1
+
+### Patch Changes
+
+- Always use the bitcoin connect webln
+
 ## 0.38.0
 
 ### Minor Changes
