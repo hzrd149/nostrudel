@@ -16,7 +16,7 @@ export const recommendedReadRelays = new RelaySet(
     "wss://relay.snort.social/",
     "wss://nos.lol/",
     "wss://purplerelay.com/",
-    "wss://eden.nostr.land/",
+    "wss://nostr.land/",
   ]),
 );
 export const recommendedWriteRelays = new RelaySet(
@@ -63,6 +63,7 @@ class ClientRelayService {
   setRelaysFromRelaySet(event: NostrEvent) {
     this.writeRelays.next(RelaySet.fromNIP65Event(event, RelayMode.WRITE));
     this.readRelays.next(RelaySet.fromNIP65Event(event, RelayMode.READ));
+    this.saveRelays();
   }
 
   saveRelays() {

@@ -1,10 +1,11 @@
+import { kinds } from "nostr-tools";
 import { COMMON_CONTACT_RELAY } from "../const";
 import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
+import replaceableEventLoaderService from "./replaceable-event-requester";
 import userAppSettings from "./settings/user-app-settings";
-import userContactsService from "./user-contacts";
 import userMailboxesService from "./user-mailboxes";
 import userMetadataService from "./user-metadata";
 
@@ -14,9 +15,15 @@ function loadContactsList() {
   const account = accountService.current.value!;
 
   log("Loading contacts list");
-  userContactsService.requestContacts(account.pubkey, [...clientRelaysService.readRelays.value, COMMON_CONTACT_RELAY], {
-    alwaysRequest: true,
-  });
+  replaceableEventLoaderService.requestEvent(
+    [...clientRelaysService.readRelays.value, COMMON_CONTACT_RELAY],
+    kinds.Contacts,
+    account.pubkey,
+    undefined,
+    {
+      alwaysRequest: true,
+    },
+  );
 }
 
 function downloadEvents() {

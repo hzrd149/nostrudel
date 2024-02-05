@@ -25,6 +25,8 @@ import accountService from "../../services/account";
 import serialPortService from "../../services/serial-port";
 import amberSignerService from "../../services/amber-signer";
 import { AtIcon } from "../../components/icons";
+import { getRelaysFromExt } from "../../helpers/nip07";
+import { safeRelayUrls } from "../../helpers/relay";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -40,16 +42,15 @@ export default function LoginStartView() {
         const pubkey = await window.nostr.getPublicKey();
 
         if (!accountService.hasAccount(pubkey)) {
-          let relays: string[] = [];
-          const extRelays = (await window.nostr.getRelays?.()) ?? [];
-          if (Array.isArray(extRelays)) {
-            relays = extRelays;
-          } else {
-            relays = Object.keys(extRelays).filter((url) => extRelays[url].read);
-          }
+          let relays = (await getRelaysFromExt()).read.urls;
 
           if (relays.length === 0) {
-            relays = ["wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine", COMMON_CONTACT_RELAY];
+            relays = safeRelayUrls([
+              "wss://relay.damus.io/",
+              "wss://relay.snort.social/",
+              "wss://nostr.wine/",
+              COMMON_CONTACT_RELAY,
+            ]);
           }
 
           accountService.addAccount({ pubkey, relays, type: "extension", readonly: false });

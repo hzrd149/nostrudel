@@ -69,6 +69,12 @@ import CommunityTrendingView from "./views/community/views/trending";
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import BrowseRelaySetsView from "./views/relays/browse-sets";
+import CacheRelayView from "./views/relays/cache";
+import RelaySetView from "./views/relays/relay-set";
+import AppRelays from "./views/relays/app";
+import MailboxesView from "./views/relays/mailboxes";
+import NIP05RelaysView from "./views/relays/nip05";
+import ContactListRelaysView from "./views/relays/contact-list";
 import UserDMsTab from "./views/user/dms";
 import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
@@ -82,10 +88,6 @@ import LaunchpadView from "./views/launchpad";
 import VideosView from "./views/videos";
 import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
-import CacheRelayView from "./views/relays/cache";
-import RelaySetView from "./views/relays/relay-set";
-import AppRelays from "./views/relays/app";
-import MailboxesView from "./views/relays/mailboxes";
 import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
 const TracksView = lazy(() => import("./views/tracks"));
@@ -267,6 +269,8 @@ const router = createHashRouter([
           { path: "app", element: <AppRelays /> },
           { path: "cache", element: <CacheRelayView /> },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "nip05", element: <NIP05RelaysView /> },
+          { path: "contacts", element: <ContactListRelaysView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },
           { path: ":id", element: <RelaySetView /> },
         ],

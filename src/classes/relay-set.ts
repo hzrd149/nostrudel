@@ -1,4 +1,6 @@
+import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
 import { getRelaysFromMailbox } from "../helpers/nostr/mailbox";
+import { safeJson } from "../helpers/parse";
 import { safeRelayUrl } from "../helpers/relay";
 import relayPoolService from "../services/relay-pool";
 import { NostrEvent } from "../types/nostr-event";
@@ -35,6 +37,14 @@ export default class RelaySet extends Set<string> {
   static fromNIP65Event(event: NostrEvent, mode: RelayMode = RelayMode.ALL) {
     return new RelaySet(
       getRelaysFromMailbox(event)
+        .filter((r) => r.mode & mode)
+        .map((r) => r.url),
+    );
+  }
+
+  static fromContactsEvent(contacts: NostrEvent, mode: RelayMode = RelayMode.ALL) {
+    return new RelaySet(
+      relaysFromContactsEvent(contacts)
         .filter((r) => r.mode & mode)
         .map((r) => r.url),
     );
