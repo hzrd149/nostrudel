@@ -17,7 +17,9 @@ export default function KeyboardShortcut({
     (e) => (requireMeta ? e.ctrlKey || e.metaKey : true) && e.key === letter,
     (e) => {
       // ignore if the user is focused on an input
-      if (document.activeElement instanceof HTMLInputElement) return;
+      if (document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement) {
+        return;
+      }
 
       if (onPress) {
         e.preventDefault();

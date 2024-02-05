@@ -34,6 +34,7 @@ function LaunchpadPage() {
       <Flex gap="4" w="full">
         <Button colorScheme="primary" size="lg" onClick={() => openModal()} variant="outline">
           New Note
+          <KeyboardShortcut letter="n" ml="2" onPress={(e) => openModal()} />
         </Button>
         <SearchForm flex={1} />
       </Flex>
