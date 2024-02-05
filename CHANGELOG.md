@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.38.2
+
+### Patch Changes
+
+- ad6e51e: Add explanations to relay views
+
 ## 0.38.1
 
 ### Patch Changes
