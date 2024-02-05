@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, Text } from "@chakra-ui/react";
 import useSubject from "../../../hooks/use-subject";
 import { offlineMode } from "../../../services/offline-mode";
 import WifiOff from "../../../components/icons/wifi-off";
@@ -14,12 +14,20 @@ import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays"
 import useCurrentAccount from "../../../hooks/use-current-account";
 import RelayControl from "./relay-control";
 import SelectRelaySet from "./select-relay-set";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { getRelaysFromExt } from "../../../helpers/nip07";
+import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
+import useUserContactRelays from "../../../hooks/use-user-contact-relays";
+import { WarningIcon } from "@chakra-ui/icons";
 
 export default function AppRelays() {
   const account = useCurrentAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
   const offline = useSubject(offlineMode);
+  const { event: nip65 } = useUserMailboxes(account?.pubkey) ?? {};
+  const nip05 = useUserDNSIdentity(account?.pubkey);
+  const contactRelays = useUserContactRelays(account?.pubkey);
 
   const sorted = useMemo(() => RelaySet.from(readRelays, writeRelays).urls.sort(), [readRelays, writeRelays]);
 
@@ -27,7 +35,9 @@ export default function AppRelays() {
     <Flex gap="2" direction="column" overflow="auto hidden" flex={1}>
       <Flex gap="2" alignItems="center">
         <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">App Relays</Heading>
+        <Heading size="lg" px={{ base: 0, lg: "2" }}>
+          App Relays
+        </Heading>
         <Button
           onClick={() => offlineMode.next(!offline)}
           leftIcon={offline ? <WifiOff /> : <Wifi />}
@@ -38,6 +48,10 @@ export default function AppRelays() {
         </Button>
       </Flex>
 
+      <Text fontStyle="italic" px="2" mt="-2">
+        These relays are stored locally and are used for everything in the app
+      </Text>
+
       {sorted.map((url) => (
         <RelayControl key={url} url={url} />
       ))}
@@ -47,6 +61,60 @@ export default function AppRelays() {
         }}
       />
 
+      {writeRelays.size === 0 && (
+        <Text color="yellow.500">
+          <WarningIcon /> There are write relays set, any note you create might not be saved
+        </Text>
+      )}
+
+      <Heading size="md" mt="2">
+        Import from:
+      </Heading>
+      <Flex wrap="wrap" gap="2">
+        {window.nostr && (
+          <Button
+            onClick={async () => {
+              const { read, write } = await getRelaysFromExt();
+              clientRelaysService.readRelays.next(read);
+              clientRelaysService.writeRelays.next(write);
+              clientRelaysService.saveRelays();
+            }}
+          >
+            Extension
+          </Button>
+        )}
+        {nip65 && (
+          <Button
+            onClick={() => {
+              clientRelaysService.setRelaysFromRelaySet(nip65);
+            }}
+          >
+            NIP-65 (Mailboxes)
+          </Button>
+        )}
+        {nip05 && (
+          <Button
+            onClick={() => {
+              clientRelaysService.readRelays.next(RelaySet.from(nip05.relays));
+              clientRelaysService.writeRelays.next(RelaySet.from(nip05.relays));
+              clientRelaysService.saveRelays();
+            }}
+          >
+            NIP-05
+          </Button>
+        )}
+        {contactRelays && (
+          <Button
+            onClick={() => {
+              clientRelaysService.readRelays.next(contactRelays.inbox);
+              clientRelaysService.writeRelays.next(contactRelays.outbox);
+              clientRelaysService.saveRelays();
+            }}
+          >
+            Contact List (Legacy)
+          </Button>
+        )}
+      </Flex>
       {/* {account && (
         <>
           <Heading size="md" mt="2">

@@ -8,13 +8,18 @@ import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/events";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import Database01 from "../../components/icons/database-01";
-import { RelayIcon } from "../../components/icons";
+import { AtIcon, RelayIcon } from "../../components/icons";
 import Mail02 from "../../components/icons/mail-02";
+import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
+import useUserContactRelays from "../../hooks/use-user-contact-relays";
+import UserSquare from "../../components/icons/user-square";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
   const relaySets = useUserRelaySets(account?.pubkey, undefined);
   const vertical = useBreakpointValue({ base: true, lg: false });
+  const nip05 = useUserDNSIdentity(account?.pubkey);
+  const kind3Relays = useUserContactRelays(account?.pubkey);
 
   const location = useLocation();
 
@@ -54,6 +59,26 @@ export default function RelaysView() {
             Mailboxes
           </Button>
         )}
+        {nip05 && (
+          <Button
+            variant="outline"
+            as={RouterLink}
+            to="/relays/nip05"
+            leftIcon={<AtIcon boxSize={6} />}
+            colorScheme={location.pathname === "/relays/nip05" ? "primary" : undefined}
+          >
+            NIP-05 Relays
+          </Button>
+        )}
+        <Button
+          variant="outline"
+          as={RouterLink}
+          to="/relays/contacts"
+          leftIcon={<UserSquare boxSize={6} />}
+          colorScheme={location.pathname === "/relays/contacts" ? "primary" : undefined}
+        >
+          Contact List Relays
+        </Button>
         {/* {account && (
           <>
             <Heading size="sm" mt="2">

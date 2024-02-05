@@ -1,5 +1,6 @@
 import { MouseEventHandler, PropsWithChildren, useCallback } from "react";
-import { Button, Card, CardBody, CardHeader, Flex, Heading } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, Flex, Heading, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import clientRelaysService, { recommendedReadRelays, recommendedWriteRelays } from "../../services/client-relays";
@@ -52,7 +53,14 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
   if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
     return (
       <Flex direction="column" maxW="md" mx="auto" h="full" alignItems="center" justifyContent="center" gap="4">
-        <Heading size="md">Looks like you don't have any relays setup</Heading>
+        <Box w="full">
+          <Heading size="md" textAlign="center">
+            Setup App Relays
+          </Heading>
+          <Text fontStyle="italic">
+            App Relays are stored locally and are used to fetch your timeline and other users notes
+          </Text>
+        </Box>
         <RelaySetCard label="Recommended Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
         <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
         <Card w="full" variant="outline">
@@ -63,7 +71,14 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
             <AddRelayForm onSubmit={(url) => clientRelaysService.addRelay(url, RelayMode.ALL)} w="full" />
           </CardBody>
         </Card>
-        <Button onClick={() => offlineMode.next(true)}>Offline mode</Button>
+        <ButtonGroup>
+          <Button as={RouterLink} to="/relays/app" variant="outline" colorScheme="primary">
+            Custom Relays
+          </Button>
+          <Button onClick={() => offlineMode.next(true)} variant="outline">
+            Offline mode
+          </Button>
+        </ButtonGroup>
       </Flex>
     );
 

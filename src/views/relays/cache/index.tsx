@@ -100,6 +100,9 @@ export default function CacheRelayView() {
         <BackButton hideFrom="lg" size="sm" />
         <Heading size="lg">Cache Relay</Heading>
       </Flex>
+      <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
+        The cache relay is used to cache event locally so they can be loaded quickly
+      </Text>
       <InternalRelay />
       <NostrRelayTray />
       {window.CACHE_RELAY_ENABLED && <HostedRelay />}
