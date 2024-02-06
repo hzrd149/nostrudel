@@ -50,8 +50,6 @@ export default function MessageBlock({
         mr={isOwn ? 0 : "auto"}
         maxW="2xl"
         alignItems={isOwn ? "flex-end" : "flex-start"}
-        overflowX="hidden"
-        overflowY="visible"
       >
         {messages.map((message, i, arr) => (
           <MessageBubbleComponent
