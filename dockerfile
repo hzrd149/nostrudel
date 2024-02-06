@@ -1,12 +1,20 @@
 # syntax=docker/dockerfile:1
-FROM node:20 as builder
+FROM node:20.11 as builder
 
 WORKDIR /app
-COPY . /app/
+
+# Install dependencies
+COPY ./package*.json .
+COPY ./yarn.lock .
+ENV NODE_ENV='development'
+RUN yarn install --production=false --frozen-lockfile
+RUN yarn patch-package
+
+COPY . .
 
 ENV VITE_COMMIT_HASH=""
 ENV VITE_APP_VERSION="custom"
-RUN yarn install && yarn build
+RUN yarn build
 
 FROM nginx:stable-alpine-slim
 EXPOSE 80

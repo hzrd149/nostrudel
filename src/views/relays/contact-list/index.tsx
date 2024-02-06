@@ -72,7 +72,7 @@ export default function ContactListRelaysView() {
       <Text fontStyle="italic" mt="-2">
         Some apps store relays in your contacts list (kind-3)
         <br />
-        noStrudel dose not use these relays, instead it uses your{" "}
+        noStrudel does not use these relays, instead it uses your{" "}
         <Link as={RouterLink} to="/relays/mailboxes" color="blue.500">
           Mailbox Relays
         </Link>

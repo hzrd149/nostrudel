@@ -101,7 +101,7 @@ export default function CacheRelayView() {
         <Heading size="lg">Cache Relay</Heading>
       </Flex>
       <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
-        The cache relay is used to cache event locally so they can be loaded quickly
+        The cache relay is used to cache events locally so they can be loaded quickly
       </Text>
       <InternalRelay />
       <NostrRelayTray />
