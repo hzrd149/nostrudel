@@ -8,7 +8,6 @@ COPY ./package*.json .
 COPY ./yarn.lock .
 ENV NODE_ENV='development'
 RUN yarn install --production=false --frozen-lockfile
-RUN yarn patch-package
 
 COPY . .
 

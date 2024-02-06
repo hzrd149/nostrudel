@@ -52,8 +52,6 @@ export default function FeedsCard({ ...props }: Omit<CardProps, "children">) {
   const myLists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
   const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
 
-  console.log(favoriteLists);
-
   const { recent: recentFeeds, useThing: useFeed } = useRecentIds("feeds", 4);
 
   const sortedFeeds = [...myLists, ...favoriteLists].sort((a, b) => {

@@ -1,19 +1,81 @@
-// @ts-nocheck
-/**
- * @react-three/fiber extends the global JSX.IntrinsicElements with 100+ extra elements which overloads typescripts type checking.
- * To fix this I pulled in the patch-package tool to comment out the offending code in @react-three/fiber
- */
-import { forwardRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
-import { Color, Fog, Vector3 } from "three";
-import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei/core/OrbitControls";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
+import {
+  AmbientLight,
+  BufferGeometry,
+  Color,
+  DirectionalLight,
+  Fog,
+  GridHelper,
+  HemisphereLight,
+  Mesh,
+  MeshPhongMaterial,
+  NormalBufferAttributes,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Scene,
+  Vector3,
+  WebGLRenderer,
+} from "three";
+import { OrbitControls, STLLoader } from "three-stdlib";
+import { useAsync, useMount } from "react-use";
 
-const STLViewer = forwardRef<HTMLCanvasElement, Omit<BoxProps, "children"> & { url: string }>(
-  ({ url, ...props }, ref) => {
-    const geometry = useLoader(STLLoader, url);
+function createSTLWorld(canvas: HTMLCanvasElement) {
+  const renderer = new WebGLRenderer({
+    canvas,
+    antialias: true,
+    preserveDrawingBuffer: true,
+    alpha: true,
+  });
+  renderer.shadowMap.enabled = true;
 
+  const scene = new Scene();
+  scene.background = new Color(0xa0a0a0);
+  scene.fog = new Fog(0xa0a0a0, 4, 20);
+
+  const camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+  camera.position.set(-2, 2, -2.5);
+  scene.add(camera);
+
+  const hemiLight = new HemisphereLight(0xffffff, 0x444444, 3);
+  hemiLight.position.set(0, 20, 0);
+  scene.add(hemiLight);
+
+  const ambientLight = new AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+
+  const dirLight = new DirectionalLight(0xffffff);
+  dirLight.position.set(-5, 15, 10);
+  dirLight.castShadow = true;
+  scene.add(dirLight);
+
+  const floor = new Mesh(new PlaneGeometry(40, 40), new MeshPhongMaterial({ color: 0xbbbbbb, depthWrite: false }));
+  floor.rotation.set(-Math.PI / 2, 0, 0);
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  const grid = new GridHelper(40, 40, 0x000000, 0x000000);
+  grid.material.transparent = true;
+  grid.material.opacity = 0.2;
+  scene.add(grid);
+
+  const object = new Mesh(
+    new BufferGeometry(),
+    new MeshPhongMaterial({ color: 0x1a5fb4, shininess: 60, flatShading: true }),
+  );
+  object.castShadow = true;
+  object.receiveShadow = true;
+  scene.add(object);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+
+  controls.enableDamping = true;
+  controls.enablePan = true;
+  controls.enableRotate = true;
+  controls.enableZoom = true;
+
+  function setSTLGeometry(geometry: BufferGeometry<NormalBufferAttributes>) {
     if (!geometry.boundingBox) geometry.computeBoundingBox();
     if (!geometry.boundingSphere) geometry.computeBoundingSphere();
 
@@ -21,54 +83,84 @@ const STLViewer = forwardRef<HTMLCanvasElement, Omit<BoxProps, "children"> & { u
     const bb = geometry.boundingBox!;
     const center = bb.getCenter(new Vector3()).multiplyScalar(objectScale);
 
-    return (
-      <Box {...props} position="relative">
-        <Canvas
-          shadows
-          gl={{
-            antialias: true,
-            shadowMapEnabled: true,
-            preserveDrawingBuffer: true,
-          }}
-          style={{ width: "100%", height: "100%" }}
-          scene={{ background: new Color(0xa0a0a0), fog: new Fog(0xa0a0a0, 4, 20) }}
-          camera={{ position: [-2, 2, -2.5] }}
-          ref={ref}
-        >
-          <OrbitControls enableDamping enablePan enableRotate enableZoom />
-          <hemisphereLight color={0xffffff} groundColor={0x444444} intensity={3} position={[0, 20, 0]} />
-          <ambientLight color={0xffffff} intensity={0.5} />
-          <directionalLight color={0xffffff} position={[-5, 15, 10]} castShadow>
-            <orthographicCamera attach="shadow-camera" args={[-2, 2, 2, -2]} />
-          </directionalLight>
-          <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            receiveShadow
-            position={[0, ((bb.min.z - bb.max.z) / 2) * objectScale, 0]}
-          >
-            <planeGeometry args={[40, 40]} />
-            <meshPhongMaterial color={0xbbbbbb} depthWrite={false} />
-          </mesh>
-          <gridHelper
-            args={[40, 40, 0x000000, 0x000000]}
-            material-opacity={0.2}
-            material-transparent={true}
-            position={[0, ((bb.min.z - bb.max.z) / 2) * objectScale, 0]}
-          />
-          <mesh
-            geometry={geometry}
-            scale={objectScale}
-            rotation={[Math.PI * -0.5, 0, 0]}
-            castShadow
-            receiveShadow
-            position={[-center.x, -center.z, center.y]}
-          >
-            <meshPhongMaterial color={0x1a5fb4} shininess={60} flatShading />
-          </mesh>
-        </Canvas>
-      </Box>
-    );
-  },
-);
+    // update object
+    object.geometry = geometry;
+    object.scale.set(objectScale, objectScale, objectScale);
+    object.rotation.set(Math.PI * -0.5, 0, 0);
+    object.position.set(-center.x, -center.z, center.y);
 
-export default STLViewer;
+    // update floor
+    grid.position.set(0, ((bb.min.z - bb.max.z) / 2) * objectScale, 0);
+    floor.position.set(0, ((bb.min.z - bb.max.z) / 2) * objectScale, 0);
+
+    console.log(object);
+  }
+
+  function resize() {
+    camera.aspect = canvas.width / canvas.height;
+    camera.updateProjectionMatrix();
+  }
+  function animate() {
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  return {
+    renderer,
+    scene,
+    camera,
+    object,
+    grid,
+    floor,
+    dirLight,
+    ambientLight,
+    hemiLight,
+    controls,
+    animate,
+    resize,
+    setSTLGeometry,
+  };
+}
+
+export default function STLViewer({
+  url,
+  width,
+  height,
+  ...props
+}: Omit<BoxProps, "children" | "width" | "height"> & { url: string; width: number; height: number }) {
+  const ref = useRef<HTMLCanvasElement | null>(null);
+
+  const [world, setWorld] = useState<ReturnType<typeof createSTLWorld>>();
+  const { value: geometry } = useAsync(async () => {
+    const loader = new STLLoader();
+    return await loader.loadAsync(url);
+  }, [url]);
+
+  useMount(() => {
+    if (!ref.current) return;
+    ref.current.width = width;
+    ref.current.height = height;
+    setWorld(createSTLWorld(ref.current));
+  });
+
+  useEffect(() => {
+    if (!world) return;
+    let running = true;
+    const animate = () => {
+      if (running) {
+        world.animate();
+        requestAnimationFrame(animate);
+      }
+    };
+    animate();
+    return () => {
+      running = false;
+    };
+  }, [world]);
+
+  useEffect(() => {
+    if (geometry && world) world.setSTLGeometry(geometry);
+  }, [world, geometry]);
+
+  return <Box as="canvas" ref={ref} {...props} />;
+}

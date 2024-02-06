@@ -36,7 +36,7 @@ function EmbeddedStlFile({ src }: { src: string }) {
         </ButtonGroup>
       </CardHeader>
       {preview.isOpen && (
-        <CardBody px="2" pt="0" pb="2">
+        <CardBody px="2" pt="0" pb="2" overflow="hidden">
           <Suspense
             fallback={
               <Text>
@@ -45,7 +45,7 @@ function EmbeddedStlFile({ src }: { src: string }) {
             }
           >
             <ErrorBoundary>
-              <STLViewer aspectRatio={16 / 10} url={src} />
+              <STLViewer aspectRatio={16 / 10} width={1920} height={1080} w="full" h="auto" url={src} />
             </ErrorBoundary>
           </Suspense>
         </CardBody>
