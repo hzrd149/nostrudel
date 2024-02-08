@@ -58,6 +58,16 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
   const offline = useSubject(offlineMode);
   const location = useLocation();
 
+  const setRelaysToMailboxes = useCallback<MouseEventHandler>(
+    (e) => {
+      if (!mailboxes) return;
+      clientRelaysService.readRelays.next(RelaySet.from(mailboxes.inbox));
+      clientRelaysService.writeRelays.next(RelaySet.from(mailboxes.outbox));
+      clientRelaysService.saveRelays();
+    },
+    [mailboxes],
+  );
+
   if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
     return (
       <Flex direction="column" maxW="md" mx="auto" alignItems="center" gap="4" px="2" py="10">
@@ -74,7 +84,11 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
             Login to use your relays
           </Button>
         )}
-        {mailboxes && <RelaySetCard label="Your Mailboxes" read={mailboxes.inbox} write={mailboxes.outbox} />}
+        {mailboxes && (
+          <Button variant="outline" colorScheme="primary" onClick={setRelaysToMailboxes}>
+            Use your existing relays ({RelaySet.from(mailboxes.inbox, mailboxes.outbox).urls.length})
+          </Button>
+        )}
         <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
         <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
         <Card w="full" variant="outline">
