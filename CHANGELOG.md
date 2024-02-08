@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.38.3
+
+### Patch Changes
+
+- Add option to use NIP-65 relays on relay prompt
+
 ## 0.38.2
 
 ### Patch Changes
