@@ -12,6 +12,8 @@ import { safeRelayUrls } from "../../helpers/relay";
 import RelaySet from "../../classes/relay-set";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { useLocation } from "react-router-dom";
+import useCurrentAccount from "../../hooks/use-current-account";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
 
 const JapaneseRelays = safeRelayUrls([
   "wss://r.kojira.io",
@@ -39,20 +41,26 @@ function RelaySetCard({ label, read, write }: { label: string; read: Iterable<st
         </Heading>
       </CardHeader>
       <CardBody px="4" pt="0" pb="4">
-        {RelaySet.from(read, write).urls.join(", ")}
+        {RelaySet.from(read, write).urls.map((url) => (
+          <Text key={url} whiteSpace="pre" isTruncated>
+            {url}
+          </Text>
+        ))}
       </CardBody>
     </Card>
   );
 }
 
 export default function RequireReadRelays({ children }: PropsWithChildren) {
+  const account = useCurrentAccount();
+  const mailboxes = useUserMailboxes(account?.pubkey);
   const readRelays = useReadRelays();
   const offline = useSubject(offlineMode);
   const location = useLocation();
 
   if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
     return (
-      <Flex direction="column" maxW="md" mx="auto" h="full" alignItems="center" justifyContent="center" gap="4">
+      <Flex direction="column" maxW="md" mx="auto" alignItems="center" gap="4" px="2" py="10">
         <Box w="full">
           <Heading size="md" textAlign="center">
             Setup App Relays
@@ -61,7 +69,13 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
             App Relays are stored locally and are used to fetch your timeline and other users notes
           </Text>
         </Box>
-        <RelaySetCard label="Recommended Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
+        {!account && (
+          <Button as={RouterLink} to="/signin" variant="outline" colorScheme="primary">
+            Login to use your relays
+          </Button>
+        )}
+        {mailboxes && <RelaySetCard label="Your Mailboxes" read={mailboxes.inbox} write={mailboxes.outbox} />}
+        <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
         <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
         <Card w="full" variant="outline">
           <CardHeader px="4" pt="4" pb="2">

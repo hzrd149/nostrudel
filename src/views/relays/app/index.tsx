@@ -63,7 +63,7 @@ export default function AppRelays() {
 
       {writeRelays.size === 0 && (
         <Text color="yellow.500">
-          <WarningIcon /> There are write relays set, any note you create might not be saved
+          <WarningIcon /> There are no write relays set, any note you create might not be saved
         </Text>
       )}
 
