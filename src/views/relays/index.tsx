@@ -103,7 +103,7 @@ export default function RelaysView() {
       else return nav;
     } else
       return (
-        <Flex gap="2" maxH="100vh" overflow="hidden">
+        <Flex gap="2" minH="100vh" overflow="hidden">
           {nav}
           <Outlet />
         </Flex>
