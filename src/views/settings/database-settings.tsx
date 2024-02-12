@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   Text,
   Input,
+  Flex,
 } from "@chakra-ui/react";
 import { addEvents, countEvents, countEventsByKind, getEventUID, updateUsed } from "nostr-idb";
 import stringify from "json-stringify-deterministic";
@@ -119,7 +120,7 @@ export default function DatabaseSettings() {
       </h2>
       <AccordionPanel>
         <DatabaseStats />
-        <ButtonGroup mt="2">
+        <Flex mt="2" gap="2" wrap="wrap">
           <Button onClick={handleClearData} isLoading={clearing}>
             Clear cache
           </Button>
@@ -130,7 +131,7 @@ export default function DatabaseSettings() {
           <Button colorScheme="red" onClick={handleDeleteDatabase} isLoading={deleting}>
             Delete database
           </Button>
-        </ButtonGroup>
+        </Flex>
       </AccordionPanel>
     </AccordionItem>
   );
