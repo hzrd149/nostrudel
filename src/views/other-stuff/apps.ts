@@ -10,6 +10,7 @@ import {
   LiveStreamIcon,
   MapIcon,
   MuteIcon,
+  SearchIcon,
   TorrentIcon,
   TrackIcon,
 } from "../../components/icons";
@@ -87,6 +88,13 @@ export const internalTools: App[] = [
     icon: MessageQuestionSquare,
     id: "unknown",
     to: "/tools/unknown",
+  },
+  {
+    title: "Query Events",
+    description: "find events based on nostr filters",
+    icon: SearchIcon,
+    id: "query",
+    to: "/tools/query",
   },
   { title: "WoT Test", description: "Just a test for now", icon: Users01, id: "wot-test", to: "/tools/wot-test" },
 ];
