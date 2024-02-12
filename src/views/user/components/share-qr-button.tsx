@@ -36,7 +36,6 @@ export const QrIconButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ico
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
           <ModalBody p="2">
             <Tabs>
               <TabList>
@@ -62,6 +61,7 @@ export const QrIconButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ico
               </TabPanels>
             </Tabs>
           </ModalBody>
+          <ModalCloseButton />
         </ModalContent>
       </Modal>
     </>
