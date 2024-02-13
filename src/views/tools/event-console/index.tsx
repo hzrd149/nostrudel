@@ -27,10 +27,11 @@ import BackButton from "../../../components/back-button";
 import { NostrFilterSchema } from "./schema";
 import { relayRequest } from "../../../helpers/relay";
 import { localRelay } from "../../../services/local-relay";
-import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import Play from "../../../components/icons/play";
 import ClockRewind from "../../../components/icons/clock-rewind";
 import HistoryDrawer from "./history-drawer";
+import EventRow from "./event-row";
+import { processFilter } from "./process";
 
 const FilterEditor = memo(
   ({ value, onChange, onRun }: { value: string; onChange: (v: string) => void; onRun: () => void }) => {
@@ -74,7 +75,7 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
     <>
       {events.map((event) => (
-        <EmbeddedUnknown key={event.id} event={event} />
+        <EventRow key={event.id} event={event} />
       ))}
     </>
   );
@@ -93,7 +94,7 @@ export default function EventConsoleView() {
   const [events, setEvents] = useState<NostrEvent[]>([]);
   const loadEvents = useCallback(async () => {
     try {
-      const filter: Filter = JSON.parse(queryRef.current);
+      const filter = await processFilter(JSON.parse(queryRef.current));
       setLoading(true);
       setHistory((arr) => (arr || []).concat(queryRef.current));
       const e = await relayRequest(localRelay, [filter]);
@@ -139,7 +140,9 @@ export default function EventConsoleView() {
       <Flex gap="2">
         <Text>{events.length} events</Text>
       </Flex>
-      <EventTimeline events={events} />
+      <Box>
+        <EventTimeline events={events} />
+      </Box>
 
       <HistoryDrawer
         isOpen={historyDrawer.isOpen}
