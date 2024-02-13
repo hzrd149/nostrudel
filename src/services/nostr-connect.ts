@@ -276,7 +276,8 @@ class NostrConnectService {
   fromBunkerURI(uri: string) {
     const url = new URL(uri);
 
-    const pubkey = url.host;
+    // firefox puts pubkey part in host, chrome puts pubkey in pathname
+    const pubkey = url.host || url.pathname.replace("//", "");
     if (!isHexKey(pubkey)) throw new Error("Invalid connection URI");
     const relays = url.searchParams.getAll("relay");
     if (relays.length === 0) throw new Error("Missing relays");
