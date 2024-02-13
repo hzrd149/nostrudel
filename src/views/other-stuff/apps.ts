@@ -90,11 +90,11 @@ export const internalTools: App[] = [
     to: "/tools/unknown",
   },
   {
-    title: "Query Events",
-    description: "find events based on nostr filters",
+    title: "Event Console",
+    description: "Find events based on nostr filters",
     icon: SearchIcon,
-    id: "query",
-    to: "/tools/query",
+    id: "console",
+    to: "/tools/console",
   },
   { title: "WoT Test", description: "Just a test for now", icon: Users01, id: "wot-test", to: "/tools/wot-test" },
 ];
