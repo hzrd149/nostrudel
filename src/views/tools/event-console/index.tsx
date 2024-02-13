@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -10,12 +10,17 @@ import {
   CloseButton,
   Flex,
   Heading,
+  IconButton,
   Text,
+  useColorMode,
+  useDisclosure,
 } from "@chakra-ui/react";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { jsonSchema } from "codemirror-json-schema";
 import { Filter, NostrEvent } from "nostr-tools";
 import { keymap } from "@codemirror/view";
+import { useLocalStorage } from "react-use";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/back-button";
@@ -24,9 +29,12 @@ import { relayRequest } from "../../../helpers/relay";
 import { localRelay } from "../../../services/local-relay";
 import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import Play from "../../../components/icons/play";
+import ClockRewind from "../../../components/icons/clock-rewind";
+import HistoryDrawer from "./history-drawer";
 
 const FilterEditor = memo(
   ({ value, onChange, onRun }: { value: string; onChange: (v: string) => void; onRun: () => void }) => {
+    const { colorMode } = useColorMode();
     const extensions = useMemo(
       () => [
         keymap.of([
@@ -49,7 +57,16 @@ const FilterEditor = memo(
       ],
       [onRun],
     );
-    return <ReactCodeMirror value={value} onChange={onChange} height="200px" lang="json" extensions={extensions} />;
+    return (
+      <ReactCodeMirror
+        value={value}
+        onChange={onChange}
+        height="200px"
+        lang="json"
+        extensions={extensions}
+        theme={colorMode === "light" ? githubLight : githubDark}
+      />
+    );
   },
 );
 
@@ -64,15 +81,12 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 });
 
 export default function EventConsoleView() {
-  const [query, setQuery] = useState(
-    () => localStorage.getItem("debug-query") || JSON.stringify({ kinds: [1], limit: 20 }, null, 2),
-  );
+  const historyDrawer = useDisclosure();
+  const [history, setHistory] = useLocalStorage<string[]>("console-history", []);
+
+  const [query, setQuery] = useState(() => history?.[0] || JSON.stringify({ kinds: [1], limit: 20 }, null, 2));
   const queryRef = useRef(query);
   queryRef.current = query;
-
-  useEffect(() => {
-    localStorage.setItem("debug-query", query);
-  }, [query]);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -81,6 +95,7 @@ export default function EventConsoleView() {
     try {
       const filter: Filter = JSON.parse(queryRef.current);
       setLoading(true);
+      setHistory((arr) => (arr || []).concat(queryRef.current));
       const e = await relayRequest(localRelay, [filter]);
       setEvents(e);
     } catch (e) {
@@ -91,10 +106,17 @@ export default function EventConsoleView() {
 
   return (
     <VerticalPageLayout>
-      <Flex gap="2">
+      <Flex gap="2" alignItems="center">
         <BackButton size="sm" />
-        <Heading size="lg">Event Console</Heading>
+        <Heading size="md">Event Console</Heading>
         <ButtonGroup ml="auto">
+          <IconButton
+            icon={<ClockRewind />}
+            aria-label="History"
+            title="History"
+            size="sm"
+            onClick={historyDrawer.onOpen}
+          />
           <Button colorScheme="primary" onClick={loadEvents} isLoading={loading} leftIcon={<Play />} size="sm">
             Run
           </Button>
@@ -118,6 +140,17 @@ export default function EventConsoleView() {
         <Text>{events.length} events</Text>
       </Flex>
       <EventTimeline events={events} />
+
+      <HistoryDrawer
+        isOpen={historyDrawer.isOpen}
+        onClose={historyDrawer.onClose}
+        history={history || []}
+        onClear={() => setHistory([])}
+        onSelect={(v) => {
+          setQuery(v);
+          historyDrawer.onClose();
+        }}
+      />
     </VerticalPageLayout>
   );
 }

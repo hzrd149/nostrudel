@@ -3025,6 +3025,22 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
 
+"@uiw/codemirror-theme-github@^4.21.21":
+  version "4.21.21"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.21.21.tgz#0e0fd13500e6c17032a9b9fccb276e13f6681a91"
+  integrity sha512-msrpNrKk/CZQHk58TshI8aH7FpEyL404m/vWlGUdL2jGW7IRKm0nXn1lXXQ/snzk65h88GO6u9fiiv0pxRuZfQ==
+  dependencies:
+    "@uiw/codemirror-themes" "4.21.21"
+
+"@uiw/codemirror-themes@4.21.21":
+  version "4.21.21"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.21.21.tgz#26efb06ecce9a51aa73d39311c90f8fcb06fdc43"
+  integrity sha512-ljVcMGdaxo75UaH+EqxJ+jLyMVVgeSfW2AKyT1VeLy+4SDpuqNQ7wq5XVxktsG6LH+OvgSFndWXgPANf4+gQcA==
+  dependencies:
+    "@codemirror/language" "^6.0.0"
+    "@codemirror/state" "^6.0.0"
+    "@codemirror/view" "^6.0.0"
+
 "@uiw/react-codemirror@^4.21.21":
   version "4.21.21"
   resolved "https://registry.yarnpkg.com/@uiw/react-codemirror/-/react-codemirror-4.21.21.tgz#986b18dbd6dc69aa470fc3d4e47b89b504af6778"
