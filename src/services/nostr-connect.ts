@@ -12,7 +12,6 @@ import { truncatedId } from "../helpers/nostr/events";
 import { NostrConnectAccount } from "./account";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { safeRelayUrl } from "../helpers/relay";
-import Subject from "../classes/subject";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
   return !!response.error;
@@ -262,6 +261,7 @@ class NostrConnectService {
   fromHostedBunker(pubkey: string, relays: string[], provider?: string) {
     return this.getClient(pubkey) || this.createClient(pubkey, relays, undefined, provider);
   }
+  /** create client from: pubkey@wss://relay.com (with optional bunker://) */
   fromBunkerAddress(address: string) {
     const parts = address.replace("bunker://", "").split("@");
     if (parts.length !== 2) throw new Error("Invalid bunker address");
@@ -272,21 +272,20 @@ class NostrConnectService {
 
     return this.getClient(pubkey) || this.createClient(pubkey, [pathRelay]);
   }
+  /** create client from: bunker://<pubkey>?relay=<relay> */
   fromBunkerURI(uri: string) {
     const url = new URL(uri);
 
-    const pathParts = url.pathname.replace(/^\/\//, "").split("@");
-    const pubkey = pathParts[0];
-    const pathRelay = pathParts[1] as string | undefined;
+    const pubkey = url.host;
     if (!isHexKey(pubkey)) throw new Error("Invalid connection URI");
     const relays = url.searchParams.getAll("relay");
-    if (pathRelay) relays.push(pathRelay);
     if (relays.length === 0) throw new Error("Missing relays");
 
     return this.getClient(pubkey) || this.createClient(pubkey, relays);
   }
-  fromBunkerToken(token: string) {
-    const [npub, hexToken] = token.split("#");
+  /** create client from: pubkey#token */
+  fromBunkerToken(pubkeyWithToken: string) {
+    const [npub, hexToken] = pubkeyWithToken.split("#");
     const decoded = nip19.decode(npub);
     const pubkey = getPubkeyFromDecodeResult(decoded);
     if (!pubkey) throw new Error("Cant find pubkey");
@@ -296,6 +295,7 @@ class NostrConnectService {
     const client = this.getClient(pubkey) || this.createClient(pubkey, relays);
     return client;
   }
+  /** create client from NIP-05 */
   fromAccount(account: NostrConnectAccount) {
     const existingClient = this.getClient(account.pubkey);
     if (existingClient) return existingClient;
