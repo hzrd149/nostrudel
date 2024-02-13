@@ -275,7 +275,7 @@ class NostrConnectService {
   fromBunkerURI(uri: string) {
     const url = new URL(uri);
 
-    const pathParts = url.pathname.replace(/^\/\//, "").split("@");
+    const pathParts = url.hostname ? [url.username, url.hostname] : url.pathname.replace(/^\/\//, "").split("@");
     const pubkey = pathParts[0];
     const pathRelay = pathParts[1] as string | undefined;
     if (!isHexKey(pubkey)) throw new Error("Invalid connection URI");
