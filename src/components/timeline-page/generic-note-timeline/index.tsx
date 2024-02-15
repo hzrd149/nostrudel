@@ -132,9 +132,9 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
       }
     };
 
-    intersectionSubject.subscribe(listener);
+    const sub = intersectionSubject.subscribe(listener);
     return () => {
-      intersectionSubject.unsubscribe(listener);
+      sub.unsubscribe();
     };
   }, [
     setPinDate,

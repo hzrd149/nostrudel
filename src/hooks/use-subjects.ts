@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PersistentSubject, Subject } from "../classes/subject";
+import Subject, { PersistentSubject } from "../classes/subject";
 
 function useSubjects<Value extends unknown>(
   subjects: (Subject<Value> | PersistentSubject<Value> | undefined)[] = [],
@@ -9,13 +9,9 @@ function useSubjects<Value extends unknown>(
 
   useEffect(() => {
     const listener = () => update((v) => v + 1);
-    for (const sub of subjects) {
-      sub?.subscribe(listener, undefined, false);
-    }
+    const subs = subjects.map((s) => s?.subscribe(listener));
     return () => {
-      for (const sub of subjects) {
-        sub?.unsubscribe(listener, undefined);
-      }
+      for (const sub of subs) sub?.unsubscribe();
     };
   }, [subjects, update]);
 

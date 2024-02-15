@@ -1,6 +1,7 @@
 import { finalizeEvent, generateSecretKey, getPublicKey, kinds, nip04, nip19 } from "nostr-tools";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import NostrMultiSubscription from "../classes/nostr-multi-subscription";
 import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
@@ -10,9 +11,7 @@ import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
 import { truncatedId } from "../helpers/nostr/events";
 import { NostrConnectAccount } from "./account";
-import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { safeRelayUrl } from "../helpers/relay";
-import Subject from "../classes/subject";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
   return !!response.error;
@@ -80,7 +79,7 @@ export class NostrConnectClient {
     this.secretKey = secretKey || bytesToHex(generateSecretKey());
     this.publicKey = getPublicKey(hexToBytes(this.secretKey));
 
-    this.sub.onEvent.subscribe(this.handleEvent, this);
+    this.sub.onEvent.subscribe((e) => this.handleEvent(e));
     this.sub.setQueryMap(
       createSimpleQueryMap(this.relays, {
         kinds: [kinds.NostrConnect, 24134],

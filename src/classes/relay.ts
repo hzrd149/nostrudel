@@ -2,8 +2,9 @@ import { offlineMode } from "../services/offline-mode";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
 import { NostrOutgoingMessage } from "../types/nostr-query";
+import ControlledObservable from "./controlled-observable";
 import createDefer, { Deferred } from "./deferred";
-import { PersistentSubject, Subject } from "./subject";
+import { PersistentSubject } from "./subject";
 
 export type IncomingEvent = {
   type: "EVENT";
@@ -46,13 +47,13 @@ const CONNECTION_TIMEOUT = 1000 * 30;
 export default class Relay {
   url: string;
   status = new PersistentSubject<number>(WebSocket.CLOSED);
-  onOpen = new Subject<Relay>(undefined, false);
-  onClose = new Subject<Relay>(undefined, false);
-  onEvent = new Subject<IncomingEvent>(undefined, false);
-  onNotice = new Subject<IncomingNotice>(undefined, false);
-  onCount = new Subject<IncomingCount>(undefined, false);
-  onEOSE = new Subject<IncomingEOSE>(undefined, false);
-  onCommandResult = new Subject<IncomingCommandResult>(undefined, false);
+  onOpen = new ControlledObservable<Relay>();
+  onClose = new ControlledObservable<Relay>();
+  onEvent = new ControlledObservable<IncomingEvent>();
+  onNotice = new ControlledObservable<IncomingNotice>();
+  onCount = new ControlledObservable<IncomingCount>();
+  onEOSE = new ControlledObservable<IncomingEOSE>();
+  onCommandResult = new ControlledObservable<IncomingCommandResult>();
   ws?: WebSocket;
 
   private connectionPromises: Deferred<void>[] = [];

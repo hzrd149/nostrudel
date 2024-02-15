@@ -155,9 +155,11 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const loadMore = useCallback(() => {
     setLoading(true);
     const request = new NostrRequest([relay]);
-    request.onEvent.subscribe(store.addEvent, store);
     const throttle = _throttle(() => update({}), 100);
-    request.onEvent.subscribe(() => throttle());
+    request.onEvent.subscribe((e) => {
+      store.addEvent(e);
+      throttle();
+    });
     request.onComplete.then(() => setLoading(false));
 
     const query: NostrQuery = { limit: 500 };

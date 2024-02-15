@@ -22,6 +22,7 @@ import {
 } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import { relayRequest } from "../helpers/relay";
+import SuperMap from "./super-map";
 
 const BLOCK_SIZE = 100;
 
@@ -32,6 +33,7 @@ export class RelayBlockLoader {
   filter: NostrRequestFilter;
   blockSize = BLOCK_SIZE;
   private log: Debugger;
+  private subs: ZenObservable.Subscription[] = [];
 
   loading = false;
   events: EventStore;
@@ -47,7 +49,7 @@ export class RelayBlockLoader {
     this.log = log || logger.extend(relay);
     this.events = new EventStore(relay);
 
-    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
+    this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
   }
 
   loadNextBlock() {
@@ -91,7 +93,8 @@ export class RelayBlockLoader {
   }
 
   cleanup() {
-    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
+    for (const sub of this.subs) sub.unsubscribe();
+    this.subs = [];
   }
 
   getFirstEvent(nth = 0, eventFilter?: EventFilter) {
@@ -124,16 +127,15 @@ export default class TimelineLoader {
     this.name = name;
     this.log = logger.extend("TimelineLoader:" + name);
     this.events = new EventStore(name);
+    this.events.connect(replaceableEventLoaderService.events, false);
 
     this.subscription = new NostrMultiSubscription(name);
-    this.subscription.onEvent.subscribe(this.handleEvent, this);
+    this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
 
     // update the timeline when there are new events
-    this.events.onEvent.subscribe(this.throttleUpdateTimeline, this);
-    this.events.onDelete.subscribe(this.throttleUpdateTimeline, this);
-    this.events.onClear.subscribe(this.throttleUpdateTimeline, this);
-
-    deleteEventService.stream.subscribe(this.handleDeleteEvent, this);
+    this.events.onEvent.subscribe(this.throttleUpdateTimeline.bind(this));
+    this.events.onDelete.subscribe(this.throttleUpdateTimeline.bind(this));
+    this.events.onClear.subscribe(this.throttleUpdateTimeline.bind(this));
   }
 
   private throttleUpdateTimeline = _throttle(this.updateTimeline, 10);
@@ -150,24 +152,20 @@ export default class TimelineLoader {
     this.events.addEvent(event);
     if (cache) localRelay.publish(event);
   }
-  private handleDeleteEvent(deleteEvent: NostrEvent) {
-    const cord = deleteEvent.tags.find(isATag)?.[1];
-    const eventId = deleteEvent.tags.find(isETag)?.[1];
 
-    if (cord) this.events.deleteEvent(cord);
-    if (eventId) this.events.deleteEvent(eventId);
-  }
-
+  private blockLoaderSubs = new SuperMap<RelayBlockLoader, ZenObservable.Subscription[]>(() => []);
   private connectToBlockLoader(loader: RelayBlockLoader) {
     this.events.connect(loader.events);
-    loader.onBlockFinish.subscribe(this.updateLoading, this);
-    loader.onBlockFinish.subscribe(this.updateComplete, this);
+    const subs = this.blockLoaderSubs.get(loader);
+    subs.push(loader.onBlockFinish.subscribe(this.updateLoading.bind(this)));
+    subs.push(loader.onBlockFinish.subscribe(this.updateComplete.bind(this)));
   }
   private disconnectToBlockLoader(loader: RelayBlockLoader) {
     loader.cleanup();
     this.events.disconnect(loader.events);
-    loader.onBlockFinish.unsubscribe(this.updateLoading, this);
-    loader.onBlockFinish.unsubscribe(this.updateComplete, this);
+    const subs = this.blockLoaderSubs.get(loader);
+    for (const sub of subs) sub.unsubscribe();
+    this.blockLoaderSubs.delete(loader);
   }
 
   private loadQueriesFromCache(queryMap: RelayQueryMap) {
@@ -305,7 +303,5 @@ export default class TimelineLoader {
     this.blockLoaders.clear();
 
     this.events.cleanup();
-
-    deleteEventService.stream.unsubscribe(this.handleDeleteEvent, this);
   }
 }

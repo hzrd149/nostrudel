@@ -73,7 +73,8 @@
     "three-spritetext": "^1.8.1",
     "three-stdlib": "^2.29.4",
     "webln": "^0.3.2",
-    "yet-another-react-lightbox": "^3.15.6"
+    "yet-another-react-lightbox": "^3.15.6",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
@@ -89,6 +90,7 @@
     "@types/react-dom": "^18.2.18",
     "@types/three": "^0.160.0",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
+    "@types/zen-observable": "^0.8.7",
     "@vitejs/plugin-react": "^4.2.1",
     "camelcase": "^8.0.0",
     "prettier": "^3.1.1",

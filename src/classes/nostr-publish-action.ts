@@ -4,7 +4,9 @@ import { NostrEvent } from "nostr-tools";
 import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";
 import Relay, { IncomingCommandResult } from "./relay";
-import Subject, { PersistentSubject } from "./subject";
+import { PersistentSubject } from "./subject";
+import ControlledObservable from "./controlled-observable";
+import SuperMap from "./super-map";
 
 export default class NostrPublishAction {
   id = nanoid();
@@ -13,10 +15,11 @@ export default class NostrPublishAction {
   event: NostrEvent;
 
   results = new PersistentSubject<IncomingCommandResult[]>([]);
-  onResult = new Subject<IncomingCommandResult>(undefined, false);
+  onResult = new ControlledObservable<IncomingCommandResult>();
   onComplete = createDefer<IncomingCommandResult[]>();
 
   private remaining = new Set<Relay>();
+  private relayResultSubs = new SuperMap<Relay, ZenObservable.Subscription[]>(() => []);
 
   constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 5000) {
     this.label = label;
@@ -26,7 +29,7 @@ export default class NostrPublishAction {
     for (const url of relays) {
       const relay = relayPoolService.requestRelay(url);
       this.remaining.add(relay);
-      relay.onCommandResult.subscribe(this.handleResult, this);
+      this.relayResultSubs.get(relay).push(relay.onCommandResult.subscribe(this.handleResult.bind(this)));
 
       // send event
       relay.send(["EVENT", event]);
@@ -42,7 +45,8 @@ export default class NostrPublishAction {
 
       this.onResult.next(result);
 
-      relay.onCommandResult.unsubscribe(this.handleResult, this);
+      this.relayResultSubs.get(relay).forEach((s) => s.unsubscribe());
+      this.relayResultSubs.delete(relay);
       this.remaining.delete(relay);
       if (this.remaining.size === 0) this.onComplete.resolve(this.results.value);
     }

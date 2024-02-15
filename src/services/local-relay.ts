@@ -1,7 +1,6 @@
-import { CacheRelay, openDB, pruneLastUsed } from "nostr-idb";
+import { CacheRelay, openDB } from "nostr-idb";
 import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
-import _throttle from "lodash.throttle";
 import { safeRelayUrl } from "../helpers/relay";
 
 // save the local relay from query params to localStorage

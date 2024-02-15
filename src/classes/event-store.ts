@@ -1,7 +1,8 @@
-import { getEventUID, isReplaceable, sortByDate } from "../helpers/nostr/events";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
-import { NostrEvent, isDTag } from "../types/nostr-event";
-import Subject from "./subject";
+import { NostrEvent } from "nostr-tools";
+import { getEventUID, sortByDate } from "../helpers/nostr/events";
+import ControlledObservable from "./controlled-observable";
+import SuperMap from "./super-map";
+import deleteEventService from "../services/delete-events";
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
@@ -11,20 +12,27 @@ export default class EventStore {
 
   customSort?: typeof sortByDate;
 
+  private deleteSub: ZenObservable.Subscription;
+
   constructor(name?: string, customSort?: typeof sortByDate) {
     this.name = name;
     this.customSort = customSort;
+
+    this.deleteSub = deleteEventService.stream.subscribe((event) => {
+      const uid = getEventUID(event);
+      this.deleteEvent(uid);
+      if (uid !== event.id) this.deleteEvent(event.id);
+    });
   }
 
   getSortedEvents() {
     return Array.from(this.events.values()).sort(this.customSort || sortByDate);
   }
 
-  onEvent = new Subject<NostrEvent>(undefined, false);
-  onDelete = new Subject<string>(undefined, false);
-  onClear = new Subject(undefined, false);
+  onEvent = new ControlledObservable<NostrEvent>();
+  onDelete = new ControlledObservable<string>();
+  onClear = new ControlledObservable();
 
-  private replaceableEventSubs = new Map<string, Subject<NostrEvent>>();
   private handleEvent(event: NostrEvent) {
     const id = getEventUID(event);
     const existing = this.events.get(id);
@@ -37,16 +45,6 @@ export default class EventStore {
   addEvent(event: NostrEvent) {
     const id = getEventUID(event);
     this.handleEvent(event);
-
-    if (isReplaceable(event.kind)) {
-      // pass the event on
-      replaceableEventLoaderService.handleEvent(event);
-
-      // subscribe to any future changes
-      const sub = replaceableEventLoaderService.getEvent(event.kind, event.pubkey, event.tags.find(isDTag)?.[1]);
-      sub.subscribe(this.handleEvent, this);
-      this.replaceableEventSubs.set(id, sub);
-    }
   }
   getEvent(id: string) {
     return this.events.get(id);
@@ -56,32 +54,36 @@ export default class EventStore {
       this.events.delete(id);
       this.onDelete.next(id);
     }
-
-    if (this.replaceableEventSubs.has(id)) {
-      this.replaceableEventSubs.get(id)?.unsubscribe(this.handleEvent, this);
-      this.replaceableEventSubs.delete(id);
-    }
   }
 
   clear() {
     this.events.clear();
     this.onClear.next(undefined);
-
-    for (const [_, sub] of this.replaceableEventSubs) {
-      sub.unsubscribe(this.handleEvent, this);
-    }
-  }
-  cleanup() {
-    this.clear();
   }
 
-  connect(other: EventStore) {
-    other.onEvent.subscribe(this.addEvent, this);
-    other.onDelete.subscribe(this.deleteEvent, this);
+  private storeSubs = new SuperMap<EventStore, ZenObservable.Subscription[]>(() => []);
+  connect(other: EventStore, fullSync = true) {
+    const subs = this.storeSubs.get(other);
+    subs.push(
+      other.onEvent.subscribe((e) => {
+        if (fullSync || this.events.has(getEventUID(e))) this.addEvent(e);
+      }),
+    );
+    subs.push(other.onDelete.subscribe(this.deleteEvent.bind(this)));
   }
   disconnect(other: EventStore) {
-    other.onEvent.unsubscribe(this.addEvent, this);
-    other.onDelete.unsubscribe(this.deleteEvent, this);
+    const subs = this.storeSubs.get(other);
+    for (const sub of subs) sub.unsubscribe();
+    this.storeSubs.delete(other);
+  }
+
+  cleanup() {
+    this.clear();
+    for (const [_, subs] of this.storeSubs) {
+      for (const sub of subs) sub.unsubscribe();
+    }
+    this.storeSubs.clear();
+    this.deleteSub.unsubscribe();
   }
 
   getFirstEvent(nth = 0, filter?: EventFilter) {

@@ -74,7 +74,7 @@ class EventZapsService {
 
       if (filter.length > 0) {
         const request = new NostrRequest([relay]);
-        request.onEvent.subscribe(this.handleEvent, this);
+        request.onEvent.subscribe((e) => this.handleEvent(e));
         request.start(filter);
       }
     }

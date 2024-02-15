@@ -4,7 +4,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { NostrOutgoingMessage, NostrRequestFilter } from "../types/nostr-query";
 import Relay, { IncomingEOSE } from "./relay";
 import relayPoolService from "../services/relay-pool";
-import { Subject } from "./subject";
+import ControlledObservable from "./controlled-observable";
 
 export default class NostrSubscription {
   static INIT = "initial";
@@ -16,8 +16,10 @@ export default class NostrSubscription {
   query?: NostrRequestFilter;
   relay: Relay;
   state = NostrSubscription.INIT;
-  onEvent = new Subject<NostrEvent>();
-  onEOSE = new Subject<IncomingEOSE>();
+  onEvent = new ControlledObservable<NostrEvent>();
+  onEOSE = new ControlledObservable<IncomingEOSE>();
+
+  private subs: ZenObservable.Subscription[] = [];
 
   constructor(relayUrl: string | URL, query?: NostrRequestFilter, name?: string) {
     this.id = nanoid();
@@ -26,14 +28,18 @@ export default class NostrSubscription {
 
     this.relay = relayPoolService.requestRelay(relayUrl);
 
-    this.onEvent.connectWithHandler(this.relay.onEvent, (event, next) => {
-      if (this.state === NostrSubscription.OPEN) {
-        next(event.body);
-      }
-    });
-    this.onEOSE.connectWithHandler(this.relay.onEOSE, (eose, next) => {
-      if (this.state === NostrSubscription.OPEN) next(eose);
-    });
+    this.subs.push(
+      this.relay.onEvent.subscribe((message) => {
+        if (this.state === NostrSubscription.OPEN && message.subId === this.id) {
+          this.onEvent.next(message.body);
+        }
+      }),
+    );
+    this.subs.push(
+      this.relay.onEOSE.subscribe((eose) => {
+        if (this.state === NostrSubscription.OPEN && eose.subId === this.id) this.onEOSE.next(eose);
+      }),
+    );
   }
 
   send(message: NostrOutgoingMessage) {
@@ -71,6 +77,9 @@ export default class NostrSubscription {
     this.send(["CLOSE", this.id]);
     // unsubscribe from relay messages
     relayPoolService.removeClaim(this.relay.url, this);
+
+    for (const sub of this.subs) sub.unsubscribe();
+    this.subs = [];
 
     return this;
   }

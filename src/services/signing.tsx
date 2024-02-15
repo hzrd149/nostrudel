@@ -181,7 +181,7 @@ class SigningService {
         await client.ensureConnected();
         return await client.nip04Encrypt(pubkey, text);
       default:
-        throw new Error("Unknown connection type");
+        throw new Error("Unknown account type");
     }
   }
 }

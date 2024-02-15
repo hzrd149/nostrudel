@@ -26,7 +26,7 @@ class UserAppSettings {
       SETTING_EVENT_IDENTIFIER,
       opts,
     );
-    sub.connectWithHandler(requestSub, (event, next) => next(parseAppSettings(event)));
+    sub.connectWithMapper(requestSub, (event, next) => next(parseAppSettings(event)));
     return sub;
   }
 
