@@ -51,7 +51,7 @@ class RelayStatsService {
         if (!info.pubkey) return sub.next(null);
 
         const request = new NostrRequest([relay, MONITOR_RELAY]);
-        request.onEvent.subscribe(this.handleEvent, this);
+        request.onEvent.subscribe((e) => this.handleEvent(e));
         request.start({ kinds: [SELF_REPORTED_KIND], authors: [info.pubkey] });
       });
     }
@@ -75,7 +75,7 @@ class RelayStatsService {
     const relays = Array.from(this.pendingMonitorStats);
 
     const request = new NostrRequest([MONITOR_RELAY]);
-    request.onEvent.subscribe(this.handleEvent, this);
+    request.onEvent.subscribe((e) => this.handleEvent(e));
     request.start({ since: 1704196800, kinds: [MONITOR_STATS_KIND], "#d": relays, authors: [MONITOR_PUBKEY] });
 
     this.pendingMonitorStats.clear();

@@ -203,6 +203,7 @@ export async function deleteDatabase() {
   db.close();
   log("Deleting");
   await deleteDB(dbName);
+  localDatabase.close();
   await nostrIDBDelete();
   window.location.reload();
 }

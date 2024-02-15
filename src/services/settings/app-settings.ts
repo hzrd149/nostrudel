@@ -12,6 +12,7 @@ appSettings.subscribe((event) => {
   log(`Changed`, event);
 });
 
+let accountSub: ZenObservable.Subscription;
 accountService.current.subscribe(() => {
   const account = accountService.current.value;
 
@@ -20,7 +21,7 @@ accountService.current.subscribe(() => {
     return;
   }
 
-  appSettings.disconnectAll();
+  if (accountSub) accountSub.unsubscribe();
 
   if (account.localSettings) {
     appSettings.next(account.localSettings);
@@ -30,8 +31,8 @@ accountService.current.subscribe(() => {
   const subject = userAppSettings.requestAppSettings(account.pubkey, clientRelaysService.readRelays.value, {
     alwaysRequest: true,
   });
-  appSettings.next(defaultSettings);
-  appSettings.connect(subject);
+  appSettings.next(subject.value || defaultSettings);
+  accountSub = subject.subscribe((s) => appSettings.next(s));
 });
 
 // clientRelaysService.relays.subscribe(() => {
