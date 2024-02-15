@@ -45,7 +45,7 @@
     "codemirror-json-schema": "^0.6.1",
     "dayjs": "^1.11.9",
     "debug": "^4.3.4",
-    "emojilib": "2",
+    "emojilib": "^3",
     "framer-motion": "^10.16.0",
     "hls.js": "^1.4.14",
     "idb": "^8.0.0",
