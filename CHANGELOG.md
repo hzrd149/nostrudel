@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.38.4
+
+### Patch Changes
+
+- e29658a: Rebuild observable class
+
 ## 0.38.3
 
 ### Patch Changes
