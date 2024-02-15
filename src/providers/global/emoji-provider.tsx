@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useContext } from "react";
-import { lib } from "emojilib";
+import lib from "emojilib";
 
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -7,10 +7,10 @@ import { isEmojiTag } from "../../types/nostr-event";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 
-const defaultEmojis = Object.entries(lib).map(([name, emojiObject]) => ({
-  ...emojiObject,
-  keywords: [name, ...emojiObject.keywords],
+const defaultEmojis = Object.entries(lib).map(([char, [name, ...keywords]]) => ({
   name,
+  keywords: [name, ...keywords],
+  char,
 }));
 
 export type Emoji = { name: string; keywords: string[]; char: string; url?: string };
