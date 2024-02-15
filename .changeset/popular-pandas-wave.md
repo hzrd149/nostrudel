@@ -2,4 +2,4 @@
 "nostrudel": minor
 ---
 
-Added simple query events tool
+Added Event Console tool

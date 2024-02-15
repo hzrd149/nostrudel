@@ -23,7 +23,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
         {!isSpecial && <DeleteEventMenuItem event={list} label="Delete List" />}
         {hasPeople && (
           <MenuItem
-            icon={<Image w="4" h="4" src="https://www.makeprisms.com/favicon.ico" />}
+            icon={<Image w="4" h="4" src="https://framerusercontent.com/images/3S3Pyvkh2tEvvKyX47QrUq7XQLk.png" />}
             onClick={() => window.open(`https://www.makeprisms.com/create/${naddr}`, "_blank")}
           >
             Create $prism

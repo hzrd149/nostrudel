@@ -1,4 +1,7 @@
 import { type JSONSchema7 } from "json-schema";
+import { kinds } from "nostr-tools";
+
+const kindNumbers = Object.values(kinds).filter((t) => typeof t === "number") as number[];
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 export const NostrFilterSchema: JSONSchema7 = {
@@ -19,6 +22,8 @@ export const NostrFilterSchema: JSONSchema7 = {
       uniqueItems: true,
       items: {
         type: "integer",
+        minimum: 0,
+        examples: kindNumbers,
       },
     },
     authors: {
@@ -34,14 +39,27 @@ export const NostrFilterSchema: JSONSchema7 = {
       type: "integer",
       description: "max number of events to return",
       default: 20,
+      minimum: 0,
     },
     until: {
-      type: "integer",
       description: "Return events before or on this date",
+      oneOf: [
+        {
+          type: "integer",
+          minimum: 0,
+        },
+        { type: "string" },
+      ],
     },
     since: {
-      type: "integer",
       description: "Return events after or on this date",
+      oneOf: [
+        {
+          type: "integer",
+          minimum: 0,
+        },
+        { type: "string" },
+      ],
     },
   },
 };
