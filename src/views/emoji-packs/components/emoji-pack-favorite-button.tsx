@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { USER_EMOJI_LIST_KIND } from "../../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
 import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";

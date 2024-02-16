@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useUserRelaySets from "../../../hooks/use-user-relay-sets";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { getListName } from "../../../helpers/nostr/lists";
 
 export default function SelectRelaySet({

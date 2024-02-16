@@ -2,13 +2,13 @@ import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { EditIcon, GhostIcon } from "../../../components/icons";
-import UserAvatar from "../../../components/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
+import UserAvatar from "../../../components/user/user-avatar";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
-import { UserFollowButton } from "../../../components/user-follow-button";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
 import accountService from "../../../services/account";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 

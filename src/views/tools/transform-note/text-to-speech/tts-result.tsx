@@ -1,7 +1,7 @@
 import { Flex, Text } from "@chakra-ui/react";
 
-import UserAvatarLink from "../../../../components/user-avatar-link";
-import UserLink from "../../../../components/user-link";
+import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 
 export default function TextToSpeechResult({ result }: { result: NostrEvent }) {

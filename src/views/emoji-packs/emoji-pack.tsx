@@ -19,7 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import UserLink from "../../components/user-link";
+import UserLink from "../../components/user/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
@@ -29,12 +29,12 @@ import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
 import { EMOJI_PACK_KIND, getEmojisFromPack, getPackName } from "../../helpers/nostr/emoji-packs";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import UserAvatarLink from "../../components/user-avatar-link";
-import NoteZapButton from "../../components/note/note-zap-button";
-import QuoteRepostButton from "../../components/note/components/quote-repost-button";
+import UserAvatarLink from "../../components/user/user-avatar-link";
 import Timestamp from "../../components/timestamp";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import NoteZapButton from "../../components/note/note-zap-button";
+import QuoteRepostButton from "../../components/note/quote-repost-button";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({

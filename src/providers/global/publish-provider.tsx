@@ -7,7 +7,7 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
-import { addPubkeyRelayHints, getAllRelayHints, isReplaceable } from "../../helpers/nostr/events";
+import { addPubkeyRelayHints, getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
 import eventExistsService from "../../services/event-exists";
 import eventReactionsService from "../../services/event-reactions";

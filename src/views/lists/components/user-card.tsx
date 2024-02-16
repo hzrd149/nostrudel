@@ -3,14 +3,14 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
-import UserAvatar from "../../../components/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
+import UserAvatar from "../../../components/user/user-avatar";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { listRemovePerson } from "../../../helpers/nostr/lists";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { UserFollowButton } from "../../../components/user-follow-button";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent } & Omit<CardProps, "children">;

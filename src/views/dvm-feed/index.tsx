@@ -7,7 +7,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 

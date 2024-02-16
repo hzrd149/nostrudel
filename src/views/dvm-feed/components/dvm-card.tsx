@@ -5,7 +5,7 @@ import { useMemo, useRef } from "react";
 import { NostrEvent } from "../../../types/nostr-event";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { DVMAvatarLink } from "./dvm-avatar";
-import { getEventAddressPointer, getEventUID } from "../../../helpers/nostr/events";
+import { getEventAddressPointer, getEventUID } from "../../../helpers/nostr/event";
 import { DVMName } from "./dvm-name";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";

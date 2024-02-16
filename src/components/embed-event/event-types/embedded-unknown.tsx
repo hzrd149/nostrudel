@@ -3,10 +3,10 @@ import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, Link, 
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
-import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
+import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
 import {
   embedEmoji,
   embedNostrHashtags,

@@ -3,12 +3,12 @@ import { Box, Card, CardBody, CardProps, Flex, Heading, LinkBox, LinkOverlay, Te
 
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import { Link as RouterLink } from "react-router-dom";
-import UserAvatar from "../../../components/user-avatar";
-import UserLink from "../../../components/user-link";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
 import StreamStatusBadge from "./status-badge";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import StreamHashtags from "./stream-hashtags";
 import Timestamp from "../../../components/timestamp";
 

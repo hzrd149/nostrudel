@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
-import { Kind0ParsedContent } from "../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserMetadata } from "../../hooks/use-user-metadata";

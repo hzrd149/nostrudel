@@ -1,6 +1,6 @@
 import { MenuItem } from "@chakra-ui/react";
 
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { NostrEvent } from "../../../types/nostr-event";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import PencilLine from "../../../components/icons/pencil-line";
@@ -17,7 +17,7 @@ export default function CommunityMenu({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={community} />
         <CopyEmbedCodeMenuItem event={community} />
         {account?.pubkey === community.pubkey && onEditClick && (
@@ -26,7 +26,7 @@ export default function CommunityMenu({
           </MenuItem>
         )}
         <DebugEventMenuItem event={community} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

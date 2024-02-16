@@ -26,7 +26,7 @@ import createDefer, { Deferred } from "../../classes/deferred";
 import useEventRelays from "../../hooks/use-event-relays";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
-import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/events";
+import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/event";
 import { Tag } from "../../types/nostr-event";
 import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";

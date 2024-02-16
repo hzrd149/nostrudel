@@ -2,17 +2,17 @@ import { useRef } from "react";
 import { Card, CardBody, CardHeader, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import StarRating from "../../../components/star-rating";
 import { safeJson } from "../../../helpers/parse";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { NoteContents } from "../../../components/note/text-note-contents";
 import { Metadata } from "./relay-card";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../../components/timestamp";
+import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {
   const ratingJson = event.tags.find((t) => t[0] === "l" && t[3])?.[3];
@@ -40,7 +40,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
           </Metadata>
         )}
         {rating && <StarRating quality={rating.quality} color="yellow.400" mb="1" />}
-        <NoteContents event={event} />
+        <TextNoteContents event={event} />
       </CardBody>
     </Card>
   );

@@ -35,7 +35,6 @@ import {
   getCommunityMods,
   getCommunityName,
 } from "../../helpers/nostr/communities";
-import { createCoordinate } from "../../services/replaceable-events";
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -43,11 +42,12 @@ import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
-import { getEventCoordinate, sortByDate } from "../../helpers/nostr/events";
+import { getEventCoordinate, sortByDate } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { createCoordinate } from "../../classes/batch-kind-loader";
 
 function CommunitiesHomePage() {
   const publish = usePublishEvent();

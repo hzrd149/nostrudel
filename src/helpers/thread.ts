@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { EventReferences, getThreadReferences } from "./nostr/events";
+import { EventReferences, getThreadReferences } from "./nostr/event";
 
 export function countReplies(replies: ThreadItem[]): number {
   return replies.reduce((c, item) => c + countReplies(item.replies), 0) + replies.length;

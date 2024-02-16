@@ -10,7 +10,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import EmojiPackCard from "./components/emoji-pack-card";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { EMOJI_PACK_KIND, getEmojisFromPack } from "../../helpers/nostr/emoji-packs";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 

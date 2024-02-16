@@ -2,7 +2,7 @@ import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import {
   DirectMessagesIcon,
   CopyToClipboardIcon,
@@ -16,11 +16,11 @@ import {
 } from "../../../components/icons";
 import accountService from "../../../services/account";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
-import { truncatedId } from "../../../helpers/nostr/events";
+import { truncatedId } from "../../../helpers/nostr/event";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import userMailboxesService from "../../../services/user-mailboxes";
@@ -52,7 +52,7 @@ export const UserProfileMenu = ({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <MenuItem onClick={() => window.open(buildAppSelectUrl(sharableId), "_blank")} icon={<ExternalLinkIcon />}>
           View in app...
         </MenuItem>
@@ -95,7 +95,7 @@ export const UserProfileMenu = ({
             Relay selection
           </MenuItem>
         )}
-      </CustomMenuIconButton>
+      </DotsMenuButton>
       {infoModal.isOpen && (
         <UserDebugModal pubkey={pubkey} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
       )}

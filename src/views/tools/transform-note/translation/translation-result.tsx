@@ -1,9 +1,9 @@
 import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
 
-import UserAvatarLink from "../../../../components/user-avatar-link";
-import UserLink from "../../../../components/user-link";
-import { NoteContents } from "../../../../components/note/text-note-contents";
+import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
+import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
 
 export default function TranslationResult({ result }: { result: NostrEvent }) {
   const content = useDisclosure();
@@ -18,7 +18,7 @@ export default function TranslationResult({ result }: { result: NostrEvent }) {
           {content.isOpen ? "Hide" : "Show"} Content
         </Button>
       </Flex>
-      {content.isOpen && <NoteContents event={result} />}
+      {content.isOpen && <TextNoteContents event={result} />}
     </>
   );
 }

@@ -5,7 +5,7 @@ import { Box, SimpleGrid } from "@chakra-ui/react";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
 } from "../../providers/local/intersection-observer";

@@ -13,13 +13,13 @@ import IntersectionObserverProvider, {
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { NostrEvent, isPTag } from "../../types/nostr-event";
-import UserAvatarLink from "../../components/user-avatar-link";
-import UserLink from "../../components/user-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
 import ArrowRight from "../../components/icons/arrow-right";
 import { AtIcon } from "../../components/icons";
 import Timestamp from "../../components/timestamp";
 import ArrowLeft from "../../components/icons/arrow-left";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 
 function DirectMessage({ dm, pubkey }: { dm: NostrEvent; pubkey: string }) {
   const sender = dm.pubkey;

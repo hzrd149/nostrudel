@@ -15,8 +15,8 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import UserAvatar from "./user-avatar";
-import { getUserDisplayName } from "../helpers/user-metadata";
+import UserAvatar from "./user/user-avatar";
+import { getUserDisplayName } from "../helpers/nostr/user-metadata";
 import { useUserMetadata } from "../hooks/use-user-metadata";
 
 function UserTag({ pubkey, ...props }: { pubkey: string } & Omit<TagProps, "children">) {

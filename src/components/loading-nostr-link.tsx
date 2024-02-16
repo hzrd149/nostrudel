@@ -22,7 +22,7 @@ import { useSet } from "react-use";
 
 import { ExternalLinkIcon, SearchIcon } from "./icons";
 import { buildAppSelectUrl } from "../helpers/nostr/apps";
-import UserLink from "./user-link";
+import UserLink from "./user/user-link";
 import { encodeDecodeResult } from "../helpers/nip19";
 
 import relayPoolService from "../services/relay-pool";

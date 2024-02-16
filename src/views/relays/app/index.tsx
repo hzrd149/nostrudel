@@ -5,7 +5,7 @@ import useSubject from "../../../hooks/use-subject";
 import { offlineMode } from "../../../services/offline-mode";
 import WifiOff from "../../../components/icons/wifi-off";
 import Wifi from "../../../components/icons/wifi";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import AddRelayForm from "./add-relay-form";
 import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";

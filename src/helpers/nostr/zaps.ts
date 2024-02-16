@@ -2,7 +2,7 @@ import { bech32 } from "@scure/base";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
-import { Kind0ParsedContent } from "../user-metadata";
+import { Kind0ParsedContent } from "./user-metadata";
 import { utils } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts

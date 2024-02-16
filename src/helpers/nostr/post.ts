@@ -1,6 +1,6 @@
 import { DraftNostrEvent, NostrEvent, Tag, isETag, isPTag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
-import { addPubkeyRelayHints, getThreadReferences } from "./events";
+import { addPubkeyRelayHints, getThreadReferences } from "./event";
 import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
 import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";

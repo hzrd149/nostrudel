@@ -6,7 +6,7 @@ import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../const";
-import QRCodeScannerButton from "../../components/qr-code-scanner-button";
+import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();

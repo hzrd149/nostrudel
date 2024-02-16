@@ -2,11 +2,11 @@ import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/local/trust";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
 import ReactionIcon from "../../event-reactions/reaction-icon";
-import { NoteLink } from "../../note-link";
+import { NoteLink } from "../../note/note-link";
 import { nip25 } from "nostr-tools";
 
 export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {

@@ -18,7 +18,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import ListCard from "./components/list-card";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function BrowseListPage() {

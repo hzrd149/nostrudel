@@ -23,7 +23,7 @@ import {
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/events";
+import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
 import { getSharableEventAddress } from "../../helpers/nip19";

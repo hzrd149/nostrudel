@@ -12,7 +12,7 @@ import Upload01 from "../../components/icons/upload-01";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import VideoCard from "./components/video-card";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 

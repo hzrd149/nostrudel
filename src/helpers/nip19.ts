@@ -1,7 +1,7 @@
 import { getPublicKey, nip19 } from "nostr-tools";
 
 import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
-import { isReplaceable } from "./nostr/events";
+import { isReplaceable } from "./nostr/event";
 import relayHintService from "../services/event-relay-hint";
 import { safeRelayUrls } from "./relay";
 

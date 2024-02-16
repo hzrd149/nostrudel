@@ -2,8 +2,8 @@ import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Text } from "@ch
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../user-link";
-import UserAvatar from "../../user-avatar";
+import UserLink from "../../user/user-link";
+import UserAvatar from "../../user/user-avatar";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/flare";
 import { getSharableEventAddress } from "../../../helpers/nip19";

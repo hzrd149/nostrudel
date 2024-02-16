@@ -4,13 +4,13 @@ import { useAsync } from "react-use";
 import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
-import { parseKind0Event } from "../../helpers/user-metadata";
+import { parseKind0Event } from "../../helpers/nostr/user-metadata";
 import { readablizeSats } from "../../helpers/bolt11";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import UserAvatar from "../../components/user-avatar";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import UserAvatar from "../../components/user/user-avatar";
+import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
-import UserLink from "../../components/user-link";
+import UserLink from "../../components/user/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";

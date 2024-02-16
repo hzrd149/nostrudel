@@ -3,7 +3,7 @@ import { Flex, Spacer } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import { isReply, isRepost, truncatedId } from "../../helpers/nostr/events";
+import { isReply, isRepost, truncatedId } from "../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";

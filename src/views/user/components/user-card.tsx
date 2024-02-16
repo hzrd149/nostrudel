@@ -1,9 +1,9 @@
 import { Flex, FlexProps } from "@chakra-ui/react";
 
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import { UserFollowButton } from "../../../components/user-follow-button";
-import UserLink from "../../../components/user-link";
-import UserAvatarLink from "../../../components/user-avatar-link";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
+import UserLink from "../../../components/user/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export type UserCardProps = { pubkey: string; relay?: string } & Omit<FlexProps, "children">;
 

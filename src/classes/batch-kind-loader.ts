@@ -5,7 +5,7 @@ import debug, { Debugger } from "debug";
 
 import NostrSubscription from "./nostr-subscription";
 import EventStore from "./event-store";
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/event";
 
 export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;

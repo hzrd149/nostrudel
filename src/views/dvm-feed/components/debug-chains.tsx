@@ -16,10 +16,10 @@ import {
 } from "@chakra-ui/react";
 import { ChainedDVMJob, getEventIdsFromJobs, getRequestInput, getRequestRelays } from "../../../helpers/nostr/dvm";
 import dayjs from "dayjs";
-import { truncatedId } from "../../../helpers/nostr/events";
+import { truncatedId } from "../../../helpers/nostr/event";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../../components/user-link";
+import UserLink from "../../../components/user/user-link";
 
 function JobResult({ result }: { result: NostrEvent }) {
   return (

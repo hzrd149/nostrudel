@@ -1,7 +1,7 @@
 import { MenuItem, useToast } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { NostrEvent } from "../../../types/nostr-event";
 import { CopyToClipboardIcon } from "../../../components/icons";
 import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
@@ -18,7 +18,7 @@ export default function CommunityPostMenu({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={event} />
         <CopyShareLinkMenuItem event={event} />
         <MenuItem
@@ -33,7 +33,7 @@ export default function CommunityPostMenu({
         </MenuItem>
         <DeleteEventMenuItem event={event} label="Delete Post" />
         <DebugEventMenuItem event={event} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

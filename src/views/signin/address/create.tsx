@@ -24,10 +24,10 @@ import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
 import useNip05Providers from "../../../hooks/use-nip05-providers";
-import { Kind0ParsedContent } from "../../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../../helpers/nostr/user-metadata";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
-import { MetadataAvatar } from "../../../components/user-avatar";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
+import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityService from "../../../services/dns-identity";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";

@@ -22,21 +22,21 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
 import { TrustProvider } from "../../../providers/local/trust";
-import { NoteContents } from "../../../components/note/text-note-contents";
-import NoteReactions from "../../../components/note/components/note-reactions";
 import { ReplyIcon } from "../../../components/icons";
 import ReplyForm from "../../thread/components/reply-form";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
-import NoteZapButton from "../../../components/note/note-zap-button";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import TorrentCommentMenu from "./torrent-comment-menu";
+import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import NoteZapButton from "../../../components/note/note-zap-button";
+import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();
@@ -91,7 +91,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
     ) : (
       <>
         <TrustProvider event={post.event}>
-          <NoteContents event={post.event} pl="2" />
+          <TextNoteContents event={post.event} pl="2" />
         </TrustProvider>
       </>
     );

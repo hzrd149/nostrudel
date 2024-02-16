@@ -9,7 +9,7 @@ import { createSimpleQueryMap } from "../helpers/nostr/filter";
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
-import { truncatedId } from "../helpers/nostr/events";
+import { truncatedId } from "../helpers/nostr/event";
 import { NostrConnectAccount } from "./account";
 import { safeRelayUrl } from "../helpers/relay";
 

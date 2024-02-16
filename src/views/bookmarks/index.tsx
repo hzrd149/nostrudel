@@ -7,15 +7,15 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
 import useSingleEvent from "../../hooks/use-single-event";
 import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
-import UserName from "../../components/user-name";
+import UserName from "../../components/user/user-name";
 import ListMenu from "../lists/components/list-menu";
-import UserAvatarLink from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EmbedEvent } from "../../components/embed-event";
-import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/events";
+import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/event";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
   const { isLoading, removeBookmark } = useEventBookmarkActions(event);

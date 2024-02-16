@@ -3,7 +3,7 @@ import { Navigate, Link as RouterLink } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";

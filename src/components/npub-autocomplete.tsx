@@ -5,7 +5,7 @@ import { nip19 } from "nostr-tools";
 
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import userMetadataService from "../services/user-metadata";
-import { getUserDisplayName } from "../helpers/user-metadata";
+import { getUserDisplayName } from "../helpers/nostr/user-metadata";
 
 const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...props }, ref) => {
   const getDirectory = useUserSearchDirectoryContext();

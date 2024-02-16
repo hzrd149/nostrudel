@@ -1,7 +1,7 @@
 import { Image, MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent, isPTag } from "../../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
@@ -17,7 +17,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={list} />
         <CopyEmbedCodeMenuItem event={list} />
         {!isSpecial && <DeleteEventMenuItem event={list} label="Delete List" />}
@@ -30,7 +30,7 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
           </MenuItem>
         )}
         <DebugEventMenuItem event={list} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

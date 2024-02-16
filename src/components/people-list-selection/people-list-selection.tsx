@@ -18,15 +18,15 @@ import { usePeopleListContext } from "../../providers/local/people-list-provider
 import useUserLists from "../../hooks/use-user-lists";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
-import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
+import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import { NostrEvent } from "../../types/nostr-event";
 import { useCallback, useState } from "react";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
 import { matchSorter } from "match-sorter";
-import UserAvatar from "../user-avatar";
-import UserName from "../user-name";
+import UserAvatar from "../user/user-avatar";
+import UserName from "../user/user-name";
 
 function ListCard({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children`">) {
   return (

@@ -21,9 +21,9 @@ import { getEventRelays } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
-import { NoteLink } from "../../note-link";
+import { NoteLink } from "../../note/note-link";
 import { BroadcastEventIcon } from "../../icons";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 

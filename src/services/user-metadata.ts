@@ -1,7 +1,7 @@
 import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
+import { Kind0ParsedContent, parseKind0Event } from "../helpers/nostr/user-metadata";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventsService, { RequestOptions } from "./replaceable-events";

@@ -12,7 +12,7 @@ import { TrustProvider } from "../../../providers/local/trust";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {

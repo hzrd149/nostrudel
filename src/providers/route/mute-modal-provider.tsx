@@ -20,7 +20,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo, use
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getUserDisplayName } from "../../helpers/user-metadata";
+import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {
@@ -34,8 +34,8 @@ import { cloneList } from "../../helpers/nostr/lists";
 import { useSigningContext } from "../global/signing-provider";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import UserAvatar from "../../components/user-avatar";
-import UserLink from "../../components/user-link";
+import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import { ChevronDownIcon } from "../../components/icons";
 import { usePublishEvent } from "../global/publish-provider";
 

@@ -2,10 +2,10 @@ import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import { Box, Button, Flex, Heading, IconButton, Image, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getUserDisplayName } from "../../../helpers/user-metadata";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import { getLudEndpoint } from "../../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
-import { truncatedId } from "../../../helpers/nostr/events";
+import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
@@ -20,10 +20,10 @@ import {
 } from "../../../components/icons";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import UserAvatar from "../../../components/user-avatar";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserAvatar from "../../../components/user/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
-import { UserFollowButton } from "../../../components/user-follow-button";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";

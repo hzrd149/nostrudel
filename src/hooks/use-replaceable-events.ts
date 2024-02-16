@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { useReadRelays } from "./use-client-relays";
 import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";
-import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
 import Subject from "../classes/subject";
 import { NostrEvent } from "../types/nostr-event";
 import useSubjects from "./use-subjects";

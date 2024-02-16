@@ -1,5 +1,5 @@
 import _throttle from "lodash.throttle";
-import { getSearchNames } from "../helpers/user-metadata";
+import { getSearchNames } from "../helpers/nostr/user-metadata";
 import db from "./db";
 import replaceableEventsService from "./replaceable-events";
 import userMetadataService from "./user-metadata";

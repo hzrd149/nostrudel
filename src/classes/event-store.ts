@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { nanoid } from "nanoid";
 
-import { getEventUID, sortByDate } from "../helpers/nostr/events";
+import { getEventUID, sortByDate } from "../helpers/nostr/event";
 import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
 import deleteEventService from "../services/delete-events";

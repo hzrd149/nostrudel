@@ -12,8 +12,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";

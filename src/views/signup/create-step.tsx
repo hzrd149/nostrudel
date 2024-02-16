@@ -4,7 +4,7 @@ import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react"
 import { bytesToHex } from "@noble/hashes/utils";
 import dayjs from "dayjs";
 
-import { Kind0ParsedContent } from "../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { containerProps } from "./common";
 import { nostrBuildUploadImage } from "../../helpers/nostr-build";
 import accountService from "../../services/account";

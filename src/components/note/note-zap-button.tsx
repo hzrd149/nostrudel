@@ -10,7 +10,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;

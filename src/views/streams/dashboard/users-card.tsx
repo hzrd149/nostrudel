@@ -5,8 +5,8 @@ import { useInterval, useObservable } from "react-use";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
-import UserAvatar from "../../../components/user-avatar";
-import UserLink from "../../../components/user-link";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../../providers/route/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";

@@ -8,7 +8,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import BadgeCard from "./components/badge-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 

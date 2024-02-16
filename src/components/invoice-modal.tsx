@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { ExternalLinkIcon, QrCodeIcon } from "./icons";
-import QrCodeSvg from "./qr-code-svg";
+import QrCodeSvg from "./qr-code/qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
 
 type CommonProps = { invoice: string; onPaid: () => void };

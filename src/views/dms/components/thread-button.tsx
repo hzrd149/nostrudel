@@ -1,7 +1,7 @@
 import { Button, IconButton } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import UserAvatar from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user/user-avatar";
 import { Thread } from "../../../providers/local/thread-provider";
 import { ChevronRightIcon, ThreadIcon } from "../../../components/icons";
 import { IconButtonProps } from "yet-another-react-lightbox";

@@ -3,7 +3,7 @@ import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/rea
 import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import UserAvatar from "../../components/user-avatar";
+import UserAvatar from "../../components/user/user-avatar";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import Timestamp from "../../components/timestamp";
@@ -17,11 +17,11 @@ import IntersectionObserverProvider, {
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useDMTimeline } from "../../providers/global/dm-timeline";
-import UserName from "../../components/user-name";
+import UserName from "../../components/user/user-name";
 import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useRef<HTMLParagraphElement | null>(null);

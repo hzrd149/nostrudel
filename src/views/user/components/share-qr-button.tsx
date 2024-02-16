@@ -18,7 +18,7 @@ import {
 import { nip19 } from "nostr-tools";
 
 import { QrCodeIcon } from "../../../components/icons";
-import QrCodeSvg from "../../../components/qr-code-svg";
+import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 

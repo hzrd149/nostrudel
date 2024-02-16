@@ -1,7 +1,7 @@
 import { ReactNode, memo, useCallback } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import MessageBlock, { MessageBlockProps } from "../../../components/message-block";
+import MessageBlock, { MessageBlockProps } from "../../../components/message/message-block";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import DirectMessageContent from "./direct-message-content";
 

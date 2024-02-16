@@ -18,7 +18,6 @@ import {
 
 import { ChevronLeftIcon } from "../../components/icons";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { EventRelays } from "../../components/note/note-relays";
 import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import BadgeMenu from "./components/badge-menu";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -27,15 +26,16 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
-import { getEventCoordinate } from "../../helpers/nostr/events";
-import UserAvatarLink from "../../components/user-avatar-link";
-import UserLink from "../../components/user-link";
+import { getEventCoordinate } from "../../helpers/nostr/event";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
 import Timestamp from "../../components/timestamp";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import BadgeAwardCard from "./components/badge-award-card";
 import TimelineLoader from "../../classes/timeline-loader";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import { EventRelays } from "../../components/note/event-relays";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
   const awards = useSubject(timeline.timeline);

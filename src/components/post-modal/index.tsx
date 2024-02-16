@@ -29,7 +29,6 @@ import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import NostrPublishAction from "../../classes/nostr-publish-action";
-import { NoteContents } from "../note/text-note-contents";
 import { PublishDetails } from "../publish-details";
 import { TrustProvider } from "../../providers/local/trust";
 import {
@@ -50,10 +49,11 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
 import { useThrottle } from "react-use";
-import MinePOW from "../mine-pow";
+import MinePOW from "../pow/mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { TextNoteContents } from "../note/timeline-note/text-note-contents";
 
 type FormValues = {
   subject: string;
@@ -199,7 +199,7 @@ export default function PostModal({
             <Box borderWidth={1} borderRadius="md" p="2">
               <ErrorBoundary>
                 <TrustProvider trust>
-                  <NoteContents event={previewDraft} />
+                  <TextNoteContents event={previewDraft} />
                 </TrustProvider>
               </ErrorBoundary>
             </Box>

@@ -29,7 +29,7 @@ import { jsonLanguage } from "@codemirror/lang-json";
 import { syntaxTree } from "@codemirror/language";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import { NostrFilterSchema } from "./schema";
 import { localRelay } from "../../../services/local-relay";
 import Play from "../../../components/icons/play";

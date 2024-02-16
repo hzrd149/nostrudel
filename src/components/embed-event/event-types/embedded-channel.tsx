@@ -2,8 +2,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { Box, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import HoverLinkOverlay from "../../hover-link-overlay";

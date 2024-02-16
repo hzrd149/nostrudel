@@ -1,7 +1,7 @@
 import { MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { TrashIcon } from "../../../components/icons";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
@@ -16,7 +16,7 @@ export default function BadgeMenu({ badge, ...props }: { badge: NostrEvent } & O
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={badge} />
         <CopyEmbedCodeMenuItem event={badge} />
         {account?.pubkey === badge.pubkey && (
@@ -25,7 +25,7 @@ export default function BadgeMenu({ badge, ...props }: { badge: NostrEvent } & O
           </MenuItem>
         )}
         <DebugEventMenuItem event={badge} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

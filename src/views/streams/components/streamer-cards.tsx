@@ -4,11 +4,11 @@ import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOve
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import replaceableEventsService from "../../../services/replaceable-events";
 import useSubject from "../../../hooks/use-subject";
-import { NoteContents } from "../../../components/note/text-note-contents";
 import { isATag } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import OpenGraphCard from "../../../components/open-graph-card";
+import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;
@@ -48,7 +48,7 @@ function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string 
       )}
       {card.content && (
         <CardBody p="2">
-          <NoteContents event={card} />
+          <TextNoteContents event={card} />
         </CardBody>
       )}
       {link && (

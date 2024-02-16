@@ -6,7 +6,7 @@ import { Filter } from "nostr-tools";
 
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { getEventUID } from "../../../../helpers/nostr/events";
+import { getEventUID } from "../../../../helpers/nostr/event";
 import {
   DVM_STATUS_KIND,
   DVM_TTS_JOB_KIND,

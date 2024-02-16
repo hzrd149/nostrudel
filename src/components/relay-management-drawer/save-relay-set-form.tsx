@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import { getListDescription, getListName, setListDescription, setListName } from "../../helpers/nostr/lists";
 import { isRTag } from "../../types/nostr-event";
-import { cloneEvent, ensureDTag } from "../../helpers/nostr/events";
+import { cloneEvent, ensureDTag } from "../../helpers/nostr/event";
 import { createRTagsFromRelaySets } from "../../helpers/nostr/mailbox";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 

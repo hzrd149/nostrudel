@@ -1,5 +1,5 @@
 import { Button, Code, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -9,7 +9,7 @@ import { CheckIcon, InboxIcon, OutboxIcon } from "../../../components/icons";
 import { useCallback, useState } from "react";
 import useCacheForm from "../../../hooks/use-cache-form";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import { cloneEvent } from "../../../helpers/nostr/events";
+import { cloneEvent } from "../../../helpers/nostr/event";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 import { usePublishEvent } from "../../../providers/global/publish-provider";

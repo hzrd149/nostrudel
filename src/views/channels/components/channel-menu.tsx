@@ -1,4 +1,4 @@
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { NostrEvent } from "../../../types/nostr-event";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
@@ -10,11 +10,11 @@ export default function ChannelMenu({
 }: Omit<MenuIconButtonProps, "children"> & { channel: NostrEvent }) {
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={channel} />
         <CopyEmbedCodeMenuItem event={channel} />
         <DebugEventMenuItem event={channel} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

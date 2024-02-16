@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useDVMMetadata from "../../../hooks/use-dvm-metadata";
 

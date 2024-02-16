@@ -1,11 +1,10 @@
 import _throttle from "lodash/throttle";
-import { Filter } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 
 import SuperMap from "../classes/super-map";
-import { NostrEvent } from "../types/nostr-event";
 import { logger } from "../helpers/debug";
 import { nameOrPubkey } from "./user-metadata";
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/event";
 import createDefer, { Deferred } from "../classes/deferred";
 import { localRelay } from "./local-relay";
 import { relayRequest } from "../helpers/relay";

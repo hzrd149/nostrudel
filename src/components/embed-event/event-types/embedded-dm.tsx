@@ -2,8 +2,8 @@ import { Card, CardBody, CardHeader, CardProps, IconButton, LinkBox, Text, useDi
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/local/trust";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
 import DecryptPlaceholder from "../../../views/dms/components/decrypt-placeholder";
 import useCurrentAccount from "../../../hooks/use-current-account";

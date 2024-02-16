@@ -7,7 +7,7 @@ import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getCommunityName } from "../../../helpers/nostr/communities";
 import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function CommunityJoinButton({

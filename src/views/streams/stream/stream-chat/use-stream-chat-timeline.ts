@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { kinds } from "nostr-tools";
 
-import { getEventUID } from "../../../../helpers/nostr/events";
+import { getEventUID } from "../../../../helpers/nostr/event";
 import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../../types/nostr-event";

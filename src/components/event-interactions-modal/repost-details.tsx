@@ -2,8 +2,8 @@ import { Flex, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
-import UserAvatarLink from "../user-avatar-link";
-import UserLink from "../user-link";
+import UserAvatarLink from "../user/user-avatar-link";
+import UserLink from "../user/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";

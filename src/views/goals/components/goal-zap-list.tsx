@@ -1,10 +1,10 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";

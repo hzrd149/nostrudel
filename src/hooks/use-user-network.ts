@@ -7,7 +7,7 @@ import replaceableEventsService from "../services/replaceable-events";
 import { useReadRelays } from "./use-client-relays";
 import useSubjects from "./use-subjects";
 import userMetadataService from "../services/user-metadata";
-import { Kind0ParsedContent } from "../helpers/user-metadata";
+import { Kind0ParsedContent } from "../helpers/nostr/user-metadata";
 
 export function useUsersMetadata(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);

@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import UserLink from "../user-link";
+import UserLink from "../user/user-link";
 import { getMatchHashtag, getMatchNostrLink, stripInvisibleChar } from "../../helpers/regexp";
 import { safeDecode } from "../../helpers/nip19";
 import { EmbedEventPointer } from "../embed-event";

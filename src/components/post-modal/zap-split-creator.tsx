@@ -16,8 +16,8 @@ import { useForm } from "react-hook-form";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import { AddIcon } from "../icons";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
-import UserAvatar from "../user-avatar";
-import UserLink from "../user-link";
+import UserAvatar from "../user/user-avatar";
+import UserLink from "../user/user-link";
 import NpubAutocomplete from "../npub-autocomplete";
 
 function getRemainingPercent(split: EventSplit) {

@@ -1,5 +1,5 @@
 import { Code, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import { Link as RouterLink } from "react-router-dom";

@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import { useAsync } from "react-use";
 import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../services/local-relay";
 import { CacheRelay } from "nostr-idb";

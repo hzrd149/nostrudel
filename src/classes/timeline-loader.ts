@@ -10,7 +10,7 @@ import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
-import { isReplaceable } from "../helpers/nostr/events";
+import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
 import deleteEventService from "../services/delete-events";
 import {

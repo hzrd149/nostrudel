@@ -17,8 +17,8 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
 import Magnet from "../../icons/magnet";

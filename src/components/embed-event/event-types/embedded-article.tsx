@@ -9,8 +9,8 @@ import {
 import { NostrEvent } from "../../../types/nostr-event";
 import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {

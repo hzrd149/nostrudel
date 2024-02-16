@@ -14,13 +14,13 @@ import {
   PIN_LIST_KIND,
   isJunkList,
 } from "../../helpers/nostr/lists";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import ListCard from "../lists/components/list-card";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { NostrEvent } from "../../types/nostr-event";
-import UserName from "../../components/user-name";
+import UserName from "../../components/user/user-name";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };

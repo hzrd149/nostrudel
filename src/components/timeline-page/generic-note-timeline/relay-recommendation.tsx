@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatar from "../../user-avatar";
-import UserLink from "../../user-link";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 import RelayCard from "../../../views/relays/components/relay-card";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { safeRelayUrl } from "../../../helpers/relay";

@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatar from "../../../components/user-avatar";
-import UserLink from "../../../components/user-link";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import Timestamp from "../../../components/timestamp";
 import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";

@@ -4,13 +4,13 @@ import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
 import { NostrEvent } from "../../../types/nostr-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { NoteTranslationsPage } from "./translation";
-import { NoteContents } from "../../../components/note/text-note-contents";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import UserLink from "../../../components/user-link";
-import NoteMenu from "../../../components/note/note-menu";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserLink from "../../../components/user/user-link";
 import NoteTextToSpeechPage from "./text-to-speech";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
+import NoteMenu from "../../../components/note/note-menu";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 
 const tabs = ["original", "translation", "tts"];
 
@@ -41,7 +41,7 @@ function TransformNotePage({ note }: { note: NostrEvent }) {
             <NoteMenu event={note} aria-label="Note Options" />
           </Flex>
 
-          <NoteContents event={note} />
+          <TextNoteContents event={note} />
         </TabPanel>
         <TabPanel {...tabProps}>
           <NoteTranslationsPage note={note} />

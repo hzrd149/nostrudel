@@ -38,7 +38,7 @@ import { groupByTime } from "../../../helpers/notification";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
 import NostrRequest from "../../../classes/nostr-request";
-import { sortByDate } from "../../../helpers/nostr/events";
+import { sortByDate } from "../../../helpers/nostr/event";
 import { NostrQuery } from "../../../types/nostr-relay";
 
 ChartJS.register(

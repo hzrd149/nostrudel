@@ -21,7 +21,7 @@ import {
   getJobStatusType,
   getResponseFromDVM,
 } from "../../../helpers/nostr/dvm";
-import { InlineInvoiceCard } from "../../../components/inline-invoice-card";
+import { InlineInvoiceCard } from "../../../components/lightning/inline-invoice-card";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { DVMAvatarLink } from "./dvm-avatar";

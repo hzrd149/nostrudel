@@ -4,19 +4,19 @@ import { kinds, nip18 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { Note } from "../../note";
-import NoteMenu from "../../note/note-menu";
-import UserAvatar from "../../user-avatar";
-import { UserDnsIdentityIcon } from "../../user-dns-identity-icon";
-import UserLink from "../../user-link";
+import TimelineNote from "../../note/timeline-note";
+import UserAvatar from "../../user/user-avatar";
+import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
+import UserLink from "../../user/user-link";
 import { TrustProvider } from "../../../providers/local/trust";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { parseHardcodedNoteContent } from "../../../helpers/nostr/events";
+import { parseHardcodedNoteContent } from "../../../helpers/nostr/event";
 import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 import LoadingNostrLink from "../../loading-nostr-link";
+import NoteMenu from "../../note/note-menu";
 
 function RepostEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
@@ -60,7 +60,7 @@ function RepostEvent({ event }: { event: NostrEvent }) {
           <LoadingNostrLink link={{ type: "nevent", data: pointer }} />
         ) : note.kind === kinds.ShortTextNote ? (
           // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
-          <Note event={note} showReplyButton registerIntersectionEntity={false} />
+          <TimelineNote event={note} showReplyButton registerIntersectionEntity={false} />
         ) : (
           <EmbedEvent event={note} />
         )}

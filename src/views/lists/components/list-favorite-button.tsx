@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
 import {
   NOTE_LIST_KIND,

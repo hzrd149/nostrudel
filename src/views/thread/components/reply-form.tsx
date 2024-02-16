@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import { NostrEvent } from "../../../types/nostr-event";
 import { UserAvatarStack } from "../../../components/compact-user-stack";
 import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
-import { NoteContents } from "../../../components/note/text-note-contents";
 import {
   addReplyTags,
   createEmojiTags,
@@ -18,8 +17,6 @@ import {
 } from "../../../helpers/nostr/post";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useSigningContext } from "../../../providers/global/signing-provider";
-import { useWriteRelays } from "../../../hooks/use-client-relays";
-import NostrPublishAction from "../../../classes/nostr-publish-action";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { TrustProvider } from "../../../providers/local/trust";
@@ -27,6 +24,7 @@ import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -143,7 +141,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
       {previewDraft.content.length > 0 && (
         <Box p="2" borderWidth={1} borderRadius="md" mb="2">
           <TrustProvider trust>
-            <NoteContents event={previewDraft} />
+            <TextNoteContents event={previewDraft} />
           </TrustProvider>
         </Box>
       )}

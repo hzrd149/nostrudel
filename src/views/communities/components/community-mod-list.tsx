@@ -1,6 +1,6 @@
 import { AvatarGroup, AvatarGroupProps } from "@chakra-ui/react";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityMods } from "../../../helpers/nostr/communities";
 
