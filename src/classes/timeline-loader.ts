@@ -1,109 +1,24 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import { Filter, matchFilters } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-relay";
-import NostrRequest from "./nostr-request";
+import { RelayQueryMap } from "../types/nostr-relay";
 import NostrMultiSubscription from "./nostr-multi-subscription";
-import Subject, { PersistentSubject } from "./subject";
+import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
-import deleteEventService from "../services/delete-events";
-import {
-  addQueryToFilter,
-  isFilterEqual,
-  isQueryMapEqual,
-  mapQueryMap,
-  stringifyFilter,
-} from "../helpers/nostr/filter";
+import { mergeFilter, isFilterEqual, isQueryMapEqual, mapQueryMap, stringifyFilter } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import { relayRequest } from "../helpers/relay";
 import SuperMap from "./super-map";
+import ChunkedRequest from "./chunked-request";
 
 const BLOCK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
-
-export class RelayBlockLoader {
-  relay: string;
-  filter: NostrRequestFilter;
-  blockSize = BLOCK_SIZE;
-  private log: Debugger;
-  private subs: ZenObservable.Subscription[] = [];
-
-  loading = false;
-  events: EventStore;
-  /** set to true when the next block produces 0 events */
-  complete = false;
-
-  onBlockFinish = new Subject<number>();
-
-  constructor(relay: string, filter: NostrRequestFilter, log?: Debugger) {
-    this.relay = relay;
-    this.filter = filter;
-
-    this.log = log || logger.extend(relay);
-    this.events = new EventStore(relay);
-
-    this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
-  }
-
-  loadNextBlock() {
-    this.loading = true;
-    let filter: NostrRequestFilter = addQueryToFilter(this.filter, { limit: this.blockSize });
-    let oldestEvent = this.getLastEvent();
-    if (oldestEvent) {
-      filter = addQueryToFilter(filter, { until: oldestEvent.created_at - 1 });
-    }
-
-    const request = new NostrRequest([this.relay]);
-
-    let gotEvents = 0;
-    request.onEvent.subscribe((e) => {
-      this.handleEvent(e);
-      gotEvents++;
-    });
-    request.onComplete.then(() => {
-      this.loading = false;
-      if (gotEvents === 0) {
-        this.complete = true;
-        this.log("Complete");
-      } else this.log(`Got ${gotEvents} events`);
-      this.onBlockFinish.next(gotEvents);
-    });
-
-    request.start(filter);
-  }
-
-  private handleEvent(event: NostrEvent) {
-    if (!matchFilters(Array.isArray(this.filter) ? this.filter : [this.filter], event)) return;
-    return this.events.addEvent(event);
-  }
-
-  private handleDeleteEvent(deleteEvent: NostrEvent) {
-    const cord = deleteEvent.tags.find(isATag)?.[1];
-    const eventId = deleteEvent.tags.find(isETag)?.[1];
-
-    if (cord) this.events.deleteEvent(cord);
-    if (eventId) this.events.deleteEvent(eventId);
-  }
-
-  cleanup() {
-    for (const sub of this.subs) sub.unsubscribe();
-    this.subs = [];
-  }
-
-  getFirstEvent(nth = 0, eventFilter?: EventFilter) {
-    return this.events.getFirstEvent(nth, eventFilter);
-  }
-  getLastEvent(nth = 0, eventFilter?: EventFilter) {
-    return this.events.getLastEvent(nth, eventFilter);
-  }
-}
 
 export default class TimelineLoader {
   cursor = dayjs().unix();
@@ -121,7 +36,7 @@ export default class TimelineLoader {
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
-  private blockLoaders = new Map<string, RelayBlockLoader>();
+  private chunkLoaders = new Map<string, ChunkedRequest>();
 
   constructor(name: string) {
     this.name = name;
@@ -152,20 +67,23 @@ export default class TimelineLoader {
     this.events.addEvent(event);
     if (cache) localRelay.publish(event);
   }
-
-  private blockLoaderSubs = new SuperMap<RelayBlockLoader, ZenObservable.Subscription[]>(() => []);
-  private connectToBlockLoader(loader: RelayBlockLoader) {
-    this.events.connect(loader.events);
-    const subs = this.blockLoaderSubs.get(loader);
-    subs.push(loader.onBlockFinish.subscribe(this.updateLoading.bind(this)));
-    subs.push(loader.onBlockFinish.subscribe(this.updateComplete.bind(this)));
+  private handleChunkFinished() {
+    this.updateLoading();
+    this.updateComplete();
   }
-  private disconnectToBlockLoader(loader: RelayBlockLoader) {
+
+  private chunkLoaderSubs = new SuperMap<ChunkedRequest, ZenObservable.Subscription[]>(() => []);
+  private connectToChunkLoader(loader: ChunkedRequest) {
+    this.events.connect(loader.events);
+    const subs = this.chunkLoaderSubs.get(loader);
+    subs.push(loader.onChunkFinish.subscribe(this.handleChunkFinished.bind(this)));
+  }
+  private disconnectToChunkLoader(loader: ChunkedRequest) {
     loader.cleanup();
     this.events.disconnect(loader.events);
-    const subs = this.blockLoaderSubs.get(loader);
+    const subs = this.chunkLoaderSubs.get(loader);
     for (const sub of subs) sub.unsubscribe();
-    this.blockLoaderSubs.delete(loader);
+    this.chunkLoaderSubs.delete(loader);
   }
 
   private loadQueriesFromCache(queryMap: RelayQueryMap) {
@@ -189,26 +107,26 @@ export default class TimelineLoader {
 
     // remove relays
     for (const relay of Object.keys(this.queryMap)) {
-      const loader = this.blockLoaders.get(relay);
+      const loader = this.chunkLoaders.get(relay);
       if (!loader) continue;
       if (!queryMap[relay]) {
-        this.disconnectToBlockLoader(loader);
-        this.blockLoaders.delete(relay);
+        this.disconnectToChunkLoader(loader);
+        this.chunkLoaders.delete(relay);
       }
     }
 
     for (const [relay, filter] of Object.entries(queryMap)) {
       // remove outdated loaders
       if (this.queryMap[relay] && !isFilterEqual(this.queryMap[relay], filter)) {
-        const old = this.blockLoaders.get(relay)!;
-        this.disconnectToBlockLoader(old);
-        this.blockLoaders.delete(relay);
+        const old = this.chunkLoaders.get(relay)!;
+        this.disconnectToChunkLoader(old);
+        this.chunkLoaders.delete(relay);
       }
 
-      if (!this.blockLoaders.has(relay)) {
-        const loader = new RelayBlockLoader(relay, filter, this.log.extend(relay));
-        this.blockLoaders.set(relay, loader);
-        this.connectToBlockLoader(loader);
+      if (!this.chunkLoaders.has(relay)) {
+        const loader = new ChunkedRequest(relay, Array.isArray(filter) ? filter : [filter], this.log.extend(relay));
+        this.chunkLoaders.set(relay, loader);
+        this.connectToChunkLoader(loader);
       }
     }
 
@@ -219,10 +137,10 @@ export default class TimelineLoader {
 
     // update the subscription query map and add limit
     this.subscription.setQueryMap(
-      mapQueryMap(this.queryMap, (filter) => addQueryToFilter(filter, { limit: BLOCK_SIZE / 2 })),
+      mapQueryMap(this.queryMap, (filter) => mergeFilter(filter, { limit: BLOCK_SIZE / 2 })),
     );
 
-    this.triggerBlockLoads();
+    this.triggerChunkLoad();
   }
 
   setEventFilter(filter?: EventFilter) {
@@ -231,33 +149,33 @@ export default class TimelineLoader {
   }
   setCursor(cursor: number) {
     this.cursor = cursor;
-    this.triggerBlockLoads();
+    this.triggerChunkLoad();
   }
 
-  triggerBlockLoads() {
+  triggerChunkLoad() {
     let triggeredLoad = false;
-    for (const [relay, loader] of this.blockLoaders) {
+    for (const [relay, loader] of this.chunkLoaders) {
       if (loader.complete || loader.loading) continue;
       const event = loader.getLastEvent(this.loadNextBlockBuffer, this.eventFilter);
       if (!event || event.created_at >= this.cursor) {
-        loader.loadNextBlock();
+        loader.loadNextChunk();
         triggeredLoad = true;
       }
     }
     if (triggeredLoad) this.updateLoading();
   }
-  loadNextBlock() {
+  loadAllNextChunks() {
     let triggeredLoad = false;
-    for (const [relay, loader] of this.blockLoaders) {
+    for (const [relay, loader] of this.chunkLoaders) {
       if (loader.complete || loader.loading) continue;
-      loader.loadNextBlock();
+      loader.loadNextChunk();
       triggeredLoad = true;
     }
     if (triggeredLoad) this.updateLoading();
   }
 
   private updateLoading() {
-    for (const [relay, loader] of this.blockLoaders) {
+    for (const [relay, loader] of this.chunkLoaders) {
       if (loader.loading) {
         if (!this.loading.value) {
           this.loading.next(true);
@@ -268,7 +186,7 @@ export default class TimelineLoader {
     if (this.loading.value) this.loading.next(false);
   }
   private updateComplete() {
-    for (const [relay, loader] of this.blockLoaders) {
+    for (const [relay, loader] of this.chunkLoaders) {
       if (!loader.complete) {
         this.complete.next(false);
         return;
@@ -290,8 +208,8 @@ export default class TimelineLoader {
   }
   reset() {
     this.cursor = dayjs().unix();
-    for (const [_, loader] of this.blockLoaders) this.disconnectToBlockLoader(loader);
-    this.blockLoaders.clear();
+    for (const [_, loader] of this.chunkLoaders) this.disconnectToChunkLoader(loader);
+    this.chunkLoaders.clear();
     this.forgetEvents();
   }
 
@@ -299,8 +217,8 @@ export default class TimelineLoader {
   cleanup() {
     this.close();
 
-    for (const [_, loader] of this.blockLoaders) this.disconnectToBlockLoader(loader);
-    this.blockLoaders.clear();
+    for (const [_, loader] of this.chunkLoaders) this.disconnectToChunkLoader(loader);
+    this.chunkLoaders.clear();
 
     this.events.cleanup();
   }

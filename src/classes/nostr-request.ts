@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
+import { Filter, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../types/nostr-event";
-import { NostrRequestFilter } from "../types/nostr-relay";
 import relayPoolService from "../services/relay-pool";
 import Relay, { CountResponse, IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
 import createDefer from "./deferred";
@@ -64,7 +63,7 @@ export default class NostrRequest {
     }
   }
 
-  start(filter: NostrRequestFilter, type: "REQ" | "COUNT" = "REQ") {
+  start(filter: Filter | Filter[], type: "REQ" | "COUNT" = "REQ") {
     if (this.state !== NostrRequest.IDLE) {
       throw new Error("cant restart a nostr request");
     }

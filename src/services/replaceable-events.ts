@@ -1,5 +1,5 @@
-import _throttle from "lodash/throttle";
 import { Filter, NostrEvent } from "nostr-tools";
+import _throttle from "lodash.throttle";
 
 import SuperMap from "../classes/super-map";
 import { logger } from "../helpers/debug";

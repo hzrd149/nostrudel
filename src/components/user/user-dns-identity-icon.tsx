@@ -4,7 +4,7 @@ import { useDnsIdentity } from "../../hooks/use-dns-identity";
 import { useUserMetadata } from "../../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
 
-export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) => {
+export function UserDnsIdentityIcon({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) {
   const metadata = useUserMetadata(pubkey);
   const identity = useDnsIdentity(metadata?.nip05);
 
@@ -32,4 +32,6 @@ export const UserDnsIdentityIcon = ({ pubkey, onlyIcon }: { pubkey: string; only
       {metadata.nip05.startsWith("_@") ? metadata.nip05.substr(2) : metadata.nip05} {renderIcon()}
     </Text>
   );
-};
+}
+
+export default UserDnsIdentityIcon;
