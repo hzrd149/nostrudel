@@ -17,17 +17,17 @@ export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "chil
     <Flex direction="column" gap="2">
       <EmbedEvent event={pub.event} />
       <Progress value={(results.length / pub.relays.length) * 100} size="lg" hasStripe />
-      {results.map((result) => (
-        <Alert key={result.relay.url} status={result.status ? "success" : "warning"}>
+      {results.map(({ result, relay }) => (
+        <Alert key={relay.url} status={result[2] ? "success" : "warning"}>
           <AlertIcon />
           <Box>
             <AlertTitle>
-              <Link as={RouterLink} to={`/r/${encodeURIComponent(result.relay.url)}`}>
-                {result.relay.url}
+              <Link as={RouterLink} to={`/r/${encodeURIComponent(relay.url)}`}>
+                {relay.url}
               </Link>
-              <RelayPaidTag url={result.relay.url} />
+              <RelayPaidTag url={relay.url} />
             </AlertTitle>
-            {result.message && <AlertDescription>{result.message}</AlertDescription>}
+            {result[3] && <AlertDescription>{result[3]}</AlertDescription>}
           </Box>
         </Alert>
       ))}

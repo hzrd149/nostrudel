@@ -1,12 +1,8 @@
-import dayjs from "dayjs";
-import debug, { Debugger } from "debug";
 import _throttle from "lodash/throttle";
 import { Filter } from "nostr-tools";
 
-import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
-import { NostrQuery } from "../types/nostr-query";
 import { logger } from "../helpers/debug";
 import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/events";
@@ -15,9 +11,7 @@ import { localRelay } from "./local-relay";
 import { relayRequest } from "../helpers/relay";
 import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
-
-type Pubkey = string;
-type Relay = string;
+import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -31,123 +25,14 @@ export type RequestOptions = {
 export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
 }
-export function createCoordinate(kind: number, pubkey: string, d?: string) {
-  return `${kind}:${pubkey}${d ? ":" + d : ""}`;
-}
-
-const RELAY_REQUEST_BATCH_TIME = 500;
-
-/** This class is ued to batch requests to a single relay */
-class ReplaceableEventRelayLoader {
-  private subscription: NostrSubscription;
-  events = new EventStore();
-
-  private requestNext = new Set<string>();
-  private requested = new Map<string, Date>();
-
-  log: Debugger;
-
-  constructor(relay: string, log?: Debugger) {
-    this.subscription = new NostrSubscription(relay, undefined, `replaceable-event-loader`);
-
-    this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
-    this.subscription.onEOSE.subscribe(this.handleEOSE.bind(this));
-
-    this.log = log || debug("misc");
-  }
-
-  private handleEvent(event: NostrEvent) {
-    const cord = getEventCoordinate(event);
-
-    // remove the cord from the waiting list
-    this.requested.delete(cord);
-
-    const current = this.events.getEvent(cord);
-    if (!current || event.created_at > current.created_at) {
-      this.events.addEvent(event);
-    }
-  }
-  private handleEOSE() {
-    // relays says it has nothing left
-    this.requested.clear();
-  }
-
-  requestEvent(kind: number, pubkey: string, d?: string) {
-    const cord = createCoordinate(kind, pubkey, d);
-    const event = this.events.getEvent(cord);
-    if (!event) {
-      this.requestNext.add(cord);
-      this.updateThrottle();
-    }
-    return event;
-  }
-
-  updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
-  update() {
-    let needsUpdate = false;
-    for (const cord of this.requestNext) {
-      if (!this.requested.has(cord)) {
-        this.requested.set(cord, new Date());
-        needsUpdate = true;
-      }
-    }
-    this.requestNext.clear();
-
-    // prune requests
-    const timeout = dayjs().subtract(1, "minute");
-    for (const [cord, date] of this.requested) {
-      if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(cord);
-        needsUpdate = true;
-      }
-    }
-
-    // update the subscription
-    if (needsUpdate) {
-      if (this.requested.size > 0) {
-        const filters: Record<number, NostrQuery> = {};
-
-        for (const [cord] of this.requested) {
-          const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
-          const kind = parseInt(kindStr);
-          filters[kind] = filters[kind] || { kinds: [kind] };
-
-          const arr = (filters[kind].authors = filters[kind].authors || []);
-          arr.push(pubkey);
-
-          if (d) {
-            const arr = (filters[kind]["#d"] = filters[kind]["#d"] || []);
-            arr.push(d);
-          }
-        }
-
-        const query = Array.from(Object.values(filters));
-
-        this.log(
-          `Updating query`,
-          Array.from(Object.keys(filters))
-            .map((kind: string) => `kind ${kind}: ${filters[parseInt(kind)].authors?.length}`)
-            .join(", "),
-        );
-        this.subscription.setQuery(query);
-
-        if (this.subscription.state !== NostrSubscription.OPEN) {
-          this.subscription.open();
-        }
-      } else if (this.subscription.state === NostrSubscription.OPEN) {
-        this.subscription.close();
-      }
-    }
-  }
-}
 
 const READ_CACHE_BATCH_TIME = 250;
 const WRITE_CACHE_BATCH_TIME = 250;
 
-class ReplaceableEventLoaderService {
-  private subjects = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
-  private loaders = new SuperMap<Relay, ReplaceableEventRelayLoader>((relay) => {
-    const loader = new ReplaceableEventRelayLoader(relay, this.log.extend(relay));
+class ReplaceableEventsService {
+  private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+  private loaders = new SuperMap<string, BatchKindLoader>((relay) => {
+    const loader = new BatchKindLoader(relay, this.log.extend(relay));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
     return loader;
   });
@@ -251,11 +136,11 @@ class ReplaceableEventLoaderService {
   }
 
   requestEvent(relays: Iterable<string>, kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
-    const cord = createCoordinate(kind, pubkey, d);
-    const sub = this.subjects.get(cord);
+    const key = createCoordinate(kind, pubkey, d);
+    const sub = this.subjects.get(key);
 
     if (!sub.value) {
-      this.loadFromCache(cord).then((loaded) => {
+      this.loadFromCache(key).then((loaded) => {
         if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
       });
     }
@@ -268,11 +153,11 @@ class ReplaceableEventLoaderService {
   }
 }
 
-const replaceableEventLoaderService = new ReplaceableEventLoaderService();
+const replaceableEventsService = new ReplaceableEventsService();
 
 if (import.meta.env.DEV) {
   //@ts-ignore
-  window.replaceableEventLoaderService = replaceableEventLoaderService;
+  window.replaceableEventsService = replaceableEventsService;
 }
 
-export default replaceableEventLoaderService;
+export default replaceableEventsService;

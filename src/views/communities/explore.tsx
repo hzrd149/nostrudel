@@ -9,7 +9,7 @@ import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubjects from "../../hooks/use-subjects";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import replaceableEventsService from "../../services/replaceable-events";
 import { COMMUNITIES_LIST_KIND, getCoordinatesFromList } from "../../helpers/nostr/lists";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
@@ -20,9 +20,7 @@ import { AddressPointer } from "nostr-tools/lib/types/nip19";
 export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);
   const communityListsSubjects = useMemo(() => {
-    return pubkeys.map((pubkey) =>
-      replaceableEventLoaderService.requestEvent(readRelays, COMMUNITIES_LIST_KIND, pubkey),
-    );
+    return pubkeys.map((pubkey) => replaceableEventsService.requestEvent(readRelays, COMMUNITIES_LIST_KIND, pubkey));
   }, [pubkeys]);
   return useSubjects(communityListsSubjects);
 }

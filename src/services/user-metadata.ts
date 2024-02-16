@@ -4,18 +4,18 @@ import _throttle from "lodash.throttle";
 import { Kind0ParsedContent, parseKind0Event } from "../helpers/user-metadata";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
-import replaceableEventLoaderService, { RequestOptions } from "./replaceable-event-requester";
+import replaceableEventsService, { RequestOptions } from "./replaceable-events";
 
 class UserMetadataService {
   private metadata = new SuperMap<string, Subject<Kind0ParsedContent>>((pubkey) => {
-    return replaceableEventLoaderService.getEvent(0, pubkey).map(parseKind0Event);
+    return replaceableEventsService.getEvent(0, pubkey).map(parseKind0Event);
   });
   getSubject(pubkey: string) {
     return this.metadata.get(pubkey);
   }
   requestMetadata(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
     const subject = this.metadata.get(pubkey);
-    replaceableEventLoaderService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
+    replaceableEventsService.requestEvent(relays, kinds.Metadata, pubkey, undefined, opts);
     return subject;
   }
 }

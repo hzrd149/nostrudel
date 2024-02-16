@@ -6,7 +6,7 @@ import { ParsedStream, STREAM_CHAT_MESSAGE_KIND, getATag } from "../../../../hel
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../../types/nostr-event";
 import useStreamGoal from "../../../../hooks/use-stream-goal";
-import { NostrQuery } from "../../../../types/nostr-query";
+import { NostrQuery } from "../../../../types/nostr-relay";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import { useReadRelays } from "../../../../hooks/use-client-relays";

@@ -1,7 +1,7 @@
 import _throttle from "lodash.throttle";
 import { getSearchNames } from "../helpers/user-metadata";
 import db from "./db";
-import replaceableEventLoaderService from "./replaceable-event-requester";
+import replaceableEventsService from "./replaceable-events";
 import userMetadataService from "./user-metadata";
 
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
@@ -25,7 +25,7 @@ const writeSearchData = _throttle(async () => {
   await transaction.done;
 }, WRITE_USER_SEARCH_BATCH_TIME);
 
-replaceableEventLoaderService.events.onEvent.subscribe((event) => {
+replaceableEventsService.events.onEvent.subscribe((event) => {
   if (event.kind === 0) {
     writeSearchQueue.add(event.pubkey);
     writeSearchData();

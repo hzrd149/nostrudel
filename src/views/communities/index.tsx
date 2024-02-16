@@ -35,7 +35,7 @@ import {
   getCommunityMods,
   getCommunityName,
 } from "../../helpers/nostr/communities";
-import { createCoordinate } from "../../services/replaceable-event-requester";
+import { createCoordinate } from "../../services/replaceable-events";
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

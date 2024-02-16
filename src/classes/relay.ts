@@ -1,39 +1,27 @@
+import { Filter, NostrEvent } from "nostr-tools";
 import { offlineMode } from "../services/offline-mode";
 import relayScoreboardService from "../services/relay-scoreboard";
-import { RawIncomingNostrEvent, NostrEvent, CountResponse } from "../types/nostr-event";
-import { NostrOutgoingMessage } from "../types/nostr-query";
 import ControlledObservable from "./controlled-observable";
 import createDefer, { Deferred } from "./deferred";
 import { PersistentSubject } from "./subject";
 
-export type IncomingEvent = {
-  type: "EVENT";
-  subId: string;
-  body: NostrEvent;
-  relay: Relay;
+export type CountResponse = {
+  count: number;
+  approximate?: boolean;
 };
-export type IncomingNotice = {
-  type: "NOTICE";
-  message: string;
-  relay: Relay;
-};
-export type IncomingCount = {
-  type: "COUNT";
-  subId: string;
-  relay: Relay;
-} & CountResponse;
-export type IncomingEOSE = {
-  type: "EOSE";
-  subId: string;
-  relay: Relay;
-};
-export type IncomingCommandResult = {
-  type: "OK";
-  eventId: string;
-  status: boolean;
-  message?: string;
-  relay: Relay;
-};
+
+export type IncomingEvent = ["EVENT", string, NostrEvent];
+export type IncomingNotice = ["NOTICE", string];
+export type IncomingCount = ["COUNT", string, CountResponse];
+export type IncomingEOSE = ["EOSE", string];
+export type IncomingCommandResult = ["OK", string, boolean] | ["OK", string, boolean, string];
+export type IncomingMessage = IncomingEvent | IncomingNotice | IncomingCount | IncomingEOSE | IncomingCommandResult;
+
+export type OutgoingEvent = ["EVENT", NostrEvent];
+export type OutgoingRequest = ["REQ", string, ...Filter[]];
+export type OutgoingCount = ["COUNT", string, ...Filter[]];
+export type OutgoingClose = ["CLOSE", string];
+export type OutgoingMessage = OutgoingEvent | OutgoingRequest | OutgoingClose | OutgoingCount;
 
 export enum RelayMode {
   NONE = 0,
@@ -46,15 +34,16 @@ const CONNECTION_TIMEOUT = 1000 * 30;
 
 export default class Relay {
   url: string;
+  ws?: WebSocket;
   status = new PersistentSubject<number>(WebSocket.CLOSED);
   onOpen = new ControlledObservable<Relay>();
   onClose = new ControlledObservable<Relay>();
+
   onEvent = new ControlledObservable<IncomingEvent>();
   onNotice = new ControlledObservable<IncomingNotice>();
   onCount = new ControlledObservable<IncomingCount>();
   onEOSE = new ControlledObservable<IncomingEOSE>();
   onCommandResult = new ControlledObservable<IncomingCommandResult>();
-  ws?: WebSocket;
 
   private connectionPromises: Deferred<void>[] = [];
 
@@ -62,7 +51,7 @@ export default class Relay {
   private ejectTimer?: () => void;
   private intentionalClose = false;
   private subscriptionResTimer = new Map<string, () => void>();
-  private queue: NostrOutgoingMessage[] = [];
+  private queue: OutgoingMessage[] = [];
 
   constructor(url: string) {
     this.url = url;
@@ -123,7 +112,7 @@ export default class Relay {
     };
     this.ws.onmessage = this.handleMessage.bind(this);
   }
-  send(json: NostrOutgoingMessage) {
+  send(json: OutgoingMessage) {
     if (this.connected) {
       this.ws?.send(JSON.stringify(json));
 
@@ -185,35 +174,38 @@ export default class Relay {
     return this.ws?.readyState;
   }
 
-  handleMessage(event: MessageEvent<string>) {
-    if (!event.data) return;
+  handleMessage(message: MessageEvent<string>) {
+    if (!message.data) return;
 
     try {
-      const data: RawIncomingNostrEvent = JSON.parse(event.data);
+      const data: IncomingMessage = JSON.parse(message.data);
       const type = data[0];
+
+      // all messages must have an argument
+      if (!data[1]) return;
 
       switch (type) {
         case "EVENT":
-          this.onEvent.next({ relay: this, type, subId: data[1], body: data[2] });
+          this.onEvent.next(data);
           this.endSubResTimer(data[1]);
           break;
         case "NOTICE":
-          this.onNotice.next({ relay: this, type, message: data[1] });
+          this.onNotice.next(data);
           break;
         case "COUNT":
-          this.onCount.next({ relay: this, type, subId: data[1], ...data[2] });
+          this.onCount.next(data);
           break;
         case "EOSE":
-          this.onEOSE.next({ relay: this, type, subId: data[1] });
+          this.onEOSE.next(data);
           this.endSubResTimer(data[1]);
           break;
         case "OK":
-          this.onCommandResult.next({ relay: this, type, eventId: data[1], status: data[2], message: data[3] });
+          this.onCommandResult.next(data);
           break;
       }
     } catch (e) {
-      console.log(`Relay: Failed to parse event from ${this.url}`);
-      console.log(event.data, e);
+      console.log(`Relay: Failed to parse massage from ${this.url}`);
+      console.log(message.data, e);
     }
   }
 }

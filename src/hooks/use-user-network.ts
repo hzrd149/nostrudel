@@ -3,7 +3,7 @@ import { kinds } from "nostr-tools";
 
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserContactList from "./use-user-contact-list";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import replaceableEventsService from "../services/replaceable-events";
 import { useReadRelays } from "./use-client-relays";
 import useSubjects from "./use-subjects";
 import userMetadataService from "../services/user-metadata";
@@ -34,7 +34,7 @@ export default function useUserNetwork(pubkey: string, additionalRelays?: Iterab
 
   const subjects = useMemo(() => {
     return contactsPubkeys.map((person) =>
-      replaceableEventLoaderService.requestEvent(readRelays, kinds.Contacts, person.pubkey),
+      replaceableEventsService.requestEvent(readRelays, kinds.Contacts, person.pubkey),
     );
   }, [contactsPubkeys, readRelays.urls.join("|")]);
 

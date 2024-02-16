@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import useReplaceableEvent from "./use-replaceable-event";
 import { PEOPLE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserMuteList from "./use-user-mute-list";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 
 export default function useUserMuteLists(
   pubkey?: string,

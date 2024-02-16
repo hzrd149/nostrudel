@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 import { ensureNotifyContentMentions } from "./post";
-import { createCoordinate } from "../../services/replaceable-event-requester";
+import { createCoordinate } from "../../services/replaceable-events";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;

@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid";
 
 import { NostrEvent } from "../types/nostr-event";
-import { NostrOutgoingRequest, NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
-import Relay, { IncomingEvent } from "./relay";
+import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-relay";
+import Relay, { IncomingEvent, OutgoingRequest } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import { isFilterEqual, isQueryMapEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
@@ -26,14 +26,14 @@ export default class NostrMultiSubscription {
     this.id = nanoid();
     this.name = name;
   }
-  private handleEvent(incomingEvent: IncomingEvent) {
+  private handleMessage(incomingEvent: IncomingEvent) {
     if (
       this.state === NostrMultiSubscription.OPEN &&
-      incomingEvent.subId === this.id &&
-      !this.seenEvents.has(incomingEvent.body.id)
+      incomingEvent[1] === this.id &&
+      !this.seenEvents.has(incomingEvent[2].id)
     ) {
-      this.onEvent.next(incomingEvent.body);
-      this.seenEvents.add(incomingEvent.body.id);
+      this.onEvent.next(incomingEvent[2]);
+      this.seenEvents.add(incomingEvent[2].id);
     }
   }
 
@@ -41,7 +41,7 @@ export default class NostrMultiSubscription {
   /** listen for event and open events from relays */
   private connectToRelay(relay: Relay) {
     const subs = this.relaySubs.get(relay);
-    subs.push(relay.onEvent.subscribe(this.handleEvent.bind(this)));
+    subs.push(relay.onEvent.subscribe(this.handleMessage.bind(this)));
     subs.push(relay.onOpen.subscribe(this.handleRelayConnect.bind(this)));
     subs.push(relay.onClose.subscribe(this.handleRelayDisconnect.bind(this)));
     relayPoolService.addClaim(relay.url, this);
@@ -93,9 +93,7 @@ export default class NostrMultiSubscription {
 
     for (const relay of this.relays) {
       const filter = this.queryMap[relay.url];
-      const message: NostrOutgoingRequest = Array.isArray(filter)
-        ? ["REQ", this.id, ...filter]
-        : ["REQ", this.id, filter];
+      const message: OutgoingRequest = Array.isArray(filter) ? ["REQ", this.id, ...filter] : ["REQ", this.id, filter];
 
       const currentFilter = this.relayQueries.get(relay);
       if (!currentFilter || !isFilterEqual(currentFilter, filter)) {

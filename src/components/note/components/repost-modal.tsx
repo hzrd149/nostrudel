@@ -21,7 +21,7 @@ import { EmbedEvent } from "../../embed-event";
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../icons";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { createCoordinate } from "../../../services/replaceable-event-requester";
+import { createCoordinate } from "../../../services/replaceable-events";
 import relayHintService from "../../../services/event-relay-hint";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 

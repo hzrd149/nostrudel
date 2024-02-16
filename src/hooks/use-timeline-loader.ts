@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
 
-import { NostrRequestFilter } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-relay";
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
 import { NostrEvent } from "../types/nostr-event";

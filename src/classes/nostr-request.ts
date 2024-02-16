@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid";
-import { CountResponse, NostrEvent } from "../types/nostr-event";
-import { NostrRequestFilter } from "../types/nostr-query";
+
+import { NostrEvent } from "../types/nostr-event";
+import { NostrRequestFilter } from "../types/nostr-relay";
 import relayPoolService from "../services/relay-pool";
-import Relay, { IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
+import Relay, { CountResponse, IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
 import createDefer from "./deferred";
 import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
@@ -19,7 +20,6 @@ export default class NostrRequest {
   state = NostrRequest.IDLE;
   onEvent = new ControlledObservable<NostrEvent>();
   onCount = new ControlledObservable<CountResponse>();
-  /** @deprecated */
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
@@ -30,7 +30,7 @@ export default class NostrRequest {
 
     for (const relay of this.relays) {
       const subs = this.relaySubs.get(relay);
-      subs.push(relay.onEOSE.subscribe(this.handleEOSE.bind(this)));
+      subs.push(relay.onEOSE.subscribe((m) => this.handleEOSE(m, relay)));
       subs.push(relay.onEvent.subscribe(this.handleEvent.bind(this)));
       subs.push(relay.onCount.subscribe(this.handleCount.bind(this)));
     }
@@ -38,9 +38,8 @@ export default class NostrRequest {
     this.timeout = timeout ?? REQUEST_DEFAULT_TIMEOUT;
   }
 
-  handleEOSE(eose: IncomingEOSE) {
-    if (eose.subId === this.id) {
-      const relay = eose.relay;
+  handleEOSE(message: IncomingEOSE, relay: Relay) {
+    if (message[1] === this.id) {
       this.relays.delete(relay);
       relay.send(["CLOSE", this.id]);
 
@@ -53,19 +52,15 @@ export default class NostrRequest {
       }
     }
   }
-  handleEvent(incomingEvent: IncomingEvent) {
-    if (
-      this.state === NostrRequest.RUNNING &&
-      incomingEvent.subId === this.id &&
-      !this.seenEvents.has(incomingEvent.body.id)
-    ) {
-      this.onEvent.next(incomingEvent.body);
-      this.seenEvents.add(incomingEvent.body.id);
+  handleEvent(message: IncomingEvent) {
+    if (this.state === NostrRequest.RUNNING && message[1] === this.id && !this.seenEvents.has(message[2].id)) {
+      this.onEvent.next(message[2]);
+      this.seenEvents.add(message[2].id);
     }
   }
   handleCount(incomingCount: IncomingCount) {
-    if (incomingCount.subId === this.id) {
-      this.onCount.next({ count: incomingCount.count, approximate: incomingCount.approximate });
+    if (incomingCount[1] === this.id) {
+      this.onCount.next(incomingCount[2]);
     }
   }
 

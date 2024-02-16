@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import RelaySet from "../classes/relay-set";
 import useUserContactList from "./use-user-contact-list";
 import { RelayMode } from "../classes/relay";

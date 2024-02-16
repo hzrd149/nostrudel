@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import useSubject from "./use-subject";
 import channelMetadataService from "../services/channel-metadata";
 import { ChannelMetadata, safeParseChannelMetadata } from "../helpers/nostr/channel";

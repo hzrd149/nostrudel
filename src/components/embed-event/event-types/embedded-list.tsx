@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getListDescription, getListName, isSpecialListKind } from "../../../helpers/nostr/lists";
-import { createCoordinate } from "../../../services/replaceable-event-requester";
+import { createCoordinate } from "../../../services/replaceable-events";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user-avatar-link";
 import UserLink from "../../user-link";

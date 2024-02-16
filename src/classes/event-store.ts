@@ -1,4 +1,6 @@
 import { NostrEvent } from "nostr-tools";
+import { nanoid } from "nanoid";
+
 import { getEventUID, sortByDate } from "../helpers/nostr/events";
 import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
@@ -6,7 +8,9 @@ import deleteEventService from "../services/delete-events";
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
+/** a class used to store and sort events */
 export default class EventStore {
+  id = nanoid(8);
   name?: string;
   events = new Map<string, NostrEvent>();
 
@@ -34,16 +38,15 @@ export default class EventStore {
   onClear = new ControlledObservable();
 
   private handleEvent(event: NostrEvent) {
-    const id = getEventUID(event);
-    const existing = this.events.get(id);
+    const uid = getEventUID(event);
+    const existing = this.events.get(uid);
     if (!existing || event.created_at > existing.created_at) {
-      this.events.set(id, event);
+      this.events.set(uid, event);
       this.onEvent.next(event);
     }
   }
 
   addEvent(event: NostrEvent) {
-    const id = getEventUID(event);
     this.handleEvent(event);
   }
   getEvent(id: string) {

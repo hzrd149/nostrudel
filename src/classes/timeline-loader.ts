@@ -4,14 +4,14 @@ import { Filter, matchFilters } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-query";
+import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-relay";
 import NostrRequest from "./nostr-request";
 import NostrMultiSubscription from "./nostr-multi-subscription";
 import Subject, { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/events";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import replaceableEventsService from "../services/replaceable-events";
 import deleteEventService from "../services/delete-events";
 import {
   addQueryToFilter,
@@ -127,7 +127,7 @@ export default class TimelineLoader {
     this.name = name;
     this.log = logger.extend("TimelineLoader:" + name);
     this.events = new EventStore(name);
-    this.events.connect(replaceableEventLoaderService.events, false);
+    this.events.connect(replaceableEventsService.events, false);
 
     this.subscription = new NostrMultiSubscription(name);
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
@@ -147,7 +147,7 @@ export default class TimelineLoader {
   }
   private handleEvent(event: NostrEvent, cache = true) {
     // if this is a replaceable event, mirror it over to the replaceable event service
-    if (isReplaceable(event.kind)) replaceableEventLoaderService.handleEvent(event);
+    if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
 
     this.events.addEvent(event);
     if (cache) localRelay.publish(event);

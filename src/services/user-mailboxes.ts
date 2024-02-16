@@ -3,7 +3,7 @@ import { kinds } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
-import replaceableEventLoaderService, { createCoordinate, RequestOptions } from "./replaceable-event-requester";
+import replaceableEventsService, { createCoordinate, RequestOptions } from "./replaceable-events";
 import RelaySet from "../classes/relay-set";
 import { RelayMode } from "../classes/relay";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
@@ -30,17 +30,17 @@ function nip65ToUserMailboxes(event: NostrEvent): UserMailboxes {
 
 class UserMailboxesService {
   private subjects = new SuperMap<string, Subject<UserMailboxes>>((pubkey) =>
-    replaceableEventLoaderService.getEvent(kinds.RelayList, pubkey).map(nip65ToUserMailboxes),
+    replaceableEventsService.getEvent(kinds.RelayList, pubkey).map(nip65ToUserMailboxes),
   );
   getMailboxes(pubkey: string) {
     return this.subjects.get(pubkey);
   }
   requestMailboxes(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
-    replaceableEventLoaderService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
+    replaceableEventsService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
 
     // also fetch the relays from the users contacts
-    const contactsSub = replaceableEventLoaderService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
+    const contactsSub = replaceableEventsService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
     sub.connectWithMapper(contactsSub, (event, next, value) => {
       // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
       const relays = relaysFromContactsEvent(event);
@@ -61,12 +61,12 @@ class UserMailboxesService {
 
   async loadFromCache(pubkey: string) {
     const sub = this.subjects.get(pubkey);
-    await replaceableEventLoaderService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
+    await replaceableEventsService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
     return sub;
   }
 
   receiveEvent(event: NostrEvent) {
-    replaceableEventLoaderService.handleEvent(event);
+    replaceableEventsService.handleEvent(event);
   }
 }
 

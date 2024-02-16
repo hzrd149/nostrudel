@@ -1,5 +1,5 @@
 import RelaySet from "../classes/relay-set";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import userMailboxesService from "../services/user-mailboxes";
 import { useReadRelays } from "./use-client-relays";
 import useSubject from "./use-subject";

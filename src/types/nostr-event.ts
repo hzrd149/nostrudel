@@ -12,24 +12,8 @@ export type Tag = string[] | ETag | PTag | RTag | DTag | ATag | ExpirationTag;
 export type NostrEvent = Omit<NostrToolsNostrEvent, "tags"> & {
   tags: Tag[];
 };
-export type CountResponse = {
-  count: number;
-  approximate?: boolean;
-};
 
 export type DraftNostrEvent = Omit<NostrEvent, "pubkey" | "id" | "sig"> & { pubkey?: string; id?: string };
-
-export type RawIncomingEvent = ["EVENT", string, NostrEvent];
-export type RawIncomingNotice = ["NOTICE", string];
-export type RawIncomingCount = ["COUNT", string, CountResponse];
-export type RawIncomingEOSE = ["EOSE", string];
-export type RawIncomingCommandResult = ["OK", string, boolean, string];
-export type RawIncomingNostrEvent =
-  | RawIncomingEvent
-  | RawIncomingNotice
-  | RawIncomingCount
-  | RawIncomingEOSE
-  | RawIncomingCommandResult;
 
 export function isETag(tag: Tag): tag is ETag {
   return tag[0] === "e" && tag[1] !== undefined;

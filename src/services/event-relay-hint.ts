@@ -2,7 +2,7 @@ import { NostrEvent } from "../types/nostr-event";
 import { getEventRelays } from "./event-relays";
 import relayScoreboardService from "./relay-scoreboard";
 import type { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
-import { createCoordinate } from "./replaceable-event-requester";
+import { createCoordinate } from "./replaceable-events";
 
 function pickBestRelays(relays: string[]) {
   // ignore local relays

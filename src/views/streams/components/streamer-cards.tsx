@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOverlay } from "@chakra-ui/react";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import replaceableEventsService from "../../../services/replaceable-events";
 import useSubject from "../../../hooks/use-subject";
 import { NoteContents } from "../../../components/note/text-note-contents";
 import { isATag } from "../../../types/nostr-event";
@@ -15,7 +15,7 @@ export const STREAMER_CARD_TYPE = 37777;
 
 function useStreamerCardsCords(pubkey: string, relays: Iterable<string>) {
   const sub = useMemo(
-    () => replaceableEventLoaderService.requestEvent(relays, STREAMER_CARDS_TYPE, pubkey),
+    () => replaceableEventsService.requestEvent(relays, STREAMER_CARDS_TYPE, pubkey),
     [pubkey, relays],
   );
   const streamerCards = useSubject(sub);

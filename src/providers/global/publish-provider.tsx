@@ -8,7 +8,7 @@ import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { addPubkeyRelayHints, getAllRelayHints, isReplaceable } from "../../helpers/nostr/events";
-import replaceableEventLoaderService from "../../services/replaceable-event-requester";
+import replaceableEventsService from "../../services/replaceable-events";
 import eventExistsService from "../../services/event-exists";
 import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
@@ -66,8 +66,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         const pub = new NostrPublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
 
-        pub.onResult.subscribe((result) => {
-          if (result.status) handleEventFromRelay(result.relay, signed);
+        pub.onResult.subscribe(({ relay, result }) => {
+          if (result[2]) handleEventFromRelay(relay, signed);
         });
 
         // send it to the local relay
@@ -75,7 +75,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
 
         // pass it to other services
         eventExistsService.handleEvent(signed);
-        if (isReplaceable(signed.kind)) replaceableEventLoaderService.handleEvent(signed);
+        if (isReplaceable(signed.kind)) replaceableEventsService.handleEvent(signed);
         if (signed.kind === kinds.Reaction) eventReactionsService.handleEvent(signed);
         if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);
         return pub;

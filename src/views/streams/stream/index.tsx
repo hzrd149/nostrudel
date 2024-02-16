@@ -31,7 +31,7 @@ import StreamSummaryContent from "../components/stream-summary-content";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import replaceableEventsService from "../../../services/replaceable-events";
 import useSubject from "../../../hooks/use-subject";
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -251,7 +251,7 @@ export default function StreamView() {
       if (parsed.data.kind !== STREAM_KIND) throw new Error("Invalid stream kind");
 
       const addrRelays = parsed.data.relays ?? [];
-      return replaceableEventLoaderService.requestEvent(
+      return replaceableEventsService.requestEvent(
         unique([...readRelays, ...streamRelays, ...addrRelays]),
         parsed.data.kind,
         parsed.data.pubkey,

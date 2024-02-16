@@ -12,7 +12,7 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import useParsedStreams from "../../hooks/use-parsed-streams";
-import { NostrRequestFilter } from "../../types/nostr-query";
+import { NostrRequestFilter } from "../../types/nostr-relay";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";

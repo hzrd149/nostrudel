@@ -1,5 +1,5 @@
 import stringify from "json-stringify-deterministic";
-import { NostrRequestFilter, RelayQueryMap } from "../../types/nostr-query";
+import { NostrRequestFilter, RelayQueryMap } from "../../types/nostr-relay";
 import { Filter } from "nostr-tools";
 import { safeRelayUrls } from "../relay";
 

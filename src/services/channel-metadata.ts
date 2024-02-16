@@ -7,7 +7,7 @@ import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrQuery } from "../types/nostr-relay";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
@@ -109,7 +109,7 @@ class ChannelMetadataRelayLoader {
         };
 
         if (query["#e"] && query["#e"].length > 0) this.log(`Updating query`, query["#e"].length);
-        this.subscription.setQuery(query);
+        this.subscription.setFilters([query]);
 
         if (this.subscription.state !== NostrSubscription.OPEN) {
           this.subscription.open();

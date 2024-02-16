@@ -30,7 +30,7 @@ import { isValidRelayURL } from "../helpers/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayFavicon } from "./relay-favicon";
 import singleEventService from "../services/single-event";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import replaceableEventsService from "../services/replaceable-events";
 
 function SearchOnRelaysModal({
   isOpen,
@@ -53,7 +53,7 @@ function SearchOnRelaysModal({
     setLoading(true);
     switch (decode.type) {
       case "naddr":
-        replaceableEventLoaderService.requestEvent(
+        replaceableEventsService.requestEvent(
           Array.from(relays),
           decode.data.kind,
           decode.data.pubkey,

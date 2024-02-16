@@ -25,8 +25,8 @@ import { PublishContext } from "../providers/global/publish-provider";
 export function PublishActionStatusTag({ pub, ...props }: { pub: NostrPublishAction } & Omit<TagProps, "children">) {
   const results = useSubject(pub.results);
 
-  const successful = results.filter((result) => result.status);
-  const failedWithMessage = results.filter((result) => !result.status && result.message);
+  const successful = results.filter(({ result }) => result[2]);
+  const failedWithMessage = results.filter(({ result }) => !result[2] && result[3]);
 
   let statusIcon = <Spinner size="xs" />;
   let statusColor: TagProps["colorScheme"] = "blue";

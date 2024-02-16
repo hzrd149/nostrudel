@@ -31,8 +31,8 @@ export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
 }
 
 relayPoolService.onRelayCreated.subscribe((relay) => {
-  relay.onEvent.subscribe(({ body: event }) => {
-    handleEventFromRelay(relay, event);
+  relay.onEvent.subscribe((message) => {
+    handleEventFromRelay(relay, message[2]);
   });
 });
 

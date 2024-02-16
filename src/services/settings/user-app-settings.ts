@@ -5,7 +5,7 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import SuperMap from "../../classes/super-map";
 import { PersistentSubject } from "../../classes/subject";
 import { AppSettings, defaultSettings, parseAppSettings } from "./migrations";
-import replaceableEventLoaderService, { RequestOptions } from "../replaceable-event-requester";
+import replaceableEventsService, { RequestOptions } from "../replaceable-events";
 
 export const APP_SETTINGS_KIND = 30078;
 export const SETTING_EVENT_IDENTIFIER = "nostrudel-settings";
@@ -19,7 +19,7 @@ class UserAppSettings {
   }
   requestAppSettings(pubkey: string, relays: Iterable<string>, opts?: RequestOptions) {
     const sub = this.parsedSubjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(
+    const requestSub = replaceableEventsService.requestEvent(
       relays,
       APP_SETTINGS_KIND,
       pubkey,
