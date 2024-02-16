@@ -3,13 +3,16 @@ import { getSearchNames } from "../helpers/nostr/user-metadata";
 import db from "./db";
 import replaceableEventsService from "./replaceable-events";
 import userMetadataService from "./user-metadata";
+import { logger } from "../helpers/debug";
 
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
+const log = logger.extend("UsernameSearch");
 
 const writeSearchQueue = new Set<string>();
 const writeSearchData = _throttle(async () => {
   if (writeSearchQueue.size === 0) return;
 
+  log(`Writing ${writeSearchQueue.size} to search table`);
   const keys = Array.from(writeSearchQueue);
   writeSearchQueue.clear();
 
