@@ -52,7 +52,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
     };
 
     await publish("Request Translation", draft);
-  }, [publish, note, readRelays]);
+  }, [publish, note, readRelays, lang]);
 
   const timeline = useTimelineLoader(
     `${getEventUID(note)}-translations`,
