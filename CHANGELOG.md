@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.38.4
+
+### Patch Changes
+
+- 64c2bb3: Fix translation selector stuck on english
+
 ## 0.38.3
 
 ### Patch Changes
