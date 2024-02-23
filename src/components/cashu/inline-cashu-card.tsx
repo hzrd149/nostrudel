@@ -4,7 +4,7 @@ import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link } 
 import { getDecodedToken, Token, CashuMint } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
 import { getMint } from "../../services/cashu-mints";

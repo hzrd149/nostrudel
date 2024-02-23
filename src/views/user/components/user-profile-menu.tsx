@@ -15,7 +15,7 @@ import {
   ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";

@@ -22,7 +22,7 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
 import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";

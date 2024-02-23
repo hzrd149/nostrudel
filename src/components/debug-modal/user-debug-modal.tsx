@@ -2,7 +2,7 @@ import { Flex, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } 
 import { ModalProps } from "@chakra-ui/react";
 import { kinds, nip19 } from "nostr-tools";
 
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import RawValue from "./raw-value";
 import RawJson from "./raw-json";
 import { useSharableProfileId } from "../../hooks/use-shareable-profile-id";

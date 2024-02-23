@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 

@@ -1,7 +1,7 @@
 import { Text, TextProps } from "@chakra-ui/react";
 
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import useAppSettings from "../../hooks/use-app-settings";
 
 export default function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: string }) {

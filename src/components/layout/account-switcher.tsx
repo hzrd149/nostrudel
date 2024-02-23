@@ -4,7 +4,7 @@ import { Box, Button, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/r
 
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
 import useSubject from "../../hooks/use-subject";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import accountService, { Account } from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";

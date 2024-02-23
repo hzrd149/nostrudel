@@ -2,7 +2,7 @@ import { forwardRef, memo, useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import { getIdenticon } from "../../helpers/identicon";
 import { safeUrl } from "../../helpers/parse";
 import { Kind0ParsedContent, getUserDisplayName } from "../../helpers/nostr/user-metadata";

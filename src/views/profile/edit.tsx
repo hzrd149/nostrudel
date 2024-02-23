@@ -18,7 +18,7 @@ import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";

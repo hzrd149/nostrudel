@@ -7,7 +7,7 @@ import { nip19 } from "nostr-tools";
 
 import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
 import UserAvatar from "../user/user-avatar";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
 
 function UserOption({ pubkey }: { pubkey: string }) {

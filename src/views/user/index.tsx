@@ -28,7 +28,7 @@ import {
 import { kinds } from "nostr-tools";
 
 import { Outlet, useMatches, useNavigate } from "react-router-dom";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";

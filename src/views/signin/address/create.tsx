@@ -30,7 +30,7 @@ import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityService from "../../../services/dns-identity";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";

@@ -40,7 +40,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
     };
 
     await publish("Request Reading", draft);
-  }, [publish, note, readRelays]);
+  }, [publish, note, readRelays, lang]);
 
   const timeline = useTimelineLoader(
     `${getEventUID(note)}-readings`,

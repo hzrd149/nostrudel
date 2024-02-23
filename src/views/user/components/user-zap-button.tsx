@@ -1,5 +1,5 @@
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import { LightningIcon } from "../../../components/icons";
 import ZapModal from "../../../components/event-zap-modal";
 import { useInvoiceModalContext } from "../../../providers/route/invoice-modal";

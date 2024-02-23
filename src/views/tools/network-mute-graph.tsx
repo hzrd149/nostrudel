@@ -21,7 +21,7 @@ import useUserContactList from "../../hooks/use-user-contact-list";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import replaceableEventsService from "../../services/replaceable-events";
 import useSubjects from "../../hooks/use-subjects";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 

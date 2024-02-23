@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
 import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {
   createEmptyMuteList,

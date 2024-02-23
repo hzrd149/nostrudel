@@ -1,7 +1,7 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Text } from "@chakra-ui/react";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import accountService, { Account } from "../../../services/account";
 import UserAvatar from "../../../components/user/user-avatar";
 import AccountInfoBadge from "../../../components/account-info-badge";

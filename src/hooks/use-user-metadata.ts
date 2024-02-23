@@ -5,7 +5,11 @@ import useSubject from "./use-subject";
 import { RequestOptions } from "../services/replaceable-events";
 import { COMMON_CONTACT_RELAY } from "../const";
 
-export function useUserMetadata(pubkey?: string, additionalRelays: Iterable<string> = [], opts: RequestOptions = {}) {
+export default function useUserMetadata(
+  pubkey?: string,
+  additionalRelays: Iterable<string> = [],
+  opts: RequestOptions = {},
+) {
   const relays = useReadRelays([...additionalRelays, COMMON_CONTACT_RELAY]);
 
   const subject = useMemo(

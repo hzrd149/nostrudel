@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardProps, Flex, Heading, Link } from "@chakra-
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserAvatar from "../../../components/user/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";

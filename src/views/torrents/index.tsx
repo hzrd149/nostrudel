@@ -16,7 +16,7 @@ import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import CategorySelect from "./components/category-select";

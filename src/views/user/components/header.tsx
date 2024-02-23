@@ -6,7 +6,7 @@ import UserAvatar from "../../../components/user/user-avatar";
 import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import accountService from "../../../services/account";
