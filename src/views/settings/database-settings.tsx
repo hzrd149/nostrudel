@@ -99,7 +99,7 @@ export default function DatabaseSettings() {
     setExporting(true);
     const rows = await localDatabase.getAll("events");
     const lines = rows.map((row) => stringify(row.event));
-    const file = new File(lines, "noStrudel-export.jsonl", {
+    const file = new File([lines.join("\n")], "noStrudel-export.jsonl", {
       type: "application/jsonl",
     });
     const url = URL.createObjectURL(file);
