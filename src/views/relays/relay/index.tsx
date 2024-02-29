@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   Button,
@@ -34,8 +34,14 @@ function RelayPage({ relay }: { relay: string }) {
   const { info } = useRelayInfo(relay);
   const showReviewForm = useDisclosure();
 
+  const uiURL = useMemo(() => {
+    const url = new URL(relay);
+    url.protocol = url.protocol === "wss:" ? "https:" : "http:";
+    return url.toString();
+  }, [relay]);
+
   return (
-    <VerticalPageLayout alignItems="stretch">
+    <Flex direction="column" alignItems="stretch" flexGrow={1} gap="2" p="2">
       <Flex gap="2" alignItems="center" wrap="wrap">
         <RelayFavicon relay={relay} />
         <Heading isTruncated size={{ base: "md", sm: "lg" }} mr="auto">
@@ -64,12 +70,13 @@ function RelayPage({ relay }: { relay: string }) {
       <Tabs display="flex" flexDirection="column" flexGrow="1" isLazy colorScheme="primary">
         <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
           <Tab>Reviews</Tab>
+          <Tab>UI</Tab>
           <Tab>Notes</Tab>
           <Tab>Users</Tab>
           <Tab>Details</Tab>
         </TabList>
 
-        <TabPanels>
+        <TabPanels flexGrow={1}>
           <TabPanel py="2" px="0">
             <Flex gap="2">
               <PeopleListSelection />
@@ -82,6 +89,9 @@ function RelayPage({ relay }: { relay: string }) {
             {showReviewForm.isOpen && <RelayReviewForm onClose={showReviewForm.onClose} relay={relay} my="4" />}
             <RelayReviews relay={relay} />
           </TabPanel>
+          <TabPanel p="0" h="full">
+            <Flex as="iframe" src={uiURL} w="full" h="full" />
+          </TabPanel>
           <TabPanel py="2" px="0">
             <RelayNotes relay={relay} />
           </TabPanel>
@@ -93,7 +103,7 @@ function RelayPage({ relay }: { relay: string }) {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </VerticalPageLayout>
+    </Flex>
   );
 }
 
