@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 import { Filter, nip19 } from "nostr-tools";
 
-function processDateString(date: string) {
-  if (date.startsWith("n")) {
+export function processDateString(date: string) {
+  if (date.toLowerCase() === "now" || date.toLowerCase() === "n") {
+    return dayjs().unix();
+  } else if (date.startsWith("n")) {
     const match = date.match(/n([+-])(\d+)([hwmsd])?/i);
     if (match === null) throw new Error(`Cant parse relative date string ${date}`);
 
@@ -21,8 +23,6 @@ function processDateString(date: string) {
           .unix()
       );
     } else throw Error(`Unknown operation ${match[1]}`);
-  } else if (date.toLowerCase() === "now") {
-    return dayjs().unix();
   }
 
   throw new Error(`Unknown date string ${date}`);

@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -13,24 +13,15 @@ import {
   IconButton,
   Switch,
   Text,
-  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import ReactCodeMirror from "@uiw/react-codemirror";
-import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
-import { jsonSchema } from "codemirror-json-schema";
 import { NostrEvent, Relay, Subscription } from "nostr-tools";
-import { keymap } from "@codemirror/view";
-import { useInterval, useLocalStorage } from "react-use";
+import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription, CacheRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
-import { jsonLanguage } from "@codemirror/lang-json";
-import { syntaxTree } from "@codemirror/language";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
-import { NostrFilterSchema } from "./schema";
 import { localRelay } from "../../../services/local-relay";
 import Play from "../../../components/icons/play";
 import ClockRewind from "../../../components/icons/clock-rewind";
@@ -43,78 +34,7 @@ import stringify from "json-stringify-deterministic";
 import { DownloadIcon } from "../../../components/icons";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
-import { UserDirectory, useUserSearchDirectoryContext } from "../../../providers/global/user-directory-provider";
-
-let users: UserDirectory = [];
-function userAutocomplete(context: CompletionContext): CompletionResult | null {
-  let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
-  if (nodeBefore.name !== "String") return null;
-
-  let textBefore = context.state.sliceDoc(nodeBefore.from, context.pos);
-  let tagBefore = /@\w*$/.exec(textBefore);
-  if (!tagBefore && !context.explicit) return null;
-
-  return {
-    from: tagBefore ? nodeBefore.from + tagBefore.index : context.pos,
-    validFor: /^(@\w*)?$/,
-    // options: tagOptions,
-    options: users
-      .filter((u) => !!u.names[0])
-      .map((user) => ({
-        label: "@" + user.names[0]!,
-        type: "keyword",
-        apply: user.pubkey,
-        detail: "pubkey",
-      })),
-  };
-}
-
-const FilterEditor = memo(
-  ({ value, onChange, onRun }: { value: string; onChange: (v: string) => void; onRun: () => void }) => {
-    const getDirectory = useUserSearchDirectoryContext();
-    const { colorMode } = useColorMode();
-
-    useInterval(() => {
-      users = getDirectory();
-    }, 1000);
-
-    const extensions = useMemo(
-      () => [
-        keymap.of([
-          {
-            win: "Ctrl-Enter",
-            linux: "Ctrl-Enter",
-            mac: "Cmd-Enter",
-            preventDefault: true,
-            run: () => {
-              onRun();
-              return true;
-            },
-            shift: () => {
-              onRun();
-              return true;
-            },
-          },
-        ]),
-        jsonSchema(NostrFilterSchema),
-        jsonLanguage.data.of({
-          autocomplete: userAutocomplete,
-        }),
-      ],
-      [onRun],
-    );
-    return (
-      <ReactCodeMirror
-        value={value}
-        onChange={onChange}
-        height="200px"
-        lang="json"
-        extensions={extensions}
-        theme={colorMode === "light" ? githubLight : githubDark}
-      />
-    );
-  },
-);
+import FilterEditor from "./filter-editor";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
