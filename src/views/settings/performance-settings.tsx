@@ -13,17 +13,6 @@ import {
   Input,
   Link,
   FormErrorMessage,
-  Code,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  useDisclosure,
-  Text,
-  Heading,
 } from "@chakra-ui/react";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
@@ -31,7 +20,6 @@ import { PerformanceIcon } from "../../components/icons";
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();
-  const cacheDetails = useDisclosure();
 
   return (
     <AccordionItem>
@@ -106,6 +94,15 @@ export default function PerformanceSettings() {
               <Switch id="showSignatureVerification" {...register("showSignatureVerification")} />
             </Flex>
             <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="autoDecryptDMs" mb="0">
+                Automatically decrypt DMs
+              </FormLabel>
+              <Switch id="autoDecryptDMs" {...register("autoDecryptDMs")} />
+            </Flex>
+            <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
           </FormControl>
         </Flex>
       </AccordionPanel>

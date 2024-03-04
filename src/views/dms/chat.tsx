@@ -25,6 +25,7 @@ import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import RelaySet from "../../classes/relay-set";
+import useAppSettings from "../../hooks/use-app-settings";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -46,6 +47,7 @@ const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useCurrentAccount()!;
+  const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
   const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
@@ -124,9 +126,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
           </Flex>
           <ButtonGroup ml="auto">
-            <Button onClick={decryptAll} isLoading={loading}>
-              Decrypt All
-            </Button>
+            {!autoDecryptDMs && (
+              <Button onClick={decryptAll} isLoading={loading}>
+                Decrypt All
+              </Button>
+            )}
             <IconButton
               aria-label="Threads"
               title="Threads"

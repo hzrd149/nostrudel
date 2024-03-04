@@ -1,6 +1,5 @@
 import { Button, Flex, Accordion, Link, useToast } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { GithubIcon, ToolsIcon } from "../../components/icons";
+import { GithubIcon } from "../../components/icons";
 import LightningSettings from "./lightning-settings";
 import DatabaseSettings from "./database-settings";
 import DisplaySettings from "./display-settings";
