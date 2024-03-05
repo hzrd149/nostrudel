@@ -8,7 +8,7 @@ import amberSignerService from "./amber-signer";
 import nostrConnectService from "./nostr-connect";
 import { hexToBytes } from "@noble/hashes/utils";
 
-const decryptedKeys = new Map<string, string>();
+const decryptedKeys = new Map<string, string | Promise<string>>();
 
 class SigningService {
   private async getSalt() {
@@ -28,7 +28,10 @@ class SigningService {
     );
     if (!password) throw new Error("Password required");
     const enc = new TextEncoder();
-    return window.crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]);
+    return await window.crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
+      "deriveBits",
+      "deriveKey",
+    ]);
   }
   private async getEncryptionKey() {
     const salt = await this.getSalt();
@@ -67,19 +70,29 @@ class SigningService {
     if (account.type !== "local") throw new Error("Account dose not have a secret key");
 
     const cache = decryptedKeys.get(account.pubkey);
-    if (cache) return cache;
+    if (cache) return await cache;
 
-    const key = await this.getEncryptionKey();
-    const decode = new TextDecoder();
+    // create a promise to decrypt the key
+    const p = (async () => {
+      const key = await this.getEncryptionKey();
+      const decode = new TextDecoder();
 
-    try {
-      const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: account.iv }, key, account.secKey);
-      const secKey = decode.decode(decrypted);
-      decryptedKeys.set(account.pubkey, secKey);
-      return secKey;
-    } catch (e) {
-      throw new Error("Failed to decrypt secret key");
-    }
+      try {
+        const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: account.iv }, key, account.secKey);
+        const secKey = decode.decode(decrypted);
+        decryptedKeys.set(account.pubkey, secKey);
+        return secKey;
+      } catch (e) {
+        console.log(e);
+        throw new Error("Failed to decrypt secret key");
+      }
+    })();
+
+    // cache the promise so its only called once
+    decryptedKeys.set(account.pubkey, p);
+
+    // await, return key
+    return await p;
   }
 
   async requestSignature(draft: DraftNostrEvent, account: Account) {
