@@ -28,8 +28,8 @@ export enum NostrConnectMethod {
   Nip04Decrypt = "nip04_decrypt",
 }
 type RequestParams = {
-  [NostrConnectMethod.Connect]: [string] | [string, string];
-  [NostrConnectMethod.CreateAccount]: [string, string] | [string, string, string];
+  [NostrConnectMethod.Connect]: [string] | [string, string] | [string, string, string];
+  [NostrConnectMethod.CreateAccount]: [string, string] | [string, string, string] | [string, string, string, string];
   [NostrConnectMethod.Disconnect]: [];
   [NostrConnectMethod.GetPublicKey]: [];
   [NostrConnectMethod.SignEvent]: [string];
@@ -56,6 +56,9 @@ export type NostrConnectErrorResponse = {
   result: string;
   error: string;
 };
+
+// FIXME list all requested perms
+const Perms = "nip04_encrypt,nip04_decrypt,sign_event:0,sign_event:1,sign_event:3,sign_event:4,sign_event:6,sign_event:7"
 
 export class NostrConnectClient {
   sub: NostrMultiSubscription;
@@ -107,6 +110,7 @@ export class NostrConnectClient {
   }
 
   private requests = new Map<string, Deferred<any>>();
+  private auths = new Set<string>();
   async handleEvent(event: NostrEvent) {
     if (this.provider && event.pubkey !== this.provider) return;
 
@@ -122,10 +126,13 @@ export class NostrConnectClient {
         if (response.error) {
           this.log("Got Error", response.id, response.result, response.error);
           if (response.result === "auth_url") {
-            try {
-              await this.handleAuthURL(response.error);
-            } catch (e) {
-              p.reject(e);
+            if (!this.auths.has(response.id)) {
+              this.auths.add(response.id)
+              try {
+                await this.handleAuthURL(response.error);
+              } catch (e) {
+                p.reject(e);
+              }
             }
           } else p.reject(response);
         } else if (response.result) {
@@ -186,7 +193,7 @@ export class NostrConnectClient {
     try {
       const result = await this.makeRequest(
         NostrConnectMethod.Connect,
-        token ? [this.publicKey, token] : [this.publicKey],
+        [this.publicKey, token || '', Perms],
       );
       this.isConnected = true;
       return result;
@@ -203,7 +210,7 @@ export class NostrConnectClient {
     try {
       const newPubkey = await this.makeAdminRequest(
         NostrConnectMethod.CreateAccount,
-        email ? [name, domain, email] : [name, domain],
+        [name, domain, email || '', Perms],
       );
       this.pubkey = newPubkey;
       this.isConnected = true;
