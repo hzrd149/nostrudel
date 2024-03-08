@@ -26,9 +26,13 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
     ["e", event.id],
     ["p", event.pubkey],
   ];
+
+  let content = emoji;
+  if (url && !content.startsWith(":") && content.endsWith(":")) content = ":" + content + ":";
+
   const draft: DraftNostrEvent = {
     kind: kinds.Reaction,
-    content: url ? ":" + emoji + ":" : emoji,
+    content,
     tags: isReplaceable(event.kind) ? [...tags, ["a", getEventCoordinate(event)]] : tags,
     created_at: dayjs().unix(),
   };

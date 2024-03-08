@@ -17,7 +17,8 @@ export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNo
             display="inline-block"
             verticalAlign="middle"
             title={match[1]}
-            alt={match[1]}
+            alt={":" + match[1] + ":"}
+            overflow="hidden"
           />
         );
       }

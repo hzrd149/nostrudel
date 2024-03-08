@@ -46,7 +46,7 @@ export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "c
         {emojis.length > 0 && (
           <Flex mb="2" wrap="wrap" gap="2">
             {emojis.map(({ name, url }) => (
-              <Image key={name + url} src={url} title={name} alt={`:${name}:`} w={8} h={8} />
+              <Image key={name + url} src={url} title={name} alt={`:${name}:`} w={8} h={8} overflow="hidden" />
             ))}
           </Flex>
         )}
