@@ -13,8 +13,8 @@ import {
 } from "../../helpers/nostr/communities";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import UserAvatarLink from "../../components/user-avatar-link";
-import UserLink from "../../components/user-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 
 import TrendUp01 from "../../components/icons/trend-up-01";
@@ -25,7 +25,7 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import HorizontalCommunityDetails from "./components/horizonal-community-details";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { getEventCoordinate, getEventUID } from "../../helpers/nostr/events";
+import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import { WritingIcon } from "../../components/icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import CommunityEditModal from "./components/community-edit-modal";

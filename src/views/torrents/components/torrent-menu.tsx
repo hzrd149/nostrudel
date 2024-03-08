@@ -1,6 +1,6 @@
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { NostrEvent } from "../../../types/nostr-event";
 import { TranslateIcon } from "../../../components/icons";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
@@ -18,7 +18,7 @@ export default function TorrentMenu({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={torrent} />
         <CopyEmbedCodeMenuItem event={torrent} />
         <MuteUserMenuItem event={torrent} />
@@ -27,7 +27,7 @@ export default function TorrentMenu({
           Translations
         </MenuItem>
         <DebugEventMenuItem event={torrent} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
 
       {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={torrent} />}
     </>

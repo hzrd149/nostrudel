@@ -2,13 +2,13 @@ import { useMemo } from "react";
 import { Flex, FlexProps, Text } from "@chakra-ui/react";
 
 import { parseZapEvent } from "../../../helpers/nostr/zaps";
-import UserLink from "../../../components/user-link";
+import UserLink from "../../../components/user/user-link";
 import { LightningIcon } from "../../../components/icons";
 import { readablizeSats } from "../../../helpers/bolt11";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import useSubject from "../../../hooks/use-subject";
-import UserAvatarLink from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
   const timeline = useStreamChatTimeline(stream);

@@ -15,8 +15,8 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -46,7 +46,7 @@ export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "c
         {emojis.length > 0 && (
           <Flex mb="2" wrap="wrap" gap="2">
             {emojis.map(({ name, url }) => (
-              <Image key={name + url} src={url} title={name} w={8} h={8} />
+              <Image key={name + url} src={url} title={name} alt={`:${name}:`} w={8} h={8} overflow="hidden" />
             ))}
           </Flex>
         )}

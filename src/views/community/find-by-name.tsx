@@ -11,7 +11,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import CommunityCard from "../communities/components/community-card";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { safeDecode } from "../../helpers/nip19";
 
 export default function CommunityFindByNameView() {

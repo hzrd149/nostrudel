@@ -23,7 +23,7 @@ import {
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/events";
+import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
 import { getSharableEventAddress } from "../../helpers/nip19";
@@ -94,7 +94,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section
               label="Content"
               p="0"
-              actions={<CopyIconButton aria-label="copy json" text={event.content} size="sm" />}
+              actions={<CopyIconButton aria-label="copy json" value={event.content} size="sm" />}
             >
               <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
                 {event.content}
@@ -103,7 +103,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section
               label="JSON"
               p="0"
-              actions={<CopyIconButton aria-label="copy json" text={JSON.stringify(event)} size="sm" />}
+              actions={<CopyIconButton aria-label="copy json" value={JSON.stringify(event)} size="sm" />}
             >
               <JsonCode data={event} />
             </Section>

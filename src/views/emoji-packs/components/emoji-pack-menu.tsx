@@ -1,5 +1,5 @@
 import { NostrEvent } from "../../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
@@ -11,12 +11,12 @@ export default function EmojiPackMenu({
 }: { pack: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={pack} />
         <CopyEmbedCodeMenuItem event={pack} />
         <DeleteEventMenuItem event={pack} label="Delete Pack" />
         <DebugEventMenuItem event={pack} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

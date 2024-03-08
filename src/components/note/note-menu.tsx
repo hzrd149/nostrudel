@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { BroadcastEventIcon } from "../icons";
 import { NostrEvent } from "../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
 import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
 import InfoCircle from "../icons/info-circle";
@@ -33,7 +33,7 @@ export default function NoteMenu({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={event} />
         <CopyShareLinkMenuItem event={event} />
         <CopyEmbedCodeMenuItem event={event} />
@@ -65,7 +65,7 @@ export default function NoteMenu({
           </MenuItem>
         )}
         <DebugEventMenuItem event={event} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
 
       {translationsModal.isOpen && <NoteTranslationModal isOpen onClose={translationsModal.onClose} note={event} />}
     </>

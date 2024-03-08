@@ -11,7 +11,7 @@ import IntersectionObserverProvider, {
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotificationTimeline } from "../../providers/global/notification-timeline";
-import { getEventUID, isReply, isRepost } from "../../helpers/nostr/events";
+import { getEventUID, isReply, isRepost } from "../../helpers/nostr/event";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";

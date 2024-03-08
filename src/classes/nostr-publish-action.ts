@@ -4,7 +4,9 @@ import { NostrEvent } from "nostr-tools";
 import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";
 import Relay, { IncomingCommandResult } from "./relay";
-import Subject, { PersistentSubject } from "./subject";
+import { PersistentSubject } from "./subject";
+import ControlledObservable from "./controlled-observable";
+import SuperMap from "./super-map";
 
 export default class NostrPublishAction {
   id = nanoid();
@@ -12,11 +14,13 @@ export default class NostrPublishAction {
   relays: string[];
   event: NostrEvent;
 
-  results = new PersistentSubject<IncomingCommandResult[]>([]);
-  onResult = new Subject<IncomingCommandResult>(undefined, false);
-  onComplete = createDefer<IncomingCommandResult[]>();
+  results = new PersistentSubject<{ relay: Relay; result: IncomingCommandResult }[]>([]);
+
+  onResult = new ControlledObservable<{ relay: Relay; result: IncomingCommandResult }>();
+  onComplete = createDefer<{ relay: Relay; result: IncomingCommandResult }[]>();
 
   private remaining = new Set<Relay>();
+  private relayResultSubs = new SuperMap<Relay, ZenObservable.Subscription[]>(() => []);
 
   constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 5000) {
     this.label = label;
@@ -26,37 +30,31 @@ export default class NostrPublishAction {
     for (const url of relays) {
       const relay = relayPoolService.requestRelay(url);
       this.remaining.add(relay);
-      relay.onCommandResult.subscribe(this.handleResult, this);
+      this.relayResultSubs.get(relay).push(
+        relay.onCommandResult.subscribe((result) => {
+          if (result[1] === this.event.id) this.handleResult(result, relay);
+        }),
+      );
 
-      // send event
       relay.send(["EVENT", event]);
     }
 
     setTimeout(this.handleTimeout.bind(this), timeout);
   }
 
-  private handleResult(result: IncomingCommandResult) {
-    if (result.eventId === this.event.id) {
-      const relay = result.relay;
-      this.results.next([...this.results.value, result]);
+  private handleResult(result: IncomingCommandResult, relay: Relay) {
+    this.results.next([...this.results.value, { relay, result }]);
+    this.onResult.next({ relay, result });
 
-      this.onResult.next(result);
-
-      relay.onCommandResult.unsubscribe(this.handleResult, this);
-      this.remaining.delete(relay);
-      if (this.remaining.size === 0) this.onComplete.resolve(this.results.value);
-    }
+    this.relayResultSubs.get(relay).forEach((s) => s.unsubscribe());
+    this.relayResultSubs.delete(relay);
+    this.remaining.delete(relay);
+    if (this.remaining.size === 0) this.onComplete.resolve(this.results.value);
   }
 
   private handleTimeout() {
     for (const relay of this.remaining) {
-      this.handleResult({
-        message: "Timeout",
-        eventId: this.event.id,
-        status: false,
-        type: "OK",
-        relay,
-      });
+      this.handleResult(["OK", this.event.id, false, "Timeout"], relay);
     }
   }
 }

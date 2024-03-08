@@ -29,7 +29,7 @@ import { useForm } from "react-hook-form";
 import { safeRelayUrl } from "../../../helpers/relay";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { COMMON_CONTACT_RELAY } from "../../../const";
-import BackButton from "../../../components/back-button";
+import BackButton from "../../../components/router/back-button";
 import AddRelayForm from "../app/add-relay-form";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {

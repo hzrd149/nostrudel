@@ -2,7 +2,7 @@ import { Button, Flex, Heading, Input, Text, Textarea } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { Kind0ParsedContent } from "../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { AppIcon, containerProps } from "./common";
 
 export default function NameStep({ onSubmit }: { onSubmit: (metadata: Kind0ParsedContent) => void }) {

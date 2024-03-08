@@ -1,12 +1,15 @@
-import React, { PropsWithChildren, useContext } from "react";
+import React, { PropsWithChildren, useContext, useMemo, useState } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
-const TrustContext = React.createContext<boolean>(false);
+const TrustContext = React.createContext<{ trust: boolean; setOverride: (trust: boolean) => void }>({
+  trust: false,
+  setOverride: () => {},
+});
 
-export function useTrusted() {
+export function useTrustContext() {
   return useContext(TrustContext);
 }
 
@@ -14,8 +17,10 @@ export function TrustProvider({
   children,
   event,
   trust = false,
-}: PropsWithChildren & { event?: NostrEvent; trust?: boolean }) {
-  const parentTrust = useContext(TrustContext);
+  allowOverride = true,
+}: PropsWithChildren & { event?: NostrEvent; trust?: boolean; allowOverride?: boolean }) {
+  const { trust: parentTrust } = useContext(TrustContext);
+  const [override, setOverride] = useState<boolean>();
 
   const account = useCurrentAccount();
   const contactList = useUserContactList(account?.pubkey);
@@ -23,5 +28,13 @@ export function TrustProvider({
 
   const isEventTrusted = trust || (!!event && (event.pubkey === account?.pubkey || following.includes(event.pubkey)));
 
-  return <TrustContext.Provider value={parentTrust || isEventTrusted}>{children}</TrustContext.Provider>;
+  const context = useMemo(() => {
+    const trust = parentTrust || isEventTrusted;
+    return {
+      trust: allowOverride ? override ?? trust : trust,
+      setOverride: (v: boolean) => allowOverride && setOverride(v),
+    };
+  }, [override, parentTrust, isEventTrusted, setOverride, allowOverride]);
+
+  return <TrustContext.Provider value={context}>{children}</TrustContext.Provider>;
 }

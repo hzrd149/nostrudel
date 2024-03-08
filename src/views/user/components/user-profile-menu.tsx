@@ -1,8 +1,8 @@
-import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
+import { MenuItem, useConst, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import {
   DirectMessagesIcon,
   CopyToClipboardIcon,
@@ -15,15 +15,16 @@ import {
   ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
-import { useUserMetadata } from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/user-metadata";
+import useUserMetadata from "../../../hooks/use-user-metadata";
+import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
-import { truncatedId } from "../../../helpers/nostr/events";
+import { truncatedId } from "../../../helpers/nostr/event";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import userMailboxesService from "../../../services/user-mailboxes";
+import { useContext } from "react";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -36,6 +37,7 @@ export const UserProfileMenu = ({
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
+  const { openAddress } = useContext(AppHandlerContext);
 
   const loginAsUser = () => {
     const relays = userMailboxesService.getMailboxes(pubkey).value?.outbox.urls;
@@ -52,8 +54,8 @@ export const UserProfileMenu = ({
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
-        <MenuItem onClick={() => window.open(buildAppSelectUrl(sharableId), "_blank")} icon={<ExternalLinkIcon />}>
+      <DotsMenuButton {...props}>
+        <MenuItem onClick={() => openAddress(sharableId)} icon={<ExternalLinkIcon />}>
           View in app...
         </MenuItem>
         {account?.pubkey !== pubkey && (
@@ -95,7 +97,7 @@ export const UserProfileMenu = ({
             Relay selection
           </MenuItem>
         )}
-      </CustomMenuIconButton>
+      </DotsMenuButton>
       {infoModal.isOpen && (
         <UserDebugModal pubkey={pubkey} isOpen={infoModal.isOpen} onClose={infoModal.onClose} size="6xl" />
       )}

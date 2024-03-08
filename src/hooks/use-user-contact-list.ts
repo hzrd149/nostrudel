@@ -1,6 +1,6 @@
 import { kinds } from "nostr-tools";
 import useReplaceableEvent from "./use-replaceable-event";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 
 export default function useUserContactList(
   pubkey?: string,

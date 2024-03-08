@@ -20,13 +20,13 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import UserAvatar from "../../user-avatar";
-import UserLink from "../../user-link";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { EventRelays } from "../../note/note-relays";
 import { useAsync } from "react-use";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
+import { EventRelays } from "../../note/event-relays";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
   const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);

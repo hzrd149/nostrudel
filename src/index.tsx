@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
 import "./services/user-event-sync";
+import "./services/username-search";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

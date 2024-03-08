@@ -1,7 +1,7 @@
 import stringify from "json-stringify-deterministic";
 
 import Subject from "../classes/subject";
-import { NostrRequestFilter } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-relay";
 import SuperMap from "../classes/super-map";
 import NostrRequest from "../classes/nostr-request";
 import relayScoreboardService from "./relay-scoreboard";

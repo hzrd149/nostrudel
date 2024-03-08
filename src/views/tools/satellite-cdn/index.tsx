@@ -75,7 +75,7 @@ function FileRow({ file }: { file: SatelliteCDNFile }) {
           <Link isExternal href={file.url}>
             {file.name}
           </Link>
-          <CopyIconButton text={file.url} aria-label="Copy URL" title="Copy URL" size="xs" variant="ghost" ml="2" />
+          <CopyIconButton value={file.url} aria-label="Copy URL" title="Copy URL" size="xs" variant="ghost" ml="2" />
         </Td>
         <Td isNumeric>{formatBytes(file.size)}</Td>
         <Td>{file.type}</Td>

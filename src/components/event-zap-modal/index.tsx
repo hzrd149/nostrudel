@@ -16,7 +16,7 @@ import clientRelaysService from "../../services/client-relays";
 import { getZapSplits } from "../../helpers/nostr/zaps";
 import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/events";
+import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import { EmbedProps } from "../embed-event";
 import userMailboxesService from "../../services/user-mailboxes";
 import InputStep from "./input-step";
@@ -26,7 +26,7 @@ import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
-import UserLink from "../user-link";
+import UserLink from "../user/user-link";
 import relayHintService from "../../services/event-relay-hint";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };

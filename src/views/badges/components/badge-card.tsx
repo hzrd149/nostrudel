@@ -3,12 +3,12 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/events";
+import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/event";
 import BadgeMenu from "./badge-menu";
 import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import Timestamp from "../../../components/timestamp";

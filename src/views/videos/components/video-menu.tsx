@@ -1,4 +1,4 @@
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
@@ -9,13 +9,13 @@ import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu
 export default function VideoMenu({ video, ...props }: { video: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={video} />
         <CopyShareLinkMenuItem event={video} />
         <CopyEmbedCodeMenuItem event={video} />
         <MuteUserMenuItem event={video} />
         <DebugEventMenuItem event={video} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

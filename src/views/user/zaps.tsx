@@ -5,9 +5,9 @@ import { useOutletContext } from "react-router-dom";
 
 import { ErrorBoundary, ErrorFallback } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
-import { NoteLink } from "../../components/note-link";
-import UserAvatarLink from "../../components/user-avatar-link";
-import UserLink from "../../components/user-link";
+import { NoteLink } from "../../components/note/note-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
 import { readablizeSats } from "../../helpers/bolt11";
 import { isProfileZap, isNoteZap, parseZapEvent, totalZaps } from "../../helpers/nostr/zaps";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -24,7 +24,7 @@ import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import Timestamp from "../../components/timestamp";
 import { EmbedEventNostrLink, EmbedEventPointer } from "../../components/embed-event";
-import { parseCoordinate } from "../../helpers/nostr/events";
+import { parseCoordinate } from "../../helpers/nostr/event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {

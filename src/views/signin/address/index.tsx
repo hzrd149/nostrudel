@@ -10,7 +10,7 @@ import accountService from "../../../services/account";
 import { COMMON_CONTACT_RELAY } from "../../../const";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
-import QRCodeScannerButton from "../../../components/qr-code-scanner-button";
+import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();

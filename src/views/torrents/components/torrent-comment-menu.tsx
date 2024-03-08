@@ -1,4 +1,4 @@
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
@@ -14,14 +14,14 @@ export default function TorrentCommentMenu({
 }: { comment: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={comment} />
         <CopyShareLinkMenuItem event={comment} />
         <CopyEmbedCodeMenuItem event={comment} />
         <MuteUserMenuItem event={comment} />
         <DeleteEventMenuItem event={comment} />
         <DebugEventMenuItem event={comment} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

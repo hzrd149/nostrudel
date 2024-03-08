@@ -11,9 +11,9 @@ import IntersectionObserverProvider, {
 } from "../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useMemo, useRef } from "react";
-import { getEventUID } from "../../helpers/nostr/events";
-import UserLink from "../../components/user-link";
-import UserAvatarLink from "../../components/user-avatar-link";
+import { getEventUID } from "../../helpers/nostr/event";
+import UserLink from "../../components/user/user-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
 
 function FollowerItem({ event }: { event: Event }) {
   const ref = useRef<HTMLDivElement | null>(null);

@@ -5,6 +5,7 @@ import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { useDebounce, useObservable } from "react-use";
 import {
   Group,
   Mesh,
@@ -21,12 +22,10 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
 import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";
-import { useDebounce } from "react-use";
-import useSubject from "../../hooks/use-subject";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
@@ -53,7 +52,7 @@ function NetworkDMGraphPage() {
 
       store.clear();
       const request = new NostrRequest(relays);
-      request.onEvent.subscribe(store.addEvent, store);
+      request.onEvent.subscribe((e) => store.addEvent(e));
       request.start({
         authors: contactsPubkeys,
         kinds: [kinds.EncryptedDirectMessage],
@@ -71,7 +70,7 @@ function NetworkDMGraphPage() {
   const selfMetadata = useUserMetadata(account.pubkey);
   const usersMetadata = useUsersMetadata(contactsPubkeys);
 
-  const newEventTrigger = useSubject(store.onEvent);
+  const newEventTrigger = useObservable(store.onEvent);
   const graphData = useMemo(() => {
     if (store.events.size === 0) return { nodes: [], links: [] };
 

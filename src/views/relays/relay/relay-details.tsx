@@ -38,8 +38,8 @@ import { groupByTime } from "../../../helpers/notification";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
 import NostrRequest from "../../../classes/nostr-request";
-import { sortByDate } from "../../../helpers/nostr/events";
-import { NostrQuery } from "../../../types/nostr-query";
+import { sortByDate } from "../../../helpers/nostr/event";
+import { NostrQuery } from "../../../types/nostr-relay";
 
 ChartJS.register(
   ArcElement,
@@ -155,9 +155,11 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const loadMore = useCallback(() => {
     setLoading(true);
     const request = new NostrRequest([relay]);
-    request.onEvent.subscribe(store.addEvent, store);
     const throttle = _throttle(() => update({}), 100);
-    request.onEvent.subscribe(() => throttle());
+    request.onEvent.subscribe((e) => {
+      store.addEvent(e);
+      throttle();
+    });
     request.onComplete.then(() => setLoading(false));
 
     const query: NostrQuery = { limit: 500 };

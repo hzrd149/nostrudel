@@ -21,10 +21,10 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
-import UserAvatar from "../../../components/user-avatar";
-import UserLink from "../../../components/user-link";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
 import { useDebounce } from "react-use";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import { CodeIcon } from "../../../components/icons";
 import { Metadata } from "./relay-card";
 import { safeRelayUrl } from "../../../helpers/relay";

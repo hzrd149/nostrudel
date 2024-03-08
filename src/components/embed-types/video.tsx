@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import { isVideoURL } from "../../helpers/url";
 import useAppSettings from "../../hooks/use-app-settings";
-import useElementBlur from "../../hooks/use-element-blur";
-import { useTrusted } from "../../providers/local/trust";
+import useElementTrustBlur from "../../hooks/use-element-trust-blur";
+import { useTrustContext } from "../../providers/local/trust";
 
 const StyledVideo = styled.video`
   max-width: 30rem;
@@ -14,8 +14,7 @@ const StyledVideo = styled.video`
 
 function TrustVideo({ src }: { src: string }) {
   const { blurImages } = useAppSettings();
-  const trusted = useTrusted();
-  const { onClick, handleEvent, style } = useElementBlur(!trusted);
+  const { onClick, handleEvent, style } = useElementTrustBlur();
 
   return (
     <StyledVideo

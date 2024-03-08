@@ -5,7 +5,7 @@ import { kinds } from "nostr-tools";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
 import ListCard from "./components/list-card";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import useUserLists from "../../hooks/use-user-lists";
 import NewListModal from "./components/new-list-modal";
 import { getSharableEventAddress } from "../../helpers/nip19";

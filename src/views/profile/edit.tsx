@@ -15,10 +15,10 @@ import { useForm } from "react-hook-form";
 
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
-import { Kind0ParsedContent } from "../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
+import useUserMetadata from "../../hooks/use-user-metadata";
 import dnsIdentityService from "../../services/dns-identity";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
@@ -205,27 +205,27 @@ export const ProfileEditView = () => {
   );
 
   const handleSubmit = async (data: FormData) => {
-    const metadata: Kind0ParsedContent = {
+    const newMetadata: Kind0ParsedContent = {
       name: data.username,
       picture: data.picture,
     };
-    if (data.displayName) metadata.displayName = metadata.display_name = data.displayName;
-    if (data.about) metadata.about = data.about;
-    if (data.website) metadata.website = data.website;
-    if (data.nip05) metadata.nip05 = data.nip05;
+    if (data.displayName) newMetadata.displayName = newMetadata.display_name = data.displayName;
+    if (data.about) newMetadata.about = data.about;
+    if (data.website) newMetadata.website = data.website;
+    if (data.nip05) newMetadata.nip05 = data.nip05;
 
     if (data.lightningAddress) {
       if (isLNURL(data.lightningAddress)) {
-        metadata.lud06 = data.lightningAddress;
+        newMetadata.lud06 = data.lightningAddress;
       } else if (isLightningAddress(data.lightningAddress)) {
-        metadata.lud16 = data.lightningAddress;
+        newMetadata.lud16 = data.lightningAddress;
       }
     }
 
     const draft: DraftNostrEvent = {
       created_at: dayjs().unix(),
       kind: 0,
-      content: JSON.stringify(metadata),
+      content: JSON.stringify({ ...metadata, ...newMetadata }),
       tags: [],
     };
 

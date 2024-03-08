@@ -14,7 +14,7 @@ import {
 import { isRTag } from "../types/nostr-event";
 import useCurrentAccount from "../hooks/use-current-account";
 import useUserRelaySets from "../hooks/use-user-relay-sets";
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/event";
 import { getListName } from "../helpers/nostr/lists";
 import { relayListAddRelay, relayListRemoveRelay } from "../helpers/nostr/relay-list";
 import { AddIcon, CheckIcon, ChevronDownIcon, InboxIcon, OutboxIcon, PlusCircleIcon } from "./icons";

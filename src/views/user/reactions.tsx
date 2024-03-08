@@ -14,12 +14,12 @@ import IntersectionObserverProvider, {
 } from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { TrustProvider } from "../../providers/local/trust";
-import UserAvatar from "../../components/user-avatar";
-import UserLink from "../../components/user-link";
-import NoteMenu from "../../components/note/note-menu";
+import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { embedEmoji } from "../../components/embed-types";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import NoteMenu from "../../components/note/note-menu";
 
 const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
   const ref = useRef<HTMLDivElement | null>(null);

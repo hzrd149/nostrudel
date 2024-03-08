@@ -6,7 +6,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { getCommunityName } from "../../helpers/nostr/communities";
 import { AddressPointer } from "nostr-tools/lib/types/nip19";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate } from "../../helpers/nostr/event";
 
 function CommunityOption({ pointer }: { pointer: AddressPointer }) {
   const community = useReplaceableEvent(pointer);

@@ -1,6 +1,6 @@
 import { COMMUNITY_DEFINITION_KIND, SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../helpers/nostr/communities";
 import { COMMUNITIES_LIST_KIND, NOTE_LIST_KIND, getAddressPointersFromList } from "../helpers/nostr/lists";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 

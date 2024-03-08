@@ -12,17 +12,17 @@ import {
 } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user-avatar-link";
-import UserLink from "../../user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { CompactNoteContent } from "../../compact-note-content";
 import { getHashtags } from "../../../helpers/nostr/stemstr";
 import { ReplyIcon } from "../../icons";
-import NoteZapButton from "../../note/note-zap-button";
-import QuoteRepostButton from "../../note/components/quote-repost-button";
 import Timestamp from "../../timestamp";
 import TrackStemstrButton from "../../../views/tracks/components/track-stemstr-button";
 import TrackDownloadButton from "../../../views/tracks/components/track-download-button";
 import TrackPlayer from "../../../views/tracks/components/track-player";
+import QuoteRepostButton from "../../note/quote-repost-button";
+import NoteZapButton from "../../note/note-zap-button";
 
 // example nevent1qqst32cnyhhs7jt578u7vp3y047dduuwjquztpvwqc43f3nvg8dh28gpzamhxue69uhhyetvv9ujuum5v4khxarj9eshquq4rxdxa
 export default function EmbeddedStemstrTrack({ track, ...props }: Omit<CardProps, "children"> & { track: NostrEvent }) {

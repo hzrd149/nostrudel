@@ -17,10 +17,10 @@ import {
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
 import { readablizeSats } from "../../../helpers/bolt11";
 import User01 from "../../../components/icons/user-01";

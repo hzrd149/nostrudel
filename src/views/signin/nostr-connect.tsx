@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 import accountService from "../../services/account";
 import nostrConnectService, { NostrConnectClient } from "../../services/nostr-connect";
-import QRCodeScannerButton from "../../components/qr-code-scanner-button";
+import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 
 export default function LoginNostrConnectView() {
   const navigate = useNavigate();

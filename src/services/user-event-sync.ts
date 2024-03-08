@@ -4,7 +4,7 @@ import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
-import replaceableEventLoaderService from "./replaceable-event-requester";
+import replaceableEventsService from "./replaceable-events";
 import userAppSettings from "./settings/user-app-settings";
 import userMailboxesService from "./user-mailboxes";
 import userMetadataService from "./user-metadata";
@@ -15,7 +15,7 @@ function loadContactsList() {
   const account = accountService.current.value!;
 
   log("Loading contacts list");
-  replaceableEventLoaderService.requestEvent(
+  replaceableEventsService.requestEvent(
     [...clientRelaysService.readRelays.value, COMMON_CONTACT_RELAY],
     kinds.Contacts,
     account.pubkey,

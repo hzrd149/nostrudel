@@ -1,7 +1,7 @@
 import { ReactNode, memo, useCallback } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import MessageBlock, { MessageBlockProps } from "../../../components/message-block";
+import MessageBlock, { MessageBlockProps } from "../../../components/message/message-block";
 import ChannelMessageContent from "./channel-message-content";
 
 function ChannelMessageBlock({ ...props }: Omit<MessageBlockProps, "renderContent">) {

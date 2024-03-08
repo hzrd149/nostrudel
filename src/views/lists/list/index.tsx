@@ -3,7 +3,7 @@ import { kinds, nip19 } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/lib/types/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
-import UserLink from "../../../components/user-link";
+import UserLink from "../../../components/user/user-link";
 import { ChevronLeftIcon } from "../../../components/icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
@@ -18,7 +18,7 @@ import {
 } from "../../../helpers/nostr/lists";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import UserCard from "../components/user-card";
-import OpenGraphCard from "../../../components/open-graph-card";
+import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import { TrustProvider } from "../../../providers/local/trust";
 import ListMenu from "../components/list-menu";
 import ListFavoriteButton from "../components/list-favorite-button";
@@ -28,7 +28,7 @@ import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import { encodeDecodeResult } from "../../../helpers/nip19";
 import useSingleEvent from "../../../hooks/use-single-event";
-import UserAvatarLink from "../../../components/user-avatar-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import { NostrEvent } from "../../../types/nostr-event";
 

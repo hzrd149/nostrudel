@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { useSigningContext } from "../providers/global/signing-provider";
 import userUserBookmarksList from "./use-user-bookmarks-list";
-import { getEventCoordinate, isReplaceable, pointerMatchEvent } from "../helpers/nostr/events";
+import { getEventCoordinate, isReplaceable, pointerMatchEvent } from "../helpers/nostr/event";
 import {
   BOOKMARK_LIST_KIND,
   listAddCoordinate,

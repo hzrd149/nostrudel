@@ -11,24 +11,24 @@ import {
 import { NostrEvent } from "../../types/nostr-event";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import UserAvatarLink from "../../components/user-avatar-link";
-import UserLink from "../../components/user-link";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
-import { UserFollowButton } from "../../components/user-follow-button";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
+import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import { UserFollowButton } from "../../components/user/user-follow-button";
 import VideoMenu from "./components/video-menu";
-import NoteZapButton from "../../components/note/note-zap-button";
 import SimpleLikeButton from "../../components/event-reactions/simple-like-button";
 import SimpleDislikeButton from "../../components/event-reactions/simple-dislike-button";
 import { ErrorBoundary } from "../../components/error-boundary";
-import QuoteRepostButton from "../../components/note/components/quote-repost-button";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import VideoCard from "./components/video-card";
-import { getEventUID } from "../../helpers/nostr/events";
-import UserName from "../../components/user-name";
+import { getEventUID } from "../../helpers/nostr/event";
+import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
+import NoteZapButton from "../../components/note/note-zap-button";
+import QuoteRepostButton from "../../components/note/quote-repost-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();

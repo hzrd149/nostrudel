@@ -30,7 +30,7 @@ import { RelayFavicon } from "../relay-favicon";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { getListName } from "../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate } from "../../helpers/nostr/event";
 import AddRelayForm from "../../views/relays/app/add-relay-form";
 import { SaveRelaySetForm } from "./save-relay-set-form";
 

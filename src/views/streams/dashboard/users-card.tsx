@@ -1,18 +1,17 @@
 import { ReactNode, memo, useMemo, useState } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { useInterval, useObservable } from "react-use";
 
-import useSubject from "../../../hooks/use-subject";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
-import UserAvatar from "../../../components/user-avatar";
-import UserLink from "../../../components/user-link";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../../providers/route/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../../helpers/nostr/lists";
 import { ParsedStream } from "../../../helpers/nostr/stream";
-import { useInterval } from "react-use";
 
 function Countdown({ time }: { time: number }) {
   const [now, setNow] = useState(dayjs().unix());
@@ -61,7 +60,7 @@ function UsersCard({ stream }: { stream: ParsedStream }) {
   const streamChatTimeline = useStreamChatTimeline(stream);
 
   // refresh when a new event
-  useSubject(streamChatTimeline.events.onEvent);
+  useObservable(streamChatTimeline.events.onEvent);
   const chatEvents = streamChatTimeline.events.getSortedEvents();
 
   const muteList = useUserMuteList(account.pubkey);

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { BOOKMARK_LIST_KIND, getAddressPointersFromList, getEventPointersFromList } from "../helpers/nostr/lists";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 

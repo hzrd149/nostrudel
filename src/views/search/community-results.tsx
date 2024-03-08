@@ -6,7 +6,7 @@ import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
 } from "../../providers/local/intersection-observer";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import CommunityCard from "../communities/components/community-card";
 import useSubject from "../../hooks/use-subject";

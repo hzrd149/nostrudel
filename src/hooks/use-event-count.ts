@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import eventCountService from "../services/event-count";
-import { NostrRequestFilter } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-relay";
 import useSubject from "./use-subject";
 
 export default function useEventCount(filter?: NostrRequestFilter, alwaysRequest = false) {

@@ -100,6 +100,8 @@ const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 const UnknownTimelineView = lazy(() => import("./views/tools/unknown-event-feed"));
+const EventConsoleView = lazy(() => import("./views/tools/event-console"));
+const EventPublisherView = lazy(() => import("./views/tools/event-publisher"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -321,6 +323,8 @@ const router = createHashRouter([
           { path: "transform/:id", element: <TransformNoteView /> },
           { path: "satellite-cdn", element: <SatelliteCDNView /> },
           { path: "unknown", element: <UnknownTimelineView /> },
+          { path: "console", element: <EventConsoleView /> },
+          { path: "publisher", element: <EventPublisherView /> },
         ],
       },
       {

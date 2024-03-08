@@ -7,7 +7,7 @@ import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
-import { NostrQuery } from "../types/nostr-query";
+import { NostrQuery } from "../types/nostr-relay";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
@@ -30,7 +30,7 @@ const RELAY_REQUEST_BATCH_TIME = 1000;
 /** This class is ued to batch requests to a single relay */
 class ChannelMetadataRelayLoader {
   private subscription: NostrSubscription;
-  private events = new SuperMap<Pubkey, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+  private events = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   private requestNext = new Set<string>();
   private requested = new Map<string, Date>();
@@ -109,7 +109,7 @@ class ChannelMetadataRelayLoader {
         };
 
         if (query["#e"] && query["#e"].length > 0) this.log(`Updating query`, query["#e"].length);
-        this.subscription.setQuery(query);
+        this.subscription.setFilters([query]);
 
         if (this.subscription.state !== NostrSubscription.OPEN) {
           this.subscription.open();
@@ -234,7 +234,7 @@ class ChannelMetadataService {
     for (const relay of relayUrls) {
       const request = this.loaders.get(relay).requestMetadata(channelId);
 
-      sub.connectWithHandler(request, (event, next, current) => {
+      sub.connectWithMapper(request, (event, next, current) => {
         if (!current || event.created_at > current.created_at) {
           next(event);
           this.saveToCache(channelId, event);

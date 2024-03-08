@@ -30,9 +30,9 @@ declare module "yet-another-react-lightbox" {
 }
 
 import { NostrEvent } from "../types/nostr-event";
-import UserAvatarLink from "./user-avatar-link";
-import UserLink from "./user-link";
-import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
+import UserAvatarLink from "./user/user-avatar-link";
+import UserLink from "./user/user-link";
+import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
 import styled from "@emotion/styled";
 import { getSharableEventAddress } from "../helpers/nip19";
 

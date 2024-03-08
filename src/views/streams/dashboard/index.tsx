@@ -12,7 +12,7 @@ import { ParsedStream, STREAM_KIND, getATag } from "../../../helpers/nostr/strea
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
 import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";

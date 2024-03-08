@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
-import { isReply, isRepost } from "../../helpers/nostr/events";
+import { isReply, isRepost } from "../../helpers/nostr/event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";

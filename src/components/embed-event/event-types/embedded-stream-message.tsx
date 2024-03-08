@@ -2,8 +2,8 @@ import { Box, Card, CardProps, Divider, Flex, Link, Text } from "@chakra-ui/reac
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent, isATag } from "../../../types/nostr-event";
-import UserLink from "../../user-link";
-import UserAvatar from "../../user-avatar";
+import UserLink from "../../user/user-link";
+import UserAvatar from "../../user/user-avatar";
 import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-message-content";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";

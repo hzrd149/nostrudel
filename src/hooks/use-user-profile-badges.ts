@@ -4,7 +4,7 @@ import useReplaceableEvent from "./use-replaceable-event";
 import { PROFILE_BADGES_IDENTIFIER, parseProfileBadges } from "../helpers/nostr/badges";
 import useReplaceableEvents from "./use-replaceable-events";
 import useSingleEvents from "./use-single-events";
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
 
 export default function useUserProfileBadges(pubkey: string, additionalRelays?: Iterable<string>) {

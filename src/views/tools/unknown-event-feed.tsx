@@ -18,7 +18,7 @@ import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { EmbedEvent } from "../../components/embed-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import {

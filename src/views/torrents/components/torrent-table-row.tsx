@@ -5,14 +5,14 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../../components/timestamp";
-import UserLink from "../../../components/user-link";
+import UserLink from "../../../components/user/user-link";
 import Magnet from "../../../components/icons/magnet";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { formatBytes } from "../../../helpers/number";
-import NoteZapButton from "../../../components/note/note-zap-button";
 import TorrentMenu from "./torrent-menu";
+import NoteZapButton from "../../../components/note/note-zap-button";
 
 type DisplayCategory = { name: string; tags: string[] };
 
@@ -57,8 +57,8 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
             </>
           ))}
       </Td>
-      <Td>
-        <Link as={RouterLink} to={`/torrents/${getSharableEventAddress(torrent)}`} isTruncated maxW="lg">
+      <Td maxW="lg" overflow="hidden" isTruncated>
+        <Link as={RouterLink} to={`/torrents/${getSharableEventAddress(torrent)}`}>
           {getTorrentTitle(torrent)}
         </Link>
       </Td>

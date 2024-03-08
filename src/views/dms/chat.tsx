@@ -4,8 +4,8 @@ import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router
 import { kinds } from "nostr-tools";
 
 import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
-import UserAvatar from "../../components/user-avatar";
-import UserLink from "../../components/user-link";
+import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -13,7 +13,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { UserDnsIdentityIcon } from "../../components/user-dns-identity-icon";
+import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
 import { useDecryptionContext } from "../../providers/global/dycryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
@@ -25,6 +25,7 @@ import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import RelaySet from "../../classes/relay-set";
+import useAppSettings from "../../hooks/use-app-settings";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -46,6 +47,7 @@ const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useCurrentAccount()!;
+  const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
   const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
@@ -124,9 +126,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
           </Flex>
           <ButtonGroup ml="auto">
-            <Button onClick={decryptAll} isLoading={loading}>
-              Decrypt All
-            </Button>
+            {!autoDecryptDMs && (
+              <Button onClick={decryptAll} isLoading={loading}>
+                Decrypt All
+              </Button>
+            )}
             <IconButton
               aria-label="Threads"
               title="Threads"

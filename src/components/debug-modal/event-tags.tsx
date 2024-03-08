@@ -4,11 +4,11 @@ import { NostrEvent, nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { Tag, isATag, isETag, isPTag } from "../../types/nostr-event";
-import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/events";
+import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/event";
 import { EmbedEventPointer } from "../embed-event";
-import UserAvatarLink from "../user-avatar-link";
-import UserLink from "../user-link";
-import { UserDnsIdentityIcon } from "../user-dns-identity-icon";
+import UserAvatarLink from "../user/user-avatar-link";
+import UserLink from "../user/user-link";
+import { UserDnsIdentityIcon } from "../user/user-dns-identity-icon";
 
 function EventTag({ tag }: { tag: Tag }) {
   const expand = useDisclosure();

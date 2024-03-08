@@ -1,5 +1,5 @@
 import { EmbedableContent, embedJSX } from "../../helpers/embeds";
-import { InlineInvoiceCard } from "../inline-invoice-card";
+import { InlineInvoiceCard } from "../lightning/inline-invoice-card";
 
 export function embedLightningInvoice(content: EmbedableContent) {
   return embedJSX(content, {

@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/events";
+import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/event";
 import {
   COMMUNITY_APPROVAL_KIND,
   buildApprovalMap,

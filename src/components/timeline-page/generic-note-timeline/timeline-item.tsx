@@ -4,18 +4,18 @@ import { Box, Text } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
-import Note from "../../note";
 import RepostEvent from "./repost-event";
 import ArticleNote from "./article-note";
 import StreamNote from "./stream-note";
 import RelayRecommendation from "./relay-recommendation";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID, isReply } from "../../../helpers/nostr/events";
+import { getEventUID, isReply } from "../../../helpers/nostr/event";
 import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/flare";
 import EmbeddedFlareVideo from "../../embed-event/event-types/embedded-flare-video";
+import { TimelineNote } from "../../note/timeline-note";
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -24,7 +24,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
   let content: ReactNode | null = null;
   switch (event.kind) {
     case kinds.ShortTextNote:
-      content = isReply(event) ? <ReplyNote event={event} /> : <Note event={event} showReplyButton />;
+      content = isReply(event) ? <ReplyNote event={event} /> : <TimelineNote event={event} showReplyButton />;
       break;
     case kinds.Repost:
     case kinds.GenericRepost:

@@ -12,8 +12,8 @@ import { matchSorter } from "match-sorter";
 
 import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
-import UserAvatar from "./user-avatar";
-import { UserDnsIdentityIcon } from "./user-dns-identity-icon";
+import UserAvatar from "./user/user-avatar";
+import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;

@@ -2,7 +2,7 @@ import { memo, useRef } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import Note from "../../note";
+import TimelineNote from "../../note/timeline-note";
 import { getEventUID } from "nostr-idb";
 
 function ReplyNote({ event }: { event: NostrEvent }) {
@@ -11,7 +11,7 @@ function ReplyNote({ event }: { event: NostrEvent }) {
 
   return (
     <div ref={ref}>
-      <Note event={event} showReplyButton showReplyLine />
+      <TimelineNote event={event} showReplyButton showReplyLine />
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrRequestFilter } from "../types/nostr-query";
+import { NostrRequestFilter } from "../types/nostr-relay";
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
-import { NostrEvent } from "../types/nostr-event";
 import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
 type Options = {

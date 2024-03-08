@@ -1,46 +1,35 @@
 import { memo, useRef, useState } from "react";
-import {
-  Alert,
-  AlertIcon,
-  Button,
-  ButtonGroup,
-  Flex,
-  IconButton,
-  Link,
-  Spacer,
-  useColorMode,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
+import ReplyForm from "./reply-form";
 import { ReplyIcon } from "../../../components/icons";
 import { countReplies, ThreadItem } from "../../../helpers/thread";
 import { TrustProvider } from "../../../providers/local/trust";
-import ReplyForm from "./reply-form";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
-import { NoteContents } from "../../../components/note/text-note-contents";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
-import NoteZapButton from "../../../components/note/note-zap-button";
-import QuoteRepostButton from "../../../components/note/components/quote-repost-button";
-import RepostButton from "../../../components/note/components/repost-button";
-import NoteMenu from "../../../components/note/note-menu";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import NoteReactions from "../../../components/note/components/note-reactions";
-import BookmarkButton from "../../../components/note/components/bookmark-button";
-import NoteCommunityMetadata from "../../../components/note/note-community-metadata";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
-import NoteProxyLink from "../../../components/note/components/note-proxy-link";
-import { NoteDetailsButton } from "../../../components/note/components/note-details-button";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
-import POWIcon from "../../../components/pow-icon";
+import POWIcon from "../../../components/pow/pow-icon";
+import RepostButton from "../../../components/note/timeline-note/components/repost-button";
+import QuoteRepostButton from "../../../components/note/quote-repost-button";
+import NoteZapButton from "../../../components/note/note-zap-button";
+import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
+import { NoteDetailsButton } from "../../../components/note/timeline-note/components/note-details-button";
+import BookmarkButton from "../../../components/note/bookmark-button";
+import NoteMenu from "../../../components/note/note-menu";
+import NoteCommunityMetadata from "../../../components/note/timeline-note/note-community-metadata";
+import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -106,7 +95,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       <>
         <NoteCommunityMetadata event={post.event} pl="2" />
         <TrustProvider trust={focusId === post.event.id ? true : undefined} event={post.event}>
-          <NoteContents event={post.event} pl="2" />
+          <TextNoteContents event={post.event} pl="2" />
         </TrustProvider>
       </>
     );

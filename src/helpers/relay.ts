@@ -1,7 +1,7 @@
 import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
 import { Filter } from "nostr-tools";
 
-import { NostrQuery, NostrRequestFilter } from "../types/nostr-query";
+import { NostrQuery, NostrRequestFilter } from "../types/nostr-relay";
 import { NostrEvent } from "../types/nostr-event";
 
 // NOTE: only use this for equality checks and querying

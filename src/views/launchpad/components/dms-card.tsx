@@ -14,10 +14,10 @@ import {
   sortConversationsByLastReceived,
 } from "../../../helpers/nostr/dms";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatar from "../../../components/user-avatar";
+import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import UserName from "../../../components/user-name";
-import { UserDnsIdentityIcon } from "../../../components/user-dns-identity-icon";
+import UserName from "../../../components/user/user-name";
+import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
 import { nip19 } from "nostr-tools";
 import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import Timestamp from "../../../components/timestamp";

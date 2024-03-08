@@ -2,8 +2,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { Card, CardFooter, CardHeader, CardProps, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 

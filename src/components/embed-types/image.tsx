@@ -1,7 +1,7 @@
 import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
-import { useTrusted } from "../../providers/local/trust";
+import { useTrustContext } from "../../providers/local/trust";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { getMatchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
@@ -10,15 +10,14 @@ import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
 import { NostrEvent } from "../../types/nostr-event";
 import useAppSettings from "../../hooks/use-app-settings";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import useElementBlur from "../../hooks/use-element-blur";
+import useElementTrustBlur from "../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../helpers/image";
 
 export type TrustImageProps = ImageProps;
 
 export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, ref) => {
   const { blurImages } = useAppSettings();
-  const trusted = useTrusted();
-  const { onClick, style } = useElementBlur(!trusted);
+  const { onClick, style } = useElementTrustBlur();
 
   const handleClick = useCallback<MouseEventHandler<HTMLImageElement>>(
     (e) => {

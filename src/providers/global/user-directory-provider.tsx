@@ -3,7 +3,7 @@ import { useAsync } from "react-use";
 
 import db from "../../services/db";
 
-export type UserDirectory = { pubkey: string; names: [] }[];
+export type UserDirectory = { pubkey: string; names: string[] }[];
 export type GetDirectoryFn = () => UserDirectory;
 const UserSearchDirectoryContext = createContext<GetDirectoryFn>(() => []);
 

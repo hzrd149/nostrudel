@@ -1,7 +1,7 @@
 import { Image, MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent, isPTag } from "../../../types/nostr-event";
-import { CustomMenuIconButton, MenuIconButtonProps } from "../../../components/menu-icon-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
@@ -17,20 +17,20 @@ export default function ListMenu({ list, ...props }: { list: NostrEvent } & Omit
 
   return (
     <>
-      <CustomMenuIconButton {...props}>
+      <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={list} />
         <CopyEmbedCodeMenuItem event={list} />
         {!isSpecial && <DeleteEventMenuItem event={list} label="Delete List" />}
         {hasPeople && (
           <MenuItem
-            icon={<Image w="4" h="4" src="https://www.makeprisms.com/favicon.ico" />}
+            icon={<Image w="4" h="4" src="https://framerusercontent.com/images/3S3Pyvkh2tEvvKyX47QrUq7XQLk.png" />}
             onClick={() => window.open(`https://www.makeprisms.com/create/${naddr}`, "_blank")}
           >
             Create $prism
           </MenuItem>
         )}
         <DebugEventMenuItem event={list} />
-      </CustomMenuIconButton>
+      </DotsMenuButton>
     </>
   );
 }

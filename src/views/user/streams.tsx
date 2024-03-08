@@ -1,6 +1,6 @@
 import { SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { truncatedId } from "../../helpers/nostr/events";
+import { truncatedId } from "../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";

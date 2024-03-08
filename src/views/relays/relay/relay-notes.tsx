@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
-import { isReply, isRepost } from "../../../helpers/nostr/events";
+import { isReply, isRepost } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../../types/nostr-event";

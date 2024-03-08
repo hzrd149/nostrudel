@@ -3,9 +3,9 @@ import { Flex, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import { NoteLink } from "../../components/note-link";
-import UserLink from "../../components/user-link";
-import { filterTagsByContentRefs, getEventUID } from "../../helpers/nostr/events";
+import { NoteLink } from "../../components/note/note-link";
+import UserLink from "../../components/user/user-link";
+import { filterTagsByContentRefs, getEventUID } from "../../helpers/nostr/event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";

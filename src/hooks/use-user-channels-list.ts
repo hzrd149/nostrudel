@@ -1,5 +1,5 @@
 import { CHANNELS_LIST_KIND, getEventPointersFromList } from "../helpers/nostr/lists";
-import { RequestOptions } from "../services/replaceable-event-requester";
+import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 

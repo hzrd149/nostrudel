@@ -3,7 +3,7 @@ import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import useEventCount from "../../../hooks/use-event-count";
-import { getEventCoordinate } from "../../../helpers/nostr/events";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 
 export default function useCountCommunityPosts(
   community: NostrEvent,

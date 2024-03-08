@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid";
-import { CountResponse, NostrEvent } from "../types/nostr-event";
-import { NostrRequestFilter } from "../types/nostr-query";
+import { Filter, NostrEvent } from "nostr-tools";
+
 import relayPoolService from "../services/relay-pool";
-import Relay, { IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
-import Subject from "./subject";
+import Relay, { CountResponse, IncomingCount, IncomingEOSE, IncomingEvent } from "./relay";
 import createDefer from "./deferred";
+import ControlledObservable from "./controlled-observable";
+import SuperMap from "./super-map";
 
 const REQUEST_DEFAULT_TIMEOUT = 1000 * 5;
 export default class NostrRequest {
@@ -12,36 +13,37 @@ export default class NostrRequest {
   static RUNNING = "running";
   static COMPLETE = "complete";
 
-  id: string;
+  id = nanoid();
   timeout: number;
   relays: Set<Relay>;
   state = NostrRequest.IDLE;
-  onEvent = new Subject<NostrEvent>(undefined, false);
-  onCount = new Subject<CountResponse>(undefined, false);
+  onEvent = new ControlledObservable<NostrEvent>();
+  onCount = new ControlledObservable<CountResponse>();
   onComplete = createDefer<void>();
   seenEvents = new Set<string>();
 
+  private relaySubs: SuperMap<Relay, ZenObservable.Subscription[]> = new SuperMap(() => []);
+
   constructor(relayUrls: Iterable<string>, timeout?: number) {
-    this.id = nanoid();
     this.relays = new Set(Array.from(relayUrls).map((url) => relayPoolService.requestRelay(url)));
 
     for (const relay of this.relays) {
-      relay.onEOSE.subscribe(this.handleEOSE, this);
-      relay.onEvent.subscribe(this.handleEvent, this);
-      relay.onCount.subscribe(this.handleCount, this);
+      const subs = this.relaySubs.get(relay);
+      subs.push(relay.onEOSE.subscribe((m) => this.handleEOSE(m, relay)));
+      subs.push(relay.onEvent.subscribe(this.handleEvent.bind(this)));
+      subs.push(relay.onCount.subscribe(this.handleCount.bind(this)));
     }
 
     this.timeout = timeout ?? REQUEST_DEFAULT_TIMEOUT;
   }
 
-  handleEOSE(eose: IncomingEOSE) {
-    if (eose.subId === this.id) {
-      const relay = eose.relay;
+  handleEOSE(message: IncomingEOSE, relay: Relay) {
+    if (message[1] === this.id) {
       this.relays.delete(relay);
       relay.send(["CLOSE", this.id]);
 
-      relay.onEOSE.unsubscribe(this.handleEOSE, this);
-      relay.onEvent.unsubscribe(this.handleEvent, this);
+      this.relaySubs.get(relay).forEach((sub) => sub.unsubscribe());
+      this.relaySubs.delete(relay);
 
       if (this.relays.size === 0) {
         this.state = NostrRequest.COMPLETE;
@@ -49,23 +51,19 @@ export default class NostrRequest {
       }
     }
   }
-  handleEvent(incomingEvent: IncomingEvent) {
-    if (
-      this.state === NostrRequest.RUNNING &&
-      incomingEvent.subId === this.id &&
-      !this.seenEvents.has(incomingEvent.body.id)
-    ) {
-      this.onEvent.next(incomingEvent.body);
-      this.seenEvents.add(incomingEvent.body.id);
+  handleEvent(message: IncomingEvent) {
+    if (this.state === NostrRequest.RUNNING && message[1] === this.id && !this.seenEvents.has(message[2].id)) {
+      this.onEvent.next(message[2]);
+      this.seenEvents.add(message[2].id);
     }
   }
   handleCount(incomingCount: IncomingCount) {
-    if (incomingCount.subId === this.id) {
-      this.onCount.next({ count: incomingCount.count, approximate: incomingCount.approximate });
+    if (incomingCount[1] === this.id) {
+      this.onCount.next(incomingCount[2]);
     }
   }
 
-  start(filter: NostrRequestFilter, type: "REQ" | "COUNT" = "REQ") {
+  start(filter: Filter | Filter[], type: "REQ" | "COUNT" = "REQ") {
     if (this.state !== NostrRequest.IDLE) {
       throw new Error("cant restart a nostr request");
     }
@@ -87,9 +85,9 @@ export default class NostrRequest {
     this.state = NostrRequest.COMPLETE;
     for (const relay of this.relays) {
       relay.send(["CLOSE", this.id]);
-      relay.onEOSE.unsubscribe(this.handleEOSE, this);
-      relay.onEvent.unsubscribe(this.handleEvent, this);
+      this.relaySubs.get(relay).forEach((sub) => sub.unsubscribe());
     }
+    this.relaySubs.clear();
     this.onComplete.resolve();
 
     return this;

@@ -17,8 +17,8 @@ import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useUserSearchDirectoryContext } from "../../../providers/global/user-directory-provider";
-import UserAvatar from "../../../components/user-avatar";
-import UserName from "../../../components/user-name";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserName from "../../../components/user/user-name";
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 
 function UserOption({ pubkey }: { pubkey: string }) {

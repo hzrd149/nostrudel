@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import useSubject from "../../../hooks/use-subject";
 import TimelineLoader from "../../../classes/timeline-loader";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import {
   ExtendedIntersectionObserverEntry,
   useIntersectionObserver,
@@ -132,9 +132,9 @@ function GenericNoteTimeline({ timeline }: { timeline: TimelineLoader }) {
       }
     };
 
-    intersectionSubject.subscribe(listener);
+    const sub = intersectionSubject.subscribe(listener);
     return () => {
-      intersectionSubject.unsubscribe(listener);
+      sub.unsubscribe();
     };
   }, [
     setPinDate,

@@ -1,3 +1,4 @@
+import AppHandlerProvider from "./app-handler-provider";
 import DebugModalProvider from "./debug-modal-provider";
 import DeleteEventProvider from "./delete-event-provider";
 import InvoiceModalProvider from "./invoice-modal";
@@ -13,7 +14,9 @@ export function RouteProviders({ children }: { children: React.ReactNode }) {
         <DebugModalProvider>
           <InvoiceModalProvider>
             <PostModalProvider>
-              <RequireReadRelays>{children}</RequireReadRelays>
+              <RequireReadRelays>
+                <AppHandlerProvider>{children}</AppHandlerProvider>
+              </RequireReadRelays>
             </PostModalProvider>
           </InvoiceModalProvider>
         </DebugModalProvider>

@@ -3,10 +3,11 @@ import { kinds } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
-import replaceableEventLoaderService, { createCoordinate, RequestOptions } from "./replaceable-event-requester";
+import replaceableEventsService, { RequestOptions } from "./replaceable-events";
 import RelaySet from "../classes/relay-set";
 import { RelayMode } from "../classes/relay";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
+import { createCoordinate } from "../classes/batch-kind-loader";
 
 export type UserMailboxes = {
   pubkey: string;
@@ -29,18 +30,19 @@ function nip65ToUserMailboxes(event: NostrEvent): UserMailboxes {
 }
 
 class UserMailboxesService {
-  private subjects = new SuperMap<string, Subject<UserMailboxes>>(() => new Subject<UserMailboxes>());
+  private subjects = new SuperMap<string, Subject<UserMailboxes>>((pubkey) =>
+    replaceableEventsService.getEvent(kinds.RelayList, pubkey).map(nip65ToUserMailboxes),
+  );
   getMailboxes(pubkey: string) {
     return this.subjects.get(pubkey);
   }
   requestMailboxes(pubkey: string, relays: Iterable<string>, opts: RequestOptions = {}) {
     const sub = this.subjects.get(pubkey);
-    const requestSub = replaceableEventLoaderService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
-    sub.connectWithHandler(requestSub, (event, next) => next(nip65ToUserMailboxes(event)));
+    replaceableEventsService.requestEvent(relays, kinds.RelayList, pubkey, undefined, opts);
 
     // also fetch the relays from the users contacts
-    const contactsSub = replaceableEventLoaderService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
-    sub.connectWithHandler(contactsSub, (event, next, value) => {
+    const contactsSub = replaceableEventsService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
+    sub.connectWithMapper(contactsSub, (event, next, value) => {
       // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
       const relays = relaysFromContactsEvent(event);
       if (relays.length > 0 && !value) {
@@ -60,16 +62,12 @@ class UserMailboxesService {
 
   async loadFromCache(pubkey: string) {
     const sub = this.subjects.get(pubkey);
-
-    // load from cache
-    await replaceableEventLoaderService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
-
-    const requestSub = replaceableEventLoaderService.getEvent(kinds.RelayList, pubkey);
-    sub.connectWithHandler(requestSub, (event, next) => next(nip65ToUserMailboxes(event)));
+    await replaceableEventsService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
+    return sub;
   }
 
   receiveEvent(event: NostrEvent) {
-    replaceableEventLoaderService.handleEvent(event);
+    replaceableEventsService.handleEvent(event);
   }
 }
 

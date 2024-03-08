@@ -15,9 +15,9 @@ import { NostrEvent } from "../../types/nostr-event";
 import NotificationIconEntry from "./components/notification-icon-entry";
 import { ChevronLeftIcon, ReplyIcon } from "../../components/icons";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
-import UserAvatarLink from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
 import useSingleEvent from "../../hooks/use-single-event";
-import UserLink from "../../components/user-link";
+import UserLink from "../../components/user/user-link";
 import { CompactNoteContent } from "../../components/compact-note-content";
 import Timestamp from "../../components/timestamp";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
@@ -26,7 +26,7 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
 } from "../../providers/local/intersection-observer";
-import { getEventUID } from "../../helpers/nostr/events";
+import { getEventUID } from "../../helpers/nostr/event";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];

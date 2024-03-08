@@ -17,7 +17,7 @@ import PeopleListProvider from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import QRCodeScannerButton from "../../components/qr-code-scanner-button";
+import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 
 export function SearchPage() {

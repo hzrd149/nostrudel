@@ -11,7 +11,7 @@ export default function RawValue({ value, heading }: { heading: string; value?: 
         <Code fontSize="md" wordBreak="break-all">
           {value}
         </Code>
-        <CopyIconButton text={String(value)} size="xs" aria-label="copy" />
+        <CopyIconButton value={String(value)} size="xs" aria-label="copy" />
       </Flex>
     </Box>
   );

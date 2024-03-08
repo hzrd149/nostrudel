@@ -6,9 +6,9 @@ import { matchSorter } from "match-sorter";
 import { nip19 } from "nostr-tools";
 
 import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
-import UserAvatar from "../user-avatar";
-import { useUserMetadata } from "../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../helpers/user-metadata";
+import UserAvatar from "../user/user-avatar";
+import useUserMetadata from "../../hooks/use-user-metadata";
+import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
 
 function UserOption({ pubkey }: { pubkey: string }) {
   const metadata = useUserMetadata(pubkey);

@@ -16,20 +16,20 @@ import {
 } from "@chakra-ui/react";
 import { ChainedDVMJob, getEventIdsFromJobs, getRequestInput, getRequestRelays } from "../../../helpers/nostr/dvm";
 import dayjs from "dayjs";
-import { truncatedId } from "../../../helpers/nostr/events";
+import { truncatedId } from "../../../helpers/nostr/event";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../../components/user-link";
+import UserLink from "../../../components/user/user-link";
 
 function JobResult({ result }: { result: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(result.id)} <CopyIconButton size="xs" aria-label="copy id" text={result.id} />
+        ID: {truncatedId(result.id)} <CopyIconButton size="xs" aria-label="copy id" value={result.id} />
       </Text>
       <Flex gap="2" alignItems="center" overflow="hidden">
         <Text isTruncated>Content: {result.content}</Text>{" "}
-        <CopyIconButton size="xs" aria-label="copy content" text={result.content} />
+        <CopyIconButton size="xs" aria-label="copy content" value={result.content} />
       </Flex>
     </>
   );
@@ -38,7 +38,7 @@ function JobStatus({ status }: { status: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(status.id)} <CopyIconButton size="xs" aria-label="copy id" text={status.id} />
+        ID: {truncatedId(status.id)} <CopyIconButton size="xs" aria-label="copy id" value={status.id} />
       </Text>
       <Text isTruncated>Status: {status.tags.find((t) => t[0] === "status")?.[1]}</Text>
       <Text isTruncated>Content: {status.content}</Text>
@@ -54,7 +54,7 @@ function ChainedJob({ job }: { job: ChainedDVMJob }) {
   return (
     <Card p="2" variant="outline">
       <Text>
-        ID: {job.request.id} <CopyIconButton size="xs" aria-label="copy id" text={job.request.id} />
+        ID: {job.request.id} <CopyIconButton size="xs" aria-label="copy id" value={job.request.id} />
       </Text>
       {input && (
         <Text>

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { ExternalLinkIcon, QrCodeIcon } from "./icons";
-import QrCodeSvg from "./qr-code-svg";
+import QrCodeSvg from "./qr-code/qr-code-svg";
 import { CopyIconButton } from "./copy-icon-button";
 
 type CommonProps = { invoice: string; onPaid: () => void };
@@ -67,7 +67,7 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
           variant="solid"
           size="md"
         />
-        <CopyIconButton text={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
+        <CopyIconButton value={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
       </Flex>
       <Flex gap="2">
         {window.webln && (

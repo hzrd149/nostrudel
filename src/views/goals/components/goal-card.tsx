@@ -2,12 +2,12 @@ import { memo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import { getGoalClosedDate, getGoalName } from "../../../helpers/nostr/goal";
 import GoalMenu from "./goal-menu";
 import GoalProgress from "./goal-progress";

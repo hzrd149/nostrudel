@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Kind0ParsedContent } from "../../helpers/user-metadata";
+import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import NameStep from "./name-step";
 import ProfileImageStep from "./profile-image-step";
 import RelayStep from "./relay-step";

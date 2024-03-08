@@ -5,7 +5,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
 import { getListName } from "../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../helpers/nostr/events";
+import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import Database01 from "../../components/icons/database-01";
 import { AtIcon, RelayIcon } from "../../components/icons";
@@ -103,7 +103,7 @@ export default function RelaysView() {
       else return nav;
     } else
       return (
-        <Flex gap="2" maxH="100vh" overflow="hidden">
+        <Flex gap="2" minH="100vh" overflow="hidden">
           {nav}
           <Outlet />
         </Flex>

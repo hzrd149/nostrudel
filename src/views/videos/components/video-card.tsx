@@ -5,7 +5,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/flare";
-import { getEventUID } from "../../../helpers/nostr/events";
+import { getEventUID } from "../../../helpers/nostr/event";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 

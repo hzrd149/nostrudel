@@ -3,8 +3,8 @@ import codes from "iso-language-codes";
 
 import { DVMJob, getRequestInputParam } from "../../../../helpers/nostr/dvm";
 import { NostrEvent } from "../../../../types/nostr-event";
-import UserAvatarLink from "../../../../components/user-avatar-link";
-import UserLink from "../../../../components/user-link";
+import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserLink from "../../../../components/user/user-link";
 import Timestamp from "../../../../components/timestamp";
 import { CodeIcon } from "../../../../components/icons";
 import TextToSpeechResponse from "./tts-response";

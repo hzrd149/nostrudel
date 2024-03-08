@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import type { AddressPointer } from "nostr-tools/lib/types/nip19";
 
-import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/events";
+import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
 
 export default function useParamsAddressPointer(key: string): AddressPointer;
 export default function useParamsAddressPointer(key: string, requireD: true): AddressPointer;

@@ -1,4 +1,4 @@
-import { getEventCoordinate } from "../helpers/nostr/events";
+import { getEventCoordinate } from "../helpers/nostr/event";
 import { COMMUNITIES_LIST_KIND } from "../helpers/nostr/lists";
 import { NostrEvent } from "../types/nostr-event";
 import useEventCount from "./use-event-count";

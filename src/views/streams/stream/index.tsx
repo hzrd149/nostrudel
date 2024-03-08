@@ -25,13 +25,13 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
 import { LiveVideoPlayer } from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
-import UserAvatarLink from "../../../components/user-avatar-link";
-import UserLink from "../../../components/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import StreamSummaryContent from "../components/stream-summary-content";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import replaceableEventLoaderService from "../../../services/replaceable-event-requester";
+import replaceableEventsService from "../../../services/replaceable-events";
 import useSubject from "../../../hooks/use-subject";
 import StreamerCards from "../components/streamer-cards";
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -60,7 +60,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
     return (
       <ButtonGroup>
         <CopyIconButton
-          text={location.href + "?displayMode=log&colorMode=dark"}
+          value={location.href + "?displayMode=log&colorMode=dark"}
           aria-label="Copy chat log URL"
           title="Copy chat log URL"
           size="sm"
@@ -251,7 +251,7 @@ export default function StreamView() {
       if (parsed.data.kind !== STREAM_KIND) throw new Error("Invalid stream kind");
 
       const addrRelays = parsed.data.relays ?? [];
-      return replaceableEventLoaderService.requestEvent(
+      return replaceableEventsService.requestEvent(
         unique([...readRelays, ...streamRelays, ...addrRelays]),
         parsed.data.kind,
         parsed.data.pubkey,

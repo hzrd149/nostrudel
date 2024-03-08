@@ -16,7 +16,7 @@ import codes from "iso-language-codes";
 
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { getEventUID } from "../../../../helpers/nostr/events";
+import { getEventUID } from "../../../../helpers/nostr/event";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useSubject from "../../../../hooks/use-subject";
 import relayScoreboardService from "../../../../services/relay-scoreboard";

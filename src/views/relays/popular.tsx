@@ -25,7 +25,7 @@ import userMailboxesService from "../../services/user-mailboxes";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ChevronLeftIcon } from "../../components/icons";
-import UserAvatar from "../../components/user-avatar";
+import UserAvatar from "../../components/user/user-avatar";
 import { RelayMetadata, RelayPaidTag } from "./components/relay-card";
 
 function usePopularContactsRelays(list?: NostrEvent) {

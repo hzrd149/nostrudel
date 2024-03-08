@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
 
 import { UnlockIcon } from "../../../components/icons";
@@ -7,6 +7,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import { NostrEvent } from "../../../types/nostr-event";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export default function DecryptPlaceholder({
   children,
@@ -17,6 +18,7 @@ export default function DecryptPlaceholder({
   message: NostrEvent;
 } & Omit<ButtonProps, "children">): JSX.Element {
   const account = useCurrentAccount();
+  const { autoDecryptDMs } = useAppSettings();
   const isOwn = account?.pubkey === message.pubkey;
   const [loading, setLoading] = useState(false);
   const { requestDecrypt, plaintext, error } = useDecryptionContainer(
@@ -31,6 +33,18 @@ export default function DecryptPlaceholder({
     } catch (e) {}
     setLoading(false);
   };
+
+  // auto decrypt
+  useEffect(() => {
+    if (autoDecryptDMs && !plaintext && !error) {
+      setLoading(true);
+      requestDecrypt()
+        .catch(() => {})
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [autoDecryptDMs, error, plaintext]);
 
   if (plaintext) {
     return children(plaintext);

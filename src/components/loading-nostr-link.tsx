@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -21,8 +21,7 @@ import { nip19 } from "nostr-tools";
 import { useSet } from "react-use";
 
 import { ExternalLinkIcon, SearchIcon } from "./icons";
-import { buildAppSelectUrl } from "../helpers/nostr/apps";
-import UserLink from "./user-link";
+import UserLink from "./user/user-link";
 import { encodeDecodeResult } from "../helpers/nip19";
 
 import relayPoolService from "../services/relay-pool";
@@ -30,7 +29,8 @@ import { isValidRelayURL } from "../helpers/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayFavicon } from "./relay-favicon";
 import singleEventService from "../services/single-event";
-import replaceableEventLoaderService from "../services/replaceable-event-requester";
+import replaceableEventsService from "../services/replaceable-events";
+import { AppHandlerContext } from "../providers/route/app-handler-provider";
 
 function SearchOnRelaysModal({
   isOpen,
@@ -53,7 +53,7 @@ function SearchOnRelaysModal({
     setLoading(true);
     switch (decode.type) {
       case "naddr":
-        replaceableEventLoaderService.requestEvent(
+        replaceableEventsService.requestEvent(
           Array.from(relays),
           decode.data.kind,
           decode.data.pubkey,
@@ -126,7 +126,8 @@ function SearchOnRelaysModal({
 }
 
 export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult }) {
-  const encoded = encodeDecodeResult(link);
+  const { openAddress } = useContext(AppHandlerContext);
+  const address = encodeDecodeResult(link);
   const details = useDisclosure();
   const search = useDisclosure();
 
@@ -184,7 +185,7 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
       >
         [{details.isOpen ? "-" : "+"}]
         <Text as="span" isTruncated>
-          {encoded}
+          {address}
         </Text>
       </Button>
       {details.isOpen && (
@@ -195,7 +196,7 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
             <Button leftIcon={<SearchIcon />} colorScheme="primary" onClick={search.onOpen}>
               Find
             </Button>
-            <Button as={Link} leftIcon={<ExternalLinkIcon />} href={buildAppSelectUrl(encoded)} isExternal>
+            <Button leftIcon={<ExternalLinkIcon />} onClick={() => openAddress(address)}>
               Open
             </Button>
           </ButtonGroup>

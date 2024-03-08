@@ -1,5 +1,5 @@
 import { useAsync } from "react-use";
-import { useUserMetadata } from "./use-user-metadata";
+import useUserMetadata from "./use-user-metadata";
 import lnurlMetadataService from "../services/lnurl-metadata";
 
 export default function useUserLNURLMetadata(pubkey: string) {

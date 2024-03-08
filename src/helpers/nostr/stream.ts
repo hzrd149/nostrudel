@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 import { ensureNotifyContentMentions } from "./post";
-import { createCoordinate } from "../../services/replaceable-event-requester";
+import { getEventCoordinate } from "./event";
 
 export const STREAM_KIND = 30311;
 export const STREAM_CHAT_MESSAGE_KIND = 1311;
@@ -87,7 +87,7 @@ export function parseStreamEvent(stream: NostrEvent): ParsedStream {
 }
 
 export function getATag(stream: ParsedStream) {
-  return createCoordinate(stream.event.kind, stream.author, stream.identifier);
+  return getEventCoordinate(stream.event);
 }
 
 export function buildChatMessage(stream: ParsedStream, content: string) {

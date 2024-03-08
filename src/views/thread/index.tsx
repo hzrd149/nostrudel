@@ -3,7 +3,6 @@ import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import Note from "../../components/note";
 import { ThreadPost } from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -14,10 +13,11 @@ import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import LoadingNostrLink from "../../components/loading-nostr-link";
-import UserName from "../../components/user-name";
+import UserName from "../../components/user/user-name";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import UserAvatarLink from "../../components/user-avatar-link";
+import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
+import TimelineNote from "../../components/note/timeline-note";
 
 function CollapsedReplies({
   pointer,
@@ -90,7 +90,7 @@ function ThreadPage({
         <CollapsedReplies pointer={grandparentPointer} thread={thread} root={rootPointer} />
       )}
       {focusedPost.replyingTo ? (
-        <Note event={focusedPost.replyingTo.event} hideDrawerButton showReplyLine={false} />
+        <TimelineNote event={focusedPost.replyingTo.event} hideDrawerButton showReplyLine={false} />
       ) : (
         focusedPost.refs.reply?.e && <LoadingNostrLink link={{ type: "nevent", data: focusedPost.refs.reply.e }} />
       )}

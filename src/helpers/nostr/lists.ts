@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { kinds, nip19 } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
-import { parseCoordinate, replaceOrAddSimpleTag } from "./events";
+import { parseCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
 
 export const MUTE_LIST_KIND = 10000;

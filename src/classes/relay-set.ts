@@ -1,9 +1,8 @@
+import { NostrEvent } from "nostr-tools";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
 import { getRelaysFromMailbox } from "../helpers/nostr/mailbox";
-import { safeJson } from "../helpers/parse";
 import { safeRelayUrl } from "../helpers/relay";
 import relayPoolService from "../services/relay-pool";
-import { NostrEvent } from "../types/nostr-event";
 import { RelayMode } from "./relay";
 
 export default class RelaySet extends Set<string> {

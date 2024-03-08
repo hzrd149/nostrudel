@@ -75,7 +75,7 @@ export default function IntersectionObserverProvider({
   callback: ExtendedIntersectionObserverCallback;
 }) {
   const elementIds = useMemo(() => new WeakMap<Element, string>(), []);
-  const [subject] = useState(() => new Subject<ExtendedIntersectionObserverEntry[]>([], false));
+  const [subject] = useState(() => new Subject<ExtendedIntersectionObserverEntry[]>([]));
 
   const handleIntersection = useCallback<IntersectionObserverCallback>(
     (entries, observer) => {

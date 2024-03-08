@@ -5,7 +5,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { NostrEvent } from "../../types/nostr-event";
-import { NostrQuery } from "../../types/nostr-query";
+import { NostrQuery } from "../../types/nostr-relay";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export type ListId = "following" | "global" | string;
