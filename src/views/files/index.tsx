@@ -7,7 +7,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useAppSettings from "../../hooks/use-app-settings";
-import { TrustProvider, useTrusted } from "../../providers/local/trust";
+import { TrustProvider, useTrustContext } from "../../providers/local/trust";
 import BlurredImage from "../../components/blured-image";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -27,7 +27,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 function ImageFile({ event }: { event: NostrEvent }) {
   const parsed = parseImageFile(event);
   const settings = useAppSettings();
-  const trust = useTrusted();
+  const { trust } = useTrustContext();
 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
