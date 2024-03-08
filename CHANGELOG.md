@@ -1,5 +1,26 @@
 # nostrudel
 
+## 0.39.0
+
+### Minor Changes
+
+- 15cb30d: Add "open in" modal (NIP-89)
+- 16ae69c: Add event publisher tool
+- b88ecd2: Added Event Console tool
+- e053e5d: Add option to automatically decrypt DMs
+
+### Patch Changes
+
+- df094b2: Rebuild observable class
+- 3359064: Add UI tab to relays
+- a967cc8: Fix custom emoji reactions having multiple colons
+- cfa0461: Fix jsonl database export format
+- 45e447c: Fix auto-playing blurred videos
+- 3a8bea9: Fix bunker://pubkey connect URIs
+- 0c36f57: Fix profile form removing unknown metadata fields
+- 45e447c: Unblur all images when clicking on a note
+- bcb3ff8: Update emojilib
+
 ## 0.38.4
 
 ### Patch Changes
