@@ -73,7 +73,18 @@ function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }
 function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; onRemove?: () => void; scale: number }) {
   return (
     <Tag>
-      <Image key={name + url} src={url} title={name} w={scale} h={scale} ml="-1" mr="2" my="1" borderRadius="md" />
+      <Image
+        key={name + url}
+        src={url}
+        title={name}
+        alt={`:${name}:`}
+        w={scale}
+        h={scale}
+        ml="-1"
+        mr="2"
+        my="1"
+        borderRadius="md"
+      />
       <TagLabel flex={1}>{name}</TagLabel>
       {onRemove && <TagCloseButton onClick={onRemove} />}
     </Tag>
