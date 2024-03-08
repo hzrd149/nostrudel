@@ -4,7 +4,7 @@ import { useAsync } from "react-use";
 import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
-import { parseKind0Event } from "../../helpers/nostr/user-metadata";
+import { parseMetadataContent } from "../../helpers/nostr/user-metadata";
 import { readablizeSats } from "../../helpers/bolt11";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import UserAvatar from "../../components/user/user-avatar";
@@ -21,7 +21,7 @@ import { usePeopleListContext } from "../../providers/local/people-list-provider
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
-  const metadata = parseKind0Event(profile);
+  const metadata = parseMetadataContent(profile);
 
   const aboutContent = useMemo(() => {
     if (!metadata.about) return null;

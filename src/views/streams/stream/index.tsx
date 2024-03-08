@@ -60,7 +60,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
     return (
       <ButtonGroup>
         <CopyIconButton
-          text={location.href + "?displayMode=log&colorMode=dark"}
+          value={location.href + "?displayMode=log&colorMode=dark"}
           aria-label="Copy chat log URL"
           title="Copy chat log URL"
           size="sm"

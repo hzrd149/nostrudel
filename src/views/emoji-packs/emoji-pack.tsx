@@ -84,6 +84,7 @@ function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; o
         mr="2"
         my="1"
         borderRadius="md"
+        overflow="hidden"
       />
       <TagLabel flex={1}>{name}</TagLabel>
       {onRemove && <TagCloseButton onClick={onRemove} />}

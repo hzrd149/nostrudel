@@ -67,7 +67,7 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
           variant="solid"
           size="md"
         />
-        <CopyIconButton text={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
+        <CopyIconButton value={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
       </Flex>
       <Flex gap="2">
         {window.webln && (

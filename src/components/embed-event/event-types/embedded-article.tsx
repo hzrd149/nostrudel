@@ -1,4 +1,17 @@
-import { Box, Card, CardBody, CardProps, Flex, Image, LinkBox, LinkOverlay, Tag, Text } from "@chakra-ui/react";
+import { useContext } from "react";
+import {
+  Box,
+  Card,
+  CardBody,
+  CardProps,
+  Flex,
+  Heading,
+  Image,
+  LinkBox,
+  LinkOverlay,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
 
 import {
   getArticleImage,
@@ -7,11 +20,11 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import { NostrEvent } from "../../../types/nostr-event";
-import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
   const title = getArticleTitle(article);
@@ -19,9 +32,10 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
   const summary = getArticleSummary(article);
 
   const naddr = getSharableEventAddress(article);
+  const { openAddress } = useContext(AppHandlerContext);
 
   return (
-    <Card as={LinkBox} size="sm" {...props}>
+    <Card as={LinkBox} size="sm" onClick={() => naddr && openAddress(naddr)} cursor="pointer" {...props}>
       {image && (
         <Box
           backgroundImage={image}
@@ -42,9 +56,7 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
           <UserLink pubkey={article.pubkey} fontWeight="bold" isTruncated />
           <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
         </Flex>
-        <LinkOverlay href={naddr ? buildAppSelectUrl(naddr, false) : undefined} isExternal fontWeight="bold">
-          {title}
-        </LinkOverlay>
+        <Heading size="md">{title}</Heading>
         <Text mb="2">{summary}</Text>
         {article.tags
           .filter((t) => t[0] === "t" && t[1])

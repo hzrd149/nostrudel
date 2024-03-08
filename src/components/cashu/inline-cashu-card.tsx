@@ -60,7 +60,7 @@ export default function InlineCachuCard({ token, ...props }: Omit<CardProps, "ch
       </Box>
       {cashu.memo && <Box>Memo: {cashu.memo}</Box>}
       <ButtonGroup ml="auto">
-        <CopyIconButton text={token} title="Copy Token" aria-label="Copy Token" />
+        <CopyIconButton value={token} title="Copy Token" aria-label="Copy Token" />
         <IconButton
           as={Link}
           icon={<WalletIcon />}

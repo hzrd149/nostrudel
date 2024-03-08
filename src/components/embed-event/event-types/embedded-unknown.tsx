@@ -1,11 +1,10 @@
-import { MouseEventHandler, useCallback, useMemo } from "react";
-import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, Link, Text } from "@chakra-ui/react";
+import { useContext, useMemo } from "react";
+import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, Text } from "@chakra-ui/react";
 
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
 import {
   embedEmoji,
@@ -21,9 +20,11 @@ import { ExternalLinkIcon } from "../../icons";
 import { renderAudioUrl } from "../../embed-types/audio";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = getSharableEventAddress(event);
+  const { openAddress } = useContext(AppHandlerContext);
 
   const alt = event.tags.find((t) => t[0] === "alt")?.[1];
   const content = useMemo(() => {
@@ -47,15 +48,11 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
           <Text>kind: {event.kind}</Text>
           <Timestamp timestamp={event.created_at} />
           <ButtonGroup ml="auto">
-            <Button
-              as={Link}
-              size="sm"
-              leftIcon={<ExternalLinkIcon />}
-              isExternal
-              href={address ? buildAppSelectUrl(address) : ""}
-            >
-              Open
-            </Button>
+            {address && (
+              <Button size="sm" leftIcon={<ExternalLinkIcon />} onClick={() => openAddress(address)}>
+                Open
+              </Button>
+            )}
             <DebugEventButton event={event} size="sm" variant="outline" />
           </ButtonGroup>
         </CardHeader>

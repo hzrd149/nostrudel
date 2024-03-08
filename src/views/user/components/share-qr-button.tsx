@@ -48,14 +48,14 @@ export const QrIconButton = ({ pubkey, ...props }: { pubkey: string } & Omit<Ico
                   <QrCodeSvg content={nprofileLink} border={2} />
                   <Flex gap="2" mt="2">
                     <Input readOnly value={nprofileLink} />
-                    <CopyIconButton text={nprofileLink} aria-label="copy nprofile" />
+                    <CopyIconButton value={nprofileLink} aria-label="copy nprofile" />
                   </Flex>
                 </TabPanel>
                 <TabPanel p="0" pt="2">
                   <QrCodeSvg content={npubLink} border={2} />
                   <Flex gap="2" mt="2">
                     <Input readOnly value={npubLink} />
-                    <CopyIconButton text={npubLink} aria-label="copy npub" />
+                    <CopyIconButton value={npubLink} aria-label="copy npub" />
                   </Flex>
                 </TabPanel>
               </TabPanels>

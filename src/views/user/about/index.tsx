@@ -152,7 +152,7 @@ export default function UserAboutTab() {
           <Flex gap="2">
             <KeyIcon />
             <Text>{truncatedId(npub, 10)}</Text>
-            <CopyIconButton text={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
+            <CopyIconButton value={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
             <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
           </Flex>
         )}

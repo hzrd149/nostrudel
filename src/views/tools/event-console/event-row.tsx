@@ -45,7 +45,9 @@ export default function EventRow({ event }: { event: NostrEvent }) {
             bg="var(--chakra-colors-chakra-body-bg)"
             borderRadius="md"
           >
-            {raw.isOpen && <CopyIconButton text={stringify(event, { space: "  " })} aria-label="Copy json" size="sm" />}
+            {raw.isOpen && (
+              <CopyIconButton value={stringify(event, { space: "  " })} aria-label="Copy json" size="sm" />
+            )}
             <Switch size="sm" checked={!raw.isOpen} onChange={raw.onToggle}>
               Raw
             </Switch>
@@ -59,12 +61,12 @@ export default function EventRow({ event }: { event: NostrEvent }) {
               <Flex gap="2">
                 <Text>ID: </Text>
                 <Code>{event.id}</Code>
-                <CopyIconButton text={event.id} aria-label="Copy ID" title="Copy ID" size="xs" />
+                <CopyIconButton value={event.id} aria-label="Copy ID" title="Copy ID" size="xs" />
               </Flex>
               <Flex gap="2">
                 <Text>Pubkey: </Text>
                 <Code>{event.pubkey}</Code>
-                <CopyIconButton text={event.pubkey} aria-label="Copy Pubkey" title="Copy Pubkey" size="xs" />
+                <CopyIconButton value={event.pubkey} aria-label="Copy Pubkey" title="Copy Pubkey" size="xs" />
               </Flex>
               <Flex gap="2">
                 <Text>Created: </Text>

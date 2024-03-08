@@ -61,7 +61,7 @@ export default function HistoryDrawer({ onClose, isOpen, history, onClear, onSel
                   {query}
                 </Button>
                 <CopyIconButton
-                  text={query}
+                  value={query}
                   aria-label="Copy Filter"
                   title="Copy Filter"
                   size="xs"

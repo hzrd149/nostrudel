@@ -57,8 +57,8 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
             </>
           ))}
       </Td>
-      <Td>
-        <Link as={RouterLink} to={`/torrents/${getSharableEventAddress(torrent)}`} isTruncated maxW="lg">
+      <Td maxW="lg" overflow="hidden" isTruncated>
+        <Link as={RouterLink} to={`/torrents/${getSharableEventAddress(torrent)}`}>
           {getTorrentTitle(torrent)}
         </Link>
       </Td>

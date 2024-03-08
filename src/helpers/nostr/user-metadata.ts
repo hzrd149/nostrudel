@@ -17,8 +17,7 @@ export type Kind0ParsedContent = {
   nip05?: string;
 };
 
-export function parseKind0Event(event: NostrEvent): Kind0ParsedContent {
-  if (event.kind !== 0) throw new Error("expected a kind 0 event");
+export function parseMetadataContent(event: NostrEvent): Kind0ParsedContent {
   try {
     const metadata = JSON.parse(event.content) as Kind0ParsedContent;
     metadata.pubkey = event.pubkey;

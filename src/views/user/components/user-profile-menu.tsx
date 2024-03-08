@@ -1,4 +1,4 @@
-import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
+import { MenuItem, useConst, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
@@ -19,11 +19,12 @@ import useUserMetadata from "../../../hooks/use-user-metadata";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import { buildAppSelectUrl } from "../../../helpers/nostr/apps";
 import { truncatedId } from "../../../helpers/nostr/event";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import userMailboxesService from "../../../services/user-mailboxes";
+import { useContext } from "react";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -36,6 +37,7 @@ export const UserProfileMenu = ({
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
+  const { openAddress } = useContext(AppHandlerContext);
 
   const loginAsUser = () => {
     const relays = userMailboxesService.getMailboxes(pubkey).value?.outbox.urls;
@@ -53,7 +55,7 @@ export const UserProfileMenu = ({
   return (
     <>
       <DotsMenuButton {...props}>
-        <MenuItem onClick={() => window.open(buildAppSelectUrl(sharableId), "_blank")} icon={<ExternalLinkIcon />}>
+        <MenuItem onClick={() => openAddress(sharableId)} icon={<ExternalLinkIcon />}>
           View in app...
         </MenuItem>
         {account?.pubkey !== pubkey && (

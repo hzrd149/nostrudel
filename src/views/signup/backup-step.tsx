@@ -98,7 +98,7 @@ export default function BackupStep({ secretKey, onConfirm }: { secretKey: string
         <FormLabel>Secret Key</FormLabel>
         <Flex gap="2">
           <Input value={nsec} />
-          <CopyIconButton aria-label="Copy nsec" title="Copy nsec" text={nsec} />
+          <CopyIconButton aria-label="Copy nsec" title="Copy nsec" value={nsec} />
         </Flex>
         <FormHelperText>This is the key to access your account, keep it secret.</FormHelperText>
       </FormControl>
