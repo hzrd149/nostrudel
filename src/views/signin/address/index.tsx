@@ -42,7 +42,7 @@ export default function LoginNostrAddressView() {
       if (nip05.hasNip46) {
         setLoading("Connecting...");
         const relays = safeRelayUrls(nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays);
-        const client = nostrConnectService.fromHostedBunker(nip05.pubkey, relays, rootNip05?.pubkey);
+        const client = nostrConnectService.fromHostedBunker(nip05.pubkey, relays);
         await client.connect();
 
         nostrConnectService.saveClient(client);
