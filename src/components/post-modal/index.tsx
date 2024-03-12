@@ -22,6 +22,7 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -298,6 +299,7 @@ export default function PostModal({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
+        {publishAction && <ModalCloseButton />}
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
           {renderContent()}
         </ModalBody>
