@@ -7,11 +7,9 @@ import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
-import clientRelaysService from "../../../services/client-relays";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import RelaySet from "../../../classes/relay-set";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export default function SendMessageForm({

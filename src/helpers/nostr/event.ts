@@ -289,11 +289,13 @@ export function addPubkeyRelayHints(draft: DraftNostrEvent) {
     ...draft,
     tags: draft.tags.map((t) => {
       if (isPTag(t) && !t[2]) {
-        const newTag = [...t];
         const mailboxes = userMailboxesService.getMailboxes(t[1]).value;
-        // TODO: Pick the best mailbox for the user
-        if (mailboxes) newTag[2] = mailboxes.inbox.urls[0];
-        return newTag;
+        if (mailboxes && mailboxes.inbox.urls.length > 0) {
+          const newTag = [...t];
+          // TODO: Pick the best mailbox for the user
+          newTag[2] = mailboxes.inbox.urls[0];
+          return newTag;
+        } else return t;
       }
       return t;
     }),
