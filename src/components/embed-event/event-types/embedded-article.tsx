@@ -1,17 +1,5 @@
 import { useContext } from "react";
-import {
-  Box,
-  Card,
-  CardBody,
-  CardProps,
-  Flex,
-  Heading,
-  Image,
-  LinkBox,
-  LinkOverlay,
-  Tag,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Tag, Text, useToast } from "@chakra-ui/react";
 
 import {
   getArticleImage,
@@ -27,15 +15,21 @@ import Timestamp from "../../timestamp";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
+  const toast = useToast();
   const title = getArticleTitle(article);
   const image = getArticleImage(article);
   const summary = getArticleSummary(article);
 
-  const naddr = getSharableEventAddress(article);
   const { openAddress } = useContext(AppHandlerContext);
 
+  const open = () => {
+    const naddr = getSharableEventAddress(article);
+    if (naddr) openAddress(naddr);
+    else toast({ status: "error", description: "Failed to get address" });
+  };
+
   return (
-    <Card as={LinkBox} size="sm" onClick={() => naddr && openAddress(naddr)} cursor="pointer" {...props}>
+    <Card as={LinkBox} size="sm" onClick={open} cursor="pointer" {...props}>
       {image && (
         <Box
           backgroundImage={image}
