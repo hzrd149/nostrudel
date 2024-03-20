@@ -30,7 +30,8 @@ export default function OtherStuffView() {
           {allApps
             .filter(
               (app) =>
-                app.title.toLocaleLowerCase().includes(search) || app.description.toLocaleLowerCase().includes(search),
+                app.title.toLowerCase().includes(search.toLowerCase()) ||
+                app.description.toLowerCase().includes(search.toLowerCase()),
             )
             .map((app) => (
               <AppCard key={app.id} app={app} onClick={() => useApp(app.id)} />
