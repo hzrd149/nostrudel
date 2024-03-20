@@ -215,7 +215,7 @@ export default function PostModal({
               onChange={onFileInputChange}
             />
             <IconButton
-              icon={<UploadImageIcon />}
+              icon={<UploadImageIcon boxSize={6} />}
               aria-label="Upload Image"
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}

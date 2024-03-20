@@ -38,6 +38,8 @@
     "@uiw/react-codemirror": "^4.21.21",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bech32": "^2.0.0",
+    "blossom-client": "^0.4.0",
+    "blossom-drive-client": "^0.1.0",
     "blurhash": "^2.0.5",
     "chart.js": "^4.4.1",
     "cheerio": "^1.0.0-rc.12",

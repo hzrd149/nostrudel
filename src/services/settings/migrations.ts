@@ -34,8 +34,12 @@ export type AppSettingsV4 = Omit<AppSettingsV3, "version"> & { version: 4; loadO
 export type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideUsernames: boolean };
 export type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
 export type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; autoDecryptDMs: boolean };
+export type AppSettingsV8 = Omit<AppSettingsV7, "version"> & {
+  version: 7;
+  mediaUploadService: "nostr.build" | "blossom";
+};
 
-export type AppSettings = AppSettingsV7;
+export type AppSettings = AppSettingsV8;
 
 export const defaultSettings: AppSettings = {
   version: 7,
@@ -55,6 +59,7 @@ export const defaultSettings: AppSettings = {
   autoDecryptDMs: false,
 
   quickReactions: ["🤙", "❤️", "🤣", "😍", "🔥"],
+  mediaUploadService: "nostr.build",
 
   autoPayWithWebLN: true,
   customZapAmounts: "50,200,500,1000,2000,5000",

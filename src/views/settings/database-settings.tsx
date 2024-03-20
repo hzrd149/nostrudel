@@ -111,7 +111,7 @@ export default function DatabaseSettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <DatabaseIcon mr="2" />
+          <DatabaseIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Database
           </Box>

@@ -73,6 +73,7 @@ import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
+import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
 import UserDMsTab from "./views/user/dms";
@@ -271,6 +272,7 @@ const router = createHashRouter([
           { path: "app", element: <AppRelays /> },
           { path: "cache", element: <CacheRelayView /> },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },

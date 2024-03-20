@@ -26,7 +26,7 @@ export default function LightningSettings() {
         <>
           <h2>
             <AccordionButton fontSize="xl">
-              <LightningIcon mr="2" />
+              <LightningIcon mr="2" boxSize={5} />
               <Box as="span" flex="1" textAlign="left">
                 Lightning
               </Box>

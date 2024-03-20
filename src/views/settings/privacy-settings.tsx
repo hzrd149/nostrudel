@@ -49,7 +49,7 @@ export default function PrivacySettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <SpyIcon mr="2" />
+          <SpyIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Privacy
           </Box>

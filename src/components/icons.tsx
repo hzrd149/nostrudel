@@ -95,6 +95,7 @@ export const ChevronRightIcon = ChevronRight;
 
 export const LightningIcon = Zap;
 export const RelayIcon = Modem02;
+export const MediaServerIcon = Database01;
 export const BroadcastEventIcon = Share07;
 export const ShareIcon = Share07;
 export const PinIcon = Pin01;

@@ -1,0 +1,192 @@
+import { useState } from "react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  CloseButton,
+  Divider,
+  Flex,
+  Heading,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+
+import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import BackButton from "../../../components/router/back-button";
+import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import { cloneEvent } from "../../../helpers/nostr/event";
+import useAppSettings from "../../../hooks/use-app-settings";
+import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import { getServersFromEvent } from "../../../helpers/media-upload/blossom";
+
+function serversEqual(a: string, b: string) {
+  return new URL(a).hostname === new URL(b).hostname;
+}
+
+function MediaServersPage() {
+  const toast = useToast();
+  const account = useCurrentAccount()!;
+  const publish = usePublishEvent();
+  const { mediaUploadService, updateSettings } = useAppSettings();
+  const mediaServers = useUsersMediaServers(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true });
+
+  const servers = mediaServers ? getServersFromEvent(mediaServers) : [];
+
+  const addServer = async (server: string) => {
+    const draft = cloneEvent(10063, mediaServers);
+    draft.tags = [...draft.tags, ["r", server]];
+    await publish("Add media server", draft);
+  };
+  const removeServer = async (server: string) => {
+    const draft = cloneEvent(10063, mediaServers);
+    draft.tags = draft.tags.filter((t) => t[0] === "r" && !serversEqual(t[1], server));
+    await publish("Remove media server", draft);
+  };
+
+  const switchToBlossom = useAsyncErrorHandler(async () => {
+    await updateSettings({ mediaUploadService: "blossom" });
+  }, [updateSettings]);
+
+  const { register, handleSubmit, reset } = useForm({ defaultValues: { server: "" } });
+
+  const [confirmServer, setConfirmServer] = useState("");
+  const submit = handleSubmit((values) => {
+    if (mediaServers?.tags.some((t) => t[0] === "r" && serversEqual(t[1], values.server)))
+      return toast({ status: "error", description: "Server already in list" });
+
+    setConfirmServer(new URL(values.server).toString());
+    reset();
+  });
+
+  const [loading, setLoading] = useState(false);
+  const confirmAddServer = async () => {
+    setLoading(true);
+    await addServer(confirmServer);
+    setConfirmServer("");
+    setLoading(false);
+  };
+
+  return (
+    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px="2">
+      <Flex gap="2" alignItems="center">
+        <BackButton hideFrom="lg" size="sm" />
+        <Heading size="lg">Media Servers</Heading>
+        {mediaServers && <DebugEventButton event={mediaServers} size="sm" ml="auto" />}
+      </Flex>
+      <Text fontStyle="italic" mt="-2">
+        <Link href="https://github.com/hzrd149/blossom" target="_blank" color="blue.500">
+          Blossom
+        </Link>{" "}
+        media servers are used to host your images and videos when making a post
+      </Text>
+
+      {mediaUploadService !== "blossom" && (
+        <Alert status="info">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Blossom not selected</AlertTitle>
+            <AlertDescription>
+              These servers wont be used for anything unless you set "Media upload service" to "Blossom" in the settings
+            </AlertDescription>
+            <br />
+            <Button size="sm" variant="outline" onClick={switchToBlossom}>
+              Switch to Blossom
+            </Button>
+          </Box>
+        </Alert>
+      )}
+
+      {servers.length === 0 && mediaUploadService === "blossom" && (
+        <Alert
+          status="error"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          height="xs"
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            No media servers!
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">
+            You need to add at least one media server in order to upload images and videos
+          </AlertDescription>
+          <Divider maxW="96" w="full" my="2" />
+          <Button onClick={() => setConfirmServer("https://cdn.satellite.earth/")}>Add cdn.satellite.earth</Button>
+        </Alert>
+      )}
+
+      <Flex direction="column" gap="2">
+        {servers.map((server) => (
+          <Flex gap="2" p="2" alignItems="center" borderWidth="1px" borderRadius="lg" key={server}>
+            <MediaServerFavicon server={server} size="sm" />
+            <Link href={server} target="_blank" color="blue.500" fontSize="lg">
+              {new URL(server).hostname}
+            </Link>
+
+            <CloseButton ml="auto" onClick={() => removeServer(server)} />
+          </Flex>
+        ))}
+      </Flex>
+
+      <Heading size="sm" mt="2">
+        Add media server
+      </Heading>
+      <Flex as="form" onSubmit={submit} gap="2">
+        <Input {...register("server", { required: true })} required placeholder="https://cdn.satellite.earth" />
+        <Button type="submit" colorScheme="primary">
+          Add
+        </Button>
+      </Flex>
+
+      {confirmServer && (
+        <Modal isOpen onClose={() => setConfirmServer("")} size="full">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add media server</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody display="flex" p="0" flexDirection="column">
+              <Box as="iframe" src={confirmServer} w="full" h="full" flex={1} />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={() => setConfirmServer("")}>
+                Cancel
+              </Button>
+              <Button colorScheme="primary" onClick={confirmAddServer} isLoading={loading}>
+                Add Server
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
+    </Flex>
+  );
+}
+
+export default function MediaServersView() {
+  return (
+    <RequireCurrentAccount>
+      <MediaServersPage />
+    </RequireCurrentAccount>
+  );
+}

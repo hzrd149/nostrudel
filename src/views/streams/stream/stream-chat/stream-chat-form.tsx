@@ -9,7 +9,7 @@ import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helper
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
-import { nostrBuildUploadImage } from "../../../../helpers/nostr-build";
+import { nostrBuildUploadImage } from "../../../../helpers/media-upload/nostr-build";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { useReadRelays } from "../../../../hooks/use-client-relays";

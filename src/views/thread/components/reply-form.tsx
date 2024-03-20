@@ -20,7 +20,7 @@ import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { TrustProvider } from "../../../providers/local/trust";
-import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
+import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
 import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
 import { usePublishEvent } from "../../../providers/global/publish-provider";

@@ -13,6 +13,7 @@ import Mail02 from "../../components/icons/mail-02";
 import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
+import Image01 from "../../components/icons/image-01";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -49,15 +50,26 @@ export default function RelaysView() {
           Cache Relay
         </Button>
         {account && (
-          <Button
-            variant="outline"
-            as={RouterLink}
-            to="/relays/mailboxes"
-            leftIcon={<Mail02 boxSize={6} />}
-            colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
-          >
-            Mailboxes
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/mailboxes"
+              leftIcon={<Mail02 boxSize={6} />}
+              colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
+            >
+              Mailboxes
+            </Button>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/media-servers"
+              leftIcon={<Image01 boxSize={6} />}
+              colorScheme={location.pathname === "/relays/media-servers" ? "primary" : undefined}
+            >
+              Media Servers
+            </Button>
+          </>
         )}
         {nip05 && (
           <Button

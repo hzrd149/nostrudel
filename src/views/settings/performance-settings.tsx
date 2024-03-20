@@ -25,7 +25,7 @@ export default function PerformanceSettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <PerformanceIcon mr="2" />
+          <PerformanceIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Performance
           </Box>

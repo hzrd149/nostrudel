@@ -27,7 +27,7 @@ export default function DisplaySettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <AppearanceIcon mr="2" />
+          <AppearanceIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Display
           </Box>
@@ -62,9 +62,6 @@ export default function DisplaySettings() {
               </FormLabel>
               <Input id="primaryColor" type="color" maxW="120" size="sm" {...register("primaryColor")} />
             </Flex>
-            <FormHelperText>
-              <span>The primary color of the theme</span>
-            </FormHelperText>
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="maxPageWidth" mb="0">
