@@ -19,7 +19,7 @@ export type SatelliteCDNFile = {
   created: number;
   magnet: string;
   type: string;
-  name: string;
+  name?: string;
   sha256: string;
   size: number;
   url: string;
