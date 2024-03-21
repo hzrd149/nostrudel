@@ -24,7 +24,7 @@ import {
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
@@ -67,7 +67,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <Timestamp timestamp={post.event.created_at} />
       {replies.length > 0 ? (
         <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>

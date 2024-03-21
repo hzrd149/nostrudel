@@ -27,9 +27,8 @@ import { RelayFavicon } from "../../../components/relay-favicon";
 import { CodeIcon } from "../../../components/icons";
 import UserLink from "../../../components/user/user-link";
 import UserAvatar from "../../../components/user/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import RawJson from "../../../components/debug-modal/raw-json";
-import { RelayShareButton } from "./relay-share-button";
 import useRelayStats from "../../../hooks/use-relay-stats";
 import { getNetwork } from "../../../helpers/nostr/relay-stats";
 
@@ -56,7 +55,7 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
           <B>Owner:</B>
           <UserAvatar pubkey={info.pubkey} size="xs" noProxy />
           <UserLink pubkey={info.pubkey} />
-          <UserDnsIdentityIcon pubkey={info.pubkey} onlyIcon />
+          <UserDnsIdentity pubkey={info.pubkey} onlyIcon />
         </Flex>
       )}
       {extended && (

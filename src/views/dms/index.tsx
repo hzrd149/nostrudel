@@ -21,7 +21,7 @@ import UserName from "../../components/user/user-name";
 import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useRef<HTMLParagraphElement | null>(null);
@@ -50,7 +50,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
         <Flex direction="column" gap="1" overflow="hidden" flex={1}>
           <Flex gap="2" alignItems="center" overflow="hidden">
             <UserName pubkey={conversation.correspondent} isTruncated />
-            <UserDnsIdentityIcon onlyIcon pubkey={conversation.correspondent} />
+            <UserDnsIdentity onlyIcon pubkey={conversation.correspondent} />
             <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />
             {hasResponded(conversation) && <CheckIcon boxSize={4} color="green.500" />}
           </Flex>

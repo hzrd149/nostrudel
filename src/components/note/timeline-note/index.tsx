@@ -20,7 +20,6 @@ import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
-import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import useSubject from "../../../hooks/use-subject";
@@ -152,9 +151,11 @@ export function TimelineNote({
           )}
           <CardHeader p="2">
             <Flex flex="1" gap="2" alignItems="center">
-              <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
+              <UserAvatarLink pubkey={event.pubkey} size="sm" />
               <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-              <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+              <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
+                <Timestamp timestamp={event.created_at} />
+              </Link>
               <POWIcon event={event} boxSize={5} />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
@@ -166,9 +167,6 @@ export function TimelineNote({
                   onClick={() => singleEventService.handleEvent(event)}
                 />
               )}
-              <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
-                <Timestamp timestamp={event.created_at} />
-              </Link>
             </Flex>
             <NoteCommunityMetadata event={event} />
             {showReplyLine && <ReplyLine event={event} />}

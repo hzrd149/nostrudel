@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { EditIcon, GhostIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useUserMetadata from "../../../hooks/use-user-metadata";
@@ -36,7 +36,7 @@ export default function Header({
         <Heading size="md" isTruncated>
           {getUserDisplayName(metadata, pubkey)}
         </Heading>
-        <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={showFullNip05} />
+        <UserDnsIdentity pubkey={pubkey} onlyIcon={showFullNip05} />
         <Spacer />
         {isSelf && !account.readonly && (
           <IconButton

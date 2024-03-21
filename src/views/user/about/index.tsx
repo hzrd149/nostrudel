@@ -20,7 +20,7 @@ import {
 } from "../../../components/icons";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
@@ -90,7 +90,7 @@ export default function UserAboutTab() {
           <UserAvatar pubkey={pubkey} size={["lg", "lg", "xl"]} noProxy />
           <Box overflow="hidden">
             <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
-            <UserDnsIdentityIcon pubkey={pubkey} />
+            <UserDnsIdentity pubkey={pubkey} />
           </Box>
 
           <Flex gap="2" ml="auto">
@@ -136,7 +136,7 @@ export default function UserAboutTab() {
           <Flex gap="2">
             <AtIcon />
             <Link href={`//${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`} isExternal>
-              <UserDnsIdentityIcon pubkey={pubkey} />
+              <UserDnsIdentity pubkey={pubkey} />
             </Link>
           </Flex>
         )}

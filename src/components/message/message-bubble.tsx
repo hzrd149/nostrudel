@@ -6,7 +6,7 @@ import { useRegisterIntersectionEntity } from "../../providers/local/intersectio
 import { getEventUID } from "../../helpers/nostr/event";
 import Timestamp from "../timestamp";
 import UserLink from "../user/user-link";
-import { UserDnsIdentityIcon } from "../user/user-dns-identity-icon";
+import UserDnsIdentity from "../user/user-dns-identity";
 import useEventReactions from "../../hooks/use-event-reactions";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import { IconThreadButton } from "../../views/dms/components/thread-button";
@@ -49,7 +49,7 @@ export default function MessageBubble({
       {showHeader && (
         <CardHeader px="2" pt="2" pb="0" gap="2" display="flex" alignItems="center">
           <UserLink pubkey={message.pubkey} fontWeight="bold" />
-          <UserDnsIdentityIcon pubkey={message.pubkey} onlyIcon />
+          <UserDnsIdentity pubkey={message.pubkey} onlyIcon />
           {actionPosition === "header" && (
             <ButtonGroup size="xs" variant="ghost" ml="auto">
               {actions}

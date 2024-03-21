@@ -13,7 +13,7 @@ import Timestamp from "../../../components/timestamp";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
@@ -67,7 +67,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <POWIcon event={post.event} boxSize={5} />
       <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />

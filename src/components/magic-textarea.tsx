@@ -13,7 +13,7 @@ import { matchSorter } from "match-sorter";
 import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user/user-avatar";
-import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
+import UserDnsIdentity from "./user/user-dns-identity";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -39,7 +39,7 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     return (
       <span>
         <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
-        <UserDnsIdentityIcon pubkey={entity.pubkey} onlyIcon />
+        <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
     );
   } else return null;
