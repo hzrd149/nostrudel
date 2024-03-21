@@ -15,6 +15,10 @@ class SingleEventService {
   pending = new Map<string, string[]>();
   log = logger.extend("SingleEvent");
 
+  getSubject(id: string) {
+    return this.subjects.get(id);
+  }
+
   requestEvent(id: string, relays: Iterable<string>) {
     const subject = this.subjects.get(id);
     if (subject.value) return subject;

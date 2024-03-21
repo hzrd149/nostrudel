@@ -1,5 +1,5 @@
+import { forwardRef } from "react";
 import { IconProps, useColorMode } from "@chakra-ui/react";
-import { QuestionIcon, QuestionOutlineIcon } from "@chakra-ui/icons";
 
 import useDnsIdentity from "../../hooks/use-dns-identity";
 import useUserMetadata from "../../hooks/use-user-metadata";
@@ -25,7 +25,7 @@ export function useDnsIdentityColor(pubkey: string) {
   }
 }
 
-export default function UserDnsIdentityIcon({ pubkey, ...props }: { pubkey: string } & IconProps) {
+const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconProps>(({ pubkey, ...props }, ref) => {
   const metadata = useUserMetadata(pubkey);
   const identity = useDnsIdentity(metadata?.nip05);
 
@@ -34,12 +34,13 @@ export default function UserDnsIdentityIcon({ pubkey, ...props }: { pubkey: stri
   }
 
   if (identity === undefined) {
-    return <VerificationFailed color="yellow.500" {...props} />;
+    return <VerificationFailed color="yellow.500" {...props} ref={ref} />;
   } else if (identity === null) {
-    return <VerificationMissing color="red.500" {...props} />;
+    return <VerificationMissing color="red.500" {...props} ref={ref} />;
   } else if (pubkey === identity.pubkey) {
-    return <VerifiedIcon color="purple.500" {...props} />;
+    return <VerifiedIcon color="purple.500" {...props} ref={ref} />;
   } else {
-    return <VerificationFailed color="red.500" {...props} />;
+    return <VerificationFailed color="red.500" {...props} ref={ref} />;
   }
-}
+});
+export default UserDnsIdentityIcon;

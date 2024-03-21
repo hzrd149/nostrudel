@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { kinds } from "nostr-tools";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -9,24 +9,26 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { useUserInbox } from "../../hooks/use-user-mailboxes";
+import AccountNotifications from "../../classes/notifications";
 
 type NotificationTimelineContextType = {
-  timeline?: TimelineLoader;
+  timeline: TimelineLoader;
+  notifications?: AccountNotifications;
 };
-const NotificationTimelineContext = createContext<NotificationTimelineContextType>({});
+const NotificationTimelineContext = createContext<NotificationTimelineContextType | null>(null);
 
-export function useNotificationTimeline() {
-  const context = useContext(NotificationTimelineContext);
-
-  if (!context?.timeline) throw new Error("No notification timeline");
-
-  return context.timeline;
+export function useNotifications() {
+  const ctx = useContext(NotificationTimelineContext);
+  if (!ctx) throw new Error("Missing notifications provider");
+  return ctx;
 }
 
-export default function NotificationTimelineProvider({ children }: PropsWithChildren) {
+export default function NotificationsProvider({ children }: PropsWithChildren) {
   const account = useCurrentAccount();
   const inbox = useUserInbox(account?.pubkey);
   const readRelays = useReadRelays(inbox);
+
+  const [notifications, setNotifications] = useState<AccountNotifications>();
 
   const userMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -57,7 +59,22 @@ export default function NotificationTimelineProvider({ children }: PropsWithChil
     { eventFilter },
   );
 
-  const context = useMemo(() => ({ timeline }), [timeline]);
+  useEffect(() => {
+    if (!account?.pubkey) return;
+    const n = new AccountNotifications(account.pubkey, timeline.events);
+    setNotifications(n);
+    if (import.meta.env.DEV) {
+      // @ts-expect-error
+      window.accountNotifications = n;
+    }
+
+    return () => {
+      n.destroy();
+      setNotifications(undefined);
+    };
+  }, [account?.pubkey, timeline.events]);
+
+  const context = useMemo(() => ({ timeline, notifications }), [timeline, notifications]);
 
   return <NotificationTimelineContext.Provider value={context}>{children}</NotificationTimelineContext.Provider>;
 }

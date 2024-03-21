@@ -4,7 +4,7 @@ import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-app-settings";
-import NotificationTimelineProvider from "./notification-timeline";
+import NotificationsProvider from "./notifications";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
@@ -26,7 +26,7 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
         <SigningProvider>
           <PublishProvider>
             <DecryptionProvider>
-              <NotificationTimelineProvider>
+              <NotificationsProvider>
                 <DMTimelineProvider>
                   <DefaultEmojiProvider>
                     <UserEmojiProvider>
@@ -34,7 +34,7 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
                     </UserEmojiProvider>
                   </DefaultEmojiProvider>
                 </DMTimelineProvider>
-              </NotificationTimelineProvider>
+              </NotificationsProvider>
             </DecryptionProvider>
           </PublishProvider>
         </SigningProvider>

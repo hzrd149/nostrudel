@@ -3,7 +3,7 @@ import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
 import { Kind0ParsedContent } from "./user-metadata";
-import { utils } from "nostr-tools";
+import { nip57, utils } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -52,6 +52,20 @@ export type ParsedZap = {
   eventId?: string;
 };
 
+const parsedZapSymbol = Symbol("parsedZap");
+type ParsedZapEvent = NostrEvent & { [parsedZapSymbol]: ParsedZap | Error };
+export function getParsedZap(event: NostrEvent) {
+  const e = event as ParsedZapEvent;
+  if (Object.hasOwn(e, parsedZapSymbol)) return e[parsedZapSymbol];
+
+  try {
+    return (e[parsedZapSymbol] = parseZapEvent(e));
+  } catch (error) {
+    if (error instanceof Error) return (e[parsedZapSymbol] = error);
+    else throw error;
+  }
+}
+
 export function parseZapEvent(event: NostrEvent): ParsedZap {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");
@@ -59,10 +73,8 @@ export function parseZapEvent(event: NostrEvent): ParsedZap {
   const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
   if (!bolt11) throw new Error("missing bolt11 invoice");
 
-  // TODO: disabled until signature verification can be offloaded to a web worker
-
-  // const error = nip57.validateZapRequest(zapRequestStr);
-  // if (error) throw new Error(error);
+  const error = nip57.validateZapRequest(zapRequestStr);
+  if (error) throw new Error(error);
 
   const request = JSON.parse(zapRequestStr) as NostrEvent;
   const payment = parsePaymentRequest(bolt11);
