@@ -56,10 +56,10 @@ export default class AccountNotifications {
       // is the "p" tag directly mentioned in the content
       const isMentioned = isPTagMentionedInContent(event, this.pubkey);
       // is the pubkey mentioned in any way in the content
-      const isQuoted = !isMentioned && getPubkeysMentionedInContent(event.content).includes(this.pubkey);
+      const isQuoted = getPubkeysMentionedInContent(event.content).includes(this.pubkey);
 
       if (isMentioned || isQuoted) e[typeSymbol] = NotificationType.Mention;
-      if (isReply(event)) e[typeSymbol] = NotificationType.Reply;
+      else if (isReply(event)) e[typeSymbol] = NotificationType.Reply;
     }
     return e;
   }
