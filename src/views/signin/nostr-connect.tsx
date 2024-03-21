@@ -32,7 +32,7 @@ export default function LoginNostrConnectView() {
         if (uri.includes("@")) client = nostrConnectService.fromBunkerAddress(uri);
         else client = nostrConnectService.fromBunkerURI(uri);
 
-        await client.connect();
+        await client.connect(new URL(uri).searchParams.get('secret') ?? undefined);
       } else if (uri.startsWith("npub")) {
         client = nostrConnectService.fromBunkerToken(uri);
         const [npub, hexToken] = uri.split("#");
