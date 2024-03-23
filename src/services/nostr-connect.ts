@@ -132,7 +132,9 @@ export class NostrConnectClient {
           p.resolve(response.result);
         }
       }
-    } catch (e) {}
+    } catch (e) {
+        this.log("Error handling event", e);
+    }
   }
 
   private createEvent(content: string, target = this.pubkey, kind = kinds.NostrConnect) {
@@ -280,9 +282,10 @@ class NostrConnectService {
     const pubkey = url.host || url.pathname.replace("//", "");
     if (!isHexKey(pubkey)) throw new Error("Invalid connection URI");
     const relays = url.searchParams.getAll("relay");
+    const secret = url.searchParams.get("secret") ?? undefined;
     if (relays.length === 0) throw new Error("Missing relays");
 
-    return this.getClient(pubkey) || this.createClient(pubkey, relays);
+    return this.getClient(pubkey) || this.createClient(pubkey, relays, secret);
   }
   /** create client from: pubkey#token */
   fromBunkerToken(pubkeyWithToken: string) {
