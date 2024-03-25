@@ -115,6 +115,7 @@ export class NostrConnectClient {
     try {
       const responseStr = await nip04.decrypt(this.secretKey, event.pubkey, event.content);
       const response = JSON.parse(responseStr);
+      console.log("Got Response", response)
       if (response.id) {
         const p = this.requests.get(response.id);
         if (!p) return;
@@ -134,6 +135,7 @@ export class NostrConnectClient {
       }
     } catch (e) {
         this.log("Error handling event", e);
+        console.log(event)
     }
   }
 
