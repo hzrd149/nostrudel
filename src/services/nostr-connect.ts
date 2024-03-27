@@ -192,7 +192,7 @@ export class NostrConnectClient {
     try {
       const result = await this.makeRequest(
         NostrConnectMethod.Connect,
-        [this.publicKey, token || '', Perms],
+        [this.pubkey, token || '', Perms],
       );
       this.isConnected = true;
       return result;
