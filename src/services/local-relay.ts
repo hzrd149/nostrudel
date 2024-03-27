@@ -43,6 +43,8 @@ function createRelay() {
     } else if (safeRelayUrl(localRelayURL)) {
       return new Relay(safeRelayUrl(localRelayURL)!);
     }
+  } else if (window.satellite?.localRelay) {
+    return new Relay(window.satellite?.localRelay);
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
     return new Relay(new URL(protocol + location.host + "/local-relay").toString());
