@@ -1,5 +1,6 @@
 interface Window {
   satellite?: {
-    localRelay?: string;
+    getLocalRelay: () => Promise<string>;
+    getAdminAuth: () => Promise<string>;
   };
 }

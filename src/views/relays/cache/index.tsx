@@ -69,11 +69,13 @@ function NostrRelayTray() {
   );
 }
 function SatelliteRelay() {
-  const relay = window.satellite!.localRelay!;
-  const enabled = localRelay.url === relay;
+  const { value: relay } = useAsync(() => window.satellite!.getLocalRelay());
+  const { value: enabled } = useAsync(async () => localRelay.url === relay, [localRelay.url, relay]);
   const enable = () => {
-    localStorage.setItem("localRelay", relay);
-    location.reload();
+    if (relay) {
+      localStorage.setItem("localRelay", relay);
+      location.reload();
+    }
   };
 
   return (
@@ -85,9 +87,9 @@ function SatelliteRelay() {
         </Button>
       </CardHeader>
       <CardBody p="4" pt="0">
-        <Text mb="2">Your installation of noStrudel is setup with a local relay that can be used as a cache</Text>
-        <Text>Maximum capacity: Unknown</Text>
-        <Text>Performance: Unknown, but probably fast...</Text>
+        <Text mb="2">Satellite desktop exposes a local caching relay that can be used to store you events</Text>
+        <Text>Maximum capacity: Unlimited</Text>
+        <Text>Performance: As fast as your computer</Text>
       </CardBody>
     </Card>
   );
@@ -129,7 +131,7 @@ export default function CacheRelayView() {
       </Text>
       <InternalRelay />
       <NostrRelayTray />
-      {window.satellite?.localRelay && <SatelliteRelay />}
+      {window.satellite && <SatelliteRelay />}
       {window.CACHE_RELAY_ENABLED && <HostedRelay />}
     </Flex>
   );

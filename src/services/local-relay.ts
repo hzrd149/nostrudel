@@ -34,7 +34,7 @@ export const localDatabase = await openDB();
 function createInternalRelay() {
   return new CacheRelay(localDatabase, { maxEvents: 10000 });
 }
-function createRelay() {
+async function createRelay() {
   const localRelayURL = localStorage.getItem("localRelay");
 
   if (localRelayURL) {
@@ -43,8 +43,8 @@ function createRelay() {
     } else if (safeRelayUrl(localRelayURL)) {
       return new Relay(safeRelayUrl(localRelayURL)!);
     }
-  } else if (window.satellite?.localRelay) {
-    return new Relay(window.satellite?.localRelay);
+  } else if (window.satellite) {
+    return new Relay(await window.satellite.getLocalRelay());
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
     return new Relay(new URL(protocol + location.host + "/local-relay").toString());
@@ -53,7 +53,7 @@ function createRelay() {
 }
 
 async function connectRelay() {
-  const relay = createRelay();
+  const relay = await createRelay();
   try {
     await relay.connect();
     log("Connected");
