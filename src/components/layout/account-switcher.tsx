@@ -63,8 +63,6 @@ export default function AccountSwitcher() {
         mb="2"
         alignItems="center"
         flexGrow={1}
-        overflowX="hidden"
-        overflowY="visible"
         onClick={onToggle}
       >
         <UserAvatar pubkey={account.pubkey} noProxy size="md" />
