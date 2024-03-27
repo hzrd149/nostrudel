@@ -81,13 +81,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
-        "#p": [account.pubkey],
-        authors: [pubkey],
-      },
-      {
-        kinds: [kinds.EncryptedDirectMessage],
-        "#p": [pubkey],
-        authors: [account.pubkey],
+        "#p": [account.pubkey, pubkey],
+        authors: [pubkey, account.pubkey],
       },
     ],
   );

@@ -5,9 +5,7 @@ import UserDnsIdentityIcon from "./user-dns-identity-icon";
 
 export default function UserDnsIdentity({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) {
   const metadata = useUserMetadata(pubkey);
-  if (!metadata?.nip05) {
-    return null;
-  }
+  if (!metadata?.nip05) return null;
 
   if (onlyIcon) {
     return (

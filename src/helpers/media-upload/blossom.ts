@@ -1,6 +1,6 @@
 import { NostrEvent } from "nostr-tools";
 import { safeUrl } from "../parse";
-import { BlobDescriptor, BlossomClient, Signer } from "blossom-client";
+import { BlobDescriptor, BlossomClient, Signer } from "blossom-client-sdk";
 
 export function getServersFromEvent(event: NostrEvent) {
   return event.tags

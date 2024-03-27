@@ -3308,21 +3308,21 @@ better-path-resolve@1.0.0:
   resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-6.1.4.tgz#c7828f6c8900562b69d5040afb881bcbdad82001"
   integrity sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==
 
-blossom-client@^0.4.0:
+blossom-client-sdk@^0.4.0:
   version "0.4.0"
-  resolved "https://registry.yarnpkg.com/blossom-client/-/blossom-client-0.4.0.tgz#1607e5f862aa14a4f7e3ca91c025c778477b0163"
-  integrity sha512-kMEMmvaH2sJ2vyJoaG28raBmTtohbFgAJ/wu0/wvNCQORxsfCrmDEmF0QuKCaFYEL4eUoBOTyhEPzhd7dekjlA==
+  resolved "https://registry.yarnpkg.com/blossom-client-sdk/-/blossom-client-sdk-0.4.0.tgz#3b40e478dbe1a324f579e29570b46eb12968074d"
+  integrity sha512-xw1lq15VCfwb8RrmKvwxV92bwD5qwou97PpZvutH+WHT87bokZrx1uCBh0Ww3x+eJqamevvW2w6QAc+BYwILCg==
   dependencies:
     cross-fetch "^4.0.0"
 
-blossom-drive-client@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/blossom-drive-client/-/blossom-drive-client-0.1.0.tgz#9cb2b20df55ad11789f6492086110633e94bdce5"
-  integrity sha512-E9KaOeqJUbhdexL9woYkViz72mKaNxNBaLiAVq2+D1N1F0d4NZ+zytNevr/+pL/rSQhbMOMZLb3Wap3UKKj/0w==
+blossom-drive-sdk@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/blossom-drive-sdk/-/blossom-drive-sdk-0.1.1.tgz#7b196548b85bb1141c32ed37dec37e412f5984f1"
+  integrity sha512-p7IaQUvK4j1nDcP4EhVXI5Yeoyfyigq9M44My6rn/98dWMFLEHQGMEbJICwuEDcjwT9VKbHAwxMeoRrgSsDPhg==
   dependencies:
     "@noble/hashes" "^1.4.0"
     "@scure/base" "^1.1.6"
-    blossom-client "^0.4.0"
+    blossom-client-sdk "^0.4.0"
     events "^3.3.0"
     mime "^4.0.1"
     nanoid "^5.0.6"
