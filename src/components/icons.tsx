@@ -33,6 +33,8 @@ import EyeOff from "./icons/eye-off";
 import Colors from "./icons/colors";
 import Database01 from "./icons/database-01";
 import Speedometer03 from "./icons/speedometer-03";
+import User03 from "./icons/user-03";
+import LetterN from "./icons/letter-n";
 import UserCircle from "./icons/user-circle";
 import DotsHorizontal from "./icons/dots-horizontal";
 import Feather from "./icons/feather";
@@ -159,6 +161,9 @@ export const AtIcon = AtSign;
 
 export const FollowIcon = UserPlus01;
 export const UnfollowIcon = UserX01;
+
+export const ViewProfileIcon = User03;
+export const NjumpIcon = LetterN;
 
 export const ListsIcon = List;
 export const LiveStreamIcon = VideoRecorder;

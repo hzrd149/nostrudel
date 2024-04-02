@@ -1,14 +1,20 @@
-import { Box, Code, Flex, Heading, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Code, Flex, Heading, Link, Switch, Text, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import ExpandButton from "./expand-button";
+import { nip19 } from "nostr-tools";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserName from "../../../components/user/user-name";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import Timestamp from "../../../components/timestamp";
 import stringify from "json-stringify-deterministic";
+import { ViewProfileButton } from "../../../components/view-userprofile";
+import { ViewNjumpUrl } from "../../../components/view-njumpurl";
 
 export default function EventRow({ event }: { event: NostrEvent }) {
   const expanded = useDisclosure();
   const raw = useDisclosure();
+  const address = "https://njump.me/" + getSharableEventAddress(event);
+  const npub = "#/u/" + nip19.npubEncode(event.pubkey);
 
   return (
     <>
@@ -25,6 +31,7 @@ export default function EventRow({ event }: { event: NostrEvent }) {
           {event.id.slice(0, 8)} ({event.kind}) [{event.tags.length}]
         </Text>
         <UserName pubkey={event.pubkey} fontSize="sm" />
+        <ViewProfileButton  as={Link}  href={npub} aria-label="View Profile" title="View Profile" size="xs" />
         {!expanded.isOpen && (
           <Text isTruncated fontSize="sm">
             {event.content}
@@ -62,6 +69,7 @@ export default function EventRow({ event }: { event: NostrEvent }) {
                 <Text>ID: </Text>
                 <Code>{event.id}</Code>
                 <CopyIconButton value={event.id} aria-label="Copy ID" title="Copy ID" size="xs" />
+                <ViewNjumpUrl as={Link}  href={address} aria-label="View opinon on Njump" title="View opinion on Njump" size="xs" />
               </Flex>
               <Flex gap="2">
                 <Text>Pubkey: </Text>
