@@ -1,7 +1,6 @@
 import { Box, Code, Flex, Heading, Link, Switch, Text, useDisclosure } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { NostrEvent, nip19 } from "nostr-tools";
 import ExpandButton from "./expand-button";
-import { nip19 } from "nostr-tools";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserName from "../../../components/user/user-name";
 import { CopyIconButton } from "../../../components/copy-icon-button";
