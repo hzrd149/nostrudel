@@ -146,7 +146,7 @@ export default function PrivacySettings() {
               <br />
               <Code fontSize="0.9em">{`<url>`}</Code> or <Code fontSize="0.9em">{`<encoded_url>`}</Code> can be used to
               inject the raw or the encoded url into the proxy url ( example:{" "}
-              <Code fontSize="0.9em">{`https://corsproxy.io/?<encoded_url>`}</Code> )
+              <Code fontSize="0.9em" userSelect="all">{`https://corsproxy.io/?<encoded_url>`}</Code> )
             </FormHelperText>
           </FormControl>
           <FormControl>

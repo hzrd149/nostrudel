@@ -66,7 +66,7 @@ export const defaultSettings: AppSettings = {
 
   primaryColor: "#8DB600",
   imageProxy: "",
-  corsProxy: "https://corsproxy.io/?<encoded_url>",
+  corsProxy: "", //"https://corsproxy.io/?<encoded_url>",
   showContentWarning: true,
   twitterRedirect: undefined,
   redditRedirect: undefined,
