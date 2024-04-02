@@ -143,18 +143,35 @@ function NotificationsPage() {
   );
 
   const nextDay = () => {
-    setDay((date) =>
-      dayjs(date ?? today, DATE_FORMAT)
+    setDay((date) => {
+      const endOfDay = dayjs(date ?? today, DATE_FORMAT)
+        .endOf("day")
+        .unix();
+
+      // find the next event
+      for (let i = timeline.timeline.value.length - 1; i > 0; i--) {
+        const e = timeline.timeline.value[i];
+        if (e.created_at > endOfDay) return dayjs.unix(e.created_at).format(DATE_FORMAT);
+      }
+
+      return dayjs(date ?? today, DATE_FORMAT)
         .add(1, "day")
-        .format(DATE_FORMAT),
-    );
+        .format(DATE_FORMAT);
+    });
   };
   const previousDay = () => {
-    setDay((date) =>
-      dayjs(date ?? today, DATE_FORMAT)
+    setDay((date) => {
+      const startOfDay = dayjs(date ?? today, DATE_FORMAT).unix();
+
+      // find the next event
+      for (const e of timeline.timeline.value) {
+        if (e.created_at < startOfDay) return dayjs.unix(e.created_at).format(DATE_FORMAT);
+      }
+
+      return dayjs(date ?? today, DATE_FORMAT)
         .subtract(1, "day")
-        .format(DATE_FORMAT),
-    );
+        .format(DATE_FORMAT);
+    });
   };
 
   // save toggles to localStorage when changed

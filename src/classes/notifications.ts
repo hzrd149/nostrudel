@@ -11,6 +11,8 @@ import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import { STREAM_CHAT_MESSAGE_KIND } from "../helpers/nostr/stream";
+import replaceableEventsService from "../services/replaceable-events";
+import { MUTE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
 
 export const typeSymbol = Symbol("notificationType");
 
@@ -92,11 +94,15 @@ export default class AccountNotifications {
 
   throttleUpdateTimeline = _throttle(this.updateTimeline.bind(this), 200);
   updateTimeline() {
+    const muteList = replaceableEventsService.getEvent(MUTE_LIST_KIND, this.pubkey).value;
+    const mutedPubkeys = muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : [];
+
     const sorted = this.store.getSortedEvents();
 
     const timeline: CategorizedEvent[] = [];
     for (const event of sorted) {
       if (!Object.hasOwn(event, typeSymbol)) continue;
+      if (mutedPubkeys.includes(event.pubkey)) continue;
       const e = event as CategorizedEvent;
 
       switch (e[typeSymbol]) {
