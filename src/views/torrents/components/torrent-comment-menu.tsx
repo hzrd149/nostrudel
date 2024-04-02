@@ -9,9 +9,8 @@ import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu
 
 export default function TorrentCommentMenu({
   comment,
-  detailsClick,
   ...props
-}: { comment: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
+}: { comment: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
       <DotsMenuButton {...props}>

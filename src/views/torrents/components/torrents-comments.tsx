@@ -31,7 +31,6 @@ import Expand01 from "../../../components/icons/expand-01";
 import { TrustProvider } from "../../../providers/local/trust";
 import { ReplyIcon } from "../../../components/icons";
 import ReplyForm from "../../thread/components/reply-form";
-import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import TorrentCommentMenu from "./torrent-comment-menu";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
@@ -42,7 +41,6 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
   const { showReactions } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: level < 2 || post.replies.length <= 1 });
   const replyForm = useDisclosure();
-  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -110,7 +108,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
-        <TorrentCommentMenu comment={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+        <TorrentCommentMenu comment={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>
   );
@@ -151,7 +149,6 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
           ))}
         </Flex>
       )}
-      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
 });

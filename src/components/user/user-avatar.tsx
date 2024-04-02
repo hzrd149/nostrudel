@@ -41,7 +41,7 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
         metadata={metadata}
         noProxy={noProxy}
         ref={ref}
-        borderColor={color}
+        borderColor={size !== "xs" ? color : undefined}
         borderStyle="none"
         size={size}
         {...props}
@@ -63,7 +63,7 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
 );
 UserAvatar.displayName = "UserAvatar";
 
-const StyledAvatar = styled(Avatar)`
+const SquareAvatar = styled(Avatar)`
   img {
     border-radius: var(--chakra-radii-lg);
     border-width: 0.18rem;
@@ -75,9 +75,10 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
   metadata?: Kind0ParsedContent;
   pubkey?: string;
   noProxy?: boolean;
+  square?: boolean;
 };
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
-  ({ pubkey, metadata, noProxy, children, ...props }, ref) => {
+  ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
     const { imageProxy, proxyUserMedia, hideUsernames } = useAppSettings();
     const account = useCurrentAccount();
     const picture = useMemo(() => {
@@ -95,8 +96,10 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
       }
     }, [metadata?.picture, imageProxy, proxyUserMedia, hideUsernames, account]);
 
+    const AvatarComponent = square ? SquareAvatar : Avatar;
+
     return (
-      <StyledAvatar
+      <AvatarComponent
         src={picture}
         icon={pubkey ? <UserIdenticon pubkey={pubkey} /> : undefined}
         // overflow="hidden"
@@ -105,10 +108,9 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
         {...props}
       >
         {children}
-      </StyledAvatar>
+      </AvatarComponent>
     );
   },
 );
-UserAvatar.displayName = "UserAvatar";
 
 export default memo(UserAvatar);
