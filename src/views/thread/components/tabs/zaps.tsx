@@ -8,8 +8,6 @@ import UserLink from "../../../../components/user/user-link";
 import Timestamp from "../../../../components/timestamp";
 import { LightningIcon } from "../../../../components/icons";
 import { readablizeSats } from "../../../../helpers/bolt11";
-import useEventZaps from "../../../../hooks/use-event-zaps";
-import { getEventUID } from "nostr-idb";
 
 const ZapEvent = memo(({ zap }: { zap: ParsedZap }) => {
   if (!zap.payment.amount) return null;
@@ -31,9 +29,7 @@ const ZapEvent = memo(({ zap }: { zap: ParsedZap }) => {
   );
 });
 
-export default function PostZapsTab({ post }: { post: ThreadItem }) {
-  const zaps = useEventZaps(getEventUID(post.event));
-
+export default function PostZapsTab({ post, zaps }: { post: ThreadItem; zaps: ParsedZap[] }) {
   return (
     <Flex px="2" direction="column" gap="2" mb="2">
       {zaps.map((zap) => (

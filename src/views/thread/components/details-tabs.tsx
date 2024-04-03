@@ -13,6 +13,10 @@ import PostReactionsTab from "./tabs/reactions";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import PostRepostsTab from "./tabs/reposts";
 import PostQuotesTab from "./tabs/quotes";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import useSubject from "../../../hooks/use-subject";
+import { getContentTagRefs } from "../../../helpers/nostr/event";
 
 const HiddenScrollbar = styled(Flex)`
   -ms-overflow-style: none; /* IE and Edge */
@@ -29,6 +33,16 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const zaps = useEventZaps(getEventUID(post.event));
   const reactions = useEventReactions(getEventUID(post.event)) ?? [];
 
+  const readRelays = useReadRelays();
+  const timeline = useTimelineLoader(`${post.event.id}-quotes`, readRelays, {
+    kinds: [kinds.ShortTextNote],
+    "#e": [post.event.id],
+  });
+  const events = useSubject(timeline.timeline);
+  const quotes = events.filter((e) => {
+    return getContentTagRefs(e.content, e.tags).some((t) => t[0] === "e" && t[1] === post.event.id);
+  });
+
   const renderContent = () => {
     switch (selected) {
       case "replies":
@@ -40,13 +54,13 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
           </Flex>
         );
       case "quotes":
-        return <PostQuotesTab post={post} />;
+        return <PostQuotesTab post={post} quotes={quotes} />;
       case "reactions":
-        return <PostReactionsTab post={post} />;
+        return <PostReactionsTab post={post} reactions={reactions} />;
       case "reposts":
         return <PostRepostsTab post={post} />;
       case "zaps":
-        return <PostZapsTab post={post} />;
+        return <PostZapsTab post={post} zaps={zaps} />;
     }
     return null;
   };
@@ -68,7 +82,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
           variant={selected === "quotes" ? "solid" : "outline"}
           onClick={() => setSelected("quotes")}
         >
-          Quotes
+          Quotes{quotes.length > 0 ? ` (${quotes.length})` : ""}
         </Button>
         <Button
           size="sm"

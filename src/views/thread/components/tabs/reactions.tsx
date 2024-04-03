@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { getEventUID } from "nostr-idb";
 import { Box, Button, Divider, Flex, SimpleGrid, SimpleGridProps, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import useEventReactions from "../../../../hooks/use-event-reactions";
 import { ThreadItem } from "../../../../helpers/thread";
 import { groupReactions } from "../../../../helpers/nostr/reactions";
 import ReactionIcon from "../../../../components/event-reactions/reaction-icon";
@@ -36,8 +35,7 @@ function ShowMoreGrid({
   );
 }
 
-export default function PostReactionsTab({ post }: { post: ThreadItem }) {
-  const reactions = useEventReactions(getEventUID(post.event)) ?? [];
+export default function PostReactionsTab({ post, reactions }: { post: ThreadItem; reactions: NostrEvent[] }) {
   const groups = useMemo(() => groupReactions(reactions), [reactions]);
 
   return (
