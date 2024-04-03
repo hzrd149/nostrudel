@@ -1,12 +1,15 @@
 import { MutableRefObject, PropsWithChildren, forwardRef } from "react";
 import { Divider, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 
 import { ExpandableToggleButton } from "../notification-item";
 
+dayjs.extend(utc);
+
 const specialNames = {
-  [dayjs().startOf("day").unix()]: "Today",
-  [dayjs().subtract(1, "day").startOf("day").unix()]: "Yesterday",
+  [dayjs().utc().startOf("day").unix()]: "Today",
+  [dayjs().utc().subtract(1, "day").startOf("day").unix()]: "Yesterday",
 };
 
 const DayGroup = forwardRef<HTMLDivElement, PropsWithChildren<{ day: number; hideRefOnClose?: boolean }>>(
