@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
+import styled from "@emotion/styled";
 
 import { ThreadItem } from "../../../helpers/thread";
 import useEventCount from "../../../hooks/use-event-count";
@@ -12,6 +13,14 @@ import PostReactionsTab from "./tabs/reactions";
 import useEventReactions from "../../../hooks/use-event-reactions";
 import PostRepostsTab from "./tabs/reposts";
 import PostQuotesTab from "./tabs/quotes";
+
+const HiddenScrollbar = styled(Flex)`
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const [selected, setSelected] = useState("replies");
@@ -44,7 +53,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
 
   return (
     <>
-      <Flex gap="4" px="2" overflowX="auto">
+      <HiddenScrollbar gap="4" px="2" overflowX="auto">
         <Button
           size="sm"
           flexShrink={0}
@@ -85,7 +94,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
         >
           Reactions{reactions.length > 0 ? ` (${reactions.length})` : ""}
         </Button>
-      </Flex>
+      </HiddenScrollbar>
 
       {renderContent()}
     </>
