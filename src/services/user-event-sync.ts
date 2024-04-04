@@ -1,4 +1,6 @@
 import { kinds } from "nostr-tools";
+import _throttle from "lodash.throttle";
+
 import { COMMON_CONTACT_RELAY } from "../const";
 import { logger } from "../helpers/debug";
 import accountService from "./account";
@@ -11,8 +13,14 @@ import userMetadataService from "./user-metadata";
 
 const log = logger.extend("user-event-sync");
 
-function loadContactsList() {
+function downloadEvents() {
   const account = accountService.current.value!;
+  const relays = clientRelaysService.readRelays.value;
+
+  log("Loading user information");
+  userMetadataService.requestMetadata(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
+  userMailboxesService.requestMailboxes(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
+  userAppSettings.requestAppSettings(account.pubkey, relays, { alwaysRequest: true });
 
   log("Loading contacts list");
   replaceableEventsService.requestEvent(
@@ -24,18 +32,6 @@ function loadContactsList() {
       alwaysRequest: true,
     },
   );
-}
-
-function downloadEvents() {
-  const account = accountService.current.value!;
-  const relays = clientRelaysService.readRelays.value;
-
-  log("Loading user information");
-  userMetadataService.requestMetadata(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
-  userMailboxesService.requestMailboxes(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
-  userAppSettings.requestAppSettings(account.pubkey, relays, { alwaysRequest: true });
-
-  loadContactsList();
 }
 
 accountService.current.subscribe((account) => {

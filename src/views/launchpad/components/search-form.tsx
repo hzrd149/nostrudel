@@ -1,16 +1,6 @@
 import { FormEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Card,
-  Code,
-  Flex,
-  FlexProps,
-  Input,
-  InputGroup,
-  InputRightElement,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Card, Flex, FlexProps, Input, InputGroup, InputRightElement, useDisclosure } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 import { useAsync, useKeyPressEvent, useThrottle } from "react-use";
 import { nip19 } from "nostr-tools";
@@ -20,6 +10,7 @@ import { useUserSearchDirectoryContext } from "../../../providers/global/user-di
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
+import { getWebOfTrust } from "../../../services/web-of-trust";
 
 function UserOption({ pubkey }: { pubkey: string }) {
   return (
@@ -41,8 +32,16 @@ export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
   const { value: localUsers = [] } = useAsync(async () => {
     if (queryThrottle.trim().length < 2) return [];
 
+    const webOfTrust = getWebOfTrust();
     const dir = await getDirectory();
-    return matchSorter(dir, queryThrottle.trim(), { keys: ["names"] }).slice(0, 10);
+    return matchSorter(dir, queryThrottle.trim(), {
+      keys: ["names"],
+      sorter: (items) =>
+        webOfTrust.sortByDistanceAndConnections(
+          items.sort((a, b) => b.rank - a.rank),
+          (i) => i.item.pubkey,
+        ),
+    }).slice(0, 10);
   }, [queryThrottle]);
   useEffect(() => {
     if (localUsers.length > 0 && !autoComplete.isOpen) autoComplete.onOpen();

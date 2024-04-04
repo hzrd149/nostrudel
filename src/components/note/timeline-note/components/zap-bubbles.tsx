@@ -26,7 +26,7 @@ export default function ZapBubbles({ event }: { event: NostrEvent }) {
   return (
     <HiddenScrollbar overflowY="hidden" overflowX="auto" gap="2">
       {sorted.map((zap) => (
-        <Tag borderRadius="full" py="1" flexShrink={0} variant="outline">
+        <Tag key={zap.event.id} borderRadius="full" py="1" flexShrink={0} variant="outline">
           <LightningIcon mr="1" />
           <TagLabel fontWeight="bold">{readablizeSats((zap.payment.amount ?? 0) / 1000)}</TagLabel>
           <UserAvatar pubkey={zap.request.pubkey} size="xs" square={false} ml="2" />
