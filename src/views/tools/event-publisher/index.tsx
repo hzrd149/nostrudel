@@ -12,6 +12,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Switch,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -26,6 +28,7 @@ import { useSigningContext } from "../../../providers/global/signing-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user/user-avatar";
+import { RelayUrlInput } from "../../../components/relay-url-input";
 
 export default function EventPublisherView() {
   const toast = useToast();
@@ -33,6 +36,8 @@ export default function EventPublisherView() {
   const { requestSignature } = useSigningContext();
   const publish = usePublishEvent();
   const account = useCurrentAccount();
+  const customRelay = useDisclosure();
+  const [customRelayURL, setCustomRelayURL] = useState("");
 
   const defaultEvent = useMemo(
     () =>
@@ -72,7 +77,11 @@ export default function EventPublisherView() {
       setLoading(true);
       const valid = verifyEvent(draft as NostrEvent);
       if (!valid) throw new Error("Invalid event");
-      await publish("Custom Event", draft);
+      if (customRelayURL) {
+        await publish("Custom Event", draft, [customRelayURL], true, true);
+      } else {
+        await publish("Custom Event", draft);
+      }
       setDraft(undefined);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -89,7 +98,11 @@ export default function EventPublisherView() {
       const event = await requestSignature(draft);
       const valid = verifyEvent(event);
       if (!valid) throw new Error("Invalid event");
-      await publish("Custom Event", event);
+      if (customRelayURL) {
+        await publish("Custom Event", draft, [customRelayURL], true, true);
+      } else {
+        await publish("Custom Event", draft);
+      }
       setDraft(undefined);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -103,6 +116,18 @@ export default function EventPublisherView() {
         <Flex gap="2" alignItems="center" wrap="wrap">
           <BackButton size="sm" />
           <Heading size="md">Event Publisher</Heading>
+          <Switch size="sm" checked={customRelay.isOpen} onChange={customRelay.onToggle}>
+            Publish to Relay
+          </Switch>
+          {customRelay.isOpen && (
+            <RelayUrlInput
+              size="sm"
+              borderRadius="md"
+              w="xs"
+              value={customRelayURL}
+              onChange={(e) => setCustomRelayURL(e.target.value)}
+            />
+          )}
           <ButtonGroup ml="auto">
             {/* <IconButton icon={<HelpCircle />} aria-label="Help" title="Help" size="sm" onClick={helpModal.onOpen} /> */}
             <Button colorScheme="primary" onClick={submitEvent} leftIcon={<Play />} size="sm">
