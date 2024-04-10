@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
@@ -8,7 +9,6 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
 import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
 import { RelayMode } from "../../../classes/relay";
-import { useCallback } from "react";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";

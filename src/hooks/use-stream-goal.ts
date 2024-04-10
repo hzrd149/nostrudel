@@ -4,8 +4,9 @@ import { GOAL_KIND } from "../helpers/nostr/goal";
 import { ParsedStream, getATag } from "../helpers/nostr/stream";
 import { NostrEvent } from "../types/nostr-event";
 import { useReadRelays } from "./use-client-relays";
-import NostrRequest from "../classes/nostr-request";
 import useSingleEvent from "./use-single-event";
+import { subscribeMany } from "../helpers/relay";
+import { Filter } from "nostr-tools";
 
 export default function useStreamGoal(stream: ParsedStream) {
   const [goal, setGoal] = useState<NostrEvent>();
@@ -15,11 +16,11 @@ export default function useStreamGoal(stream: ParsedStream) {
 
   useEffect(() => {
     if (!stream.goal) {
-      const request = new NostrRequest(readRelays);
-      request.onEvent.subscribe((event) => {
-        setGoal(event);
+      const filter: Filter = { "#a": [getATag(stream)], kinds: [GOAL_KIND] };
+      const sub = subscribeMany(Array.from(readRelays), [filter], {
+        onevent: (event) => setGoal((c) => (!c || event.created_at > c.created_at ? event : c)),
+        oneose: () => sub.close(),
       });
-      request.start({ "#a": [getATag(stream)], kinds: [GOAL_KIND] });
     }
   }, [stream.identifier, stream.goal, readRelays.urls.join("|")]);
 

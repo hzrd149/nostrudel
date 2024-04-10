@@ -1,12 +1,12 @@
 import { Filter, kinds, nip25 } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
 import { relayRequest } from "../helpers/relay";
+import relayPoolService from "./relay-pool";
 
 type eventId = string;
 type relay = string;
@@ -73,9 +73,9 @@ class EventReactionsService {
       if (coordinates.length > 0) filters.push({ "#a": coordinates, kinds: [kinds.Reaction] });
 
       if (filters.length > 0) {
-        const request = new NostrRequest([relay]);
-        request.onEvent.subscribe((e) => this.handleEvent(e));
-        request.start(filters);
+        const subscription = relayPoolService
+          .requestRelay(relay)
+          .subscribe(filters, { onevent: (event) => this.handleEvent(event), oneose: () => subscription.close() });
       }
     }
     this.pending.clear();

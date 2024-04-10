@@ -134,7 +134,7 @@ export default class AccountNotifications {
           break;
         }
         case NotificationType.Zap:
-          const parsed = getParsedZap(e);
+          const parsed = getParsedZap(e, true, true);
           if (parsed instanceof Error) break;
           if (!parsed.payment.amount) break;
           timeline.push(e);

@@ -62,7 +62,7 @@
     "nanoid": "^5.0.4",
     "ngeohash": "^0.6.3",
     "nostr-idb": "^2.1.1",
-    "nostr-tools": "^2.1.3",
+    "nostr-tools": "^2.4.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",

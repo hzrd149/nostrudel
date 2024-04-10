@@ -40,7 +40,7 @@ class DnsIdentityService {
 
   async fetchIdentity(address: string) {
     const { name, domain } = parseAddress(address);
-    if (!name || !domain) throw new Error("invalid address");
+    if (!name || !domain) throw new Error("invalid address " + address);
 
     const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
       .then((res) => res.json() as Promise<IdentityJson>)

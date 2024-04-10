@@ -1,12 +1,12 @@
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
 import { relayRequest, safeRelayUrls } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 import Subject from "../classes/subject";
+import relayPoolService from "./relay-pool";
 
 const RELAY_REQUEST_BATCH_TIME = 500;
 
@@ -64,9 +64,9 @@ class SingleEventService {
     }
 
     for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const request = new NostrRequest([relay]);
-      request.onEvent.subscribe((event) => this.handleEvent(event));
-      request.start({ ids });
+      const sub = relayPoolService
+        .requestRelay(relay)
+        .subscribe([{ ids }], { onevent: (event) => this.handleEvent(event), oneose: () => sub.close() });
     }
     this.pending.clear();
   }

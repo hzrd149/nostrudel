@@ -37,9 +37,9 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { groupByTime } from "../../../helpers/notification";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
-import NostrRequest from "../../../classes/nostr-request";
 import { sortByDate } from "../../../helpers/nostr/event";
 import { NostrQuery } from "../../../types/nostr-relay";
+import relayPoolService from "../../../services/relay-pool";
 
 ChartJS.register(
   ArcElement,
@@ -154,18 +154,21 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const [loading, setLoading] = useState(false);
   const loadMore = useCallback(() => {
     setLoading(true);
-    const request = new NostrRequest([relay]);
-    const throttle = _throttle(() => update({}), 100);
-    request.onEvent.subscribe((e) => {
-      store.addEvent(e);
-      throttle();
-    });
-    request.onComplete.then(() => setLoading(false));
-
     const query: NostrQuery = { limit: 500 };
     const last = store.getLastEvent();
     if (last) query.until = last.created_at;
-    request.start(query);
+
+    const throttleUpdate = _throttle(() => update({}), 100);
+    const sub = relayPoolService.requestRelay(relay).subscribe([query], {
+      onevent: (event) => {
+        store.addEvent(event);
+        throttleUpdate();
+      },
+      oneose: () => sub.close(),
+      onclose: () => {
+        setLoading(false);
+      },
+    });
   }, [relay, update, store]);
 
   useEffect(() => loadMore(), [relay, loadMore]);

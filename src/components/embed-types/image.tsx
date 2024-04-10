@@ -1,7 +1,6 @@
 import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
-import { useTrustContext } from "../../providers/local/trust";
 import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
 import { getMatchLink } from "../../helpers/regexp";
 import { useRegisterSlide } from "../lightbox-provider";
@@ -100,7 +99,7 @@ export const GalleryImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
 export function ImageGallery({ images, event }: { images: string[]; event?: NostrEvent }) {
   const photos = useMemo(() => {
     return images.map((img) => {
-      const photo: PhotoWithoutSize = { src: img };
+      const photo: PhotoWithoutSize = { src: img, key: img };
       return photo;
     });
   }, [images]);

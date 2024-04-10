@@ -1,21 +1,21 @@
 import { Debugger } from "debug";
-import { Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { Filter, NostrEvent, Relay, matchFilters } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "./nostr-request";
 import Subject from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import deleteEventService from "../services/delete-events";
 import { mergeFilter } from "../helpers/nostr/filter";
 import { isATag, isETag } from "../types/nostr-event";
+import relayPoolService from "../services/relay-pool";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export default class ChunkedRequest {
-  relay: string;
+  relay: Relay;
   filters: Filter[];
   chunkSize = DEFAULT_CHUNK_SIZE;
   private log: Debugger;
@@ -28,12 +28,12 @@ export default class ChunkedRequest {
 
   onChunkFinish = new Subject<number>();
 
-  constructor(relay: string, filters: Filter[], log?: Debugger) {
+  constructor(relay: Relay, filters: Filter[], log?: Debugger) {
     this.relay = relay;
     this.filters = filters;
 
-    this.log = log || logger.extend(relay);
-    this.events = new EventStore(relay);
+    this.log = log || logger.extend(relay.url);
+    this.events = new EventStore(relay.url);
 
     // TODO: find a better place for this
     this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
@@ -47,23 +47,25 @@ export default class ChunkedRequest {
       filters = mergeFilter(filters, { until: oldestEvent.created_at - 1 });
     }
 
-    const request = new NostrRequest([this.relay]);
+    relayPoolService.addClaim(this.relay, this);
 
     let gotEvents = 0;
-    request.onEvent.subscribe((e) => {
-      this.handleEvent(e);
-      gotEvents++;
+    const sub = this.relay.subscribe(filters, {
+      onevent: (event) => {
+        this.handleEvent(event);
+        gotEvents++;
+      },
+      oneose: () => {
+        this.loading = false;
+        if (gotEvents === 0) {
+          this.complete = true;
+          this.log("Complete");
+        } else this.log(`Got ${gotEvents} events`);
+        this.onChunkFinish.next(gotEvents);
+        sub.close();
+        relayPoolService.removeClaim(this.relay, this);
+      },
     });
-    request.onComplete.then(() => {
-      this.loading = false;
-      if (gotEvents === 0) {
-        this.complete = true;
-        this.log("Complete");
-      } else this.log(`Got ${gotEvents} events`);
-      this.onChunkFinish.next(gotEvents);
-    });
-
-    request.start(filters);
   }
 
   private handleEvent(event: NostrEvent) {

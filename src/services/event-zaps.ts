@@ -1,12 +1,12 @@
 import { Filter, kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent, isATag, isETag } from "../types/nostr-event";
 import { relayRequest } from "../helpers/relay";
 import { localRelay } from "./local-relay";
+import relayPoolService from "./relay-pool";
 
 type eventUID = string;
 type relay = string;
@@ -73,9 +73,9 @@ class EventZapsService {
       if (coordinates.length > 0) filter.push({ "#a": coordinates, kinds: [kinds.Zap] });
 
       if (filter.length > 0) {
-        const request = new NostrRequest([relay]);
-        request.onEvent.subscribe((e) => this.handleEvent(e));
-        request.start(filter);
+        const sub = relayPoolService
+          .requestRelay(relay)
+          .subscribe(filter, { onevent: (event) => this.handleEvent(event), oneose: () => sub.close() });
       }
     }
     this.pending.clear();

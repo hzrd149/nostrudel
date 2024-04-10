@@ -11,6 +11,7 @@ import { relayRequest } from "../helpers/relay";
 import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
 import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
+import relayPoolService from "./relay-pool";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -31,7 +32,7 @@ const WRITE_CACHE_BATCH_TIME = 250;
 class ReplaceableEventsService {
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
   private loaders = new SuperMap<string, BatchKindLoader>((relay) => {
-    const loader = new BatchKindLoader(relay, this.log.extend(relay));
+    const loader = new BatchKindLoader(relayPoolService.requestRelay(relay), this.log.extend(relay));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
     return loader;
   });

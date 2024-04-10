@@ -1,7 +1,7 @@
+import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { validateRelayURL } from "../helpers/relay";
 import { offlineMode } from "../services/offline-mode";
-import Relay from "./relay";
 import Subject from "./subject";
 
 export default class RelayPool {
@@ -34,9 +34,9 @@ export default class RelayPool {
     }
 
     const relay = this.relays.get(key) as Relay;
-    if (connect && !relay.okay) {
+    if (connect && !relay.connected) {
       try {
-        relay.open();
+        relay.connect();
       } catch (e) {
         this.log(`Failed to connect to ${relay.url}`);
         this.log(e);
@@ -58,9 +58,9 @@ export default class RelayPool {
 
     for (const [url, relay] of this.relays.entries()) {
       const claims = this.getRelayClaims(url).size;
-      if (!relay.okay && claims > 0) {
+      if (!relay.connected && claims > 0) {
         try {
-          relay.open();
+          relay.connect();
         } catch (e) {
           this.log(`Failed to connect to ${relay.url}`);
           this.log(e);
@@ -69,14 +69,12 @@ export default class RelayPool {
     }
   }
 
-  addClaim(url: string | URL, id: any) {
-    url = validateRelayURL(url);
-    const key = url.toString();
+  addClaim(relay: string | URL | Relay, id: any) {
+    const key = relay instanceof Relay ? relay.url : validateRelayURL(relay).toString();
     this.getRelayClaims(key).add(id);
   }
-  removeClaim(url: string | URL, id: any) {
-    url = validateRelayURL(url);
-    const key = url.toString();
+  removeClaim(relay: string | URL | Relay, id: any) {
+    const key = relay instanceof Relay ? relay.url : validateRelayURL(relay).toString();
     this.getRelayClaims(key).delete(id);
   }
 

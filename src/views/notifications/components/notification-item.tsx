@@ -5,7 +5,7 @@ import { kinds, nip18, nip25 } from "nostr-tools";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { parseZapEvent } from "../../../helpers/nostr/zaps";
+import { getParsedZap } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { getEventUID, parseCoordinate } from "../../../helpers/nostr/event";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
@@ -93,11 +93,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
 });
 
 const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ event }, ref) => {
-  const zap = useMemo(() => {
-    try {
-      return parseZapEvent(event);
-    } catch (e) {}
-  }, [event]);
+  const zap = useMemo(() => getParsedZap(event), [event]);
 
   if (!zap || !zap.payment.amount) return null;
 

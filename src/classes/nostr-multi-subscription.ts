@@ -1,12 +1,11 @@
 import { nanoid } from "nanoid";
 
 import { NostrEvent } from "../types/nostr-event";
-import { NostrRequestFilter, RelayQueryMap } from "../types/nostr-relay";
-import Relay, { IncomingEvent, OutgoingRequest } from "./relay";
+import { RelayQueryMap } from "../types/nostr-relay";
 import relayPoolService from "../services/relay-pool";
 import { isFilterEqual, isQueryMapEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
-import SuperMap from "./super-map";
+import { Relay, Subscription } from "nostr-tools";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -18,6 +17,8 @@ export default class NostrMultiSubscription {
   queryMap: RelayQueryMap = {};
 
   relays: Relay[] = [];
+  subscriptions = new Map<Relay, Subscription>();
+
   state = NostrMultiSubscription.INIT;
   onEvent = new ControlledObservable<NostrEvent>();
   seenEvents = new Set<string>();
@@ -26,38 +27,17 @@ export default class NostrMultiSubscription {
     this.id = nanoid();
     this.name = name;
   }
-  private handleMessage(incomingEvent: IncomingEvent) {
-    if (
-      this.state === NostrMultiSubscription.OPEN &&
-      incomingEvent[1] === this.id &&
-      !this.seenEvents.has(incomingEvent[2].id)
-    ) {
-      this.onEvent.next(incomingEvent[2]);
-      this.seenEvents.add(incomingEvent[2].id);
-    }
+  private handleEvent(event: NostrEvent) {
+    if (this.seenEvents.has(event.id)) return;
+    this.onEvent.next(event);
+    this.seenEvents.add(event.id);
   }
 
-  private relaySubs = new SuperMap<Relay, ZenObservable.Subscription[]>(() => []);
-  /** listen for event and open events from relays */
-  private connectToRelay(relay: Relay) {
-    const subs = this.relaySubs.get(relay);
-    subs.push(relay.onEvent.subscribe(this.handleMessage.bind(this)));
-    subs.push(relay.onOpen.subscribe(this.handleRelayConnect.bind(this)));
-    subs.push(relay.onClose.subscribe(this.handleRelayDisconnect.bind(this)));
+  private handleAddRelay(relay: Relay) {
     relayPoolService.addClaim(relay.url, this);
   }
-  /** stop listing to events from relays */
-  private disconnectFromRelay(relay: Relay) {
-    const subs = this.relaySubs.get(relay);
-    for (const sub of subs) sub.unsubscribe();
-    this.relaySubs.delete(relay);
+  private handleRemoveRelay(relay: Relay) {
     relayPoolService.removeClaim(relay.url, this);
-
-    // if the subscription is open and had sent a request to the relay
-    if (this.state === NostrMultiSubscription.OPEN && this.relayQueries.has(relay)) {
-      relay.send(["CLOSE", this.id]);
-    }
-    this.relayQueries.delete(relay);
   }
 
   setQueryMap(queryMap: RelayQueryMap) {
@@ -70,7 +50,7 @@ export default class NostrMultiSubscription {
         // add relay
         const relay = relayPoolService.requestRelay(url);
         this.relays.push(relay);
-        this.connectToRelay(relay);
+        this.handleAddRelay(relay);
       }
     }
     for (const url of Object.keys(this.queryMap)) {
@@ -78,41 +58,51 @@ export default class NostrMultiSubscription {
         const relay = this.relays.find((r) => r.url === url);
         if (!relay) continue;
         this.relays = this.relays.filter((r) => r !== relay);
-        this.disconnectFromRelay(relay);
+        this.handleRemoveRelay(relay);
       }
     }
 
     this.queryMap = queryMap;
 
-    this.updateRelayQueries();
+    this.updateSubscriptions();
   }
 
-  private relayQueries = new WeakMap<Relay, NostrRequestFilter>();
-  private updateRelayQueries() {
-    if (this.state !== NostrMultiSubscription.OPEN) return;
+  private updateSubscriptions() {
+    // close all subscriptions if not open
+    if (this.state !== NostrMultiSubscription.OPEN) {
+      for (const [relay, subscription] of this.subscriptions) {
+        subscription.close();
+      }
+      this.subscriptions.clear();
+      return;
+    }
 
+    // else open and update subscriptions
     for (const relay of this.relays) {
-      const filter = this.queryMap[relay.url];
-      const message: OutgoingRequest = Array.isArray(filter) ? ["REQ", this.id, ...filter] : ["REQ", this.id, filter];
+      const filters = this.queryMap[relay.url];
 
-      const currentFilter = this.relayQueries.get(relay);
-      if (!currentFilter || !isFilterEqual(currentFilter, filter)) {
-        this.relayQueries.set(relay, filter);
-        relay.send(message);
+      let subscription = this.subscriptions.get(relay);
+      if (!subscription || !isFilterEqual(subscription.filters, filters)) {
+        if (subscription) {
+          subscription.filters = filters;
+          subscription.fire();
+        } else {
+          subscription = relay.subscribe(filters, {
+            onevent: (event) => this.handleEvent(event),
+            onclose: () => {
+              if (this.subscriptions.get(relay) === subscription) {
+                this.subscriptions.delete(relay);
+              }
+            },
+          });
+          this.subscriptions.set(relay, subscription);
+        }
       }
     }
   }
-  private handleRelayConnect(relay: Relay) {
-    this.updateRelayQueries();
-  }
-  private handleRelayDisconnect(relay: Relay) {
-    this.relayQueries.delete(relay);
-  }
 
-  sendAll(event: NostrEvent) {
-    for (const relay of this.relays) {
-      relay.send(["EVENT", event]);
-    }
+  publish(event: NostrEvent) {
+    return Promise.all(this.relays.map((r) => r.publish(event)));
   }
 
   open() {
@@ -120,14 +110,14 @@ export default class NostrMultiSubscription {
 
     this.state = NostrMultiSubscription.OPEN;
     // reconnect to all relays
-    for (const relay of this.relays) this.connectToRelay(relay);
+    for (const relay of this.relays) this.handleAddRelay(relay);
     // send queries
-    this.updateRelayQueries();
+    this.updateSubscriptions();
 
     return this;
   }
-  waitForConnection(): Promise<void> {
-    return Promise.all(this.relays.map((r) => r.waitForConnection())).then((v) => void 0);
+  waitForAllConnection(): Promise<void> {
+    return Promise.all(this.relays.filter((r) => !r.connected).map((r) => r.connect())).then((v) => void 0);
   }
   close() {
     if (this.state !== NostrMultiSubscription.OPEN) return this;
@@ -135,7 +125,7 @@ export default class NostrMultiSubscription {
     // forget all seen events
     this.forgetEvents();
     // unsubscribe from relay messages
-    for (const relay of this.relays) this.disconnectFromRelay(relay);
+    for (const relay of this.relays) this.handleRemoveRelay(relay);
     // set state
     this.state = NostrMultiSubscription.CLOSED;
 

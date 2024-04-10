@@ -3,13 +3,13 @@ import stringify from "json-stringify-deterministic";
 import Subject from "../classes/subject";
 import { NostrRequestFilter } from "../types/nostr-relay";
 import SuperMap from "../classes/super-map";
-import NostrRequest from "../classes/nostr-request";
 import relayScoreboardService from "./relay-scoreboard";
 import { logger } from "../helpers/debug";
 import { matchFilter, matchFilters } from "nostr-tools";
 import { NostrEvent } from "../types/nostr-event";
 import { relayRequest } from "../helpers/relay";
 import { localRelay } from "./local-relay";
+import relayPoolService from "./relay-pool";
 
 function hashFilter(filter: NostrRequestFilter) {
   return stringify(filter);
@@ -62,20 +62,23 @@ class EventExistsService {
       relays.delete(nextRelay);
 
       (async () => {
-        const sub = this.answers.get(key);
-        const request = new NostrRequest([nextRelay], 500);
-        const limitFilter = Array.isArray(filter) ? filter.map((f) => ({ ...f, limit: 1 })) : { ...filter, limit: 1 };
-        request.start(limitFilter);
-        request.onEvent.subscribe(() => {
-          this.log("Found event for", filter);
-          sub.next(true);
-          this.pending.delete(key);
+        const subject = this.answers.get(key);
+        const limitFilter = Array.isArray(filter) ? filter.map((f) => ({ ...f, limit: 1 })) : [{ ...filter, limit: 1 }];
+        const subscription = relayPoolService.requestRelay(nextRelay).subscribe(limitFilter, {
+          eoseTimeout: 500,
+          onevent: () => {
+            this.log("Found event for", filter);
+            subject.next(true);
+            this.pending.delete(key);
+          },
+          oneose: () => {
+            if (subject.value === undefined && this.asked.get(key).size > this.pending.get(key).size) {
+              this.log("Could not find event for", filter);
+              subject.next(false);
+            }
+            subscription.close();
+          },
         });
-        await request.onComplete;
-        if (sub.value === undefined && this.asked.get(key).size > this.pending.get(key).size) {
-          this.log("Could not find event for", filter);
-          sub.next(false);
-        }
       })();
     }
   }

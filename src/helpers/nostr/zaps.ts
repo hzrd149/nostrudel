@@ -54,18 +54,38 @@ export type ParsedZap = {
 
 const parsedZapSymbol = Symbol("parsedZap");
 type ParsedZapEvent = NostrEvent & { [parsedZapSymbol]: ParsedZap | Error };
-export function getParsedZap(event: NostrEvent) {
+
+export function getParsedZap(event: NostrEvent, quite: false, returnError?: boolean): ParsedZap;
+export function getParsedZap(event: NostrEvent, quite: true, returnError: true): ParsedZap | Error;
+export function getParsedZap(event: NostrEvent, quite: true, returnError: false): ParsedZap | undefined;
+export function getParsedZap(event: NostrEvent, quite?: boolean, returnError?: boolean): ParsedZap | undefined;
+export function getParsedZap(event: NostrEvent, quite: boolean = true, returnError?: boolean) {
   const e = event as ParsedZapEvent;
   if (Object.hasOwn(e, parsedZapSymbol)) return e[parsedZapSymbol];
 
   try {
     return (e[parsedZapSymbol] = parseZapEvent(e));
   } catch (error) {
-    if (error instanceof Error) return (e[parsedZapSymbol] = error);
-    else throw error;
+    if (error instanceof Error) {
+      e[parsedZapSymbol] = error;
+      if (quite) return returnError ? error : undefined;
+      else throw error;
+    } else throw error;
   }
 }
 
+export function parseZapEvents(events: NostrEvent[]) {
+  const parsed: ParsedZap[] = [];
+
+  for (const event of events) {
+    const p = getParsedZap(event);
+    if (p) parsed.push(p);
+  }
+
+  return parsed;
+}
+
+/** @deprecated use getParsedZap instead */
 export function parseZapEvent(event: NostrEvent): ParsedZap {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
   if (!zapRequestStr) throw new Error("no description tag");

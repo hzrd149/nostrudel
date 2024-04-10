@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import {
   Flex,
   FlexProps,
@@ -19,14 +20,13 @@ import NostrPublishAction from "../classes/nostr-publish-action";
 import useSubject from "../hooks/use-subject";
 import { CheckIcon, ErrorIcon } from "./icons";
 import { PublishDetails } from "./publish-details";
-import { useContext } from "react";
 import { PublishContext } from "../providers/global/publish-provider";
 
 export function PublishActionStatusTag({ pub, ...props }: { pub: NostrPublishAction } & Omit<TagProps, "children">) {
   const results = useSubject(pub.results);
 
-  const successful = results.filter(({ result }) => result[2]);
-  const failedWithMessage = results.filter(({ result }) => !result[2] && result[3]);
+  const successful = results.filter(({ success }) => success);
+  const failedWithMessage = results.filter(({ success, message }) => !success && !!message);
 
   let statusIcon = <Spinner size="xs" />;
   let statusColor: TagProps["colorScheme"] = "blue";

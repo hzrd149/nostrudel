@@ -15,6 +15,7 @@ import { localRelay } from "../services/local-relay";
 import { relayRequest } from "../helpers/relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
+import relayPoolService from "../services/relay-pool";
 
 const BLOCK_SIZE = 100;
 
@@ -124,7 +125,11 @@ export default class TimelineLoader {
       }
 
       if (!this.chunkLoaders.has(relay)) {
-        const loader = new ChunkedRequest(relay, Array.isArray(filter) ? filter : [filter], this.log.extend(relay));
+        const loader = new ChunkedRequest(
+          relayPoolService.requestRelay(relay),
+          Array.isArray(filter) ? filter : [filter],
+          this.log.extend(relay),
+        );
         this.chunkLoaders.set(relay, loader);
         this.connectToChunkLoader(loader);
       }

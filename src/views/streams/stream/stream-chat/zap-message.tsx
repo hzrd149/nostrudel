@@ -7,7 +7,7 @@ import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../../providers/local/intersection-observer";
 import { LightningIcon } from "../../../../components/icons";
-import { parseZapEvent } from "../../../../helpers/nostr/zaps";
+import { getParsedZap } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import { TrustProvider } from "../../../../providers/local/trust";
 import ChatMessageContent from "./chat-message-content";
@@ -17,11 +17,7 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, zap.id);
 
-  const parsed = useMemo(() => {
-    try {
-      return parseZapEvent(zap);
-    } catch (e) {}
-  }, [zap]);
+  const parsed = useMemo(() => getParsedZap(zap), [zap]);
   const clientMuteFilter = useClientSideMuteFilter();
 
   if (!parsed || !parsed.payment.amount) return null;

@@ -66,8 +66,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         const pub = new NostrPublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
 
-        pub.onResult.subscribe(({ relay, result }) => {
-          if (result[2]) handleEventFromRelay(relay, signed);
+        pub.onResult.subscribe(({ relay, success }) => {
+          if (success) handleEventFromRelay(relay, signed);
         });
 
         // send it to the local relay
