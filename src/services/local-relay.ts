@@ -2,6 +2,7 @@ import { CacheRelay, openDB } from "nostr-idb";
 import { Relay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
+import WasmRelay from "./wasm-relay";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -38,7 +39,9 @@ async function createRelay() {
   const localRelayURL = localStorage.getItem("localRelay");
 
   if (localRelayURL) {
-    if (localRelayURL.startsWith("nostr-idb://")) {
+    if (localRelayURL === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
+      return new WasmRelay();
+    } else if (localRelayURL.startsWith("nostr-idb://")) {
       return createInternalRelay();
     } else if (safeRelayUrl(localRelayURL)) {
       return new Relay(safeRelayUrl(localRelayURL)!);

@@ -91,6 +91,7 @@ import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
 import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
+import DatabaseView from "./views/relays/cache/database";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -270,7 +271,13 @@ const router = createHashRouter([
         children: [
           { path: "", element: <AppRelays /> },
           { path: "app", element: <AppRelays /> },
-          { path: "cache", element: <CacheRelayView /> },
+          {
+            path: "cache",
+            children: [
+              { path: "database", element: <DatabaseView /> },
+              { path: "", element: <CacheRelayView /> },
+            ],
+          },
           { path: "mailboxes", element: <MailboxesView /> },
           { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },

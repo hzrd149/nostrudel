@@ -36,8 +36,8 @@ import { DownloadIcon, ShareIcon } from "../../../components/icons";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
-import { CopyIconButton } from "../../../components/copy-icon-button";
 import { safeJson } from "../../../helpers/parse";
+import WasmRelay from "../../../services/wasm-relay";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -86,7 +86,7 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      let r: Relay | CacheRelay = localRelay;
+      let r: Relay | CacheRelay | WasmRelay = localRelay;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {

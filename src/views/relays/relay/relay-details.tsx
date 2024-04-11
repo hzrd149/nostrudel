@@ -40,6 +40,8 @@ import EventStore from "../../../classes/event-store";
 import { sortByDate } from "../../../helpers/nostr/event";
 import { NostrQuery } from "../../../types/nostr-relay";
 import relayPoolService from "../../../services/relay-pool";
+import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
+import EventKindsTable from "../../../components/charts/event-kinds-table";
 
 ChartJS.register(
   ArcElement,
@@ -75,28 +77,13 @@ function groupByKind(events: NostrEvent[]) {
   return byKind;
 }
 
-function buildPieChartData(events: NostrEvent[]) {
+function getSortedKinds(events: NostrEvent[]) {
   const byKind = groupByKind(events);
 
-  const sortedKinds = Object.entries(byKind)
+  return Object.entries(byKind)
     .map(([kind, events]) => ({ kind, count: events.length }))
-    .sort((a, b) => b.count - a.count);
-
-  const data: ChartData<"pie", number[], string> = {
-    labels: sortedKinds.map(({ kind }) => String(kind)),
-    datasets: [{ label: "# of events", data: sortedKinds.map(({ count }) => count) }],
-  };
-
-  return data;
-}
-function buildTableData(events: NostrEvent[]) {
-  const byKind = groupByKind(events);
-
-  const sortedKinds = Object.entries(byKind)
-    .map(([kind, events]) => ({ kind, count: events.length }))
-    .sort((a, b) => b.count - a.count);
-
-  return sortedKinds;
+    .sort((a, b) => b.count - a.count)
+    .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
 function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartData<"line", number[], string> {
@@ -175,8 +162,7 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
 
   const events = Array.from(store.events.values()).sort(sortByDate);
 
-  const pieChartData = buildPieChartData(events);
-  const tableData = buildTableData(events);
+  const kinds = getSortedKinds(events);
 
   return (
     <VerticalPageLayout>
@@ -189,33 +175,10 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
       <Flex wrap="wrap" gap="4" alignItems="flex-start">
         <Card p="2" w="50%">
           <Heading size="sm">Events by kind</Heading>
-          <Pie
-            data={pieChartData}
-            options={{
-              color,
-              plugins: { colors: { forceOverride: true } },
-            }}
-          />
+          <EventKindsPieChart kinds={kinds} />
         </Card>
         <Card p="2" minW="xs">
-          <TableContainer>
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th isNumeric>Kind</Th>
-                  <Th isNumeric>Count</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {tableData.map(({ kind, count }) => (
-                  <Tr key={kind}>
-                    <Td isNumeric>{kind}</Td>
-                    <Td isNumeric>{count}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <EventKindsTable kinds={kinds} />
         </Card>
         {/* <Card p="2" w="full" aspectRatio={16 / 9}>
           <Heading size="sm">Event kinds over time</Heading>

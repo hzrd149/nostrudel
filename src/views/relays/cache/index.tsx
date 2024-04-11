@@ -1,8 +1,22 @@
-import { Button, Card, CardBody, CardHeader, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/router/back-button";
 import { useAsync } from "react-use";
-import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../services/local-relay";
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { CacheRelay } from "nostr-idb";
+import { Link as RouterLink } from "react-router-dom";
+
+import BackButton from "../../../components/router/back-button";
+import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../services/local-relay";
+import WasmRelay from "../../../services/wasm-relay";
 
 function InternalRelay() {
   const enabled = localRelay instanceof CacheRelay;
@@ -24,9 +38,59 @@ function InternalRelay() {
         <Text>Maximum capacity: 10k events</Text>
         <Text>Performance: Usable, but limited by the browser</Text>
       </CardBody>
+      {enabled && (
+        <CardFooter p="4" pt="0">
+          <Button size="sm" colorScheme="primary" ml="auto" as={RouterLink} to="/relays/cache/database">
+            Database Tools
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
+
+function WasmWorkerRelay() {
+  const enabled = localRelay instanceof WasmRelay;
+  const enable = () => {
+    localStorage.setItem("localRelay", "nostr-idb://wasm-worker");
+    location.reload();
+  };
+
+  return (
+    <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
+      <CardHeader p="4" display="flex" gap="2" alignItems="center">
+        <Heading size="md">Internal SQLite Cache</Heading>
+        <Button size="sm" colorScheme="primary" ml="auto" onClick={enable} isDisabled={enabled}>
+          {enabled ? "Enabled" : "Enable"}
+        </Button>
+      </CardHeader>
+      <CardBody p="4" pt="0">
+        <Text mb="2">
+          Use{" "}
+          <Link
+            href="https://git.v0l.io/Kieran/snort/src/branch/main/packages/worker-relay"
+            isExternal
+            color="blue.500"
+          >
+            @snort/worker-relay
+          </Link>{" "}
+          with SQLite running in the browser.
+        </Text>
+        <Text>Maximum capacity: Unlimited</Text>
+        <Text>Performance: Slightly slower than Browser Cache</Text>
+        <Text color="yellow.500">NOTE: Can increase the initial load time of the app by ~2 seconds</Text>
+      </CardBody>
+      {enabled && (
+        <CardFooter p="4" pt="0">
+          <Button size="sm" colorScheme="primary" ml="auto" as={RouterLink} to="/relays/cache/database">
+            Database Tools
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
+  );
+}
+
 function NostrRelayTray() {
   const { value: available, loading: checking } = useAsync(checkNostrRelayTray);
 
@@ -68,6 +132,7 @@ function NostrRelayTray() {
     </Card>
   );
 }
+
 function SatelliteRelay() {
   const { value: relay } = useAsync(() => window.satellite!.getLocalRelay());
   const { value: enabled } = useAsync(async () => localRelay.url === relay, [localRelay.url, relay]);
@@ -130,6 +195,7 @@ export default function CacheRelayView() {
         The cache relay is used to cache events locally so they can be loaded quickly
       </Text>
       <InternalRelay />
+      {WasmRelay.SUPPORTED && <WasmWorkerRelay />}
       <NostrRelayTray />
       {window.satellite && <SatelliteRelay />}
       {window.CACHE_RELAY_ENABLED && <HostedRelay />}
