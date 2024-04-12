@@ -1,4 +1,4 @@
-import _throttle from "lodash/throttle";
+import _throttle from "lodash.throttle";
 
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";

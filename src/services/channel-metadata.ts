@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
-import _throttle from "lodash/throttle";
+import _throttle from "lodash.throttle";
 import { kinds } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
