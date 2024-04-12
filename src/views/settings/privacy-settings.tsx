@@ -49,7 +49,7 @@ export default function PrivacySettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <SpyIcon mr="2" />
+          <SpyIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Privacy
           </Box>
@@ -146,7 +146,7 @@ export default function PrivacySettings() {
               <br />
               <Code fontSize="0.9em">{`<url>`}</Code> or <Code fontSize="0.9em">{`<encoded_url>`}</Code> can be used to
               inject the raw or the encoded url into the proxy url ( example:{" "}
-              <Code fontSize="0.9em">{`https://corsproxy.io/?<encoded_url>`}</Code> )
+              <Code fontSize="0.9em" userSelect="all">{`https://corsproxy.io/?<encoded_url>`}</Code> )
             </FormHelperText>
           </FormControl>
           <FormControl>

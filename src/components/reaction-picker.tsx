@@ -56,6 +56,7 @@ export default function ReactionPicker({ onSelect }: ReactionPickerProps) {
         />
         {quickReactions.map((emoji) => (
           <IconButton
+            key={emoji}
             icon={<span>{emoji}</span>}
             aria-label="Shaka"
             variant="ghost"

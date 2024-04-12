@@ -3,7 +3,7 @@ import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
 import { Kind0ParsedContent } from "./user-metadata";
-import { utils } from "nostr-tools";
+import { nip57, utils, validateEvent } from "nostr-tools";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -52,19 +52,57 @@ export type ParsedZap = {
   eventId?: string;
 };
 
+const parsedZapSymbol = Symbol("parsedZap");
+type ParsedZapEvent = NostrEvent & { [parsedZapSymbol]: ParsedZap | Error };
+
+export function getParsedZap(event: NostrEvent, quite: false, returnError?: boolean): ParsedZap;
+export function getParsedZap(event: NostrEvent, quite: true, returnError: true): ParsedZap | Error;
+export function getParsedZap(event: NostrEvent, quite: true, returnError: false): ParsedZap | undefined;
+export function getParsedZap(event: NostrEvent, quite?: boolean, returnError?: boolean): ParsedZap | undefined;
+export function getParsedZap(event: NostrEvent, quite: boolean = true, returnError?: boolean) {
+  const e = event as ParsedZapEvent;
+  if (Object.hasOwn(e, parsedZapSymbol)) {
+    const cached = e[parsedZapSymbol];
+    if (!returnError && cached instanceof Error) return undefined;
+    if (!quite && cached instanceof Error) throw cached;
+    return cached;
+  }
+
+  try {
+    return (e[parsedZapSymbol] = parseZapEvent(e));
+  } catch (error) {
+    if (error instanceof Error) {
+      e[parsedZapSymbol] = error;
+      if (quite) return returnError ? error : undefined;
+      else throw error;
+    } else throw error;
+  }
+}
+
+export function parseZapEvents(events: NostrEvent[]) {
+  const parsed: ParsedZap[] = [];
+
+  for (const event of events) {
+    const p = getParsedZap(event);
+    if (p) parsed.push(p);
+  }
+
+  return parsed;
+}
+
+/** @deprecated use getParsedZap instead */
 export function parseZapEvent(event: NostrEvent): ParsedZap {
   const zapRequestStr = event.tags.find(([t, v]) => t === "description")?.[1];
-  if (!zapRequestStr) throw new Error("no description tag");
+  if (!zapRequestStr) throw new Error("No description tag");
 
   const bolt11 = event.tags.find((t) => t[0] === "bolt11")?.[1];
-  if (!bolt11) throw new Error("missing bolt11 invoice");
+  if (!bolt11) throw new Error("Missing bolt11 invoice");
 
-  // TODO: disabled until signature verification can be offloaded to a web worker
-
-  // const error = nip57.validateZapRequest(zapRequestStr);
-  // if (error) throw new Error(error);
+  const error = nip57.validateZapRequest(zapRequestStr);
+  if (error) throw new Error(error);
 
   const request = JSON.parse(zapRequestStr) as NostrEvent;
+  if (!validateEvent(request)) throw new Error("Invalid zap request");
   const payment = parsePaymentRequest(bolt11);
 
   return {

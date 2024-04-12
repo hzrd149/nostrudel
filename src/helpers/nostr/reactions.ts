@@ -28,7 +28,7 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
   ];
 
   let content = emoji;
-  if (url && !content.startsWith(":") && content.endsWith(":")) content = ":" + content + ":";
+  if (url && !content.startsWith(":") && !content.endsWith(":")) content = ":" + content + ":";
 
   const draft: DraftNostrEvent = {
     kind: kinds.Reaction,
@@ -37,7 +37,7 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
     created_at: dayjs().unix(),
   };
 
-  if (url) draft.tags.push(["emoji", emoji, url]);
+  if (url) draft.tags.push(["emoji", emoji.replaceAll(/(^:|:$)/g, ""), url]);
 
   return draft;
 }

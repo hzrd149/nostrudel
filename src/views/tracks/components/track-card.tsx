@@ -13,7 +13,7 @@ import { ReplyIcon } from "../../../components/icons";
 import TrackStemstrButton from "./track-stemstr-button";
 import TrackDownloadButton from "./track-download-button";
 import TrackPlayer from "./track-player";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import TrackMenu from "./track-menu";
 import QuoteRepostButton from "../../../components/note/quote-repost-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
@@ -29,7 +29,7 @@ export default function TrackCard({ track, ...props }: { track: NostrEvent } & O
       <CardHeader display="flex" alignItems="center" p="2" pb="0" gap="2">
         <UserAvatarLink pubkey={track.pubkey} size="sm" />
         <UserLink pubkey={track.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        <UserDnsIdentityIcon pubkey={track.pubkey} onlyIcon />
+        <UserDnsIdentity pubkey={track.pubkey} onlyIcon />
         <Timestamp ml="auto" timestamp={track.created_at} />
       </CardHeader>
       <CardBody p="2" display="flex" gap="2" flexDirection="column">

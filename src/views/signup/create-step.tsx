@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { containerProps } from "./common";
-import { nostrBuildUploadImage } from "../../helpers/nostr-build";
+import { nostrBuildUploadImage } from "../../helpers/media-upload/nostr-build";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import { COMMON_CONTACT_RELAY } from "../../const";

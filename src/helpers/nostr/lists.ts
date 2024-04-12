@@ -5,15 +5,15 @@ import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRT
 import { parseCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
 
-export const MUTE_LIST_KIND = 10000;
-export const PIN_LIST_KIND = 10001;
-export const BOOKMARK_LIST_KIND = 10003;
-export const COMMUNITIES_LIST_KIND = 10004;
-export const CHANNELS_LIST_KIND = 10005;
+export const MUTE_LIST_KIND = kinds.Mutelist;
+export const PIN_LIST_KIND = kinds.Pinlist;
+export const BOOKMARK_LIST_KIND = kinds.BookmarkList;
+export const COMMUNITIES_LIST_KIND = kinds.CommunitiesList;
+export const CHANNELS_LIST_KIND = kinds.PublicChatsList;
 
-export const PEOPLE_LIST_KIND = 30000;
+export const PEOPLE_LIST_KIND = kinds.Followsets;
 export const NOTE_LIST_KIND = 30001;
-export const BOOKMARK_LIST_SET_KIND = 30003;
+export const BOOKMARK_LIST_SET_KIND = kinds.Bookmarksets;
 
 export function getListName(event: NostrEvent) {
   if (event.kind === kinds.Contacts) return "Following";

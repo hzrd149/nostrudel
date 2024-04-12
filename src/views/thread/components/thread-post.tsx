@@ -13,8 +13,7 @@ import Timestamp from "../../../components/timestamp";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
-import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
@@ -24,12 +23,13 @@ import RepostButton from "../../../components/note/timeline-note/components/repo
 import QuoteRepostButton from "../../../components/note/quote-repost-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
-import { NoteDetailsButton } from "../../../components/note/timeline-note/components/note-details-button";
 import BookmarkButton from "../../../components/note/bookmark-button";
 import NoteMenu from "../../../components/note/note-menu";
 import NoteCommunityMetadata from "../../../components/note/timeline-note/note-community-metadata";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
+import DetailsTabs from "./details-tabs";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -42,7 +42,6 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
   const { showReactions } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.length <= 1) });
   const replyForm = useDisclosure();
-  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -67,7 +66,7 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <POWIcon event={post.event} boxSize={5} />
       <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
@@ -117,9 +116,8 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
         <NoteProxyLink event={post.event} />
-        <NoteDetailsButton event={post.event} onClick={detailsModal.onOpen} />
         <BookmarkButton event={post.event} aria-label="Bookmark" />
-        <NoteMenu event={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+        <NoteMenu event={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>
   );
@@ -141,19 +139,28 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
         ref={ref}
       >
         {header}
-        {expanded.isOpen && renderContent()}
-        {expanded.isOpen && showReactionsOnNewLine && reactionButtons}
-        {expanded.isOpen && footer}
+        {expanded.isOpen && (
+          <>
+            {renderContent()}
+            <ZapBubbles event={post.event} />
+            {showReactionsOnNewLine && reactionButtons}
+            {footer}
+          </>
+        )}
       </Flex>
       {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
-      {post.replies.length > 0 && expanded.isOpen && (
-        <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
-          {post.replies.map((child) => (
-            <ThreadPost key={child.event.id} post={child} focusId={focusId} level={level + 1} />
-          ))}
-        </Flex>
+      {level === -1 ? (
+        <DetailsTabs post={post} />
+      ) : (
+        expanded.isOpen &&
+        post.replies.length > 0 && (
+          <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
+            {post.replies.map((child) => (
+              <ThreadPost key={child.event.id} post={child} focusId={focusId} level={level + 1} />
+            ))}
+          </Flex>
+        )
       )}
-      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
 });

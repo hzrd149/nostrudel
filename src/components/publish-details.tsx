@@ -17,8 +17,8 @@ export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "chil
     <Flex direction="column" gap="2">
       <EmbedEvent event={pub.event} />
       <Progress value={(results.length / pub.relays.length) * 100} size="lg" hasStripe />
-      {results.map(({ result, relay }) => (
-        <Alert key={relay.url} status={result[2] ? "success" : "warning"}>
+      {results.map(({ success, message, relay }) => (
+        <Alert key={relay.url} status={success ? "success" : "warning"}>
           <AlertIcon />
           <Box>
             <AlertTitle>
@@ -27,7 +27,7 @@ export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "chil
               </Link>
               <RelayPaidTag url={relay.url} />
             </AlertTitle>
-            {result[3] && <AlertDescription>{result[3]}</AlertDescription>}
+            {message && <AlertDescription>{message}</AlertDescription>}
           </Box>
         </Alert>
       ))}

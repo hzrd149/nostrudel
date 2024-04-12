@@ -1,6 +1,7 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { ChevronLeftIcon } from "../icons";
 import { useNavigate } from "react-router-dom";
+
+import { ChevronLeftIcon } from "../icons";
 
 export default function BackButton({ ...props }: Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
   const navigate = useNavigate();

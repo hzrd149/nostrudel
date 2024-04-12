@@ -32,7 +32,6 @@ declare module "yet-another-react-lightbox" {
 import { NostrEvent } from "../types/nostr-event";
 import UserAvatarLink from "./user/user-avatar-link";
 import UserLink from "./user/user-link";
-import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
 import styled from "@emotion/styled";
 import { getSharableEventAddress } from "../helpers/nip19";
 
@@ -107,7 +106,6 @@ function EventSlideHeader({ event, ...props }: { event: NostrEvent } & Omit<Flex
     <Flex gap="2" alignItems="center" p="2" {...props}>
       <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
       <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-      <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
       <Spacer />
       <Button as={RouterLink} to={`/n/${encoded}`} colorScheme="primary" size="sm">
         View Note

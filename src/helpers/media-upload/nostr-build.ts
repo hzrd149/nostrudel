@@ -1,5 +1,5 @@
 import { nip98 } from "nostr-tools";
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 
 type NostrBuildResponse = {
   status: "success" | "error";

@@ -39,22 +39,22 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
 
 const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | DraftNostrEvent) {
-  // @ts-ignore
+  // @ts-expect-error
   if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
 
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
   const isReply = !!getThreadReferences(event).reply;
-  // @ts-ignore
+  // @ts-expect-error
   event[isReplySymbol] = isReply;
   return isReply;
 }
-export function isMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+export function isPTagMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
 const isRepostSymbol = Symbol("isRepost");
 export function isRepost(event: NostrEvent | DraftNostrEvent) {
-  // @ts-ignore
+  // @ts-expect-error
   if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
 
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return true;
@@ -62,7 +62,7 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
   const match = event.content.match(getMatchNostrLink());
   const isRepost = !!match && match[0].length === event.content.length;
 
-  // @ts-ignore
+  // @ts-expect-error
   event[isRepostSymbol] = isRepost;
   return isRepost;
 }
@@ -165,11 +165,27 @@ export function interpretThreadTags(event: NostrEvent | DraftNostrEvent) {
   };
 }
 
-export type EventReferences = ReturnType<typeof getThreadReferences>;
-export function getThreadReferences(event: NostrEvent | DraftNostrEvent) {
-  const tags = interpretThreadTags(event);
+export type ThreadReferences = {
+  root?:
+    | { e: EventPointer; a: undefined }
+    | { e: undefined; a: AddressPointer }
+    | { e: EventPointer; a: AddressPointer };
+  reply?:
+    | { e: EventPointer; a: undefined }
+    | { e: undefined; a: AddressPointer }
+    | { e: EventPointer; a: AddressPointer };
+};
+export const threadRefsSymbol = Symbol("threadRefs");
+export type EventWithThread = (NostrEvent | DraftNostrEvent) & { [threadRefsSymbol]: ThreadReferences };
 
-  return {
+export function getThreadReferences(event: NostrEvent | DraftNostrEvent): ThreadReferences {
+  // @ts-expect-error
+  if (Object.hasOwn(event, threadRefsSymbol)) return event[threadRefsSymbol];
+
+  const e = event as EventWithThread;
+  const tags = interpretThreadTags(e);
+
+  const threadRef = {
     root: tags.root && {
       e: tags.root.e && eTagToEventPointer(tags.root.e),
       a: tags.root.a && aTagToAddressPointer(tags.root.a),
@@ -178,16 +194,12 @@ export function getThreadReferences(event: NostrEvent | DraftNostrEvent) {
       e: tags.reply.e && eTagToEventPointer(tags.reply.e),
       a: tags.reply.a && aTagToAddressPointer(tags.reply.a),
     },
-  } as {
-    root?:
-      | { e: EventPointer; a: undefined }
-      | { e: undefined; a: AddressPointer }
-      | { e: EventPointer; a: AddressPointer };
-    reply?:
-      | { e: EventPointer; a: undefined }
-      | { e: undefined; a: AddressPointer }
-      | { e: EventPointer; a: AddressPointer };
-  };
+  } as ThreadReferences;
+
+  // @ts-expect-error
+  event[threadRefsSymbol] = threadRef;
+
+  return threadRef;
 }
 
 export function getEventCoordinate(event: NostrEvent) {
@@ -289,11 +301,13 @@ export function addPubkeyRelayHints(draft: DraftNostrEvent) {
     ...draft,
     tags: draft.tags.map((t) => {
       if (isPTag(t) && !t[2]) {
-        const newTag = [...t];
         const mailboxes = userMailboxesService.getMailboxes(t[1]).value;
-        // TODO: Pick the best mailbox for the user
-        if (mailboxes) newTag[2] = mailboxes.inbox.urls[0];
-        return newTag;
+        if (mailboxes && mailboxes.inbox.urls.length > 0) {
+          const newTag = [...t];
+          // TODO: Pick the best mailbox for the user
+          newTag[2] = mailboxes.inbox.urls[0];
+          return newTag;
+        } else return t;
       }
       return t;
     }),

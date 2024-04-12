@@ -2,7 +2,7 @@ import { MutableRefObject, PropsWithChildren, forwardRef } from "react";
 import { Divider, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
-import { ExpandableToggleButton } from "../notification-item";
+import { ExpandableToggleButton } from "./notification-item";
 
 const specialNames = {
   [dayjs().startOf("day").unix()]: "Today",

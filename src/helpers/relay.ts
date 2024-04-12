@@ -1,8 +1,9 @@
 import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
-import { Filter } from "nostr-tools";
+import { AbstractRelay, Filter, SubCloser, SubscribeManyParams, Subscription } from "nostr-tools";
 
 import { NostrQuery, NostrRequestFilter } from "../types/nostr-relay";
 import { NostrEvent } from "../types/nostr-event";
+import relayPoolService from "../services/relay-pool";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {
@@ -109,4 +110,82 @@ export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: Subscr
       onclose: () => res(events),
     });
   });
+}
+
+// copied from nostr-tools, SimplePool#subscribeMany
+export function subscribeMany(relays: string[], filters: Filter[], params: SubscribeManyParams): SubCloser {
+  const _knownIds = new Set<string>();
+  const subs: Subscription[] = [];
+
+  // batch all EOSEs into a single
+  const eosesReceived: boolean[] = [];
+  let handleEose = (i: number) => {
+    eosesReceived[i] = true;
+    if (eosesReceived.filter((a) => a).length === relays.length) {
+      params.oneose?.();
+      handleEose = () => {};
+    }
+  };
+  // batch all closes into a single
+  const closesReceived: string[] = [];
+  let handleClose = (i: number, reason: string) => {
+    handleEose(i);
+    closesReceived[i] = reason;
+    if (closesReceived.filter((a) => a).length === relays.length) {
+      params.onclose?.(closesReceived);
+      handleClose = () => {};
+    }
+  };
+
+  const localAlreadyHaveEventHandler = (id: string) => {
+    if (params.alreadyHaveEvent?.(id)) {
+      return true;
+    }
+    const have = _knownIds.has(id);
+    _knownIds.add(id);
+    return have;
+  };
+
+  // open a subscription in all given relays
+  const allOpened = Promise.all(
+    relays.map(validateRelayURL).map(async (url, i, arr) => {
+      if (arr.indexOf(url) !== i) {
+        // duplicate
+        handleClose(i, "duplicate url");
+        return;
+      }
+
+      let relay: AbstractRelay;
+      try {
+        relay = relayPoolService.requestRelay(url);
+        await relay.connect();
+        // changed from nostr-tools
+        // relay = await this.ensureRelay(url, {
+        //   connectionTimeout: params.maxWait ? Math.max(params.maxWait * 0.8, params.maxWait - 1000) : undefined,
+        // });
+      } catch (err) {
+        handleClose(i, (err as any)?.message || String(err));
+        return;
+      }
+
+      let subscription = relay.subscribe(filters, {
+        ...params,
+        oneose: () => handleEose(i),
+        onclose: (reason) => handleClose(i, reason),
+        alreadyHaveEvent: localAlreadyHaveEventHandler,
+        eoseTimeout: params.maxWait,
+      });
+
+      subs.push(subscription);
+    }),
+  );
+
+  return {
+    async close() {
+      await allOpened;
+      subs.forEach((sub) => {
+        sub.close();
+      });
+    },
+  };
 }

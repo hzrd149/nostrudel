@@ -1,12 +1,13 @@
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import relayInfoService from "./relay-info";
 import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
+import relayPoolService from "./relay-pool";
+import { Filter } from "nostr-tools";
 
 const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";
 const MONITOR_RELAY = "wss://history.nostr.watch";
@@ -50,9 +51,10 @@ class RelayStatsService {
       relayInfoService.getInfo(relay).then((info) => {
         if (!info.pubkey) return sub.next(null);
 
-        const request = new NostrRequest([relay, MONITOR_RELAY]);
-        request.onEvent.subscribe((e) => this.handleEvent(e));
-        request.start({ kinds: [SELF_REPORTED_KIND], authors: [info.pubkey] });
+        const filter: Filter = { kinds: [SELF_REPORTED_KIND], authors: [info.pubkey] };
+        const subscription = relayPoolService
+          .requestRelay(MONITOR_RELAY)
+          .subscribe([filter], { onevent: (event) => this.handleEvent(event), oneose: () => subscription.close() });
       });
     }
 
@@ -74,9 +76,10 @@ class RelayStatsService {
   private batchRequestMonitorStats() {
     const relays = Array.from(this.pendingMonitorStats);
 
-    const request = new NostrRequest([MONITOR_RELAY]);
-    request.onEvent.subscribe((e) => this.handleEvent(e));
-    request.start({ since: 1704196800, kinds: [MONITOR_STATS_KIND], "#d": relays, authors: [MONITOR_PUBKEY] });
+    const filter: Filter = { since: 1704196800, kinds: [MONITOR_STATS_KIND], "#d": relays, authors: [MONITOR_PUBKEY] };
+    const sub = relayPoolService
+      .requestRelay(MONITOR_RELAY)
+      .subscribe([filter], { onevent: (event) => this.handleEvent(event), oneose: () => sub.close() });
 
     this.pendingMonitorStats.clear();
   }

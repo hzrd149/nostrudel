@@ -1,11 +1,9 @@
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
-import { getListName } from "../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import Database01 from "../../components/icons/database-01";
 import { AtIcon, RelayIcon } from "../../components/icons";
@@ -13,6 +11,7 @@ import Mail02 from "../../components/icons/mail-02";
 import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
+import Image01 from "../../components/icons/image-01";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -42,22 +41,33 @@ export default function RelaysView() {
         <Button
           as={RouterLink}
           variant="outline"
-          colorScheme={location.pathname === "/relays/cache" ? "primary" : undefined}
+          colorScheme={location.pathname.startsWith("/relays/cache") ? "primary" : undefined}
           to="/relays/cache"
           leftIcon={<Database01 boxSize={6} />}
         >
           Cache Relay
         </Button>
         {account && (
-          <Button
-            variant="outline"
-            as={RouterLink}
-            to="/relays/mailboxes"
-            leftIcon={<Mail02 boxSize={6} />}
-            colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
-          >
-            Mailboxes
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/mailboxes"
+              leftIcon={<Mail02 boxSize={6} />}
+              colorScheme={location.pathname.startsWith("/relays/mailboxes") ? "primary" : undefined}
+            >
+              Mailboxes
+            </Button>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/media-servers"
+              leftIcon={<Image01 boxSize={6} />}
+              colorScheme={location.pathname.startsWith("/relays/media-servers") ? "primary" : undefined}
+            >
+              Media Servers
+            </Button>
+          </>
         )}
         {nip05 && (
           <Button
@@ -65,7 +75,7 @@ export default function RelaysView() {
             as={RouterLink}
             to="/relays/nip05"
             leftIcon={<AtIcon boxSize={6} />}
-            colorScheme={location.pathname === "/relays/nip05" ? "primary" : undefined}
+            colorScheme={location.pathname.startsWith("/relays/nip05") ? "primary" : undefined}
           >
             NIP-05 Relays
           </Button>
@@ -75,7 +85,7 @@ export default function RelaysView() {
           as={RouterLink}
           to="/relays/contacts"
           leftIcon={<UserSquare boxSize={6} />}
-          colorScheme={location.pathname === "/relays/contacts" ? "primary" : undefined}
+          colorScheme={location.pathname.startsWith("/relays/contacts") ? "primary" : undefined}
         >
           Contact List Relays
         </Button>

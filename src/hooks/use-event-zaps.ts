@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import eventZapsService from "../services/event-zaps";
 import { useReadRelays } from "./use-client-relays";
 import useSubject from "./use-subject";
-import { parseZapEvent } from "../helpers/nostr/zaps";
+import { getParsedZap } from "../helpers/nostr/zaps";
 
 export default function useEventZaps(eventUID: string, additionalRelays?: Iterable<string>, alwaysRequest = true) {
   const readRelays = useReadRelays(additionalRelays);
@@ -18,9 +18,8 @@ export default function useEventZaps(eventUID: string, additionalRelays?: Iterab
   const zaps = useMemo(() => {
     const parsed = [];
     for (const zap of events) {
-      try {
-        parsed.push(parseZapEvent(zap));
-      } catch (e) {}
+      const p = getParsedZap(zap);
+      if (p) parsed.push(p);
     }
     return parsed;
   }, [events]);

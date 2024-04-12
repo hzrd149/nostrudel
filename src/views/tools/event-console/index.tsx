@@ -19,6 +19,8 @@ import { NostrEvent, Relay, Subscription } from "nostr-tools";
 import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription, CacheRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
+import stringify from "json-stringify-deterministic";
+import { useSearchParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
@@ -30,11 +32,12 @@ import EventRow from "./event-row";
 import { processFilter } from "./process";
 import HelpModal from "./help-modal";
 import HelpCircle from "../../../components/icons/help-circle";
-import stringify from "json-stringify-deterministic";
-import { DownloadIcon } from "../../../components/icons";
+import { DownloadIcon, ShareIcon } from "../../../components/icons";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
+import { safeJson } from "../../../helpers/parse";
+import WasmRelay from "../../../services/wasm-relay";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -47,16 +50,27 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 });
 
 export default function EventConsoleView() {
+  const [params, setParams] = useSearchParams();
   const historyDrawer = useDisclosure();
   const [history, setHistory] = useLocalStorage<string[]>("console-history", []);
   const helpModal = useDisclosure();
-  const queryRelay = useDisclosure();
-  const [relayURL, setRelayURL] = useState("");
+  const queryRelay = useDisclosure({ defaultIsOpen: params.has("relay") });
+  const [relayURL, setRelayURL] = useState(params.get("relay") || "");
   const [relay, setRelay] = useState<Relay | null>(null);
 
   const [sub, setSub] = useState<Subscription | IDBSubscription | null>(null);
 
-  const [query, setQuery] = useState(() => history?.[0] || JSON.stringify({ kinds: [1], limit: 20 }, null, 2));
+  const [query, setQuery] = useState(() => {
+    if (params.has("filter")) {
+      const str = params.get("filter");
+      if (str) {
+        const f = safeJson(str, null);
+        if (f) return JSON.stringify(f, null, 2);
+      }
+    }
+    if (history?.[0]) return history?.[0];
+    return JSON.stringify({ kinds: [1], limit: 20 }, null, 2);
+  });
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,7 +86,7 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      let r: Relay | CacheRelay = localRelay;
+      let r: Relay | CacheRelay | WasmRelay = localRelay;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {
@@ -122,6 +136,13 @@ export default function EventConsoleView() {
     window.open(url, "_blank");
   };
 
+  const updateSharedURL = () => {
+    const p = new URLSearchParams(params);
+    p.set("filter", query);
+    p.set("relay", relayURL);
+    setParams(p, { replace: true });
+  };
+
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center" wrap="wrap">
@@ -141,6 +162,9 @@ export default function EventConsoleView() {
         )}
         <ButtonGroup ml="auto">
           <IconButton icon={<HelpCircle />} aria-label="Help" title="Help" size="sm" onClick={helpModal.onOpen} />
+          {queryRelay.isOpen && (
+            <IconButton icon={<ShareIcon />} aria-label="Share" size="sm" onClick={updateSharedURL} />
+          )}
           <IconButton
             icon={<ClockRewind />}
             aria-label="History"

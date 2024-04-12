@@ -6,11 +6,7 @@ import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-em
 import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 
-export default function TrackMenu({
-  track,
-  detailsClick,
-  ...props
-}: { track: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
+export default function TrackMenu({ track, ...props }: { track: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
       <DotsMenuButton {...props}>

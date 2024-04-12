@@ -1,10 +1,31 @@
-import { Text, Tooltip } from "@chakra-ui/react";
+import { forwardRef } from "react";
+import { IconProps, useColorMode } from "@chakra-ui/react";
 
 import useDnsIdentity from "../../hooks/use-dns-identity";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
 
-export function UserDnsIdentityIcon({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) {
+export function useDnsIdentityColor(pubkey: string) {
+  const metadata = useUserMetadata(pubkey);
+  const identity = useDnsIdentity(metadata?.nip05);
+  const { colorMode } = useColorMode();
+
+  if (!metadata?.nip05) {
+    return colorMode === "light" ? "gray.200" : "gray.800";
+  }
+
+  if (identity === undefined) {
+    return "yellow.500";
+  } else if (identity === null) {
+    return "red.500";
+  } else if (pubkey === identity.pubkey) {
+    return "purple.500";
+  } else {
+    return "red.500";
+  }
+}
+
+const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconProps>(({ pubkey, ...props }, ref) => {
   const metadata = useUserMetadata(pubkey);
   const identity = useDnsIdentity(metadata?.nip05);
 
@@ -12,26 +33,14 @@ export function UserDnsIdentityIcon({ pubkey, onlyIcon }: { pubkey: string; only
     return null;
   }
 
-  const renderIcon = () => {
-    if (identity === undefined) {
-      return <VerificationFailed color="yellow.500" />;
-    } else if (identity === null) {
-      return <VerificationMissing color="red.500" />;
-    } else if (pubkey === identity.pubkey) {
-      return <VerifiedIcon color="purple.500" />;
-    } else {
-      return <VerificationFailed color="red.500" />;
-    }
-  };
-
-  if (onlyIcon) {
-    return <Tooltip label={metadata.nip05}>{renderIcon()}</Tooltip>;
+  if (identity === undefined) {
+    return <VerificationFailed color="yellow.500" {...props} ref={ref} />;
+  } else if (identity === null) {
+    return <VerificationMissing color="red.500" {...props} ref={ref} />;
+  } else if (pubkey === identity.pubkey) {
+    return <VerifiedIcon color="purple.500" {...props} ref={ref} />;
+  } else {
+    return <VerificationFailed color="red.500" {...props} ref={ref} />;
   }
-  return (
-    <Text as="span" whiteSpace="nowrap">
-      {metadata.nip05.startsWith("_@") ? metadata.nip05.substr(2) : metadata.nip05} {renderIcon()}
-    </Text>
-  );
-}
-
+});
 export default UserDnsIdentityIcon;

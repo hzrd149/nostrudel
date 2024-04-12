@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Flex,
   FormControl,
@@ -11,33 +12,45 @@ import {
   AccordionIcon,
   FormHelperText,
   Input,
-  Divider,
   Tag,
   TagLabel,
   TagCloseButton,
   useDisclosure,
   IconButton,
   Button,
+  Select,
+  Text,
+  Link,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  Divider,
 } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 
 import { AppSettings } from "../../services/settings/migrations";
-import { AppearanceIcon, EditIcon, NotesIcon } from "../../components/icons";
+import { EditIcon, NotesIcon } from "../../components/icons";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
+import useUsersMediaServers from "../../hooks/use-user-media-servers";
+import useCurrentAccount from "../../hooks/use-current-account";
 
 export default function PostSettings() {
+  const account = useCurrentAccount();
   const { register, setValue, getValues, watch } = useFormContext<AppSettings>();
   const emojiPicker = useDisclosure();
+  const mediaServers = useUsersMediaServers(account?.pubkey);
 
   const emojis = useContextEmojis();
   const [emojiSearch, setEmojiSearch] = useState("");
 
   watch("quickReactions");
+  watch("mediaUploadService");
   const filteredEmojis = useMemo(() => {
     const values = getValues();
     if (emojiSearch.trim()) {
       const noCustom = emojis.filter((e) => e.char && !e.url && !values.quickReactions.includes(e.char));
-      return matchSorter(noCustom, emojiSearch.trim(), { keys: ["keywords"] }).slice(0, 10);
+      return matchSorter(noCustom, emojiSearch.trim(), { keys: ["keywords", "char"] }).slice(0, 10);
     }
     return [];
   }, [emojiSearch, getValues().quickReactions]);
@@ -61,7 +74,7 @@ export default function PostSettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <NotesIcon mr="2" />
+          <NotesIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Post
           </Box>
@@ -76,7 +89,7 @@ export default function PostSettings() {
             </FormLabel>
             <Flex gap="2" wrap="wrap">
               {getValues().quickReactions.map((char, i) => (
-                <Tag key={char + i}>
+                <Tag key={char + i} size="lg">
                   <TagLabel>{char}</TagLabel>
                   {emojiPicker.isOpen && <TagCloseButton onClick={() => removeEmoji(char)} />}
                 </Tag>
@@ -89,14 +102,13 @@ export default function PostSettings() {
             </Flex>
             {emojiPicker.isOpen && (
               <>
-                <Divider my="2" />
                 <Input
                   type="search"
                   w="sm"
                   h="8"
                   value={emojiSearch}
                   onChange={(e) => setEmojiSearch(e.target.value)}
-                  mb="2"
+                  my="2"
                 />
                 <Flex gap="2" wrap="wrap">
                   {filteredEmojis.map((emoji) => (
@@ -115,6 +127,38 @@ export default function PostSettings() {
               </>
             )}
           </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="theme" mb="0">
+              Media upload service
+            </FormLabel>
+            <Select id="mediaUploadService" w="sm" {...register("mediaUploadService")}>
+              <option value="nostr.build">nostr.build</option>
+              <option value="blossom">Blossom</option>
+            </Select>
+
+            {getValues().mediaUploadService === "nostr.build" && (
+              <>
+                <FormHelperText>
+                  Its a good idea to sign up and pay for an account on{" "}
+                  <Link href="https://nostr.build/login/" target="_blank" color="blue.500">
+                    nostr.build
+                  </Link>
+                </FormHelperText>
+              </>
+            )}
+
+            {getValues().mediaUploadService === "blossom" && (!mediaServers || mediaServers.tags.length === 0) && (
+              <Alert status="error" mt="2" flexWrap="wrap">
+                <AlertIcon />
+                <AlertTitle>Missing media servers!</AlertTitle>
+                <AlertDescription>Looks like you don't have any media servers setup</AlertDescription>
+                <Button as={RouterLink} colorScheme="primary" ml="auto" size="sm" to="/relays/media-servers">
+                  Setup servers
+                </Button>
+              </Alert>
+            )}
+          </FormControl>
+
           <FormControl>
             <FormLabel htmlFor="noteDifficulty" mb="0">
               Proof of work

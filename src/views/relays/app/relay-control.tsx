@@ -12,21 +12,9 @@ import UploadCloud01 from "../../../components/icons/upload-cloud-01";
 
 export default function RelayControl({ url }: { url: string }) {
   const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
-  const status = useSubject(relay.status);
   const writeRelays = useSubject(clientRelaysService.writeRelays);
 
-  let color = "gray";
-  switch (status) {
-    case WebSocket.OPEN:
-      color = "green";
-      break;
-    case WebSocket.CONNECTING:
-      color = "yellow";
-      break;
-    case WebSocket.CLOSED:
-      color = "red";
-      break;
-  }
+  const color = relay.connected ? "green" : "red";
 
   const onChange = () => {
     if (writeRelays.has(url)) clientRelaysService.removeRelay(url, RelayMode.WRITE);

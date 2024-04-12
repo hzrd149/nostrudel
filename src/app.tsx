@@ -73,6 +73,7 @@ import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
+import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
 import UserDMsTab from "./views/user/dms";
@@ -90,6 +91,7 @@ import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
 import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
+import DatabaseView from "./views/relays/cache/database";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -269,8 +271,15 @@ const router = createHashRouter([
         children: [
           { path: "", element: <AppRelays /> },
           { path: "app", element: <AppRelays /> },
-          { path: "cache", element: <CacheRelayView /> },
+          {
+            path: "cache",
+            children: [
+              { path: "database", element: <DatabaseView /> },
+              { path: "", element: <CacheRelayView /> },
+            ],
+          },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },

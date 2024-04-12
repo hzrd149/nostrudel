@@ -24,14 +24,13 @@ import {
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
 import { TrustProvider } from "../../../providers/local/trust";
 import { ReplyIcon } from "../../../components/icons";
 import ReplyForm from "../../thread/components/reply-form";
-import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import TorrentCommentMenu from "./torrent-comment-menu";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
@@ -42,7 +41,6 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
   const { showReactions } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: level < 2 || post.replies.length <= 1 });
   const replyForm = useDisclosure();
-  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -67,7 +65,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <Timestamp timestamp={post.event.created_at} />
       {replies.length > 0 ? (
         <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
@@ -110,7 +108,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
-        <TorrentCommentMenu comment={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+        <TorrentCommentMenu comment={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>
   );
@@ -151,7 +149,6 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
           ))}
         </Flex>
       )}
-      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
 });

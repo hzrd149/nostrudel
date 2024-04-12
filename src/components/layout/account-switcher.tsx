@@ -56,14 +56,13 @@ export default function AccountSwitcher() {
     <Flex direction="column" gap="2">
       <Box
         as="button"
-        borderRadius="30"
+        borderRadius="lg"
         borderWidth={1}
         display="flex"
         gap="2"
         mb="2"
         alignItems="center"
         flexGrow={1}
-        overflow="hidden"
         onClick={onToggle}
       >
         <UserAvatar pubkey={account.pubkey} noProxy size="md" />

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -19,12 +20,12 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useDebounce } from "react-use";
+
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
-import { useDebounce } from "react-use";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { CodeIcon } from "../../../components/icons";
 import { Metadata } from "./relay-card";
 import { safeRelayUrl } from "../../../helpers/relay";
@@ -43,7 +44,7 @@ function RelayDetails({ url, debug }: { url: string; debug?: boolean }) {
           <Text fontWeight="bold">Owner: </Text>
           <UserAvatar pubkey={info.pubkey} size="xs" />
           <UserLink pubkey={info.pubkey} />
-          <UserDnsIdentityIcon pubkey={info.pubkey} onlyIcon />
+          <UserDnsIdentity pubkey={info.pubkey} onlyIcon />
         </Flex>
       )}
       <Metadata name="NIPs">{info.supported_nips?.join(", ")}</Metadata>

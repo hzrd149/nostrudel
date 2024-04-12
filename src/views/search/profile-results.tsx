@@ -8,7 +8,7 @@ import { parseMetadataContent } from "../../helpers/nostr/user-metadata";
 import { readablizeSats } from "../../helpers/bolt11";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import UserAvatar from "../../components/user/user-avatar";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
 import UserLink from "../../components/user/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
@@ -38,7 +38,7 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
       <UserAvatar pubkey={profile.pubkey} noProxy mr="2" float="left" />
       <UserLink pubkey={profile.pubkey} fontWeight="bold" fontSize="xl" isTruncated />
       <br />
-      <UserDnsIdentityIcon pubkey={profile.pubkey} />
+      <UserDnsIdentity pubkey={profile.pubkey} />
       <br />
       <Box whiteSpace="pre" overflow="hidden" maxH="xs" isTruncated>
         {aboutContent}

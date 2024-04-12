@@ -13,7 +13,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 import { useDecryptionContext } from "../../providers/global/dycryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
@@ -81,13 +81,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
-        "#p": [account.pubkey],
-        authors: [pubkey],
-      },
-      {
-        kinds: [kinds.EncryptedDirectMessage],
-        "#p": [pubkey],
-        authors: [account.pubkey],
+        "#p": [account.pubkey, pubkey],
+        authors: [pubkey, account.pubkey],
       },
     ],
   );
@@ -123,7 +118,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             />
             <UserAvatar pubkey={pubkey} size="sm" />
             <UserLink pubkey={pubkey} fontWeight="bold" />
-            <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
+            <UserDnsIdentity pubkey={pubkey} onlyIcon />
           </Flex>
           <ButtonGroup ml="auto">
             {!autoDecryptDMs && (

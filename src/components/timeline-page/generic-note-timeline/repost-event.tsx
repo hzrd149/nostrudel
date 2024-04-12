@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import TimelineNote from "../../note/timeline-note";
 import UserAvatar from "../../user/user-avatar";
-import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
+import UserDnsIdentity from "../../user/user-dns-identity";
 import UserLink from "../../user/user-link";
 import { TrustProvider } from "../../../providers/local/trust";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
@@ -41,7 +41,7 @@ function RepostEvent({ event }: { event: NostrEvent }) {
           <Heading size="sm" display="inline" isTruncated whiteSpace="pre">
             <UserLink pubkey={event.pubkey} />
           </Heading>
-          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+          <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
           <Text as="span" whiteSpace="pre">
             {communityCoordinate ? `Shared to` : `Shared`}
           </Text>
