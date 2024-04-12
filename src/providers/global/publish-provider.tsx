@@ -22,12 +22,14 @@ type PublishContextType = {
     event: EventTemplate | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
+    onlyAdditionalRelays: false
   ): Promise<NostrPublishAction>;
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
+    onlyAdditionalRelays?: boolean
   ): Promise<NostrPublishAction | undefined>;
 };
 export const PublishContext = createContext<PublishContextType>({
@@ -47,14 +49,19 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const { requestSignature } = useSigningContext();
 
   const publishEvent = useCallback(
-    async (label: string, event: DraftNostrEvent | NostrEvent, additionalRelays?: Iterable<string>, quite = true) => {
+    async (label: string, event: DraftNostrEvent | NostrEvent, additionalRelays?: Iterable<string>, quite = true, onlyAdditionalRelays = false) => {
       try {
-        const relays = RelaySet.from(
-          clientRelaysService.writeRelays.value,
-          clientRelaysService.outbox,
-          additionalRelays,
-          getAllRelayHints(event),
-        );
+        let relays;
+        if (onlyAdditionalRelays) {
+          relays = RelaySet.from(additionalRelays);
+        } else {
+          relays = RelaySet.from(
+            clientRelaysService.writeRelays.value,
+            clientRelaysService.outbox,
+            additionalRelays,
+            getAllRelayHints(event),
+          );
+        }
 
         let signed: NostrEvent;
         if (!Object.hasOwn(event, "sig")) {
