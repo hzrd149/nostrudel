@@ -85,7 +85,7 @@ function CommunitiesHomePage() {
 
     const pub = await publish("Create Community", draft, values.relays, false);
 
-    navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
+    if(pub) navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
   const timeline = useTimelineLoader(
