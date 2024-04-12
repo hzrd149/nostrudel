@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Flex, FlexProps, Text } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { parseZapEvents } from "../../../helpers/nostr/zaps";
 import UserLink from "../../../components/user/user-link";
@@ -13,7 +14,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
   const timeline = useStreamChatTimeline(stream);
   const events = useSubject(timeline.timeline);
-  const zaps = useMemo(() => parseZapEvents(events), [events]);
+  const zaps = useMemo(() => parseZapEvents(events.filter((e) => e.kind === kinds.Zap)), [events]);
 
   const totals: Record<string, number> = {};
   for (const zap of zaps) {
