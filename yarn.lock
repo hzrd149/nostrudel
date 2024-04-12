@@ -2766,10 +2766,10 @@
     "@noble/hashes" "~1.3.2"
     "@scure/base" "~1.1.4"
 
-"@snort/worker-relay@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@snort/worker-relay/-/worker-relay-1.0.9.tgz#7e51597a5834b9b5ebba9ef7725af3ef46e71559"
-  integrity sha512-mm5Y8GFxKUEzlmGFcmB9vIommBUCL9GBix4qzjgZzdfYrlJ/7mlCR+wEUd3KcbqnKYVKfDQpaFTUjAuGJmEiJw==
+"@snort/worker-relay@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@snort/worker-relay/-/worker-relay-1.0.10.tgz#3f79891027ec249e9722e358fc3ef59954238cc0"
+  integrity sha512-fmtLU+xSvThu4z5l9OqNlbX2HBBCCr9LYBEMXCPs/1llpA10euneTrsQndsrEP5dkDDn8TzMwaQIxl3OIahORQ==
   dependencies:
     "@sqlite.org/sqlite-wasm" "^3.45.1-build1"
     eventemitter3 "^5.0.1"

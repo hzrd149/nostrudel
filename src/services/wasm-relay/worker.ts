@@ -6,7 +6,7 @@ const workerScript = import.meta.env.DEV
   : new WorkerVite();
 
 const workerRelay = new WorkerRelayInterface(workerScript);
-await workerRelay.init("nostrudel.db");
+await workerRelay.init({ databasePath: "nostrudel.db", insertBatchSize: 100 });
 
 if (import.meta.env.DEV) {
   // @ts-expect-error
