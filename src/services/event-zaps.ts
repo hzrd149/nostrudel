@@ -40,7 +40,7 @@ class EventZapsService {
       subject.next([...subject.value, event]);
     }
 
-    if (cache) localRelay.publish(event);
+    if (cache && localRelay) localRelay.publish(event);
   }
 
   throttleBatchRequest = _throttle(this.batchRequests, 2000);
@@ -54,8 +54,9 @@ class EventZapsService {
     const filters: Filter[] = [];
     if (ids.length > 0) filters.push({ "#e": ids, kinds: [kinds.Zap] });
     if (cords.length > 0) filters.push({ "#a": cords, kinds: [kinds.Zap] });
-    if (filters.length > 0)
+    if (filters.length > 0 && localRelay) {
       relayRequest(localRelay, filters).then((events) => events.forEach((e) => this.handleEvent(e, false)));
+    }
 
     const idsFromRelays: Record<relay, eventUID[]> = {};
     for (const [id, relays] of this.pending) {

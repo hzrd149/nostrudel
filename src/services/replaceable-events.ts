@@ -62,6 +62,7 @@ class ReplaceableEventsService {
   private readFromCacheThrottle = _throttle(this.readFromCache, READ_CACHE_BATCH_TIME);
   private async readFromCache() {
     if (this.readFromCachePromises.size === 0) return;
+    if (!localRelay) return;
 
     const loading = new Map<string, Deferred<boolean>>();
 
@@ -100,6 +101,7 @@ class ReplaceableEventsService {
     if (events.length > 0) this.dbLog(`Read ${events.length} events from database`);
   }
   loadFromCache(cord: string) {
+    if (!localRelay) return Promise.resolve(false);
     const dedupe = this.readFromCachePromises.get(cord);
     if (dedupe) return dedupe;
 
@@ -117,8 +119,10 @@ class ReplaceableEventsService {
   private async writeToCache() {
     if (this.writeCacheQueue.size === 0) return;
 
-    this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
-    for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
+    if (localRelay) {
+      this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
+      for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
+    }
     this.writeCacheQueue.clear();
   }
   private async saveToCache(cord: string, event: NostrEvent) {

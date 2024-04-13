@@ -3,6 +3,7 @@ import { AbstractRelay, NostrEvent, VerifiedEvent, verifiedSymbol } from "nostr-
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
+import MemoryRelay from "../classes/memory-relay";
 
 function fakeVerify(event: NostrEvent): event is VerifiedEvent {
   return (event[verifiedSymbol] = true);
@@ -43,7 +44,12 @@ async function createRelay() {
   const localRelayURL = localStorage.getItem("localRelay");
 
   if (localRelayURL) {
-    if (localRelayURL === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
+    if (localRelayURL === ":none:") {
+      return null;
+    }
+    if (localRelayURL === ":memory:") {
+      return new MemoryRelay();
+    } else if (localRelayURL === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
       return new WasmRelay();
     } else if (localRelayURL.startsWith("nostr-idb://")) {
       return createInternalRelay();
@@ -63,6 +69,8 @@ async function createRelay() {
 
 async function connectRelay() {
   const relay = await createRelay();
+  if (!relay) return relay;
+
   try {
     await relay.connect();
     log("Connected");
@@ -77,7 +85,7 @@ export const localRelay = await connectRelay();
 
 // keep the relay connection alive
 setInterval(() => {
-  if (!localRelay.connected) localRelay.connect().then(() => log("Reconnected"));
+  if (localRelay && !localRelay.connected) localRelay.connect().then(() => log("Reconnected"));
 }, 1000 * 5);
 
 if (import.meta.env.DEV) {

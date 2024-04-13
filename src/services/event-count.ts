@@ -18,7 +18,7 @@ class EventCountService {
 
     if (sub.value === undefined || alwaysRequest) {
       // try to get a count from the local relay
-      localRelay.count(Array.isArray(filter) ? filter : [filter], {}).then((count) => {
+      localRelay?.count(Array.isArray(filter) ? filter : [filter], {}).then((count) => {
         if (Number.isFinite(count)) sub.next(count);
       });
     }

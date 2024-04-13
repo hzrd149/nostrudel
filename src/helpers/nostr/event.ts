@@ -9,7 +9,6 @@ import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";
-import userMailboxesService from "../../services/user-mailboxes";
 import RelaySet from "../../classes/relay-set";
 
 export function truncatedId(str: string, keep = 6) {
@@ -295,25 +294,6 @@ export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): 
   };
 }
 
-/** add missing relay hints for "p" tags */
-export function addPubkeyRelayHints(draft: DraftNostrEvent) {
-  return {
-    ...draft,
-    tags: draft.tags.map((t) => {
-      if (isPTag(t) && !t[2]) {
-        const mailboxes = userMailboxesService.getMailboxes(t[1]).value;
-        if (mailboxes && mailboxes.inbox.urls.length > 0) {
-          const newTag = [...t];
-          // TODO: Pick the best mailbox for the user
-          newTag[2] = mailboxes.inbox.urls[0];
-          return newTag;
-        } else return t;
-      }
-      return t;
-    }),
-  };
-}
-
 /** ensure an event has a d tag */
 export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
   if (!draft.tags.some(isDTag)) {
@@ -338,6 +318,24 @@ export function getAllRelayHints(draft: NostrEvent | EventTemplate) {
     }
   }
   return hints;
+}
+
+function groupByKind(events: NostrEvent[]) {
+  const byKind: Record<number, NostrEvent[]> = {};
+  for (const event of events) {
+    byKind[event.kind] = byKind[event.kind] || [];
+    byKind[event.kind].push(event);
+  }
+  return byKind;
+}
+
+export function getSortedKinds(events: NostrEvent[]) {
+  const byKind = groupByKind(events);
+
+  return Object.entries(byKind)
+    .map(([kind, events]) => ({ kind, count: events.length }))
+    .sort((a, b) => b.count - a.count)
+    .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
 export { getEventUID };

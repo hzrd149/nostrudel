@@ -1,6 +1,6 @@
-import { kinds } from "nostr-tools";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../types/nostr-event";
+import { isPTag } from "../types/nostr-event";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventsService, { RequestOptions } from "./replaceable-events";
@@ -68,6 +68,25 @@ class UserMailboxesService {
 
   receiveEvent(event: NostrEvent) {
     replaceableEventsService.handleEvent(event);
+  }
+
+  /** add missing relay hints to p tags */
+  addPubkeyRelayHints(draft: EventTemplate) {
+    return {
+      ...draft,
+      tags: draft.tags.map((t) => {
+        if (isPTag(t) && !t[2]) {
+          const mailboxes = this.getMailboxes(t[1]).value;
+          if (mailboxes && mailboxes.inbox.urls.length > 0) {
+            const newTag = [...t];
+            // TODO: Pick the best mailbox for the user
+            newTag[2] = mailboxes.inbox.urls[0];
+            return newTag;
+          } else return t;
+        }
+        return t;
+      }),
+    };
   }
 }
 

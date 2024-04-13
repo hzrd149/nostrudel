@@ -66,7 +66,7 @@ export default class TimelineLoader {
     if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
 
     this.events.addEvent(event);
-    if (cache) localRelay.publish(event);
+    if (cache && localRelay) localRelay.publish(event);
   }
   private handleChunkFinished() {
     this.updateLoading();
@@ -110,8 +110,10 @@ export default class TimelineLoader {
 
     // recreate cache chunk loader
     if (this.cacheChunkLoader) this.disconnectToChunkLoader(this.cacheChunkLoader);
-    this.cacheChunkLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("local-relay"));
-    this.connectToChunkLoader(this.cacheChunkLoader);
+    if (localRelay) {
+      this.cacheChunkLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("local-relay"));
+      this.connectToChunkLoader(this.cacheChunkLoader);
+    }
 
     // update the live subscription query map and add limit
     this.subscription.setFilters(mergeFilter(filters, { limit: BLOCK_SIZE / 2 }));

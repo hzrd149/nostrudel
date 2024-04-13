@@ -1,12 +1,14 @@
+import { nip19 } from "nostr-tools";
 import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
-import { addPubkeyRelayHints, getThreadReferences } from "./event";
+import { getThreadReferences } from "./event";
 import { safeDecode } from "../nip19";
 import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
+
 import relayHintService from "../../services/event-relay-hint";
-import { nip19 } from "nostr-tools";
+import userMailboxesService from "../../services/user-mailboxes";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -177,7 +179,7 @@ export function finalizeNote(draft: DraftNostrEvent) {
   let updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
-  updated = addPubkeyRelayHints(updated);
+  updated = userMailboxesService.addPubkeyRelayHints(updated);
   updated = ensureTagContentMentions(updated);
   return updated;
 }

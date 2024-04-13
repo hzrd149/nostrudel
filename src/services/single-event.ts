@@ -33,7 +33,7 @@ class SingleEventService {
 
   handleEvent(event: NostrEvent, cache = true) {
     this.subjects.get(event.id).next(event);
-    if (cache) localRelay.publish(event);
+    if (cache && localRelay) localRelay.publish(event);
   }
 
   private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
@@ -44,7 +44,7 @@ class SingleEventService {
     const loaded: string[] = [];
 
     // load from cache relay
-    const fromCache = await relayRequest(localRelay, [{ ids }]);
+    const fromCache = localRelay ? await relayRequest(localRelay, [{ ids }]) : [];
 
     for (const e of fromCache) {
       this.handleEvent(e, false);

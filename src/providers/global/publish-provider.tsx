@@ -7,13 +7,14 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import NostrPublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
-import { addPubkeyRelayHints, getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
+import { getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
 import eventExistsService from "../../services/event-exists";
 import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
 import { handleEventFromRelay } from "../../services/event-relays";
 import deleteEventService from "../../services/delete-events";
+import userMailboxesService from "../../services/user-mailboxes";
 
 type PublishContextType = {
   log: NostrPublishAction[];
@@ -22,14 +23,14 @@ type PublishContextType = {
     event: EventTemplate | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
-    onlyAdditionalRelays: false
+    onlyAdditionalRelays: false,
   ): Promise<NostrPublishAction>;
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
-    onlyAdditionalRelays?: boolean
+    onlyAdditionalRelays?: boolean,
   ): Promise<NostrPublishAction | undefined>;
 };
 export const PublishContext = createContext<PublishContextType>({
@@ -49,7 +50,13 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const { requestSignature } = useSigningContext();
 
   const publishEvent = useCallback(
-    async (label: string, event: DraftNostrEvent | NostrEvent, additionalRelays?: Iterable<string>, quite = true, onlyAdditionalRelays = false) => {
+    async (
+      label: string,
+      event: DraftNostrEvent | NostrEvent,
+      additionalRelays?: Iterable<string>,
+      quite = true,
+      onlyAdditionalRelays = false,
+    ) => {
       try {
         let relays;
         if (onlyAdditionalRelays) {
@@ -66,7 +73,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         let signed: NostrEvent;
         if (!Object.hasOwn(event, "sig")) {
           let draft: EventTemplate = event as EventTemplate;
-          draft = addPubkeyRelayHints(draft);
+          draft = userMailboxesService.addPubkeyRelayHints(draft);
           signed = await requestSignature(draft);
         } else signed = event as NostrEvent;
 
@@ -78,7 +85,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         });
 
         // send it to the local relay
-        localRelay.publish(signed);
+        if (localRelay) localRelay.publish(signed);
 
         // pass it to other services
         eventExistsService.handleEvent(signed);

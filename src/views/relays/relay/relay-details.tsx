@@ -1,19 +1,4 @@
-import {
-  Button,
-  Card,
-  Flex,
-  Heading,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useColorModeValue,
-  useTheme,
-} from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text, useColorModeValue, useTheme } from "@chakra-ui/react";
 
 import {
   Chart as ChartJS,
@@ -28,7 +13,6 @@ import {
   LinearScale,
   CategoryScale,
 } from "chart.js";
-import { Pie } from "react-chartjs-2";
 import _throttle from "lodash.throttle";
 
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -37,7 +21,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { groupByTime } from "../../../helpers/notification";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
-import { sortByDate } from "../../../helpers/nostr/event";
+import { getSortedKinds, sortByDate } from "../../../helpers/nostr/event";
 import { NostrQuery } from "../../../types/nostr-relay";
 import relayPoolService from "../../../services/relay-pool";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
@@ -66,24 +50,6 @@ function getMinMaxTime(events: NostrEvent[], timeBlock = 60 * 60) {
   }
 
   return { minDate, maxDate };
-}
-
-function groupByKind(events: NostrEvent[]) {
-  const byKind: Record<number, NostrEvent[]> = {};
-  for (const event of events) {
-    byKind[event.kind] = byKind[event.kind] || [];
-    byKind[event.kind].push(event);
-  }
-  return byKind;
-}
-
-function getSortedKinds(events: NostrEvent[]) {
-  const byKind = groupByKind(events);
-
-  return Object.entries(byKind)
-    .map(([kind, events]) => ({ kind, count: events.length }))
-    .sort((a, b) => b.count - a.count)
-    .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
 function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartData<"line", number[], string> {

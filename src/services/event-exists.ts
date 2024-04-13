@@ -37,7 +37,9 @@ class EventExistsService {
     if (!this.filters.has(key)) this.filters.set(key, filter);
 
     if (sub.value !== true) {
-      relayRequest(localRelay, Array.isArray(filter) ? filter : [filter]).then((cached) => {
+      const p = localRelay ? relayRequest(localRelay, Array.isArray(filter) ? filter : [filter]) : Promise.resolve([]);
+
+      p.then((cached) => {
         if (cached.length > 0) {
           for (const e of cached) this.handleEvent(e, false);
         } else {
@@ -91,7 +93,7 @@ class EventExistsService {
       }
     }
 
-    if (cache) localRelay.publish(event);
+    if (cache && localRelay) localRelay.publish(event);
   }
 }
 

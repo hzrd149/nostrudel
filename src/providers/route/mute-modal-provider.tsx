@@ -16,7 +16,7 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
@@ -131,6 +131,8 @@ function UnmuteHandler() {
 
   const check = async () => {
     if (!muteList) return;
+    if (modal.isOpen) return;
+
     const now = dayjs().unix();
     const expirations = getPubkeysExpiration(muteList);
     const expired = Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
@@ -141,7 +143,9 @@ function UnmuteHandler() {
     } else if (modal.isOpen) modal.onClose();
   };
 
-  useInterval(check, 10 * 1000);
+  useEffect(() => {
+    check();
+  }, [muteList?.id]);
 
   return modal.isOpen ? <UnmuteModal onClose={modal.onClose} isOpen={modal.isOpen} /> : null;
 }
@@ -149,7 +153,6 @@ function UnmuteHandler() {
 function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
   const publish = usePublishEvent();
   const account = useCurrentAccount()!;
-  const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
 
   const getExpiredPubkeys = useCallback(() => {

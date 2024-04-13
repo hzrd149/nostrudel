@@ -86,7 +86,8 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      let r: Relay | AbstractRelay | CacheRelay | WasmRelay = localRelay;
+      if (!localRelay) throw new Error("Local relay disabled");
+      let r = localRelay!;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {

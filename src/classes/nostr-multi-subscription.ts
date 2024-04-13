@@ -5,6 +5,7 @@ import relayPoolService from "../services/relay-pool";
 import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
 import { Filter, Relay, Subscription } from "nostr-tools";
+import { offlineMode } from "../services/offline-mode";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -125,6 +126,7 @@ export default class NostrMultiSubscription {
     return this;
   }
   waitForAllConnection(): Promise<void> {
+    if (offlineMode.value) return Promise.resolve();
     return Promise.all(this.relays.filter((r) => !r.connected).map((r) => r.connect())).then((v) => void 0);
   }
   close() {

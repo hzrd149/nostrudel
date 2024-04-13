@@ -6,7 +6,9 @@ import { Link as RouterLink } from "react-router-dom";
 import BackButton from "../../../../components/router/back-button";
 import { localRelay } from "../../../../services/local-relay";
 import WasmRelay from "../../../../services/wasm-relay";
+import MemoryRelay from "../../../../classes/memory-relay";
 
+const MemoryDatabasePage = lazy(() => import("./memory"));
 const WasmDatabasePage = lazy(() => import("./wasm"));
 const InternalDatabasePage = lazy(() => import("./internal"));
 
@@ -22,6 +24,7 @@ export default function DatabaseView() {
 
   if (localRelay instanceof WasmRelay) content = <WasmDatabasePage />;
   else if (localRelay instanceof CacheRelay) content = <InternalDatabasePage />;
+  else if (localRelay instanceof MemoryRelay) content = <MemoryDatabasePage />;
 
   return (
     <Flex gap="2" direction="column" flex={1}>

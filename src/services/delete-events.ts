@@ -1,7 +1,6 @@
-import { kinds } from "nostr-tools";
+import { NostrEvent, kinds } from "nostr-tools";
 
 import { getEventUID } from "../helpers/nostr/event";
-import { NostrEvent } from "../types/nostr-event";
 import ControlledObservable from "../classes/controlled-observable";
 
 const deleteEventStream = new ControlledObservable<NostrEvent>();

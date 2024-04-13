@@ -34,7 +34,7 @@ export default class RelayPool {
     }
 
     const relay = this.relays.get(key) as AbstractRelay;
-    if (connect && !relay.connected) {
+    if (connect && !relay.connected && !offlineMode.value) {
       try {
         relay.connect();
       } catch (e) {
