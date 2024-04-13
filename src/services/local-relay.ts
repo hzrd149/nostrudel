@@ -1,8 +1,12 @@
 import { CacheRelay, openDB } from "nostr-idb";
-import { Relay } from "nostr-tools";
+import { AbstractRelay, NostrEvent, VerifiedEvent, verifiedSymbol } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
+
+function fakeVerify(event: NostrEvent): event is VerifiedEvent {
+  return (event[verifiedSymbol] = true);
+}
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -17,7 +21,7 @@ if (paramRelay) {
 export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
 export async function checkNostrRelayTray() {
   return new Promise((res) => {
-    const test = new Relay(NOSTR_RELAY_TRAY_URL);
+    const test = new AbstractRelay(NOSTR_RELAY_TRAY_URL, { verifyEvent: fakeVerify });
     test
       .connect()
       .then(() => {
@@ -44,13 +48,15 @@ async function createRelay() {
     } else if (localRelayURL.startsWith("nostr-idb://")) {
       return createInternalRelay();
     } else if (safeRelayUrl(localRelayURL)) {
-      return new Relay(safeRelayUrl(localRelayURL)!);
+      return new AbstractRelay(safeRelayUrl(localRelayURL)!, { verifyEvent: fakeVerify });
     }
   } else if (window.satellite) {
-    return new Relay(await window.satellite.getLocalRelay());
+    return new AbstractRelay(await window.satellite.getLocalRelay(), { verifyEvent: fakeVerify });
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-    return new Relay(new URL(protocol + location.host + "/local-relay").toString());
+    return new AbstractRelay(new URL(protocol + location.host + "/local-relay").toString(), {
+      verifyEvent: fakeVerify,
+    });
   }
   return createInternalRelay();
 }

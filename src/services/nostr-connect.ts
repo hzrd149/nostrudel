@@ -5,7 +5,6 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import NostrMultiSubscription from "../classes/nostr-multi-subscription";
 import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
-import { createSimpleQueryMap } from "../helpers/nostr/filter";
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
@@ -84,12 +83,13 @@ export class NostrConnectClient {
     this.publicKey = getPublicKey(hexToBytes(this.secretKey));
 
     this.sub.onEvent.subscribe((e) => this.handleEvent(e));
-    this.sub.setQueryMap(
-      createSimpleQueryMap(this.relays, {
+    this.sub.setRelays(this.relays);
+    this.sub.setFilters([
+      {
         kinds: [kinds.NostrConnect, 24134],
         "#p": [this.publicKey],
-      }),
-    );
+      },
+    ]);
   }
 
   async open() {

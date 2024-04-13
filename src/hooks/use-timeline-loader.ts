@@ -1,11 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { useUnmount } from "react-use";
-import { NostrEvent } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 
-import { NostrRequestFilter } from "../types/nostr-relay";
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
-import { createSimpleQueryMap } from "../helpers/nostr/filter";
 
 type Options = {
   /** @deprecated */
@@ -18,17 +16,23 @@ type Options = {
 export default function useTimelineLoader(
   key: string,
   relays: Iterable<string>,
-  query: NostrRequestFilter | undefined,
+  filters: Filter | Filter[] | undefined,
   opts?: Options,
 ) {
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   useEffect(() => {
-    if (query) {
-      timeline.setQueryMap(createSimpleQueryMap(relays, query));
+    timeline.setRelays(relays);
+    timeline.triggerChunkLoad();
+  }, [Array.from(relays).join("|")]);
+
+  useEffect(() => {
+    if (filters) {
+      timeline.setFilters(Array.isArray(filters) ? filters : [filters]);
       timeline.open();
+      timeline.triggerChunkLoad();
     } else timeline.close();
-  }, [timeline, JSON.stringify(query), Array.from(relays).join("|")]);
+  }, [timeline, JSON.stringify(filters)]);
 
   useEffect(() => {
     timeline.setEventFilter(opts?.eventFilter);

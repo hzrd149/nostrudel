@@ -1,12 +1,12 @@
 import { nanoid } from "nanoid";
-import { NostrEvent, Relay } from "nostr-tools";
+import { NostrEvent, AbstractRelay } from "nostr-tools";
 
 import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";
 import { PersistentSubject } from "./subject";
 import ControlledObservable from "./controlled-observable";
 
-type Result = { relay: Relay; success: boolean; message: string };
+type Result = { relay: AbstractRelay; success: boolean; message: string };
 
 export default class NostrPublishAction {
   id = nanoid();
@@ -19,7 +19,7 @@ export default class NostrPublishAction {
   onResult = new ControlledObservable<Result>();
   onComplete = createDefer<Result[]>();
 
-  private remaining = new Set<Relay>();
+  private remaining = new Set<AbstractRelay>();
 
   constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 5000) {
     this.label = label;
@@ -41,7 +41,7 @@ export default class NostrPublishAction {
     setTimeout(this.handleTimeout.bind(this), timeout);
   }
 
-  private handleResult(id: string, success: boolean, message: string, relay: Relay) {
+  private handleResult(id: string, success: boolean, message: string, relay: AbstractRelay) {
     const result: Result = { relay, success, message };
     this.results.next([...this.results.value, result]);
     this.onResult.next(result);

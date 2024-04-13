@@ -2,9 +2,9 @@ import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
 
 import relayPoolService from "../services/relay-pool";
-import { Relay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools";
 
-const getStatusText = (relay: Relay) => {
+const getStatusText = (relay: AbstractRelay) => {
   // if (relay.connecting) return "Connecting...";
   if (relay.connected) return "Connected";
   // if (relay.closing) return "Disconnecting...";
@@ -12,7 +12,7 @@ const getStatusText = (relay: Relay) => {
   return "Disconnected";
   // return "Unused";
 };
-const getStatusColor = (relay: Relay) => {
+const getStatusColor = (relay: AbstractRelay) => {
   // if (relay.connecting) return "yellow";
   if (relay.connected) return "green";
   // if (relay.closing) return "yellow";

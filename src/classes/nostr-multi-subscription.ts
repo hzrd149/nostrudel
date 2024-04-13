@@ -1,11 +1,10 @@
 import { nanoid } from "nanoid";
 
 import { NostrEvent } from "../types/nostr-event";
-import { RelayQueryMap } from "../types/nostr-relay";
 import relayPoolService from "../services/relay-pool";
-import { isFilterEqual, isQueryMapEqual } from "../helpers/nostr/filter";
+import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
-import { Relay, Subscription } from "nostr-tools";
+import { Filter, Relay, Subscription } from "nostr-tools";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -14,7 +13,7 @@ export default class NostrMultiSubscription {
 
   id: string;
   name?: string;
-  queryMap: RelayQueryMap = {};
+  filters: Filter[] = [];
 
   relays: Relay[] = [];
   subscriptions = new Map<Relay, Subscription>();
@@ -38,31 +37,39 @@ export default class NostrMultiSubscription {
   }
   private handleRemoveRelay(relay: Relay) {
     relayPoolService.removeClaim(relay.url, this);
+
+    // close subscription
+    const sub = this.subscriptions.get(relay);
+    if (sub && !sub.closed) {
+      sub.close();
+      this.subscriptions.delete(relay);
+    }
   }
 
-  setQueryMap(queryMap: RelayQueryMap) {
-    if (isQueryMapEqual(this.queryMap, queryMap)) return;
+  setFilters(filters: Filter[]) {
+    if (isFilterEqual(this.filters, filters)) return;
+    this.filters = filters;
+    this.updateSubscriptions();
+  }
 
+  setRelays(relays: Iterable<string>) {
     // add and remove relays
-    for (const url of Object.keys(queryMap)) {
-      if (!this.queryMap[url]) {
-        if (this.relays.some((r) => r.url === url)) continue;
+    for (const url of relays) {
+      if (!this.relays.some((r) => r.url === url)) {
         // add relay
         const relay = relayPoolService.requestRelay(url);
         this.relays.push(relay);
         this.handleAddRelay(relay);
       }
     }
-    for (const url of Object.keys(this.queryMap)) {
-      if (!queryMap[url]) {
-        const relay = this.relays.find((r) => r.url === url);
-        if (!relay) continue;
+
+    const urlArr = Array.from(relays);
+    for (const relay of this.relays) {
+      if (!urlArr.includes(relay.url)) {
         this.relays = this.relays.filter((r) => r !== relay);
         this.handleRemoveRelay(relay);
       }
     }
-
-    this.queryMap = queryMap;
 
     this.updateSubscriptions();
   }
@@ -79,7 +86,7 @@ export default class NostrMultiSubscription {
 
     // else open and update subscriptions
     for (const relay of this.relays) {
-      const filters = this.queryMap[relay.url];
+      const filters = this.filters;
 
       let subscription = this.subscriptions.get(relay);
       if (!subscription || !isFilterEqual(subscription.filters, filters)) {
@@ -87,6 +94,7 @@ export default class NostrMultiSubscription {
           subscription.filters = filters;
           subscription.fire();
         } else {
+          if (filters.length === 0) debugger;
           subscription = relay.subscribe(filters, {
             onevent: (event) => this.handleEvent(event),
             onclose: () => {

@@ -77,7 +77,7 @@ function EventRow({
 
 export default function TimelineHealth({ timeline }: { timeline: TimelineLoader }) {
   const events = useSubject(timeline.timeline);
-  const relays = Array.from(Object.keys(timeline.queryMap));
+  const relays = Array.from(Object.keys(timeline.relays));
 
   return (
     <>

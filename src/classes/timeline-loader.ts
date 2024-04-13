@@ -3,16 +3,14 @@ import { Debugger } from "debug";
 import { Filter, NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import { RelayQueryMap } from "../types/nostr-relay";
 import NostrMultiSubscription from "./nostr-multi-subscription";
 import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
-import { mergeFilter, isFilterEqual, isQueryMapEqual, mapQueryMap, stringifyFilter } from "../helpers/nostr/filter";
+import { mergeFilter, isFilterEqual } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
-import { relayRequest } from "../helpers/relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
 import relayPoolService from "../services/relay-pool";
@@ -23,7 +21,8 @@ export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export default class TimelineLoader {
   cursor = dayjs().unix();
-  queryMap: RelayQueryMap = {};
+  filters: Filter[] = [];
+  relays: string[] = [];
 
   events: EventStore;
   timeline = new PersistentSubject<NostrEvent[]>([]);
@@ -37,6 +36,7 @@ export default class TimelineLoader {
   private log: Debugger;
   private subscription: NostrMultiSubscription;
 
+  private cacheChunkLoader: ChunkedRequest | null = null;
   private chunkLoaders = new Map<string, ChunkedRequest>();
 
   constructor(name: string) {
@@ -87,65 +87,62 @@ export default class TimelineLoader {
     this.chunkLoaderSubs.delete(loader);
   }
 
-  private loadQueriesFromCache(queryMap: RelayQueryMap) {
-    const queries: Record<string, Filter[]> = {};
-    for (const [url, filters] of Object.entries(queryMap)) {
-      const key = stringifyFilter(filters);
-      if (!queries[key]) queries[key] = Array.isArray(filters) ? filters : [filters];
+  setFilters(filters: Filter[]) {
+    if (isFilterEqual(this.filters, filters)) return;
+
+    this.log("Set filters", filters);
+
+    // recreate all chunk loaders
+    for (const url of this.relays) {
+      const loader = this.chunkLoaders.get(url);
+      if (loader) {
+        this.disconnectToChunkLoader(loader);
+        this.chunkLoaders.delete(url);
+      }
+
+      const chunkLoader = new ChunkedRequest(relayPoolService.requestRelay(url), filters, this.log.extend(url));
+      this.chunkLoaders.set(url, chunkLoader);
+      this.connectToChunkLoader(chunkLoader);
     }
 
-    for (const filters of Object.values(queries)) {
-      relayRequest(localRelay, filters).then((events) => {
-        for (const e of events) this.handleEvent(e, false);
-      });
-    }
+    // set filters
+    this.filters = filters;
+
+    // recreate cache chunk loader
+    if (this.cacheChunkLoader) this.disconnectToChunkLoader(this.cacheChunkLoader);
+    this.cacheChunkLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("local-relay"));
+    this.connectToChunkLoader(this.cacheChunkLoader);
+
+    // update the live subscription query map and add limit
+    this.subscription.setFilters(mergeFilter(filters, { limit: BLOCK_SIZE / 2 }));
   }
 
-  setQueryMap(queryMap: RelayQueryMap) {
-    if (isQueryMapEqual(this.queryMap, queryMap)) return;
+  setRelays(relays: Iterable<string>) {
+    this.relays = Array.from(relays);
 
-    this.log("set query map", queryMap);
-
-    // remove relays
-    for (const relay of Object.keys(this.queryMap)) {
-      const loader = this.chunkLoaders.get(relay);
+    // remove chunk loaders
+    for (const url of relays) {
+      const loader = this.chunkLoaders.get(url);
       if (!loader) continue;
-      if (!queryMap[relay]) {
+      if (!this.relays.includes(url)) {
         this.disconnectToChunkLoader(loader);
-        this.chunkLoaders.delete(relay);
+        this.chunkLoaders.delete(url);
       }
     }
 
-    for (const [relay, filter] of Object.entries(queryMap)) {
-      // remove outdated loaders
-      if (this.queryMap[relay] && !isFilterEqual(this.queryMap[relay], filter)) {
-        const old = this.chunkLoaders.get(relay)!;
-        this.disconnectToChunkLoader(old);
-        this.chunkLoaders.delete(relay);
-      }
-
-      if (!this.chunkLoaders.has(relay)) {
-        const loader = new ChunkedRequest(
-          relayPoolService.requestRelay(relay),
-          Array.isArray(filter) ? filter : [filter],
-          this.log.extend(relay),
-        );
-        this.chunkLoaders.set(relay, loader);
-        this.connectToChunkLoader(loader);
+    // create chunk loaders only if filters are set
+    if (this.filters.length > 0) {
+      for (const url of relays) {
+        if (!this.chunkLoaders.has(url)) {
+          const loader = new ChunkedRequest(relayPoolService.requestRelay(url), this.filters, this.log.extend(url));
+          this.chunkLoaders.set(url, loader);
+          this.connectToChunkLoader(loader);
+        }
       }
     }
 
-    this.queryMap = queryMap;
-
-    // load all filters from cache relay
-    this.loadQueriesFromCache(queryMap);
-
-    // update the subscription query map and add limit
-    this.subscription.setQueryMap(
-      mapQueryMap(this.queryMap, (filter) => mergeFilter(filter, { limit: BLOCK_SIZE / 2 })),
-    );
-
-    this.triggerChunkLoad();
+    // update live subscription
+    this.subscription.setRelays(relays);
   }
 
   setEventFilter(filter?: EventFilter) {
@@ -157,30 +154,48 @@ export default class TimelineLoader {
     this.triggerChunkLoad();
   }
 
+  private getAllLoaders() {
+    return this.cacheChunkLoader
+      ? [...this.chunkLoaders.values(), this.cacheChunkLoader]
+      : Array.from(this.chunkLoaders.values());
+  }
+
   triggerChunkLoad() {
     let triggeredLoad = false;
-    for (const [relay, loader] of this.chunkLoaders) {
+    const loaders = this.getAllLoaders();
+
+    for (const loader of loaders) {
+      // skip loader if its already loading or complete
       if (loader.complete || loader.loading) continue;
+
       const event = loader.getLastEvent(this.loadNextBlockBuffer, this.eventFilter);
       if (!event || event.created_at >= this.cursor) {
         loader.loadNextChunk();
         triggeredLoad = true;
       }
     }
+
     if (triggeredLoad) this.updateLoading();
   }
   loadAllNextChunks() {
     let triggeredLoad = false;
-    for (const [relay, loader] of this.chunkLoaders) {
+    const loaders = this.getAllLoaders();
+
+    for (const loader of loaders) {
+      // skip loader if its already loading or complete
       if (loader.complete || loader.loading) continue;
+
       loader.loadNextChunk();
       triggeredLoad = true;
     }
+
     if (triggeredLoad) this.updateLoading();
   }
 
   private updateLoading() {
-    for (const [relay, loader] of this.chunkLoaders) {
+    const loaders = this.getAllLoaders();
+
+    for (const loader of loaders) {
       if (loader.loading) {
         if (!this.loading.value) {
           this.loading.next(true);
@@ -191,7 +206,9 @@ export default class TimelineLoader {
     if (this.loading.value) this.loading.next(false);
   }
   private updateComplete() {
-    for (const [relay, loader] of this.chunkLoaders) {
+    const loaders = this.getAllLoaders();
+
+    for (const loader of loaders) {
       if (!loader.complete) {
         this.complete.next(false);
         return;
@@ -213,8 +230,10 @@ export default class TimelineLoader {
   }
   reset() {
     this.cursor = dayjs().unix();
-    for (const [_, loader] of this.chunkLoaders) this.disconnectToChunkLoader(loader);
+    const loaders = this.getAllLoaders();
+    for (const loader of loaders) this.disconnectToChunkLoader(loader);
     this.chunkLoaders.clear();
+    this.cacheChunkLoader = null;
     this.forgetEvents();
   }
 
@@ -222,8 +241,10 @@ export default class TimelineLoader {
   cleanup() {
     this.close();
 
-    for (const [_, loader] of this.chunkLoaders) this.disconnectToChunkLoader(loader);
+    const loaders = this.getAllLoaders();
+    for (const loader of loaders) this.disconnectToChunkLoader(loader);
     this.chunkLoaders.clear();
+    this.cacheChunkLoader = null;
 
     this.events.cleanup();
   }

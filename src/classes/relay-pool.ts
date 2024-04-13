@@ -1,12 +1,12 @@
-import { Relay } from "nostr-tools";
+import { AbstractRelay, verifyEvent } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { validateRelayURL } from "../helpers/relay";
 import { offlineMode } from "../services/offline-mode";
 import Subject from "./subject";
 
 export default class RelayPool {
-  relays = new Map<string, Relay>();
-  onRelayCreated = new Subject<Relay>();
+  relays = new Map<string, AbstractRelay>();
+  onRelayCreated = new Subject<AbstractRelay>();
 
   relayClaims = new Map<string, Set<any>>();
 
@@ -28,12 +28,12 @@ export default class RelayPool {
     url = validateRelayURL(url);
     const key = url.toString();
     if (!this.relays.has(key)) {
-      const newRelay = new Relay(key);
+      const newRelay = new AbstractRelay(key, { verifyEvent });
       this.relays.set(key, newRelay);
       this.onRelayCreated.next(newRelay);
     }
 
-    const relay = this.relays.get(key) as Relay;
+    const relay = this.relays.get(key) as AbstractRelay;
     if (connect && !relay.connected) {
       try {
         relay.connect();
@@ -69,13 +69,17 @@ export default class RelayPool {
     }
   }
 
-  addClaim(relay: string | URL | Relay, id: any) {
-    const key = relay instanceof Relay ? relay.url : validateRelayURL(relay).toString();
-    this.getRelayClaims(key).add(id);
+  addClaim(relay: string | URL, id: any) {
+    try {
+      const key = validateRelayURL(relay).toString();
+      this.getRelayClaims(key).add(id);
+    } catch (error) {}
   }
-  removeClaim(relay: string | URL | Relay, id: any) {
-    const key = relay instanceof Relay ? relay.url : validateRelayURL(relay).toString();
-    this.getRelayClaims(key).delete(id);
+  removeClaim(relay: string | URL, id: any) {
+    try {
+      const key = validateRelayURL(relay).toString();
+      this.getRelayClaims(key).delete(id);
+    } catch (error) {}
   }
 
   get connectedCount() {

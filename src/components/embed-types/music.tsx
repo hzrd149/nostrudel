@@ -20,7 +20,7 @@ export function renderWavlakeUrl(match: URL) {
       frameBorder="0"
       title="Wavlake Embed"
       src={embedUrl.toString()}
-      style={{ width: "100%", height: 354, maxWidth: 573, ...setZIndex }}
+      style={{ width: "100%", height: 400, maxWidth: 600, ...setZIndex }}
     ></iframe>
   );
 }

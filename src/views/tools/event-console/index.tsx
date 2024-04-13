@@ -15,7 +15,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent, Relay, Subscription } from "nostr-tools";
+import { AbstractRelay, NostrEvent, Relay, Subscription } from "nostr-tools";
 import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription, CacheRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
@@ -86,7 +86,7 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      let r: Relay | CacheRelay | WasmRelay = localRelay;
+      let r: Relay | AbstractRelay | CacheRelay | WasmRelay = localRelay;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {

@@ -1,4 +1,4 @@
-import { Relay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools";
 import { PersistentSubject } from "../classes/subject";
 import { getEventUID } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
@@ -22,7 +22,7 @@ function addRelay(id: string, relay: string) {
   }
 }
 
-export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
+export function handleEventFromRelay(relay: AbstractRelay, event: NostrEvent) {
   const uid = getEventUID(event);
 
   addRelay(uid, relay.url);
