@@ -4,10 +4,7 @@ import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
-
-function fakeVerify(event: NostrEvent): event is VerifiedEvent {
-  return (event[verifiedSymbol] = true);
-}
+import { fakeVerifyEvent } from "./verify-event";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -22,7 +19,10 @@ if (paramRelay) {
 export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
 export async function checkNostrRelayTray() {
   return new Promise((res) => {
-    const test = new AbstractRelay(NOSTR_RELAY_TRAY_URL, { verifyEvent: fakeVerify });
+    const test = new AbstractRelay(NOSTR_RELAY_TRAY_URL, {
+      // presume events from the cache are already verified
+      verifyEvent: fakeVerifyEvent,
+    });
     test
       .connect()
       .then(() => {
@@ -54,14 +54,14 @@ async function createRelay() {
     } else if (localRelayURL.startsWith("nostr-idb://")) {
       return createInternalRelay();
     } else if (safeRelayUrl(localRelayURL)) {
-      return new AbstractRelay(safeRelayUrl(localRelayURL)!, { verifyEvent: fakeVerify });
+      return new AbstractRelay(safeRelayUrl(localRelayURL)!, { verifyEvent: fakeVerifyEvent });
     }
   } else if (window.satellite) {
-    return new AbstractRelay(await window.satellite.getLocalRelay(), { verifyEvent: fakeVerify });
+    return new AbstractRelay(await window.satellite.getLocalRelay(), { verifyEvent: fakeVerifyEvent });
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
     return new AbstractRelay(new URL(protocol + location.host + "/local-relay").toString(), {
-      verifyEvent: fakeVerify,
+      verifyEvent: fakeVerifyEvent,
     });
   }
   return createInternalRelay();

@@ -8,6 +8,7 @@ import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
 import relayPoolService from "./relay-pool";
 import { Filter } from "nostr-tools";
+import { alwaysVerify } from "./verify-event";
 
 const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";
 const MONITOR_RELAY = "wss://history.nostr.watch";
@@ -24,6 +25,8 @@ class RelayStatsService {
   }
 
   handleEvent(event: NostrEvent, cache = true) {
+    if (!alwaysVerify(event)) return;
+
     // ignore all events before NIP-66 start date
     if (event.created_at < 1704196800) return;
 

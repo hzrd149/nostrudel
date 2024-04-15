@@ -16,12 +16,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { EventTemplate, NostrEvent, UnsignedEvent, getEventHash, verifyEvent } from "nostr-tools";
+import dayjs from "dayjs";
+
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
 import Play from "../../../components/icons/play";
 import EventEditor from "./event-editor";
-import { EventTemplate, NostrEvent, UnsignedEvent, getEventHash, verifyEvent } from "nostr-tools";
-import dayjs from "dayjs";
 import { processEvent } from "./process";
 import { WritingIcon } from "../../../components/icons";
 import { useSigningContext } from "../../../providers/global/signing-provider";

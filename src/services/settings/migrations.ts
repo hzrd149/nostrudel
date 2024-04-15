@@ -10,6 +10,7 @@ export type AppSettingsV0 = {
   autoShowMedia: boolean;
   proxyUserMedia: boolean;
   showReactions: boolean;
+  /** @deprecated */
   showSignatureVerification: boolean;
 
   autoPayWithWebLN: boolean;
@@ -53,6 +54,7 @@ export const defaultSettings: AppSettings = {
   proxyUserMedia: false,
   loadOpenGraphData: true,
   showReactions: true,
+  /** @deprecated */
   showSignatureVerification: false,
   noteDifficulty: null,
 

@@ -12,6 +12,7 @@ import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
 import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
 import relayPoolService from "./relay-pool";
+import { alwaysVerify } from "./verify-event";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -43,6 +44,7 @@ class ReplaceableEventsService {
   dbLog = this.log.extend("database");
 
   handleEvent(event: NostrEvent, saveToCache = true) {
+    if (!alwaysVerify(event)) return;
     const cord = getEventCoordinate(event);
 
     const subject = this.subjects.get(cord);

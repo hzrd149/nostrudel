@@ -11,6 +11,7 @@ import createDefer, { Deferred } from "../classes/deferred";
 import { truncatedId } from "../helpers/nostr/event";
 import { NostrConnectAccount } from "./account";
 import { safeRelayUrl } from "../helpers/relay";
+import { alwaysVerify } from "./verify-event";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
   return !!response.error;
@@ -112,6 +113,7 @@ export class NostrConnectClient {
   private requests = new Map<string, Deferred<any>>();
   private auths = new Set<string>();
   async handleEvent(event: NostrEvent) {
+    if (!alwaysVerify(event)) return;
     if (this.provider && event.pubkey !== this.provider) return;
 
     const to = event.tags.find(isPTag)?.[1];

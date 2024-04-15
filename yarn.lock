@@ -5473,10 +5473,10 @@ nostr-tools@^2.3.2:
   optionalDependencies:
     nostr-wasm v0.1.0
 
-nostr-tools@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-2.4.0.tgz#bc2140a95ce0be8d4900bd852f652d811562753e"
-  integrity sha512-xQC7XdGeh0gLyprcKhvx5lwr7OQ+ZOiQ9C6GpzlVAj+EBv+AiN8kySb57t3uJoG1HK15oT9jf++MmQLwhp1xNQ==
+nostr-tools@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-2.5.0.tgz#083c8a22eb88c65f30d88a25e200ea2274348663"
+  integrity sha512-G02O3JYNCfhx9NDjd3NOCw/5ck8PX5hiOIhHKpsXyu49ZtZbxGH3OLP9tf0fpUZ+EVWdjIYFR689sV0i7+TOng==
   dependencies:
     "@noble/ciphers" "^0.5.1"
     "@noble/curves" "1.2.0"
@@ -5487,7 +5487,7 @@ nostr-tools@^2.4.0:
   optionalDependencies:
     nostr-wasm v0.1.0
 
-nostr-wasm@v0.1.0:
+nostr-wasm@^0.1.0, nostr-wasm@v0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/nostr-wasm/-/nostr-wasm-0.1.0.tgz#17af486745feb2b7dd29503fdd81613a24058d94"
   integrity sha512-78BTryCLcLYv96ONU8Ws3Q1JzjlAt+43pWQhIl86xZmWeegYCNLPml7yQ+gG3vR6V5h4XGj+TxO+SS5dsThQIA==

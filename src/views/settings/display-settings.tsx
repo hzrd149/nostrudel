@@ -40,7 +40,7 @@ export default function DisplaySettings() {
             <FormLabel htmlFor="theme" mb="0">
               Theme
             </FormLabel>
-            <Select id="theme" {...register("theme")}>
+            <Select id="theme" {...register("theme")} maxW="sm">
               <option value="default">Default</option>
               <option value="chakraui">ChakraUI</option>
             </Select>
@@ -49,7 +49,7 @@ export default function DisplaySettings() {
             <FormLabel htmlFor="colorMode" mb="0">
               Color Mode
             </FormLabel>
-            <Select id="colorMode" {...register("colorMode")}>
+            <Select id="colorMode" {...register("colorMode")} maxW="sm">
               <option value="system">System Default</option>
               <option value="light">Light</option>
               <option value="dark">Dark</option>
@@ -67,7 +67,7 @@ export default function DisplaySettings() {
             <FormLabel htmlFor="maxPageWidth" mb="0">
               Max Page width
             </FormLabel>
-            <Select id="maxPageWidth" {...register("maxPageWidth")}>
+            <Select id="maxPageWidth" {...register("maxPageWidth")} maxW="sm">
               <option value="none">None</option>
               <option value="md">Medium (~768px)</option>
               <option value="lg">Large (~992px)</option>
@@ -123,7 +123,12 @@ export default function DisplaySettings() {
             <FormLabel htmlFor="muted-words" mb="0">
               Muted words
             </FormLabel>
-            <Textarea id="muted-words" {...register("mutedWords")} placeholder="Broccoli, Spinach, Artichoke..." />
+            <Textarea
+              id="muted-words"
+              {...register("mutedWords")}
+              placeholder="Broccoli, Spinach, Artichoke..."
+              maxW="2xl"
+            />
             <FormHelperText>
               <span>
                 Comma separated list of words, phrases or hashtags you never want to see in notes. (case insensitive)

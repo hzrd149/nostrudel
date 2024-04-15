@@ -1,8 +1,9 @@
-import { AbstractRelay, verifyEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { validateRelayURL } from "../helpers/relay";
 import { offlineMode } from "../services/offline-mode";
 import Subject from "./subject";
+import verifyEventMethod from "../services/verify-event";
 
 export default class RelayPool {
   relays = new Map<string, AbstractRelay>();
@@ -28,7 +29,7 @@ export default class RelayPool {
     url = validateRelayURL(url);
     const key = url.toString();
     if (!this.relays.has(key)) {
-      const newRelay = new AbstractRelay(key, { verifyEvent });
+      const newRelay = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
       this.relays.set(key, newRelay);
       this.onRelayCreated.next(newRelay);
     }
