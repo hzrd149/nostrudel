@@ -1,5 +1,22 @@
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import { Box, Button, Flex, Heading, IconButton, Image, Link, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
 import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
@@ -22,7 +39,7 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
-import { ChatIcon } from "@chakra-ui/icons";
+import { ChatIcon, QuestionIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -32,6 +49,7 @@ import UserJoinedCommunities from "./user-joined-communities";
 import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
 import UserJoinedChanneled from "./user-joined-channels";
+import { getTextColor } from "../../../helpers/color";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -46,6 +64,7 @@ export default function UserAboutTab() {
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
+  const colorModal = useDisclosure();
 
   const metadata = useUserMetadata(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
@@ -53,6 +72,7 @@ export default function UserAboutTab() {
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
+  const pubkeyColor = "#" + pubkey.slice(0, 6);
 
   return (
     <Flex
@@ -124,6 +144,14 @@ export default function UserAboutTab() {
       )}
 
       <Flex gap="2" px="2" direction="column">
+        <Flex gap="2">
+          <Box w="5" h="5" backgroundColor={pubkeyColor} rounded="full" />
+          <Text>Public key color</Text>
+          <Link color="blue.500" onClick={colorModal.onOpen}>
+            {pubkeyColor}
+          </Link>
+        </Flex>
+
         {metadata?.lud16 && (
           <Flex gap="2">
             <LightningIcon />
@@ -194,6 +222,50 @@ export default function UserAboutTab() {
       <UserPinnedEvents pubkey={pubkey} />
       <UserJoinedCommunities pubkey={pubkey} />
       <UserJoinedChanneled pubkey={pubkey} />
+
+      <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p="4">Public Key Color</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display="flex" flexDirection="column" px="4" pt="0" pb="4" alignItems="center">
+            <Input value={pubkey} readOnly />
+            <ChevronDownIcon boxSize={10} />
+            <Flex w="full" h="10">
+              <Flex
+                px="2"
+                py="1"
+                borderWidth="1px"
+                borderStart="solid"
+                rounded="md"
+                borderColor="primary.500"
+                alignItems="center"
+              >
+                {pubkey.slice(0, 6)}
+              </Flex>
+              <Flex borderWidth="1px" borderStyle="solid" px="2" py="1" rounded="md" flex="1" alignItems="center">
+                {pubkey.slice(6)}
+              </Flex>
+            </Flex>
+            <ChevronDownIcon boxSize={10} />
+            <Box
+              px="10"
+              py="2"
+              backgroundColor={pubkeyColor}
+              rounded="md"
+              textColor={getTextColor(pubkeyColor.replace("#", "")) === "light" ? "white" : "black"}
+            >
+              {pubkeyColor}
+            </Box>
+
+            <Text mt="4">
+              The public key color is a hex color code created by taking the first 6 digits of a users pubkey.
+              <br />
+              It can be used to help users identify fake accounts or impersonators
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 }

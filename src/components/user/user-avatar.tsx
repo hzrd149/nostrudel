@@ -33,7 +33,7 @@ export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> &
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ pubkey, noProxy, relay, size, ...props }, ref) => {
     const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
-    const color = useDnsIdentityColor(pubkey);
+    const color = "#" + pubkey.slice(0, 6); //useDnsIdentityColor(pubkey);
 
     return (
       <MetadataAvatar
