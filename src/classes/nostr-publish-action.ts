@@ -6,7 +6,7 @@ import createDefer from "./deferred";
 import { PersistentSubject } from "./subject";
 import ControlledObservable from "./controlled-observable";
 
-type Result = { relay: AbstractRelay; success: boolean; message: string };
+export type PublishResult = { relay: AbstractRelay; success: boolean; message: string };
 
 export default class NostrPublishAction {
   id = nanoid();
@@ -14,14 +14,15 @@ export default class NostrPublishAction {
   relays: string[];
   event: NostrEvent;
 
-  results = new PersistentSubject<Result[]>([]);
+  results = new PersistentSubject<PublishResult[]>([]);
+  completePromise = createDefer();
 
-  onResult = new ControlledObservable<Result>();
-  onComplete = createDefer<Result[]>();
+  /** @deprecated */
+  onResult = new ControlledObservable<PublishResult>();
 
   private remaining = new Set<AbstractRelay>();
 
-  constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 5000) {
+  constructor(label: string, relays: Iterable<string>, event: NostrEvent, timeout: number = 10_000) {
     this.label = label;
     this.relays = Array.from(relays);
     this.event = event;
@@ -42,12 +43,15 @@ export default class NostrPublishAction {
   }
 
   private handleResult(id: string, success: boolean, message: string, relay: AbstractRelay) {
-    const result: Result = { relay, success, message };
-    this.results.next([...this.results.value, result]);
+    const result: PublishResult = { relay, success, message };
+    this.results.next([...this.results.value.filter((r) => r.relay !== relay), result]);
     this.onResult.next(result);
 
     this.remaining.delete(relay);
-    if (this.remaining.size === 0) this.onComplete.resolve(this.results.value);
+
+    if (this.remaining.size === 0) {
+      this.completePromise.resolve();
+    }
   }
 
   private handleTimeout() {
