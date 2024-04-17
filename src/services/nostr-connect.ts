@@ -75,7 +75,7 @@ export class NostrConnectClient {
   supportedMethods: NostrConnectMethod[] | undefined;
 
   constructor(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
-    this.sub = new NostrMultiSubscription(`${truncatedId(pubkey)}-nostr-connect`);
+    this.sub = new NostrMultiSubscription(`${pubkey}-nostr-connect`);
     this.pubkey = pubkey;
     this.relays = relays;
     this.provider = provider;

@@ -6,6 +6,7 @@ import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
 import { Filter, Relay, Subscription } from "nostr-tools";
 import { offlineMode } from "../services/offline-mode";
+import RelaySet from "./relay-set";
 
 export default class NostrMultiSubscription {
   static INIT = "initial";
@@ -64,9 +65,9 @@ export default class NostrMultiSubscription {
       }
     }
 
-    const urlArr = Array.from(relays);
+    const relaySet = RelaySet.from(relays);
     for (const relay of this.relays) {
-      if (!urlArr.includes(relay.url)) {
+      if (!relaySet.has(relay.url)) {
         this.relays = this.relays.filter((r) => r !== relay);
         this.handleRemoveRelay(relay);
       }
@@ -111,7 +112,7 @@ export default class NostrMultiSubscription {
   }
 
   publish(event: NostrEvent) {
-    return Promise.all(this.relays.map((r) => r.publish(event)));
+    return Promise.allSettled(this.relays.map((r) => r.publish(event)));
   }
 
   open() {
@@ -127,7 +128,7 @@ export default class NostrMultiSubscription {
   }
   waitForAllConnection(): Promise<void> {
     if (offlineMode.value) return Promise.resolve();
-    return Promise.all(this.relays.filter((r) => !r.connected).map((r) => r.connect())).then((v) => void 0);
+    return Promise.allSettled(this.relays.filter((r) => !r.connected).map((r) => r.connect())).then((v) => void 0);
   }
   close() {
     if (this.state !== NostrMultiSubscription.OPEN) return this;
