@@ -55,7 +55,9 @@ function ClientConnectForm() {
     <>
       {client ? (
         <>
-          <QrCodeSvg content={connectionURL} />
+          <a href={connectionURL} target="_blank">
+            <QrCodeSvg content={connectionURL} />
+          </a>
           <Flex gap="2">
             <Input
               value={connectionURL}
