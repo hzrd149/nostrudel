@@ -8,7 +8,6 @@ import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../he
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
-import { truncatedId } from "../helpers/nostr/event";
 import { NostrConnectAccount } from "./account";
 import { safeRelayUrl } from "../helpers/relay";
 import { alwaysVerify } from "./verify-event";
@@ -65,7 +64,7 @@ export class NostrConnectClient {
   log = logger.extend("NostrConnectClient");
 
   isConnected = false;
-  pubkey: string;
+  pubkey?: string;
   provider?: string;
   relays: string[];
 
@@ -74,8 +73,8 @@ export class NostrConnectClient {
 
   supportedMethods: NostrConnectMethod[] | undefined;
 
-  constructor(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
-    this.sub = new NostrMultiSubscription(`${pubkey}-nostr-connect`);
+  constructor(pubkey?: string, relays: string[] = [], secretKey?: string, provider?: string) {
+    this.sub = new NostrMultiSubscription();
     this.pubkey = pubkey;
     this.relays = relays;
     this.provider = provider;
@@ -122,6 +121,17 @@ export class NostrConnectClient {
     try {
       const responseStr = await nip04.decrypt(this.secretKey, event.pubkey, event.content);
       const response = JSON.parse(responseStr);
+
+      // handle client connections
+      if (!this.pubkey && response.result === "ack") {
+        this.log("Got ack response from", event.pubkey);
+        this.pubkey = event.pubkey;
+        this.isConnected = true;
+        this.listenPromise?.resolve(response.result);
+        this.listenPromise = null;
+        return;
+      }
+
       if (response.id) {
         const p = this.requests.get(response.id);
         if (!p) return;
@@ -146,6 +156,7 @@ export class NostrConnectClient {
   }
 
   private createEvent(content: string, target = this.pubkey, kind = kinds.NostrConnect) {
+    if (!target) throw new Error("invalid target pubkey");
     return finalizeEvent(
       {
         kind,
@@ -161,6 +172,7 @@ export class NostrConnectClient {
     params: RequestParams[T],
     kind = kinds.NostrConnect,
   ): Promise<ResponseResults[T]> {
+    if (!this.pubkey) throw new Error("pubkey not set");
     const id = nanoid(8);
     const request: NostrConnectRequest<T> = { id, method, params };
     const encrypted = await nip04.encrypt(this.secretKey, this.pubkey, JSON.stringify(request));
@@ -191,6 +203,7 @@ export class NostrConnectClient {
   }
 
   async connect(token?: string) {
+    if (!this.pubkey) throw new Error("pubkey not set");
     await this.open();
     try {
       const result = await this.makeRequest(NostrConnectMethod.Connect, [this.pubkey, token || "", Perms]);
@@ -201,6 +214,14 @@ export class NostrConnectClient {
       this.close();
       throw e;
     }
+  }
+
+  listenPromise: Deferred<"ack"> | null = null;
+  listen(): Promise<"ack"> {
+    if (this.pubkey) throw new Error("Cant listen if there is already a pubkey");
+    this.open();
+    this.listenPromise = createDefer();
+    return this.listenPromise;
   }
 
   async createAccount(name: string, domain: string, email?: string) {
@@ -228,6 +249,8 @@ export class NostrConnectClient {
   disconnect() {
     return this.makeRequest(NostrConnectMethod.Disconnect, []);
   }
+
+  // methods
   getPublicKey() {
     return this.makeRequest(NostrConnectMethod.GetPublicKey, []);
   }
