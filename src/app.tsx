@@ -119,6 +119,11 @@ const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
 const NewTorrentView = lazy(() => import("./views/torrents/new"));
 
+const WikiHomeView = lazy(() => import("./views/wiki"));
+const WikiPageView = lazy(() => import("./views/wiki/page"));
+const WikiTopicView = lazy(() => import("./views/wiki/topic"));
+const WikiSearchView = lazy(() => import("./views/wiki/search"));
+
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
     z-index: var(--chakra-zIndices-popover);
@@ -305,6 +310,15 @@ const router = createHashRouter([
             path: "",
             element: <VideosView />,
           },
+        ],
+      },
+      {
+        path: "wiki",
+        children: [
+          { path: "search", element: <WikiSearchView /> },
+          { path: "topic/:topic", element: <WikiTopicView /> },
+          { path: "page/:naddr", element: <WikiPageView /> },
+          { path: "", element: <WikiHomeView /> },
         ],
       },
       {

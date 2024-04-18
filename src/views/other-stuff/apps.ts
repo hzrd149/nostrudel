@@ -13,6 +13,7 @@ import {
   SearchIcon,
   TorrentIcon,
   TrackIcon,
+  WikiIcon,
 } from "../../components/icons";
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
@@ -23,12 +24,20 @@ import UploadCloud01 from "../../components/icons/upload-cloud-01";
 
 export const internalApps: App[] = [
   {
+    title: "Streams",
+    description: "Watch live streams",
+    icon: LiveStreamIcon,
+    id: "streams",
+    to: "/streams",
+  },
+  {
     title: "Communities",
     description: "Create and manage communities",
     icon: CommunityIcon,
     id: "communities",
     to: "/communities",
   },
+  { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
     title: "Channels",
     description: "Browse and talk in channels",
