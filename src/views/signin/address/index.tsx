@@ -47,7 +47,7 @@ export default function LoginNostrAddressView() {
 
         nostrConnectService.saveClient(client);
         accountService.addFromNostrConnect(client);
-        accountService.switchAccount(client.pubkey);
+        accountService.switchAccount(client.pubkey!);
       } else {
         accountService.addAccount({
           type: "pubkey",

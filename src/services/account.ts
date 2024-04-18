@@ -104,6 +104,7 @@ class AccountService {
     db.put("accounts", account);
   }
   addFromNostrConnect(client: NostrConnectClient) {
+    if (!client.pubkey) throw new Error("Cant add client without pubkey");
     this.addAccount({
       type: "nostr-connect",
       signerRelays: client.relays,

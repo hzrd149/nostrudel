@@ -103,7 +103,7 @@ export default function LoginNostrAddressCreate() {
 
       nostrConnectService.saveClient(client);
       accountService.addFromNostrConnect(client);
-      accountService.switchAccount(client.pubkey);
+      accountService.switchAccount(client.pubkey!);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
