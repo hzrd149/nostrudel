@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { getPageTitle } from "../../../helpers/nostr/wiki";
+import { getPageSummary, getPageTitle } from "../../../helpers/nostr/wiki";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
 
@@ -17,10 +17,10 @@ export default function WikiPageResult({ page }: { page: NostrEvent }) {
         </HoverLinkOverlay>
       </Heading>
       <Text>
-        by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />
+        by <UserLink pubkey={page.pubkey} fontWeight="bold " /> - <Timestamp timestamp={page.created_at} />
       </Text>
       <Text color="GrayText" noOfLines={2}>
-        {page.content.split("\n")[0]}
+        {getPageSummary(page)}
       </Text>
     </LinkBox>
   );

@@ -42,12 +42,16 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
         <MarkdownContent event={page} />
       </Box>
 
-      <Heading size="lg" mt="4">
-        Other Versions:
-      </Heading>
-      {sorted.slice(0, 6).map((page) => (
-        <WikiPageResult key={page.id} page={page} />
-      ))}
+      {sorted.length > 0 && (
+        <>
+          <Heading size="lg" mt="4">
+            Other Versions:
+          </Heading>
+          {sorted.slice(0, 6).map((page) => (
+            <WikiPageResult key={page.id} page={page} />
+          ))}
+        </>
+      )}
     </VerticalPageLayout>
   );
 }

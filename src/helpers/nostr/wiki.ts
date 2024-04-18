@@ -11,3 +11,8 @@ export function getPageTopic(page: NostrEvent) {
   if (!d) throw new Error("Page missing d tag");
   return d;
 }
+
+export function getPageSummary(page: NostrEvent) {
+  const summary = page.tags.find((t) => t[0] === "summary")?.[1];
+  return summary || page.content.split("\n")[0];
+}
