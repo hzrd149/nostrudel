@@ -4,7 +4,7 @@ import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "../services/relay-pool";
 import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
-import { Filter, Relay, Subscription } from "nostr-tools";
+import { AbstractRelay, Filter, Subscription } from "nostr-tools";
 import { offlineMode } from "../services/offline-mode";
 import RelaySet from "./relay-set";
 
@@ -17,8 +17,8 @@ export default class NostrMultiSubscription {
   name?: string;
   filters: Filter[] = [];
 
-  relays: Relay[] = [];
-  subscriptions = new Map<Relay, Subscription>();
+  relays: AbstractRelay[] = [];
+  subscriptions = new Map<AbstractRelay, Subscription>();
 
   state = NostrMultiSubscription.INIT;
   onEvent = new ControlledObservable<NostrEvent>();
@@ -34,10 +34,10 @@ export default class NostrMultiSubscription {
     this.seenEvents.add(event.id);
   }
 
-  private handleAddRelay(relay: Relay) {
+  private handleAddRelay(relay: AbstractRelay) {
     relayPoolService.addClaim(relay.url, this);
   }
-  private handleRemoveRelay(relay: Relay) {
+  private handleRemoveRelay(relay: AbstractRelay) {
     relayPoolService.removeClaim(relay.url, this);
 
     // close subscription
@@ -96,7 +96,8 @@ export default class NostrMultiSubscription {
           subscription.filters = filters;
           subscription.fire();
         } else {
-          if (filters.length === 0) debugger;
+          if (!relay.connected) relayPoolService.requestConnect(relay);
+
           subscription = relay.subscribe(filters, {
             onevent: (event) => this.handleEvent(event),
             onclose: () => {
@@ -112,7 +113,12 @@ export default class NostrMultiSubscription {
   }
 
   publish(event: NostrEvent) {
-    return Promise.allSettled(this.relays.map((r) => r.publish(event)));
+    return Promise.allSettled(
+      this.relays.map(async (r) => {
+        if (!r.connected) await relayPoolService.requestConnect(r);
+        return await r.publish(event);
+      }),
+    );
   }
 
   open() {

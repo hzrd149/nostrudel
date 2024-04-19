@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import { Navigate, useParams } from "react-router-dom";
 import { kinds, nip19 } from "nostr-tools";
+
 import { STREAM_KIND } from "../../helpers/nostr/stream";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
@@ -8,6 +9,8 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
+import { EmbedEventPointer } from "../../components/embed-event";
 
 function NostrLinkPage() {
   const { link } = useParams() as { link?: string };
@@ -41,15 +44,17 @@ function NostrLinkPage() {
       if (decoded.data.kind === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${cleanLink}`} replace />;
       if (decoded.data.kind === kinds.ChannelCreation) return <Navigate to={`/channels/${cleanLink}`} replace />;
       if (decoded.data.kind === kinds.ShortTextNote) return <Navigate to={`/n/${cleanLink}`} replace />;
-      // if there is no kind redirect to the thread view
-      return <Navigate to={`/n/${cleanLink}`} replace />;
+      if (decoded.data.kind === WIKI_PAGE_KIND) return <Navigate to={`/wiki/page/${cleanLink}`} replace />;
   }
 
   return (
-    <Alert status="warning">
-      <AlertIcon />
-      <AlertTitle>Unknown type {JSON.stringify(decoded.data)}</AlertTitle>
-    </Alert>
+    <>
+      <Alert status="warning">
+        <AlertIcon />
+        <AlertTitle>Unknown event kind</AlertTitle>
+      </Alert>
+      <EmbedEventPointer pointer={decoded} />
+    </>
   );
 }
 

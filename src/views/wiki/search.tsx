@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Button, Flex, Heading, Input, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { NostrEvent } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
+import { Subscription, getEventUID } from "nostr-idb";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { subscribeMany } from "../../helpers/relay";
-import { SEARCH_RELAYS } from "../../const";
+import { SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
+import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
+import { localRelay } from "../../services/local-relay";
+import { getWebOfTrust } from "../../services/web-of-trust";
+import WikiPageResult from "./components/wiki-page-result";
 
 export default function WikiSearchView() {
   const { value: query, setValue: setQuery } = useRouteSearchValue("q");
@@ -22,9 +26,32 @@ export default function WikiSearchView() {
 
   const [results, setResults] = useState<NostrEvent[]>([]);
 
-  // useEffect(() => {
-  //   const sub = subscribeMany([SEARCH_RELAYS]);
-  // }, [query]);
+  useEffect(() => {
+    setResults([]);
+
+    const filter: Filter = { kinds: [WIKI_PAGE_KIND], search: query };
+
+    const seen = new Set<string>();
+    const handleEvent = (event: NostrEvent) => {
+      if (seen.has(getEventUID(event))) return;
+      setResults((arr) => arr.concat(event));
+      seen.add(getEventUID(event));
+    };
+
+    const remoteSearchSub = subscribeMany([...SEARCH_RELAYS, ...WIKI_RELAYS], [filter], {
+      onevent: handleEvent,
+      oneose: () => remoteSearchSub.close(),
+    });
+
+    if (localRelay) {
+      const localSearchSub: Subscription = localRelay.subscribe([filter], {
+        onevent: handleEvent,
+        oneose: () => localSearchSub.close(),
+      });
+    }
+  }, [query, setResults]);
+
+  const sorted = getWebOfTrust().sortByDistanceAndConnections(results, (p) => p.pubkey);
 
   return (
     <VerticalPageLayout>
@@ -49,6 +76,9 @@ export default function WikiSearchView() {
           </Button>
         </Flex>
       </Flex>
+      {sorted.map((page) => (
+        <WikiPageResult key={page.id} page={page} />
+      ))}
     </VerticalPageLayout>
   );
 }

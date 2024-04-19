@@ -19,21 +19,19 @@ export default function WikiPageResult({ page, compare }: { page: NostrEvent; co
 
   return (
     <Flex as={LinkBox} py="2" px="4" direction="column">
-      <Flex gap="2" alignItems="center">
-        <Box overflow="hidden">
-          <Heading size="md">
-            <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
-              {getPageTitle(page)}
-            </HoverLinkOverlay>
-          </Heading>
-          <Text>
-            by <UserLink pubkey={page.pubkey} fontWeight="bold " /> - <Timestamp timestamp={page.created_at} />
-          </Text>
-          <Text color="GrayText" noOfLines={2}>
-            {getPageSummary(page)}
-          </Text>
-        </Box>
-      </Flex>
+      <Box overflow="hidden">
+        <Heading size="md">
+          <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
+            {getPageTitle(page)}
+          </HoverLinkOverlay>
+        </Heading>
+        <Text>
+          by <UserLink pubkey={page.pubkey} fontWeight="bold " /> - <Timestamp timestamp={page.created_at} />
+        </Text>
+        <Text color="GrayText" noOfLines={2}>
+          {getPageSummary(page)}
+        </Text>
+      </Box>
       <ButtonGroup variant="link" mt="auto">
         {address && (
           <Button

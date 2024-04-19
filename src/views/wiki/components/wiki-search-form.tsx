@@ -7,8 +7,7 @@ export default function WikiSearchForm({ ...props }: Omit<FlexProps, "children">
   const { register, handleSubmit } = useForm({ defaultValues: { search: "" } });
 
   const onSubmit = handleSubmit((values) => {
-    // navigate(`/wiki/search?q=${encodeURIComponent(values.search)}`);
-    navigate(`/wiki/topic/${values.search}`);
+    navigate(`/wiki/search?q=${encodeURIComponent(values.search)}`);
   });
 
   return (

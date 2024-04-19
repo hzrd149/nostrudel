@@ -16,7 +16,7 @@ import { Link as RouterLink } from "react-router-dom";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getPageForks, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
+import { getPageDefer, getPageForks, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import MarkdownContent from "./components/markdown";
 import UserLink from "../../components/user/user-link";
 import { getWebOfTrust } from "../../services/web-of-trust";
@@ -33,6 +33,54 @@ import FileSearch01 from "../../components/icons/file-search-01";
 import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import QuoteRepostButton from "../../components/note/quote-repost-button";
+import WikiPageMenu from "./components/wioki-page-menu";
+
+function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
+  const topic = getPageTopic(page);
+
+  return (
+    <Alert status="info" display="flex" flexWrap="wrap">
+      <AlertIcon>
+        <GitBranch01 boxSize={5} />
+      </AlertIcon>
+      <Text>
+        This page was forked from <UserLink pubkey={address.pubkey} fontWeight="bold" /> version
+      </Text>
+      <ButtonGroup variant="link" ml="auto">
+        <Button leftIcon={<ExternalLinkIcon />} as={RouterLink} to={`/wiki/page/${nip19.naddrEncode(address)}`}>
+          Original
+        </Button>
+        <Button
+          leftIcon={<FileSearch01 />}
+          as={RouterLink}
+          to={`/wiki/compare/${topic}/${address.pubkey}/${page.pubkey}`}
+        >
+          Compare
+        </Button>
+      </ButtonGroup>
+    </Alert>
+  );
+}
+
+function DeferAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
+  return (
+    <Alert status="warning" display="flex" flexWrap="wrap">
+      <AlertIcon />
+      <Text>
+        The author of this page has deferred to <UserLink pubkey={address.pubkey} fontWeight="bold" /> version
+      </Text>
+      <Button
+        leftIcon={<ExternalLinkIcon />}
+        as={RouterLink}
+        to={`/wiki/page/${nip19.naddrEncode(address)}`}
+        variant="link"
+        ml="4"
+      >
+        View
+      </Button>
+    </Alert>
+  );
+}
 
 function WikiPagePage({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
@@ -40,6 +88,7 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
 
   const pages = useSubject(timeline.timeline).filter((p) => p.pubkey !== page.pubkey);
   const { address } = getPageForks(page);
+  const defer = getPageDefer(page);
 
   const forks = getWebOfTrust().sortByDistanceAndConnections(
     pages.filter((p) => getPageForks(p).address?.pubkey === page.pubkey),
@@ -58,37 +107,17 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
         <ButtonGroup float="right">
           <QuoteRepostButton event={page} />
           <NoteZapButton event={page} showEventPreview={false} />
-          <DebugEventButton event={page} />
+          <WikiPageMenu page={page} aria-label="Page Options" />
         </ButtonGroup>
         <Heading>{getPageTitle(page)}</Heading>
         <Text>
           by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />
         </Text>
-        {address && (
-          <Alert status="info" display="flex" flexWrap="wrap">
-            <AlertIcon>
-              <GitBranch01 boxSize={5} />
-            </AlertIcon>
-            <Text>
-              This page was forked from <UserLink pubkey={address.pubkey} fontWeight="bold" /> version
-            </Text>
-            <ButtonGroup variant="link" ml="auto">
-              <Button leftIcon={<ExternalLinkIcon />} as={RouterLink} to={`/wiki/page/${nip19.naddrEncode(address)}`}>
-                Original
-              </Button>
-              <Button
-                leftIcon={<FileSearch01 />}
-                as={RouterLink}
-                to={`/wiki/compare/${topic}/${address.pubkey}/${page.pubkey}`}
-              >
-                Compare
-              </Button>
-            </ButtonGroup>
-          </Alert>
-        )}
+        {address && <ForkAlert page={page} address={address} />}
+        {defer?.address && <DeferAlert page={page} address={defer.address} />}
         <Divider my="2" />
         <MarkdownContent event={page} />
-        <ZapBubbles event={page} />
+        <ZapBubbles event={page} mt="4" />
       </Box>
 
       {forks.length > 0 && (

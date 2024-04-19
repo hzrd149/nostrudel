@@ -1,4 +1,5 @@
 import { AbstractRelay } from "nostr-tools";
+
 import { logger } from "../helpers/debug";
 import { validateRelayURL } from "../helpers/relay";
 import { offlineMode } from "../services/offline-mode";
@@ -35,7 +36,20 @@ export default class RelayPool {
     }
 
     const relay = this.relays.get(key) as AbstractRelay;
-    if (connect && !relay.connected && !offlineMode.value) {
+    if (connect) this.requestConnect(relay);
+    return relay;
+  }
+
+  async requestConnect(relayOrUrl: string | URL | AbstractRelay) {
+    let relay: AbstractRelay | undefined = undefined;
+
+    if (typeof relayOrUrl === "string") relay = this.relays.get(relayOrUrl);
+    else if (relayOrUrl instanceof URL) relay = this.relays.get(relayOrUrl.toString());
+    else relay = relayOrUrl;
+
+    if (!relay) return;
+
+    if (!relay.connected && !offlineMode.value) {
       try {
         relay.connect();
       } catch (e) {
@@ -43,7 +57,6 @@ export default class RelayPool {
         this.log(e);
       }
     }
-    return relay;
   }
 
   pruneRelays() {

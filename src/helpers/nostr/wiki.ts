@@ -19,13 +19,23 @@ export function getPageSummary(page: NostrEvent) {
 }
 
 export function getPageForks(page: NostrEvent) {
-  const addressFork = page.tags.find((t) => t[0] === "a" && t[1] && t[3]);
-  const eventFork = page.tags.find((t) => t[0] === "a" && t[1] && t[3]);
+  const addressFork = page.tags.find((t) => t[0] === "a" && t[1] && t[3] === "fork");
+  const eventFork = page.tags.find((t) => t[0] === "a" && t[1] && t[3] === "fork");
 
   const address = addressFork ? parseCoordinate(addressFork[1], true) ?? undefined : undefined;
   const event: nip19.EventPointer | undefined = eventFork ? { id: eventFork[1] } : undefined;
 
   return { event, address };
+}
+
+export function getPageDefer(page: NostrEvent) {
+  const addressTag = page.tags.find((t) => t[0] === "a" && t[1] && t[3] === "defer");
+  const eventTag = page.tags.find((t) => t[0] === "a" && t[1] && t[3] === "defer");
+
+  const address = addressTag ? parseCoordinate(addressTag[1], true) ?? undefined : undefined;
+  const event: nip19.EventPointer | undefined = eventTag ? { id: eventTag[1] } : undefined;
+
+  if (event || address) return { event, address };
 }
 
 export function isPageFork(page: NostrEvent) {

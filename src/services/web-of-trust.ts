@@ -9,7 +9,7 @@ import replaceableEventsService from "./replaceable-events";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 
 const log = logger.extend("web-of-trust");
-let webOfTrust: PubkeyGraph;
+let webOfTrust = new PubkeyGraph("");
 
 let newEvents = 0;
 const throttleUpdateWebOfTrust = _throttle(() => {

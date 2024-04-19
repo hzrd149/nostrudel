@@ -158,7 +158,7 @@ export function subscribeMany(relays: string[], filters: Filter[], params: Subsc
       let relay: AbstractRelay;
       try {
         relay = relayPoolService.requestRelay(url);
-        await relay.connect();
+        await relayPoolService.requestConnect(relay);
         // changed from nostr-tools
         // relay = await this.ensureRelay(url, {
         //   connectionTimeout: params.maxWait ? Math.max(params.maxWait * 0.8, params.maxWait - 1000) : undefined,

@@ -14,6 +14,7 @@ import WikiPageResult from "./components/wiki-page-result";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { WIKI_RELAYS } from "../../const";
+import { ExternalLinkIcon } from "../../components/icons";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;
@@ -29,13 +30,16 @@ export default function WikiHomeView() {
 
   return (
     <VerticalPageLayout>
-      <Flex mx="auto" mt="10vh" mb="10vh" direction="column" alignItems="center" maxW="full" gap="4">
+      <Flex mx="auto" mt="10vh" mb="10vh" direction="column" alignItems="center" maxW="full">
         <Heading>
           <Link as={RouterLink} to="/wiki/topic/wikifreedia">
             Wikifreedia
           </Link>
         </Heading>
-        <WikiSearchForm maxW="full" />
+        <Link isExternal color="blue.500" href="https://wikifreedia.xyz/">
+          wikifreedia.xyz <ExternalLinkIcon />
+        </Link>
+        <WikiSearchForm maxW="full" mt="4" />
       </Flex>
 
       <Heading size="md" mt="4">

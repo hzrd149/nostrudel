@@ -1,4 +1,4 @@
-import { Flex, Tag, TagLabel } from "@chakra-ui/react";
+import { Flex, FlexProps, Tag, TagLabel } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import styled from "@emotion/styled";
@@ -16,7 +16,7 @@ const HiddenScrollbar = styled(Flex)`
   }
 `;
 
-export default function ZapBubbles({ event }: { event: NostrEvent }) {
+export default function ZapBubbles({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
   const zaps = useEventZaps(getEventUID(event));
 
   if (zaps.length === 0) return null;
@@ -24,10 +24,10 @@ export default function ZapBubbles({ event }: { event: NostrEvent }) {
   const sorted = zaps.sort((a, b) => (b.payment.amount ?? 0) - (a.payment.amount ?? 0));
 
   return (
-    <HiddenScrollbar overflowY="hidden" overflowX="auto" gap="2">
+    <HiddenScrollbar overflowY="hidden" overflowX="auto" gap="2" {...props}>
       {sorted.map((zap) => (
         <Tag key={zap.event.id} borderRadius="full" py="1" flexShrink={0} variant="outline">
-          <LightningIcon mr="1" />
+          <LightningIcon mr="1" color="yellow.400" />
           <TagLabel fontWeight="bold">{readablizeSats((zap.payment.amount ?? 0) / 1000)}</TagLabel>
           <UserAvatar pubkey={zap.request.pubkey} size="xs" square={false} ml="2" />
         </Tag>
