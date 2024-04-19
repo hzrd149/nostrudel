@@ -77,12 +77,9 @@ import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
 import UserDMsTab from "./views/user/dms";
-import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
 import DVMFeedView from "./views/dvm-feed/feed";
-import TransformNoteView from "./views/tools/transform-note";
-import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
 import LaunchpadView from "./views/launchpad";
@@ -97,13 +94,16 @@ const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
-const WotTestView = lazy(() => import("./views/tools/wot-test"));
 const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 const UnknownTimelineView = lazy(() => import("./views/tools/unknown-event-feed"));
 const EventConsoleView = lazy(() => import("./views/tools/event-console"));
 const EventPublisherView = lazy(() => import("./views/tools/event-publisher"));
+const DMTimelineView = lazy(() => import("./views/tools/dm-timeline"));
+const TransformNoteView = lazy(() => import("./views/tools/transform-note"));
+const SatelliteCDNView = lazy(() => import("./views/tools/satellite-cdn"));
+const CorrectionsFeedView = lazy(() => import("./views/tools/corrections"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -339,7 +339,6 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
-          { path: "wot-test", element: <WotTestView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
           { path: "dm-timeline", element: <DMTimelineView /> },
@@ -348,6 +347,7 @@ const router = createHashRouter([
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
           { path: "publisher", element: <EventPublisherView /> },
+          { path: "corrections", element: <CorrectionsFeedView /> },
         ],
       },
       {

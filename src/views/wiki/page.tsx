@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-tools";
-import { Box, Card, Divider, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Divider, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
@@ -14,6 +14,7 @@ import useSubject from "../../hooks/use-subject";
 import useWikiTopicTimeline from "./hooks/use-wiki-topic-timeline";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
+import DebugEventButton from "../../components/debug-modal/debug-event-button";
 
 function WikiPagePage({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
@@ -34,6 +35,9 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
       </Flex>
 
       <Box>
+        <ButtonGroup float="right">
+          <DebugEventButton event={page} />
+        </ButtonGroup>
         <Heading>{getPageTitle(page)}</Heading>
         <Text>
           by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />

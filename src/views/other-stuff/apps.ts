@@ -21,6 +21,7 @@ import Users01 from "../../components/icons/users-01";
 import Film02 from "../../components/icons/film-02";
 import MessageQuestionSquare from "../../components/icons/message-question-square";
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
+import Edit04 from "../../components/icons/edit-04";
 
 export const internalApps: App[] = [
   {
@@ -113,7 +114,13 @@ export const internalTools: App[] = [
     id: "publisher",
     to: "/tools/publisher ",
   },
-  { title: "WoT Test", description: "Just a test for now", icon: Users01, id: "wot-test", to: "/tools/wot-test" },
+  {
+    title: "Corrections Feed",
+    description: "A feed of post edits",
+    icon: Edit04,
+    id: "corrections",
+    to: "/tools/corrections ",
+  },
 ];
 
 export const externalTools: App[] = [
