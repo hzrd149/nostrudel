@@ -24,7 +24,7 @@ import Rocket02 from "../icons/rocket-02";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import KeyboardShortcut from "../keyboard-shortcut";
 import useRecentIds from "../../hooks/use-recent-ids";
-import { allApps } from "../../views/other-stuff/apps";
+import { internalApps, internalTools } from "../../views/other-stuff/apps";
 import { App, AppIcon } from "../../views/other-stuff/component/app-card";
 import { useMemo } from "react";
 
@@ -79,18 +79,19 @@ export default function NavItems() {
 
   const { recent: recentApps } = useRecentIds("apps");
   const otherStuff = useMemo(() => {
-    const apps = recentApps.map((id) => allApps.find((app) => app.id === id)).filter(Boolean) as App[];
+    const internal = [...internalApps, ...internalTools];
+    const apps = recentApps.map((id) => internal.find((app) => app.id === id)).filter(Boolean) as App[];
     if (apps.length > 3) {
       apps.length = 3;
     } else {
       if (apps.length < 3 && !apps.some((a) => a.id === "streams")) {
-        apps.push(allApps.find((app) => app.id === "streams")!);
+        apps.push(internal.find((app) => app.id === "streams")!);
       }
       if (apps.length < 3 && !apps.some((a) => a.id === "communities")) {
-        apps.push(allApps.find((app) => app.id === "communities")!);
+        apps.push(internal.find((app) => app.id === "communities")!);
       }
       if (apps.length < 3 && !apps.some((a) => a.id === "channels")) {
-        apps.push(allApps.find((app) => app.id === "channels")!);
+        apps.push(internal.find((app) => app.id === "channels")!);
       }
     }
     return apps;

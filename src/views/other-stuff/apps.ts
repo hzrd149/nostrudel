@@ -17,7 +17,6 @@ import {
 } from "../../components/icons";
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
-import Users01 from "../../components/icons/users-01";
 import Film02 from "../../components/icons/film-02";
 import MessageQuestionSquare from "../../components/icons/message-question-square";
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
