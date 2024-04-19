@@ -1,5 +1,5 @@
 import { ColorModeContext, useColorMode } from "@chakra-ui/react";
-import ReactDiffViewer from "react-diff-viewer-continued";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer-continued";
 import computeStyles, { ReactDiffViewerStylesOverride } from "react-diff-viewer-continued/lib/src/styles";
 
 const fixedStyles: ReactDiffViewerStylesOverride = {
@@ -35,7 +35,17 @@ class FixedReactDiffViewer extends ReactDiffViewer {
   }
 }
 
-export default function DiffViewer({ oldValue, newValue }: { oldValue: string; newValue: string }) {
+export default function DiffViewer({
+  oldValue,
+  newValue,
+  method = DiffMethod.WORDS,
+  splitView = false,
+}: {
+  oldValue: string;
+  newValue: string;
+  method?: DiffMethod;
+  splitView?: boolean;
+}) {
   const { colorMode } = useColorMode();
 
   return (
@@ -44,9 +54,8 @@ export default function DiffViewer({ oldValue, newValue }: { oldValue: string; n
       newValue={newValue}
       useDarkTheme={colorMode === "dark"}
       hideLineNumbers
-      splitView={false}
-      //@ts-expect-error
-      compareMethod="diffWords"
+      splitView={splitView}
+      compareMethod={method}
     />
   );
 }
