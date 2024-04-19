@@ -54,7 +54,7 @@ export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "chil
         result ? (
           <PublishResultRow key={url} result={result} />
         ) : (
-          <Alert status="info">
+          <Alert key={url} status="info">
             <Spinner mr="2" />
             <Box>
               <AlertTitle>
