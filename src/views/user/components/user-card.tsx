@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
@@ -7,7 +8,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export type UserCardProps = { pubkey: string; relay?: string } & Omit<FlexProps, "children">;
 
-export const UserCard = ({ pubkey, relay, ...props }: UserCardProps) => {
+export const UserCard = memo(({ pubkey, relay, ...props }: UserCardProps) => {
   return (
     <Flex
       borderWidth="1px"
@@ -29,4 +30,4 @@ export const UserCard = ({ pubkey, relay, ...props }: UserCardProps) => {
       <UserFollowButton pubkey={pubkey} size="sm" variant="outline" flexShrink={0} />
     </Flex>
   );
-};
+});
