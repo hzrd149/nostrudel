@@ -6,6 +6,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
+  Flex,
   Heading,
   SimpleGrid,
   Spinner,
@@ -34,6 +35,7 @@ import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import QuoteRepostButton from "../../components/note/quote-repost-button";
 import WikiPageMenu from "./components/wioki-page-menu";
+import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -103,22 +105,27 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
     <VerticalPageLayout>
       <WikiPageHeader />
 
-      <Box>
-        <ButtonGroup float="right">
-          <QuoteRepostButton event={page} />
-          <NoteZapButton event={page} showEventPreview={false} />
-          <WikiPageMenu page={page} aria-label="Page Options" />
-        </ButtonGroup>
-        <Heading>{getPageTitle(page)}</Heading>
-        <Text>
-          by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />
-        </Text>
-        {address && <ForkAlert page={page} address={address} />}
-        {defer?.address && <DeferAlert page={page} address={defer.address} />}
-        <Divider my="2" />
-        <MarkdownContent event={page} />
-        <ZapBubbles event={page} mt="4" />
-      </Box>
+      <Flex wrap="wrap">
+        <Box>
+          <Heading>{getPageTitle(page)}</Heading>
+          <Text>
+            by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />
+          </Text>
+        </Box>
+        <Flex alignItems="flex-end" gap="2" ml="auto">
+          <EventVoteButtons event={page} inline chevrons={false} />
+          <ButtonGroup size="sm">
+            <QuoteRepostButton event={page} />
+            <NoteZapButton event={page} showEventPreview={false} />
+            <WikiPageMenu page={page} aria-label="Page Options" />
+          </ButtonGroup>
+        </Flex>
+      </Flex>
+      {address && <ForkAlert page={page} address={address} />}
+      {defer?.address && <DeferAlert page={page} address={defer.address} />}
+      <ZapBubbles event={page} />
+      <Divider />
+      <MarkdownContent event={page} />
 
       {forks.length > 0 && (
         <>

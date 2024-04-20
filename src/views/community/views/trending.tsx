@@ -5,7 +5,6 @@ import {
   COMMUNITY_APPROVAL_KIND,
   buildApprovalMap,
   getCommunityMods,
-  getCommunityPostVote,
   getCommunityRelays,
 } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
@@ -14,7 +13,7 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import useEventsReactions from "../../../hooks/use-events-reactions";
-import { groupReactions } from "../../../helpers/nostr/reactions";
+import { getEventReactionScore, groupReactions } from "../../../helpers/nostr/reactions";
 import ApprovedEvent from "../components/community-approved-post";
 import { RouterContext } from "../community-home";
 
@@ -40,7 +39,7 @@ export default function CommunityTrendingView() {
     const dir: Record<string, number> = {};
     for (const [id, reactions] of Object.entries(eventReactions)) {
       const grouped = groupReactions(reactions);
-      const { vote } = getCommunityPostVote(grouped);
+      const { vote } = getEventReactionScore(grouped);
       dir[id] = vote;
     }
     return dir;

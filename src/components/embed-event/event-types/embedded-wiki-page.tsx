@@ -40,9 +40,7 @@ export default function EmbeddedWikiPage({ page: page, ...props }: Omit<CardProp
         </Text>
       </CardHeader>
       <CardBody p="2" overflow="hidden">
-        <Text color="GrayText" noOfLines={2}>
-          {getPageSummary(page)}
-        </Text>
+        <Text noOfLines={2}>{getPageSummary(page)}</Text>
       </CardBody>
       {showFooter && (
         <CardFooter>

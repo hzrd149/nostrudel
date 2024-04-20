@@ -41,3 +41,10 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
 
   return draft;
 }
+
+export function getEventReactionScore(grouped: ReactionGroup[]) {
+  const up = grouped.find((r) => r.emoji === "+");
+  const down = grouped.find((r) => r.emoji === "-");
+  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
+  return { up, down, vote };
+}

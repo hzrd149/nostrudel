@@ -6,13 +6,13 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { WIKI_PAGE_KIND, getPageTitle } from "../../helpers/nostr/wiki";
 import Timestamp from "../../components/timestamp";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import WikiPageHeader from "./components/wiki-page-header";
 import DiffViewer from "../../components/diff/diff-viewer";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import MarkdownContent from "./components/markdown";
 import { WIKI_RELAYS } from "../../const";
 import UserName from "../../components/user/user-name";
+import WikiPageMenu from "./components/wioki-page-menu";
 
 function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent }) {
   const vertical = useBreakpointValue({ base: true, lg: false }) ?? false;
@@ -24,8 +24,8 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
 
       <Flex gap="4" direction={vertical ? "column" : "row"}>
         <Box flex={1}>
-          <ButtonGroup float="right">
-            <DebugEventButton event={base} />
+          <ButtonGroup float="right" size="sm">
+            <WikiPageMenu page={base} aria-label="Page Optinos" />
           </ButtonGroup>
           <Heading>
             <UserName pubkey={base.pubkey} />
@@ -35,8 +35,8 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
           </Text>
         </Box>
         <Box flex={1}>
-          <ButtonGroup float="right">
-            <DebugEventButton event={diff} />
+          <ButtonGroup float="right" size="sm">
+            <WikiPageMenu page={diff} aria-label="Page Optinos" />
           </ButtonGroup>
           <Heading>
             <UserName pubkey={diff.pubkey} />
