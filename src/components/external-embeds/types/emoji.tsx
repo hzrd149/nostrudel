@@ -1,7 +1,7 @@
 import { Image } from "@chakra-ui/react";
-import { EmbedableContent, embedJSX } from "../../helpers/embeds";
-import { DraftNostrEvent, NostrEvent, isEmojiTag } from "../../types/nostr-event";
-import { getMatchEmoji } from "../../helpers/regexp";
+import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
+import { DraftNostrEvent, NostrEvent, isEmojiTag } from "../../../types/nostr-event";
+import { getMatchEmoji } from "../../../helpers/regexp";
 
 export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {

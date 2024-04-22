@@ -13,11 +13,11 @@ import {
   renderGenericUrl,
   renderImageUrl,
   renderVideoUrl,
-} from "../../embed-types";
+} from "../../external-embeds";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import Timestamp from "../../timestamp";
 import { ExternalLinkIcon } from "../../icons";
-import { renderAudioUrl } from "../../embed-types/audio";
+import { renderAudioUrl } from "../../external-embeds/types/audio";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";

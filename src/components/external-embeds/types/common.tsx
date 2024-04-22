@@ -1,7 +1,7 @@
 import { Link } from "@chakra-ui/react";
 
-import OpenGraphCard from "../open-graph/open-graph-card";
-import OpenGraphLink from "../open-graph/open-graph-link";
+import OpenGraphCard from "../../open-graph/open-graph-card";
+import OpenGraphLink from "../../open-graph/open-graph-link";
 
 export function renderGenericUrl(match: URL) {
   return (

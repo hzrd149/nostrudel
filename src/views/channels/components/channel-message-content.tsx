@@ -26,10 +26,10 @@ import {
   renderTwitterUrl,
   renderVideoUrl,
   renderWavlakeUrl,
-  renderYoutubeUrl,
-} from "../../../components/embed-types";
+  renderYoutubeURL,
+} from "../../../components/external-embeds";
 import { LightboxProvider } from "../../../components/lightbox-provider";
-import { renderAudioUrl } from "../../../components/embed-types/audio";
+import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
 
 const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & { message: NostrEvent }) => {
   const content = useMemo(() => {
@@ -41,7 +41,7 @@ const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & 
     // common
     c = embedUrls(c, [
       renderSimpleXLink,
-      renderYoutubeUrl,
+      renderYoutubeURL,
       renderTwitterUrl,
       renderRedditUrl,
       renderWavlakeUrl,

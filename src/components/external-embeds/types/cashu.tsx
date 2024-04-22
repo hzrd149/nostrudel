@@ -1,8 +1,8 @@
 import { lazy } from "react";
-import { EmbedableContent, embedJSX } from "../../helpers/embeds";
-import { getMatchCashu } from "../../helpers/regexp";
+import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
+import { getMatchCashu } from "../../../helpers/regexp";
 
-const InlineCachuCard = lazy(() => import("../cashu/inline-cashu-card"));
+const InlineCachuCard = lazy(() => import("../../cashu/inline-cashu-card"));
 
 export function embedCashuTokens(content: EmbedableContent) {
   return embedJSX(content, {

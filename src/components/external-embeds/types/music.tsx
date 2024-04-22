@@ -1,8 +1,9 @@
 import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
-import { EmbedEventPointer } from "../embed-event";
-import appSettings from "../../services/settings/app-settings";
-import { STEMSTR_RELAY } from "../../helpers/nostr/stemstr";
+import { EmbedEventPointer } from "../../embed-event";
+import appSettings from "../../../services/settings/app-settings";
+import { STEMSTR_RELAY } from "../../../helpers/nostr/stemstr";
+import ExpandableEmbed from "../expandable-embed";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
@@ -15,13 +16,15 @@ export function renderWavlakeUrl(match: URL) {
   embedUrl.hostname = "embed.wavlake.com";
 
   return (
-    <iframe
-      loading="lazy"
-      frameBorder="0"
-      title="Wavlake Embed"
-      src={embedUrl.toString()}
-      style={{ width: "100%", height: 400, maxWidth: 600, ...setZIndex }}
-    ></iframe>
+    <ExpandableEmbed label="Wavlake" url={match}>
+      <iframe
+        loading="lazy"
+        frameBorder="0"
+        title="Wavlake Embed"
+        src={embedUrl.toString()}
+        style={{ width: "100%", height: 400, maxWidth: 600, ...setZIndex }}
+      ></iframe>
+    </ExpandableEmbed>
   );
 }
 
@@ -36,14 +39,16 @@ export function renderAppleMusicUrl(match: URL) {
   embedUrl.hostname = "embed.music.apple.com";
 
   return (
-    <iframe
-      allow="encrypted-media *; fullscreen *; clipboard-write"
-      frameBorder="0"
-      title={isList ? "Apple Music List Embed" : "Apple Music Embed"}
-      height={isList ? 450 : 175}
-      style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent", ...setZIndex }}
-      src={embedUrl.toString()}
-    ></iframe>
+    <ExpandableEmbed label="Apple Music" url={match}>
+      <iframe
+        allow="encrypted-media *; fullscreen *; clipboard-write"
+        frameBorder="0"
+        title={isList ? "Apple Music List Embed" : "Apple Music Embed"}
+        height={isList ? 450 : 175}
+        style={{ width: "100%", maxWidth: "660px", overflow: "hidden", background: "transparent", ...setZIndex }}
+        src={embedUrl.toString()}
+      ></iframe>
+    </ExpandableEmbed>
   );
 }
 
@@ -61,17 +66,19 @@ export function renderSpotifyUrl(match: URL) {
   embedUrl.pathname = "/embed" + embedUrl.pathname;
 
   return (
-    <iframe
-      style={{ borderRadius: "12px", ...setZIndex }}
-      width="100%"
-      height={isList ? 400 : 152}
-      title={isList ? "Spotify List Embed" : "Spotify Embed"}
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-      src={embedUrl.toString()}
-    ></iframe>
+    <ExpandableEmbed label="Spotify" url={match}>
+      <iframe
+        style={{ borderRadius: "12px", ...setZIndex }}
+        width="100%"
+        height={isList ? 400 : 152}
+        title={isList ? "Spotify List Embed" : "Spotify Embed"}
+        frameBorder="0"
+        allowFullScreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        src={embedUrl.toString()}
+      ></iframe>
+    </ExpandableEmbed>
   );
 }
 
@@ -86,13 +93,15 @@ export function renderTidalUrl(match: URL) {
   embedUrl.searchParams.set("disableAnalytics", "true");
 
   return (
-    <iframe
-      src={embedUrl.toString()}
-      width="100%"
-      height={isList ? 400 : 96}
-      title={isList ? "Tidal List Embed" : "Tidal Embed"}
-      style={setZIndex}
-    ></iframe>
+    <ExpandableEmbed label="Tidal" url={match}>
+      <iframe
+        src={embedUrl.toString()}
+        width="100%"
+        height={isList ? 400 : 96}
+        title={isList ? "Tidal List Embed" : "Tidal Embed"}
+        style={setZIndex}
+      ></iframe>
+    </ExpandableEmbed>
   );
 }
 
@@ -102,16 +111,18 @@ export function renderSongDotLinkUrl(match: URL) {
   const { colorMode } = useColorMode();
 
   return (
-    <Box
-      as="iframe"
-      w="full"
-      h="full"
-      maxW="xl"
-      aspectRatio={16 / 10}
-      src={`https://odesli.co/embed/?url=${encodeURIComponent(match.href)}&theme=${colorMode}`}
-      sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
-      style={setZIndex}
-    ></Box>
+    <ExpandableEmbed url={match} label="Song.link">
+      <Box
+        as="iframe"
+        w="full"
+        h="full"
+        maxW="xl"
+        aspectRatio={16 / 10}
+        src={`https://odesli.co/embed/?url=${encodeURIComponent(match.href)}&theme=${colorMode}`}
+        sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+        style={setZIndex}
+      ></Box>
+    </ExpandableEmbed>
   );
 }
 

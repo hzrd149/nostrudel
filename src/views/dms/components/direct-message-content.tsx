@@ -17,11 +17,11 @@ import {
   renderTwitterUrl,
   renderVideoUrl,
   renderWavlakeUrl,
-  renderYoutubeUrl,
-} from "../../../components/embed-types";
+  renderYoutubeURL,
+} from "../../../components/external-embeds";
 import { TrustProvider } from "../../../providers/local/trust";
 import { LightboxProvider } from "../../../components/lightbox-provider";
-import { renderAudioUrl } from "../../../components/embed-types/audio";
+import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
 
 export default function DirectMessageContent({
   event,
@@ -34,7 +34,7 @@ export default function DirectMessageContent({
   content = embedNostrLinks(content);
   content = embedUrls(content, [
     renderSimpleXLink,
-    renderYoutubeUrl,
+    renderYoutubeURL,
     renderTwitterUrl,
     renderRedditUrl,
     renderWavlakeUrl,

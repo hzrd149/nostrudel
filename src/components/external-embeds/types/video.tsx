@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
-import { isVideoURL } from "../../helpers/url";
-import useAppSettings from "../../hooks/use-app-settings";
-import useElementTrustBlur from "../../hooks/use-element-trust-blur";
-import { useTrustContext } from "../../providers/local/trust";
+
+import { isVideoURL } from "../../../helpers/url";
+import useAppSettings from "../../../hooks/use-app-settings";
+import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
+import ExpandableEmbed from "../expandable-embed";
 
 const StyledVideo = styled.video`
   max-width: 30rem;
@@ -30,5 +31,9 @@ function TrustVideo({ src }: { src: string }) {
 export function renderVideoUrl(match: URL) {
   if (!isVideoURL(match)) return null;
 
-  return <TrustVideo src={match.toString()} />;
+  return (
+    <ExpandableEmbed label="Video" url={match} hideOnDefaultOpen>
+      <TrustVideo src={match.toString()} />
+    </ExpandableEmbed>
+  );
 }

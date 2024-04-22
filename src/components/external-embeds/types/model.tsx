@@ -13,10 +13,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Suspense, lazy } from "react";
-import { ErrorBoundary } from "../error-boundary";
-import { DownloadIcon, ThingsIcon } from "../icons";
+import { ErrorBoundary } from "../../error-boundary";
+import { DownloadIcon, ThingsIcon } from "../../icons";
+import ExpandableEmbed from "../expandable-embed";
 
-const STLViewer = lazy(() => import("../stl-viewer"));
+const STLViewer = lazy(() => import("../../stl-viewer"));
 
 function EmbeddedStlFile({ src }: { src: string }) {
   const preview = useDisclosure();
@@ -62,5 +63,9 @@ function EmbeddedStlFile({ src }: { src: string }) {
 export function renderModelUrl(match: URL) {
   if (!match.pathname.endsWith(".stl")) return null;
 
-  return <EmbeddedStlFile src={match.toString()} />;
+  return (
+    <ExpandableEmbed label="STL Model" url={match} hideOnDefaultOpen>
+      <EmbeddedStlFile src={match.toString()} />
+    </ExpandableEmbed>
+  );
 }

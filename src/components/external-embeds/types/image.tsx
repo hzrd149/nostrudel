@@ -1,16 +1,17 @@
 import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
 import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 
-import { EmbedableContent, defaultGetLocation } from "../../helpers/embeds";
-import { getMatchLink } from "../../helpers/regexp";
-import { useRegisterSlide } from "../lightbox-provider";
-import { isImageURL } from "../../helpers/url";
-import PhotoGallery, { PhotoWithoutSize } from "../photo-gallery";
-import { NostrEvent } from "../../types/nostr-event";
-import useAppSettings from "../../hooks/use-app-settings";
-import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import useElementTrustBlur from "../../hooks/use-element-trust-blur";
-import { buildImageProxyURL } from "../../helpers/image";
+import { EmbedableContent, defaultGetLocation } from "../../../helpers/embeds";
+import { getMatchLink } from "../../../helpers/regexp";
+import { useRegisterSlide } from "../../lightbox-provider";
+import { isImageURL } from "../../../helpers/url";
+import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
+import { NostrEvent } from "../../../types/nostr-event";
+import useAppSettings from "../../../hooks/use-app-settings";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
+import { buildImageProxyURL } from "../../../helpers/image";
+import ExpandableEmbed from "../expandable-embed";
 
 export type TrustImageProps = ImageProps;
 
@@ -107,14 +108,16 @@ export function ImageGallery({ images, event }: { images: string[]; event?: Nost
   const rowMultiplier = useBreakpointValue({ base: 1.5, sm: 2, md: 3, lg: 4, xl: 5 }) ?? 4;
 
   return (
-    <PhotoGallery
-      layout="rows"
-      photos={photos}
-      renderPhoto={({ photo, imageProps, wrapperStyle }) => (
-        <GalleryImage src={imageProps.src} style={imageProps.style} />
-      )}
-      targetRowHeight={(containerWidth) => containerWidth / rowMultiplier}
-    />
+    <ExpandableEmbed label="Image Gallery" hideOnDefaultOpen urls={images}>
+      <PhotoGallery
+        layout="rows"
+        photos={photos}
+        renderPhoto={({ photo, imageProps, wrapperStyle }) => (
+          <GalleryImage src={imageProps.src} style={imageProps.style} />
+        )}
+        targetRowHeight={(containerWidth) => containerWidth / rowMultiplier}
+      />
+    </ExpandableEmbed>
   );
 }
 
@@ -184,5 +187,9 @@ export function embedImageGallery(content: EmbedableContent, event?: NostrEvent)
 export function renderImageUrl(match: URL) {
   if (!isImageURL(match)) return null;
 
-  return <EmbeddedImage src={match.toString()} imageProps={{ maxH: ["initial", "35vh"] }} />;
+  return (
+    <ExpandableEmbed label="Image" url={match} hideOnDefaultOpen>
+      <EmbeddedImage src={match.toString()} imageProps={{ maxH: ["initial", "35vh"] }} />
+    </ExpandableEmbed>
+  );
 }

@@ -1,5 +1,5 @@
 import { Button, Image, Link } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "../icons";
+import { ExternalLinkIcon } from "../../icons";
 
 export function renderSimpleXLink(match: URL) {
   if (match.hostname !== "simplex.chat") return null;

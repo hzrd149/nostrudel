@@ -26,7 +26,7 @@ import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserMetadata from "../../../hooks/use-user-metadata";
-import { embedNostrLinks, renderGenericUrl } from "../../../components/embed-types";
+import { embedNostrLinks, renderGenericUrl } from "../../../components/external-embeds";
 import {
   ChevronDownIcon,
   ChevronUpIcon,

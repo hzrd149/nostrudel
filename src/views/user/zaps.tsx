@@ -20,7 +20,7 @@ import IntersectionObserverProvider, {
 } from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
+import { embedNostrLinks, renderGenericUrl } from "../../components/external-embeds";
 import Timestamp from "../../components/timestamp";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { parseCoordinate } from "../../helpers/nostr/event";

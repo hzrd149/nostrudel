@@ -9,7 +9,7 @@ import {
   embedNostrMentions,
   embedNostrHashtags,
   renderWavlakeUrl,
-  renderYoutubeUrl,
+  renderYoutubeURL,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
@@ -29,7 +29,8 @@ import {
   embedNipDefinitions,
   renderAudioUrl,
   renderModelUrl,
-} from "../../embed-types";
+  renderCodePenURL,
+} from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
 
 function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
@@ -41,7 +42,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   // common
   content = embedUrls(content, [
     renderSimpleXLink,
-    renderYoutubeUrl,
+    renderYoutubeURL,
     renderTwitterUrl,
     renderRedditUrl,
     renderWavlakeUrl,
@@ -55,6 +56,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
     renderVideoUrl,
     renderAudioUrl,
     renderModelUrl,
+    renderCodePenURL,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 

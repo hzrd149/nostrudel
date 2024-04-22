@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { isAudioURL } from "../../helpers/url";
+import { isAudioURL } from "../../../helpers/url";
 
 const StyledAudio = styled.audio`
   max-width: 30rem;

@@ -25,7 +25,7 @@ import { PerformanceIcon } from "../../components/icons";
 import { selectedMethod } from "../../services/verify-event";
 
 function VerifyEventSettings() {
-  const [verifyEventMethod, setVerifyEventMethod] = useLocalStorage<string>("verify-event-method", "default", {
+  const [verifyEventMethod, setVerifyEventMethod] = useLocalStorage<string>("verify-event-method", "internal", {
     raw: true,
   });
 
@@ -38,8 +38,8 @@ function VerifyEventSettings() {
           Verify event method
         </FormLabel>
         <Select value={verifyEventMethod} onChange={(e) => setVerifyEventMethod(e.target.value)} maxW="sm">
-          <option value="default">Default</option>
           <option value="wasm">WebAssembly</option>
+          <option value="internal">Internal</option>
           <option value="none">None</option>
         </Select>
         <FormHelperText>Default: All events signatures are checked</FormHelperText>

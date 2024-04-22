@@ -9,7 +9,7 @@ import { readablizeSats } from "../../helpers/bolt11";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import UserAvatar from "../../components/user/user-avatar";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
-import { embedNostrLinks, renderGenericUrl } from "../../components/embed-types";
+import { embedNostrLinks, renderGenericUrl } from "../../components/external-embeds";
 import UserLink from "../../components/user/user-link";
 import trustedUserStatsService, { NostrBandUserStats } from "../../services/trusted-user-stats";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

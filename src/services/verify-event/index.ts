@@ -5,7 +5,7 @@ import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
 const localStorageKey = "verify-event-method";
 
 const log = logger.extend("VerifyEvent");
-let selectedMethod = "default";
+let selectedMethod = "wasm";
 let verifyEventMethod: typeof verifyEvent;
 let alwaysVerify: typeof verifyEvent;
 
@@ -34,7 +34,7 @@ function loadWithTimeout() {
 }
 
 try {
-  selectedMethod = localStorage.getItem(localStorageKey) ?? "default";
+  selectedMethod = localStorage.getItem(localStorageKey) ?? "wasm";
 
   switch (selectedMethod) {
     case "wasm":
@@ -48,17 +48,17 @@ try {
       verifyEventMethod = fakeVerifyEvent;
       alwaysVerify = verifyEvent;
       break;
-    case "default":
+    case "internal":
     default:
-      log("Using nostr-tools default");
+      log("Using internal nostr-tools");
       verifyEventMethod = alwaysVerify = verifyEvent;
       break;
   }
 } catch (error) {
-  console.error("Failed to initialize event verification method, falling back to default");
+  console.error("Failed to initialize event verification method, falling back to internal nostr-tools");
   console.log(error);
 
-  localStorage.setItem(localStorageKey, "default");
+  localStorage.setItem(localStorageKey, "internal");
   verifyEventMethod = alwaysVerify = verifyEvent;
 }
 

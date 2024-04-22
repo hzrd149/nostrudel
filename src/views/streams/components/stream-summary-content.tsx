@@ -9,7 +9,7 @@ import {
   embedNostrMentions,
   renderGenericUrl,
   renderImageUrl,
-} from "../../../components/embed-types";
+} from "../../../components/external-embeds";
 import { Box, BoxProps } from "@chakra-ui/react";
 
 export default function StreamSummaryContent({ stream, ...props }: BoxProps & { stream: ParsedStream }) {
