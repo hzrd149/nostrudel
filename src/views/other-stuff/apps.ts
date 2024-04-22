@@ -187,6 +187,22 @@ export const externalTools: App[] = [
     image: "https://nosbin.com/logo.png",
     isExternal: true,
   },
+  {
+    id: "blossom.hzrd149.com",
+    title: "Blossom Drive",
+    description: "Upload and organize blobs",
+    to: "https://blossom.hzrd149.com/",
+    image: "https://blossom.hzrd149.com/pwa-192x192.png",
+    isExternal: true,
+  },
+  {
+    id: "bouquet.slidestr.net",
+    title: "Bouquet",
+    description: "Manage your blobs on multiple servers",
+    to: "https://bouquet.slidestr.net/",
+    image: "https://bouquet.slidestr.net/bouquet.png",
+    isExternal: true,
+  },
 ];
 
 export const allApps = [...internalApps, ...internalTools, ...externalTools];
