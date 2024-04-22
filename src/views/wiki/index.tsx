@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
@@ -40,6 +40,9 @@ export default function WikiHomeView() {
           wikifreedia.xyz <ExternalLinkIcon />
         </Link>
         <WikiSearchForm maxW="full" mt="4" />
+        <Button variant="link" p="2" mt="2" as={RouterLink} to="/wiki/create">
+          Create Page
+        </Button>
       </Flex>
 
       <Heading size="md" mt="4">

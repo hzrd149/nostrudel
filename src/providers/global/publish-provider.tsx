@@ -28,6 +28,13 @@ type PublishContextType = {
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
+    additionalRelays: Iterable<string> | undefined,
+    quite: false,
+    onlyAdditionalRelays?: boolean,
+  ): Promise<NostrPublishAction>;
+  publishEvent(
+    label: string,
+    event: EventTemplate | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
     onlyAdditionalRelays?: boolean,

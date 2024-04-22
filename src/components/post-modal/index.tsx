@@ -101,6 +101,9 @@ export default function PostModal({
     },
     mode: "all",
   });
+
+  // watch form state
+  formState.isDirty;
   watch("content");
   watch("nsfw");
   watch("nsfwReason");
@@ -232,9 +235,6 @@ export default function PostModal({
           {mentions.length > 0 && <UserAvatarStack label="Mentions" pubkeys={mentions} />}
           <Button onClick={onClose} variant="ghost">
             Cancel
-          </Button>
-          <Button onClick={() => reset()} isDisabled={!formState.isDirty}>
-            Reset
           </Button>
           <Button
             colorScheme="primary"

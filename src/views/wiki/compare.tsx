@@ -1,6 +1,17 @@
 import { NostrEvent } from "nostr-tools";
-import { Alert, AlertIcon, Box, ButtonGroup, Divider, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
-import { Navigate, useParams } from "react-router-dom";
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  ButtonGroup,
+  Divider,
+  Flex,
+  Heading,
+  IconButton,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
+import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
 
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -13,6 +24,8 @@ import MarkdownContent from "./components/markdown";
 import { WIKI_RELAYS } from "../../const";
 import UserName from "../../components/user/user-name";
 import WikiPageMenu from "./components/wioki-page-menu";
+import { getSharableEventAddress } from "../../helpers/nip19";
+import { ExternalLinkIcon } from "../../components/icons";
 
 function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent }) {
   const vertical = useBreakpointValue({ base: true, lg: false }) ?? false;
@@ -25,6 +38,12 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
       <Flex gap="4" direction={vertical ? "column" : "row"}>
         <Box flex={1}>
           <ButtonGroup float="right" size="sm">
+            <IconButton
+              as={RouterLink}
+              to={`/wiki/page/${getSharableEventAddress(base)}`}
+              icon={<ExternalLinkIcon />}
+              aria-label="Open Page"
+            />
             <WikiPageMenu page={base} aria-label="Page Optinos" />
           </ButtonGroup>
           <Heading>
@@ -36,6 +55,12 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
         </Box>
         <Box flex={1}>
           <ButtonGroup float="right" size="sm">
+            <IconButton
+              as={RouterLink}
+              to={`/wiki/page/${getSharableEventAddress(diff)}`}
+              icon={<ExternalLinkIcon />}
+              aria-label="Open Page"
+            />
             <WikiPageMenu page={diff} aria-label="Page Optinos" />
           </ButtonGroup>
           <Heading>

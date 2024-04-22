@@ -23,6 +23,7 @@ import {
 } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { NostrEvent } from "nostr-tools";
+import { forwardRef } from "react";
 import Markdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -36,35 +37,35 @@ const StyledMarkdown = styled(Markdown)`
 
 function H1({ children, ...props }: HeadingProps) {
   return (
-    <Heading as="h1" size="xl" mt="6" mb="2" {...props}>
+    <Heading as="h1" size="2xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
 function H2({ children, ...props }: HeadingProps) {
   return (
-    <Heading as="h2" size="lg" mt="6" mb="2" {...props}>
+    <Heading as="h2" size="xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
 function H3({ children, ...props }: HeadingProps) {
   return (
-    <Heading as="h3" size="md" mt="4" mb="2" {...props}>
+    <Heading as="h3" size="lg" mt="4" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
 function H4({ children, ...props }: HeadingProps) {
   return (
-    <Heading as="h4" size="sm" my="2" {...props}>
+    <Heading as="h4" size="md" my="2" {...props}>
       {children}
     </Heading>
   );
 }
 function H5({ children, ...props }: HeadingProps) {
   return (
-    <Heading as="h5" size="xs" my="2" {...props}>
+    <Heading as="h5" size="sm" my="2" {...props}>
       {children}
     </Heading>
   );
@@ -123,10 +124,16 @@ const components: Partial<Components> = {
   code: Code,
 };
 
-export default function MarkdownContent({ event }: { event: NostrEvent }) {
+export const CharkaMarkdown = forwardRef<HTMLDivElement, { children: string }>(({ children }, ref) => {
   return (
-    <StyledMarkdown remarkPlugins={[remarkGfm]} components={components}>
-      {event.content}
-    </StyledMarkdown>
+    <div ref={ref}>
+      <StyledMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        {children}
+      </StyledMarkdown>
+    </div>
   );
+});
+
+export default function MarkdownContent({ event }: { event: NostrEvent }) {
+  return <CharkaMarkdown>{event.content}</CharkaMarkdown>;
 }
