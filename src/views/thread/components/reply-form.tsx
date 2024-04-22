@@ -85,7 +85,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   }, [getValues().content, emojis]);
 
   const submit = handleSubmit(async (values) => {
-    const pub = await publish("Reply", draft);
+    const pub = await publish("Reply", { ...draft, created_at: dayjs().unix() });
 
     if (pub && onSubmitted) onSubmitted(pub.event);
   });
