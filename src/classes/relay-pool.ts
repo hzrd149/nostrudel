@@ -28,6 +28,7 @@ export default class RelayPool {
 
   requestRelay(url: string | URL, connect = true) {
     url = validateRelayURL(url);
+
     const key = url.toString();
     if (!this.relays.has(key)) {
       const newRelay = new AbstractRelay(key, { verifyEvent: verifyEventMethod });

@@ -13,6 +13,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
+      // strategies: "injectManifest",
+      // srcDir: "src",
+      // filename: "sw.ts",
+      // devOptions: {
+      //   // NOTE: ESM service workers is not supported by firefox
+      //   type: "module",
+      //   enabled: true,
+      // },
       workbox: {
         // This increase the cache limit to 3mB
         maximumFileSizeToCacheInBytes: 2097152 * 1.5,

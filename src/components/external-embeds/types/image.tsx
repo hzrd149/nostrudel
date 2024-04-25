@@ -40,7 +40,7 @@ export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"
 };
 
 function useImageThumbnail(src?: string) {
-  return (src && buildImageProxyURL(src, "256,fit")) ?? src;
+  return (src && buildImageProxyURL(src, "512,fit")) ?? src;
 }
 
 export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(

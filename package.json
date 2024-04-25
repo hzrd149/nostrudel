@@ -92,6 +92,9 @@
     "three-spritetext": "^1.8.1",
     "three-stdlib": "^2.29.4",
     "webln": "^0.3.2",
+    "workbox-core": "7.0.0",
+    "workbox-precaching": "7.0.0",
+    "workbox-routing": "7.0.0",
     "yet-another-react-lightbox": "^3.17.3",
     "zen-observable": "^0.10.0"
   },

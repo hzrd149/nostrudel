@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import db from "./db";
 import _throttle from "lodash.throttle";
 
-import { fetchWithCorsFallback } from "../helpers/cors";
+import { fetchWithProxy } from "../helpers/request";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 
@@ -42,7 +42,7 @@ class DnsIdentityService {
     const { name, domain } = parseAddress(address);
     if (!name || !domain) throw new Error("invalid address " + address);
 
-    const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
+    const json = await fetchWithProxy(`https://${domain}/.well-known/nostr.json?name=${name}`)
       .then((res) => res.json() as Promise<IdentityJson>)
       .then((json) => {
         // convert all keys in names, and relays to lower case
