@@ -1,6 +1,7 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Text } from "@chakra-ui/react";
-import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
+
+import { getDisplayName } from "../../../helpers/nostr/user-metadata";
 import useUserMetadata from "../../../hooks/use-user-metadata";
 import accountService, { Account } from "../../../services/account";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -26,7 +27,7 @@ export default function AccountCard({ account }: { account: Account }) {
       <UserAvatar pubkey={pubkey} size="md" noProxy />
       <Box flex={1}>
         <Text isTruncated fontWeight="bold">
-          {getUserDisplayName(metadata, pubkey)}
+          {getDisplayName(metadata, pubkey)}
         </Text>
         <AccountInfoBadge account={account} />
       </Box>

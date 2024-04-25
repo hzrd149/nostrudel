@@ -19,7 +19,6 @@ import {
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import { getLudEndpoint } from "../../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/event";
@@ -39,7 +38,7 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
-import { ChatIcon, QuestionIcon } from "@chakra-ui/icons";
+import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -50,6 +49,7 @@ import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
 import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
+import UserName from "../../../components/user/user-name";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -109,7 +109,9 @@ export default function UserAboutTab() {
         >
           <UserAvatar pubkey={pubkey} size={["lg", "lg", "xl"]} noProxy />
           <Box overflow="hidden">
-            <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
+            <Heading isTruncated>
+              <UserName pubkey={pubkey} />
+            </Heading>
             <UserDnsIdentity pubkey={pubkey} />
           </Box>
 

@@ -91,7 +91,7 @@ export default function DisplaySettings() {
           <FormControl>
             <Flex alignItems="center">
               <FormLabel htmlFor="hideUsernames" mb="0">
-                Hide Usernames (anon mode)
+                Hide usernames (anon mode)
               </FormLabel>
               <Switch id="hideUsernames" {...register("hideUsernames")} />
             </Flex>
@@ -106,6 +106,17 @@ export default function DisplaySettings() {
                   Details
                 </Link>
               </span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="removeEmojisInUsernames" mb="0">
+                Hide Emojis in usernames
+              </FormLabel>
+              <Switch id="removeEmojisInUsernames" {...register("removeEmojisInUsernames")} />
+            </Flex>
+            <FormHelperText>
+              <span>Enabled: Removes all emojis in other users usernames and display names</span>
             </FormHelperText>
           </FormControl>
           <FormControl>

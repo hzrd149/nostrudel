@@ -20,7 +20,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useEffect, u
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {
@@ -70,7 +70,7 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
     <Modal onClose={onClose} size="lg" {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader p="4">Mute {getUserDisplayName(metadata, pubkey)} for:</ModalHeader>
+        <ModalHeader p="4">Mute {getDisplayName(metadata, pubkey)} for:</ModalHeader>
         <ModalCloseButton />
         <ModalBody px="4" py="0">
           <SimpleGrid columns={3} spacing="2">

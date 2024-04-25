@@ -26,7 +26,7 @@ import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
-import { Kind0ParsedContent, getUserDisplayName, parseMetadataContent } from "../../helpers/nostr/user-metadata";
+import { Kind0ParsedContent, getDisplayName, parseMetadataContent } from "../../helpers/nostr/user-metadata";
 import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
 import ArrowRight from "../icons/arrow-right";
@@ -79,7 +79,7 @@ function AppHandler({ app, decoded }: { app: NostrEvent; decoded: nip19.DecodeRe
       <MetadataAvatar metadata={metadata} />
       <Box overflow="hidden">
         <HoverLinkOverlay fontWeight="bold" href={link} isExternal>
-          {getUserDisplayName(metadata, app.pubkey)}
+          {getDisplayName(metadata, app.pubkey)}
         </HoverLinkOverlay>
         <Text noOfLines={3}>{metadata.about}</Text>
       </Box>
@@ -112,7 +112,7 @@ export default function AppHandlerModal({
     if (search.length > 1) {
       try {
         const parsed = JSON.parse(app.content) as Kind0ParsedContent;
-        if (getUserDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
+        if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
           return true;
         }
       } catch (error) {}

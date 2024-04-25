@@ -5,7 +5,7 @@ import { useAsync } from "react-use";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import { getIdenticon } from "../../helpers/identicon";
 import { safeUrl } from "../../helpers/parse";
-import { Kind0ParsedContent, getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { Kind0ParsedContent, getDisplayName } from "../../helpers/nostr/user-metadata";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
@@ -103,7 +103,7 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
         src={picture}
         icon={pubkey ? <UserIdenticon pubkey={pubkey} /> : undefined}
         // overflow="hidden"
-        title={getUserDisplayName(metadata, pubkey ?? "")}
+        title={getDisplayName(metadata, pubkey ?? "")}
         ref={ref}
         {...props}
       >

@@ -36,20 +36,22 @@ export type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideU
 export type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
 export type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; autoDecryptDMs: boolean };
 export type AppSettingsV8 = Omit<AppSettingsV7, "version"> & {
-  version: 7;
+  version: 8;
   mediaUploadService: "nostr.build" | "blossom";
 };
+export type AppSettingsV9 = Omit<AppSettingsV8, "version"> & { version: 9; removeEmojisInUsernames: boolean };
 
-export type AppSettings = AppSettingsV8;
+export type AppSettings = AppSettingsV9;
 
 export const defaultSettings: AppSettings = {
-  version: 7,
+  version: 9,
   theme: "default",
   colorMode: "system",
   defaultRelays: ["wss://relay.damus.io", "wss://nostr.wine", "wss://nos.lol", "wss://welcome.nostr.wine"],
   maxPageWidth: "none",
   blurImages: true,
   hideUsernames: false,
+  removeEmojisInUsernames: false,
   autoShowMedia: true,
   proxyUserMedia: false,
   loadOpenGraphData: true,
@@ -76,7 +78,7 @@ export const defaultSettings: AppSettings = {
 };
 
 export function upgradeSettings(settings: { version: number }): AppSettings | null {
-  return { ...defaultSettings, ...settings, version: 7 };
+  return { ...defaultSettings, ...settings, version: 9 };
 }
 
 export function parseAppSettings(event: NostrEvent): AppSettings {

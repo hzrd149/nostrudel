@@ -5,10 +5,12 @@ import { nip19 } from "nostr-tools";
 
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import userMetadataService from "../services/user-metadata";
-import { getUserDisplayName } from "../helpers/nostr/user-metadata";
+import { getDisplayName } from "../helpers/nostr/user-metadata";
+import useAppSettings from "../hooks/use-app-settings";
 
 const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...props }, ref) => {
   const getDirectory = useUserSearchDirectoryContext();
+  const { removeEmojisInUsernames } = useAppSettings();
 
   const { value: users } = useAsync(async () => {
     const dir = await getDirectory();
@@ -24,7 +26,7 @@ const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...p
             .filter((p) => !!p.metadata)
             .map(({ metadata, pubkey }) => (
               <option key={pubkey} value={nip19.npubEncode(pubkey)}>
-                {getUserDisplayName(metadata, pubkey)}
+                {getDisplayName(metadata, pubkey, removeEmojisInUsernames)}
               </option>
             ))}
         </datalist>

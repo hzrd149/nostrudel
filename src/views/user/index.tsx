@@ -29,7 +29,7 @@ import { kinds } from "nostr-tools";
 
 import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import useUserMetadata from "../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -82,7 +82,7 @@ const UserView = () => {
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
   const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
-  useAppTitle(getUserDisplayName(metadata, pubkey));
+  useAppTitle(getDisplayName(metadata, pubkey));
 
   const hasTorrents = useEventExists({ kinds: [TORRENT_KIND], authors: [pubkey] }, readRelays);
   const hasGoals = useEventExists({ kinds: [GOAL_KIND], authors: [pubkey] }, readRelays);
