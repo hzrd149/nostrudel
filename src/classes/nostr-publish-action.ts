@@ -5,10 +5,11 @@ import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";
 import { PersistentSubject } from "./subject";
 import ControlledObservable from "./controlled-observable";
+import dayjs from "dayjs";
 
 export type PublishResult = { relay: AbstractRelay; success: boolean; message: string };
 
-export default class NostrPublishAction {
+export default class PublishAction {
   id = nanoid();
   label: string;
   relays: string[];

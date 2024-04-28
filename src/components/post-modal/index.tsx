@@ -29,8 +29,8 @@ import { useForm } from "react-hook-form";
 import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { PublishDetails } from "../publish-details";
+import PublishAction from "../../classes/nostr-publish-action";
+import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
 import { TrustProvider } from "../../providers/local/trust";
 import {
   correctContentMentions,
@@ -85,7 +85,7 @@ export default function PostModal({
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
   const [miningTarget, setMiningTarget] = useState(0);
-  const [publishAction, setPublishAction] = useState<NostrPublishAction>();
+  const [publishAction, setPublishAction] = useState<PublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 

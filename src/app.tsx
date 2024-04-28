@@ -89,6 +89,7 @@ import BookmarksView from "./views/bookmarks";
 import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
 import DatabaseView from "./views/relays/cache/database";
+import TaskManagerProvider from "./views/task-manager/provider";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -451,11 +452,13 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
-    <DrawerSubViewProvider parentRouter={router}>
-      <Global styles={overrideReactTextareaAutocompleteStyles} />
-      <Suspense fallback={<Spinner />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </DrawerSubViewProvider>
+    <TaskManagerProvider parentRouter={router}>
+      <DrawerSubViewProvider parentRouter={router}>
+        <Global styles={overrideReactTextareaAutocompleteStyles} />
+        <Suspense fallback={<Spinner />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </DrawerSubViewProvider>
+    </TaskManagerProvider>
   </ErrorBoundary>
 );

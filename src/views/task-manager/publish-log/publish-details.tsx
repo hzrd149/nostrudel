@@ -12,13 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import NostrPublishAction, { PublishResult } from "../classes/nostr-publish-action";
-import useSubject from "../hooks/use-subject";
-import { RelayPaidTag } from "../views/relays/components/relay-card";
-import { EmbedEvent } from "./embed-event";
+import PublishAction, { PublishResult } from "../../../classes/nostr-publish-action";
+import useSubject from "../../../hooks/use-subject";
+import { RelayPaidTag } from "../../relays/components/relay-card";
+import { EmbedEvent } from "../../../components/embed-event";
 
 export type PostResultsProps = {
-  pub: NostrPublishAction;
+  pub: PublishAction;
 };
 
 function PublishResultRow({ result }: { result: PublishResult }) {

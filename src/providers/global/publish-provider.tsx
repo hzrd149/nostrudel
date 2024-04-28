@@ -4,7 +4,7 @@ import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 
 import { useSigningContext } from "./signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import NostrPublishAction from "../../classes/nostr-publish-action";
+import PublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
@@ -17,28 +17,28 @@ import deleteEventService from "../../services/delete-events";
 import userMailboxesService from "../../services/user-mailboxes";
 
 type PublishContextType = {
-  log: NostrPublishAction[];
+  log: PublishAction[];
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays: false,
-  ): Promise<NostrPublishAction>;
+  ): Promise<PublishAction>;
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays?: boolean,
-  ): Promise<NostrPublishAction>;
+  ): Promise<PublishAction>;
   publishEvent(
     label: string,
     event: EventTemplate | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
     onlyAdditionalRelays?: boolean,
-  ): Promise<NostrPublishAction | undefined>;
+  ): Promise<PublishAction | undefined>;
 };
 export const PublishContext = createContext<PublishContextType>({
   log: [],
@@ -53,7 +53,7 @@ export function usePublishEvent() {
 
 export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
-  const [log, setLog] = useState<NostrPublishAction[]>([]);
+  const [log, setLog] = useState<PublishAction[]>([]);
   const { requestSignature } = useSigningContext();
 
   const publishEvent = useCallback(
@@ -84,7 +84,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
           signed = await requestSignature(draft);
         } else signed = event as NostrEvent;
 
-        const pub = new NostrPublishAction(label, relays, signed);
+        const pub = new PublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
 
         pub.onResult.subscribe(({ relay, success }) => {
