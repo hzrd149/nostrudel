@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Button, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
@@ -9,7 +9,6 @@ import { WIKI_PAGE_KIND, validatePage } from "../../helpers/nostr/wiki";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
-import { getWebOfTrust } from "../../services/web-of-trust";
 import WikiPageResult from "./components/wiki-page-result";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -26,7 +25,6 @@ export default function WikiHomeView() {
   const timeline = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], { eventFilter });
 
   const pages = useSubject(timeline.timeline).filter((p) => p.content.length > 0);
-  const sorted = getWebOfTrust().sortByDistanceAndConnections(pages, (p) => p.pubkey);
 
   return (
     <VerticalPageLayout>
@@ -49,7 +47,7 @@ export default function WikiHomeView() {
         Recent Updates:
       </Heading>
       <SimpleGrid spacing="2" columns={{ base: 1, lg: 2, xl: 3 }}>
-        {sorted.map((page) => (
+        {pages.slice(0, 32).map((page) => (
           <ErrorBoundary key={page.id}>
             <WikiPageResult page={page} />
           </ErrorBoundary>

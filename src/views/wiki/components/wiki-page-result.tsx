@@ -11,6 +11,7 @@ import Timestamp from "../../../components/timestamp";
 import FileSearch01 from "../../../components/icons/file-search-01";
 import GitBranch01 from "../../../components/icons/git-branch-01";
 import UserName from "../../../components/user/user-name";
+import UserAvatar from "../../../components/user/user-avatar";
 
 export default function WikiPageResult({ page, compare }: { page: NostrEvent; compare?: NostrEvent }) {
   const topic = getPageTopic(page);
@@ -20,41 +21,42 @@ export default function WikiPageResult({ page, compare }: { page: NostrEvent; co
   return (
     <Flex as={LinkBox} py="2" px="4" direction="column">
       <Box overflow="hidden">
-        <Heading size="md">
-          <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
-            {getPageTitle(page)}
-          </HoverLinkOverlay>
-        </Heading>
-        <Text>
-          by <UserLink pubkey={page.pubkey} fontWeight="bold " /> - <Timestamp timestamp={page.created_at} />
-        </Text>
-        <Text color="GrayText" noOfLines={2}>
-          {getPageSummary(page)}
-        </Text>
+        <Flex gap="2" wrap="wrap">
+          <Heading size="md">
+            <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
+              {getPageTitle(page)}
+            </HoverLinkOverlay>
+          </Heading>
+        </Flex>
+        <Text noOfLines={2}>{getPageSummary(page)}</Text>
       </Box>
-      <ButtonGroup variant="link" mt="auto">
-        {address && (
-          <Button
-            as={RouterLink}
-            to={`/wiki/page/${nip19.naddrEncode(address)}`}
-            p="2"
-            colorScheme="blue"
-            leftIcon={<GitBranch01 />}
-          >
-            <UserName pubkey={address.pubkey} />
-          </Button>
-        )}
-        {compare && (
-          <Button
-            as={RouterLink}
-            to={`/wiki/compare/${topic}/${compare.pubkey}/${page.pubkey}`}
-            leftIcon={<FileSearch01 />}
-            ml="auto"
-          >
-            Compare
-          </Button>
-        )}
-      </ButtonGroup>
+      <Flex gap="2" alignItems="center" mt="auto">
+        <UserAvatar pubkey={page.pubkey} size="xs" />
+        <UserLink pubkey={page.pubkey} fontWeight="bold " />
+        <ButtonGroup variant="link" flex={1}>
+          {address && (
+            <Button
+              as={RouterLink}
+              to={`/wiki/page/${nip19.naddrEncode(address)}`}
+              p="2"
+              colorScheme="blue"
+              leftIcon={<GitBranch01 />}
+            >
+              <UserName pubkey={address.pubkey} />
+            </Button>
+          )}
+          {compare && (
+            <Button
+              as={RouterLink}
+              to={`/wiki/compare/${topic}/${compare.pubkey}/${page.pubkey}`}
+              leftIcon={<FileSearch01 />}
+              ml="auto"
+            >
+              Compare
+            </Button>
+          )}
+        </ButtonGroup>
+      </Flex>
     </Flex>
   );
 }

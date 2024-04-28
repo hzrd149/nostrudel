@@ -1,5 +1,5 @@
-import { Heading } from "@chakra-ui/react";
-import { Navigate, useParams } from "react-router-dom";
+import { Heading, Link } from "@chakra-ui/react";
+import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
@@ -23,6 +23,15 @@ export default function WikiTopicView() {
       {sorted.map((page) => (
         <WikiPageResult key={page.id} page={page} />
       ))}
+
+      {sorted.length === 0 && (
+        <Heading mx="auto" size="md" mt="8">
+          Looks like there are no pages,{" "}
+          <Link as={RouterLink} to={{ pathname: "/wiki/create", search: "topic=" + topic }} color="blue.500">
+            Create one?
+          </Link>
+        </Heading>
+      )}
     </VerticalPageLayout>
   );
 }

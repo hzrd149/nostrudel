@@ -1,6 +1,5 @@
 import {
   Code,
-  CodeProps,
   Heading,
   HeadingProps,
   Image,
@@ -8,6 +7,15 @@ import {
   LinkProps,
   ListItem,
   OrderedList,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
+  Spinner,
   Table,
   TableContainer,
   TableProps,
@@ -20,12 +28,23 @@ import {
   Thead,
   Tr,
   UnorderedList,
+  useDisclosure,
 } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { NostrEvent } from "nostr-tools";
-import { forwardRef } from "react";
-import Markdown, { Components } from "react-markdown";
+import { forwardRef, useCallback, useMemo, useState } from "react";
+import Markdown, { Components, ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import wikiLinkPlugin from "remark-wiki-link";
+import { Link as RouterLink } from "react-router-dom";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import { subscribeMany } from "../../../helpers/relay";
+import { WIKI_PAGE_KIND, getPageSummary } from "../../../helpers/nostr/wiki";
+import replaceableEventsService from "../../../services/replaceable-events";
+import { getEventUID } from "nostr-idb";
+import UserName from "../../../components/user/user-name";
+import { getWebOfTrust } from "../../../services/web-of-trust";
+import { getSharableEventAddress } from "../../../helpers/nip19";
 
 const StyledMarkdown = styled(Markdown)`
   pre > code {
@@ -35,63 +54,151 @@ const StyledMarkdown = styled(Markdown)`
   }
 `;
 
-function H1({ children, ...props }: HeadingProps) {
+function H1({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h1" size="2xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H2({ children, ...props }: HeadingProps) {
+function H2({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h2" size="xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H3({ children, ...props }: HeadingProps) {
+function H3({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h3" size="lg" mt="4" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H4({ children, ...props }: HeadingProps) {
+function H4({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h4" size="md" my="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H5({ children, ...props }: HeadingProps) {
+function H5({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h5" size="sm" my="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H6({ children, ...props }: HeadingProps) {
+function H6({ children, node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h6" size="xs" my="2" {...props}>
       {children}
     </Heading>
   );
 }
-function A({ children, ...props }: LinkProps) {
+
+const MAX_VERSIONS = 4;
+function WikiLink({ children, node, href, ...props }: LinkProps & ExtraProps) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const readRelays = useReadRelays();
+
+  const properties = node!.properties as { className: string; href: string };
+  const topic = properties.href.replace(/^#\/page\//, "");
+
+  const [events, setEvents] = useState<NostrEvent[]>();
+
+  const load = useCallback(() => {
+    const arr: NostrEvent[] = [];
+
+    const sub = subscribeMany(Array.from(readRelays), [{ kinds: [WIKI_PAGE_KIND], "#d": [topic] }], {
+      onevent: (event) => {
+        replaceableEventsService.handleEvent(event);
+        if (event.content) arr.push(event);
+      },
+      oneose: () => {
+        setEvents(arr);
+        sub.close();
+      },
+    });
+  }, [topic, setEvents, readRelays]);
+
+  const open = useCallback(() => {
+    if (!events) load();
+    onOpen();
+  }, [onOpen, events]);
+
+  const sorted = useMemo(() => {
+    if (!events) return [];
+    const arr = getWebOfTrust().sortByDistanceAndConnections(events, (e) => e.pubkey);
+    const seen = new Set<string>();
+    const unique: NostrEvent[] = [];
+
+    for (const event of arr) {
+      const summary = getPageSummary(event);
+      if (!seen.has(summary)) {
+        seen.add(summary);
+        unique.push(event);
+        if (unique.length >= MAX_VERSIONS) break;
+      }
+    }
+
+    return unique;
+  }, [events]);
+
+  // if there is only one result, redirect to it
+  const to = events?.length === 1 ? "/wiki/page/" + getSharableEventAddress(events[0]) : "/wiki/topic/" + topic;
+
   return (
-    <Link color="blue.500" isExternal {...props}>
+    <Popover returnFocusOnClose={false} isOpen={isOpen} onClose={onClose} placement="top" closeOnBlur={true}>
+      <PopoverTrigger>
+        <Link as={RouterLink} color="blue.500" {...props} to={to} onMouseEnter={open} onMouseLeave={onClose}>
+          {children}
+        </Link>
+      </PopoverTrigger>
+      <Portal>
+        <PopoverContent w="lg">
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader fontWeight="bold">{children}</PopoverHeader>
+          <PopoverBody>
+            {events === undefined && <Spinner />}
+            {sorted.map((page) => (
+              <Text key={getEventUID(page)} noOfLines={2} mb="2">
+                <UserName pubkey={page.pubkey} />: {getPageSummary(page)}
+              </Text>
+            ))}
+            {events?.length === 0 && <Text fontStyle="italic">There is no entry for this topic</Text>}
+          </PopoverBody>
+        </PopoverContent>
+      </Portal>
+    </Popover>
+  );
+}
+function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
+  const properties: { className?: string; href?: string } | undefined = node?.properties;
+
+  if (properties?.className?.includes("internal") && properties.href) {
+    return (
+      <WikiLink href={href} node={node} {...props}>
+        {children}
+      </WikiLink>
+    );
+  }
+
+  return (
+    <Link color="blue.500" isExternal href={href} {...props}>
       {children}
     </Link>
   );
 }
-function P({ children, ...props }: TextProps) {
+function P({ children, node, ...props }: TextProps & ExtraProps) {
   return (
     <Text my="2" {...props}>
       {children}
     </Text>
   );
 }
-function TableWithContainer({ children, ...props }: TableProps) {
+function TableWithContainer({ children, node, ...props }: TableProps & ExtraProps) {
   return (
     <TableContainer>
       <Table size="sm" mb="4" {...props}>
@@ -127,7 +234,7 @@ const components: Partial<Components> = {
 export const CharkaMarkdown = forwardRef<HTMLDivElement, { children: string }>(({ children }, ref) => {
   return (
     <div ref={ref}>
-      <StyledMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <StyledMarkdown remarkPlugins={[remarkGfm, wikiLinkPlugin]} components={components}>
         {children}
       </StyledMarkdown>
     </div>

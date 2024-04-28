@@ -1,12 +1,13 @@
 import { useMemo, useRef, useState } from "react";
 import { Button, Flex, FormControl, FormLabel, Heading, Input, VisuallyHidden, useToast } from "@chakra-ui/react";
 import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import { useForm } from "react-hook-form";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 
+import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -16,8 +17,7 @@ import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { WIKI_RELAYS } from "../../const";
 import useAppSettings from "../../hooks/use-app-settings";
-import EasyMDE from "easymde";
-import { getServersFromEvent, uploadFileToServers } from "../../helpers/media-upload/blossom";
+import { uploadFileToServers } from "../../helpers/media-upload/blossom";
 import useUsersMediaServers from "../../hooks/use-user-media-servers";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -27,18 +27,27 @@ import useCacheForm from "../../hooks/use-cache-form";
 export default function CreateWikiPageView() {
   const account = useCurrentAccount();
   const { mediaUploadService } = useAppSettings();
-  const servers = useUsersMediaServers(account?.pubkey);
+  const { servers } = useUsersMediaServers(account?.pubkey);
   const toast = useToast();
   const { requestSignature } = useSigningContext();
   const publish = usePublishEvent();
   const navigate = useNavigate();
+  const [search] = useSearchParams();
+  const presetTopic = search.get("topic");
+  const presetTitle = search.get("title");
+
   const { register, setValue, getValues, handleSubmit, watch, formState, reset } = useForm({
-    defaultValues: { content: "", title: "", topic: "" },
+    defaultValues: { content: "", title: presetTitle || presetTopic || "", topic: presetTopic || "" },
     mode: "all",
   });
 
-  // @ts-expect-error
-  useCacheForm("wiki-page", getValues, setValue, formState);
+  const clearFormCache = useCacheForm(
+    presetTopic ? "wiki-" + presetTopic : "wiki-create-page",
+    // @ts-expect-error
+    getValues,
+    setValue,
+    formState,
+  );
 
   watch("content");
   register("content", {
@@ -59,6 +68,7 @@ export default function CreateWikiPageView() {
       };
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
+      clearFormCache();
       navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`);
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
@@ -72,7 +82,7 @@ export default function CreateWikiPageView() {
     async function imageUploadFunction(file: File, onSuccess: (url: string) => void, onError: (error: string) => void) {
       if (!servers) return onError("No media servers set");
       try {
-        const blob = await uploadFileToServers(getServersFromEvent(servers), file, requestSignature);
+        const blob = await uploadFileToServers(servers, file, requestSignature);
         if (blob) onSuccess(blob.url);
       } catch (error) {
         if (error instanceof Error) onError(error.message);
