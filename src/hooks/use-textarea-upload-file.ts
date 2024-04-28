@@ -7,7 +7,7 @@ import { useSigningContext } from "../providers/global/signing-provider";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import useAppSettings from "./use-app-settings";
 import useUsersMediaServers from "./use-user-media-servers";
-import { getServersFromEvent, uploadFileToServers } from "../helpers/media-upload/blossom";
+import { uploadFileToServers } from "../helpers/media-upload/blossom";
 import useCurrentAccount from "./use-current-account";
 
 export function useTextAreaUploadFileWithForm(
@@ -31,7 +31,7 @@ export default function useTextAreaUploadFile(
   const toast = useToast();
   const account = useCurrentAccount();
   const { mediaUploadService } = useAppSettings();
-  const mediaServers = useUsersMediaServers(account?.pubkey);
+  const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
   const { requestSignature } = useSigningContext();
 
   const insertURL = useCallback(
@@ -68,8 +68,8 @@ export default function useTextAreaUploadFile(
           const response = await nostrBuildUploadImage(file, requestSignature);
           const imageUrl = response.url;
           insertURL(imageUrl);
-        } else if (mediaUploadService === "blossom" && mediaServers) {
-          const blob = await uploadFileToServers(getServersFromEvent(mediaServers), file, requestSignature);
+        } else if (mediaUploadService === "blossom" && mediaServers.length) {
+          const blob = await uploadFileToServers(mediaServers, file, requestSignature);
           insertURL(blob.url);
         }
       } catch (e) {

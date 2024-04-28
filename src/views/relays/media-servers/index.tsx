@@ -34,29 +34,42 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import { cloneEvent } from "../../../helpers/nostr/event";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { getServersFromEvent } from "../../../helpers/media-upload/blossom";
-
-function serversEqual(a: string, b: string) {
-  return new URL(a).hostname === new URL(b).hostname;
-}
+import { USER_MEDIA_SERVERS_KIND, isServerTag, serversEqual } from "../../../helpers/nostr/blossom";
 
 function MediaServersPage() {
   const toast = useToast();
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
   const { mediaUploadService, updateSettings } = useAppSettings();
-  const mediaServers = useUsersMediaServers(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true });
-
-  const servers = mediaServers ? getServersFromEvent(mediaServers) : [];
+  const { event, servers } = useUsersMediaServers(account.pubkey, undefined, {
+    alwaysRequest: true,
+    ignoreCache: true,
+  });
 
   const addServer = async (server: string) => {
-    const draft = cloneEvent(10063, mediaServers);
-    draft.tags = [...draft.tags, ["r", server]];
+    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    draft.tags = [
+      ...draft.tags.filter((t) => !isServerTag(t)),
+      ...servers.map((server) => ["server", server]),
+      ["server", server],
+    ];
     await publish("Add media server", draft);
   };
   const removeServer = async (server: string) => {
-    const draft = cloneEvent(10063, mediaServers);
-    draft.tags = draft.tags.filter((t) => t[0] === "r" && !serversEqual(t[1], server));
+    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    draft.tags = [
+      ...draft.tags.filter((t) => !isServerTag(t)),
+      ...servers.filter((s) => !serversEqual(s, server)).map((server) => ["server", server]),
+    ];
+    await publish("Remove media server", draft);
+  };
+  const makeDefault = async (server: string) => {
+    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    draft.tags = [
+      ...draft.tags.filter((t) => !isServerTag(t)),
+      ["server", server],
+      ...servers.filter((s) => !serversEqual(s, server)).map((server) => ["server", server]),
+    ];
     await publish("Remove media server", draft);
   };
 
@@ -67,12 +80,21 @@ function MediaServersPage() {
   const { register, handleSubmit, reset } = useForm({ defaultValues: { server: "" } });
 
   const [confirmServer, setConfirmServer] = useState("");
-  const submit = handleSubmit((values) => {
-    if (mediaServers?.tags.some((t) => t[0] === "r" && serversEqual(t[1], values.server)))
+  const submit = handleSubmit(async (values) => {
+    let url = new URL(values.server.startsWith("http") ? values.server : "https://" + values.server).toString();
+
+    if (event?.tags.some((t) => isServerTag(t) && serversEqual(t[1], url)))
       return toast({ status: "error", description: "Server already in list" });
 
-    setConfirmServer(new URL(values.server).toString());
-    reset();
+    try {
+      // test server
+      const res = await fetch(url);
+
+      setConfirmServer(url);
+      reset();
+    } catch (error) {
+      toast({ status: "error", description: "Cant reach server" });
+    }
   });
 
   const [loading, setLoading] = useState(false);
@@ -88,7 +110,7 @@ function MediaServersPage() {
       <Flex gap="2" alignItems="center">
         <BackButton hideFrom="lg" size="sm" />
         <Heading size="lg">Media Servers</Heading>
-        {mediaServers && <DebugEventButton event={mediaServers} size="sm" ml="auto" />}
+        {event && <DebugEventButton event={event} size="sm" ml="auto" />}
       </Flex>
       <Text fontStyle="italic" mt="-2">
         <Link href="https://github.com/hzrd149/blossom" target="_blank" color="blue.500">
@@ -136,14 +158,32 @@ function MediaServersPage() {
       )}
 
       <Flex direction="column" gap="2">
-        {servers.map((server) => (
-          <Flex gap="2" p="2" alignItems="center" borderWidth="1px" borderRadius="lg" key={server}>
+        {servers.map((server, i) => (
+          <Flex
+            gap="2"
+            p="2"
+            alignItems="center"
+            borderWidth="1px"
+            borderRadius="lg"
+            key={server}
+            borderColor={i === 0 ? "primary.500" : undefined}
+          >
             <MediaServerFavicon server={server} size="sm" />
             <Link href={server} target="_blank" color="blue.500" fontSize="lg">
               {new URL(server).hostname}
             </Link>
 
-            <CloseButton ml="auto" onClick={() => removeServer(server)} />
+            <Button
+              ml="auto"
+              variant={i === 0 ? "solid" : "outline"}
+              colorScheme={i === 0 ? "primary" : undefined}
+              size="sm"
+              onClick={() => makeDefault(server)}
+              isDisabled={i === 0}
+            >
+              Default
+            </Button>
+            <CloseButton onClick={() => removeServer(server)} />
           </Flex>
         ))}
       </Flex>
@@ -159,16 +199,16 @@ function MediaServersPage() {
       </Flex>
 
       {confirmServer && (
-        <Modal isOpen onClose={() => setConfirmServer("")} size="full">
+        <Modal isOpen onClose={() => setConfirmServer("")} size="6xl">
           <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Add media server</ModalHeader>
+          <ModalContent h="calc(100vh - var(--chakra-space-32))">
+            <ModalHeader p="4">Add media server</ModalHeader>
             <ModalCloseButton />
-            <ModalBody display="flex" p="0" flexDirection="column">
+            <ModalBody p="0" display="flex" flexDirection="column">
               <Box as="iframe" src={confirmServer} w="full" h="full" flex={1} />
             </ModalBody>
 
-            <ModalFooter>
+            <ModalFooter p="4">
               <Button variant="ghost" mr={3} onClick={() => setConfirmServer("")}>
                 Cancel
               </Button>

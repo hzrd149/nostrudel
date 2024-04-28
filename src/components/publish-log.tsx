@@ -60,8 +60,8 @@ function PublishAction({ pub }: { pub: NostrPublishAction }) {
   return (
     <>
       <Flex gap="2" alignItems="center" cursor="pointer" onClick={details.onOpen}>
-        <Text>{pub.label}</Text>
-        <PublishActionStatusTag ml="auto" pub={pub} />
+        <Text isTruncated>{pub.label}</Text>
+        <PublishActionStatusTag ml="auto" pub={pub} flexShrink={0} />
       </Flex>
       {details.isOpen && (
         <Modal isOpen onClose={details.onClose} size="2xl">
