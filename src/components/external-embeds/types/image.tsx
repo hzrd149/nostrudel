@@ -1,5 +1,39 @@
-import { MouseEventHandler, MutableRefObject, forwardRef, useCallback, useMemo, useRef } from "react";
-import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
+import {
+  MouseEvent,
+  MouseEventHandler,
+  MutableRefObject,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Button,
+  Code,
+  Image,
+  ImageProps,
+  Link,
+  LinkProps,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Text,
+  Tooltip,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
+import { sha256 } from "@noble/hashes/sha256";
 
 import { EmbedableContent, defaultGetLocation } from "../../../helpers/embeds";
 import { getMatchLink } from "../../../helpers/regexp";
@@ -12,6 +46,7 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../../helpers/image";
 import ExpandableEmbed from "../expandable-embed";
+import { bytesToHex } from "@noble/hashes/utils";
 
 export type TrustImageProps = ImageProps;
 
@@ -59,6 +94,8 @@ export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
       },
       [show],
     );
+
+    const sha256 = src?.match(/[0-9a-f]{64}/i);
 
     // NOTE: the parent <div> has display=block and and <a> has inline-block
     // this is so that the <a> element can act like a block without being full width
@@ -183,12 +220,74 @@ export function embedImageGallery(content: EmbedableContent, event?: NostrEvent)
     .flat();
 }
 
+function VerifyImageButton({ src, original }: { src: URL; original: string }) {
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const modal = useDisclosure();
+  const [downloaded, setDownloaded] = useState<string>();
+  const [matches, setMatches] = useState<boolean>();
+  const verify = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      if (matches !== undefined) return modal.onOpen();
+
+      setLoading(true);
+      try {
+        const buff = await fetch(src).then((res) => res.arrayBuffer());
+        const downloaded = bytesToHex(sha256.create().update(new Uint8Array(buff)).digest());
+        setDownloaded(downloaded);
+
+        setMatches(original === downloaded);
+      } catch (error) {
+        if (error instanceof Error) toast({ status: "error", description: error.message });
+      }
+      setLoading(false);
+    },
+    [src, matches],
+  );
+
+  return (
+    <>
+      <Button
+        onClick={verify}
+        isLoading={loading}
+        colorScheme={matches === undefined ? undefined : matches ? "green" : "red"}
+      >
+        [ {matches === undefined ? "Verify" : matches ? "Valid" : "Invalid!"} ]
+      </Button>
+      {modal.isOpen && downloaded && (
+        <Modal isOpen={modal.isOpen} onClose={modal.onClose} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader p="4">Invalid Hash</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody px="4" pb="4" pt="0">
+              <Text fontWeight="bold">Original:</Text>
+              <Code>{original}</Code>
+
+              <Text fontWeight="bold">Downloaded:</Text>
+              <Code>{downloaded}</Code>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
+    </>
+  );
+}
+
 // nostr:nevent1qqsfhafvv705g5wt8rcaytkj6shsshw3dwgamgfe3za8knk0uq4yesgpzpmhxue69uhkummnw3ezuamfdejszrthwden5te0dehhxtnvdakqsrnltk
 export function renderImageUrl(match: URL) {
   if (!isImageURL(match)) return null;
 
+  const hash = match.pathname.match(/[0-9a-f]{64}/)?.[0];
+
   return (
-    <ExpandableEmbed label="Image" url={match} hideOnDefaultOpen>
+    <ExpandableEmbed
+      label="Image"
+      url={match}
+      actions={hash ? <VerifyImageButton src={match} original={hash} /> : undefined}
+      hideOnDefaultOpen={!hash}
+    >
       <EmbeddedImage src={match.toString()} imageProps={{ maxH: ["initial", "35vh"] }} />
     </ExpandableEmbed>
   );

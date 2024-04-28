@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import EmbedActions from "./embed-actions";
 import { Link, useDisclosure } from "@chakra-ui/react";
 
@@ -10,7 +10,14 @@ export default function ExpandableEmbed({
   url,
   urls,
   hideOnDefaultOpen,
-}: PropsWithChildren<{ label: string; url?: string | URL; urls?: string[] | URL[]; hideOnDefaultOpen?: boolean }>) {
+  actions,
+}: PropsWithChildren<{
+  label: string;
+  url?: string | URL;
+  urls?: string[] | URL[];
+  hideOnDefaultOpen?: boolean;
+  actions?: ReactNode;
+}>) {
   const { autoShowMedia } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: autoShowMedia });
   const showActions = hideOnDefaultOpen && autoShowMedia ? false : true;
@@ -26,7 +33,9 @@ export default function ExpandableEmbed({
           display="flex"
           mt="2"
           mb="1"
-        />
+        >
+          {actions}
+        </EmbedActions>
       )}
       {expanded.isOpen
         ? children
