@@ -19,13 +19,11 @@ import {
   IconButton,
   Button,
   Select,
-  Text,
   Link,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Divider,
 } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 
@@ -39,7 +37,7 @@ export default function PostSettings() {
   const account = useCurrentAccount();
   const { register, setValue, getValues, watch } = useFormContext<AppSettings>();
   const emojiPicker = useDisclosure();
-  const mediaServers = useUsersMediaServers(account?.pubkey);
+  const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
 
   const emojis = useContextEmojis();
   const [emojiSearch, setEmojiSearch] = useState("");
@@ -147,7 +145,7 @@ export default function PostSettings() {
               </>
             )}
 
-            {getValues().mediaUploadService === "blossom" && (!mediaServers || mediaServers.tags.length === 0) && (
+            {getValues().mediaUploadService === "blossom" && (!mediaServers || mediaServers.length === 0) && (
               <Alert status="error" mt="2" flexWrap="wrap">
                 <AlertIcon />
                 <AlertTitle>Missing media servers!</AlertTitle>
