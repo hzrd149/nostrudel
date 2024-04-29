@@ -1,55 +1,86 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, ButtonGroup, Flex, Heading, Progress, Text } from "@chakra-ui/react";
 import { getEventHash, nip13 } from "nostr-tools";
-
 import { DraftNostrEvent } from "../../types/nostr-event";
 import CheckCircle from "../icons/check-circle";
 import { useMount } from "react-use";
 
 const BATCH_NUMBER = 1000;
 
+type MinerCleanup = () => void;
+
+function getNumThreads() {
+  // Check if the property is supported
+  if (navigator.hardwareConcurrency) {
+    return navigator.hardwareConcurrency;
+  } else {
+    // Default to a reasonable number if the property is not supported
+    return 2; // Or any other value you prefer
+  }
+}
+
 function miner(
   draft: DraftNostrEvent & { pubkey: string },
   target: number,
   onProgress: (hash: string, difficulty: number) => void,
   onComplete: (draft: DraftNostrEvent) => void,
-) {
-  let running = true;
-  let nonce = 0;
+  stopMiner: MinerCleanup, // Pass the stopMiner function to the miner
+): MinerCleanup {
+  if (typeof Worker !== "undefined") {
+    const numThreads = getNumThreads();
+    const nonceRangeSize = 1000000; // Size of each nonce range
+    let miningComplete = false; // Flag to track mining completion
+    let bestHash = getEventHash(draft); // Initialize best hash with the starting hash
+    let bestDifficulty = nip13.getPow(bestHash); // Initialize best difficulty with starting hash's difficulty
 
-  let bestDifficulty = nip13.getPow(getEventHash(draft));
-  let bestHash: string = getEventHash(draft);
+    const handleMessage = (msg: any) => {
+      if (miningComplete) return; // Ignore messages if mining is already complete
 
-  const nonceTag = ["nonce", "0", String(target)];
-  const newDraft = { ...draft, tags: [...draft.tags, nonceTag] };
-
-  const mine = () => {
-    for (let i = 0; i < BATCH_NUMBER; i++) {
-      nonceTag[1] = String(nonce);
-      const hash = getEventHash(newDraft);
-      const difficulty = nip13.getPow(hash);
-      if (difficulty > bestDifficulty) {
-        bestDifficulty = difficulty;
-        bestHash = hash;
-        onProgress(hash, difficulty);
+      if (msg.type === "progress") {
+        const { hash, difficulty } = msg;
+        if (difficulty > bestDifficulty) {
+          bestHash = hash; // Update the best hash if a better one is found
+          bestDifficulty = difficulty; // Update the best difficulty
+          onProgress(bestHash, bestDifficulty); // Call onProgress with the new best hash and difficulty
+        }
+      } else if (msg.type === "complete") {
+        miningComplete = true; // Set the flag to indicate mining completion
+        onComplete(msg.draft);
+        stopMiner(); // Call stopMiner when mining is complete
+        cleanup; // Call stopMiner when mining is complete
       }
+    };
 
-      if (difficulty >= target) {
-        running = false;
-        onComplete(newDraft);
-        break;
-      }
-      nonce++;
+    const workers: Worker[] = [];
+    for (let i = 0; i < numThreads; i++) {
+      const startNonce = i * nonceRangeSize; // Calculate start nonce for each worker
+      const endNonce = (i + 1) * nonceRangeSize - 1; // Calculate end nonce for each worker
+      const worker = new Worker(new URL("./miner.ts", import.meta.url), { type: "module" });
+      worker.onmessage = (event) => handleMessage(event.data);
+      workers.push(worker);
+      worker.postMessage({ draft, target, startNonce, endNonce }); // Pass nonce range to worker
     }
 
-    if (running) requestIdleCallback(mine);
-  };
+    const cleanup: MinerCleanup = () => {
+      workers.forEach((worker) => {
+        worker.terminate();
+      });
+    };
 
-  mine();
+    return cleanup;
+  } else {
+    console.error("Web Workers are not supported in this environment.");
+    return () => {};
+  }
+}
 
-  return () => {
-    running = false;
-  };
+interface MinePOWProps {
+  draft: DraftNostrEvent & { pubkey: string };
+  targetPOW: number;
+  onComplete: (draft: DraftNostrEvent) => void;
+  onCancel: () => void;
+  onSkip?: () => void;
+  successDelay?: number;
 }
 
 export default function MinePOW({
@@ -59,51 +90,50 @@ export default function MinePOW({
   onCancel,
   onSkip,
   successDelay = 800,
-}: {
-  draft: DraftNostrEvent & { pubkey: string };
-  targetPOW: number;
-  onComplete: (draft: DraftNostrEvent) => void;
-  onCancel: () => void;
-  onSkip?: () => void;
-  successDelay?: number;
-}) {
-  const [progress, setProgress] = useState<{ difficulty: number; hash: string }>(() => ({
+}: MinePOWProps): JSX.Element {
+  const [bestProgress, setBestProgress] = useState<{ difficulty: number; hash: string }>(() => ({
     difficulty: nip13.getPow(getEventHash(draft)),
     hash: getEventHash(draft),
   }));
-  const stop = useRef<() => void>(() => {});
+  const stopMiner = useRef<MinerCleanup>(() => {});
 
   useMount(() => {
-    const stopMiner = miner(
+    const stopMinerFunc = miner(
       draft,
       targetPOW,
-      (hash, difficulty) => setProgress({ hash, difficulty }),
+      (hash, difficulty) => {
+        // Update the best progress only if a better hash is found
+        if (difficulty > bestProgress.difficulty) {
+          setBestProgress({ hash, difficulty });
+        }
+      },
       (draft) => {
         setTimeout(() => onComplete(draft), successDelay);
       },
+      stopMiner.current, // Pass the current stopMiner function to the miner
     );
-    stop.current = stopMiner;
+    stopMiner.current = stopMinerFunc;
   });
 
   return (
     <Flex gap="2" direction="column">
-      {progress.difficulty > targetPOW ? (
+      {bestProgress.difficulty > targetPOW ? (
         <>
           <CheckCircle boxSize={12} color="green.500" mx="auto" />
           <Heading size="md" mx="auto" mt="2">
             Found POW
           </Heading>
-          <Text mx="auto">{progress.hash}</Text>
+          <Text mx="auto">{bestProgress.hash}</Text>
         </>
       ) : (
         <>
           <Heading size="sm">Mining POW...</Heading>
-          <Text>Best Hash: {progress.hash}</Text>
-          <Progress hasStripe value={(progress.difficulty / targetPOW) * 100} />
+          <Text>Best Hash: {bestProgress.hash}</Text>
+          <Progress hasStripe value={(bestProgress.difficulty / targetPOW) * 100} />
           <ButtonGroup mx="auto">
             <Button
               onClick={() => {
-                stop.current();
+                stopMiner.current();
                 onCancel();
               }}
             >
@@ -112,7 +142,7 @@ export default function MinePOW({
             {onSkip && (
               <Button
                 onClick={() => {
-                  stop.current();
+                  stopMiner.current();
                   onSkip();
                 }}
               >
