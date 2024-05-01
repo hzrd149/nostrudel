@@ -62,7 +62,7 @@ export default function LoginNip05View() {
       return toast({ status: "error", title: "No relay selected" });
     }
 
-    // add the account if it dose not exist
+    // add the account if it does not exist
     if (!accountService.hasAccount(pubkey)) {
       const bootstrapRelays = new Set<string>();
 

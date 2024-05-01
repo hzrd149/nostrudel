@@ -7,6 +7,7 @@ import serialPortService from "./serial-port";
 import amberSignerService from "./amber-signer";
 import nostrConnectService from "./nostr-connect";
 import { hexToBytes } from "@noble/hashes/utils";
+import { alwaysVerify } from "./verify-event";
 
 const decryptedKeys = new Map<string, string | Promise<string>>();
 
@@ -67,7 +68,7 @@ class SigningService {
   }
 
   async decryptSecKey(account: Account) {
-    if (account.type !== "local") throw new Error("Account dose not have a secret key");
+    if (account.type !== "local") throw new Error("Account does not have a secret key");
 
     const cache = decryptedKeys.get(account.pubkey);
     if (cache) return await cache;
@@ -106,12 +107,13 @@ class SigningService {
       case "local": {
         const secKey = await this.decryptSecKey(account);
         const tmpDraft = { ...draft, pubkey: getPublicKey(hexToBytes(secKey)) };
-        const event = finalizeEvent(tmpDraft, hexToBytes(secKey)) as NostrEvent;
+        const event = finalizeEvent(tmpDraft, hexToBytes(secKey));
         return event;
       }
       case "extension":
         if (window.nostr) {
           const signed = await window.nostr.signEvent(draft);
+          if (!alwaysVerify(signed)) throw new Error("Invalid event");
           checkSig(signed);
           return signed;
         } else throw new Error("Missing nostr extension");
@@ -149,7 +151,7 @@ class SigningService {
         if (window.nostr) {
           if (window.nostr.nip04) {
             return await window.nostr.nip04.decrypt(pubkey, data);
-          } else throw new Error("Extension dose not support decryption");
+          } else throw new Error("Extension does not support decryption");
         } else throw new Error("Missing nostr extension");
       case "serial":
         if (serialPortService.supported) {
@@ -179,7 +181,7 @@ class SigningService {
         if (window.nostr) {
           if (window.nostr.nip04) {
             return await window.nostr.nip04.encrypt(pubkey, text);
-          } else throw new Error("Extension dose not support encryption");
+          } else throw new Error("Extension does not support encryption");
         } else throw new Error("Missing nostr extension");
       case "serial":
         if (serialPortService.supported) {

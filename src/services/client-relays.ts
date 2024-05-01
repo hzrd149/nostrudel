@@ -62,7 +62,7 @@ class ClientRelayService {
   }
   setRelaysFromRelaySet(event: NostrEvent) {
     this.writeRelays.next(RelaySet.fromNIP65Event(event, RelayMode.WRITE));
-    this.readRelays.next(RelaySet.fromNIP65Event(event, RelayMode.READ));
+    this.readRelays.next(RelaySet.fromNIP65Event(event, RelayMode.ALL));
     this.saveRelays();
   }
 

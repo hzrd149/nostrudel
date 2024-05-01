@@ -2,14 +2,14 @@ import { PropsWithChildren, createContext, useCallback, useContext, useEffect, u
 import { Router, Location, To, createMemoryRouter, RouteObject } from "react-router-dom";
 import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import { logger } from "../../helpers/debug";
-import { RouteProviders } from "../../providers/route";
-import InspectRelayView from "./network/inspect-relay";
+import InspectRelayView from "./relays/inspect-relay";
 
 import TaskManagerModal from "./modal";
 import TaskManagerLayout from "./layout";
-import TaskManagerNetwork from "./network";
+import TaskManagerRelays from "./relays";
 import TaskManagerDatabase from "./database";
 import PublishLogView from "./publish-log";
+import TaskManagerProcesses from "./processes";
 
 type Router = ReturnType<typeof createMemoryRouter>;
 
@@ -30,18 +30,16 @@ const routes: RouteObject[] = [
     element: <TaskManagerLayout />,
     children: [
       {
-        path: "network",
-        element: <TaskManagerNetwork />,
-        children: [
-          {
-            path: ":url",
-            element: (
-              <RouteProviders>
-                <InspectRelayView />
-              </RouteProviders>
-            ),
-          },
-        ],
+        path: "relays",
+        element: <TaskManagerRelays />,
+      },
+      {
+        path: "r/:url",
+        element: <InspectRelayView />,
+      },
+      {
+        path: "processes",
+        element: <TaskManagerProcesses />,
       },
       { path: "publish-log", element: <PublishLogView /> },
       {

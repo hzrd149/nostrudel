@@ -51,9 +51,12 @@ export default class MemoryRelay implements SimpleRelay {
 
   subscribe(filters: Filter[], options: SubscriptionOptions) {
     const sub: Subscription = {
-      id: nanoid(),
+      id: nanoid(8),
       filters,
       ...options,
+      fire: () => {
+        this.executeSubscription(sub);
+      },
       close: () => {
         this.subscriptions.delete(sub.id);
       },

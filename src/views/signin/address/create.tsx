@@ -90,8 +90,8 @@ export default function LoginNostrAddressCreate() {
       if (!metadata.nip05) throw new Error("Provider missing nip05 address");
       const nip05 = await dnsIdentityService.fetchIdentity(metadata.nip05);
       if (!nip05 || nip05.pubkey !== selected.pubkey) throw new Error("Invalid provider");
-      if (nip05.name !== "_") throw new Error("Provider dose not own the domain");
-      if (!nip05.hasNip46) throw new Error("Provider dose not support NIP-46");
+      if (nip05.name !== "_") throw new Error("Provider does not own the domain");
+      if (!nip05.hasNip46) throw new Error("Provider does not support NIP-46");
       const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 

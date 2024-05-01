@@ -7,6 +7,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useUserInbox } from "../../hooks/use-user-mailboxes";
+import { truncateId } from "../../helpers/string";
 
 type DMTimelineContextType = {
   timeline?: TimelineLoader;
@@ -35,7 +36,7 @@ export default function DMTimelineProvider({ children }: PropsWithChildren) {
   );
 
   const timeline = useTimelineLoader(
-    `${account?.pubkey ?? "anon"}-dms`,
+    `${truncateId(account?.pubkey ?? "anon")}-dms`,
     inbox,
     account?.pubkey
       ? [

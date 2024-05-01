@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@c
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
-import { useNotifications } from "../../../providers/global/notifications";
+import { useNotifications } from "../../../providers/global/notifications-provider";
 import useSubject from "../../../hooks/use-subject";
 import { NotificationType, typeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";

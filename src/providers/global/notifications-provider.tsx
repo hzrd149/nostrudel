@@ -10,6 +10,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import AccountNotifications from "../../classes/notifications";
+import { truncateId } from "../../helpers/string";
 
 type NotificationTimelineContextType = {
   timeline: TimelineLoader;
@@ -40,7 +41,7 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
   );
 
   const timeline = useTimelineLoader(
-    `${account?.pubkey ?? "anon"}-notification`,
+    `${truncateId(account?.pubkey ?? "anon")}-notification`,
     readRelays,
     account?.pubkey
       ? {

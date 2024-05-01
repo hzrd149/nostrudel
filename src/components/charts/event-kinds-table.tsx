@@ -18,7 +18,7 @@ export default function EventKindsTable({
   );
 
   return (
-    <TableContainer>
+    <TableContainer minH="sm">
       <Table size="sm">
         <Thead>
           <Tr>

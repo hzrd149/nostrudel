@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 export type PublishResult = { relay: AbstractRelay; success: boolean; message: string };
 
 export default class PublishAction {
-  id = nanoid();
+  id = nanoid(8);
   label: string;
   relays: string[];
   event: NostrEvent;

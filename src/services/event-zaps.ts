@@ -66,7 +66,7 @@ class EventZapsService {
       }
     }
 
-    for (const [relay, ids] of Object.entries(idsFromRelays)) {
+    for (const [url, ids] of Object.entries(idsFromRelays)) {
       const eventIds = ids.filter((id) => !id.includes(":"));
       const coordinates = ids.filter((id) => id.includes(":"));
       const filter: Filter[] = [];
@@ -74,9 +74,15 @@ class EventZapsService {
       if (coordinates.length > 0) filter.push({ "#a": coordinates, kinds: [kinds.Zap] });
 
       if (filter.length > 0) {
-        const sub = relayPoolService
-          .requestRelay(relay)
-          .subscribe(filter, { onevent: (event) => this.handleEvent(event), oneose: () => sub.close() });
+        const relay = relayPoolService.getRelay(url);
+        if (relay) {
+          if (!relay.connected) relayPoolService.requestConnect(relay);
+
+          const sub = relay.subscribe(filter, {
+            onevent: (event) => this.handleEvent(event),
+            oneose: () => sub.close(),
+          });
+        }
       }
     }
     this.pending.clear();

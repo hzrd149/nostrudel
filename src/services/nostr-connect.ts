@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
-import NostrMultiSubscription from "../classes/nostr-multi-subscription";
+import MultiSubscription from "../classes/multi-subscription";
 import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
@@ -11,6 +11,7 @@ import createDefer, { Deferred } from "../classes/deferred";
 import { NostrConnectAccount } from "./account";
 import { safeRelayUrl } from "../helpers/relay";
 import { alwaysVerify } from "./verify-event";
+import { truncateId } from "../helpers/string";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
   return !!response.error;
@@ -60,7 +61,7 @@ const Perms =
   "nip04_encrypt,nip04_decrypt,sign_event:0,sign_event:1,sign_event:3,sign_event:4,sign_event:6,sign_event:7";
 
 export class NostrConnectClient {
-  sub: NostrMultiSubscription;
+  sub: MultiSubscription;
   log = logger.extend("NostrConnectClient");
 
   isConnected = false;
@@ -74,7 +75,7 @@ export class NostrConnectClient {
   supportedMethods: NostrConnectMethod[] | undefined;
 
   constructor(pubkey?: string, relays: string[] = [], secretKey?: string, provider?: string) {
-    this.sub = new NostrMultiSubscription();
+    this.sub = new MultiSubscription(`${truncateId(pubkey || "unknown")}-nostr-connect`);
     this.pubkey = pubkey;
     this.relays = relays;
     this.provider = provider;
@@ -126,6 +127,7 @@ export class NostrConnectClient {
       if (!this.pubkey && response.result === "ack") {
         this.log("Got ack response from", event.pubkey);
         this.pubkey = event.pubkey;
+        this.sub.name = `${truncateId(event.pubkey)}-nostr-connect`;
         this.isConnected = true;
         this.listenPromise?.resolve(response.result);
         this.listenPromise = null;
@@ -256,7 +258,9 @@ export class NostrConnectClient {
   }
   async signEvent(draft: DraftNostrEvent) {
     const eventString = await this.makeRequest(NostrConnectMethod.SignEvent, [JSON.stringify(draft)]);
-    return JSON.parse(eventString) as NostrEvent;
+    const event= JSON.parse(eventString) as NostrEvent;
+    if(!alwaysVerify(event)) throw new Error('Invalid event')
+    return event
   }
   nip04Encrypt(pubkey: string, plaintext: string) {
     return this.makeRequest(NostrConnectMethod.Nip04Encrypt, [pubkey, plaintext]);

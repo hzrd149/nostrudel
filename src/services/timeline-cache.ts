@@ -27,7 +27,7 @@ class TimelineCacheService {
       if (deadTimeline) {
         this.log(`Destroying ${deadTimeline.name}`);
         this.timelines.delete(deleteKey);
-        deadTimeline.cleanup();
+        deadTimeline.destroy();
       }
     }
 

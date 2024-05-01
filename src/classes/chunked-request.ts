@@ -1,6 +1,8 @@
 import { Debugger } from "debug";
-import { Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { AbstractRelay, Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
+import { nanoid } from "nanoid";
 
 import Subject from "./subject";
 import { logger } from "../helpers/debug";
@@ -9,14 +11,18 @@ import deleteEventService from "../services/delete-events";
 import { mergeFilter } from "../helpers/nostr/filter";
 import { isATag, isETag } from "../types/nostr-event";
 import relayPoolService from "../services/relay-pool";
-import { SimpleRelay } from "nostr-idb";
+import Process from "./process";
+import processManager from "../services/process-manager";
+import LayersThree01 from "../components/icons/layers-three-01";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export default class ChunkedRequest {
-  relay: SimpleRelay;
+  id: string;
+  process: Process;
+  relay: AbstractRelay;
   filters: Filter[];
   chunkSize = DEFAULT_CHUNK_SIZE;
   private log: Debugger;
@@ -29,8 +35,11 @@ export default class ChunkedRequest {
 
   onChunkFinish = new Subject<number>();
 
-  constructor(relay: SimpleRelay, filters: Filter[], log?: Debugger) {
-    this.relay = relay;
+  constructor(relay: SimpleRelay | AbstractRelay, filters: Filter[], log?: Debugger) {
+    this.id = nanoid(8);
+    this.process = new Process("ChunkedRequest", this, [relay]);
+    this.process.icon = LayersThree01;
+    this.relay = relay as AbstractRelay;
     this.filters = filters;
 
     this.log = log || logger.extend(relay.url);
@@ -38,35 +47,50 @@ export default class ChunkedRequest {
 
     // TODO: find a better place for this
     this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
+
+    processManager.registerProcess(this.process);
   }
 
-  loadNextChunk() {
+  async loadNextChunk() {
+    if (this.loading) return;
     this.loading = true;
+
+    if (!this.relay.connected) {
+      this.log("relay not connected, aborting");
+      relayPoolService.requestConnect(this.relay);
+      return;
+    }
+
     let filters: Filter[] = mergeFilter(this.filters, { limit: this.chunkSize });
     let oldestEvent = this.getLastEvent();
     if (oldestEvent) {
       filters = mergeFilter(filters, { until: oldestEvent.created_at - 1 });
     }
 
-    relayPoolService.addClaim(this.relay.url, this);
-
     let gotEvents = 0;
-    if (filters.length === 0) debugger;
-    const sub = this.relay.subscribe(filters, {
-      onevent: (event) => {
-        this.handleEvent(event);
-        gotEvents++;
-      },
-      oneose: () => {
-        this.loading = false;
-        if (gotEvents === 0) {
-          this.complete = true;
-          this.log("Complete");
-        } else this.log(`Got ${gotEvents} events`);
-        this.onChunkFinish.next(gotEvents);
-        sub.close();
-        relayPoolService.removeClaim(this.relay.url, this);
-      },
+
+    this.process.active = true;
+    await new Promise<number>((res) => {
+      const sub = this.relay.subscribe(filters, {
+        onevent: (event) => {
+          this.handleEvent(event);
+          gotEvents++;
+        },
+        oneose: () => {
+          this.loading = false;
+          if (gotEvents === 0) {
+            this.complete = true;
+            this.log("Complete");
+          } else {
+            this.log(`Got ${gotEvents} events`);
+          }
+
+          this.onChunkFinish.next(gotEvents);
+          sub.close();
+          this.process.active = false;
+          res(gotEvents);
+        },
+      });
     });
   }
 
@@ -83,15 +107,16 @@ export default class ChunkedRequest {
     if (eventId) this.events.deleteEvent(eventId);
   }
 
-  cleanup() {
-    for (const sub of this.subs) sub.unsubscribe();
-    this.subs = [];
-  }
-
   getFirstEvent(nth = 0, eventFilter?: EventFilter) {
     return this.events.getFirstEvent(nth, eventFilter);
   }
   getLastEvent(nth = 0, eventFilter?: EventFilter) {
     return this.events.getLastEvent(nth, eventFilter);
+  }
+
+  destroy() {
+    for (const sub of this.subs) sub.unsubscribe();
+    this.subs = [];
+    processManager.unregisterProcess(this.process);
   }
 }

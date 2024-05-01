@@ -42,7 +42,7 @@ export default class WasmRelay implements SimpleRelay {
 
   async count(filters: Filter[], params: { id?: string | null }) {
     if (!this.worker) throw new Error("Worker not setup");
-    return await this.worker.count(["REQ", params.id || nanoid(), ...filters]);
+    return await this.worker.count(["REQ", params.id || nanoid(8), ...filters]);
   }
 
   private async executeSubscription(sub: Subscription) {
@@ -69,7 +69,7 @@ export default class WasmRelay implements SimpleRelay {
       this.subscriptions.delete(options.id);
     }
 
-    const id = options.id || nanoid();
+    const id = options.id || nanoid(8);
 
     const sub = {
       id,

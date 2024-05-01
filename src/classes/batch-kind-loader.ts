@@ -1,10 +1,14 @@
 import dayjs from "dayjs";
-import { Filter, NostrEvent, Relay, Subscription } from "nostr-tools";
+import { Filter, NostrEvent, AbstractRelay } from "nostr-tools";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
 
 import EventStore from "./event-store";
 import { getEventCoordinate } from "../helpers/nostr/event";
+import PersistentSubscription from "./persistent-subscription";
+import Process from "./process";
+import BracketsX from "../components/icons/brackets-x";
+import processManager from "../services/process-manager";
 
 export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
@@ -14,18 +18,22 @@ const RELAY_REQUEST_BATCH_TIME = 500;
 
 /** This class is ued to batch requests by kind to a single relay */
 export default class BatchKindLoader {
-  private subscription: Subscription | null = null;
+  private subscription: PersistentSubscription | null = null;
   events = new EventStore();
-  relay: Relay;
+  relay: AbstractRelay;
+  process: Process;
 
   private requestNext = new Set<string>();
   private requested = new Map<string, Date>();
 
   log: Debugger;
 
-  constructor(relay: Relay, log?: Debugger) {
+  constructor(relay: AbstractRelay, log?: Debugger) {
     this.relay = relay;
-    this.log = log || debug("RelayBatchLoader");
+    this.log = log || debug("BatchKindLoader");
+    this.process = new Process("BatchKindLoader", this, [relay]);
+    this.process.icon = BracketsX;
+    processManager.registerProcess(this.process);
   }
 
   private handleEvent(event: NostrEvent) {
@@ -55,7 +63,7 @@ export default class BatchKindLoader {
   }
 
   updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
-  update() {
+  async update() {
     let needsUpdate = false;
     for (const key of this.requestNext) {
       if (!this.requested.has(key)) {
@@ -102,18 +110,26 @@ export default class BatchKindLoader {
             .join(", "),
         );
 
-        if (!this.subscription || this.subscription.closed) {
-          this.subscription = this.relay.subscribe(query, {
+        if (!this.subscription) {
+          this.subscription = new PersistentSubscription(this.relay, {
             onevent: (event) => this.handleEvent(event),
             oneose: () => this.handleEOSE(),
           });
-        } else {
-          this.subscription.filters = query;
-          this.subscription.fire();
+          this.process.addChild(this.subscription.process);
         }
-      } else if (this.subscription && !this.subscription.closed) {
+
+        this.subscription.filters = query;
+        this.subscription.fire();
+        this.process.active = true;
+      } else if (this.subscription) {
         this.subscription.close();
+        this.process.active = false;
       }
     }
+  }
+
+  destroy() {
+    this.process.remove();
+    processManager.unregisterProcess(this.process);
   }
 }

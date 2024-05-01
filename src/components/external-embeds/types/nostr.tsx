@@ -73,7 +73,7 @@ export function embedNostrHashtags(content: EmbedableContent, event: NostrEvent 
     name: "nostr-hashtag",
     regexp: getMatchHashtag(),
     getLocation: (match) => {
-      if (match.index === undefined) throw new Error("match dose not have index");
+      if (match.index === undefined) throw new Error("match does not have index");
 
       const start = match.index + match[1].length;
       const end = start + 1 + match[2].length;

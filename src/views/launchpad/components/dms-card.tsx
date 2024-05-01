@@ -4,7 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useDMTimeline } from "../../../providers/global/dm-timeline";
+import { useDMTimeline } from "../../../providers/global/dms-provider";
 import useSubject from "../../../hooks/use-subject";
 import {
   KnownConversation,

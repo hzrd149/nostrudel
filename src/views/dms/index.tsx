@@ -16,7 +16,7 @@ import IntersectionObserverProvider, {
 } from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { useDMTimeline } from "../../providers/global/dm-timeline";
+import { useDMTimeline } from "../../providers/global/dms-provider";
 import UserName from "../../components/user/user-name";
 import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
 import { NostrEvent } from "../../types/nostr-event";

@@ -10,11 +10,9 @@ import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";
 import RelaySet from "../../classes/relay-set";
+import { truncateId } from "../string";
 
-export function truncatedId(str: string, keep = 6) {
-  if (str.length < keep * 2 + 3) return str;
-  return str.substring(0, keep) + "..." + str.substring(str.length - keep);
-}
+export { truncateId as truncatedId };
 
 export function isReplaceable(kind: number) {
   return kinds.isReplaceableKind(kind) || kinds.isParameterizedReplaceableKind(kind);
@@ -124,7 +122,7 @@ export function interpretThreadTags(event: NostrEvent | DraftNostrEvent) {
   let replyATag = aTags.find((t) => t[3] === "reply");
 
   if (!rootETag || !replyETag) {
-    // a direct reply dose not need a "reply" reference
+    // a direct reply does not need a "reply" reference
     // https://github.com/nostr-protocol/nips/blob/master/10.md
 
     // this is not necessarily to spec. but if there is only one id (root or reply) then assign it to both

@@ -10,7 +10,12 @@ export default function TaskManagerButton({ ...props }: Omit<ButtonProps, "child
   const { openTaskManager } = useTaskManagerContext();
 
   return (
-    <Button variant="link" justifyContent="space-between" onClick={() => openTaskManager("/network")} {...props}>
+    <Button
+      variant="link"
+      justifyContent="space-between"
+      onClick={() => openTaskManager(log.length === 0 ? "/relays" : "/publish-log")}
+      {...props}
+    >
       Task Manager
       {log.length > 0 && <PublishActionStatusTag action={log[log.length - 1]} />}
     </Button>

@@ -97,6 +97,12 @@ export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<st
   return filtersByRelay;
 }
 
+// NOTE: this is a hack because nostr-tools does not expose the "challenge" field on relays
+export function getChallenge(relay: AbstractRelay): string {
+  // @ts-expect-error
+  return relay.challenge;
+}
+
 export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SubscriptionOptions = {}) {
   return new Promise<NostrEvent[]>((res) => {
     const events: NostrEvent[] = [];

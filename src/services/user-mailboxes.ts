@@ -43,7 +43,7 @@ class UserMailboxesService {
     // also fetch the relays from the users contacts
     const contactsSub = replaceableEventsService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
     sub.connectWithMapper(contactsSub, (event, next, value) => {
-      // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
+      // NOTE: only use relays from contact list if the user does not have a NIP-65 relay list
       const relays = relaysFromContactsEvent(event);
       if (relays.length > 0 && !value) {
         next({

@@ -24,6 +24,7 @@ import TimelineActionAndStatus from "../../components/timeline-page/timeline-act
 import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { truncateId } from "../../helpers/string";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
   const messages = useSubject(timeline.timeline);
@@ -57,7 +58,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     [clientMuteFilter],
   );
   const timeline = useTimelineLoader(
-    `${channel.id}-chat-messages`,
+    `${truncateId(channel.id)}-chat-messages`,
     relays,
     {
       kinds: [kinds.ChannelMessage],

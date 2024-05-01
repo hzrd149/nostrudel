@@ -26,6 +26,7 @@ import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-app-settings";
+import { truncateId } from "../../helpers/string";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -76,7 +77,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const otherMailboxes = useUserMailboxes(pubkey);
   const mailboxes = useUserMailboxes(account.pubkey);
   const timeline = useTimelineLoader(
-    `${pubkey}-${account.pubkey}-messages`,
+    `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
     RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
     [
       {

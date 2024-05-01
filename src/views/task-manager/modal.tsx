@@ -19,7 +19,7 @@ import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import { PersistentSubject } from "../../classes/subject";
 import useSubject from "../../hooks/use-subject";
 import DatabaseView from "../relays/cache/database";
-import TaskManagerNetwork from "./network";
+import TaskManagerRelays from "./relays";
 import { Suspense } from "react";
 
 type Router = ReturnType<typeof createMemoryRouter>;

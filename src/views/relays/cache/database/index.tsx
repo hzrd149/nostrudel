@@ -15,7 +15,7 @@ const InternalDatabasePage = lazy(() => import("./internal"));
 export default function DatabaseView() {
   let content = (
     <Text>
-      noStrudel dose not have access to the selected cache relays database{" "}
+      noStrudel does not have access to the selected cache relays database{" "}
       <Link as={RouterLink} to="/relays/cache" color="blue.500">
         Change cache relay
       </Link>

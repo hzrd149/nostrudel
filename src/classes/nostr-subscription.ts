@@ -22,7 +22,7 @@ export default class NostrSubscription {
   onEOSE = new ControlledObservable<number>();
 
   constructor(relayUrl: string | URL, filters?: Filter[], name?: string) {
-    this.id = nanoid();
+    this.id = nanoid(8);
     this.filters = filters;
     this.name = name;
 
@@ -48,8 +48,6 @@ export default class NostrSubscription {
       oneose: () => this.onEOSE.next(Math.random()),
     });
 
-    relayPoolService.addClaim(this.relay.url, this);
-
     return this;
   }
   close() {
@@ -59,8 +57,6 @@ export default class NostrSubscription {
     this.state = NostrSubscription.CLOSED;
     // send close message
     this.subscription?.close();
-    // unsubscribe from relay messages
-    relayPoolService.removeClaim(this.relay.url, this);
 
     return this;
   }

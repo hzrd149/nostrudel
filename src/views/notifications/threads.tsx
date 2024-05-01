@@ -8,7 +8,7 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotifications } from "../../providers/global/notifications";
+import { useNotifications } from "../../providers/global/notifications-provider";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
 import { NostrEvent } from "../../types/nostr-event";

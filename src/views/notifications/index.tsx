@@ -12,7 +12,7 @@ import IntersectionObserverProvider, {
 } from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotifications } from "../../providers/global/notifications";
+import { useNotifications } from "../../providers/global/notifications-provider";
 import { getEventUID, isReply } from "../../helpers/nostr/event";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";

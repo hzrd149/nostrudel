@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import { Filter, NostrEvent } from "nostr-tools";
+import { AbstractRelay, Filter, NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import NostrMultiSubscription from "./nostr-multi-subscription";
+import MultiSubscription from "./multi-subscription";
 import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
@@ -14,6 +14,9 @@ import { localRelay } from "../services/local-relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
 import relayPoolService from "../services/relay-pool";
+import Process from "./process";
+import AlignHorizontalCentre02 from "../components/icons/align-horizontal-centre-02";
+import processManager from "../services/process-manager";
 
 const BLOCK_SIZE = 100;
 
@@ -22,7 +25,7 @@ export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 export default class TimelineLoader {
   cursor = dayjs().unix();
   filters: Filter[] = [];
-  relays: string[] = [];
+  relays: AbstractRelay[] = [];
 
   events: EventStore;
   timeline = new PersistentSubject<NostrEvent[]>([]);
@@ -33,25 +36,33 @@ export default class TimelineLoader {
   eventFilter?: EventFilter;
 
   name: string;
+  process: Process;
   private log: Debugger;
-  private subscription: NostrMultiSubscription;
+  private subscription: MultiSubscription;
 
   private cacheChunkLoader: ChunkedRequest | null = null;
   private chunkLoaders = new Map<string, ChunkedRequest>();
 
   constructor(name: string) {
     this.name = name;
+    this.process = new Process("TimelineLoader", this);
+    this.process.name = name;
+    this.process.icon = AlignHorizontalCentre02;
+
     this.log = logger.extend("TimelineLoader:" + name);
     this.events = new EventStore(name);
     this.events.connect(replaceableEventsService.events, false);
 
-    this.subscription = new NostrMultiSubscription(name);
+    this.subscription = new MultiSubscription(name);
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
+    this.process.addChild(this.subscription.process);
 
     // update the timeline when there are new events
     this.events.onEvent.subscribe(this.throttleUpdateTimeline.bind(this));
     this.events.onDelete.subscribe(this.throttleUpdateTimeline.bind(this));
     this.events.onClear.subscribe(this.throttleUpdateTimeline.bind(this));
+
+    processManager.registerProcess(this.process);
   }
 
   private throttleUpdateTimeline = _throttle(this.updateTimeline, 10);
@@ -75,12 +86,14 @@ export default class TimelineLoader {
 
   private chunkLoaderSubs = new SuperMap<ChunkedRequest, ZenObservable.Subscription[]>(() => []);
   private connectToChunkLoader(loader: ChunkedRequest) {
+    this.process.addChild(loader.process);
+
     this.events.connect(loader.events);
     const subs = this.chunkLoaderSubs.get(loader);
     subs.push(loader.onChunkFinish.subscribe(this.handleChunkFinished.bind(this)));
   }
-  private disconnectToChunkLoader(loader: ChunkedRequest) {
-    loader.cleanup();
+  private disconnectFromChunkLoader(loader: ChunkedRequest) {
+    loader.destroy();
     this.events.disconnect(loader.events);
     const subs = this.chunkLoaderSubs.get(loader);
     for (const sub of subs) sub.unsubscribe();
@@ -93,15 +106,19 @@ export default class TimelineLoader {
     this.log("Set filters", filters);
 
     // recreate all chunk loaders
-    for (const url of this.relays) {
-      const loader = this.chunkLoaders.get(url);
+    for (const relay of this.relays) {
+      const loader = this.chunkLoaders.get(relay.url);
       if (loader) {
-        this.disconnectToChunkLoader(loader);
-        this.chunkLoaders.delete(url);
+        this.disconnectFromChunkLoader(loader);
+        this.chunkLoaders.delete(relay.url);
       }
 
-      const chunkLoader = new ChunkedRequest(relayPoolService.requestRelay(url), filters, this.log.extend(url));
-      this.chunkLoaders.set(url, chunkLoader);
+      const chunkLoader = new ChunkedRequest(
+        relayPoolService.requestRelay(relay.url),
+        filters,
+        this.log.extend(relay.url),
+      );
+      this.chunkLoaders.set(relay.url, chunkLoader);
       this.connectToChunkLoader(chunkLoader);
     }
 
@@ -109,9 +126,9 @@ export default class TimelineLoader {
     this.filters = filters;
 
     // recreate cache chunk loader
-    if (this.cacheChunkLoader) this.disconnectToChunkLoader(this.cacheChunkLoader);
+    if (this.cacheChunkLoader) this.disconnectFromChunkLoader(this.cacheChunkLoader);
     if (localRelay) {
-      this.cacheChunkLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("local-relay"));
+      this.cacheChunkLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("cache-relay"));
       this.connectToChunkLoader(this.cacheChunkLoader);
     }
 
@@ -119,32 +136,35 @@ export default class TimelineLoader {
     this.subscription.setFilters(mergeFilter(filters, { limit: BLOCK_SIZE / 2 }));
   }
 
-  setRelays(relays: Iterable<string>) {
-    this.relays = Array.from(relays);
+  setRelays(relays: Iterable<string | URL | AbstractRelay>) {
+    const newRelays = relayPoolService.getRelays(relays);
 
     // remove chunk loaders
-    for (const url of relays) {
-      const loader = this.chunkLoaders.get(url);
+    for (const relay of newRelays) {
+      const loader = this.chunkLoaders.get(relay.url);
       if (!loader) continue;
-      if (!this.relays.includes(url)) {
-        this.disconnectToChunkLoader(loader);
-        this.chunkLoaders.delete(url);
+      if (!this.relays.includes(relay)) {
+        this.disconnectFromChunkLoader(loader);
+        this.chunkLoaders.delete(relay.url);
       }
     }
 
     // create chunk loaders only if filters are set
     if (this.filters.length > 0) {
-      for (const url of relays) {
-        if (!this.chunkLoaders.has(url)) {
-          const loader = new ChunkedRequest(relayPoolService.requestRelay(url), this.filters, this.log.extend(url));
-          this.chunkLoaders.set(url, loader);
+      for (const relay of newRelays) {
+        if (!this.chunkLoaders.has(relay.url)) {
+          const loader = new ChunkedRequest(relay, this.filters, this.log.extend(relay.url));
+          this.chunkLoaders.set(relay.url, loader);
           this.connectToChunkLoader(loader);
         }
       }
     }
 
+    this.relays = relayPoolService.getRelays(relays);
+    this.process.relays = new Set(this.relays);
+
     // update live subscription
-    this.subscription.setRelays(relays);
+    this.subscription.setRelays(this.relays);
   }
 
   setEventFilter(filter?: EventFilter) {
@@ -219,9 +239,11 @@ export default class TimelineLoader {
     return this.complete.next(true);
   }
   open() {
+    this.process.active = true;
     this.subscription.open();
   }
   close() {
+    this.process.active = false;
     this.subscription.close();
   }
 
@@ -233,21 +255,25 @@ export default class TimelineLoader {
   reset() {
     this.cursor = dayjs().unix();
     const loaders = this.getAllLoaders();
-    for (const loader of loaders) this.disconnectToChunkLoader(loader);
+    for (const loader of loaders) this.disconnectFromChunkLoader(loader);
     this.chunkLoaders.clear();
     this.cacheChunkLoader = null;
     this.forgetEvents();
   }
 
   /** close the subscription and remove any event listeners for this timeline */
-  cleanup() {
+  destroy() {
     this.close();
 
     const loaders = this.getAllLoaders();
-    for (const loader of loaders) this.disconnectToChunkLoader(loader);
+    for (const loader of loaders) this.disconnectFromChunkLoader(loader);
     this.chunkLoaders.clear();
     this.cacheChunkLoader = null;
 
+    this.subscription.destroy();
+
     this.events.cleanup();
+    this.process.remove();
+    processManager.unregisterProcess(this.process);
   }
 }

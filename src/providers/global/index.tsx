@@ -4,12 +4,12 @@ import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-app-settings";
-import NotificationsProvider from "./notifications";
+import NotificationsProvider from "./notifications-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import DecryptionProvider from "./dycryption-provider";
-import DMTimelineProvider from "./dm-timeline";
+import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
 
 // Top level providers, should be render as close to the root as possible

@@ -3,7 +3,6 @@ import _throttle from "lodash.throttle";
 
 import SuperMap from "../classes/super-map";
 import { logger } from "../helpers/debug";
-import { nameOrPubkey } from "./user-metadata";
 import { getEventCoordinate } from "../helpers/nostr/event";
 import createDefer, { Deferred } from "../classes/deferred";
 import { localRelay } from "./local-relay";
@@ -13,6 +12,10 @@ import Subject from "../classes/subject";
 import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
+import { truncateId } from "../helpers/string";
+import UserSquare from "../components/icons/user-square";
+import Process from "../classes/process";
+import processManager from "./process-manager";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -24,17 +27,20 @@ export type RequestOptions = {
 };
 
 export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
-  return `${kind}:${nameOrPubkey(pubkey)}${d ? ":" + d : ""}`;
+  return `${kind}:${truncateId(pubkey)}${d ? ":" + d : ""}`;
 }
 
 const READ_CACHE_BATCH_TIME = 250;
 const WRITE_CACHE_BATCH_TIME = 250;
 
 class ReplaceableEventsService {
+  process: Process;
+
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
   private loaders = new SuperMap<string, BatchKindLoader>((relay) => {
     const loader = new BatchKindLoader(relayPoolService.requestRelay(relay), this.log.extend(relay));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
+    this.process.addChild(loader.process);
     return loader;
   });
 
@@ -42,6 +48,13 @@ class ReplaceableEventsService {
 
   log = logger.extend("ReplaceableEventLoader");
   dbLog = this.log.extend("database");
+
+  constructor() {
+    this.process = new Process("ReplaceableEventsService", this);
+    this.process.icon = UserSquare;
+    this.process.active = true;
+    processManager.registerProcess(this.process);
+  }
 
   handleEvent(event: NostrEvent, saveToCache = true) {
     if (!alwaysVerify(event)) return;
@@ -156,6 +169,10 @@ class ReplaceableEventsService {
     }
 
     return sub;
+  }
+
+  destroy() {
+    processManager.unregisterProcess(this.process);
   }
 }
 

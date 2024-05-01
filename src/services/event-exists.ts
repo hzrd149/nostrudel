@@ -87,8 +87,8 @@ class EventExistsService {
 
   handleEvent(event: NostrEvent, cache = true) {
     for (const [key, filter] of this.filters) {
-      const doseMatch = Array.isArray(filter) ? matchFilters(filter, event) : matchFilter(filter, event);
-      if (doseMatch && this.answers.get(key).value !== true) {
+      const doesMatch = Array.isArray(filter) ? matchFilters(filter, event) : matchFilter(filter, event);
+      if (doesMatch && this.answers.get(key).value !== true) {
         this.answers.get(key).next(true);
       }
     }

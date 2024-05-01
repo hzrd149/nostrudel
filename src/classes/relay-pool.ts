@@ -1,29 +1,47 @@
 import { AbstractRelay } from "nostr-tools";
 
 import { logger } from "../helpers/debug";
-import { validateRelayURL } from "../helpers/relay";
+import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
 import { offlineMode } from "../services/offline-mode";
-import Subject from "./subject";
+import Subject, { PersistentSubject } from "./subject";
 import verifyEventMethod from "../services/verify-event";
+import SuperMap from "./super-map";
+import processManager from "../services/process-manager";
 
 export default class RelayPool {
   relays = new Map<string, AbstractRelay>();
   onRelayCreated = new Subject<AbstractRelay>();
+  onRelayChallenge = new Subject<[AbstractRelay, string]>();
 
-  relayClaims = new Map<string, Set<any>>();
+  connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
+  connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
 
   log = logger.extend("RelayPool");
 
-  getRelays() {
-    return Array.from(this.relays.values());
+  getRelay(relayOrUrl: string | URL | AbstractRelay) {
+    let relay: AbstractRelay | undefined = undefined;
+
+    if (typeof relayOrUrl === "string") {
+      const safeURL = safeRelayUrl(relayOrUrl);
+      if (safeURL) relay = this.relays.get(safeURL) || this.requestRelay(safeURL);
+    } else if (relayOrUrl instanceof URL) {
+      relay = this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
+    } else relay = relayOrUrl;
+
+    return relay;
   }
-  getRelayClaims(url: string | URL) {
-    url = validateRelayURL(url);
-    const key = url.toString();
-    if (!this.relayClaims.has(key)) {
-      this.relayClaims.set(key, new Set());
+
+  getRelays(urls?: Iterable<string | URL | AbstractRelay>) {
+    if (urls) {
+      const relays: AbstractRelay[] = [];
+      for (const url of urls) {
+        const relay = this.getRelay(url);
+        if (relay) relays.push(relay);
+      }
+      return relays;
     }
-    return this.relayClaims.get(key) as Set<any>;
+
+    return Array.from(this.relays.values());
   }
 
   requestRelay(url: string | URL, connect = true) {
@@ -32,6 +50,7 @@ export default class RelayPool {
     const key = url.toString();
     if (!this.relays.has(key)) {
       const newRelay = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
+      newRelay._onauth = (challenge) => this.onRelayChallenge.next([newRelay, challenge]);
       this.relays.set(key, newRelay);
       this.onRelayCreated.next(newRelay);
     }
@@ -41,67 +60,58 @@ export default class RelayPool {
     return relay;
   }
 
-  async requestConnect(relayOrUrl: string | URL | AbstractRelay) {
-    let relay: AbstractRelay | undefined = undefined;
+  async waitForOpen(relayOrUrl: string | URL | AbstractRelay, quite = true) {
+    let relay = this.getRelay(relayOrUrl);
+    if (!relay) return Promise.reject("Missing relay");
 
-    if (typeof relayOrUrl === "string") relay = this.relays.get(relayOrUrl);
-    else if (relayOrUrl instanceof URL) relay = this.relays.get(relayOrUrl.toString());
-    else relay = relayOrUrl;
+    if (relay.connected) return true;
 
+    try {
+      // if the relay is connecting, wait. otherwise request a connection
+      // @ts-expect-error
+      (await relay.connectionPromise) || this.requestConnect(relay, quite);
+      return true;
+    } catch (err) {
+      if (quite) return false;
+      else throw err;
+    }
+  }
+
+  async requestConnect(relayOrUrl: string | URL | AbstractRelay, quite = true) {
+    let relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
     if (!relay.connected && !offlineMode.value) {
+      this.connecting.get(relay).next(true);
       try {
-        relay.connect();
+        await relay.connect();
+        this.connecting.get(relay).next(false);
       } catch (e) {
-        this.log(`Failed to connect to ${relay.url}`);
-        this.log(e);
+        e = e || new Error("Unknown error");
+        if (e instanceof Error) {
+          this.log(`Failed to connect to ${relay.url}`, e.message);
+          this.connectionErrors.get(relay).push(e);
+        }
+        this.connecting.get(relay).next(false);
+        if (!quite) throw e;
       }
     }
   }
 
-  pruneRelays() {
-    for (const [url, relay] of this.relays.entries()) {
-      const claims = this.getRelayClaims(url).size;
-      if (claims === 0) {
+  disconnectFromUnused() {
+    for (const [url, relay] of this.relays) {
+      let disconnect = true;
+      for (const process of processManager.processes) {
+        if (process.active && process.relays.has(relay)) {
+          disconnect = false;
+          break;
+        }
+      }
+
+      if (disconnect) {
+        this.log(`No active processes using ${relay.url}, disconnecting`);
         relay.close();
       }
     }
-  }
-  reconnectRelays() {
-    if (offlineMode.value) return;
-
-    for (const [url, relay] of this.relays.entries()) {
-      const claims = this.getRelayClaims(url).size;
-      if (!relay.connected && claims > 0) {
-        try {
-          relay.connect();
-        } catch (e) {
-          this.log(`Failed to connect to ${relay.url}`);
-          this.log(e);
-        }
-      }
-    }
-  }
-
-  addClaim(relay: string | URL, id: any) {
-    try {
-      const key = validateRelayURL(relay).toString();
-      this.getRelayClaims(key).add(id);
-    } catch (error) {}
-  }
-  removeClaim(relay: string | URL, id: any) {
-    try {
-      const key = validateRelayURL(relay).toString();
-      this.getRelayClaims(key).delete(id);
-    } catch (error) {}
-  }
-
-  get connectedCount() {
-    let count = 0;
-    for (const [url, relay] of this.relays.entries()) {
-      if (relay.connected) count++;
-    }
-    return count;
   }
 }

@@ -55,10 +55,10 @@ try {
       break;
   }
 } catch (error) {
-  console.error("Failed to initialize event verification method, falling back to internal nostr-tools");
+  console.error("Failed to initialize event verification method, disabling");
   console.log(error);
 
-  localStorage.setItem(localStorageKey, "internal");
+  localStorage.setItem(localStorageKey, "none");
   verifyEventMethod = alwaysVerify = verifyEvent;
 }
 
