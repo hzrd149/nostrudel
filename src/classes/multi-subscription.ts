@@ -103,7 +103,7 @@ export default class MultiSubscription {
     }
 
     // create cache sub if it does not exist
-    if (!this.cacheSubscription) {
+    if (!this.cacheSubscription && localRelay) {
       this.cacheSubscription = new PersistentSubscription(localRelay as AbstractRelay, {
         onevent: (event) => this.handleEvent(event),
       });
@@ -111,7 +111,7 @@ export default class MultiSubscription {
     }
 
     // update cache sub filters if they changed
-    if (!isFilterEqual(this.cacheSubscription.filters, this.filters)) {
+    if (this.cacheSubscription && !isFilterEqual(this.cacheSubscription.filters, this.filters)) {
       this.cacheSubscription.filters = this.filters;
       this.cacheSubscription.fire();
     }

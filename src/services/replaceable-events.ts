@@ -1,12 +1,10 @@
-import { Filter, NostrEvent } from "nostr-tools";
+import { AbstractRelay, NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import SuperMap from "../classes/super-map";
 import { logger } from "../helpers/debug";
 import { getEventCoordinate } from "../helpers/nostr/event";
-import createDefer, { Deferred } from "../classes/deferred";
 import { localRelay } from "./local-relay";
-import { relayRequest } from "../helpers/relay";
 import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
 import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
@@ -30,13 +28,14 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
   return `${kind}:${truncateId(pubkey)}${d ? ":" + d : ""}`;
 }
 
-const READ_CACHE_BATCH_TIME = 250;
 const WRITE_CACHE_BATCH_TIME = 250;
 
 class ReplaceableEventsService {
   process: Process;
 
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+
+  private cacheLoader: BatchKindLoader | null = null;
   private loaders = new SuperMap<string, BatchKindLoader>((relay) => {
     const loader = new BatchKindLoader(relayPoolService.requestRelay(relay), this.log.extend(relay));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
@@ -47,13 +46,18 @@ class ReplaceableEventsService {
   events = new EventStore();
 
   log = logger.extend("ReplaceableEventLoader");
-  dbLog = this.log.extend("database");
 
   constructor() {
     this.process = new Process("ReplaceableEventsService", this);
     this.process.icon = UserSquare;
     this.process.active = true;
     processManager.registerProcess(this.process);
+
+    if (localRelay) {
+      this.cacheLoader = new BatchKindLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
+      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e));
+      this.process.addChild(this.cacheLoader.process);
+    }
   }
 
   handleEvent(event: NostrEvent, saveToCache = true) {
@@ -73,69 +77,13 @@ class ReplaceableEventsService {
     return this.subjects.get(createCoordinate(kind, pubkey, d));
   }
 
-  private readFromCachePromises = new Map<string, Deferred<boolean>>();
-  private readFromCacheThrottle = _throttle(this.readFromCache, READ_CACHE_BATCH_TIME);
-  private async readFromCache() {
-    if (this.readFromCachePromises.size === 0) return;
-    if (!localRelay) return;
-
-    const loading = new Map<string, Deferred<boolean>>();
-
-    const kindFilters: Record<number, Filter> = {};
-    for (const [cord, p] of this.readFromCachePromises) {
-      const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
-      const kind = parseInt(kindStr);
-      kindFilters[kind] = kindFilters[kind] || { kinds: [kind] };
-
-      const arr = (kindFilters[kind].authors = kindFilters[kind].authors || []);
-      arr.push(pubkey);
-
-      if (d) {
-        const arr = (kindFilters[kind]["#d"] = kindFilters[kind]["#d"] || []);
-        arr.push(d);
-      }
-
-      loading.set(cord, p);
-    }
-    const filters = Object.values(kindFilters);
-
-    for (const [cord] of loading) this.readFromCachePromises.delete(cord);
-
-    const events = await relayRequest(localRelay, filters);
-    for (const event of events) {
-      this.handleEvent(event, false);
-      const cord = getEventCoordinate(event);
-      const promise = loading.get(cord);
-      if (promise) promise.resolve(true);
-      loading.delete(cord);
-    }
-
-    // resolve remaining promises
-    for (const [_, promise] of loading) promise.resolve();
-
-    if (events.length > 0) this.dbLog(`Read ${events.length} events from database`);
-  }
-  loadFromCache(cord: string) {
-    if (!localRelay) return Promise.resolve(false);
-    const dedupe = this.readFromCachePromises.get(cord);
-    if (dedupe) return dedupe;
-
-    // add to read queue
-    const promise = createDefer<boolean>();
-    this.readFromCachePromises.set(cord, promise);
-
-    this.readFromCacheThrottle();
-
-    return promise;
-  }
-
   private writeCacheQueue = new Map<string, NostrEvent>();
   private writeToCacheThrottle = _throttle(this.writeToCache, WRITE_CACHE_BATCH_TIME);
   private async writeToCache() {
     if (this.writeCacheQueue.size === 0) return;
 
     if (localRelay) {
-      this.dbLog(`Writing ${this.writeCacheQueue.size} events to database`);
+      this.log(`Sending ${this.writeCacheQueue.size} events to cache relay`);
       for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
     }
     this.writeCacheQueue.clear();
@@ -158,13 +106,14 @@ class ReplaceableEventsService {
     const key = createCoordinate(kind, pubkey, d);
     const sub = this.subjects.get(key);
 
-    if (!sub.value) {
-      this.loadFromCache(key).then((loaded) => {
+    if (!sub.value && this.cacheLoader) {
+      this.cacheLoader.requestEvent(kind, pubkey, d).then((loaded) => {
         if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
       });
     }
 
-    if (opts?.alwaysRequest || (!sub.value && opts.ignoreCache)) {
+    if (opts?.alwaysRequest || !this.cacheLoader || (!sub.value && opts.ignoreCache)) {
+      this.log("Skipping cache for", key);
       this.requestEventFromRelays(relays, kind, pubkey, d);
     }
 

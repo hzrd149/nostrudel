@@ -41,7 +41,7 @@ class SingleEventLoader {
       // this.pending.get(id).add(relay);
       this.idsFromRelays.get(relay).add(id);
     }
-    this.idsFromRelays.get(localRelay as AbstractRelay).add(id);
+    if (localRelay) this.idsFromRelays.get(localRelay as AbstractRelay).add(id);
     this.updateSubscriptionsThrottle();
 
     return subject;

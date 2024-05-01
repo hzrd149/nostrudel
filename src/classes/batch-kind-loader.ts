@@ -9,6 +9,7 @@ import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
 import processManager from "../services/process-manager";
+import createDefer, { Deferred } from "./deferred";
 
 export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
@@ -25,6 +26,7 @@ export default class BatchKindLoader {
 
   private requestNext = new Set<string>();
   private requested = new Map<string, Date>();
+  private promises = new Map<string, Deferred<NostrEvent | null>>();
 
   log: Debugger;
 
@@ -45,21 +47,52 @@ export default class BatchKindLoader {
     const current = this.events.getEvent(key);
     if (!current || event.created_at > current.created_at) {
       this.events.addEvent(event);
+
+      // if there is a promise waiting, resolve with event
+      const defer = this.promises.get(key);
+      if (defer) {
+        this.promises.delete(key);
+        defer.resolve(event);
+      }
     }
   }
   private handleEOSE() {
     // relays says it has nothing left
     this.requested.clear();
+
+    // prune requests
+    const timeout = dayjs().subtract(1, "minute");
+    for (const [key, date] of this.requested) {
+      if (dayjs(date).isBefore(timeout)) {
+        this.requested.delete(key);
+
+        // if there is a promise waiting for this event, resolve null
+        const defer = this.promises.get(key);
+        if (defer) {
+          this.promises.delete(key);
+          defer.resolve(null);
+        }
+      }
+    }
   }
 
-  requestEvent(kind: number, pubkey: string, d?: string) {
+  requestEvent(kind: number, pubkey: string, d?: string): Promise<NostrEvent | null> {
     const key = createCoordinate(kind, pubkey, d);
     const event = this.events.getEvent(key);
+
     if (!event) {
+      if (this.promises.has(key)) return this.promises.get(key)!;
+
+      const p = createDefer<NostrEvent | null>();
+      this.promises.set(key, p);
+
       this.requestNext.add(key);
       this.updateThrottle();
+
+      return p;
     }
-    return event;
+
+    return Promise.resolve(event);
   }
 
   updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
@@ -72,15 +105,6 @@ export default class BatchKindLoader {
       }
     }
     this.requestNext.clear();
-
-    // prune requests
-    const timeout = dayjs().subtract(1, "minute");
-    for (const [key, date] of this.requested) {
-      if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(key);
-        needsUpdate = true;
-      }
-    }
 
     // update the subscription
     if (needsUpdate) {
