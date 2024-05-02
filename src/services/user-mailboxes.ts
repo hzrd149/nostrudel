@@ -7,7 +7,6 @@ import replaceableEventsService, { RequestOptions } from "./replaceable-events";
 import RelaySet from "../classes/relay-set";
 import { RelayMode } from "../classes/relay";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
-import { createCoordinate } from "../classes/batch-kind-loader";
 
 export type UserMailboxes = {
   pubkey: string;
@@ -62,7 +61,9 @@ class UserMailboxesService {
 
   async loadFromCache(pubkey: string) {
     const sub = this.subjects.get(pubkey);
-    await replaceableEventsService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
+    if (replaceableEventsService.cacheLoader) {
+      await replaceableEventsService.cacheLoader?.requestEvent(kinds.RelayList, pubkey);
+    }
     return sub;
   }
 

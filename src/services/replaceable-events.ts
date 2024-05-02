@@ -35,8 +35,8 @@ class ReplaceableEventsService {
 
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
-  private cacheLoader: BatchKindLoader | null = null;
-  private loaders = new SuperMap<string, BatchKindLoader>((relay) => {
+  cacheLoader: BatchKindLoader | null = null;
+  loaders = new SuperMap<string, BatchKindLoader>((relay) => {
     const loader = new BatchKindLoader(relayPoolService.requestRelay(relay), this.log.extend(relay));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
     this.process.addChild(loader.process);
