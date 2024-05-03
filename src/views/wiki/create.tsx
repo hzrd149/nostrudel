@@ -23,6 +23,7 @@ import { useSigningContext } from "../../providers/global/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { CharkaMarkdown } from "./components/markdown";
 import useCacheForm from "../../hooks/use-cache-form";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
 
 export default function CreateWikiPageView() {
   const account = useCurrentAccount();
@@ -63,6 +64,7 @@ export default function CreateWikiPageView() {
         tags: [
           ["d", values.topic],
           ["title", values.title],
+          ["published_at", String(dayjs().unix())],
         ],
         created_at: dayjs().unix(),
       };
@@ -152,7 +154,7 @@ export default function CreateWikiPageView() {
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Title</FormLabel>
-          <Input {...register("title", { required: true })} />
+          <Input {...register("title", { required: true })} autoComplete="off" />
         </FormControl>
       </Flex>
       <SimpleMDE value={getValues().content} onChange={(v) => setValue("content", v)} options={options} />

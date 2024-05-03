@@ -126,6 +126,7 @@ const WikiTopicView = lazy(() => import("./views/wiki/topic"));
 const WikiSearchView = lazy(() => import("./views/wiki/search"));
 const WikiCompareView = lazy(() => import("./views/wiki/compare"));
 const CreateWikiPageView = lazy(() => import("./views/wiki/create"));
+const EditWikiPageView = lazy(() => import("./views/wiki/edit"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -321,6 +322,7 @@ const router = createHashRouter([
           { path: "search", element: <WikiSearchView /> },
           { path: "topic/:topic", element: <WikiTopicView /> },
           { path: "page/:naddr", element: <WikiPageView /> },
+          { path: "edit/:topic", element: <EditWikiPageView /> },
           { path: "compare/:topic/:a/:b", element: <WikiCompareView /> },
           { path: "create", element: <CreateWikiPageView /> },
           { path: "", element: <WikiHomeView /> },

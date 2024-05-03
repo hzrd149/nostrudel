@@ -2,4 +2,4 @@
 "nostrudel": minor
 ---
 
-Add date picker to notifictions
+Add date picker to notifications

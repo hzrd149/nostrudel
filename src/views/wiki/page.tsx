@@ -25,7 +25,6 @@ import useSubject from "../../hooks/use-subject";
 import useWikiTopicTimeline from "./hooks/use-wiki-topic-timeline";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import WikiPageHeader from "./components/wiki-page-header";
 import { WIKI_RELAYS } from "../../const";
 import GitBranch01 from "../../components/icons/git-branch-01";
@@ -36,6 +35,7 @@ import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbl
 import QuoteRepostButton from "../../components/note/quote-repost-button";
 import WikiPageMenu from "./components/wioki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
+import useCurrentAccount from "../../hooks/use-current-account";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -85,6 +85,7 @@ function DeferAlert({ page, address }: { page: NostrEvent; address: nip19.Addres
 }
 
 function WikiPagePage({ page }: { page: NostrEvent }) {
+  const account = useCurrentAccount();
   const topic = getPageTopic(page);
   const timeline = useWikiTopicTimeline(topic);
 
@@ -105,20 +106,29 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
     <VerticalPageLayout>
       <WikiPageHeader />
 
-      <Flex wrap="wrap">
-        <Box>
+      <Flex gap="2" wrap="wrap">
+        <Box flex={1}>
           <Heading>{getPageTitle(page)}</Heading>
           <Text>
             by <UserLink pubkey={page.pubkey} /> - <Timestamp timestamp={page.created_at} />
           </Text>
         </Box>
-        <Flex alignItems="flex-end" gap="2" ml="auto">
-          <EventVoteButtons event={page} inline chevrons={false} />
-          <ButtonGroup size="sm">
-            <QuoteRepostButton event={page} />
-            <NoteZapButton event={page} showEventPreview={false} />
-            <WikiPageMenu page={page} aria-label="Page Options" />
+        <Flex direction="column" gap="2" ml="auto">
+          <ButtonGroup ml="auto" size="sm">
+            {page.pubkey === account?.pubkey && (
+              <Button as={RouterLink} colorScheme="primary" to={`/wiki/edit/${getPageTopic(page)}`}>
+                Edit
+              </Button>
+            )}
           </ButtonGroup>
+          <Flex alignItems="flex-end" gap="2" ml="auto">
+            <EventVoteButtons event={page} inline chevrons={false} />
+            <ButtonGroup size="sm">
+              <QuoteRepostButton event={page} />
+              <NoteZapButton event={page} showEventPreview={false} />
+              <WikiPageMenu page={page} aria-label="Page Options" />
+            </ButtonGroup>
+          </Flex>
         </Flex>
       </Flex>
       {address && <ForkAlert page={page} address={address} />}
