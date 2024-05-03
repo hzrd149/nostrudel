@@ -155,7 +155,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
 
 export default function TorrentComments({ torrent }: { torrent: NostrEvent }) {
   const readRelays = useReadRelays();
-  const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, TORRENT_COMMENT_KIND);
+  const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, [TORRENT_COMMENT_KIND]);
 
   const thread = useMemo(() => buildThread(events), [events]);
   const rootItem = thread.get(torrent.id);

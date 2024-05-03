@@ -38,7 +38,7 @@ export type ThreadItemProps = {
   level?: number;
 };
 
-export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) => {
+function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) {
   const { showReactions } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.length <= 1) });
   const replyForm = useDisclosure();
@@ -163,4 +163,6 @@ export const ThreadPost = memo(({ post, initShowReplies, focusId, level = -1 }: 
       )}
     </>
   );
-});
+}
+
+export default memo(ThreadPost);

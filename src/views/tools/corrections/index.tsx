@@ -8,6 +8,7 @@ import PeopleListProvider, { usePeopleListContext } from "../../../providers/loc
 import BackButton from "../../../components/router/back-button";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import CorrectionCard from "./correction-card";
+import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
 
 function CorrectionsPage() {
   const { listId, filter } = usePeopleListContext();
@@ -15,7 +16,7 @@ function CorrectionsPage() {
   const timeline = useTimelineLoader(
     `${listId}-corrections`,
     readRelays,
-    filter ? [{ kinds: [1010], ...filter }] : undefined,
+    filter ? [{ kinds: [CORRECTION_EVENT_KIND], ...filter }] : undefined,
   );
 
   const corrections = useSubject(timeline.timeline);
