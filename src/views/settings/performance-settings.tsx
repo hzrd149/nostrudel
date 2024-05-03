@@ -29,8 +29,6 @@ function VerifyEventSettings() {
     raw: true,
   });
 
-  console.log(selectedMethod, verifyEventMethod);
-
   return (
     <>
       <FormControl>

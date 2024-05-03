@@ -97,7 +97,7 @@ export default class MultiSubscription {
 
         if (subscription) {
           subscription.filters = this.filters;
-          subscription.fire();
+          subscription.update();
         }
       }
     }
@@ -113,7 +113,7 @@ export default class MultiSubscription {
     // update cache sub filters if they changed
     if (this.cacheSubscription && !isFilterEqual(this.cacheSubscription.filters, this.filters)) {
       this.cacheSubscription.filters = this.filters;
-      this.cacheSubscription.fire();
+      this.cacheSubscription.update();
     }
   }
 

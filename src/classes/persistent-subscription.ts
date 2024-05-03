@@ -33,18 +33,19 @@ export default class PersistentSubscription {
     processManager.registerProcess(this.process);
   }
 
-  async fire() {
+  async update() {
     if (!this.filters || this.filters.length === 0) return this;
 
     if (!(await relayPoolService.waitForOpen(this.relay))) return;
 
-    // recreate the subscription since strfry and other relays reject subscription updates
+    // recreate the subscription since nostream and other relays reject subscription updates
     // if (this.subscription?.closed === false) {
     //   this.closed = true;
     //   this.subscription.close();
     // }
 
     this.closed = false;
+    this.eosed = false;
     this.process.active = true;
 
     // recreate the subscription if its closed since nostr-tools cant reopen a sub
@@ -66,10 +67,12 @@ export default class PersistentSubscription {
           this.params.onclose?.(reason);
         },
       });
+    } else {
+      this.subscription.filters = this.filters;
+      // NOTE: reset the eosed flag since nostr-tools dose not
+      this.subscription.eosed = false;
+      this.subscription.fire();
     }
-
-    this.subscription.filters = this.filters;
-    this.subscription.fire();
 
     return this;
   }

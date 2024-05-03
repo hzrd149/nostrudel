@@ -75,7 +75,7 @@ class SingleEventLoader {
         } else {
           // TODO: might be good to check if the ids have changed since last filter
           subscription.filters = [{ ids: Array.from(ids) }];
-          subscription.fire();
+          subscription.update();
         }
       }
     }

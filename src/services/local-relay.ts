@@ -77,6 +77,9 @@ async function connectRelay() {
     log("Connected");
 
     if (relay instanceof AbstractRelay) {
+      // set the base timeout to 1 second
+      relay.baseEoseTimeout = 1000;
+
       relayPoolService.relays.set(relay.url, relay);
       relay.onnotice = (notice) => relayPoolService.handleRelayNotice(relay, notice);
     }

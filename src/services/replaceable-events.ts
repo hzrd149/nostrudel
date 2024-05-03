@@ -55,7 +55,7 @@ class ReplaceableEventsService {
 
     if (localRelay) {
       this.cacheLoader = new BatchKindLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
-      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e));
+      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, false));
       this.process.addChild(this.cacheLoader.process);
     }
   }
@@ -113,7 +113,6 @@ class ReplaceableEventsService {
     }
 
     if (opts?.alwaysRequest || !this.cacheLoader || (!sub.value && opts.ignoreCache)) {
-      this.log("Skipping cache for", key);
       this.requestEventFromRelays(relays, kind, pubkey, d);
     }
 

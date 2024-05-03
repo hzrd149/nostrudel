@@ -25,6 +25,7 @@ export default class BatchKindLoader {
   process: Process;
 
   private requestNext = new Set<string>();
+
   private requested = new Map<string, Date>();
   private promises = new Map<string, Deferred<NostrEvent | null>>();
 
@@ -44,36 +45,22 @@ export default class BatchKindLoader {
     // remove the key from the waiting list
     this.requested.delete(key);
 
+    const defer = this.promises.get(key);
+    if (defer) this.promises.delete(key);
+
     const current = this.events.getEvent(key);
     if (!current || event.created_at > current.created_at) {
       this.events.addEvent(event);
 
-      // if there is a promise waiting, resolve with event
-      const defer = this.promises.get(key);
-      if (defer) {
-        this.promises.delete(key);
-        defer.resolve(event);
-      }
-    }
+      if (defer) defer.resolve(event);
+    } else if (defer) defer.resolve(null);
   }
   private handleEOSE() {
-    // relays says it has nothing left
-    this.requested.clear();
-
-    // prune requests
-    const timeout = dayjs().subtract(1, "minute");
-    for (const [key, date] of this.requested) {
-      if (dayjs(date).isBefore(timeout)) {
-        this.requested.delete(key);
-
-        // if there is a promise waiting for this event, resolve null
-        const defer = this.promises.get(key);
-        if (defer) {
-          this.promises.delete(key);
-          defer.resolve(null);
-        }
-      }
+    for (const [key, defer] of this.promises) {
+      this.requested.delete(key);
+      defer.resolve(null);
     }
+    this.promises.clear();
   }
 
   requestEvent(kind: number, pubkey: string, d?: string): Promise<NostrEvent | null> {
@@ -97,6 +84,9 @@ export default class BatchKindLoader {
 
   updateThrottle = _throttle(this.update, RELAY_REQUEST_BATCH_TIME);
   async update() {
+    // skip the update if the subscription is running
+    if (this.subscription?.closed === false && !this.subscription.eosed) return;
+
     let needsUpdate = false;
     for (const key of this.requestNext) {
       if (!this.requested.has(key)) {
@@ -143,7 +133,7 @@ export default class BatchKindLoader {
         }
 
         this.subscription.filters = query;
-        this.subscription.fire();
+        this.subscription.update();
         this.process.active = true;
       } else if (this.subscription) {
         this.subscription.close();
