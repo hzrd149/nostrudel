@@ -4,7 +4,7 @@ import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
 
 import EventStore from "./event-store";
-import { getEventCoordinate } from "../helpers/nostr/event";
+import { getEventUID } from "../helpers/nostr/event";
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
@@ -39,7 +39,7 @@ export default class BatchKindLoader {
   }
 
   private handleEvent(event: NostrEvent) {
-    const key = getEventCoordinate(event);
+    const key = getEventUID(event);
 
     // remove the key from the waiting list
     this.requested.delete(key);

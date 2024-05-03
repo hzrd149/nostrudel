@@ -22,13 +22,16 @@ const getStatusColor = (relay: AbstractRelay, connecting = false) => {
   return "red";
 };
 
-export const RelayStatus = ({ url }: { url: string }) => {
+export const RelayStatus = ({ url, relay }: { url?: string; relay?: AbstractRelay }) => {
   const update = useForceUpdate();
-
-  const relay = relayPoolService.requestRelay(url, false);
-  const connecting = useSubject(relayPoolService.connecting.get(relay));
-
   useInterval(() => update(), 500);
 
-  return <Badge colorScheme={getStatusColor(relay, connecting)}>{getStatusText(relay, connecting)}</Badge>;
+  if (!relay) {
+    if (url) relay = relayPoolService.getRelay(url);
+    else throw Error("Missing url or relay");
+  }
+
+  const connecting = useSubject(relayPoolService.connecting.get(relay!));
+
+  return <Badge colorScheme={getStatusColor(relay!, connecting)}>{getStatusText(relay!, connecting)}</Badge>;
 };

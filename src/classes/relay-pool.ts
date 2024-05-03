@@ -1,4 +1,5 @@
 import { AbstractRelay } from "nostr-tools";
+import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
@@ -8,10 +9,17 @@ import verifyEventMethod from "../services/verify-event";
 import SuperMap from "./super-map";
 import processManager from "../services/process-manager";
 
+export type Notice = {
+  message: string;
+  date: number;
+};
+
 export default class RelayPool {
   relays = new Map<string, AbstractRelay>();
   onRelayCreated = new Subject<AbstractRelay>();
   onRelayChallenge = new Subject<[AbstractRelay, string]>();
+
+  notices = new SuperMap<AbstractRelay, PersistentSubject<Notice[]>>(() => new PersistentSubject<Notice[]>([]));
 
   connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
   connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
@@ -19,16 +27,16 @@ export default class RelayPool {
   log = logger.extend("RelayPool");
 
   getRelay(relayOrUrl: string | URL | AbstractRelay) {
-    let relay: AbstractRelay | undefined = undefined;
-
     if (typeof relayOrUrl === "string") {
       const safeURL = safeRelayUrl(relayOrUrl);
-      if (safeURL) relay = this.relays.get(safeURL) || this.requestRelay(safeURL);
+      if (safeURL) {
+        return this.relays.get(safeURL) || this.requestRelay(safeURL);
+      } else return;
     } else if (relayOrUrl instanceof URL) {
-      relay = this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
-    } else relay = relayOrUrl;
+      return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
+    }
 
-    return relay;
+    return relayOrUrl;
   }
 
   getRelays(urls?: Iterable<string | URL | AbstractRelay>) {
@@ -49,14 +57,16 @@ export default class RelayPool {
 
     const key = url.toString();
     if (!this.relays.has(key)) {
-      const newRelay = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
-      newRelay._onauth = (challenge) => this.onRelayChallenge.next([newRelay, challenge]);
-      this.relays.set(key, newRelay);
-      this.onRelayCreated.next(newRelay);
+      const r = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
+      r._onauth = (challenge) => this.onRelayChallenge.next([r, challenge]);
+      r.onnotice = (notice) => this.handleRelayNotice(r, notice);
+
+      this.relays.set(key, r);
+      this.onRelayCreated.next(r);
     }
 
     const relay = this.relays.get(key) as AbstractRelay;
-    if (connect) this.requestConnect(relay);
+    if (connect && !relay.connected) this.requestConnect(relay);
     return relay;
   }
 
@@ -98,8 +108,15 @@ export default class RelayPool {
     }
   }
 
+  handleRelayNotice(relay: AbstractRelay, message: string) {
+    const subject = this.notices.get(relay);
+    subject.next([...subject.value, { message, date: dayjs().unix() }]);
+  }
+
   disconnectFromUnused() {
     for (const [url, relay] of this.relays) {
+      if (!relay.connected) continue;
+
       let disconnect = true;
       for (const process of processManager.processes) {
         if (process.active && process.relays.has(relay)) {

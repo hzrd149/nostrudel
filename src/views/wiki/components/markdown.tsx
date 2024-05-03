@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import {
   Code,
   Heading,
@@ -7,15 +8,6 @@ import {
   LinkProps,
   ListItem,
   OrderedList,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
-  Spinner,
   Table,
   TableContainer,
   TableProps,
@@ -28,23 +20,13 @@ import {
   Thead,
   Tr,
   UnorderedList,
-  useDisclosure,
 } from "@chakra-ui/react";
+import Markdown, { Components, ExtraProps } from "react-markdown";
 import styled from "@emotion/styled";
 import { NostrEvent } from "nostr-tools";
-import { forwardRef, useCallback, useMemo, useState } from "react";
-import Markdown, { Components, ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "remark-wiki-link";
-import { Link as RouterLink } from "react-router-dom";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import { subscribeMany } from "../../../helpers/relay";
-import { WIKI_PAGE_KIND, getPageSummary } from "../../../helpers/nostr/wiki";
-import replaceableEventsService from "../../../services/replaceable-events";
-import { getEventUID } from "nostr-idb";
-import UserName from "../../../components/user/user-name";
-import { getWebOfTrust } from "../../../services/web-of-trust";
-import { getSharableEventAddress } from "../../../helpers/nip19";
+import WikiLink from "./wiki-link";
 
 const StyledMarkdown = styled(Markdown)`
   pre > code {
@@ -97,83 +79,6 @@ function H6({ children, node, ...props }: HeadingProps & ExtraProps) {
   );
 }
 
-const MAX_VERSIONS = 4;
-function WikiLink({ children, node, href, ...props }: LinkProps & ExtraProps) {
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const readRelays = useReadRelays();
-
-  const properties = node!.properties as { className: string; href: string };
-  const topic = properties.href.replace(/^#\/page\//, "");
-
-  const [events, setEvents] = useState<NostrEvent[]>();
-
-  const load = useCallback(() => {
-    const arr: NostrEvent[] = [];
-
-    const sub = subscribeMany(Array.from(readRelays), [{ kinds: [WIKI_PAGE_KIND], "#d": [topic] }], {
-      onevent: (event) => {
-        replaceableEventsService.handleEvent(event);
-        if (event.content) arr.push(event);
-      },
-      oneose: () => {
-        setEvents(arr);
-        sub.close();
-      },
-    });
-  }, [topic, setEvents, readRelays]);
-
-  const open = useCallback(() => {
-    if (!events) load();
-    onOpen();
-  }, [onOpen, events]);
-
-  const sorted = useMemo(() => {
-    if (!events) return [];
-    const arr = getWebOfTrust().sortByDistanceAndConnections(events, (e) => e.pubkey);
-    const seen = new Set<string>();
-    const unique: NostrEvent[] = [];
-
-    for (const event of arr) {
-      const summary = getPageSummary(event);
-      if (!seen.has(summary)) {
-        seen.add(summary);
-        unique.push(event);
-        if (unique.length >= MAX_VERSIONS) break;
-      }
-    }
-
-    return unique;
-  }, [events]);
-
-  // if there is only one result, redirect to it
-  const to = events?.length === 1 ? "/wiki/page/" + getSharableEventAddress(events[0]) : "/wiki/topic/" + topic;
-
-  return (
-    <Popover returnFocusOnClose={false} isOpen={isOpen} onClose={onClose} placement="top" closeOnBlur={true}>
-      <PopoverTrigger>
-        <Link as={RouterLink} color="blue.500" {...props} to={to} onMouseEnter={open} onMouseLeave={onClose}>
-          {children}
-        </Link>
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent w="lg">
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader fontWeight="bold">{children}</PopoverHeader>
-          <PopoverBody>
-            {events === undefined && <Spinner />}
-            {sorted.map((page) => (
-              <Text key={getEventUID(page)} noOfLines={2} mb="2">
-                <UserName pubkey={page.pubkey} />: {getPageSummary(page)}
-              </Text>
-            ))}
-            {events?.length === 0 && <Text fontStyle="italic">There is no entry for this topic</Text>}
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
-    </Popover>
-  );
-}
 function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
   const properties: { className?: string; href?: string } | undefined = node?.properties;
 

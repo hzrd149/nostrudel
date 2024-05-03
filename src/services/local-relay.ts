@@ -1,10 +1,11 @@
 import { CacheRelay, openDB } from "nostr-idb";
-import { AbstractRelay, NostrEvent, VerifiedEvent, verifiedSymbol } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools";
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import { fakeVerifyEvent } from "./verify-event";
+import relayPoolService from "./relay-pool";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -74,6 +75,12 @@ async function connectRelay() {
   try {
     await relay.connect();
     log("Connected");
+
+    if (relay instanceof AbstractRelay) {
+      relayPoolService.relays.set(relay.url, relay);
+      relay.onnotice = (notice) => relayPoolService.handleRelayNotice(relay, notice);
+    }
+
     return relay;
   } catch (e) {
     log("Failed to connect to local relay, falling back to internal");

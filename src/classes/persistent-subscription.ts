@@ -38,6 +38,12 @@ export default class PersistentSubscription {
 
     if (!(await relayPoolService.waitForOpen(this.relay))) return;
 
+    // recreate the subscription since strfry and other relays reject subscription updates
+    // if (this.subscription?.closed === false) {
+    //   this.closed = true;
+    //   this.subscription.close();
+    // }
+
     this.closed = false;
     this.process.active = true;
 

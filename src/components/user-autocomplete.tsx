@@ -8,7 +8,7 @@ import userMetadataService from "../services/user-metadata";
 import { getDisplayName } from "../helpers/nostr/user-metadata";
 import useAppSettings from "../hooks/use-app-settings";
 
-const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...props }, ref) => {
+const UserAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...props }, ref) => {
   const getDirectory = useUserSearchDirectoryContext();
   const { removeEmojisInUsernames } = useAppSettings();
 
@@ -19,7 +19,7 @@ const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...p
 
   return (
     <>
-      <Input placeholder="npub..." list="users" value={value} {...props} ref={ref} />
+      <Input placeholder="Users" list="users" value={value} {...props} ref={ref} />
       {users && (
         <datalist id="users">
           {users
@@ -35,4 +35,4 @@ const NpubAutocomplete = forwardRef<HTMLInputElement, InputProps>(({ value, ...p
   );
 });
 
-export default NpubAutocomplete;
+export default UserAutocomplete;

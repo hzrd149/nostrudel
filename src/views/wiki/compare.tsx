@@ -23,7 +23,7 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import MarkdownContent from "./components/markdown";
 import { WIKI_RELAYS } from "../../const";
 import UserName from "../../components/user/user-name";
-import WikiPageMenu from "./components/wioki-page-menu";
+import WikiPageMenu from "./components/wiki-page-menu";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { ExternalLinkIcon } from "../../components/icons";
 

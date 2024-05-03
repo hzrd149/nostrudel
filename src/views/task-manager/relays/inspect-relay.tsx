@@ -1,5 +1,21 @@
 import { useCallback, useMemo } from "react";
-import { Button, ButtonGroup, Flex, Heading, Spacer, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  Spacer,
+  Tab,
+  TabIndicator,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useForceUpdate,
+  useInterval,
+  useToast,
+} from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -10,6 +26,7 @@ import useSubject from "../../../hooks/use-subject";
 import ProcessBranch from "../processes/process/process-tree";
 import processManager from "../../../services/process-manager";
 import RelayAuthButton from "../../../components/relays/relay-auth-button";
+import Timestamp from "../../../components/timestamp";
 
 export default function InspectRelayView() {
   const toast = useToast();
@@ -31,6 +48,7 @@ export default function InspectRelayView() {
   }, [toast]);
 
   const rootProcesses = processManager.getRootProcessesForRelay(relay);
+  const notices = useSubject(relayPoolService.notices.get(relay));
 
   return (
     <VerticalPageLayout>
@@ -50,15 +68,32 @@ export default function InspectRelayView() {
         </ButtonGroup>
       </Flex>
 
-      <Flex direction="column">
-        {Array.from(rootProcesses).map((process) => (
-          <ProcessBranch
-            key={process.id}
-            process={process}
-            filter={(p) => (p.relays.size > 0 ? p.relays.has(relay) : p.children.size > 0)}
-          />
-        ))}
-      </Flex>
+      <Tabs position="relative" variant="unstyled">
+        <TabList>
+          <Tab>Processes ({rootProcesses.size})</Tab>
+          <Tab>Notices ({notices.length})</Tab>
+        </TabList>
+        <TabIndicator mt="-1.5px" height="2px" bg="primary.500" borderRadius="1px" />
+
+        <TabPanels>
+          <TabPanel p="0">
+            {Array.from(rootProcesses).map((process) => (
+              <ProcessBranch
+                key={process.id}
+                process={process}
+                filter={(p) => (p.relays.size > 0 ? p.relays.has(relay) : p.children.size > 0)}
+              />
+            ))}
+          </TabPanel>
+          <TabPanel p="0">
+            {notices.map((notice) => (
+              <Text fontFamily="monospace" key={notice.date + notice.message}>
+                [<Timestamp timestamp={notice.date} />] {notice.message}
+              </Text>
+            ))}
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </VerticalPageLayout>
   );
 }

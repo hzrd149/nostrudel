@@ -33,7 +33,7 @@ import FileSearch01 from "../../components/icons/file-search-01";
 import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import QuoteRepostButton from "../../components/note/quote-repost-button";
-import WikiPageMenu from "./components/wioki-page-menu";
+import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import useCurrentAccount from "../../hooks/use-current-account";
 
