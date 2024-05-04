@@ -1,21 +1,16 @@
-import { Filter, NostrEvent, AbstractRelay } from "nostr-tools";
+import { NostrEvent, AbstractRelay } from "nostr-tools";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
 
 import EventStore from "./event-store";
-import { getEventUID } from "../helpers/nostr/event";
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
 import processManager from "../services/process-manager";
 import createDefer, { Deferred } from "./deferred";
 
-export function createCoordinate(kind: number, pubkey: string, d?: string) {
-  return `${kind}:${pubkey}${d ? ":" + d : ""}`;
-}
-
-/** This class is ued to batch requests by kind to a single relay */
-export default class BatchKindLoader {
+/** This class is used to batch requests for single events from a relay */
+export default class BatchEventLoader {
   events = new EventStore();
   relay: AbstractRelay;
   process: Process;
@@ -32,8 +27,8 @@ export default class BatchKindLoader {
 
   constructor(relay: AbstractRelay, log?: Debugger) {
     this.relay = relay;
-    this.log = log || debug("BatchKindLoader");
-    this.process = new Process("BatchKindLoader", this, [relay]);
+    this.log = log || debug("BatchEventLoader");
+    this.process = new Process("BatchEventLoader", this, [relay]);
     this.process.icon = BracketsX;
     processManager.registerProcess(this.process);
 
@@ -44,16 +39,15 @@ export default class BatchKindLoader {
     this.process.addChild(this.subscription.process);
   }
 
-  requestEvent(kind: number, pubkey: string, d?: string): Promise<NostrEvent | null> {
-    const key = createCoordinate(kind, pubkey, d);
-    const event = this.events.getEvent(key);
+  requestEvent(id: string): Promise<NostrEvent | null> {
+    const event = this.events.getEvent(id);
 
     if (!event) {
-      if (this.pending.has(key)) return this.pending.get(key)!;
-      if (this.next.has(key)) return this.next.get(key)!;
+      if (this.pending.has(id)) return this.pending.get(id)!;
+      if (this.next.has(id)) return this.next.get(id)!;
 
       const defer = createDefer<NostrEvent | null>();
-      this.next.set(key, defer);
+      this.next.set(id, defer);
 
       // request subscription update
       this.start();
@@ -77,17 +71,11 @@ export default class BatchKindLoader {
   );
 
   private handleEvent(event: NostrEvent) {
-    const key = getEventUID(event);
+    const key = event.id;
 
-    const defer = this.pending.get(key);
-    if (defer) this.pending.delete(key);
-
-    const current = this.events.getEvent(key);
-    if (!current || event.created_at > current.created_at) {
-      this.events.addEvent(event);
-
-      if (defer) defer.resolve(event);
-    } else if (defer) defer.resolve(null);
+    this.events.addEvent(event);
+    this.pending.get(key)?.resolve(event);
+    this.pending.delete(key);
   }
   private handleEOSE() {
     // resolve with null for any events we where not able to find
@@ -97,8 +85,8 @@ export default class BatchKindLoader {
     this.pending.clear();
     this.process.active = false;
 
-    // batch finished, if there is a next request an update
-    if (this.next.size > 0) this.start();
+    // do next request or close the subscription
+    this.start();
   }
 
   update() {
@@ -108,30 +96,9 @@ export default class BatchKindLoader {
 
     // update subscription
     if (this.pending.size > 0) {
-      const filters: Record<number, Filter> = {};
+      this.log(`Updating filters ${this.pending.size} events`);
 
-      for (const [cord] of this.pending) {
-        const [kindStr, pubkey, d] = cord.split(":") as [string, string] | [string, string, string];
-        const kind = parseInt(kindStr);
-        filters[kind] = filters[kind] || { kinds: [kind] };
-
-        const arr = (filters[kind].authors = filters[kind].authors || []);
-        arr.push(pubkey);
-
-        if (d) {
-          const arr = (filters[kind]["#d"] = filters[kind]["#d"] || []);
-          arr.push(d);
-        }
-      }
-
-      this.log(
-        `Updating query`,
-        Array.from(Object.keys(filters))
-          .map((kind: string) => `kind ${kind}: ${filters[parseInt(kind)].authors?.length}`)
-          .join(", "),
-      );
-
-      this.subscription.filters = Array.from(Object.values(filters));
+      this.subscription.filters = [{ ids: Array.from(this.pending.keys()) }];
       this.subscription.update();
       this.process.active = true;
     } else {
