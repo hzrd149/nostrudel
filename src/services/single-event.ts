@@ -34,6 +34,7 @@ class SingleEventService {
   constructor() {
     this.process = new Process("SingleEventService", this);
     this.process.icon = Code02;
+    this.process.active = true;
     processManager.registerProcess(this.process);
 
     // when an event is added to the store, pass it along to the subjects
