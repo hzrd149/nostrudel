@@ -58,7 +58,7 @@ class EventZapsService {
 
   requestZaps(eventUID: string, urls: Iterable<string | URL | AbstractRelay>, alwaysRequest = true) {
     const subject = this.subjects.get(eventUID);
-    if (subject.value && !alwaysRequest) return;
+    if (subject.value && !alwaysRequest) return subject;
 
     if (localRelay) {
       this.loaders.get(localRelay as AbstractRelay).requestEvents(eventUID);

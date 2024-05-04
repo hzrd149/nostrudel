@@ -76,7 +76,7 @@ export default class BatchRelationLoader {
     { leading: false, trailing: true },
   );
 
-  private handleEvent(event: NostrEvent) {
+  handleEvent(event: NostrEvent) {
     // add event to cache
     const updateIds = new Set<string>();
     for (const tag of event.tags) {
@@ -93,7 +93,7 @@ export default class BatchRelationLoader {
 
     for (const id of updateIds) this.onEventUpdate.next(id);
   }
-  private handleEOSE() {
+  handleEOSE() {
     // resolve all pending from the last request
     for (const [uid, defer] of this.pending) {
       defer.resolve(this.references.get(uid));
