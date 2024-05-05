@@ -39,24 +39,26 @@ export default function LoginNostrAddressView() {
     if (!nip05) return;
 
     try {
-      if (nip05.hasNip46) {
+      if (nip05.hasNip46 && nip05.pubkey) {
         setLoading("Connecting...");
-        const relays = safeRelayUrls(nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays);
+        const relays = safeRelayUrls(
+          nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays || [],
+        );
         const client = nostrConnectService.fromHostedBunker(nip05.pubkey, relays);
         await client.connect();
 
         nostrConnectService.saveClient(client);
         accountService.addFromNostrConnect(client);
         accountService.switchAccount(client.pubkey!);
-      } else {
+      } else if (nip05.pubkey) {
         accountService.addAccount({
           type: "pubkey",
           pubkey: nip05.pubkey,
-          relays: [...nip05.relays, COMMON_CONTACT_RELAY],
+          relays: nip05.relays ? [...nip05.relays, COMMON_CONTACT_RELAY] : [COMMON_CONTACT_RELAY],
           readonly: true,
         });
         accountService.switchAccount(nip05.pubkey);
-      }
+      } else throw Error("Cant find address");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

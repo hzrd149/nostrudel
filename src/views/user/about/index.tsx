@@ -50,6 +50,7 @@ import UserStatsAccordion from "./user-stats-accordion";
 import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
+import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -58,6 +59,42 @@ function buildDescriptionContent(description: string) {
   content = embedUrls(content, [renderGenericUrl]);
 
   return content;
+}
+
+function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
+  const metadata = useUserMetadata(pubkey);
+  const dnsIdentity = useUserDNSIdentity(pubkey);
+  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
+  const nip05URL = parsedNip05
+    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
+    : undefined;
+
+  if (dnsIdentity === undefined)
+    return (
+      <Text color="yellow.500">
+        Unable to check DNS identity due to CORS error{" "}
+        {nip05URL && (
+          <Link
+            color="blue.500"
+            href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(nip05URL)}&method=get`}
+            isExternal
+          >
+            Test
+            <ExternalLinkIcon ml="1" />
+          </Link>
+        )}
+      </Text>
+    );
+  else if (dnsIdentity.exists === false) return <Text color="red.500">Unable to find nostr.json file</Text>;
+  else if (dnsIdentity.pubkey === undefined)
+    return <Text color="red.500">Unable to find DNS Identity in nostr.json file</Text>;
+  else if (dnsIdentity.pubkey === pubkey) return null;
+  else
+    return (
+      <Text color="red.500" fontWeight="bold">
+        Invalid DNS Identity!
+      </Text>
+    );
 }
 
 export default function UserAboutTab() {
@@ -69,10 +106,13 @@ export default function UserAboutTab() {
   const metadata = useUserMetadata(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
+  const pubkeyColor = "#" + pubkey.slice(0, 6);
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
-  const pubkeyColor = "#" + pubkey.slice(0, 6);
+  const nip05URL = parsedNip05
+    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
+    : undefined;
 
   return (
     <Flex
@@ -162,13 +202,16 @@ export default function UserAboutTab() {
             </Link>
           </Flex>
         )}
-        {parsedNip05 && (
-          <Flex gap="2">
-            <AtIcon />
-            <Link href={`//${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`} isExternal>
-              <UserDnsIdentity pubkey={pubkey} />
-            </Link>
-          </Flex>
+        {nip05URL && (
+          <Box>
+            <Flex gap="2">
+              <AtIcon />
+              <Link href={nip05URL} isExternal>
+                <UserDnsIdentity pubkey={pubkey} />
+              </Link>
+            </Flex>
+            <DNSIdentityWarning pubkey={pubkey} />
+          </Box>
         )}
         {metadata?.website && (
           <Flex gap="2">

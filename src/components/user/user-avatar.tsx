@@ -9,7 +9,7 @@ import { Kind0ParsedContent, getDisplayName } from "../../helpers/nostr/user-met
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
-import UserDnsIdentityIcon, { useDnsIdentityColor } from "./user-dns-identity-icon";
+import UserDnsIdentityIcon from "./user-dns-identity-icon";
 import styled from "@emotion/styled";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {

@@ -69,7 +69,7 @@ export default function RelaysView() {
             </Button>
           </>
         )}
-        {nip05 && (
+        {nip05?.exists && (
           <Button
             variant="outline"
             as={RouterLink}
