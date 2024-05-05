@@ -141,8 +141,7 @@ export default function PrivacySettings() {
             )}
             {formState.errors.corsProxy && <FormErrorMessage>{formState.errors.corsProxy.message}</FormErrorMessage>}
             <FormHelperText>
-              This is used as a fallback ( to bypass CORS restrictions ) or to make connections to .onion and .i2p
-              domains
+              This is used as a fallback ( to bypass CORS restrictions ) or to make requests to .onion and .i2p domains
               <br />
               This can either point to an instance of{" "}
               <Link href="https://github.com/Rob--W/cors-anywhere" isExternal color="blue.500">

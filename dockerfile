@@ -34,13 +34,14 @@ RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/ap
 RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 ENV PATH="/node-v20.12.2/bin:$PATH"
+RUN npm install -g yarn@1.22
 
 WORKDIR /app
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # copy server
 COPY server/ /app/server/
-RUN cd /app/server/ && npm install
+RUN cd /app/server/ && yarn install
 
 # setup entrypoint
 ADD ./docker-entrypoint.sh docker-entrypoint.sh
