@@ -6,7 +6,6 @@
   "license": "MIT",
   "dependencies": {
     "cors-anywhere": "^0.4.4",
-    "pac-proxy-agent": "^7.0.1",
-    "workbox-precaching": "^7.1.0"
+    "pac-proxy-agent": "^7.0.1"
   }
 }
