@@ -163,6 +163,10 @@ export default class MultiSubscription {
   }
 
   destroy() {
+    for (const [relay, sub] of this.subscriptions) {
+      sub.destroy();
+    }
+
     this.process.remove();
     processManager.unregisterProcess(this.process);
   }

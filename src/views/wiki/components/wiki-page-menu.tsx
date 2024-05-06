@@ -4,7 +4,7 @@ import { MenuItem } from "@chakra-ui/react";
 
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
+import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -24,7 +24,7 @@ export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & 
           </MenuItem>
         )}
 
-        <CopyShareLinkMenuItem event={page} />
+        <ShareLinkMenuItem event={page} />
         <CopyEmbedCodeMenuItem event={page} />
 
         <DebugEventMenuItem event={page} />

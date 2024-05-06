@@ -20,8 +20,6 @@ export type RequestOptions = {
   alwaysRequest?: boolean;
   /** ignore the cache on initial load */
   ignoreCache?: boolean;
-  // TODO: figure out a clean way for useReplaceableEvent hook to "unset" or "unsubscribe"
-  // keepAlive?: boolean;
 };
 
 export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
@@ -36,8 +34,8 @@ class ReplaceableEventsService {
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   cacheLoader: BatchKindLoader | null = null;
-  loaders = new SuperMap<string, BatchKindLoader>((relay) => {
-    const loader = new BatchKindLoader(relayPoolService.requestRelay(relay), this.log.extend(relay));
+  loaders = new SuperMap<AbstractRelay, BatchKindLoader>((relay) => {
+    const loader = new BatchKindLoader(relay, this.log.extend(relay.url));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
     this.process.addChild(loader.process);
     return loader;
@@ -93,8 +91,14 @@ class ReplaceableEventsService {
     this.writeToCacheThrottle();
   }
 
-  private requestEventFromRelays(relays: Iterable<string>, kind: number, pubkey: string, d?: string) {
+  private requestEventFromRelays(
+    urls: Iterable<string | URL | AbstractRelay>,
+    kind: number,
+    pubkey: string,
+    d?: string,
+  ) {
     const cord = createCoordinate(kind, pubkey, d);
+    const relays = relayPoolService.getRelays(urls);
     const sub = this.subjects.get(cord);
 
     for (const relay of relays) this.loaders.get(relay).requestEvent(kind, pubkey, d);
@@ -102,8 +106,15 @@ class ReplaceableEventsService {
     return sub;
   }
 
-  requestEvent(relays: Iterable<string>, kind: number, pubkey: string, d?: string, opts: RequestOptions = {}) {
+  requestEvent(
+    urls: Iterable<string | URL | AbstractRelay>,
+    kind: number,
+    pubkey: string,
+    d?: string,
+    opts: RequestOptions = {},
+  ) {
     const key = createCoordinate(kind, pubkey, d);
+    const relays = relayPoolService.getRelays(urls);
     const sub = this.subjects.get(key);
 
     if (!sub.value && this.cacheLoader) {
