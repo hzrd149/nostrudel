@@ -142,6 +142,7 @@ export default class BatchKindLoader {
   }
 
   destroy() {
+    this.subscription.destroy();
     this.process.remove();
     processManager.unregisterProcess(this.process);
   }

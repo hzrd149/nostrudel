@@ -140,6 +140,7 @@ export default class BatchRelationLoader {
   }
 
   destroy() {
+    this.subscription.destroy();
     this.process.remove();
     processManager.unregisterProcess(this.process);
   }

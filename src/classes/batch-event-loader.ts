@@ -109,6 +109,7 @@ export default class BatchEventLoader {
   }
 
   destroy() {
+    this.subscription.destroy()
     this.process.remove();
     processManager.unregisterProcess(this.process);
   }
