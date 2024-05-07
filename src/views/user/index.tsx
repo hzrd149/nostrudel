@@ -68,8 +68,8 @@ const tabs = [
 
 function useUserBestOutbox(pubkey: string, count: number = 4) {
   const mailbox = useUserMailboxes(pubkey);
-  const relays = useReadRelays(mailbox?.outbox);
-  const sorted = relayScoreboardService.getRankedRelays(relays);
+  const relays = useReadRelays();
+  const sorted = relayScoreboardService.getRankedRelays(mailbox?.outbox.size ? mailbox?.outbox : relays);
   return !count ? sorted : sorted.slice(0, count);
 }
 
