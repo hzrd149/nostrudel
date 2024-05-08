@@ -1,5 +1,6 @@
 import { NostrEvent, nip19 } from "nostr-tools";
 import { truncatedId } from "./event";
+import { npubEncode } from "../nip19";
 
 export type Kind0ParsedContent = {
   pubkey?: string;
@@ -29,7 +30,7 @@ export function parseMetadataContent(event: NostrEvent): Kind0ParsedContent {
     if (metadata.website) metadata.website = fixWebsiteUrl(metadata.website);
 
     return metadata;
-  } catch (e) {}
+  } catch (e) { }
   return {};
 }
 
@@ -40,7 +41,7 @@ export function getSearchNames(metadata: Kind0ParsedContent) {
 }
 
 export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
-  return metadata?.displayName || metadata?.display_name || metadata?.name || truncatedId(nip19.npubEncode(pubkey));
+  return metadata?.displayName || metadata?.display_name || metadata?.name || truncatedId(npubEncode(pubkey) || pubkey);
 }
 
 export function fixWebsiteUrl(website: string) {

@@ -20,7 +20,7 @@ export function safeDecode(str: string) {
     if ((result.type === "nevent" || result.type === "nprofile" || result.type === "naddr") && result.data.relays)
       result.data.relays = safeRelayUrls(result.data.relays);
     return result;
-  } catch (e) {}
+  } catch (e) { }
 }
 
 export function getPubkeyFromDecodeResult(result?: nip19.DecodeResult) {
@@ -110,4 +110,11 @@ export function getPointerFromTag(tag: Tag): nip19.DecodeResult | null {
     return { type: "nprofile", data: { pubkey, relays: relay ? [relay] : undefined } };
   }
   return null;
+}
+
+export function npubEncode(pk: string): string | undefined {
+  try {
+    return nip19.npubEncode(pk);
+  } catch (err) {
+  }
 }

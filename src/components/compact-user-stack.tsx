@@ -18,15 +18,15 @@ import { nip19 } from "nostr-tools";
 import UserAvatar from "./user/user-avatar";
 import { getUserDisplayName } from "../helpers/nostr/user-metadata";
 import useUserMetadata from "../hooks/use-user-metadata";
+import { npubEncode } from "../helpers/nip19";
 
 function UserTag({ pubkey, ...props }: { pubkey: string } & Omit<TagProps, "children">) {
   const metadata = useUserMetadata(pubkey);
-  const npub = nip19.npubEncode(pubkey);
 
   const displayName = getUserDisplayName(metadata, pubkey);
 
   return (
-    <Tag as={RouterLink} to={`/u/${npub}`} {...props}>
+    <Tag as={RouterLink} to={`/u/${npubEncode(pubkey) || pubkey}`} {...props}>
       <UserAvatar pubkey={pubkey} size="xs" mr="2" title={displayName} />
       {displayName}
     </Tag>
