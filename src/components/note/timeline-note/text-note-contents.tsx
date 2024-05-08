@@ -30,6 +30,7 @@ import {
   renderAudioUrl,
   renderModelUrl,
   renderCodePenURL,
+  renderArchiveOrgURL,
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
 
@@ -57,6 +58,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
     renderAudioUrl,
     renderModelUrl,
     renderCodePenURL,
+    renderArchiveOrgURL,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 

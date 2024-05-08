@@ -38,7 +38,7 @@ import { sha256 } from "@noble/hashes/sha256";
 import { EmbedableContent, defaultGetLocation } from "../../../helpers/embeds";
 import { getMatchLink } from "../../../helpers/regexp";
 import { useRegisterSlide } from "../../lightbox-provider";
-import { isImageURL } from "../../../helpers/url";
+import { getMediaHashFromURL, isImageURL } from "../../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAppSettings from "../../../hooks/use-app-settings";
@@ -94,8 +94,6 @@ export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
       },
       [show],
     );
-
-    const sha256 = src?.match(/[0-9a-f]{64}/i);
 
     // NOTE: the parent <div> has display=block and and <a> has inline-block
     // this is so that the <a> element can act like a block without being full width
@@ -279,7 +277,7 @@ function VerifyImageButton({ src, original }: { src: URL; original: string }) {
 export function renderImageUrl(match: URL) {
   if (!isImageURL(match)) return null;
 
-  const hash = match.pathname.match(/[0-9a-f]{64}/)?.[0];
+  const hash = getMediaHashFromURL(match);
 
   return (
     <ExpandableEmbed
