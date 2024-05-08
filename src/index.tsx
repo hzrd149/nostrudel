@@ -13,6 +13,15 @@ onConnected((provider) => {
   window.webln = provider;
 });
 
+// When the app closes, remove the bitcoin-connect config if its set to extension
+// This prevents it from prompting the user to authorize or unlock their extension when the app is opened
+window.addEventListener("unload", () => {
+  const config = localStorage.getItem("bc:config");
+  if (config && JSON.parse(config).connectorType === "extension.generic") {
+    localStorage.removeItem("bc:config");
+  }
+});
+
 // setup dayjs
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";

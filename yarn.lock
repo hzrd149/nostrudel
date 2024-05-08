@@ -2378,28 +2378,28 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.2.1.tgz#988dc7b806e38981131b71ab1302436564499973"
-  integrity sha512-SeOaIFbEDQL3SAu/uips/djXMbii+zFKTGJi1yvuaV16mf+Iu+F61SwDNV5ZIim3S/0UHLvLesIseelpdsgDMA==
+"@getalby/bitcoin-connect-react@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.3.0.tgz#8873297eeaaa10adcd5dd52bc15aa7139b7c9397"
+  integrity sha512-JXCVUtZvOZYfb4fhZHpVZZ6iswpKtXi7onqfaEFYQFJHHCeUPdscSsqJrIZ/gEqF1foqkaaKidUmY3w9klz+jw==
   dependencies:
-    "@getalby/bitcoin-connect" "^3.2.1"
+    "@getalby/bitcoin-connect" "^3.3.0"
 
-"@getalby/bitcoin-connect@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.2.1.tgz#828518d530cf00115267e58fa4f26c73223aa21a"
-  integrity sha512-mpfiqcPVSvWtAD/dDSb6iRHf2JE7BxoD7NDTN6/+2fmL9CzWPCZ+nxUl9WN9+hdM2d6q1zdAqWHm2SLhCrYJsQ==
+"@getalby/bitcoin-connect@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.3.0.tgz#7a53bf884729e8ff3e692e059d2b9c02ba75fa4b"
+  integrity sha512-3e4oGasmz6EdX+xwzS/bFv9nZmZcFSafSgrabpX9ejvBGS93sntZ8yFwLf0ynyvpxcUbeCq4Ww0Vt3TlQmwgug==
   dependencies:
-    "@getalby/lightning-tools" "^5.0.1"
+    "@getalby/lightning-tools" "^5.0.3"
     "@getalby/sdk" "^3.2.3"
-    "@lightninglabs/lnc-web" "^0.2.8-alpha"
+    "@lightninglabs/lnc-web" "^0.3.1-alpha"
     qrcode-generator "^1.4.4"
     zustand "^4.4.7"
 
-"@getalby/lightning-tools@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.1.tgz#08a974bcdf3d98a86ff9909df838360ee67174c8"
-  integrity sha512-xoBfBYMQrJqwryU9fAYGIW6dzWRpdsAw8rroqTROba2bHdYT0ZvGnt4tjqXUhRswopR2X+wp1QeeWHZNL9A0Kg==
+"@getalby/lightning-tools@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.3.tgz#4cc6ef1253a30fb4913af89b842645e0c04994bf"
+  integrity sha512-QG3/SBI5n2py5IgsjP3K+c8eq55eiI3PQB12yo9Pot0b5hcN7TNNoTKn0fgLJjO1iEVCUkF513kDOpjjXwK0hQ==
 
 "@getalby/sdk@^3.2.3":
   version "3.3.0"
@@ -2482,18 +2482,18 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@lightninglabs/lnc-core@0.2.8-alpha":
-  version "0.2.8-alpha"
-  resolved "https://registry.yarnpkg.com/@lightninglabs/lnc-core/-/lnc-core-0.2.8-alpha.tgz#78272c04a5ec95a9ccb830f75ab9b5ca227f0801"
-  integrity sha512-2tHzmklIiQhJiK1aabX0R2AbbWi0mizWgniCUOb573XToYQN7L61Phh+hWUCxIFfAhHCkp2mnSmX+7eT/ikxOg==
+"@lightninglabs/lnc-core@0.3.1-alpha":
+  version "0.3.1-alpha"
+  resolved "https://registry.yarnpkg.com/@lightninglabs/lnc-core/-/lnc-core-0.3.1-alpha.tgz#cfd6c0857a20013fb1819b40bd1158a2edc8bcf0"
+  integrity sha512-I/hThdItLWJ6RU8Z27ZIXhpBS2JJuD3+TjtaQXX2CabaUYXlcN4sk+Kx8N/zG/fk8qZvjlRWum4vHu4ZX554Fg==
 
-"@lightninglabs/lnc-web@^0.2.8-alpha":
-  version "0.2.8-alpha"
-  resolved "https://registry.yarnpkg.com/@lightninglabs/lnc-web/-/lnc-web-0.2.8-alpha.tgz#454f6d68bcd8d766761f326846467000fc9c251c"
-  integrity sha512-Pe0Moupd7mglbvbVZk7GqPNxa/4lFFWWsnYtiSahzjhNCmTaoQkk/gUY8kk1u5mHaqUmrL1YgLCLsmbGbWPV/g==
+"@lightninglabs/lnc-web@^0.3.1-alpha":
+  version "0.3.1-alpha"
+  resolved "https://registry.yarnpkg.com/@lightninglabs/lnc-web/-/lnc-web-0.3.1-alpha.tgz#bbeccff8f2b0071468681642d47c97f8c953020b"
+  integrity sha512-yL5SgBkl6kd6ISzJHGlSN7TXbiDoo1pfGvTOIdVWYVyXtEeW8PT+x6YGOmyQXGFT2OOf7fC7PfP9VnskDPuFaA==
   dependencies:
-    "@lightninglabs/lnc-core" "0.2.8-alpha"
-    crypto-js "4.1.1"
+    "@lightninglabs/lnc-core" "0.3.1-alpha"
+    crypto-js "4.2.0"
 
 "@manypkg/find-root@^1.1.0":
   version "1.1.0"
@@ -3853,10 +3853,10 @@ cross-spawn@^5.1.0:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-crypto-js@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
-  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
+crypto-js@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 crypto-random-string@^2.0.0:
   version "2.0.0"
