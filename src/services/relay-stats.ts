@@ -1,4 +1,4 @@
-import _throttle from "lodash/throttle";
+import _throttle from "lodash.throttle";
 
 import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
