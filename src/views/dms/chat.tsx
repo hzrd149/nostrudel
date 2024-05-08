@@ -1,7 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
-import { kinds } from "nostr-tools";
+import { NostrEvent, kinds } from "nostr-tools";
 
 import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user/user-avatar";
@@ -74,6 +74,16 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      const from = event.pubkey;
+      const to = event.tags.find((t) => t[0] === "p")?.[1];
+
+      return (from === account.pubkey && to === pubkey) || (from === pubkey && to === account.pubkey);
+    },
+    [account, pubkey],
+  );
+
   const otherMailboxes = useUserMailboxes(pubkey);
   const mailboxes = useUserMailboxes(account.pubkey);
   const timeline = useTimelineLoader(
@@ -86,6 +96,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         authors: [pubkey, account.pubkey],
       },
     ],
+    { eventFilter },
   );
 
   const [loading, setLoading] = useState(false);
