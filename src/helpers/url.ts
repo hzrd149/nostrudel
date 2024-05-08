@@ -1,5 +1,3 @@
-import { isValidRelayURL, validateRelayURL } from "./relay";
-
 export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
 
 export const IMAGE_EXT = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];
@@ -23,10 +21,10 @@ export function isAudioURL(url: string | URL) {
 }
 
 export function getMediaHashFromURL(url: string | URL) {
-  const u = new URL(url);
+  const u = url instanceof URL ? url : new URL(url);
   const matches = Array.from(u.pathname.matchAll(/[0-9a-f]{64}/gi));
 
-  return matches[matches.length - 1][0] as string | undefined;
+  if (matches.length > 0) return matches[matches.length - 1][0] as string | undefined;
 }
 
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
