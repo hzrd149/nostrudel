@@ -6688,19 +6688,19 @@ react-focus-lock@^2.9.4:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
-react-force-graph-2d@^1.25.1:
-  version "1.25.3"
-  resolved "https://registry.yarnpkg.com/react-force-graph-2d/-/react-force-graph-2d-1.25.3.tgz#9ed1f4bafd0a9bc3e8ed98d5b1c584b728ac856f"
-  integrity sha512-BFgZ8Mbq03fEO3Xss9hi1LAReu0LatEVpqJlrm9023p6rJMaUIrGWfVPQUx7ObjMfVBfuq0JXvCcCEpo+FmO1Q==
+react-force-graph-2d@^1.25.4:
+  version "1.25.4"
+  resolved "https://registry.yarnpkg.com/react-force-graph-2d/-/react-force-graph-2d-1.25.4.tgz#91f9e8169d0eeb6a7e36c36dd99da5128702b776"
+  integrity sha512-Y1xwa79PHVZUedfa/TO+Cboq2hIc1flA1z4o1oraOu6qMS0r421vNpfjWhJPR6qJonNme3tzeVt5boEA7Ue8sg==
   dependencies:
     force-graph "1"
     prop-types "15"
     react-kapsule "2"
 
-react-force-graph-3d@^1.23.1:
-  version "1.24.1"
-  resolved "https://registry.yarnpkg.com/react-force-graph-3d/-/react-force-graph-3d-1.24.1.tgz#5a4d39578b7253a96efbdc3a02c98a26901ca751"
-  integrity sha512-Qx3z397VueK2KMjxETx7HRBqFFjEejjsFLgzCbne4Op+0+SlfGjwqxOCopAdAqcK6D+SQ0mhzTUCWw74Sr5wGA==
+react-force-graph-3d@^1.24.2:
+  version "1.24.2"
+  resolved "https://registry.yarnpkg.com/react-force-graph-3d/-/react-force-graph-3d-1.24.2.tgz#e94d14981e06f3a0b5b4a5f5d69888a2ff88ee35"
+  integrity sha512-/tZ0BywYuj35Q84AH2WN+Cx0RIygnN5F1+EvsdAqsAMoIJ0xl4L/9aD/pwjCoWfFqi3w5wR2DQuitDXeTayZnQ==
   dependencies:
     "3d-force-graph" "^1.73"
     prop-types "15"
@@ -7592,15 +7592,15 @@ three-render-objects@^1.29:
     kapsule "1"
     polished "4"
 
-three-spritetext@^1.8.1:
+three-spritetext@^1.8.2:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/three-spritetext/-/three-spritetext-1.8.2.tgz#62d8106e579274c65d86df2b56dda46b13fa97cc"
   integrity sha512-OYjyAhWnQ6+7CPKjnpq3JQM+Lpr6cSOppCtbOOzF1IbCauGkoDFvbAnxYd0LVxEsIO2RALXXScg2eX+R6CAfyA==
 
-three-stdlib@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.29.4.tgz#6e8741f6a2d435d15ed73f3a14dd149660d4ce51"
-  integrity sha512-XNzGCrz/uAk9XoLwd35eN7dQyI4ggXZTeqjcN034YdYBpBlNO9kmLHehl/0Nw9jCelblB7jla+unHAOIyLyV6Q==
+three-stdlib@^2.29.11:
+  version "2.29.11"
+  resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.29.11.tgz#9bec17887464e8f4fe36d41e879655b16411c686"
+  integrity sha512-vSyUavKCwOJQd2ch9IHhyJVx6eNG3y+z3/LulqHM7OLMy81OqnmIrvc2b4phKr/c1aVjHRNG2X7JOklfrDDcmQ==
   dependencies:
     "@types/draco3d" "^1.4.0"
     "@types/offscreencanvas" "^2019.6.4"

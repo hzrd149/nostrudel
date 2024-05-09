@@ -55,6 +55,7 @@ export default class TimelineLoader {
 
     this.subscription = new MultiSubscription(name);
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
+    this.subscription.onCacheEvent.subscribe((event) => this.handleEvent(event, true));
     this.process.addChild(this.subscription.process);
 
     // update the timeline when there are new events
@@ -72,12 +73,16 @@ export default class TimelineLoader {
       this.timeline.next(this.events.getSortedEvents().filter((e) => filter(e, this.events)));
     } else this.timeline.next(this.events.getSortedEvents());
   }
-  private handleEvent(event: NostrEvent, cache = true) {
+
+  private seenInCache = new Set<string>();
+  private handleEvent(event: NostrEvent, fromCache = false) {
     // if this is a replaceable event, mirror it over to the replaceable event service
     if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
 
     this.events.addEvent(event);
-    if (cache && localRelay) localRelay.publish(event);
+    if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
+
+    if (fromCache) this.seenInCache.add(event.id);
   }
   private handleChunkFinished() {
     this.updateLoading();

@@ -23,7 +23,10 @@ export default class MultiSubscription {
 
   relays = new Set<AbstractRelay>();
   subscriptions = new Map<AbstractRelay, PersistentSubscription>();
+
+  useCache = true;
   cacheSubscription: PersistentSubscription | null = null;
+  onCacheEvent = new ControlledObservable<NostrEvent>();
 
   state = MultiSubscription.CLOSED;
   onEvent = new ControlledObservable<NostrEvent>();
@@ -38,9 +41,12 @@ export default class MultiSubscription {
 
     processManager.registerProcess(this.process);
   }
-  private handleEvent(event: NostrEvent) {
+  private handleEvent(event: NostrEvent, fromCache = false) {
     if (this.seenEvents.has(event.id)) return;
-    this.onEvent.next(event);
+
+    if (fromCache) this.onCacheEvent.next(event);
+    else this.onEvent.next(event);
+
     this.seenEvents.add(event.id);
   }
 
@@ -102,18 +108,22 @@ export default class MultiSubscription {
       }
     }
 
-    // create cache sub if it does not exist
-    if (!this.cacheSubscription && localRelay) {
-      this.cacheSubscription = new PersistentSubscription(localRelay as AbstractRelay, {
-        onevent: (event) => this.handleEvent(event),
-      });
-      this.process.addChild(this.cacheSubscription.process);
-    }
+    if (this.useCache) {
+      // create cache sub if it does not exist
+      if (!this.cacheSubscription && localRelay) {
+        this.cacheSubscription = new PersistentSubscription(localRelay as AbstractRelay, {
+          onevent: (event) => this.handleEvent(event, true),
+        });
+        this.process.addChild(this.cacheSubscription.process);
+      }
 
-    // update cache sub filters if they changed
-    if (this.cacheSubscription && !isFilterEqual(this.cacheSubscription.filters, this.filters)) {
-      this.cacheSubscription.filters = this.filters;
-      this.cacheSubscription.update();
+      // update cache sub filters if they changed
+      if (this.cacheSubscription && !isFilterEqual(this.cacheSubscription.filters, this.filters)) {
+        this.cacheSubscription.filters = this.filters;
+        this.cacheSubscription.update();
+      }
+    } else if (this.cacheSubscription?.closed === false) {
+      this.cacheSubscription.close();
     }
   }
 

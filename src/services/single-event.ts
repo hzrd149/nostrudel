@@ -73,7 +73,7 @@ class SingleEventService {
           .requestEvent(id)
           .then((cached) => {
             this.loadingFromCache.delete(id);
-            if (cached) this.handleEvent(cached, false);
+            if (cached) this.handleEvent(cached, true);
             else this.loadEventFromRelays(id);
           });
       }
@@ -82,11 +82,11 @@ class SingleEventService {
     return subject;
   }
 
-  handleEvent(event: NostrEvent, cache = true) {
+  handleEvent(event: NostrEvent, fromCache = false) {
     this.events.addEvent(event);
     this.pendingRelays.delete(event.id);
 
-    if (cache && localRelay) localRelay.publish(event);
+    if (!fromCache && localRelay) localRelay.publish(event);
   }
 }
 

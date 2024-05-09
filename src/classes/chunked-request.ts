@@ -33,6 +33,7 @@ export default class ChunkedRequest {
   /** set to true when the next chunk produces 0 events */
   complete = false;
 
+  private lastChunkIdx = 0;
   onChunkFinish = new Subject<number>();
 
   constructor(relay: SimpleRelay | AbstractRelay, filters: Filter[], log?: Debugger) {
@@ -72,6 +73,8 @@ export default class ChunkedRequest {
     this.process.active = true;
     await new Promise<number>((res) => {
       const sub = this.relay.subscribe(filters, {
+        // @ts-expect-error
+        id: this.id + "-" + this.lastChunkIdx++,
         onevent: (event) => {
           this.handleEvent(event);
           gotEvents++;

@@ -26,8 +26,6 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
   return `${kind}:${truncateId(pubkey)}${d ? ":" + d : ""}`;
 }
 
-const WRITE_CACHE_BATCH_TIME = 250;
-
 class ReplaceableEventsService {
   process: Process;
 
@@ -53,13 +51,14 @@ class ReplaceableEventsService {
 
     if (localRelay) {
       this.cacheLoader = new BatchKindLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
-      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, false));
+      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, true));
       this.process.addChild(this.cacheLoader.process);
     }
   }
 
-  handleEvent(event: NostrEvent, saveToCache = true) {
-    if (!alwaysVerify(event)) return;
+  private seenInCache = new Set<string>();
+  handleEvent(event: NostrEvent, fromCache = false) {
+    if (!fromCache && !alwaysVerify(event)) return;
     const cord = getEventCoordinate(event);
 
     const subject = this.subjects.get(cord);
@@ -67,28 +66,15 @@ class ReplaceableEventsService {
     if (!current || event.created_at > current.created_at) {
       subject.next(event);
       this.events.addEvent(event);
-      if (saveToCache) this.saveToCache(cord, event);
+
+      if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
     }
+
+    if (fromCache) this.seenInCache.add(event.id);
   }
 
   getEvent(kind: number, pubkey: string, d?: string) {
     return this.subjects.get(createCoordinate(kind, pubkey, d));
-  }
-
-  private writeCacheQueue = new Map<string, NostrEvent>();
-  private writeToCacheThrottle = _throttle(this.writeToCache, WRITE_CACHE_BATCH_TIME);
-  private async writeToCache() {
-    if (this.writeCacheQueue.size === 0) return;
-
-    if (localRelay) {
-      this.log(`Sending ${this.writeCacheQueue.size} events to cache relay`);
-      for (const [_, event] of this.writeCacheQueue) localRelay.publish(event);
-    }
-    this.writeCacheQueue.clear();
-  }
-  private async saveToCache(cord: string, event: NostrEvent) {
-    this.writeCacheQueue.set(cord, event);
-    this.writeToCacheThrottle();
   }
 
   private requestEventFromRelays(
