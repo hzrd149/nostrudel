@@ -15,7 +15,7 @@ ENV VITE_COMMIT_HASH=""
 ENV VITE_APP_VERSION="custom"
 RUN yarn build
 
-FROM nginx:stable-alpine-slim
+FROM nginx:stable-alpine-slim as main
 EXPOSE 80
 
 # install nodejs
@@ -33,7 +33,9 @@ RUN echo '@edge https://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/ap
 # remove tmp files
 RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-ENV PATH="/node-v20.12.2/bin:$PATH"
+ARG PATH="/node-v20.12.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV PATH="${PATH}"
+
 RUN npm install -g yarn@1.22
 
 WORKDIR /app
