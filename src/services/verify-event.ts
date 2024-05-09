@@ -1,6 +1,6 @@
 import { NostrEvent, VerifiedEvent, verifiedSymbol, verifyEvent } from "nostr-tools";
-import { logger } from "../../helpers/debug";
 import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
+import { logger } from "../helpers/debug";
 
 const localStorageKey = "verify-event-method";
 

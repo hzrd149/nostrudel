@@ -258,9 +258,9 @@ export class NostrConnectClient {
   }
   async signEvent(draft: DraftNostrEvent) {
     const eventString = await this.makeRequest(NostrConnectMethod.SignEvent, [JSON.stringify(draft)]);
-    const event= JSON.parse(eventString) as NostrEvent;
-    if(!alwaysVerify(event)) throw new Error('Invalid event')
-    return event
+    const event = JSON.parse(eventString) as NostrEvent;
+    if (!alwaysVerify(event)) throw new Error("Invalid event");
+    return event;
   }
   nip04Encrypt(pubkey: string, plaintext: string) {
     return this.makeRequest(NostrConnectMethod.Nip04Encrypt, [pubkey, plaintext]);

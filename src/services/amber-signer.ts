@@ -1,14 +1,13 @@
-import { VerifiedEvent, getEventHash, nip19 } from "nostr-tools";
+import { EventTemplate, NostrEvent, VerifiedEvent, getEventHash, nip19 } from "nostr-tools";
 
 import createDefer, { Deferred } from "../classes/deferred";
 import { getPubkeyFromDecodeResult, isHex, isHexKey } from "../helpers/nip19";
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { alwaysVerify } from "./verify-event";
 
 export function createGetPublicKeyIntent() {
   return `intent:#Intent;scheme=nostrsigner;S.compressionType=none;S.returnType=signature;S.type=get_public_key;end`;
 }
-export function createSignEventIntent(draft: DraftNostrEvent) {
+export function createSignEventIntent(draft: EventTemplate) {
   return `intent:${encodeURIComponent(
     JSON.stringify(draft),
   )}#Intent;scheme=nostrsigner;S.compressionType=none;S.returnType=signature;S.type=sign_event;end`;
@@ -73,8 +72,8 @@ async function getPublicKey() {
   throw new Error("Expected clipboard to have pubkey");
 }
 
-async function signEvent(draft: DraftNostrEvent & { pubkey: string }): Promise<VerifiedEvent> {
-  const draftWithId = { ...draft, id: draft.id || getEventHash(draft) };
+async function signEvent(draft: EventTemplate & { pubkey: string }): Promise<VerifiedEvent> {
+  const draftWithId = { ...draft, id: getEventHash(draft) };
   const sig = await intentRequest(createSignEventIntent(draftWithId));
   if (!isHex(sig)) throw new Error("Expected hex signature");
 
