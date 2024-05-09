@@ -18,6 +18,7 @@ export function renderCodePenURL(match: URL) {
         loading="lazy"
         allowTransparency
         allowFullScreen
+        zIndex={1}
       />
     </ExpandableEmbed>
   );
@@ -42,6 +43,7 @@ export function renderArchiveOrgURL(match: URL) {
         loading="lazy"
         allowTransparency
         allowFullScreen
+        zIndex={1}
       />
     </ExpandableEmbed>
   );
