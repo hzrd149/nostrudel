@@ -6262,10 +6262,10 @@ nostr-tools@^2.3.2:
   optionalDependencies:
     nostr-wasm v0.1.0
 
-nostr-tools@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-2.5.1.tgz#614d6aaf5c21df6b239d7ed42fdf77616a4621e7"
-  integrity sha512-bpkhGGAhdiCN0irfV+xoH3YP5CQeOXyXzUq7SYeM6D56xwTXZCPEmBlUGqFVfQidvRsoVeVxeAiOXW2c2HxoRQ==
+nostr-tools@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/nostr-tools/-/nostr-tools-2.5.2.tgz#54b445380ac2a7740ad90ed3b044bca93ecf23bd"
+  integrity sha512-Ls2FKh694eudBye6q89yJ5JhXjQle1MWp1yD2sBZ5j9M3IOBEW8ia9IED5W6daSAjlT/Z/pV77yTkdF45c1Rbg==
   dependencies:
     "@noble/ciphers" "^0.5.1"
     "@noble/curves" "1.2.0"
