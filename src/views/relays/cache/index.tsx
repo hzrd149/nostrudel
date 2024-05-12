@@ -105,11 +105,13 @@ function NostrRelayTray() {
     location.reload();
   };
 
+  const githubUrl = navigator.userAgent.includes("Android") ? "https://github.com/greenart7c3/Citrine" : "https://github.com/CodyTseng/nostr-relay-tray"
+
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Nostr Relay Tray</Heading>
-        <Link color="blue.500" href="https://github.com/CodyTseng/nostr-relay-tray" isExternal>
+        <Link color="blue.500" href={`${githubUrl}`} isExternal>
           GitHub
         </Link>
         {available ? (
@@ -120,7 +122,7 @@ function NostrRelayTray() {
           <Button
             as={Link}
             isExternal
-            href="https://github.com/CodyTseng/nostr-relay-tray"
+            href={`${githubUrl}`}
             colorScheme="blue"
             size="sm"
             ml="auto"
