@@ -5,7 +5,7 @@ import { Link as RouterLink } from "react-router-dom";
 import ReplyForm from "./reply-form";
 import { ReplyIcon } from "../../../components/icons";
 import { countReplies, ThreadItem } from "../../../helpers/thread";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";

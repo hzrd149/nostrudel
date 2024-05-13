@@ -69,7 +69,11 @@ export default function useTextAreaUploadFile(
           const imageUrl = response.url;
           insertURL(imageUrl);
         } else if (mediaUploadService === "blossom" && mediaServers.length) {
-          const blob = await uploadFileToServers(mediaServers, file, requestSignature);
+          const blob = await uploadFileToServers(
+            mediaServers.map((s) => s.toString()),
+            file,
+            requestSignature,
+          );
           insertURL(blob.url);
         }
       } catch (e) {

@@ -33,6 +33,7 @@ import {
   renderArchiveOrgURL,
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
+import { MediaOwnerProvider } from "../../../providers/local/media-owner-provider";
 
 function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -93,13 +94,15 @@ export const TextNoteContents = React.memo(
     }
 
     return (
-      <LightboxProvider>
-        <Suspense fallback={<Spinner />}>
-          <Box whiteSpace="pre-wrap" {...props}>
-            {content}
-          </Box>
-        </Suspense>
-      </LightboxProvider>
+      <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>
+        <LightboxProvider>
+          <Suspense fallback={<Spinner />}>
+            <Box whiteSpace="pre-wrap" {...props}>
+              {content}
+            </Box>
+          </Suspense>
+        </LightboxProvider>
+      </MediaOwnerProvider>
     );
   },
 );

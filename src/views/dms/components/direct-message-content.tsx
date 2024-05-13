@@ -19,7 +19,7 @@ import {
   renderWavlakeUrl,
   renderYoutubeURL,
 } from "../../../components/external-embeds";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
 

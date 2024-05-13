@@ -9,7 +9,7 @@ import Timestamp from "../../../../components/timestamp";
 import { LightningIcon } from "../../../../components/icons";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
-import { TrustProvider } from "../../../../providers/local/trust";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 
 const ZapEvent = memo(({ zap }: { zap: ParsedZap }) => {
   if (!zap.payment.amount) return null;

@@ -34,7 +34,8 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import { cloneEvent } from "../../../helpers/nostr/event";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { USER_MEDIA_SERVERS_KIND, isServerTag, serversEqual } from "../../../helpers/nostr/blossom";
+import { isServerTag } from "../../../helpers/nostr/blossom";
+import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 
 function MediaServersPage() {
   const toast = useToast();
@@ -47,28 +48,28 @@ function MediaServersPage() {
   });
 
   const addServer = async (server: string) => {
-    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    const draft = cloneEvent(USER_BLOSSOM_SERVER_LIST_KIND, event);
     draft.tags = [
       ...draft.tags.filter((t) => !isServerTag(t)),
-      ...servers.map((server) => ["server", server]),
+      ...servers.map((server) => ["server", server.toString()]),
       ["server", server],
     ];
     await publish("Add media server", draft);
   };
   const removeServer = async (server: string) => {
-    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    const draft = cloneEvent(USER_BLOSSOM_SERVER_LIST_KIND, event);
     draft.tags = [
       ...draft.tags.filter((t) => !isServerTag(t)),
-      ...servers.filter((s) => !serversEqual(s, server)).map((server) => ["server", server]),
+      ...servers.filter((s) => !areServersEqual(s, server)).map((server) => ["server", server.toString()]),
     ];
     await publish("Remove media server", draft);
   };
   const makeDefault = async (server: string) => {
-    const draft = cloneEvent(USER_MEDIA_SERVERS_KIND, event);
+    const draft = cloneEvent(USER_BLOSSOM_SERVER_LIST_KIND, event);
     draft.tags = [
       ...draft.tags.filter((t) => !isServerTag(t)),
-      ["server", server],
-      ...servers.filter((s) => !serversEqual(s, server)).map((server) => ["server", server]),
+      ["server", server.toString()],
+      ...servers.filter((s) => !areServersEqual(s, server)).map((server) => ["server", server.toString()]),
     ];
     await publish("Remove media server", draft);
   };
@@ -83,7 +84,7 @@ function MediaServersPage() {
   const submit = handleSubmit(async (values) => {
     let url = new URL(values.server.startsWith("http") ? values.server : "https://" + values.server).toString();
 
-    if (event?.tags.some((t) => isServerTag(t) && serversEqual(t[1], url)))
+    if (event?.tags.some((t) => isServerTag(t) && areServersEqual(t[1], url)))
       return toast({ status: "error", description: "Server already in list" });
 
     try {
@@ -165,11 +166,11 @@ function MediaServersPage() {
             alignItems="center"
             borderWidth="1px"
             borderRadius="lg"
-            key={server}
+            key={server.toString()}
             borderColor={i === 0 ? "primary.500" : undefined}
           >
-            <MediaServerFavicon server={server} size="sm" />
-            <Link href={server} target="_blank" color="blue.500" fontSize="lg">
+            <MediaServerFavicon server={server.toString()} size="sm" />
+            <Link href={server.toString()} target="_blank" color="blue.500" fontSize="lg">
               {new URL(server).hostname}
             </Link>
 
@@ -178,12 +179,12 @@ function MediaServersPage() {
               variant={i === 0 ? "solid" : "outline"}
               colorScheme={i === 0 ? "primary" : undefined}
               size="sm"
-              onClick={() => makeDefault(server)}
+              onClick={() => makeDefault(server.toString())}
               isDisabled={i === 0}
             >
               Default
             </Button>
-            <CloseButton onClick={() => removeServer(server)} />
+            <CloseButton onClick={() => removeServer(server.toString())} />
           </Flex>
         ))}
       </Flex>

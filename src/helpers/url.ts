@@ -20,13 +20,6 @@ export function isAudioURL(url: string | URL) {
   return AUDIO_EXT.some((ext) => u.pathname.endsWith(ext));
 }
 
-export function getMediaHashFromURL(url: string | URL) {
-  const u = url instanceof URL ? url : new URL(url);
-  const matches = Array.from(u.pathname.matchAll(/[0-9a-f]{64}/gi));
-
-  if (matches.length > 0) return matches[matches.length - 1][0] as string | undefined;
-}
-
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
   const newUrl = new URL(url);
   replacementUrl = convertToUrl(replacementUrl);

@@ -84,7 +84,11 @@ export default function CreateWikiPageView() {
     async function imageUploadFunction(file: File, onSuccess: (url: string) => void, onError: (error: string) => void) {
       if (!servers) return onError("No media servers set");
       try {
-        const blob = await uploadFileToServers(servers, file, requestSignature);
+        const blob = await uploadFileToServers(
+          servers.map((s) => s.toString()),
+          file,
+          requestSignature,
+        );
         if (blob) onSuccess(blob.url);
       } catch (error) {
         if (error instanceof Error) onError(error.message);

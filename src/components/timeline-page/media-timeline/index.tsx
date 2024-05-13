@@ -8,7 +8,7 @@ import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
 import { EmbeddedImageProps, GalleryImage } from "../../external-embeds";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";

@@ -8,7 +8,7 @@ import TimelineNote from "../../note/timeline-note";
 import UserAvatar from "../../user/user-avatar";
 import UserDnsIdentity from "../../user/user-dns-identity";
 import UserLink from "../../user/user-link";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";

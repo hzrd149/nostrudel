@@ -28,7 +28,7 @@ import RepostButton from "./components/repost-button";
 import QuoteRepostButton from "../quote-repost-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import BookmarkButton from "../bookmark-button";
 import useCurrentAccount from "../../../hooks/use-current-account";

@@ -3426,6 +3426,13 @@ blossom-client-sdk@^0.5.1:
   dependencies:
     cross-fetch "^4.0.0"
 
+blossom-client-sdk@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/blossom-client-sdk/-/blossom-client-sdk-0.6.0.tgz#e5fc2b17f3d76e3b8bb3d31a535db294ebce5a07"
+  integrity sha512-m1dAIQF0WceEvpxbl349IUeNTay6w/QF7RAUlELIFxES7fbRQB0dkbVhT58y+SW+tTQvgMfuPmMAAsghrGwGfg==
+  dependencies:
+    cross-fetch "^4.0.0"
+
 blossom-drive-sdk@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/blossom-drive-sdk/-/blossom-drive-sdk-0.3.0.tgz#35ab1afebbc8c79bd86af10628291b3e06935f35"

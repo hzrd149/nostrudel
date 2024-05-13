@@ -6,7 +6,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { useRegisterIntersectionEntity } from "../../../../providers/local/intersection-observer";
-import { TrustProvider } from "../../../../providers/local/trust";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ChatMessageContent from "./chat-message-content";
 import NoteZapButton from "../../../../components/note/note-zap-button";
 

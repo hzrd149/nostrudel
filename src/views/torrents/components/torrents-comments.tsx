@@ -28,7 +28,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { ReplyIcon } from "../../../components/icons";
 import ReplyForm from "../../thread/components/reply-form";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";

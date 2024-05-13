@@ -31,7 +31,7 @@ import { kinds } from "nostr-tools";
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import PublishAction from "../../classes/nostr-publish-action";
 import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
-import { TrustProvider } from "../../providers/local/trust";
+import { TrustProvider } from "../../providers/local/trust-provider";
 import {
   correctContentMentions,
   createEmojiTags,

@@ -4,7 +4,7 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
-import { TrustProvider } from "../../../../providers/local/trust";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 
 export default function TranslationResult({ result }: { result: NostrEvent }) {
   const content = useDisclosure();

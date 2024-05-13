@@ -11,7 +11,7 @@ import { getEventUID, parseCoordinate } from "../../../helpers/nostr/event";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import Heart from "../../../components/icons/heart";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import {

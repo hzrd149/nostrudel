@@ -4,6 +4,7 @@ import {
   MutableRefObject,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -21,24 +22,23 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Text,
-  Tooltip,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { sha256 } from "@noble/hashes/sha256";
+import { bytesToHex } from "@noble/hashes/utils";
+import {
+  getHashFromURL,
+  handleImageFallbacks,
+  getServersFromServerListEvent,
+  USER_BLOSSOM_SERVER_LIST_KIND,
+} from "blossom-client-sdk";
 
 import { EmbedableContent, defaultGetLocation } from "../../../helpers/embeds";
 import { getMatchLink } from "../../../helpers/regexp";
 import { useRegisterSlide } from "../../lightbox-provider";
-import { getMediaHashFromURL, isImageURL } from "../../../helpers/url";
+import { isImageURL } from "../../../helpers/url";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAppSettings from "../../../hooks/use-app-settings";
@@ -46,7 +46,9 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../../helpers/image";
 import ExpandableEmbed from "../expandable-embed";
-import { bytesToHex } from "@noble/hashes/utils";
+import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
+import replaceableEventsService from "../../../services/replaceable-events";
+import clientRelaysService from "../../../services/client-relays";
 
 export type TrustImageProps = ImageProps;
 
@@ -74,38 +76,62 @@ export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"
   imageProps?: TrustImageProps;
 };
 
+function getPubkeyMediaServers(pubkey?: string) {
+  if (!pubkey) return;
+
+  return new Promise<URL[] | undefined>((res) => {
+    const sub = replaceableEventsService.requestEvent(
+      clientRelaysService.readRelays.value,
+      USER_BLOSSOM_SERVER_LIST_KIND,
+      pubkey,
+    );
+
+    if (sub.value) res(getServersFromServerListEvent(sub.value));
+    else {
+      sub.once((event) => res(getServersFromServerListEvent(event)));
+    }
+  });
+}
+
 function useImageThumbnail(src?: string) {
   return (src && buildImageProxyURL(src, "512,fit")) ?? src;
 }
 
-export const EmbeddedImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
-  ({ src, event, imageProps, ...props }, ref) => {
-    const thumbnail = useImageThumbnail(src);
+export function EmbeddedImage({ src, event, imageProps, ...props }: EmbeddedImageProps) {
+  const owner = useMediaOwnerContext();
+  const thumbnail = useImageThumbnail(src);
 
-    ref = ref || useRef<HTMLImageElement | null>(null);
-    const { show } = useRegisterSlide(
-      ref as MutableRefObject<HTMLImageElement | null>,
-      src ? { type: "image", src, event } : undefined,
-    );
-    const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
-      (e) => {
-        !e.isPropagationStopped() && show();
-        e.preventDefault();
-      },
-      [show],
-    );
+  const ref = useRef<HTMLImageElement | null>(null);
+  const { show } = useRegisterSlide(ref, src ? { type: "image", src, event } : undefined);
+  const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
+    (e) => {
+      !e.isPropagationStopped() && show();
+      e.preventDefault();
+    },
+    [show],
+  );
 
-    // NOTE: the parent <div> has display=block and and <a> has inline-block
-    // this is so that the <a> element can act like a block without being full width
-    return (
-      <div>
-        <Link href={src} isExternal onClick={handleClick} display="inline-block" {...props}>
-          <TrustImage {...imageProps} src={thumbnail} cursor="pointer" ref={ref} onClick={handleClick} />
-        </Link>
-      </div>
-    );
-  },
-);
+  useEffect(() => {
+    if (ref.current) handleImageFallbacks(ref.current, getPubkeyMediaServers);
+  }, []);
+
+  // NOTE: the parent <div> has display=block and and <a> has inline-block
+  // this is so that the <a> element can act like a block without being full width
+  return (
+    <div>
+      <Link href={src} isExternal onClick={handleClick} display="inline-block" {...props}>
+        <TrustImage
+          {...imageProps}
+          src={thumbnail}
+          cursor="pointer"
+          ref={ref}
+          onClick={handleClick}
+          data-pubkey={owner}
+        />
+      </Link>
+    </div>
+  );
+}
 
 export const GalleryImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
   ({ src, event, imageProps, ...props }, ref) => {
@@ -123,6 +149,11 @@ export const GalleryImage = forwardRef<HTMLImageElement, EmbeddedImageProps>(
       },
       [show],
     );
+
+    useEffect(() => {
+      const el = (ref as MutableRefObject<HTMLImageElement | null>).current;
+      if (el) handleImageFallbacks(el, getPubkeyMediaServers);
+    }, []);
 
     return (
       <Link href={src} isExternal onClick={handleClick} {...props}>
@@ -277,7 +308,7 @@ function VerifyImageButton({ src, original }: { src: URL; original: string }) {
 export function renderImageUrl(match: URL) {
   if (!isImageURL(match)) return null;
 
-  const hash = getMediaHashFromURL(match);
+  const hash = getHashFromURL(match);
 
   return (
     <ExpandableEmbed

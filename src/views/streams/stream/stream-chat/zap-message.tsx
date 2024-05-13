@@ -9,7 +9,7 @@ import { useRegisterIntersectionEntity } from "../../../../providers/local/inter
 import { LightningIcon } from "../../../../components/icons";
 import { getParsedZap } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";
-import { TrustProvider } from "../../../../providers/local/trust";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ChatMessageContent from "./chat-message-content";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 
