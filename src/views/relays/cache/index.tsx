@@ -106,11 +106,12 @@ function NostrRelayTray() {
   };
 
   const githubUrl = navigator.userAgent.includes("Android") ? "https://github.com/greenart7c3/Citrine" : "https://github.com/CodyTseng/nostr-relay-tray"
+  const appName = navigator.userAgent.includes("Android") ? "Citrine" : "Nostr Relay Tray"
 
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
-        <Heading size="md">Nostr Relay Tray</Heading>
+        <Heading size="md">{appName}</Heading>
         <Link color="blue.500" href={`${githubUrl}`} isExternal>
           GitHub
         </Link>
