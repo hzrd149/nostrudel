@@ -6,7 +6,6 @@ export function useMediaOwnerContext() {
   return useContext(MediaOwnerContext);
 }
 
-export function MediaOwnerProvider({ children, owner }: PropsWithChildren & { owner?: string }) {
-  if (owner) return <MediaOwnerContext.Provider value={owner}>{children}</MediaOwnerContext.Provider>;
-  else <>{children}</>;
+export default function MediaOwnerProvider({ children, owner }: PropsWithChildren & { owner?: string }) {
+  return owner ? <MediaOwnerContext.Provider value={owner}>{children}</MediaOwnerContext.Provider> : children;
 }

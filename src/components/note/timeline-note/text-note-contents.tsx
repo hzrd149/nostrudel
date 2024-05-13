@@ -33,7 +33,7 @@ import {
   renderArchiveOrgURL,
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
-import { MediaOwnerProvider } from "../../../providers/local/media-owner-provider";
+import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
 
 function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
