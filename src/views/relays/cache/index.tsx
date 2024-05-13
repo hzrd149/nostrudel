@@ -105,8 +105,9 @@ function NostrRelayTray() {
     location.reload();
   };
 
-  const githubUrl = navigator.userAgent.includes("Android") ? "https://github.com/greenart7c3/Citrine" : "https://github.com/CodyTseng/nostr-relay-tray"
-  const appName = navigator.userAgent.includes("Android") ? "Citrine" : "Nostr Relay Tray"
+  const isAndroid = navigator.userAgent.includes("Android")
+  const githubUrl = isAndroid ? "https://github.com/greenart7c3/Citrine" : "https://github.com/CodyTseng/nostr-relay-tray"
+  const appName = isAndroid ? "Citrine" : "Nostr Relay Tray"
 
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
@@ -132,11 +133,21 @@ function NostrRelayTray() {
           </Button>
         )}
       </CardHeader>
-      <CardBody p="4" pt="0">
-        <Text mb="2">A cool little app that runs a local relay in your systems tray</Text>
-        <Text>Maximum capacity: Unlimited</Text>
-        <Text>Performance: As fast as your computer</Text>
-      </CardBody>
+        {
+          isAndroid ? (
+            <CardBody p="4" pt="0">
+            <Text mb="2">A cool little app that runs a local relay in your phone</Text>
+            <Text>Maximum capacity: Unlimited</Text>
+            <Text>Performance: As fast as your phone</Text>
+            </CardBody>
+          ) : (
+            <CardBody p="4" pt="0">
+            <Text mb="2">A cool little app that runs a local relay in your systems tray</Text>
+            <Text>Maximum capacity: Unlimited</Text>
+            <Text>Performance: As fast as your computer</Text>
+            </CardBody>
+          )
+        }
     </Card>
   );
 }
