@@ -9,6 +9,7 @@ import useAppSettings from "./use-app-settings";
 import useUsersMediaServers from "./use-user-media-servers";
 import { uploadFileToServers } from "../helpers/media-upload/blossom";
 import useCurrentAccount from "./use-current-account";
+import { stripSensitiveMetadataOnFile } from "../helpers/image";
 
 export function useTextAreaUploadFileWithForm(
   ref: MutableRefObject<RefType | null>,
@@ -64,14 +65,15 @@ export default function useTextAreaUploadFile(
     async (file: File) => {
       setUploading(true);
       try {
+        const safeFile = await stripSensitiveMetadataOnFile(file);
         if (mediaUploadService === "nostr.build") {
-          const response = await nostrBuildUploadImage(file, requestSignature);
+          const response = await nostrBuildUploadImage(safeFile, requestSignature);
           const imageUrl = response.url;
           insertURL(imageUrl);
         } else if (mediaUploadService === "blossom" && mediaServers.length) {
           const blob = await uploadFileToServers(
             mediaServers.map((s) => s.toString()),
-            file,
+            safeFile,
             requestSignature,
           );
           insertURL(blob.url);

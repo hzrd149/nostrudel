@@ -21,9 +21,8 @@ import { uploadFileToServers } from "../../helpers/media-upload/blossom";
 import useUsersMediaServers from "../../hooks/use-user-media-servers";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { CharkaMarkdown } from "./components/markdown";
 import useCacheForm from "../../hooks/use-cache-form";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import MarkdownEditor from "./components/markdown-editor";
 
 export default function CreateWikiPageView() {
   const account = useCurrentAccount();
@@ -77,67 +76,6 @@ export default function CreateWikiPageView() {
     }
   });
 
-  const [_, setPreview] = useState<HTMLElement>();
-  const previewRef = useRef<HTMLDivElement | null>(null);
-  const options = useMemo(() => {
-    const uploads = mediaUploadService === "blossom";
-    async function imageUploadFunction(file: File, onSuccess: (url: string) => void, onError: (error: string) => void) {
-      if (!servers) return onError("No media servers set");
-      try {
-        const blob = await uploadFileToServers(
-          servers.map((s) => s.toString()),
-          file,
-          requestSignature,
-        );
-        if (blob) onSuccess(blob.url);
-      } catch (error) {
-        if (error instanceof Error) onError(error.message);
-      }
-    }
-
-    return {
-      minHeight: "60vh",
-      uploadImage: uploads,
-      imageUploadFunction: uploads ? imageUploadFunction : undefined,
-      toolbar: [
-        "undo",
-        "redo",
-        "|",
-        "bold",
-        "italic",
-        "heading",
-        "|",
-        "quote",
-        "unordered-list",
-        "ordered-list",
-        "table",
-        "code",
-        "|",
-        "link",
-        "image",
-        ...(uploads
-          ? [
-              {
-                name: "upload-image",
-                title: "Upload Image",
-                className: "fa fa-upload",
-                action: EasyMDE.drawUploadedImage,
-              },
-            ]
-          : []),
-        "|",
-        "preview",
-        "side-by-side",
-        "fullscreen",
-        "|",
-        "guide",
-      ],
-      previewRender(text, element) {
-        return previewRef.current?.innerHTML || ReactDOMServer.renderToString(<CharkaMarkdown>{text}</CharkaMarkdown>);
-      },
-    } satisfies SimpleMDEReactProps["options"];
-  }, [servers, requestSignature, setPreview]);
-
   return (
     <VerticalPageLayout as="form" h="full" onSubmit={submit}>
       <Heading>Create Page</Heading>
@@ -161,11 +99,9 @@ export default function CreateWikiPageView() {
           <Input {...register("title", { required: true })} autoComplete="off" />
         </FormControl>
       </Flex>
-      <SimpleMDE value={getValues().content} onChange={(v) => setValue("content", v)} options={options} />
-      <VisuallyHidden>
-        <CharkaMarkdown ref={previewRef}>{getValues().content}</CharkaMarkdown>
-      </VisuallyHidden>
+      <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
       <Flex gap="2" justifyContent="flex-end">
+        <Button onClick={() => navigate(-1)}>Cancel</Button>
         {formState.isDirty && <Button onClick={() => reset()}>Clear</Button>}
         <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
           Publish

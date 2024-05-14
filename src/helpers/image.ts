@@ -1,3 +1,4 @@
+import { fixOrientationAndStripMetadata } from "../lib/fix-image-orientation";
 import appSettings from "../services/settings/app-settings";
 
 export type ImageSize = { width: number; height: number };
@@ -30,4 +31,11 @@ export function buildImageProxyURL(src: string, size: string | number) {
 
   url.pathname = url.pathname.replace(/\/$/, "") + "/" + size + "/" + src;
   return url.toString();
+}
+
+export async function stripSensitiveMetadataOnFile(file: File) {
+  if (file.type === "image/jpeg" || file.type === "image/png") {
+    return (await fixOrientationAndStripMetadata(file)) as File;
+  }
+  return file;
 }

@@ -13,6 +13,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import { CharkaMarkdown } from "./markdown";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { uploadFileToServers } from "../../../helpers/media-upload/blossom";
+import { stripSensitiveMetadataOnFile } from "../../../helpers/image";
 
 export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProps) {
   const account = useCurrentAccount();
@@ -27,9 +28,10 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
     async function imageUploadFunction(file: File, onSuccess: (url: string) => void, onError: (error: string) => void) {
       if (!servers) return onError("No media servers set");
       try {
+        const safeFile = await stripSensitiveMetadataOnFile(file);
         const blob = await uploadFileToServers(
           servers.map((s) => s.toString()),
-          file,
+          safeFile,
           requestSignature,
         );
         if (blob) onSuccess(blob.url);
