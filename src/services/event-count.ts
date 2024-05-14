@@ -33,7 +33,6 @@ class EventCountService {
   }
 }
 
-/** @deprecated */
 const eventCountService = new EventCountService();
 
 if (import.meta.env.DEV) {

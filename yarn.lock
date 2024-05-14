@@ -3419,28 +3419,22 @@ better-path-resolve@1.0.0:
   resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-6.1.4.tgz#c7828f6c8900562b69d5040afb881bcbdad82001"
   integrity sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==
 
-blossom-client-sdk@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/blossom-client-sdk/-/blossom-client-sdk-0.5.1.tgz#9b07ed2ebd29903268a44ea1b7f1b54d2edace46"
-  integrity sha512-RuT+uyNLVToSivANQrrA2Kmio8l0Z2lEIs3e7OwBnd/gxcl+KoINwuZ/JVjsquOPNcjkXBVbsvmRzJnesmkjWg==
+blossom-client-sdk@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/blossom-client-sdk/-/blossom-client-sdk-0.7.0.tgz#e9224f333c953d57cdfdf2aa41fbd99435da27a2"
+  integrity sha512-xG0HiuhFcK6UpmYjJ4vRPm3APMrRf+MQDfZWlNRTxs2gEETfqbhYm5pCl2hPfLjpEcFSDXgr3sLCh6C77ABKgg==
   dependencies:
+    "@noble/hashes" "^1.4.0"
     cross-fetch "^4.0.0"
 
-blossom-client-sdk@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/blossom-client-sdk/-/blossom-client-sdk-0.6.0.tgz#e5fc2b17f3d76e3b8bb3d31a535db294ebce5a07"
-  integrity sha512-m1dAIQF0WceEvpxbl349IUeNTay6w/QF7RAUlELIFxES7fbRQB0dkbVhT58y+SW+tTQvgMfuPmMAAsghrGwGfg==
-  dependencies:
-    cross-fetch "^4.0.0"
-
-blossom-drive-sdk@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/blossom-drive-sdk/-/blossom-drive-sdk-0.3.0.tgz#35ab1afebbc8c79bd86af10628291b3e06935f35"
-  integrity sha512-K2mhnIO1WVSb7Ua9wcgv4ra3rnoIfp1X8oKdHOFNNosuCVI5dBZumDvYJlrn4ZztE9UZslIqlb/swr0PZcGmgw==
+blossom-drive-sdk@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/blossom-drive-sdk/-/blossom-drive-sdk-0.4.0.tgz#c24a7dda7a540e9fda21372a34c5c764411f434b"
+  integrity sha512-bDOTFtsoT40+NbGYteG50PaKR0wDnMeCN4BmMDI5R/zkbvAz4Qh+OC3zVbsbZekQPM9L5tAH+wuF+Qe/vh3s7Q==
   dependencies:
     "@noble/hashes" "^1.4.0"
     "@scure/base" "^1.1.6"
-    blossom-client-sdk "^0.5.1"
+    blossom-client-sdk "^0.7.0"
     eventemitter3 "^5.0.1"
     mime "^4.0.1"
     nanoid "^5.0.6"

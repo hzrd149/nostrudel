@@ -9,7 +9,6 @@ import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
-import eventExistsService from "../../services/event-exists";
 import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
 import { handleEventFromRelay } from "../../services/event-relays";
@@ -95,7 +94,6 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (localRelay) localRelay.publish(signed);
 
         // pass it to other services
-        eventExistsService.handleEvent(signed);
         if (isReplaceable(signed.kind)) replaceableEventsService.handleEvent(signed);
         if (signed.kind === kinds.Reaction) eventReactionsService.handleEvent(signed);
         if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);
