@@ -14,7 +14,7 @@ import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
-import { getWebOfTrust } from "../services/web-of-trust";
+import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -60,6 +60,7 @@ const Loading: ReactTextareaAutocompleteProps<
 >["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
 function useAutocompleteTriggers() {
+  const webOfTrust = useWebOfTrust();
   const emojis = useContextEmojis();
   const getDirectory = useUserSearchDirectoryContext();
 
@@ -77,10 +78,12 @@ function useAutocompleteTriggers() {
         return matchSorter(dir, token.trim(), {
           keys: ["names"],
           sorter: (items) =>
-            getWebOfTrust().sortByDistanceAndConnections(
-              items.sort((a, b) => b.rank - a.rank),
-              (i) => i.item.pubkey,
-            ),
+            webOfTrust
+              ? webOfTrust.sortByDistanceAndConnections(
+                  items.sort((a, b) => b.rank - a.rank),
+                  (i) => i.item.pubkey,
+                )
+              : items,
         }).slice(0, 10);
       },
       component: Item,

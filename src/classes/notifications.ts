@@ -103,6 +103,7 @@ export default class AccountNotifications {
     for (const event of sorted) {
       if (!Object.hasOwn(event, typeSymbol)) continue;
       if (mutedPubkeys.includes(event.pubkey)) continue;
+      if (event.pubkey === this.pubkey) continue;
       const e = event as CategorizedEvent;
 
       switch (e[typeSymbol]) {

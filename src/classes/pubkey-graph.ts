@@ -1,8 +1,11 @@
 import { NostrEvent } from "nostr-tools";
+import _throttle from "lodash.throttle";
+import { logger } from "../helpers/debug";
 
 export class PubkeyGraph {
   /** the pubkey at the center of it all */
   root: string;
+  log = logger.extend("PubkeyGraph");
 
   connections = new Map<string, string[]>();
   distance = new Map<string, number>();
@@ -86,6 +89,8 @@ export class PubkeyGraph {
 
     return 0;
   }
+
+  throttleCompute = _throttle(this.compute.bind(this), 5_000, { leading: false });
 
   changed = new Set<string>();
   compute() {

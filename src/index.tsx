@@ -4,7 +4,6 @@ import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
 import "./services/user-event-sync";
 import "./services/username-search";
-import "./services/web-of-trust";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

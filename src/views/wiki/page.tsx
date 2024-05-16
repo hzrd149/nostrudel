@@ -21,7 +21,6 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPageDefer, getPageForks, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import MarkdownContent from "./components/markdown";
 import UserLink from "../../components/user/user-link";
-import { getWebOfTrust } from "../../services/web-of-trust";
 import useSubject from "../../hooks/use-subject";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
@@ -38,6 +37,7 @@ import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -91,8 +91,6 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
 
   const readRelays = useReadRelays();
-  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
-  const pages = useSubject(subject);
   const { address } = getPageForks(page);
   const defer = getPageDefer(page);
 
@@ -133,24 +131,18 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
 }
 
 function WikiPageFooter({ page }: { page: NostrEvent }) {
+  const webOfTrust = useWebOfTrust();
   const topic = getPageTopic(page);
 
   const readRelays = useReadRelays();
   const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
   const pages = useSubject(subject);
 
-  const forks = pages
-    ? getWebOfTrust().sortByDistanceAndConnections(
-        Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey),
-        (p) => p.pubkey,
-      )
-    : [];
-  const other = pages
-    ? getWebOfTrust().sortByDistanceAndConnections(
-        Array.from(pages.values()).filter((p) => !forks.includes(p) && p.pubkey !== page.pubkey),
-        (p) => p.pubkey,
-      )
-    : [];
+  let forks = pages ? Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey) : [];
+  if (webOfTrust) forks = webOfTrust.sortByDistanceAndConnections(forks, (p) => p.pubkey);
+
+  let other = pages ? Array.from(pages.values()).filter((p) => !forks.includes(p) && p.pubkey !== page.pubkey) : [];
+  if (webOfTrust) other = webOfTrust.sortByDistanceAndConnections(other, (p) => p.pubkey);
 
   return (
     <>

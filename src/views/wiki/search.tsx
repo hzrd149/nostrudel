@@ -12,11 +12,12 @@ import { subscribeMany } from "../../helpers/relay";
 import { SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { localRelay } from "../../services/local-relay";
-import { getWebOfTrust } from "../../services/web-of-trust";
 import WikiPageResult from "./components/wiki-page-result";
 import dictionaryService from "../../services/dictionary";
+import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 
 export default function WikiSearchView() {
+  const webOfTrust = useWebOfTrust();
   const { value: query, setValue: setQuery } = useRouteSearchValue("q");
   if (!query) return <Navigate to="/wiki" />;
 
@@ -53,7 +54,7 @@ export default function WikiSearchView() {
     }
   }, [query, setResults]);
 
-  const sorted = getWebOfTrust().sortByDistanceAndConnections(results, (p) => p.pubkey);
+  const sorted = webOfTrust ? webOfTrust.sortByDistanceAndConnections(results, (p) => p.pubkey) : results;
 
   return (
     <VerticalPageLayout>

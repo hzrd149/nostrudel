@@ -1,35 +1,32 @@
-import { useMemo, useRef, useState } from "react";
-import { Button, Flex, FormControl, FormLabel, Heading, Input, VisuallyHidden, useToast } from "@chakra-ui/react";
-import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Input,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import ReactDOMServer from "react-dom/server";
 import { useForm } from "react-hook-form";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 
-import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
 
+import { WIKI_RELAYS } from "../../const";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { removeNonASCIIChar } from "../../helpers/string";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { getSharableEventAddress } from "../../helpers/nip19";
-import { WIKI_RELAYS } from "../../const";
-import useAppSettings from "../../hooks/use-app-settings";
-import { uploadFileToServers } from "../../helpers/media-upload/blossom";
-import useUsersMediaServers from "../../hooks/use-user-media-servers";
-import { useSigningContext } from "../../providers/global/signing-provider";
-import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import MarkdownEditor from "./components/markdown-editor";
 
 export default function CreateWikiPageView() {
-  const account = useCurrentAccount();
-  const { mediaUploadService } = useAppSettings();
-  const { servers } = useUsersMediaServers(account?.pubkey);
   const toast = useToast();
-  const { requestSignature } = useSigningContext();
   const publish = usePublishEvent();
   const navigate = useNavigate();
   const [search] = useSearchParams();
@@ -37,7 +34,7 @@ export default function CreateWikiPageView() {
   const presetTitle = search.get("title");
 
   const { register, setValue, getValues, handleSubmit, watch, formState, reset } = useForm({
-    defaultValues: { content: "", title: presetTitle || presetTopic || "", topic: presetTopic || "" },
+    defaultValues: { content: "", title: presetTitle || presetTopic || "", topic: presetTopic || "", summary: "" },
     mode: "all",
   });
 
@@ -99,6 +96,11 @@ export default function CreateWikiPageView() {
           <Input {...register("title", { required: true })} autoComplete="off" />
         </FormControl>
       </Flex>
+      <FormControl>
+        <FormLabel>Summary</FormLabel>
+        <Textarea {...register("summary", { required: true })} isRequired />
+        <FormHelperText>We'll never share your email.</FormHelperText>
+      </FormControl>
       <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
       <Flex gap="2" justifyContent="flex-end">
         <Button onClick={() => navigate(-1)}>Cancel</Button>

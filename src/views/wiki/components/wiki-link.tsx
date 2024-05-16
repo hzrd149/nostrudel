@@ -22,10 +22,9 @@ import { Link as RouterLink } from "react-router-dom";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { getPageSummary } from "../../../helpers/nostr/wiki";
 import UserName from "../../../components/user/user-name";
-import { getWebOfTrust } from "../../../services/web-of-trust";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import dictionaryService from "../../../services/dictionary";
 import useSubject from "../../../hooks/use-subject";
+import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 
 export default function WikiLink({
   children,
@@ -35,6 +34,7 @@ export default function WikiLink({
   topic,
   ...props
 }: LinkProps & ExtraProps & { maxVersions?: number; topic?: string }) {
+  const webOfTrust = useWebOfTrust();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const readRelays = useReadRelays();
 
@@ -51,7 +51,10 @@ export default function WikiLink({
 
   const sorted = useMemo(() => {
     if (!events) return [];
-    const arr = getWebOfTrust().sortByDistanceAndConnections(Array.from(events.values()), (e) => e.pubkey);
+
+    let arr = Array.from(events.values());
+    if (webOfTrust) arr = webOfTrust.sortByDistanceAndConnections(arr, (e) => e.pubkey);
+
     const seen = new Set<string>();
     const unique: NostrEvent[] = [];
 
@@ -65,15 +68,19 @@ export default function WikiLink({
     }
 
     return unique;
-  }, [events]);
-
-  // if there is only one result, redirect to it
-  const to = sorted?.length === 1 ? "/wiki/page/" + getSharableEventAddress(sorted[0]) : "/wiki/topic/" + topic;
+  }, [events, maxVersions, webOfTrust]);
 
   return (
     <Popover returnFocusOnClose={false} isOpen={isOpen} onClose={onClose} placement="top" closeOnBlur={true}>
       <PopoverTrigger>
-        <Link as={RouterLink} color="blue.500" {...props} to={to} onMouseEnter={onOpen} onMouseLeave={onClose}>
+        <Link
+          as={RouterLink}
+          color="blue.500"
+          {...props}
+          to={"/wiki/topic/" + topic}
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
+        >
           {children}
         </Link>
       </PopoverTrigger>
