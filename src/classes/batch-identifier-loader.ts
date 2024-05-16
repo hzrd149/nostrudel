@@ -1,6 +1,7 @@
 import { NostrEvent, AbstractRelay } from "nostr-tools";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
+import { getEventUID } from "nostr-idb";
 
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
@@ -10,24 +11,25 @@ import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
 import Subject from "./subject";
 
-/** Batches requests for events that reference another event (via #e tag) from a single relay */
-export default class BatchRelationLoader {
+/** Batches requests for events with #d tags from a single relay */
+export default class BatchIdentifierLoader {
   kinds: number[];
   relay: AbstractRelay;
   process: Process;
 
+  /** list of identifiers that have been loaded */
   requested = new Set<string>();
-  /** event id / coordinate -> event id -> event */
-  references = new SuperMap<string, Map<string, NostrEvent>>(() => new Map());
+  /** identifier -> event uid -> event */
+  identifiers = new SuperMap<string, Map<string, NostrEvent>>(() => new Map());
 
-  onEventUpdate = new Subject<string>();
+  onIdentifierUpdate = new Subject<string>();
 
   subscription: PersistentSubscription;
 
-  // a map of events that are waiting for the current request to finish
+  // a map of identifiers that are waiting for the current request to finish
   private next = new Map<string, Deferred<Map<string, NostrEvent>>>();
 
-  // a map of events currently being requested from the relay
+  // a map of identifiers currently being requested from the relay
   private pending = new Map<string, Deferred<Map<string, NostrEvent>>>();
 
   log: Debugger;
@@ -35,8 +37,8 @@ export default class BatchRelationLoader {
   constructor(relay: AbstractRelay, kinds: number[], log?: Debugger) {
     this.relay = relay;
     this.kinds = kinds;
-    this.log = log || debug("BatchRelationLoader");
-    this.process = new Process("BatchRelationLoader", this, [relay]);
+    this.log = log || debug("BatchIdentifierLoader");
+    this.process = new Process("BatchIdentifierLoader", this, [relay]);
     this.process.icon = Dataflow04;
     processManager.registerProcess(this.process);
 
@@ -47,17 +49,17 @@ export default class BatchRelationLoader {
     this.process.addChild(this.subscription.process);
   }
 
-  requestEvents(uid: string): Promise<Map<string, NostrEvent>> {
+  requestEvents(identifier: string): Promise<Map<string, NostrEvent>> {
     // if there is a cache only return it if we have requested this id before
-    if (this.references.has(uid) && this.requested.has(uid)) {
-      return Promise.resolve(this.references.get(uid));
+    if (this.identifiers.has(identifier) && this.requested.has(identifier)) {
+      return Promise.resolve(this.identifiers.get(identifier));
     }
 
-    if (this.pending.has(uid)) return this.pending.get(uid)!;
-    if (this.next.has(uid)) return this.next.get(uid)!;
+    if (this.pending.has(identifier)) return this.pending.get(identifier)!;
+    if (this.next.has(identifier)) return this.next.get(identifier)!;
 
     const defer = createDefer<Map<string, NostrEvent>>();
-    this.next.set(uid, defer);
+    this.next.set(identifier, defer);
 
     // request subscription update
     this.requestUpdate();
@@ -79,30 +81,30 @@ export default class BatchRelationLoader {
 
   handleEvent(event: NostrEvent) {
     // add event to cache
-    const updateIds = new Set<string>();
     for (const tag of event.tags) {
-      if (tag[0] === "e" && tag[1]) {
-        const id = tag[1];
-        this.references.get(id).set(event.id, event);
-        updateIds.add(id);
-      } else if (tag[0] === "a" && tag[1]) {
-        const cord = tag[1];
-        this.references.get(cord).set(event.id, event);
-        updateIds.add(cord);
+      if (tag[0] === "d" && tag[1]) {
+        const identifier = tag[1];
+        this.identifiers.get(identifier).set(getEventUID(event), event);
+        this.changedIdentifiers.add(identifier);
       }
     }
-
-    for (const id of updateIds) this.onEventUpdate.next(id);
   }
+
+  private changedIdentifiers = new Set<string>();
   handleEOSE() {
     // resolve all pending from the last request
-    for (const [uid, defer] of this.pending) {
-      defer.resolve(this.references.get(uid));
+    for (const [identifier, defer] of this.pending) {
+      defer.resolve(this.identifiers.get(identifier));
+      this.changedIdentifiers.add(identifier);
     }
 
     // reset
     this.pending.clear();
     this.process.active = false;
+
+    for (const identifier of this.changedIdentifiers) {
+      this.onIdentifierUpdate.next(identifier);
+    }
 
     // do next request or close the subscription
     if (this.next.size > 0) this.requestUpdate();
@@ -110,26 +112,22 @@ export default class BatchRelationLoader {
 
   update() {
     // copy everything from next to pending
-    for (const [uid, defer] of this.next) this.pending.set(uid, defer);
+    for (const [identifier, defer] of this.next) this.pending.set(identifier, defer);
     this.next.clear();
 
     // update subscription
     if (this.pending.size > 0) {
       this.log(`Updating filters ${this.pending.size} events`);
 
-      const ids: string[] = [];
-      const cords: string[] = [];
-      const uids = Array.from(this.pending.keys());
-      for (const uid of uids) {
-        this.requested.add(uid);
-
-        if (uid.includes(":")) cords.push(uid);
-        else ids.push(uid);
+      const dTags: string[] = [];
+      const identifiers = Array.from(this.pending.keys());
+      for (const identifier of identifiers) {
+        this.requested.add(identifier);
+        dTags.push(identifier);
       }
 
       this.subscription.filters = [];
-      if (ids.length > 0) this.subscription.filters.push({ "#e": ids, kinds: this.kinds });
-      if (ids.length > 0) this.subscription.filters.push({ "#a": cords, kinds: this.kinds });
+      if (dTags.length > 0) this.subscription.filters.push({ "#d": dTags, kinds: this.kinds });
 
       this.subscription.update();
       this.process.active = true;

@@ -1,28 +1,54 @@
-import { Heading, Link } from "@chakra-ui/react";
+import { Button, Flex, Heading, Link } from "@chakra-ui/react";
 import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import { getWebOfTrust } from "../../services/web-of-trust";
-import WikiPageResult from "./components/wiki-page-result";
-import useWikiTopicTimeline from "./hooks/use-wiki-topic-timeline";
+import { useEffect, useMemo, useState } from "react";
+import dictionaryService from "../../services/dictionary";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import WikiPageHeader from "./components/wiki-page-header";
+import UserAvatar from "../../components/user/user-avatar";
+import UserName from "../../components/user/user-name";
+import { WikiPagePage } from "./page";
 
 export default function WikiTopicView() {
   const { topic } = useParams();
   if (!topic) return <Navigate to="/wiki" />;
 
-  const timeline = useWikiTopicTimeline(topic);
+  const readRelays = useReadRelays();
+  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
 
-  const pages = useSubject(timeline.timeline).filter((p) => p.content.length > 0);
-  const sorted = getWebOfTrust().sortByDistanceAndConnections(pages, (p) => p.pubkey);
+  const pages = useSubject(subject);
+  const sorted = pages
+    ? getWebOfTrust().sortByDistanceAndConnections(Array.from(pages?.values()), (p) => p.pubkey)
+    : [];
+
+  const [selected, setSelected] = useState<NostrEvent>();
+
+  // if the topic changes remove selection
+  useEffect(() => setSelected(undefined), [topic]);
 
   return (
     <VerticalPageLayout>
-      <Heading>{topic}</Heading>
-
-      {sorted.map((page) => (
-        <WikiPageResult key={page.id} page={page} />
-      ))}
+      <WikiPageHeader />
+      <Flex gap="2" overflow="auto">
+        {sorted.map((page, i) => (
+          <Button
+            key={page.pubkey}
+            flexShrink={0}
+            variant="outline"
+            p="1"
+            pr="4"
+            colorScheme={(!selected && i === 0) || selected === page ? "primary" : undefined}
+            onClick={() => setSelected(page)}
+          >
+            <UserAvatar pubkey={page.pubkey} size="sm" />
+            <UserName pubkey={page.pubkey} ml="2" />
+          </Button>
+        ))}
+      </Flex>
 
       {sorted.length === 0 && (
         <Heading mx="auto" size="md" mt="8">
@@ -32,6 +58,8 @@ export default function WikiTopicView() {
           </Link>
         </Heading>
       )}
+
+      {(selected || sorted.length > 0) && <WikiPagePage page={selected || sorted[0]} />}
     </VerticalPageLayout>
   );
 }

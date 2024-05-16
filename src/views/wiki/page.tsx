@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { NostrEvent, nip19 } from "nostr-tools";
 import {
   Alert,
@@ -22,7 +23,6 @@ import MarkdownContent from "./components/markdown";
 import UserLink from "../../components/user/user-link";
 import { getWebOfTrust } from "../../services/web-of-trust";
 import useSubject from "../../hooks/use-subject";
-import useWikiTopicTimeline from "./hooks/use-wiki-topic-timeline";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
 import WikiPageHeader from "./components/wiki-page-header";
@@ -36,6 +36,8 @@ import QuoteRepostButton from "../../components/note/quote-repost-button";
 import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import useCurrentAccount from "../../hooks/use-current-account";
+import dictionaryService from "../../services/dictionary";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -84,28 +86,18 @@ function DeferAlert({ page, address }: { page: NostrEvent; address: nip19.Addres
   );
 }
 
-function WikiPagePage({ page }: { page: NostrEvent }) {
+export function WikiPagePage({ page }: { page: NostrEvent }) {
   const account = useCurrentAccount();
   const topic = getPageTopic(page);
-  const timeline = useWikiTopicTimeline(topic);
 
-  const pages = useSubject(timeline.timeline).filter((p) => p.pubkey !== page.pubkey);
+  const readRelays = useReadRelays();
+  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
+  const pages = useSubject(subject);
   const { address } = getPageForks(page);
   const defer = getPageDefer(page);
 
-  const forks = getWebOfTrust().sortByDistanceAndConnections(
-    pages.filter((p) => getPageForks(p).address?.pubkey === page.pubkey),
-    (p) => p.pubkey,
-  );
-  const other = getWebOfTrust().sortByDistanceAndConnections(
-    pages.filter((p) => !forks.includes(p)),
-    (p) => p.pubkey,
-  );
-
   return (
-    <VerticalPageLayout>
-      <WikiPageHeader />
-
+    <>
       <Flex gap="2" wrap="wrap">
         <Box flex={1}>
           <Heading>{getPageTitle(page)}</Heading>
@@ -136,7 +128,32 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
       <ZapBubbles event={page} />
       <Divider />
       <MarkdownContent event={page} />
+    </>
+  );
+}
 
+function WikiPageFooter({ page }: { page: NostrEvent }) {
+  const topic = getPageTopic(page);
+
+  const readRelays = useReadRelays();
+  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
+  const pages = useSubject(subject);
+
+  const forks = pages
+    ? getWebOfTrust().sortByDistanceAndConnections(
+        Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey),
+        (p) => p.pubkey,
+      )
+    : [];
+  const other = pages
+    ? getWebOfTrust().sortByDistanceAndConnections(
+        Array.from(pages.values()).filter((p) => !forks.includes(p) && p.pubkey !== page.pubkey),
+        (p) => p.pubkey,
+      )
+    : [];
+
+  return (
+    <>
       {forks.length > 0 && (
         <>
           <Heading size="lg" mt="4">
@@ -161,7 +178,7 @@ function WikiPagePage({ page }: { page: NostrEvent }) {
           </SimpleGrid>
         </>
       )}
-    </VerticalPageLayout>
+    </>
   );
 }
 
@@ -170,5 +187,11 @@ export default function WikiPageView() {
   const event = useReplaceableEvent(pointer, WIKI_RELAYS);
 
   if (!event) return <Spinner />;
-  return <WikiPagePage page={event} />;
+  return (
+    <VerticalPageLayout>
+      <WikiPageHeader />
+      <WikiPagePage page={event} />
+      <WikiPageFooter page={event} />
+    </VerticalPageLayout>
+  );
 }

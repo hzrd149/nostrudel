@@ -14,6 +14,7 @@ import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { localRelay } from "../../services/local-relay";
 import { getWebOfTrust } from "../../services/web-of-trust";
 import WikiPageResult from "./components/wiki-page-result";
+import dictionaryService from "../../services/dictionary";
 
 export default function WikiSearchView() {
   const { value: query, setValue: setQuery } = useRouteSearchValue("q");
@@ -33,6 +34,7 @@ export default function WikiSearchView() {
 
     const seen = new Set<string>();
     const handleEvent = (event: NostrEvent) => {
+      dictionaryService.handleEvent(event);
       if (seen.has(getEventUID(event))) return;
       setResults((arr) => arr.concat(event));
       seen.add(getEventUID(event));

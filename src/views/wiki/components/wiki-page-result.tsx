@@ -7,7 +7,6 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../../helpers/nostr/wiki";
 import UserLink from "../../../components/user/user-link";
-import Timestamp from "../../../components/timestamp";
 import FileSearch01 from "../../../components/icons/file-search-01";
 import GitBranch01 from "../../../components/icons/git-branch-01";
 import UserName from "../../../components/user/user-name";

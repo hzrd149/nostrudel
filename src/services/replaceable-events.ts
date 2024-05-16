@@ -7,7 +7,7 @@ import { getEventCoordinate } from "../helpers/nostr/event";
 import { localRelay } from "./local-relay";
 import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
-import BatchKindLoader, { createCoordinate } from "../classes/batch-kind-loader";
+import BatchKindPubkeyLoader, { createCoordinate } from "../classes/batch-kind-pubkey-loader";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
 import { truncateId } from "../helpers/string";
@@ -31,9 +31,9 @@ class ReplaceableEventsService {
 
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
-  cacheLoader: BatchKindLoader | null = null;
-  loaders = new SuperMap<AbstractRelay, BatchKindLoader>((relay) => {
-    const loader = new BatchKindLoader(relay, this.log.extend(relay.url));
+  cacheLoader: BatchKindPubkeyLoader | null = null;
+  loaders = new SuperMap<AbstractRelay, BatchKindPubkeyLoader>((relay) => {
+    const loader = new BatchKindPubkeyLoader(relay, this.log.extend(relay.url));
     loader.events.onEvent.subscribe((e) => this.handleEvent(e));
     this.process.addChild(loader.process);
     return loader;
@@ -50,7 +50,7 @@ class ReplaceableEventsService {
     processManager.registerProcess(this.process);
 
     if (localRelay) {
-      this.cacheLoader = new BatchKindLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
+      this.cacheLoader = new BatchKindPubkeyLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
       this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, true));
       this.process.addChild(this.cacheLoader.process);
     }

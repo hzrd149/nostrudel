@@ -14,8 +14,8 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
 }
 
-/** This class is ued to batch requests by kind to a single relay */
-export default class BatchKindLoader {
+/** This class is used to batch requests by kind and pubkey to a single relay */
+export default class BatchKindPubkeyLoader {
   events = new EventStore();
   relay: AbstractRelay;
   process: Process;
@@ -32,8 +32,8 @@ export default class BatchKindLoader {
 
   constructor(relay: AbstractRelay, log?: Debugger) {
     this.relay = relay;
-    this.log = log || debug("BatchKindLoader");
-    this.process = new Process("BatchKindLoader", this, [relay]);
+    this.log = log || debug("BatchKindPubkeyLoader");
+    this.process = new Process("BatchKindPubkeyLoader", this, [relay]);
     this.process.icon = BracketsX;
     processManager.registerProcess(this.process);
 

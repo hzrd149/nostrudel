@@ -41,7 +41,7 @@ import NoteZapButton from "../../../components/note/note-zap-button";
 import Link01 from "../../../components/icons/link-01";
 import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
-import { createCoordinate } from "../../../classes/batch-kind-loader";
+import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 
 export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);

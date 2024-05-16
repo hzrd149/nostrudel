@@ -47,7 +47,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import ApprovedEvent from "../community/components/community-approved-post";
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { createCoordinate } from "../../classes/batch-kind-loader";
+import { createCoordinate } from "../../classes/batch-kind-pubkey-loader";
 
 function CommunitiesHomePage() {
   const publish = usePublishEvent();

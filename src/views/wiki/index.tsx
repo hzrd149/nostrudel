@@ -1,4 +1,14 @@
-import { Button, Flex, Heading, SimpleGrid } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  LinkBox,
+  SimpleGrid,
+  useForceUpdate,
+  useInterval,
+} from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
@@ -15,6 +25,10 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { WIKI_RELAYS } from "../../const";
 import { ExternalLinkIcon } from "../../components/icons";
 import WikiLink from "./components/wiki-link";
+import { useEffect } from "react";
+import dictionaryService from "../../services/dictionary";
+import UserAvatar from "../../components/user/user-avatar";
+import HoverLinkOverlay from "../../components/hover-link-overlay";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;
@@ -26,6 +40,15 @@ export default function WikiHomeView() {
   const timeline = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], { eventFilter });
 
   const pages = useSubject(timeline.timeline).filter((p) => p.content.length > 0);
+
+  useEffect(() => {
+    for (const page of pages) {
+      dictionaryService.handleEvent(page);
+    }
+  }, [pages]);
+
+  const update = useForceUpdate();
+  useInterval(update, 1000);
 
   return (
     <VerticalPageLayout>
@@ -48,11 +71,23 @@ export default function WikiHomeView() {
         Recent Updates:
       </Heading>
       <SimpleGrid spacing="2" columns={{ base: 1, lg: 2, xl: 3 }}>
-        {pages.slice(0, 32).map((page) => (
-          <ErrorBoundary key={page.id}>
-            <WikiPageResult page={page} />
-          </ErrorBoundary>
-        ))}
+        {Array.from(dictionaryService.topics)
+          .filter(([_, sub]) => !!sub.value && sub.value.size > 0)
+          .sort((a, b) => b[1].value!.size - a[1].value!.size)
+          .map(([topic, sub]) => (
+            <LinkBox key={topic} p="2">
+              <Heading size="md">
+                <HoverLinkOverlay as={RouterLink} to={`/wiki/topic/${topic}`}>
+                  {topic}
+                </HoverLinkOverlay>
+              </Heading>
+              <AvatarGroup size="sm">
+                {Array.from(sub.value!.values()).map((page) => (
+                  <UserAvatar pubkey={page.pubkey} />
+                ))}
+              </AvatarGroup>
+            </LinkBox>
+          ))}
       </SimpleGrid>
       <TimelineActionAndStatus timeline={timeline} />
     </VerticalPageLayout>

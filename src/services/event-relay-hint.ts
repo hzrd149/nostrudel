@@ -1,4 +1,4 @@
-import { createCoordinate } from "../classes/batch-kind-loader";
+import { createCoordinate } from "../classes/batch-kind-pubkey-loader";
 import { NostrEvent } from "../types/nostr-event";
 import { getEventRelays } from "./event-relays";
 import relayScoreboardService from "./relay-scoreboard";
