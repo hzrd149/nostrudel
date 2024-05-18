@@ -13,15 +13,23 @@ import {
   SearchIcon,
   TorrentIcon,
   TrackIcon,
+  WikiIcon,
 } from "../../components/icons";
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
-import Users01 from "../../components/icons/users-01";
 import Film02 from "../../components/icons/film-02";
 import MessageQuestionSquare from "../../components/icons/message-question-square";
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
+import Edit04 from "../../components/icons/edit-04";
 
 export const internalApps: App[] = [
+  {
+    title: "Streams",
+    description: "Watch live streams",
+    icon: LiveStreamIcon,
+    id: "streams",
+    to: "/streams",
+  },
   {
     title: "Communities",
     description: "Create and manage communities",
@@ -29,6 +37,7 @@ export const internalApps: App[] = [
     id: "communities",
     to: "/communities",
   },
+  { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
     title: "Channels",
     description: "Browse and talk in channels",
@@ -104,7 +113,13 @@ export const internalTools: App[] = [
     id: "publisher",
     to: "/tools/publisher ",
   },
-  { title: "WoT Test", description: "Just a test for now", icon: Users01, id: "wot-test", to: "/tools/wot-test" },
+  {
+    title: "Corrections Feed",
+    description: "A feed of post edits",
+    icon: Edit04,
+    id: "corrections",
+    to: "/tools/corrections ",
+  },
 ];
 
 export const externalTools: App[] = [
@@ -170,6 +185,22 @@ export const externalTools: App[] = [
     description: "Upload code snippets to nostr",
     to: "https://nosbin.com/",
     image: "https://nosbin.com/logo.png",
+    isExternal: true,
+  },
+  {
+    id: "blossom.hzrd149.com",
+    title: "Blossom Drive",
+    description: "Upload and organize blobs",
+    to: "https://blossom.hzrd149.com/",
+    image: "https://blossom.hzrd149.com/pwa-192x192.png",
+    isExternal: true,
+  },
+  {
+    id: "bouquet.slidestr.net",
+    title: "Bouquet",
+    description: "Manage your blobs on multiple servers",
+    to: "https://bouquet.slidestr.net/",
+    image: "https://bouquet.slidestr.net/bouquet.png",
     isExternal: true,
   },
 ];

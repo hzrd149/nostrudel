@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, CardProps, IconButton, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";

@@ -3,6 +3,41 @@ set -e
 
 PROXY_PASS_BLOCK=""
 
+# start tor if set to true
+if [ "$TOR_PROXY" = "true" ]; then
+  echo "Starting tor socks proxy"
+
+  tor &
+  tor_process=$!
+  TOR_PROXY="127.0.0.1:9050"
+fi
+
+# inject request proxy
+if [ -n "$REQUEST_PROXY" ]; then
+  REQUEST_PROXY_URL="$REQUEST_PROXY"
+
+  if [ "$REQUEST_PROXY" = "true" ]; then
+    REQUEST_PROXY_URL="127.0.0.1:8080"
+  fi
+
+  echo "Request proxy set to $REQUEST_PROXY"
+  sed -i 's/REQUEST_PROXY = ""/REQUEST_PROXY = "\/request-proxy"/g' /usr/share/nginx/html/index.html
+  PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
+    location /request-proxy/ {
+      proxy_pass http://$REQUEST_PROXY_URL;
+      rewrite ^/request-proxy/(.*) /\$1 break;
+    }
+  "
+
+  if [ -n "$PROXY_FIRST" ]; then
+    echo "Telling app to use request proxy first"
+    sed -i 's/PROXY_FIRST = false/PROXY_FIRST = true/g' /usr/share/nginx/html/index.html
+  fi
+else
+  echo "No request proxy set"
+fi
+
+# inject cache relay URL
 if [ -n "$CACHE_RELAY" ]; then
   echo "Cache relay set to $CACHE_RELAY"
   sed -i 's/CACHE_RELAY_ENABLED = false/CACHE_RELAY_ENABLED = true/g' /usr/share/nginx/html/index.html
@@ -18,19 +53,7 @@ else
   echo "No cache relay set"
 fi
 
-if [ -n "$CORS_PROXY" ]; then
-  echo "CORS proxy set to $CORS_PROXY"
-  sed -i 's/CORS_PROXY_PATH = ""/CORS_PROXY_PATH = "\/corsproxy"/g' /usr/share/nginx/html/index.html
-  PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
-    location /corsproxy/ {
-      proxy_pass http://$CORS_PROXY;
-      rewrite ^/corsproxy/(.*) /\$1 break;
-    }
-  "
-else
-  echo "No CORS proxy set"
-fi
-
+# inject image proxy URL
 if [ -n "$IMAGE_PROXY" ]; then
   echo "Image proxy set to $IMAGE_PROXY"
   sed -i 's/IMAGE_PROXY_PATH = ""/IMAGE_PROXY_PATH = "\/imageproxy"/g' /usr/share/nginx/html/index.html
@@ -99,8 +122,26 @@ echo "$NGINX_CONF" > $CONF_FILE
 
 _term() {
   echo "Caught SIGTERM signal!"
+
+  # stop node server
+  if [ "$REQUEST_PROXY" = "true" ]; then
+    kill -SIGTERM "$node_process" 2>/dev/null
+  fi
+
+  # stop tor if started
+  if [ "$TOR_PROXY" = "true" ]; then
+    kill -SIGTERM "$tor_process" 2>/dev/null
+  fi
+
+  # stop nginx
   kill -SIGTERM "$nginx_process" 2>/dev/null
 }
+
+if [ "$REQUEST_PROXY" = "true" ]; then
+  echo "Starting local request proxy"
+  node server/index.js &
+  node_process=$!
+fi
 
 nginx -g 'daemon off;' &
 nginx_process=$!

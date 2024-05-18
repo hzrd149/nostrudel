@@ -11,7 +11,6 @@ import {
   IconButton,
   Link,
   LinkBox,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -20,7 +19,6 @@ import { Link as RouterLink } from "react-router-dom";
 
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
-import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import useSubject from "../../../hooks/use-subject";
@@ -30,79 +28,26 @@ import RepostButton from "./components/repost-button";
 import QuoteRepostButton from "../quote-repost-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import BookmarkButton from "../bookmark-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../../views/thread/components/reply-form";
-import { getThreadReferences, truncatedId } from "../../../helpers/nostr/event";
+import { getThreadReferences } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
 import OpenInDrawerButton from "../open-in-drawer-button";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import NoteCommunityMetadata from "./note-community-metadata";
-import useSingleEvent from "../../../hooks/use-single-event";
-import { CompactNoteContent } from "../../compact-note-content";
 import NoteProxyLink from "./components/note-proxy-link";
-import { NoteDetailsButton } from "./components/note-details-button";
-import EventInteractionDetailsModal from "../../event-interactions-modal";
 import singleEventService from "../../../services/single-event";
-import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
-import { nip19 } from "nostr-tools";
 import POWIcon from "../../pow/pow-icon";
+import ReplyContext from "./components/reply-context";
+import ZapBubbles from "./components/zap-bubbles";
 
-function ReplyToE({ pointer }: { pointer: EventPointer }) {
-  const event = useSingleEvent(pointer.id, pointer.relays);
-
-  if (!event) {
-    const nevent = nip19.neventEncode(pointer);
-    return (
-      <Text>
-        Replying to{" "}
-        <Link as={RouterLink} to={`/l/${nevent}`} color="blue.500">
-          {truncatedId(nevent)}
-        </Link>
-      </Text>
-    );
-  }
-
-  return (
-    <>
-      <Text>
-        Replying to <UserLink pubkey={event.pubkey} fontWeight="bold" />
-      </Text>
-      <CompactNoteContent event={event} maxLength={96} isTruncated textOnly />
-    </>
-  );
-}
-function ReplyToA({ pointer }: { pointer: AddressPointer }) {
-  const naddr = nip19.naddrEncode(pointer);
-
-  return (
-    <Text>
-      Replying to{" "}
-      <Link as={RouterLink} to={`/l/${naddr}`} color="blue.500">
-        {truncatedId(naddr)}
-      </Link>
-    </Text>
-  );
-}
-
-function ReplyLine({ event }: { event: NostrEvent }) {
-  const refs = getThreadReferences(event);
-  if (!refs.reply) return null;
-
-  return (
-    <Flex gap="2" fontStyle="italic" alignItems="center" whiteSpace="nowrap">
-      <ReplyIcon />
-      {refs.reply.e ? <ReplyToE pointer={refs.reply.e} /> : <ReplyToA pointer={refs.reply.a} />}
-    </Flex>
-  );
-}
-
-export type NoteProps = Omit<CardProps, "children"> & {
+export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
@@ -120,11 +65,10 @@ export function TimelineNote({
   registerIntersectionEntity = true,
   clickable = true,
   ...props
-}: NoteProps) {
+}: TimelineNoteProps) {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
   const replyForm = useDisclosure();
-  const detailsModal = useDisclosure();
 
   const ref = useRef<HTMLDivElement | null>(null);
   useRegisterIntersectionEntity(ref, event.id);
@@ -152,9 +96,11 @@ export function TimelineNote({
           )}
           <CardHeader p="2">
             <Flex flex="1" gap="2" alignItems="center">
-              <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
+              <UserAvatarLink pubkey={event.pubkey} size="sm" />
               <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-              <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+              <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
+                <Timestamp timestamp={event.created_at} />
+              </Link>
               <POWIcon event={event} boxSize={5} />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
@@ -166,17 +112,15 @@ export function TimelineNote({
                   onClick={() => singleEventService.handleEvent(event)}
                 />
               )}
-              <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
-                <Timestamp timestamp={event.created_at} />
-              </Link>
             </Flex>
             <NoteCommunityMetadata event={event} />
-            {showReplyLine && <ReplyLine event={event} />}
+            {showReplyLine && <ReplyContext event={event} />}
           </CardHeader>
           <CardBody p="0">
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
+            <ZapBubbles event={event} />
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
               <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>
@@ -191,9 +135,8 @@ export function TimelineNote({
               <Box flexGrow={1} />
               <ButtonGroup size="sm" variant="ghost">
                 <NoteProxyLink event={event} />
-                <NoteDetailsButton event={event} onClick={detailsModal.onOpen} />
                 <BookmarkButton event={event} aria-label="Bookmark note" />
-                <NoteMenu event={event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+                <NoteMenu event={event} aria-label="More Options" />
               </ButtonGroup>
             </Flex>
           </CardFooter>
@@ -206,7 +149,6 @@ export function TimelineNote({
           onSubmitted={replyForm.onClose}
         />
       )}
-      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={event} />}
     </TrustProvider>
   );
 }

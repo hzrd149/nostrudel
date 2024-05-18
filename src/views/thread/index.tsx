@@ -3,7 +3,7 @@ import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { ThreadPost } from "./components/thread-post";
+import ThreadPost from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { ThreadItem, buildThread } from "../../helpers/thread";
@@ -18,6 +18,7 @@ import { getSharableEventAddress } from "../../helpers/nip19";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
 import TimelineNote from "../../components/note/timeline-note";
+import TimelineLoader from "../../classes/timeline-loader";
 
 function CollapsedReplies({
   pointer,

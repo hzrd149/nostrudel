@@ -1,70 +1,92 @@
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
-import { relayRequest, safeRelayUrls } from "../helpers/relay";
 import { logger } from "../helpers/debug";
 import Subject from "../classes/subject";
-
-const RELAY_REQUEST_BATCH_TIME = 500;
+import relayPoolService from "./relay-pool";
+import Process from "../classes/process";
+import { AbstractRelay } from "nostr-tools";
+import processManager from "./process-manager";
+import Code02 from "../components/icons/code-02";
+import BatchEventLoader from "../classes/batch-event-loader";
+import EventStore from "../classes/event-store";
 
 class SingleEventService {
-  private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
-  pending = new Map<string, string[]>();
-  log = logger.extend("SingleEvent");
+  process: Process;
+  log = logger.extend("SingleEventService");
 
-  requestEvent(id: string, relays: Iterable<string>) {
+  events = new EventStore();
+  subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+
+  loaders = new SuperMap<AbstractRelay, BatchEventLoader>((relay) => {
+    const loader = new BatchEventLoader(relay, this.log.extend(relay.url));
+    this.process.addChild(loader.process);
+    this.events.connect(loader.events);
+    return loader;
+  });
+
+  pendingRelays = new SuperMap<string, Set<AbstractRelay>>(() => new Set());
+
+  idsFromRelays = new SuperMap<AbstractRelay, Set<string>>(() => new Set());
+  // subscriptions = new Map<AbstractRelay, PersistentSubscription>();
+  constructor() {
+    this.process = new Process("SingleEventService", this);
+    this.process.icon = Code02;
+    this.process.active = true;
+    processManager.registerProcess(this.process);
+
+    // when an event is added to the store, pass it along to the subjects
+    this.events.onEvent.subscribe((event) => {
+      this.subjects.get(event.id).next(event);
+    });
+  }
+
+  getSubject(id: string) {
+    return this.subjects.get(id);
+  }
+
+  private loadEventFromRelays(id: string) {
+    const relays = this.pendingRelays.get(id);
+
+    for (const relay of relays) {
+      this.loaders.get(relay).requestEvent(id);
+    }
+  }
+
+  loadingFromCache = new Set<string>();
+  requestEvent(id: string, urls: Iterable<string | URL | AbstractRelay>) {
     const subject = this.subjects.get(id);
     if (subject.value) return subject;
 
-    const safeURLs = safeRelayUrls(Array.from(relays));
+    const relays = relayPoolService.getRelays(urls);
+    for (const relay of relays) this.pendingRelays.get(id).add(relay);
 
-    this.pending.set(id, this.pending.get(id)?.concat(safeURLs) ?? safeURLs);
-    this.batchRequestsThrottle();
+    // load from the local relay first
+    if (localRelay) {
+      if (!this.loadingFromCache.has(id)) {
+        this.loadingFromCache.add(id);
+
+        this.loaders
+          .get(localRelay as AbstractRelay)
+          .requestEvent(id)
+          .then((cached) => {
+            this.loadingFromCache.delete(id);
+            if (cached) this.handleEvent(cached, true);
+            else this.loadEventFromRelays(id);
+          });
+      }
+    } else this.loadEventFromRelays(id);
 
     return subject;
   }
 
-  handleEvent(event: NostrEvent, cache = true) {
-    this.subjects.get(event.id).next(event);
-    if (cache) localRelay.publish(event);
-  }
+  handleEvent(event: NostrEvent, fromCache = false) {
+    this.events.addEvent(event);
+    this.pendingRelays.delete(event.id);
 
-  private batchRequestsThrottle = _throttle(this.batchRequests, RELAY_REQUEST_BATCH_TIME);
-  async batchRequests() {
-    if (this.pending.size === 0) return;
-
-    const ids = Array.from(this.pending.keys());
-    const loaded: string[] = [];
-
-    // load from cache relay
-    const fromCache = await relayRequest(localRelay, [{ ids }]);
-
-    for (const e of fromCache) {
-      this.handleEvent(e, false);
-      loaded.push(e.id);
-    }
-
-    if (loaded.length > 0) this.log(`Loaded ${loaded.length} from cache instead of relays`);
-
-    const idsFromRelays: Record<string, string[]> = {};
-    for (const [id, relays] of this.pending) {
-      if (loaded.includes(id)) continue;
-
-      for (const relay of relays) {
-        idsFromRelays[relay] = idsFromRelays[relay] ?? [];
-        idsFromRelays[relay].push(id);
-      }
-    }
-
-    for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const request = new NostrRequest([relay]);
-      request.onEvent.subscribe((event) => this.handleEvent(event));
-      request.start({ ids });
-    }
-    this.pending.clear();
+    if (!fromCache && localRelay) localRelay.publish(event);
   }
 }
 

@@ -67,6 +67,7 @@ import Magnet from "./icons/magnet";
 import Recording02 from "./icons/recording-02";
 import Upload01 from "./icons/upload-01";
 import Modem02 from "./icons/modem-02";
+import BookOpen01 from "./icons/book-open-01";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -95,6 +96,7 @@ export const ChevronRightIcon = ChevronRight;
 
 export const LightningIcon = Zap;
 export const RelayIcon = Modem02;
+export const MediaServerIcon = Database01;
 export const BroadcastEventIcon = Share07;
 export const ShareIcon = Share07;
 export const PinIcon = Pin01;
@@ -244,3 +246,5 @@ export const TrackIcon = Recording02;
 
 export const InboxIcon = Download01;
 export const OutboxIcon = Upload01;
+
+export const WikiIcon = BookOpen01;

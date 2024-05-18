@@ -1,30 +1,37 @@
 import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
 
-import Relay from "../classes/relay";
 import relayPoolService from "../services/relay-pool";
+import { AbstractRelay } from "nostr-tools";
+import useSubject from "../hooks/use-subject";
 
-const getStatusText = (relay: Relay) => {
-  if (relay.connecting) return "Connecting...";
+const getStatusText = (relay: AbstractRelay, connecting = false) => {
+  if (connecting) return "Connecting...";
   if (relay.connected) return "Connected";
-  if (relay.closing) return "Disconnecting...";
-  if (relay.closed) return "Disconnected";
-  return "Unused";
+  // if (relay.closing) return "Disconnecting...";
+  // if (relay.closed) return "Disconnected";
+  return "Disconnected";
+  // return "Unused";
 };
-const getStatusColor = (relay: Relay) => {
-  if (relay.connecting) return "yellow";
+const getStatusColor = (relay: AbstractRelay, connecting = false) => {
+  if (connecting) return "yellow";
   if (relay.connected) return "green";
-  if (relay.closing) return "yellow";
-  if (relay.closed) return "red";
-  return "gray";
+  // if (relay.closing) return "yellow";
+  // if (relay.closed) return "red";
+  // return "gray";
+  return "red";
 };
 
-export const RelayStatus = ({ url }: { url: string }) => {
+export const RelayStatus = ({ url, relay }: { url?: string; relay?: AbstractRelay }) => {
   const update = useForceUpdate();
-
-  const relay = relayPoolService.requestRelay(url, false);
-
   useInterval(() => update(), 500);
 
-  return <Badge colorScheme={getStatusColor(relay)}>{getStatusText(relay)}</Badge>;
+  if (!relay) {
+    if (url) relay = relayPoolService.getRelay(url);
+    else throw Error("Missing url or relay");
+  }
+
+  const connecting = useSubject(relayPoolService.connecting.get(relay!));
+
+  return <Badge colorScheme={getStatusColor(relay!, connecting)}>{getStatusText(relay!, connecting)}</Badge>;
 };

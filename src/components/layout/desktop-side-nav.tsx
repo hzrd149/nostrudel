@@ -5,13 +5,14 @@ import { css } from "@emotion/react";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
-import PublishLog from "../publish-log";
 import NavItems from "./nav-items";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { WritingIcon } from "../icons";
 import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";
+import { useTaskManagerContext } from "../../views/task-manager/provider";
+import TaskManagerButton from "./task-manager-button";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -88,7 +89,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           </Button>
         )}
       </Flex>
-      <PublishLog overflowY="auto" minH="15rem" my="4" />
+      <TaskManagerButton mt="auto" flexShrink={0} py="2" />
     </Flex>
   );
 }

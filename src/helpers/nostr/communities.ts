@@ -85,13 +85,6 @@ export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
   return approvals;
 }
 
-export function getCommunityPostVote(grouped: ReactionGroup[]) {
-  const up = grouped.find((r) => r.emoji === "+");
-  const down = grouped.find((r) => r.emoji === "-");
-  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
-  return { up, down, vote };
-}
-
 export function getEventCommunityPointer(event: NostrEvent) {
   const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
   return communityTag ? parseCoordinate(communityTag[1], true) : null;

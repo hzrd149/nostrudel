@@ -10,11 +10,11 @@ export default function useUserMetadata(
   additionalRelays: Iterable<string> = [],
   opts: RequestOptions = {},
 ) {
-  const relays = useReadRelays([...additionalRelays, COMMON_CONTACT_RELAY]);
+  const readRelays = useReadRelays([...additionalRelays, COMMON_CONTACT_RELAY]);
 
   const subject = useMemo(
-    () => (pubkey ? userMetadataService.requestMetadata(pubkey, relays, opts) : undefined),
-    [pubkey, relays],
+    () => (pubkey ? userMetadataService.requestMetadata(pubkey, readRelays, opts) : undefined),
+    [pubkey, readRelays],
   );
   const metadata = useSubject(subject);
 

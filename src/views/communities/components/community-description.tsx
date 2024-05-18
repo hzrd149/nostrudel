@@ -4,7 +4,7 @@ import { Box, BoxProps, Button } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityDescription } from "../../../helpers/nostr/communities";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../../helpers/embeds";
-import { renderGenericUrl } from "../../../components/embed-types";
+import { renderGenericUrl } from "../../../components/external-embeds";
 
 export default function CommunityDescription({
   community,

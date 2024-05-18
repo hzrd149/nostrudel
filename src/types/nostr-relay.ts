@@ -4,5 +4,3 @@ import { Filter } from "nostr-tools";
 export type NostrQuery = Filter;
 
 export type NostrRequestFilter = Filter | Filter[];
-
-export type RelayQueryMap = Record<string, Filter[]>;

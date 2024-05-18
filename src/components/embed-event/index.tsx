@@ -41,6 +41,8 @@ import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
 import LoadingNostrLink from "../loading-nostr-link";
 import EmbeddedRepost from "./event-types/embedded-repost";
+import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
+import EmbeddedWikiPage from "./event-types/embedded-wiki-page";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -93,6 +95,8 @@ export function EmbedEvent({
       case kinds.Repost:
       case kinds.GenericRepost:
         return <EmbeddedRepost repost={event} {...cardProps} />;
+      case WIKI_PAGE_KIND:
+        return <EmbeddedWikiPage page={event} {...cardProps} />;
     }
 
     return <EmbeddedUnknown event={event} {...cardProps} />;

@@ -1,8 +1,7 @@
-import Relay from "../classes/relay";
+import { AbstractRelay } from "nostr-tools";
 import { PersistentSubject } from "../classes/subject";
 import { getEventUID } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
-import relayPoolService from "./relay-pool";
 
 const eventRelays = new Map<string, PersistentSubject<string[]>>();
 
@@ -23,18 +22,19 @@ function addRelay(id: string, relay: string) {
   }
 }
 
-export function handleEventFromRelay(relay: Relay, event: NostrEvent) {
+export function handleEventFromRelay(relay: AbstractRelay, event: NostrEvent) {
   const uid = getEventUID(event);
 
   addRelay(uid, relay.url);
   if (event.id !== uid) addRelay(event.id, relay.url);
 }
 
-relayPoolService.onRelayCreated.subscribe((relay) => {
-  relay.onEvent.subscribe((message) => {
-    handleEventFromRelay(relay, message[2]);
-  });
-});
+// TODO: track events from relays
+// relayPoolService.onRelayCreated.subscribe((relay) => {
+//   relay.onEvent.subscribe((message) => {
+//     handleEventFromRelay(relay, message[2]);
+//   });
+// });
 
 const eventRelaysService = {
   getEventRelays,

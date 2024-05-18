@@ -22,15 +22,16 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { PublishDetails } from "../publish-details";
-import { TrustProvider } from "../../providers/local/trust";
+import PublishAction from "../../classes/nostr-publish-action";
+import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
+import { TrustProvider } from "../../providers/local/trust-provider";
 import {
   correctContentMentions,
   createEmojiTags,
@@ -84,7 +85,7 @@ export default function PostModal({
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
   const [miningTarget, setMiningTarget] = useState(0);
-  const [publishAction, setPublishAction] = useState<NostrPublishAction>();
+  const [publishAction, setPublishAction] = useState<PublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 
@@ -100,6 +101,9 @@ export default function PostModal({
     },
     mode: "all",
   });
+
+  // watch form state
+  formState.isDirty;
   watch("content");
   watch("nsfw");
   watch("nsfwReason");
@@ -214,7 +218,7 @@ export default function PostModal({
               onChange={onFileInputChange}
             />
             <IconButton
-              icon={<UploadImageIcon />}
+              icon={<UploadImageIcon boxSize={6} />}
               aria-label="Upload Image"
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}
@@ -231,9 +235,6 @@ export default function PostModal({
           {mentions.length > 0 && <UserAvatarStack label="Mentions" pubkeys={mentions} />}
           <Button onClick={onClose} variant="ghost">
             Cancel
-          </Button>
-          <Button onClick={() => reset()} isDisabled={!formState.isDirty}>
-            Reset
           </Button>
           <Button
             colorScheme="primary"
@@ -298,6 +299,7 @@ export default function PostModal({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
+        {publishAction && <ModalCloseButton />}
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
           {renderContent()}
         </ModalBody>

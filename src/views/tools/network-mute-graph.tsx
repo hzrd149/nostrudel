@@ -1,17 +1,9 @@
 import { useMemo } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { useNavigate } from "react-router-dom";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
-import {
-  Group,
-  Mesh,
-  MeshBasicMaterial,
-  SRGBColorSpace,
-  SphereGeometry,
-  Sprite,
-  SpriteMaterial,
-  TextureLoader,
-} from "three";
+import { Mesh, MeshBasicMaterial, SRGBColorSpace, SphereGeometry, Sprite, SpriteMaterial, TextureLoader } from "three";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
@@ -22,7 +14,6 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import replaceableEventsService from "../../services/replaceable-events";
 import useSubjects from "../../hooks/use-subjects";
 import useUserMetadata from "../../hooks/use-user-metadata";
-import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 
 export function useUsersMuteLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
@@ -62,7 +53,7 @@ function NetworkGraphPage() {
 
         const metadata = usersMetadata[pubkey];
         if (metadata) {
-          node.image = metadata.picture;
+          node.image = metadata.picture || metadata.image;
           node.name = metadata.name;
         }
 
@@ -105,24 +96,17 @@ function NetworkGraphPage() {
               linkCurvature={0.25}
               nodeThreeObject={(node: NodeType) => {
                 if (!node.image) {
-                  return new Mesh(new SphereGeometry(5, 12, 6), new MeshBasicMaterial({ color: 0xaa0f0f }));
+                  return new Mesh(
+                    new SphereGeometry(5, 12, 6),
+                    new MeshBasicMaterial({ color: parseInt(node.id.slice(0, 6), 16) }),
+                  );
                 }
-
-                const group = new Group();
 
                 const imgTexture = new TextureLoader().load(node.image);
                 imgTexture.colorSpace = SRGBColorSpace;
                 const material = new SpriteMaterial({ map: imgTexture });
                 const sprite = new Sprite(material);
                 sprite.scale.set(10, 10, 10);
-
-                group.children.push(sprite);
-
-                // if (node.name) {
-                //   const text = new SpriteText(node.name, 8, "ffffff");
-                //   text.position.set(0, 0, 16);
-                //   group.children.push(text);
-                // }
 
                 return sprite;
               }}

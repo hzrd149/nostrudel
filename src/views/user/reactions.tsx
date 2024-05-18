@@ -13,11 +13,11 @@ import IntersectionObserverProvider, {
   useRegisterIntersectionEntity,
 } from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { TrustProvider } from "../../providers/local/trust";
+import { TrustProvider } from "../../providers/local/trust-provider";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import { EmbedEventPointer } from "../../components/embed-event";
-import { embedEmoji } from "../../components/embed-types";
+import { embedEmoji } from "../../components/external-embeds";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NoteMenu from "../../components/note/note-menu";
 

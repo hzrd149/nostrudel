@@ -13,10 +13,51 @@ import {
   Input,
   Link,
   FormErrorMessage,
+  Select,
+  Button,
+  Text,
 } from "@chakra-ui/react";
+import { useLocalStorage } from "react-use";
+
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
 import { PerformanceIcon } from "../../components/icons";
+import { selectedMethod } from "../../services/verify-event";
+
+function VerifyEventSettings() {
+  const [verifyEventMethod, setVerifyEventMethod] = useLocalStorage<string>("verify-event-method", "internal", {
+    raw: true,
+  });
+
+  return (
+    <>
+      <FormControl>
+        <FormLabel htmlFor="verifyEventMethod" mb="0">
+          Verify event method
+        </FormLabel>
+        <Select value={verifyEventMethod} onChange={(e) => setVerifyEventMethod(e.target.value)} maxW="sm">
+          <option value="wasm">WebAssembly</option>
+          <option value="internal">Internal</option>
+          <option value="none">None</option>
+        </Select>
+        <FormHelperText>Default: All events signatures are checked</FormHelperText>
+        <FormHelperText>WebAssembly: Events signatures are checked in a separate thread</FormHelperText>
+        <FormHelperText>None: Only Profiles, Follows, and replaceable event signatures are checked</FormHelperText>
+
+        {selectedMethod !== verifyEventMethod && (
+          <>
+            <Text color="blue.500" mt="2">
+              NOTE: You must reload the app for this setting to take effect
+            </Text>
+            <Button colorScheme="primary" size="sm" onClick={() => location.reload()}>
+              Reload App
+            </Button>
+          </>
+        )}
+      </FormControl>
+    </>
+  );
+}
 
 export default function PerformanceSettings() {
   const { register, formState } = useFormContext<AppSettings>();
@@ -25,7 +66,7 @@ export default function PerformanceSettings() {
     <AccordionItem>
       <h2>
         <AccordionButton fontSize="xl">
-          <PerformanceIcon mr="2" />
+          <PerformanceIcon mr="2" boxSize={5} />
           <Box as="span" flex="1" textAlign="left">
             Performance
           </Box>
@@ -88,15 +129,6 @@ export default function PerformanceSettings() {
           </FormControl>
           <FormControl>
             <Flex alignItems="center">
-              <FormLabel htmlFor="showSignatureVerification" mb="0">
-                Show signature verification
-              </FormLabel>
-              <Switch id="showSignatureVerification" {...register("showSignatureVerification")} />
-            </Flex>
-            <FormHelperText>Enabled: show signature verification on notes</FormHelperText>
-          </FormControl>
-          <FormControl>
-            <Flex alignItems="center">
               <FormLabel htmlFor="autoDecryptDMs" mb="0">
                 Automatically decrypt DMs
               </FormLabel>
@@ -104,6 +136,7 @@ export default function PerformanceSettings() {
             </Flex>
             <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
           </FormControl>
+          <VerifyEventSettings />
         </Flex>
       </AccordionPanel>
     </AccordionItem>

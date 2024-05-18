@@ -73,15 +73,13 @@ import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
+import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
 import UserDMsTab from "./views/user/dms";
-import DMTimelineView from "./views/tools/dm-timeline";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
 import DVMFeedView from "./views/dvm-feed/feed";
-import TransformNoteView from "./views/tools/transform-note";
-import SatelliteCDNView from "./views/tools/satellite-cdn";
 import OtherStuffView from "./views/other-stuff";
 import { RouteProviders } from "./providers/route";
 import LaunchpadView from "./views/launchpad";
@@ -90,18 +88,23 @@ import VideoDetailsView from "./views/videos/video";
 import BookmarksView from "./views/bookmarks";
 import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
+import DatabaseView from "./views/relays/cache/database";
+import TaskManagerProvider from "./views/task-manager/provider";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
-const WotTestView = lazy(() => import("./views/tools/wot-test"));
 const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 const UnknownTimelineView = lazy(() => import("./views/tools/unknown-event-feed"));
 const EventConsoleView = lazy(() => import("./views/tools/event-console"));
 const EventPublisherView = lazy(() => import("./views/tools/event-publisher"));
+const DMTimelineView = lazy(() => import("./views/tools/dm-timeline"));
+const TransformNoteView = lazy(() => import("./views/tools/transform-note"));
+const SatelliteCDNView = lazy(() => import("./views/tools/satellite-cdn"));
+const CorrectionsFeedView = lazy(() => import("./views/tools/corrections"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -116,6 +119,14 @@ const ChannelView = lazy(() => import("./views/channels/channel"));
 const TorrentsView = lazy(() => import("./views/torrents"));
 const TorrentDetailsView = lazy(() => import("./views/torrents/torrent"));
 const NewTorrentView = lazy(() => import("./views/torrents/new"));
+
+const WikiHomeView = lazy(() => import("./views/wiki"));
+const WikiPageView = lazy(() => import("./views/wiki/page"));
+const WikiTopicView = lazy(() => import("./views/wiki/topic"));
+const WikiSearchView = lazy(() => import("./views/wiki/search"));
+const WikiCompareView = lazy(() => import("./views/wiki/compare"));
+const CreateWikiPageView = lazy(() => import("./views/wiki/create"));
+const EditWikiPageView = lazy(() => import("./views/wiki/edit"));
 
 const overrideReactTextareaAutocompleteStyles = css`
   .rta__autocomplete {
@@ -269,8 +280,15 @@ const router = createHashRouter([
         children: [
           { path: "", element: <AppRelays /> },
           { path: "app", element: <AppRelays /> },
-          { path: "cache", element: <CacheRelayView /> },
+          {
+            path: "cache",
+            children: [
+              { path: "database", element: <DatabaseView /> },
+              { path: "", element: <CacheRelayView /> },
+            ],
+          },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },
@@ -299,6 +317,18 @@ const router = createHashRouter([
         ],
       },
       {
+        path: "wiki",
+        children: [
+          { path: "search", element: <WikiSearchView /> },
+          { path: "topic/:topic", element: <WikiTopicView /> },
+          { path: "page/:naddr", element: <WikiPageView /> },
+          { path: "edit/:topic", element: <EditWikiPageView /> },
+          { path: "compare/:topic/:a/:b", element: <WikiCompareView /> },
+          { path: "create", element: <CreateWikiPageView /> },
+          { path: "", element: <WikiHomeView /> },
+        ],
+      },
+      {
         path: "dvm",
         children: [
           { path: ":addr", element: <DVMFeedView /> },
@@ -316,7 +346,6 @@ const router = createHashRouter([
         path: "tools",
         children: [
           { path: "", element: <ToolsHomeView /> },
-          { path: "wot-test", element: <WotTestView /> },
           { path: "network-mute-graph", element: <NetworkMuteGraphView /> },
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
           { path: "dm-timeline", element: <DMTimelineView /> },
@@ -325,6 +354,7 @@ const router = createHashRouter([
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
           { path: "publisher", element: <EventPublisherView /> },
+          { path: "corrections", element: <CorrectionsFeedView /> },
         ],
       },
       {
@@ -424,11 +454,13 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
-    <DrawerSubViewProvider parentRouter={router}>
-      <Global styles={overrideReactTextareaAutocompleteStyles} />
-      <Suspense fallback={<Spinner />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </DrawerSubViewProvider>
+    <TaskManagerProvider parentRouter={router}>
+      <DrawerSubViewProvider parentRouter={router}>
+        <Global styles={overrideReactTextareaAutocompleteStyles} />
+        <Suspense fallback={<Spinner />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </DrawerSubViewProvider>
+    </TaskManagerProvider>
   </ErrorBoundary>
 );

@@ -6,9 +6,6 @@ export default class SuperMap<Key, Value> extends Map<Key, Value> {
     this.newValue = newValue;
   }
 
-  has(key: Key) {
-    return true;
-  }
   get(key: Key) {
     let value = super.get(key);
     if (value === undefined) {

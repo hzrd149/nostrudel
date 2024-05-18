@@ -5,7 +5,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { NoteTranslationsPage } from "./translation";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
 import NoteTextToSpeechPage from "./text-to-speech";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
@@ -36,7 +36,7 @@ function TransformNotePage({ note }: { note: NostrEvent }) {
           <Flex gap="2" alignItems="center">
             <UserAvatarLink pubkey={note.pubkey} size={["xs", "sm"]} />
             <UserLink pubkey={note.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-            <UserDnsIdentityIcon pubkey={note.pubkey} onlyIcon />
+            <UserDnsIdentity pubkey={note.pubkey} onlyIcon />
             <Spacer />
             <NoteMenu event={note} aria-label="Note Options" />
           </Flex>

@@ -10,6 +10,7 @@ export type AppSettingsV0 = {
   autoShowMedia: boolean;
   proxyUserMedia: boolean;
   showReactions: boolean;
+  /** @deprecated */
   showSignatureVerification: boolean;
 
   autoPayWithWebLN: boolean;
@@ -34,34 +35,42 @@ export type AppSettingsV4 = Omit<AppSettingsV3, "version"> & { version: 4; loadO
 export type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideUsernames: boolean };
 export type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
 export type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; autoDecryptDMs: boolean };
+export type AppSettingsV8 = Omit<AppSettingsV7, "version"> & {
+  version: 8;
+  mediaUploadService: "nostr.build" | "blossom";
+};
+export type AppSettingsV9 = Omit<AppSettingsV8, "version"> & { version: 9; removeEmojisInUsernames: boolean };
 
-export type AppSettings = AppSettingsV7;
+export type AppSettings = AppSettingsV9;
 
 export const defaultSettings: AppSettings = {
-  version: 7,
+  version: 9,
   theme: "default",
   colorMode: "system",
   defaultRelays: ["wss://relay.damus.io", "wss://nostr.wine", "wss://nos.lol", "wss://welcome.nostr.wine"],
   maxPageWidth: "none",
   blurImages: true,
   hideUsernames: false,
+  removeEmojisInUsernames: false,
   autoShowMedia: true,
   proxyUserMedia: false,
   loadOpenGraphData: true,
   showReactions: true,
+  /** @deprecated */
   showSignatureVerification: false,
   noteDifficulty: null,
 
   autoDecryptDMs: false,
 
   quickReactions: ["🤙", "❤️", "🤣", "😍", "🔥"],
+  mediaUploadService: "nostr.build",
 
   autoPayWithWebLN: true,
   customZapAmounts: "50,200,500,1000,2000,5000",
 
   primaryColor: "#8DB600",
   imageProxy: "",
-  corsProxy: "https://corsproxy.io/?<encoded_url>",
+  corsProxy: "", //"https://corsproxy.io/?<encoded_url>",
   showContentWarning: true,
   twitterRedirect: undefined,
   redditRedirect: undefined,
@@ -69,7 +78,7 @@ export const defaultSettings: AppSettings = {
 };
 
 export function upgradeSettings(settings: { version: number }): AppSettings | null {
-  return { ...defaultSettings, ...settings, version: 7 };
+  return { ...defaultSettings, ...settings, version: 9 };
 }
 
 export function parseAppSettings(event: NostrEvent): AppSettings {

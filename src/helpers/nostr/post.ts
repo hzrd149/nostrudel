@@ -1,13 +1,13 @@
-import { DraftNostrEvent, NostrEvent, Tag, isETag, isPTag } from "../../types/nostr-event";
+import { nip19 } from "nostr-tools";
+import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
-import { addPubkeyRelayHints, getThreadReferences } from "./event";
-import { getPubkeyFromDecodeResult, safeDecode } from "../nip19";
+import { getThreadReferences } from "./event";
+import { safeDecode } from "../nip19";
 import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
+
 import relayHintService from "../../services/event-relay-hint";
-import { EventTemplate } from "nostr-tools";
-import RelaySet from "../../classes/relay-set";
 import userMailboxesService from "../../services/user-mailboxes";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
@@ -103,6 +103,38 @@ export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
   return mentions.length > 0 ? ensureNotifyPubkeys(draft, mentions) : draft;
 }
 
+export function getAllEventsMentionedInContent(content: string) {
+  const matched = content.matchAll(getMatchNostrLink());
+
+  const events: nip19.EventPointer[] = [];
+
+  for (const match of matched) {
+    const decode = safeDecode(match[2]);
+    if (!decode) continue;
+
+    switch (decode.type) {
+      case "note":
+        events.push({ id: decode.data });
+        break;
+      case "nevent":
+        events.push(decode.data);
+        break;
+    }
+  }
+
+  return events;
+}
+export function ensureTagContentMentions(draft: DraftNostrEvent) {
+  const mentions = getAllEventsMentionedInContent(draft.content);
+  const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+
+  for (const pointer of mentions) {
+    updated.tags = AddEtag(updated.tags, pointer.id, pointer.relays?.[0] ?? "", "mention", false);
+  }
+
+  return updated;
+}
+
 export function createHashtagTags(draft: DraftNostrEvent) {
   const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
 
@@ -147,6 +179,7 @@ export function finalizeNote(draft: DraftNostrEvent) {
   let updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
-  updated = addPubkeyRelayHints(updated);
+  updated = userMailboxesService.addPubkeyRelayHints(updated);
+  updated = ensureTagContentMentions(updated);
   return updated;
 }

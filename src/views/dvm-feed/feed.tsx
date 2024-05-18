@@ -38,6 +38,7 @@ import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import DVMParams from "./components/dvm-params";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { getHumanReadableCoordinate } from "../../services/replaceable-events";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "hour").unix());
@@ -48,15 +49,18 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
 
   const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
   const readRelays = useReadRelays(dvmRelays);
-  const timeline = useTimelineLoader(`${pointer.kind}:${pointer.pubkey}:${pointer.identifier}-jobs`, readRelays, [
-    { authors: [account.pubkey], "#p": [pointer.pubkey], kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND], since },
-    {
-      authors: [pointer.pubkey],
-      "#p": [account.pubkey],
-      kinds: [DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],
-      since,
-    },
-  ]);
+  const timeline = useTimelineLoader(
+    `${getHumanReadableCoordinate(pointer.kind, pointer.pubkey, pointer.identifier)}-jobs`,
+    readRelays,
+    [
+      {
+        authors: [account.pubkey, pointer.pubkey],
+        "#p": [account.pubkey, pointer.pubkey],
+        kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND, DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],
+        since,
+      },
+    ],
+  );
 
   const events = useSubject(timeline.timeline);
   const jobs = groupEventsIntoJobs(events);

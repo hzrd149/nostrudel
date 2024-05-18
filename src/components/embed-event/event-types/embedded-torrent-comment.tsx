@@ -7,7 +7,7 @@ import UserLink from "../../user/user-link";
 import useSubject from "../../../hooks/use-subject";
 import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import Timestamp from "../../timestamp";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";

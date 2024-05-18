@@ -1,5 +1,5 @@
 import db from "./db";
-import { fetchWithCorsFallback } from "../helpers/cors";
+import { fetchWithProxy } from "../helpers/request";
 import { isHexKey } from "../helpers/nip19";
 import { validateRelayURL } from "../helpers/relay";
 
@@ -26,7 +26,7 @@ async function fetchInfo(relay: string) {
   const url = validateRelayURL(relay);
   url.protocol = url.protocol === "ws:" ? "http" : "https";
 
-  const infoDoc = await fetchWithCorsFallback(url, { headers: { Accept: "application/nostr+json" } }).then(
+  const infoDoc = await fetchWithProxy(url, { headers: { Accept: "application/nostr+json" } }).then(
     (res) => res.json() as Promise<RelayInformationDocument>,
   );
 

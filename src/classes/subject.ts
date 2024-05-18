@@ -28,6 +28,16 @@ export default class Subject<T> {
   }
   subscribe: Observable<T>["subscribe"];
 
+  once(next: (value: T) => void) {
+    const sub = this.subscribe((v) => {
+      if (v !== undefined) {
+        next(v);
+        sub.unsubscribe();
+      }
+    });
+    return sub;
+  }
+
   map<R>(callback: (value: T) => R, defaultValue?: R): Subject<R> {
     const child = new Subject(defaultValue);
 

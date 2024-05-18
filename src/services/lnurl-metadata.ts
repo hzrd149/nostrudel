@@ -1,4 +1,4 @@
-import { fetchWithCorsFallback } from "../helpers/cors";
+import { fetchWithProxy } from "../helpers/request";
 import { getLudEndpoint } from "../helpers/lnurl";
 
 type LNURLPMetadata = {
@@ -24,9 +24,7 @@ class LNURLMetadataService {
     const url = getLudEndpoint(addressOrLNURL);
     if (!url) return;
     try {
-      const metadata = await fetchWithCorsFallback(url).then(
-        (res) => res.json() as Promise<LNURLError | LNURLPMetadata>,
-      );
+      const metadata = await fetchWithProxy(url).then((res) => res.json() as Promise<LNURLError | LNURLPMetadata>);
       if ((metadata as LNURLPMetadata).tag === "payRequest") {
         return metadata as LNURLPMetadata;
       }

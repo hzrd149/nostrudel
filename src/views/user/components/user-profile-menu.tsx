@@ -1,4 +1,4 @@
-import { MenuItem, useConst, useDisclosure, useToast } from "@chakra-ui/react";
+import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
@@ -16,10 +16,8 @@ import {
 } from "../../../components/icons";
 import accountService from "../../../services/account";
 import useUserMetadata from "../../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import { truncatedId } from "../../../helpers/nostr/event";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import userMailboxesService from "../../../services/user-mailboxes";
@@ -67,7 +65,7 @@ export const UserProfileMenu = ({
           Direct messages
         </MenuItem>
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
-          Login as {truncatedId(getUserDisplayName(metadata, pubkey))}
+          Login as user
         </MenuItem>
         <MenuItem
           onClick={() => {

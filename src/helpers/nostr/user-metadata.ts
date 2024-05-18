@@ -1,4 +1,5 @@
 import { NostrEvent, nip19 } from "nostr-tools";
+import emojiRegex from "emoji-regex";
 import { truncatedId } from "./event";
 
 export type Kind0ParsedContent = {
@@ -39,8 +40,16 @@ export function getSearchNames(metadata: Kind0ParsedContent) {
   return [metadata.displayName, metadata.display_name, metadata.name].filter(Boolean) as string[];
 }
 
-export function getUserDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string) {
-  return metadata?.displayName || metadata?.display_name || metadata?.name || truncatedId(nip19.npubEncode(pubkey));
+const matchEmoji = emojiRegex();
+export function getDisplayName(metadata: Kind0ParsedContent | undefined, pubkey: string, removeEmojis = false) {
+  let displayName = metadata?.displayName || metadata?.display_name || metadata?.name;
+
+  if (displayName) {
+    if (removeEmojis) displayName = displayName.replaceAll(matchEmoji, "");
+    return displayName;
+  }
+
+  return truncatedId(nip19.npubEncode(pubkey));
 }
 
 export function fixWebsiteUrl(website: string) {

@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import StarRating from "../../../components/star-rating";
 import { safeJson } from "../../../helpers/parse";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -28,7 +28,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
       <CardHeader display="flex" gap="2" px="2" pt="2" pb="0">
         <UserAvatarLink pubkey={event.pubkey} size="xs" />
         <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+        <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
         <Timestamp ml="auto" timestamp={event.created_at} />
       </CardHeader>
       <CardBody p="2">

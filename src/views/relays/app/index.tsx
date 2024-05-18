@@ -13,7 +13,6 @@ import RelaySet from "../../../classes/relay-set";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import RelayControl from "./relay-control";
-import SelectRelaySet from "./select-relay-set";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";

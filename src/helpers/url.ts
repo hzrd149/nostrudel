@@ -1,5 +1,3 @@
-import { isValidRelayURL, validateRelayURL } from "./relay";
-
 export const convertToUrl = (url: string | URL) => (url instanceof URL ? url : new URL(url));
 
 export const IMAGE_EXT = [".svg", ".gif", ".png", ".jpg", ".jpeg", ".webp", ".avif"];

@@ -14,7 +14,7 @@ import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserLink from "../../../components/user/user-link";
 import { getRelaysFromList } from "../../../helpers/nostr/lists";
@@ -30,7 +30,7 @@ function UserCard({ list, pubkey }: { list: NostrEvent; pubkey: string }) {
       <UserAvatarLink pubkey={pubkey} />
       <Flex direction="column" overflow="hidden">
         <HoverLinkOverlay as={UserLink} pubkey={pubkey} fontWeight="bold" isTruncated />
-        <UserDnsIdentityIcon pubkey={pubkey} />
+        <UserDnsIdentity pubkey={pubkey} />
       </Flex>
     </Card>
   );

@@ -1,84 +1,75 @@
-import { Filter, kinds } from "nostr-tools";
+import { AbstractRelay, kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
-import NostrRequest from "../classes/nostr-request";
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
-import { NostrEvent, isATag, isETag } from "../types/nostr-event";
-import { relayRequest } from "../helpers/relay";
+import { NostrEvent } from "../types/nostr-event";
 import { localRelay } from "./local-relay";
-
-type eventUID = string;
-type relay = string;
+import relayPoolService from "./relay-pool";
+import Process from "../classes/process";
+import { LightningIcon } from "../components/icons";
+import processManager from "./process-manager";
+import BatchRelationLoader from "../classes/batch-relation-loader";
+import { logger } from "../helpers/debug";
 
 class EventZapsService {
-  subjects = new SuperMap<eventUID, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
-  pending = new SuperMap<eventUID, Set<relay>>(() => new Set());
+  log = logger.extend("EventZapsService");
+  process: Process;
 
-  requestZaps(eventUID: eventUID, relays: Iterable<string>, alwaysRequest = true) {
-    const subject = this.subjects.get(eventUID);
+  subjects = new SuperMap<string, Subject<NostrEvent[]>>(() => new Subject<NostrEvent[]>([]));
 
-    if (!subject.value || alwaysRequest) {
-      for (const relay of relays) {
-        this.pending.get(eventUID).add(relay);
+  loaders = new SuperMap<AbstractRelay, BatchRelationLoader>((relay) => {
+    const loader = new BatchRelationLoader(relay, [kinds.Zap], this.log.extend(relay.url));
+    this.process.addChild(loader.process);
+    loader.onEventUpdate.subscribe((id) => {
+      this.updateSubject(id);
+    });
+    return loader;
+  });
+
+  constructor() {
+    this.process = new Process("EventZapsService", this);
+    this.process.icon = LightningIcon;
+    this.process.active = true;
+
+    processManager.registerProcess(this.process);
+  }
+
+  // merged results from all loaders for a single event
+  private updateSubject(id: string) {
+    const ids = new Set<string>();
+    const events: NostrEvent[] = [];
+    const subject = this.subjects.get(id);
+
+    for (const [relay, loader] of this.loaders) {
+      if (loader.references.has(id)) {
+        const other = loader.references.get(id);
+        for (const [_, e] of other) {
+          if (!ids.has(e.id)) {
+            ids.add(e.id);
+            events.push(e);
+          }
+        }
       }
     }
-    this.throttleBatchRequest();
+
+    subject.next(events);
+  }
+
+  requestZaps(eventUID: string, urls: Iterable<string | URL | AbstractRelay>, alwaysRequest = true) {
+    const subject = this.subjects.get(eventUID);
+    if (subject.value && !alwaysRequest) return subject;
+
+    if (localRelay) {
+      this.loaders.get(localRelay as AbstractRelay).requestEvents(eventUID);
+    }
+
+    const relays = relayPoolService.getRelays(urls);
+    for (const relay of relays) {
+      this.loaders.get(relay).requestEvents(eventUID);
+    }
 
     return subject;
-  }
-
-  handleEvent(event: NostrEvent, cache = true) {
-    if (event.kind !== kinds.Zap) return;
-    const eventUID = event.tags.find(isETag)?.[1] ?? event.tags.find(isATag)?.[1];
-    if (!eventUID) return;
-
-    const subject = this.subjects.get(eventUID);
-    if (!subject.value) {
-      subject.next([event]);
-    } else if (!subject.value.some((e) => e.id === event.id)) {
-      subject.next([...subject.value, event]);
-    }
-
-    if (cache) localRelay.publish(event);
-  }
-
-  throttleBatchRequest = _throttle(this.batchRequests, 2000);
-  batchRequests() {
-    if (this.pending.size === 0) return;
-
-    // load events from cache
-    const uids = Array.from(this.pending.keys());
-    const ids = uids.filter((id) => !id.includes(":"));
-    const cords = uids.filter((id) => id.includes(":"));
-    const filters: Filter[] = [];
-    if (ids.length > 0) filters.push({ "#e": ids, kinds: [kinds.Zap] });
-    if (cords.length > 0) filters.push({ "#a": cords, kinds: [kinds.Zap] });
-    if (filters.length > 0)
-      relayRequest(localRelay, filters).then((events) => events.forEach((e) => this.handleEvent(e, false)));
-
-    const idsFromRelays: Record<relay, eventUID[]> = {};
-    for (const [id, relays] of this.pending) {
-      for (const relay of relays) {
-        idsFromRelays[relay] = idsFromRelays[relay] ?? [];
-        idsFromRelays[relay].push(id);
-      }
-    }
-
-    for (const [relay, ids] of Object.entries(idsFromRelays)) {
-      const eventIds = ids.filter((id) => !id.includes(":"));
-      const coordinates = ids.filter((id) => id.includes(":"));
-      const filter: Filter[] = [];
-      if (eventIds.length > 0) filter.push({ "#e": eventIds, kinds: [kinds.Zap] });
-      if (coordinates.length > 0) filter.push({ "#a": coordinates, kinds: [kinds.Zap] });
-
-      if (filter.length > 0) {
-        const request = new NostrRequest([relay]);
-        request.onEvent.subscribe((e) => this.handleEvent(e));
-        request.start(filter);
-      }
-    }
-    this.pending.clear();
   }
 }
 

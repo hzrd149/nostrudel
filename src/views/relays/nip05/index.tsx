@@ -42,7 +42,7 @@ export default function NIP05RelaysView() {
         </Link>
       </Text>
 
-      {nip05?.relays.map((url) => <RelayItem key={url} url={url} />)}
+      {nip05?.relays?.map((url) => <RelayItem key={url} url={url} />)}
     </Flex>
   );
 }

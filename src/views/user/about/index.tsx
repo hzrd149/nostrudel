@@ -1,15 +1,31 @@
 import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import { Box, Button, Flex, Heading, IconButton, Image, Link, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
 import { getLudEndpoint } from "../../../helpers/lnurl";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserMetadata from "../../../hooks/use-user-metadata";
-import { embedNostrLinks, renderGenericUrl } from "../../../components/embed-types";
+import { embedNostrLinks, renderGenericUrl } from "../../../components/external-embeds";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -20,7 +36,7 @@ import {
 } from "../../../components/icons";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
 import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
@@ -32,6 +48,9 @@ import UserJoinedCommunities from "./user-joined-communities";
 import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
 import UserJoinedChanneled from "./user-joined-channels";
+import { getTextColor } from "../../../helpers/color";
+import UserName from "../../../components/user/user-name";
+import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -42,17 +61,58 @@ function buildDescriptionContent(description: string) {
   return content;
 }
 
+function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
+  const metadata = useUserMetadata(pubkey);
+  const dnsIdentity = useUserDNSIdentity(pubkey);
+  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
+  const nip05URL = parsedNip05
+    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
+    : undefined;
+
+  if (dnsIdentity === undefined)
+    return (
+      <Text color="yellow.500">
+        Unable to check DNS identity due to CORS error{" "}
+        {nip05URL && (
+          <Link
+            color="blue.500"
+            href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(nip05URL)}&method=get`}
+            isExternal
+          >
+            Test
+            <ExternalLinkIcon ml="1" />
+          </Link>
+        )}
+      </Text>
+    );
+  else if (dnsIdentity.exists === false) return <Text color="red.500">Unable to find nostr.json file</Text>;
+  else if (dnsIdentity.pubkey === undefined)
+    return <Text color="red.500">Unable to find DNS Identity in nostr.json file</Text>;
+  else if (dnsIdentity.pubkey === pubkey) return null;
+  else
+    return (
+      <Text color="red.500" fontWeight="bold">
+        Invalid DNS Identity!
+      </Text>
+    );
+}
+
 export default function UserAboutTab() {
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
+  const colorModal = useDisclosure();
 
   const metadata = useUserMetadata(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
+  const pubkeyColor = "#" + pubkey.slice(0, 6);
 
   const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
+  const nip05URL = parsedNip05
+    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
+    : undefined;
 
   return (
     <Flex
@@ -89,8 +149,10 @@ export default function UserAboutTab() {
         >
           <UserAvatar pubkey={pubkey} size={["lg", "lg", "xl"]} noProxy />
           <Box overflow="hidden">
-            <Heading isTruncated>{getUserDisplayName(metadata, pubkey)}</Heading>
-            <UserDnsIdentityIcon pubkey={pubkey} />
+            <Heading isTruncated>
+              <UserName pubkey={pubkey} />
+            </Heading>
+            <UserDnsIdentity pubkey={pubkey} />
           </Box>
 
           <Flex gap="2" ml="auto">
@@ -124,6 +186,14 @@ export default function UserAboutTab() {
       )}
 
       <Flex gap="2" px="2" direction="column">
+        <Flex gap="2">
+          <Box w="5" h="5" backgroundColor={pubkeyColor} rounded="full" />
+          <Text>Public key color</Text>
+          <Link color="blue.500" onClick={colorModal.onOpen}>
+            {pubkeyColor}
+          </Link>
+        </Flex>
+
         {metadata?.lud16 && (
           <Flex gap="2">
             <LightningIcon />
@@ -132,13 +202,16 @@ export default function UserAboutTab() {
             </Link>
           </Flex>
         )}
-        {parsedNip05 && (
-          <Flex gap="2">
-            <AtIcon />
-            <Link href={`//${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`} isExternal>
-              <UserDnsIdentityIcon pubkey={pubkey} />
-            </Link>
-          </Flex>
+        {nip05URL && (
+          <Box>
+            <Flex gap="2">
+              <AtIcon />
+              <Link href={nip05URL} isExternal>
+                <UserDnsIdentity pubkey={pubkey} />
+              </Link>
+            </Flex>
+            <DNSIdentityWarning pubkey={pubkey} />
+          </Box>
         )}
         {metadata?.website && (
           <Flex gap="2">
@@ -194,6 +267,50 @@ export default function UserAboutTab() {
       <UserPinnedEvents pubkey={pubkey} />
       <UserJoinedCommunities pubkey={pubkey} />
       <UserJoinedChanneled pubkey={pubkey} />
+
+      <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p="4">Public Key Color</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display="flex" flexDirection="column" px="4" pt="0" pb="4" alignItems="center">
+            <Input value={pubkey} readOnly />
+            <ChevronDownIcon boxSize={10} />
+            <Flex w="full" h="10">
+              <Flex
+                px="2"
+                py="1"
+                borderWidth="1px"
+                borderStart="solid"
+                rounded="md"
+                borderColor="primary.500"
+                alignItems="center"
+              >
+                {pubkey.slice(0, 6)}
+              </Flex>
+              <Flex borderWidth="1px" borderStyle="solid" px="2" py="1" rounded="md" flex="1" alignItems="center">
+                {pubkey.slice(6)}
+              </Flex>
+            </Flex>
+            <ChevronDownIcon boxSize={10} />
+            <Box
+              px="10"
+              py="2"
+              backgroundColor={pubkeyColor}
+              rounded="md"
+              textColor={getTextColor(pubkeyColor.replace("#", "")) === "light" ? "white" : "black"}
+            >
+              {pubkeyColor}
+            </Box>
+
+            <Text mt="4">
+              The public key color is a hex color code created by taking the first 6 digits of a users pubkey.
+              <br />
+              It can be used to help users identify fake accounts or impersonators
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 }

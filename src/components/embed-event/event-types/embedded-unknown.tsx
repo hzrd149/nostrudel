@@ -5,7 +5,7 @@ import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import { UserDnsIdentityIcon } from "../../user/user-dns-identity-icon";
+import UserDnsIdentity from "../../user/user-dns-identity";
 import {
   embedEmoji,
   embedNostrHashtags,
@@ -13,11 +13,11 @@ import {
   renderGenericUrl,
   renderImageUrl,
   renderVideoUrl,
-} from "../../embed-types";
+} from "../../external-embeds";
 import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import Timestamp from "../../timestamp";
 import { ExternalLinkIcon } from "../../icons";
-import { renderAudioUrl } from "../../embed-types/audio";
+import { renderAudioUrl } from "../../external-embeds/types/audio";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
@@ -44,7 +44,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
         <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
           <UserAvatarLink pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="md" />
-          <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
+          <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
           <Text>kind: {event.kind}</Text>
           <Timestamp timestamp={event.created_at} />
           <ButtonGroup ml="auto">

@@ -8,7 +8,7 @@ import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
-import { createCoordinate } from "../../../classes/batch-kind-loader";
+import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 
 export default function EmbeddedList({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);

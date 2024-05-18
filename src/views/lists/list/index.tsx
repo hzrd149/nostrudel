@@ -19,7 +19,7 @@ import {
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import UserCard from "../components/user-card";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import ListMenu from "../components/list-menu";
 import ListFavoriteButton from "../components/list-favorite-button";
 import ListFeedButton from "../components/list-feed-button";

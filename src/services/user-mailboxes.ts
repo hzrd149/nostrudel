@@ -1,13 +1,12 @@
-import { kinds } from "nostr-tools";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../types/nostr-event";
+import { isPTag } from "../types/nostr-event";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 import replaceableEventsService, { RequestOptions } from "./replaceable-events";
 import RelaySet from "../classes/relay-set";
 import { RelayMode } from "../classes/relay";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
-import { createCoordinate } from "../classes/batch-kind-loader";
 
 export type UserMailboxes = {
   pubkey: string;
@@ -43,7 +42,7 @@ class UserMailboxesService {
     // also fetch the relays from the users contacts
     const contactsSub = replaceableEventsService.requestEvent(relays, kinds.Contacts, pubkey, undefined, opts);
     sub.connectWithMapper(contactsSub, (event, next, value) => {
-      // NOTE: only use relays from contact list if the user dose not have a NIP-65 relay list
+      // NOTE: only use relays from contact list if the user does not have a NIP-65 relay list
       const relays = relaysFromContactsEvent(event);
       if (relays.length > 0 && !value) {
         next({
@@ -62,12 +61,33 @@ class UserMailboxesService {
 
   async loadFromCache(pubkey: string) {
     const sub = this.subjects.get(pubkey);
-    await replaceableEventsService.loadFromCache(createCoordinate(kinds.RelayList, pubkey));
+    if (replaceableEventsService.cacheLoader) {
+      await replaceableEventsService.cacheLoader?.requestEvent(kinds.RelayList, pubkey);
+    }
     return sub;
   }
 
   receiveEvent(event: NostrEvent) {
     replaceableEventsService.handleEvent(event);
+  }
+
+  /** add missing relay hints to p tags */
+  addPubkeyRelayHints(draft: EventTemplate) {
+    return {
+      ...draft,
+      tags: draft.tags.map((t) => {
+        if (isPTag(t) && !t[2]) {
+          const mailboxes = this.getMailboxes(t[1]).value;
+          if (mailboxes && mailboxes.inbox.urls.length > 0) {
+            const newTag = [...t];
+            // TODO: Pick the best mailbox for the user
+            newTag[2] = mailboxes.inbox.urls[0];
+            return newTag;
+          } else return t;
+        }
+        return t;
+      }),
+    };
   }
 }
 

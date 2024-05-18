@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import {
   Flex,
   FormControl,
@@ -25,11 +25,10 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 
 import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import useUserMetadata from "../../hooks/use-user-metadata";
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -38,11 +37,6 @@ import { unique } from "../../helpers/array";
 import { RelayFavicon } from "../../components/relay-favicon";
 import Header from "./components/header";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useEventExists from "../../hooks/use-event-exists";
-import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
-import { STREAM_KIND } from "../../helpers/nostr/stream";
-import { TORRENT_KIND } from "../../helpers/nostr/torrents";
-import { GOAL_KIND } from "../../helpers/nostr/goal";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 
@@ -68,8 +62,8 @@ const tabs = [
 
 function useUserBestOutbox(pubkey: string, count: number = 4) {
   const mailbox = useUserMailboxes(pubkey);
-  const relays = useReadRelays(mailbox?.outbox);
-  const sorted = relayScoreboardService.getRankedRelays(relays);
+  const relays = useReadRelays();
+  const sorted = relayScoreboardService.getRankedRelays(mailbox?.outbox.size ? mailbox?.outbox : relays);
   return !count ? sorted : sorted.slice(0, count);
 }
 
@@ -82,42 +76,12 @@ const UserView = () => {
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
   const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
-  useAppTitle(getUserDisplayName(metadata, pubkey));
-
-  const hasTorrents = useEventExists({ kinds: [TORRENT_KIND], authors: [pubkey] }, readRelays);
-  const hasGoals = useEventExists({ kinds: [GOAL_KIND], authors: [pubkey] }, readRelays);
-  const hasTracks = useEventExists({ kinds: [STEMSTR_TRACK_KIND], authors: [pubkey] }, [
-    "wss://relay.stemstr.app",
-    ...readRelays,
-  ]);
-  const hasArticles = useEventExists({ kinds: [kinds.LongFormArticle], authors: [pubkey] }, readRelays);
-  const hasStreams = useEventExists({ kinds: [STREAM_KIND], authors: [pubkey] }, [
-    "wss://relay.snort.social",
-    "wss://nos.lol",
-    "wss://relay.damus.io",
-    "wss://nostr.wine",
-    ...readRelays,
-  ]);
-
-  const filteredTabs = useMemo(
-    () =>
-      tabs.filter((tab) => {
-        if (tab.path === "tracks" && hasTracks === false) return false;
-        if (tab.path === "articles" && hasArticles === false) return false;
-        if (tab.path === "streams" && hasStreams === false) return false;
-        if (tab.path === "torrents" && hasTorrents === false) return false;
-        if (tab.path === "goals" && hasGoals === false) return false;
-        return true;
-      }),
-    [hasTracks, hasArticles, hasStreams, hasTorrents, hasGoals, tabs],
-  );
+  useAppTitle(getDisplayName(metadata, pubkey));
 
   const matches = useMatches();
   const lastMatch = matches[matches.length - 1];
 
-  const activeTab = filteredTabs.indexOf(
-    filteredTabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? filteredTabs[0],
-  );
+  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
 
   return (
     <>
@@ -130,12 +94,12 @@ const UserView = () => {
             flexGrow="1"
             isLazy
             index={activeTab}
-            onChange={(v) => navigate(filteredTabs[v].path, { replace: true })}
+            onChange={(v) => navigate(tabs[v].path, { replace: true })}
             colorScheme="primary"
             h="full"
           >
             <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
-              {filteredTabs.map(({ label }) => (
+              {tabs.map(({ label }) => (
                 <Tab key={label} whiteSpace="pre">
                   {label}
                 </Tab>
@@ -143,7 +107,7 @@ const UserView = () => {
             </TabList>
 
             <TabPanels>
-              {filteredTabs.map(({ label }) => (
+              {tabs.map(({ label }) => (
                 <TabPanel key={label} p={0}>
                   <ErrorBoundary>
                     <Suspense fallback={<Spinner />}>

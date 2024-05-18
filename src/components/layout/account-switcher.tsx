@@ -2,7 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import accountService, { Account } from "../../services/account";
@@ -25,7 +25,7 @@ function AccountItem({ account, onClick }: { account: Account; onClick?: () => v
       <Flex as="button" onClick={handleClick} flex={1} gap="2" overflow="hidden" alignItems="center">
         <UserAvatar pubkey={pubkey} size="md" />
         <Flex direction="column" overflow="hidden" alignItems="flex-start">
-          <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
+          <Text isTruncated>{getDisplayName(metadata, pubkey)}</Text>
           <AccountInfoBadge fontSize="0.7em" account={account} />
         </Flex>
       </Flex>
@@ -56,19 +56,18 @@ export default function AccountSwitcher() {
     <Flex direction="column" gap="2">
       <Box
         as="button"
-        borderRadius="30"
+        borderRadius="lg"
         borderWidth={1}
         display="flex"
         gap="2"
         mb="2"
         alignItems="center"
         flexGrow={1}
-        overflow="hidden"
         onClick={onToggle}
       >
         <UserAvatar pubkey={account.pubkey} noProxy size="md" />
         <Text whiteSpace="nowrap" fontWeight="bold" fontSize="lg" isTruncated>
-          {getUserDisplayName(metadata, account.pubkey)}
+          {getDisplayName(metadata, account.pubkey)}
         </Text>
         <Flex ml="auto" alignItems="center" justifyContent="center" aspectRatio={1} h="3rem">
           {isOpen ? <ChevronUpIcon fontSize="1.5rem" /> : <ChevronDownIcon fontSize="1.5rem" />}

@@ -16,11 +16,11 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {
@@ -70,7 +70,7 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
     <Modal onClose={onClose} size="lg" {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader p="4">Mute {getUserDisplayName(metadata, pubkey)} for:</ModalHeader>
+        <ModalHeader p="4">Mute {getDisplayName(metadata, pubkey)} for:</ModalHeader>
         <ModalCloseButton />
         <ModalBody px="4" py="0">
           <SimpleGrid columns={3} spacing="2">
@@ -131,6 +131,8 @@ function UnmuteHandler() {
 
   const check = async () => {
     if (!muteList) return;
+    if (modal.isOpen) return;
+
     const now = dayjs().unix();
     const expirations = getPubkeysExpiration(muteList);
     const expired = Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
@@ -141,7 +143,9 @@ function UnmuteHandler() {
     } else if (modal.isOpen) modal.onClose();
   };
 
-  useInterval(check, 10 * 1000);
+  useEffect(() => {
+    check();
+  }, [muteList?.id]);
 
   return modal.isOpen ? <UnmuteModal onClose={modal.onClose} isOpen={modal.isOpen} /> : null;
 }
@@ -149,7 +153,6 @@ function UnmuteHandler() {
 function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
   const publish = usePublishEvent();
   const account = useCurrentAccount()!;
-  const { requestSignature } = useSigningContext();
   const muteList = useUserMuteList(account?.pubkey, [], { ignoreCache: true });
 
   const getExpiredPubkeys = useCallback(() => {

@@ -9,7 +9,7 @@ import {
   embedNostrMentions,
   embedNostrHashtags,
   renderWavlakeUrl,
-  renderYoutubeUrl,
+  renderYoutubeURL,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
@@ -29,8 +29,11 @@ import {
   embedNipDefinitions,
   renderAudioUrl,
   renderModelUrl,
-} from "../../embed-types";
+  renderCodePenURL,
+  renderArchiveOrgURL,
+} from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
+import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
 
 function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -41,7 +44,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   // common
   content = embedUrls(content, [
     renderSimpleXLink,
-    renderYoutubeUrl,
+    renderYoutubeURL,
     renderTwitterUrl,
     renderRedditUrl,
     renderWavlakeUrl,
@@ -55,6 +58,8 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
     renderVideoUrl,
     renderAudioUrl,
     renderModelUrl,
+    renderCodePenURL,
+    renderArchiveOrgURL,
     simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
   ]);
 
@@ -89,13 +94,15 @@ export const TextNoteContents = React.memo(
     }
 
     return (
-      <LightboxProvider>
-        <Suspense fallback={<Spinner />}>
-          <Box whiteSpace="pre-wrap" {...props}>
-            {content}
-          </Box>
-        </Suspense>
-      </LightboxProvider>
+      <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>
+        <LightboxProvider>
+          <Suspense fallback={<Spinner />}>
+            <Box whiteSpace="pre-wrap" {...props}>
+              {content}
+            </Box>
+          </Suspense>
+        </LightboxProvider>
+      </MediaOwnerProvider>
     );
   },
 );

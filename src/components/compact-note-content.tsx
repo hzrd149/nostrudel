@@ -3,7 +3,13 @@ import { Box, BoxProps, Text } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../helpers/embeds";
-import { embedNostrLinks, embedNostrMentions, embedNostrHashtags, embedEmoji, renderGenericUrl } from "./embed-types";
+import {
+  embedNostrLinks,
+  embedNostrMentions,
+  embedNostrHashtags,
+  embedEmoji,
+  renderGenericUrl,
+} from "./external-embeds";
 import { LightboxProvider } from "./lightbox-provider";
 
 function buildContents(event: NostrEvent | DraftNostrEvent, textOnly = false) {

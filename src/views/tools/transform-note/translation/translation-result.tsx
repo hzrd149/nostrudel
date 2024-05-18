@@ -4,6 +4,7 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 
 export default function TranslationResult({ result }: { result: NostrEvent }) {
   const content = useDisclosure();
@@ -18,7 +19,11 @@ export default function TranslationResult({ result }: { result: NostrEvent }) {
           {content.isOpen ? "Hide" : "Show"} Content
         </Button>
       </Flex>
-      {content.isOpen && <TextNoteContents event={result} />}
+      {content.isOpen && (
+        <TrustProvider trust>
+          <TextNoteContents event={result} />
+        </TrustProvider>
+      )}
     </>
   );
 }

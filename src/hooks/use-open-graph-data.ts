@@ -1,5 +1,5 @@
 import { useAsync } from "react-use";
-import { fetchWithCorsFallback } from "../helpers/cors";
+import { fetchWithProxy } from "../helpers/request";
 import type { OgObjectInteral } from "../lib/open-graph-scraper/types";
 import useAppSettings from "./use-app-settings";
 
@@ -22,7 +22,7 @@ export default function useOpenGraphData(url: URL) {
 
     try {
       const controller = new AbortController();
-      const res = await fetchWithCorsFallback(url, { signal: controller.signal });
+      const res = await fetchWithProxy(url, { signal: controller.signal });
       const contentType = res.headers.get("content-type");
 
       if (contentType?.includes("text/html")) {

@@ -3,10 +3,11 @@ import React, { useCallback, useContext, useMemo } from "react";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { DraftNostrEvent } from "../../types/nostr-event";
+import { EventTemplate, VerifiedEvent } from "nostr-tools";
 
 export type SigningContextType = {
-  requestSignature: (draft: DraftNostrEvent) => Promise<NostrEvent>;
+  requestSignature: (draft: EventTemplate | DraftNostrEvent) => Promise<VerifiedEvent>;
   requestDecrypt: (data: string, pubkey: string) => Promise<string>;
   requestEncrypt: (data: string, pubkey: string) => Promise<string>;
 };

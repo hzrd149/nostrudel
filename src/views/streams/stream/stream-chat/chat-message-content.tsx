@@ -12,7 +12,7 @@ import {
   renderSoundCloudUrl,
   renderStemstrUrl,
   renderWavlakeUrl,
-} from "../../../../components/embed-types";
+} from "../../../../components/external-embeds";
 import { NostrEvent } from "../../../../types/nostr-event";
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {

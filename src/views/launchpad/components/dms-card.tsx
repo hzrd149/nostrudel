@@ -4,7 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useDMTimeline } from "../../../providers/global/dm-timeline";
+import { useDMTimeline } from "../../../providers/global/dms-provider";
 import useSubject from "../../../hooks/use-subject";
 import {
   KnownConversation,
@@ -17,7 +17,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { nip19 } from "nostr-tools";
 import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import Timestamp from "../../../components/timestamp";
@@ -38,7 +38,7 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
           <HoverLinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}`}>
             <UserName pubkey={conversation.correspondent} />
           </HoverLinkOverlay>
-          <UserDnsIdentityIcon pubkey={conversation.correspondent} onlyIcon />
+          <UserDnsIdentity pubkey={conversation.correspondent} onlyIcon />
         </Flex>
         {lastReceived && <MessagePreview message={lastReceived} pubkey={conversation.correspondent} />}
       </Flex>

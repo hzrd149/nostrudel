@@ -28,7 +28,7 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
   ];
 
   let content = emoji;
-  if (url && !content.startsWith(":") && content.endsWith(":")) content = ":" + content + ":";
+  if (url && !content.startsWith(":") && !content.endsWith(":")) content = ":" + content + ":";
 
   const draft: DraftNostrEvent = {
     kind: kinds.Reaction,
@@ -37,7 +37,14 @@ export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string)
     created_at: dayjs().unix(),
   };
 
-  if (url) draft.tags.push(["emoji", emoji, url]);
+  if (url) draft.tags.push(["emoji", emoji.replaceAll(/(^:|:$)/g, ""), url]);
 
   return draft;
+}
+
+export function getEventReactionScore(grouped: ReactionGroup[]) {
+  const up = grouped.find((r) => r.emoji === "+");
+  const down = grouped.find((r) => r.emoji === "-");
+  const vote = (up?.pubkeys.length ?? 0) - (down?.pubkeys.length ?? 0);
+  return { up, down, vote };
 }

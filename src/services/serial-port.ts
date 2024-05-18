@@ -1,4 +1,4 @@
-import { getEventHash, validateEvent } from "nostr-tools";
+import { getEventHash } from "nostr-tools";
 import { base64 } from "@scure/base";
 import { randomBytes, hexToBytes } from "@noble/hashes/utils";
 import { Point } from "@noble/secp256k1";
@@ -6,6 +6,7 @@ import { Point } from "@noble/secp256k1";
 import { logger } from "../helpers/debug";
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import createDefer, { Deferred } from "../classes/deferred";
+import { alwaysVerify } from "./verify-event";
 
 const METHOD_PING = "/ping";
 // const METHOD_LOG = '/log'
@@ -225,9 +226,10 @@ async function signEvent(draft: DraftNostrEvent) {
   if (!signed.pubkey) signed.pubkey = await callMethodOnDevice(METHOD_PUBLIC_KEY, []);
   if (!signed.created_at) signed.created_at = Math.round(Date.now() / 1000);
   if (!signed.id) signed.id = getEventHash(signed);
-  if (!validateEvent(signed)) throw new Error("Tnvalid event");
 
   signed.sig = await callMethodOnDevice(METHOD_SIGN_MESSAGE, [signed.id]);
+  if (!alwaysVerify(signed)) throw new Error("Invalid event");
+
   return signed;
 }
 

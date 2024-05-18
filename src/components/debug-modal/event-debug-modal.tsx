@@ -84,7 +84,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
         <ModalHeader p="4">{event.id}</ModalHeader>
         <ModalCloseButton />
         <ModalBody p="0">
-          <Accordion allowToggle>
+          <Accordion allowToggle defaultIndex={event.content ? 1 : 2}>
             <Section label="IDs">
               <RawValue heading="Event Id" value={event.id} />
               <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />

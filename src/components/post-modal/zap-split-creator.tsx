@@ -18,7 +18,7 @@ import { AddIcon } from "../icons";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
-import NpubAutocomplete from "../npub-autocomplete";
+import UserAutocomplete from "../user-autocomplete";
 
 function getRemainingPercent(split: EventSplit) {
   return Math.round((1 - split.reduce((v, p) => v + p.percent, 0)) * 100) / 100;
@@ -67,7 +67,7 @@ function AddUserForm({
 
   return (
     <Flex as="form" gap="2" onSubmit={submit}>
-      <NpubAutocomplete {...register("pubkey", { required: true, validate: validateNpub })} />
+      <UserAutocomplete {...register("pubkey", { required: true, validate: validateNpub })} />
       <NumberInput
         step={1}
         min={1}
