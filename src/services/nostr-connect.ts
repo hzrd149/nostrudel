@@ -82,7 +82,7 @@ export class NostrConnectClient {
     this.sub.onEvent.subscribe((e) => this.handleEvent(e));
     this.sub.setQueryMap(
       createSimpleQueryMap(this.relays, {
-        kinds: [kinds.NostrConnect, 24134],
+        kinds: [kinds.NostrConnect, 24133],
         "#p": [this.publicKey],
       }),
     );
@@ -165,7 +165,7 @@ export class NostrConnectClient {
   private async makeAdminRequest<T extends NostrConnectMethod>(
     method: T,
     params: RequestParams[T],
-    kind = 24134,
+    kind = 24133,
   ): Promise<ResponseResults[T]> {
     if (!this.provider) throw new Error("Missing provider");
     const id = nanoid(8);
