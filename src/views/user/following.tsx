@@ -6,6 +6,7 @@ import { useAdditionalRelayContext } from "../../providers/local/additional-rela
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 export default function UserFollowingTab() {
   const webOfTrust = useWebOfTrust();
@@ -22,7 +23,9 @@ export default function UserFollowingTab() {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" p="2">
       {sorted.map(({ pubkey, relay }) => (
-        <UserCard key={pubkey} pubkey={pubkey} relay={relay} />
+        <ErrorBoundary>
+          <UserCard key={pubkey} pubkey={pubkey} relay={relay} />
+        </ErrorBoundary>
       ))}
     </SimpleGrid>
   );

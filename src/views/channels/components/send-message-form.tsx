@@ -39,17 +39,13 @@ export default function ChannelMessageForm({
     let draft: DraftNostrEvent = {
       kind: kinds.ChannelMessage,
       content: values.content,
-      tags: [["e", channel.id]],
+      tags: [["e", rootId || channel.id, "", "root"]],
       created_at: dayjs().unix(),
     };
 
     const contentMentions = getPubkeysMentionedInContent(draft.content);
     draft = createEmojiTags(draft, emojis);
     draft = ensureNotifyPubkeys(draft, contentMentions);
-
-    if (rootId) {
-      draft.tags.push(["e", rootId, "", "root"]);
-    }
 
     setLoadingMessage("Signing...");
     await publish("Send DM", draft, undefined, false);
