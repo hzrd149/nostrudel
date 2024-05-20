@@ -9,15 +9,21 @@ export function isMediaURL(url: string | URL) {
 }
 export function isImageURL(url: string | URL) {
   const u = new URL(url);
-  return IMAGE_EXT.some((ext) => u.pathname.endsWith(ext));
+  const ipfsFilename = u.searchParams.get("filename");
+
+  return IMAGE_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
 }
 export function isVideoURL(url: string | URL) {
   const u = new URL(url);
-  return VIDEO_EXT.some((ext) => u.pathname.endsWith(ext));
+  const ipfsFilename = u.searchParams.get("filename");
+
+  return VIDEO_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
 }
 export function isAudioURL(url: string | URL) {
   const u = new URL(url);
-  return AUDIO_EXT.some((ext) => u.pathname.endsWith(ext));
+  const ipfsFilename = u.searchParams.get("filename");
+
+  return AUDIO_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
 }
 
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
