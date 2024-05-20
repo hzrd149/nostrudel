@@ -105,15 +105,11 @@ function NostrRelayTray() {
     location.reload();
   };
 
-  const isAndroid = navigator.userAgent.includes("Android")
-  const githubUrl = isAndroid ? "https://github.com/greenart7c3/Citrine" : "https://github.com/CodyTseng/nostr-relay-tray"
-  const appName = isAndroid ? "Citrine" : "Nostr Relay Tray"
-
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
-        <Heading size="md">{appName}</Heading>
-        <Link color="blue.500" href={`${githubUrl}`} isExternal>
+        <Heading size="md">Nostr Relay Tray</Heading>
+        <Link color="blue.500" href="https://github.com/CodyTseng/nostr-relay-tray" isExternal>
           GitHub
         </Link>
         {available ? (
@@ -124,7 +120,7 @@ function NostrRelayTray() {
           <Button
             as={Link}
             isExternal
-            href={`${githubUrl}`}
+            href="https://github.com/CodyTseng/nostr-relay-tray"
             colorScheme="blue"
             size="sm"
             ml="auto"
@@ -133,21 +129,53 @@ function NostrRelayTray() {
           </Button>
         )}
       </CardHeader>
-        {
-          isAndroid ? (
-            <CardBody p="4" pt="0">
-            <Text mb="2">A cool little app that runs a local relay in your phone</Text>
-            <Text>Maximum capacity: Unlimited</Text>
-            <Text>Performance: As fast as your phone</Text>
-            </CardBody>
-          ) : (
-            <CardBody p="4" pt="0">
-            <Text mb="2">A cool little app that runs a local relay in your systems tray</Text>
-            <Text>Maximum capacity: Unlimited</Text>
-            <Text>Performance: As fast as your computer</Text>
-            </CardBody>
-          )
-        }
+        <CardBody p="4" pt="0">
+        <Text mb="2">A cool little app that runs a local relay in your systems tray</Text>
+        <Text>Maximum capacity: Unlimited</Text>
+        <Text>Performance: As fast as your computer</Text>
+        </CardBody>
+    </Card>
+  );
+}
+
+function CitrineRelay() {
+  const { value: available, loading: checking } = useAsync(checkNostrRelayTray);
+
+  const enabled = localRelay?.url.startsWith(NOSTR_RELAY_TRAY_URL);
+  const enable = () => {
+    localStorage.setItem("localRelay", NOSTR_RELAY_TRAY_URL);
+    location.reload();
+  };
+
+  return (
+    <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
+      <CardHeader p="4" display="flex" gap="2" alignItems="center">
+        <Heading size="md">Citrine</Heading>
+        <Link color="blue.500" href="https://github.com/greenart7c3/Citrine" isExternal>
+          GitHub
+        </Link>
+        {available ? (
+          <Button size="sm" colorScheme="primary" ml="auto" isLoading={checking} onClick={enable} isDisabled={enabled}>
+            {enabled ? "Enabled" : "Enable"}
+          </Button>
+        ) : (
+          <Button
+            as={Link}
+            isExternal
+            href="https://github.com/greenart7c3/Citrine"
+            colorScheme="blue"
+            size="sm"
+            ml="auto"
+          >
+            Get the app
+          </Button>
+        )}
+      </CardHeader>
+        <CardBody p="4" pt="0">
+        <Text mb="2">A cool little app that runs a local relay in your phone</Text>
+        <Text>Maximum capacity: Unlimited</Text>
+        <Text>Performance: As fast as your phone</Text>
+        </CardBody>
     </Card>
   );
 }
@@ -274,7 +302,13 @@ export default function CacheRelayView() {
       </Text>
       <InternalRelay />
       {WasmRelay.SUPPORTED && <WasmWorkerRelay />}
-      <NostrRelayTray />
+      {
+        navigator.userAgent.includes("Android") ? (
+          <CitrineRelay />
+        ) : (
+          <NostrRelayTray />
+        )
+      }
       {window.satellite && <SatelliteRelay />}
       {window.CACHE_RELAY_ENABLED && <HostedRelay />}
       <Button w="full" variant="link" p="4" onClick={showAdvanced.onToggle}>
