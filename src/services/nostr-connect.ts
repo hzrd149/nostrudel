@@ -87,7 +87,7 @@ export class NostrConnectClient {
     this.sub.setRelays(this.relays);
     this.sub.setFilters([
       {
-        kinds: [kinds.NostrConnect, 24134],
+        kinds: [kinds.NostrConnect],
         "#p": [this.publicKey],
       },
     ]);
@@ -189,7 +189,7 @@ export class NostrConnectClient {
   private async makeAdminRequest<T extends NostrConnectMethod>(
     method: T,
     params: RequestParams[T],
-    kind = 24134,
+    kind = 24133,
   ): Promise<ResponseResults[T]> {
     if (!this.provider) throw new Error("Missing provider");
     const id = nanoid(8);
