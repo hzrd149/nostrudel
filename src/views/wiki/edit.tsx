@@ -1,4 +1,15 @@
-import { Button, Flex, FormControl, FormLabel, Heading, Input, Spinner, Textarea, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Spacer,
+  Spinner,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
@@ -14,7 +25,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import MarkdownEditor from "./components/markdown-editor";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
-import FormatToolbar from "./components/format-toolbar";
+import FormatButton from "./components/format-toolbar";
 import dictionaryService from "../../services/dictionary";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
@@ -47,6 +58,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
     try {
       const draft = cloneEvent(WIKI_PAGE_KIND, page);
       draft.content = values.content;
+      replaceOrAddSimpleTag(draft, "title", values.title);
       replaceOrAddSimpleTag(draft, "summary", values.summary);
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
@@ -75,18 +87,18 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
         <FormLabel>Summary</FormLabel>
         <Textarea {...register("summary", { required: true })} isRequired />
       </FormControl>
-      <FormatToolbar
-        getValue={() => getValues().content}
-        setValue={(content) => setValue("content", content, { shouldDirty: true })}
-      />
-      <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
-      <Flex gap="2" justifyContent="flex-end">
-        {formState.isDirty && <Button onClick={() => reset()}>Clear</Button>}
+      <Flex gap="2">
+        <FormatButton
+          getValue={() => getValues().content}
+          setValue={(content) => setValue("content", content, { shouldDirty: true })}
+        />
+        <Spacer />
         <Button onClick={() => navigate(-1)}>Cancel</Button>
         <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
           Publish
         </Button>
       </Flex>
+      <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
     </VerticalPageLayout>
   );
 }

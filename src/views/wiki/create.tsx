@@ -8,6 +8,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  Spacer,
   Textarea,
   useToast,
 } from "@chakra-ui/react";
@@ -30,7 +31,7 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import UserName from "../../components/user/user-name";
 import { getEventCoordinate } from "../../helpers/nostr/event";
-import FormatToolbar from "./components/format-toolbar";
+import FormatButton from "./components/format-toolbar";
 import dictionaryService from "../../services/dictionary";
 
 export default function CreateWikiPageView() {
@@ -147,18 +148,18 @@ export default function CreateWikiPageView() {
         <FormLabel>Summary</FormLabel>
         <Textarea {...register("summary", { required: true })} isRequired />
       </FormControl>
-      <FormatToolbar
-        getValue={() => getValues().content}
-        setValue={(content) => setValue("content", content, { shouldDirty: true })}
-      />
-      <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
-      <Flex gap="2" justifyContent="flex-end">
+      <Flex gap="2">
+        <FormatButton
+          getValue={() => getValues().content}
+          setValue={(content) => setValue("content", content, { shouldDirty: true })}
+        />
+        <Spacer />
         <Button onClick={() => navigate(-1)}>Cancel</Button>
-        {formState.isDirty && <Button onClick={() => reset()}>Clear</Button>}
         <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
           Publish
         </Button>
       </Flex>
+      <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
     </VerticalPageLayout>
   );
 }

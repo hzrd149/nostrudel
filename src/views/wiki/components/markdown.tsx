@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import {
   Code,
+  CodeProps,
   Heading,
   HeadingProps,
   Image,
@@ -113,6 +114,14 @@ function TableWithContainer({ children, node, ...props }: TableProps & ExtraProp
   );
 }
 
+function CustomCode({ children, node, ...props }: CodeProps & ExtraProps) {
+  return (
+    <Code fontSize="inherit" {...props}>
+      {children}
+    </Code>
+  );
+}
+
 const components: Partial<Components> = {
   h1: H1,
   h2: H2,
@@ -133,7 +142,7 @@ const components: Partial<Components> = {
   tr: Tr,
   td: Td,
   th: Th,
-  code: Code,
+  code: CustomCode,
 };
 
 export const CharkaMarkdown = forwardRef<HTMLDivElement, { children: string }>(({ children }, ref) => {

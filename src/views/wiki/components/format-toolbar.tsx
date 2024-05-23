@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button, Flex, Spinner } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
-export default function FormatToolbar({
+export default function FormatButton({
   getValue,
   setValue,
 }: {
@@ -20,12 +20,8 @@ export default function FormatToolbar({
   };
 
   return (
-    <Flex gap="2">
-      <Button onClick={format} size="sm" colorScheme="primary" isDisabled={loading}>
-        Format
-      </Button>
-
-      {loading && <Spinner />}
-    </Flex>
+    <Button onClick={format} colorScheme="primary" isLoading={loading}>
+      Format
+    </Button>
   );
 }
