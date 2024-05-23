@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -18,7 +19,6 @@ import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import { nip19 } from "nostr-tools";
 import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/decryption-provider";
 import Timestamp from "../../../components/timestamp";
 
@@ -59,7 +59,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
     const grouped = groupIntoConversations(messages)
       .map((c) => identifyConversation(c, account.pubkey))
       .filter((c) => {
-        if (c.messages.some((m) => m.pubkey === c.correspondent)) return hasResponded(c);
+        if (c.messages.some((m) => m.pubkey === c.correspondent)) return !hasResponded(c);
         else return false;
       });
     const sorted = sortConversationsByLastReceived(grouped);

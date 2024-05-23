@@ -1,4 +1,19 @@
-import { Flex, LinkBox, Spacer } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  LinkBox,
+  Spacer,
+  Tab,
+  TabIndicator,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useForceUpdate,
+  useInterval,
+} from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { AbstractRelay } from "nostr-tools";
 
@@ -7,6 +22,8 @@ import { RelayFavicon } from "../../../components/relay-favicon";
 import { RelayStatus } from "../../../components/relay-status";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { localRelay } from "../../../services/local-relay";
+import useSubjects from "../../../hooks/use-subjects";
+import Timestamp from "../../../components/timestamp";
 
 function RelayRow({ relay }: { relay: AbstractRelay }) {
   return (
@@ -22,14 +39,50 @@ function RelayRow({ relay }: { relay: AbstractRelay }) {
 }
 
 export default function TaskManagerRelays() {
+  const update = useForceUpdate();
+  useInterval(update, 2000);
+
+  const relays = Array.from(relayPoolService.relays.values())
+    .filter((r) => r !== localRelay)
+    .sort((a, b) => +b.connected - +a.connected || a.url.localeCompare(b.url));
+
+  const notices = useSubjects(Array.from(relayPoolService.notices.values()))
+    .flat()
+    .sort((a, b) => b.date - a.date);
+
   return (
-    <Flex direction="column">
-      {localRelay instanceof AbstractRelay && <RelayRow relay={localRelay} />}
-      {Array.from(relayPoolService.relays.values())
-        .filter((r) => r !== localRelay)
-        .map((relay) => (
-          <RelayRow key={relay.url} relay={relay} />
-        ))}
-    </Flex>
+    <Tabs position="relative" variant="unstyled">
+      <TabList>
+        <Tab>Relays ({relays.length})</Tab>
+        <Tab>Notices ({notices.length})</Tab>
+      </TabList>
+      <TabIndicator mt="-1.5px" height="2px" bg="primary.500" borderRadius="1px" />
+
+      <TabPanels>
+        <TabPanel p="0">
+          <Flex direction="column">
+            {localRelay instanceof AbstractRelay && <RelayRow relay={localRelay} />}
+            {relays.map((relay) => (
+              <RelayRow key={relay.url} relay={relay} />
+            ))}
+          </Flex>
+        </TabPanel>
+        <TabPanel p="0">
+          {notices.map((notice) => (
+            <LinkBox key={notice.date + notice.message} px="2" py="1">
+              <HoverLinkOverlay
+                as={RouterLink}
+                to={`/r/${encodeURIComponent(notice.relay.url)}`}
+                fontFamily="monospace"
+                fontWeight="bold"
+              >
+                {notice.relay.url}
+              </HoverLinkOverlay>
+              <Text fontFamily="monospace">{notice.message}</Text>
+            </LinkBox>
+          ))}
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 }

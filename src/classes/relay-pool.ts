@@ -12,6 +12,7 @@ import processManager from "../services/process-manager";
 export type Notice = {
   message: string;
   date: number;
+  relay: AbstractRelay;
 };
 
 export default class RelayPool {
@@ -23,6 +24,9 @@ export default class RelayPool {
 
   connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
   connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
+
+  authForPublish = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
+  authForSubscribe = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
 
   log = logger.extend("RelayPool");
 
@@ -110,7 +114,10 @@ export default class RelayPool {
 
   handleRelayNotice(relay: AbstractRelay, message: string) {
     const subject = this.notices.get(relay);
-    subject.next([...subject.value, { message, date: dayjs().unix() }]);
+    subject.next([...subject.value, { message, date: dayjs().unix(), relay }]);
+
+    const authForSubscribe = this.authForSubscribe.get(relay);
+    if (!authForSubscribe.value) authForSubscribe.next(true);
   }
 
   disconnectFromUnused() {
@@ -128,6 +135,10 @@ export default class RelayPool {
       if (disconnect) {
         this.log(`No active processes using ${relay.url}, disconnecting`);
         relay.close();
+
+        // NOTE: fix nostr-tools not resetting the connection promise
+        // @ts-expect-error
+        relay.connectionPromise = false;
       }
     }
   }
