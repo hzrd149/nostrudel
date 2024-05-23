@@ -99,7 +99,7 @@ export default function CreateWikiPageView() {
       <FormControl>
         <FormLabel>Summary</FormLabel>
         <Textarea {...register("summary", { required: true })} isRequired />
-        <FormHelperText>We'll never share your email.</FormHelperText>
+        <FormHelperText>A short summary of the page</FormHelperText>
       </FormControl>
       <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
       <Flex gap="2" justifyContent="flex-end">

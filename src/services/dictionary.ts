@@ -27,7 +27,7 @@ class DictionaryService {
   });
 
   constructor() {
-    this.process = new Process("EventReactionsService", this);
+    this.process = new Process("DictionaryService", this);
     this.process.icon = BookOpen01;
     this.process.active = true;
 

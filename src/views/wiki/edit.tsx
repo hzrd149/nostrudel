@@ -1,4 +1,15 @@
-import { Button, Flex, FormControl, FormLabel, Heading, Input, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Input,
+  Spinner,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
@@ -7,13 +18,13 @@ import { WIKI_RELAYS } from "../../const";
 import useCacheForm from "../../hooks/use-cache-form";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { WIKI_PAGE_KIND, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
+import { WIKI_PAGE_KIND, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import MarkdownEditor from "./components/markdown-editor";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { cloneEvent } from "../../helpers/nostr/event";
+import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const toast = useToast();
@@ -23,7 +34,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
 
   const { register, setValue, getValues, handleSubmit, watch, formState, reset } = useForm({
-    defaultValues: { content: page.content, title: getPageTitle(page) ?? topic },
+    defaultValues: { content: page.content, title: getPageTitle(page) ?? topic, summary: getPageSummary(page) },
     mode: "all",
   });
 
@@ -45,6 +56,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
     try {
       const draft = cloneEvent(WIKI_PAGE_KIND, page);
       draft.content = values.content;
+      replaceOrAddSimpleTag(draft, "summary", values.summary);
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
       clearFormCache();
@@ -67,6 +79,11 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
           <Input {...register("title", { required: true })} autoComplete="off" />
         </FormControl>
       </Flex>
+      <FormControl>
+        <FormLabel>Summary</FormLabel>
+        <Textarea {...register("summary", { required: true })} isRequired />
+        <FormHelperText>A short summary of the page</FormHelperText>
+      </FormControl>
       <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
       <Flex gap="2" justifyContent="flex-end">
         {formState.isDirty && <Button onClick={() => reset()}>Clear</Button>}

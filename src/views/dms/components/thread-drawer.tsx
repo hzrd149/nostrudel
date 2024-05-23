@@ -27,7 +27,7 @@ import { Thread, useThreadsContext } from "../../../providers/local/thread-provi
 import ThreadButton from "./thread-button";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
-import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import { useDecryptionContext } from "../../../providers/global/decryption-provider";
 import DirectMessageBlock from "./direct-message-block";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {

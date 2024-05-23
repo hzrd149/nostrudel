@@ -18,7 +18,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
 import { useDMTimeline } from "../../providers/global/dms-provider";
 import UserName from "../../components/user/user-name";
-import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
+import { useDecryptionContainer } from "../../providers/global/decryption-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
 import UserDnsIdentity from "../../components/user/user-dns-identity";

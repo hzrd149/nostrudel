@@ -299,6 +299,7 @@ export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
   }
 }
 
+/** either replaces the existing tag or adds a new one */
 export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, value: string) {
   if (draft.tags.some((t) => t[0] === tagName)) {
     draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));

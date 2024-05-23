@@ -8,7 +8,7 @@ import NotificationsProvider from "./notifications-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
-import DecryptionProvider from "./dycryption-provider";
+import DecryptionProvider from "./decryption-provider";
 import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
 import WebOfTrustProvider from "./web-of-trust-provider";

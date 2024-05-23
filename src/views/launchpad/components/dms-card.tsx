@@ -19,7 +19,7 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { nip19 } from "nostr-tools";
-import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/decryption-provider";
 import Timestamp from "../../../components/timestamp";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
