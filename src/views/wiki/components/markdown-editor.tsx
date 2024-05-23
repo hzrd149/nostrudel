@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { VisuallyHidden } from "@chakra-ui/react";
 import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
 import ReactDOMServer from "react-dom/server";
+import { Global, css } from "@emotion/react";
 
 import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
@@ -14,6 +15,12 @@ import { CharkaMarkdown } from "./markdown";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { uploadFileToServers } from "../../../helpers/media-upload/blossom";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";
+
+const fixCodeMirrorFont = css`
+  .EasyMDEContainer .CodeMirror {
+    font-family: monospace !important;
+  }
+`;
 
 export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProps) {
   const account = useCurrentAccount();
@@ -85,6 +92,7 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
 
   return (
     <>
+      <Global styles={fixCodeMirrorFont} />
       <SimpleMDE options={customOptions} {...props} />
       <VisuallyHidden>
         <CharkaMarkdown ref={previewRef}>{props.value ?? ""}</CharkaMarkdown>

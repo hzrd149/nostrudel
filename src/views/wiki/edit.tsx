@@ -1,15 +1,4 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  Input,
-  Spinner,
-  Textarea,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Heading, Input, Spinner, Textarea, useToast } from "@chakra-ui/react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
@@ -25,6 +14,8 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import MarkdownEditor from "./components/markdown-editor";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
+import FormatToolbar from "./components/format-toolbar";
+import dictionaryService from "../../services/dictionary";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const toast = useToast();
@@ -34,7 +25,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
 
   const { register, setValue, getValues, handleSubmit, watch, formState, reset } = useForm({
-    defaultValues: { content: page.content, title: getPageTitle(page) ?? topic, summary: getPageSummary(page) },
+    defaultValues: { content: page.content, title: getPageTitle(page) ?? topic, summary: getPageSummary(page, false) },
     mode: "all",
   });
 
@@ -59,8 +50,9 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
       replaceOrAddSimpleTag(draft, "summary", values.summary);
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
+      dictionaryService.handleEvent(pub.event);
       clearFormCache();
-      navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`);
+      navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`, { replace: true });
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
     }
@@ -68,7 +60,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
 
   return (
     <VerticalPageLayout as="form" h="full" onSubmit={submit}>
-      <Heading>Create Page</Heading>
+      <Heading>Edit Page</Heading>
       <Flex gap="2" wrap={{ base: "wrap", md: "nowrap" }}>
         <FormControl w={{ base: "full", md: "sm" }} isRequired flexShrink={0}>
           <FormLabel>Topic</FormLabel>
@@ -82,8 +74,11 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
       <FormControl>
         <FormLabel>Summary</FormLabel>
         <Textarea {...register("summary", { required: true })} isRequired />
-        <FormHelperText>A short summary of the page</FormHelperText>
       </FormControl>
+      <FormatToolbar
+        getValue={() => getValues().content}
+        setValue={(content) => setValue("content", content, { shouldDirty: true })}
+      />
       <MarkdownEditor value={getValues().content} onChange={(v) => setValue("content", v)} />
       <Flex gap="2" justifyContent="flex-end">
         {formState.isDirty && <Button onClick={() => reset()}>Clear</Button>}

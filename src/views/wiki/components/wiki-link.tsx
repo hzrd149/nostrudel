@@ -20,7 +20,7 @@ import { getEventUID } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import { getPageSummary } from "../../../helpers/nostr/wiki";
+import { getPageDefer, getPageSummary } from "../../../helpers/nostr/wiki";
 import UserName from "../../../components/user/user-name";
 import dictionaryService from "../../../services/dictionary";
 import useSubject from "../../../hooks/use-subject";
@@ -54,6 +54,7 @@ export default function WikiLink({
 
     let arr = Array.from(events.values());
     if (webOfTrust) arr = webOfTrust.sortByDistanceAndConnections(arr, (e) => e.pubkey);
+    arr = arr.filter((p) => !getPageDefer(p));
 
     const seen = new Set<string>();
     const unique: NostrEvent[] = [];

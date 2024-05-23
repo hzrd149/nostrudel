@@ -18,7 +18,7 @@ import { Link as RouterLink } from "react-router-dom";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getPageDefer, getPageForks, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
+import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import MarkdownContent from "./components/markdown";
 import UserLink from "../../components/user/user-link";
 import useSubject from "../../hooks/use-subject";
@@ -38,6 +38,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import { getSharableEventAddress } from "../../helpers/nip19";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -88,11 +89,10 @@ function DeferAlert({ page, address }: { page: NostrEvent; address: nip19.Addres
 
 export function WikiPagePage({ page }: { page: NostrEvent }) {
   const account = useCurrentAccount();
-  const topic = getPageTopic(page);
 
-  const readRelays = useReadRelays();
   const { address } = getPageForks(page);
   const defer = getPageDefer(page);
+  const summary = getPageSummary(page, false);
 
   return (
     <>
@@ -110,6 +110,11 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
                 Edit
               </Button>
             )}
+            {page.pubkey !== account?.pubkey && (
+              <Button as={RouterLink} colorScheme="primary" to={`/wiki/create?fork=${getSharableEventAddress(page)}`}>
+                Fork
+              </Button>
+            )}
           </ButtonGroup>
           <Flex alignItems="flex-end" gap="2" ml="auto">
             <EventVoteButtons event={page} inline chevrons={false} />
@@ -125,6 +130,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
       {defer?.address && <DeferAlert page={page} address={defer.address} />}
       <ZapBubbles event={page} />
       <Divider />
+      {summary && <Text fontStyle="italic">{summary}</Text>}
       <MarkdownContent event={page} />
     </>
   );

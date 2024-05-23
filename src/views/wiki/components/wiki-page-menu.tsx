@@ -10,6 +10,8 @@ import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { EditIcon } from "../../../components/icons";
 import { getPageTopic } from "../../../helpers/nostr/wiki";
+import { getSharableEventAddress } from "../../../helpers/nip19";
+import GitBranch02 from "../../../components/icons/git-branch-02";
 
 export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useCurrentAccount();
@@ -21,6 +23,11 @@ export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & 
         {account?.pubkey === page.pubkey && (
           <MenuItem as={RouterLink} to={`/wiki/edit/${getPageTopic(page)}`} icon={<EditIcon />}>
             Edit Page
+          </MenuItem>
+        )}
+        {account?.pubkey !== page.pubkey && (
+          <MenuItem as={RouterLink} to={`/wiki/create?fork=${getSharableEventAddress(page)}`} icon={<GitBranch02 />}>
+            Fork Page
           </MenuItem>
         )}
 
