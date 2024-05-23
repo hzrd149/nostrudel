@@ -21,7 +21,7 @@ export default function WikiTopicView() {
 
   const webOfTrust = useWebOfTrust();
   const readRelays = useReadRelays();
-  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
+  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays, true), [topic, readRelays]);
 
   const pages = useSubject(subject);
 

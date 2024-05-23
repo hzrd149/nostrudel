@@ -66,8 +66,14 @@ export default function CreateWikiPageView() {
     setValue("content", fork.content);
   }, [fork, setValue]);
 
+  const cacheKey = forkAddress
+    ? "wiki-" + forkAddress.identifier + ":" + forkAddress.pubkey + "-fork"
+    : presetTopic
+      ? "wiki-" + presetTopic
+      : "wiki-create-page";
+
   const clearFormCache = useCacheForm(
-    presetTopic ? "wiki-" + presetTopic : "wiki-create-page",
+    cacheKey,
     // @ts-expect-error
     getValues,
     setValue,
