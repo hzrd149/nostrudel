@@ -81,7 +81,7 @@ export default function DebugEventTags({ event }: { event: NostrEvent }) {
 
   return (
     <>
-      <Button variant="link" color="GrayText" fontFamily="monospace" onClick={expand.onToggle}>
+      <Button variant="link" color="GrayText" fontFamily="monospace" onClick={expand.onToggle} isTruncated>
         [{expand.isOpen ? "-" : "+"}] Tags ({event.tags.length})
       </Button>
       {expand.isOpen && (
