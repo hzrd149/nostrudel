@@ -86,35 +86,3 @@ const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & 
 });
 
 export default ChannelMessageContent;
-
-// function ChannelChatMessage({ message, channel }: { message: NostrEvent; channel: NostrEvent }) {
-//   const ref = useRef<HTMLDivElement | null>(null);
-//   useRegisterIntersectionEntity(ref, message.id);
-
-//   return (
-//     <TrustProvider event={message}>
-//       <Box>
-//         <Box overflow="hidden" maxH="lg" ref={ref}>
-//           <UserAvatar pubkey={message.pubkey} size="xs" display="inline-block" mr="2" />
-//           <Text as="span" fontWeight="bold" color={message.pubkey === channel.pubkey ? "purple.200" : "blue.200"}>
-//             <UserLink pubkey={message.pubkey} />
-//             {": "}
-//           </Text>
-//           <Timestamp timestamp={message.created_at} float="right" />
-//           <NoteZapButton
-//             display="inline-block"
-//             event={message}
-//             size="xs"
-//             variant="ghost"
-//             float="right"
-//             mx="2"
-//             allowComment={false}
-//           />
-//           <ChannelMessageContent message={message} />
-//         </Box>
-//       </Box>
-//     </TrustProvider>
-//   );
-// }
-
-// export default memo(ChannelChatMessage);

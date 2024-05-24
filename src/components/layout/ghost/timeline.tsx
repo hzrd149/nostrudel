@@ -1,23 +1,20 @@
-import { useRef } from "react";
 import { Code, Flex, FlexProps, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19, nip25 } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import TimelineActionAndStatus from "../../timeline-page/timeline-action-and-status";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../../providers/local/intersection-observer";
+import TimelineActionAndStatus from "../../timeline/timeline-action-and-status";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import Timestamp from "../../timestamp";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import UserName from "../../user/user-name";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import { getSharableEventAddress } from "../../../helpers/nip19";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 const kindColors: Record<number, FlexProps["bg"]> = {
   [kinds.ShortTextNote]: "blue.500",
@@ -44,8 +41,7 @@ function KindTag({ event }: { event: NostrEvent }) {
 }
 
 function TimelineItem({ event }: { event: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   const renderContent = () => {
     switch (event.kind) {

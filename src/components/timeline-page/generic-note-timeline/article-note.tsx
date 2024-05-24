@@ -1,14 +1,12 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { Box } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import EmbeddedArticle from "../../embed-event/event-types/embedded-article";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/event";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function ArticleNote({ article }: { article: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(article));
+  const ref = useEventIntersectionRef(article);
 
   return (
     <Box ref={ref}>

@@ -1,7 +1,8 @@
 import { useInterval } from "react-use";
+import { NostrEvent } from "nostr-tools";
+
 import TimelineLoader from "../classes/timeline-loader";
 import { useIntersectionMapCallback } from "../providers/local/intersection-observer";
-import { NostrEvent } from "../types/nostr-event";
 
 export function useTimelineCurserIntersectionCallback(timeline: TimelineLoader) {
   // if the cursor is set too far ahead and the last block did not overlap with the cursor

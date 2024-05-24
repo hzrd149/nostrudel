@@ -16,7 +16,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 

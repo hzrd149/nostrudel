@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -15,7 +15,6 @@ import Minus from "../../../components/icons/minus";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import POWIcon from "../../../components/pow/pow-icon";
@@ -30,6 +29,7 @@ import { TextNoteContents } from "../../../components/note/timeline-note/text-no
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 import DetailsTabs from "./details-tabs";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -122,8 +122,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
     </Flex>
   );
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, post.event.id);
+  const ref = useEventIntersectionRef(post.event);
 
   if (isMuted && replies.length === 0) return null;
 

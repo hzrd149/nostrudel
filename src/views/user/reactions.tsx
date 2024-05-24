@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { nip25 } from "nostr-tools";
@@ -7,11 +6,9 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import UserAvatar from "../../components/user/user-avatar";
@@ -20,10 +17,10 @@ import { EmbedEventPointer } from "../../components/embed-event";
 import { embedEmoji } from "../../components/external-embeds";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NoteMenu from "../../components/note/note-menu";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, reaction.id);
+  const ref = useEventIntersectionRef(reaction);
 
   const pointer = nip25.getReactedEventPointer(reaction);
   if (!pointer) return null;

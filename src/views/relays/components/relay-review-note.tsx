@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Card, CardBody, CardHeader, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -8,11 +7,10 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import StarRating from "../../../components/star-rating";
 import { safeJson } from "../../../helpers/parse";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { Metadata } from "./relay-card";
-import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../../components/timestamp";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {
   const ratingJson = event.tags.find((t) => t[0] === "l" && t[3])?.[3];
@@ -20,8 +18,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
 
   const url = event.tags.find((t) => t[0] === "r")?.[1];
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   return (
     <Card variant="outline" ref={ref}>

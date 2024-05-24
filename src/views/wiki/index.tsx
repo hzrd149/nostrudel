@@ -20,7 +20,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useSubject from "../../hooks/use-subject";
 import WikiPageResult from "./components/wiki-page-result";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { WIKI_RELAYS } from "../../const";
 import { ExternalLinkIcon } from "../../components/icons";

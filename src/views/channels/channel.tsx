@@ -20,7 +20,7 @@ import TimelineLoader from "../../classes/timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ChannelMessageBlock from "./components/channel-message-block";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import { useReadRelays } from "../../hooks/use-client-relays";

@@ -1,10 +1,6 @@
-import { useRef } from "react";
-
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { getEventUID } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
@@ -12,10 +8,10 @@ import CommunityCard from "../communities/components/community-card";
 import useSubject from "../../hooks/use-subject";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 function CommunityResult({ community }: { community: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(community));
+  const ref = useEventIntersectionRef(community);
 
   return (
     <div ref={ref}>

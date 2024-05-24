@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { Box, Card, CardBody, CardProps, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 
 import { ParsedStream } from "../../../helpers/nostr/stream";
@@ -6,18 +6,16 @@ import { Link as RouterLink } from "react-router-dom";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
 import StreamStatusBadge from "./status-badge";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useEventNaddr from "../../../hooks/use-event-naddr";
-import { getEventUID } from "../../../helpers/nostr/event";
 import StreamHashtags from "./stream-hashtags";
 import Timestamp from "../../../components/timestamp";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function StreamCard({ stream, ...props }: CardProps & { stream: ParsedStream }) {
   const { title, image } = stream;
 
   // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(stream.event));
+  const ref = useEventIntersectionRef(stream.event);
 
   const naddr = useEventNaddr(stream.event, stream.relays);
 

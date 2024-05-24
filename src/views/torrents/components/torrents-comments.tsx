@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
@@ -6,9 +6,7 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import {
   Alert,
@@ -36,6 +34,7 @@ import TorrentCommentMenu from "./torrent-comment-menu";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();
@@ -115,8 +114,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
 
   const colorProps = useThreadColorLevelProps(level);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, post.event.id);
+  const ref = useEventIntersectionRef(post.event);
 
   return (
     <>

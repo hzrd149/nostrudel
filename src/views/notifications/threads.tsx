@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useMemo, useRef } from "react";
+import { MouseEventHandler, useCallback, useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -23,11 +23,9 @@ import Timestamp from "../../components/timestamp";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { getSharableEventAddress } from "../../helpers/nip19";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
-import { getEventUID } from "../../helpers/nostr/event";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
@@ -63,8 +61,7 @@ function ThreadGroup({ rootId, events }: { rootId: string; events: NostrEvent[] 
 
   const rootEvent = useSingleEvent(rootId);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(events[events.length - 1]));
+  const ref = useEventIntersectionRef(events[events.length - 1]);
 
   return (
     <NotificationIconEntry icon={<ReplyIcon boxSize={8} />}>

@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { kinds, nip18 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
@@ -9,7 +9,6 @@ import UserAvatar from "../../user/user-avatar";
 import UserDnsIdentity from "../../user/user-dns-identity";
 import UserLink from "../../user/user-link";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
@@ -17,6 +16,7 @@ import { parseHardcodedNoteContent } from "../../../helpers/nostr/event";
 import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 import LoadingNostrLink from "../../loading-nostr-link";
 import NoteMenu from "../../note/note-menu";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function RepostEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
@@ -28,8 +28,7 @@ function RepostEvent({ event }: { event: NostrEvent }) {
 
   const communityCoordinate = getEventCommunityPointer(event);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  const ref = useEventIntersectionRef(event);
 
   if ((note && muteFilter(note)) || !pointer) return null;
 

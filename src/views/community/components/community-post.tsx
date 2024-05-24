@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useRef } from "react";
+import { MouseEventHandler, useCallback } from "react";
 import {
   AvatarGroup,
   Card,
@@ -22,18 +22,17 @@ import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { CompactNoteContent } from "../../../components/compact-note-content";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID, parseHardcodedNoteContent } from "../../../helpers/nostr/event";
+import { parseHardcodedNoteContent } from "../../../helpers/nostr/event";
 import UserLink from "../../../components/user/user-link";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSingleEvent from "../../../hooks/use-single-event";
 import CommunityPostMenu from "./community-post-menu";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
-  const ref = useRef<HTMLAnchorElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(approval));
+  const ref = useEventIntersectionRef(approval);
 
   return <UserAvatarLink pubkey={approval.pubkey} ref={ref} size="xs" />;
 }
@@ -88,8 +87,7 @@ export function CommunityTextPost({
   showCommunity,
   ...props
 }: Omit<CardProps, "children"> & CommunityPostPropTypes) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   const communityPointer = getEventCommunityPointer(event);
 
@@ -134,8 +132,7 @@ export function CommunityRepostPost({
   const loadedRepost = useSingleEvent(eventId, readRelays);
   const repost = encodedRepost || loadedRepost;
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, repost && getEventUID(repost));
+  const ref = useEventIntersectionRef(repost);
 
   const muteFilter = useUserMuteFilter();
   if (repost && muteFilter(repost)) return;

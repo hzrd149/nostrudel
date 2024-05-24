@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -31,12 +31,10 @@ import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
 import ArrowRight from "../icons/arrow-right";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
-import { getEventUID } from "nostr-idb";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import { CopyIconButton } from "../copy-icon-button";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function useEventFromDecode(decoded: nip19.DecodeResult) {
   switch (decoded.type) {
@@ -70,8 +68,7 @@ function AppHandler({ app, decoded }: { app: NostrEvent; decoded: nip19.DecodeRe
     return tag ? tag[1].replace("<bech32>", encodeDecodeResult(decoded)) : undefined;
   }, [decoded, app]);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(app));
+  const ref = useEventIntersectionRef(app);
 
   if (!link) return null;
   return (

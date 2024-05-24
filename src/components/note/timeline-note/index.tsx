@@ -1,4 +1,4 @@
-import { useRef, memo } from "react";
+import { memo } from "react";
 import {
   Box,
   ButtonGroup,
@@ -29,7 +29,6 @@ import QuoteRepostButton from "../quote-repost-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import BookmarkButton from "../bookmark-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
@@ -46,6 +45,7 @@ import singleEventService from "../../../services/single-event";
 import POWIcon from "../../pow/pow-icon";
 import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -70,8 +70,7 @@ export function TimelineNote({
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
   const replyForm = useDisclosure();
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  const ref = useEventIntersectionRef(event);
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
 

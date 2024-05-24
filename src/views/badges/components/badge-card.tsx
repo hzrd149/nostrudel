@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
@@ -7,12 +7,12 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/event";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import BadgeMenu from "./badge-menu";
 import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import Timestamp from "../../../components/timestamp";
 import useEventCount from "../../../hooks/use-event-count";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);
@@ -20,8 +20,7 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
   const navigate = useNavigate();
 
   // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(badge));
+  const ref = useEventIntersectionRef(badge);
 
   const timesAwarded = useEventCount({ kinds: [kinds.BadgeAward], "#a": [getEventCoordinate(badge)] });
 

@@ -1,17 +1,16 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 import { ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../providers/local/intersection-observer";
-import { getEventUID } from "../../helpers/nostr/event";
 import Timestamp from "../timestamp";
 import UserLink from "../user/user-link";
 import UserDnsIdentity from "../user/user-dns-identity";
 import useEventReactions from "../../hooks/use-event-reactions";
 import EventReactionButtons from "../event-reactions/event-reactions";
-import { IconThreadButton } from "../../views/dms/components/thread-button";
+import { IconThreadButton } from "./thread-button";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
 import NoteZapButton from "../note/note-zap-button";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 export type MessageBubbleProps = {
   message: NostrEvent;
@@ -33,8 +32,7 @@ export default function MessageBubble({
   let actionPosition = showHeader ? "header" : "inline";
   if (hasReactions && actionPosition === "inline") actionPosition = "footer";
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(message));
+  const ref = useEventIntersectionRef(message);
 
   const actions = (
     <>

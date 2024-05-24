@@ -17,14 +17,14 @@ import {
   Text,
   TextProps,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import Timestamp from "../../../components/timestamp";
 import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
-import ThreadButton from "./thread-button";
+import ThreadButton from "../../../components/message/thread-button";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import { useDecryptionContext } from "../../../providers/global/decryption-provider";
@@ -33,7 +33,11 @@ import DirectMessageBlock from "./direct-message-block";
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
     <DecryptPlaceholder message={message} variant="link" py="4" px="6rem" zIndex={1}>
-      {(plaintext) => <Text isTruncated>{plaintext}</Text>}
+      {(plaintext) => (
+        <Text isTruncated {...props}>
+          {plaintext}
+        </Text>
+      )}
     </DecryptPlaceholder>
   );
 }

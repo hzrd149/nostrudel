@@ -1,6 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Router, Location, To, createMemoryRouter, RouteObject } from "react-router-dom";
-import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import { logger } from "../../helpers/debug";
 import InspectRelayView from "./relays/inspect-relay";
 
@@ -10,6 +9,7 @@ import TaskManagerRelays from "./relays";
 import TaskManagerDatabase from "./database";
 import PublishLogView from "./publish-log";
 import TaskManagerProcesses from "./processes";
+import useRouterMarker from "../../hooks/use-router-marker";
 
 type Router = ReturnType<typeof createMemoryRouter>;
 

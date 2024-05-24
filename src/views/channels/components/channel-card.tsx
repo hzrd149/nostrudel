@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { EventPointer } from "nostr-tools/lib/types/nip19";
@@ -18,13 +17,13 @@ import {
 
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import singleEventService from "../../../services/single-event";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function ChannelCard({
   channel,
@@ -34,8 +33,7 @@ export default function ChannelCard({
   const readRelays = useReadRelays(additionalRelays);
   const { metadata } = useChannelMetadata(channel.id, readRelays);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, channel.id);
+  const ref = useEventIntersectionRef(channel);
 
   if (!channel || !metadata) return null;
 

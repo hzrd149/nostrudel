@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import dayjs from "dayjs";
@@ -12,17 +12,16 @@ import {
   getCommunityRelays,
 } from "../../../helpers/nostr/communities";
 import useSubject from "../../../hooks/use-subject";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import { CheckIcon } from "../../../components/icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import CommunityPost from "../components/community-post";
 import { RouterContext } from "../community-home";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 type PendingProps = {
   event: NostrEvent;
@@ -33,8 +32,7 @@ type PendingProps = {
 function ModPendingPost({ event, community, approvals }: PendingProps) {
   const publish = usePublishEvent();
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   const communityRelays = getCommunityRelays(community);
   const [loading, setLoading] = useState(false);

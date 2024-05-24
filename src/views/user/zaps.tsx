@@ -1,6 +1,6 @@
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -13,11 +13,9 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
 import { embedNostrLinks, renderGenericUrl } from "../../components/external-embeds";
@@ -25,10 +23,10 @@ import Timestamp from "../../components/timestamp";
 import { EmbedEventPointer } from "../../components/embed-event";
 import { parseCoordinate } from "../../helpers/nostr/event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const Zap = ({ zapEvent }: { zapEvent: NostrEvent }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, zapEvent.id);
+  const ref = useEventIntersectionRef(zapEvent);
 
   const { request, payment } = getParsedZap(zapEvent, false);
 

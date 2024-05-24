@@ -4,7 +4,7 @@ import { COMMUNITY_APPROVAL_KIND, buildApprovalMap, getCommunityMods } from "../
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import ApprovedEvent from "../components/community-approved-post";
 import { RouterContext } from "../community-home";

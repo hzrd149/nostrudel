@@ -1,13 +1,12 @@
-import { ReactNode, forwardRef, memo, useMemo, useRef } from "react";
+import { ReactNode, forwardRef, memo, useMemo } from "react";
 import { AvatarGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
 import { kinds, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { NostrEvent, isATag, isETag } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { getParsedZap } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
-import { getEventUID, parseCoordinate } from "../../../helpers/nostr/event";
+import { parseCoordinate } from "../../../helpers/nostr/event";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../../components/error-boundary";
@@ -25,6 +24,7 @@ import {
 import useSingleEvent from "../../../hooks/use-single-event";
 import NotificationIconEntry from "./notification-icon-entry";
 import { CategorizedEvent, NotificationType, typeSymbol } from "../../../classes/notifications";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export const ExpandableToggleButton = ({
   toggle,
@@ -136,8 +136,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
 });
 
 const NotificationItem = ({ event }: { event: CategorizedEvent }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   let content: ReactNode | null = null;
   switch (event[typeSymbol]) {

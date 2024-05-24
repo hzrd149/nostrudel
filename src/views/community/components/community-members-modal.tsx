@@ -21,7 +21,7 @@ import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserLink from "../../../components/user/user-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatarLink from "../../../components/user/user-avatar-link";

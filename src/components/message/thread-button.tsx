@@ -1,11 +1,11 @@
 import { Button, IconButton } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 
-import UserAvatar from "../../../components/user/user-avatar";
-import { Thread } from "../../../providers/local/thread-provider";
-import { ChevronRightIcon, ThreadIcon } from "../../../components/icons";
+import UserAvatar from "../user/user-avatar";
+import { Thread } from "../../providers/local/thread-provider";
+import { ChevronRightIcon, ThreadIcon } from "../icons";
 import { IconButtonProps } from "yet-another-react-lightbox";
-import { NostrEvent } from "../../../types/nostr-event";
 
 export default function ThreadButton({ thread }: { thread: Thread }) {
   const navigate = useNavigate();

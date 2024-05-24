@@ -1,10 +1,10 @@
 import { CardProps, Flex } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import { NostrEvent } from "../../types/nostr-event";
 import MessageBubble, { MessageBubbleProps } from "./message-bubble";
 import { useThreadsContext } from "../../providers/local/thread-provider";
-import ThreadButton from "../../views/dms/components/thread-button";
+import ThreadButton from "./thread-button";
 import UserAvatarLink from "../user/user-avatar-link";
 
 function MessageBubbleWithThread({ message, showThreadButton = true, ...props }: MessageBubbleProps) {

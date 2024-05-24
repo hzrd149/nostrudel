@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Event, kinds } from "nostr-tools";
@@ -6,18 +7,14 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { useMemo, useRef } from "react";
-import { getEventUID } from "../../helpers/nostr/event";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserLink from "../../components/user/user-link";
 import UserAvatarLink from "../../components/user/user-avatar-link";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 function FollowerItem({ event }: { event: Event }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   return (
     <Flex gap="2" overflow="hidden" alignItems="center" ref={ref}>

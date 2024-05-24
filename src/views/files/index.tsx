@@ -1,5 +1,5 @@
+import { useState } from "react";
 import { Flex, Image, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
-import { useRef, useState } from "react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
@@ -14,23 +14,21 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import { UserAvatarLink } from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import MimeTypePicker from "./mime-type-picker";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import Timestamp from "../../components/timestamp";
 import NoteZapButton from "../../components/note/note-zap-button";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 function ImageFile({ event }: { event: NostrEvent }) {
   const parsed = parseImageFile(event);
   const settings = useAppSettings();
   const { trust } = useTrustContext();
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  const ref = useEventIntersectionRef(event);
 
   const shouldBlur = settings.blurImages && !trust;
 
@@ -77,8 +75,7 @@ function ImageFile({ event }: { event: NostrEvent }) {
 function VideoFile({ event }: { event: NostrEvent }) {
   const url = getFileUrl(event);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  const ref = useEventIntersectionRef(event);
 
   return (
     <Flex direction="column" gap="2" ref={ref}>

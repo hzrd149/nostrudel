@@ -1,15 +1,15 @@
 import { Card, CardProps, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
 import { Link as RouterLink, To } from "react-router-dom";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
+import { AddressPointer } from "nostr-tools/lib/types/nip19";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { DVMAvatarLink } from "./dvm-avatar";
-import { getEventAddressPointer, getEventUID } from "../../../helpers/nostr/event";
+import { getEventAddressPointer } from "../../../helpers/nostr/event";
 import { DVMName } from "./dvm-name";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function DVMCard({
   appData,
@@ -20,8 +20,7 @@ export default function DVMCard({
   const metadata = JSON.parse(appData.content);
   const pointer: AddressPointer = useMemo(() => getEventAddressPointer(appData), [appData]);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(appData));
+  const ref = useEventIntersectionRef(appData);
 
   return (
     <>

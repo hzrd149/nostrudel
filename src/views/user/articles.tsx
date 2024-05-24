@@ -6,7 +6,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import ArticleNote from "../../components/timeline-page/generic-note-timeline/article-note";
 

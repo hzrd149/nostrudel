@@ -10,7 +10,7 @@ import { STREAM_KIND } from "../../helpers/nostr/stream";
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import useParsedStreams from "../../hooks/use-parsed-streams";
 import { NostrRequestFilter } from "../../types/nostr-relay";
 import { useAppTitle } from "../../hooks/use-app-title";

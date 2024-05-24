@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
   Spinner,
@@ -19,13 +19,12 @@ import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
 import { getEventRelays } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note/note-link";
 import { BroadcastEventIcon } from "../../icons";
-import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function EventRow({
   event,
@@ -36,8 +35,7 @@ function EventRow({
   const seenRelays = useSubject(sub);
   const publish = usePublishEvent();
 
-  const ref = useRef<HTMLTableRowElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   const { colorMode } = useColorMode();
   const yes = colorMode === "light" ? "green.200" : "green.800";

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import { UnlockIcon } from "../../../components/icons";
 import { useDecryptionContainer } from "../../../providers/global/decryption-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
-import { NostrEvent } from "../../../types/nostr-event";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useAppSettings from "../../../hooks/use-app-settings";
 

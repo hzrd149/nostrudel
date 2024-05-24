@@ -12,14 +12,13 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 import { useDecryptionContext } from "../../providers/global/decryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
@@ -27,6 +26,7 @@ import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-app-settings";
 import { truncateId } from "../../helpers/string";
+import useRouterMarker from "../../hooks/use-router-marker";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {

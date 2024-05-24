@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   Badge,
   Card,
@@ -19,21 +18,17 @@ import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useEventNaddr from "../../../hooks/use-event-naddr";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { useAsync } from "react-use";
-import { getEventUID } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
 import { EventRelays } from "../../note/event-relays";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
   const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);
-
-  // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   const naddr = useEventNaddr(event);
 

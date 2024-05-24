@@ -1,46 +1,23 @@
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { Button, ButtonGroup, Flex, IconButton, Input, useDisclosure } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
-import { useThrottle } from "react-use";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
-import { getEventUID, isReply } from "../../helpers/nostr/event";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NotificationItem from "./components/notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
-import { NostrEvent } from "../../types/nostr-event";
-import { groupByTime } from "../../helpers/notification";
-import DayGroup from "./components/day-group";
-import TimelineLoader from "../../classes/timeline-loader";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../components/icons";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { NotificationType, typeSymbol } from "../../classes/notifications";
 
 const DATE_FORMAT = "YYYY-MM-DD";
-
-const NotificationDay = memo(({ day, events }: { day: number; events: NostrEvent[] }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(events[events.length - 1]));
-
-  return (
-    <DayGroup day={day} ref={ref} hideRefOnClose>
-      {events.map((event) => (
-        <NotificationItem key={event.id} event={event} />
-      ))}
-    </DayGroup>
-  );
-});
 
 const NotificationsTimeline = memo(
   ({
@@ -96,7 +73,6 @@ const NotificationsTimeline = memo(
         maxTimestamp,
       ],
     );
-    // const sortedDays = useMemo(() => groupByTime(filteredEvents), [filteredEvents]);
 
     if (filteredEvents.length === 0)
       return (
@@ -112,14 +88,6 @@ const NotificationsTimeline = memo(
         ))}
       </>
     );
-
-    // return (
-    //   <>
-    //     {sortedDays.map(([day, events]) => (
-    //       <NotificationDay key={day} day={day} events={events} />
-    //     ))}
-    //   </>
-    // );
   },
 );
 

@@ -1,8 +1,5 @@
-import { useRef } from "react";
 import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Tag } from "@chakra-ui/react";
 
-import { getEventUID } from "../../../helpers/nostr/event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getHashtags } from "../../../helpers/nostr/stemstr";
 import { CompactNoteContent } from "../../../components/compact-note-content";
@@ -17,12 +14,12 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import TrackMenu from "./track-menu";
 import QuoteRepostButton from "../../../components/note/quote-repost-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function TrackCard({ track, ...props }: { track: NostrEvent } & Omit<CardProps, "children">) {
   const hashtags = getHashtags(track);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(track));
+  const ref = useEventIntersectionRef(track);
 
   return (
     <Card variant="outline" ref={ref} {...props}>

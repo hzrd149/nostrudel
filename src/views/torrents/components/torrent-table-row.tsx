@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo } from "react";
 import { ButtonGroup, IconButton, Link, Td, Tr } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -8,17 +8,15 @@ import Timestamp from "../../../components/timestamp";
 import UserLink from "../../../components/user/user-link";
 import Magnet from "../../../components/icons/magnet";
 import { getSharableEventAddress } from "../../../helpers/nip19";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/event";
 import { formatBytes } from "../../../helpers/number";
 import TorrentMenu from "./torrent-menu";
 import NoteZapButton from "../../../components/note/note-zap-button";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 type DisplayCategory = { name: string; tags: string[] };
 
 function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
-  const ref = useRef<HTMLTableRowElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(torrent));
+  const ref = useEventIntersectionRef<HTMLTableRowElement>(torrent);
 
   const magnetLink = useMemo(() => getTorrentMagnetLink(torrent), [torrent]);
 
