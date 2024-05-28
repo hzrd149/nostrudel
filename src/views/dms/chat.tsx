@@ -27,6 +27,7 @@ import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-app-settings";
 import { truncateId } from "../../helpers/string";
 import useRouterMarker from "../../hooks/use-router-marker";
+import BackButton, { BackIconButton } from "../../components/router/back-button";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -121,13 +122,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       <IntersectionObserverProvider callback={callback}>
         <Card size="sm" flexShrink={0} p="2" flexDirection="row">
           <Flex gap="2" alignItems="center">
-            <IconButton
-              variant="ghost"
-              icon={<ChevronLeftIcon />}
-              aria-label="Back"
-              onClick={() => navigate(-1)}
-              hideFrom="xl"
-            />
+            <BackIconButton />
             <UserAvatar pubkey={pubkey} size="sm" />
             <UserLink pubkey={pubkey} fontWeight="bold" />
             <UserDnsIdentity pubkey={pubkey} onlyIcon />

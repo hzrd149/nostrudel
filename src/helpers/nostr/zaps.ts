@@ -3,7 +3,8 @@ import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 
 import { Kind0ParsedContent } from "./user-metadata";
-import { nip57, utils, validateEvent } from "nostr-tools";
+import { nip57, utils } from "nostr-tools";
+import verifyEvent from "../../services/verify-event";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -102,7 +103,7 @@ export function parseZapEvent(event: NostrEvent): ParsedZap {
   if (error) throw new Error(error);
 
   const request = JSON.parse(zapRequestStr) as NostrEvent;
-  if (!validateEvent(request)) throw new Error("Invalid zap request");
+  if (!verifyEvent(request)) throw new Error("Invalid zap request");
   const payment = parsePaymentRequest(bolt11);
 
   return {
