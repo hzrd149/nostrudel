@@ -36,14 +36,14 @@ RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 ARG PATH="/node-v20.12.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV PATH="${PATH}"
 
-RUN npm install -g yarn@1.22
+# RUN npm install -g yarn@1.22
 
 WORKDIR /app
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # copy server
 COPY server/ /app/server/
-RUN cd /app/server/ && yarn install
+RUN cd /app/server/ && npm install
 
 # setup entrypoint
 ADD ./docker-entrypoint.sh docker-entrypoint.sh

@@ -32,7 +32,7 @@ import CommunityPostMenu from "./community-post-menu";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
-  const ref = useEventIntersectionRef(approval);
+  const ref = useEventIntersectionRef<HTMLAnchorElement>(approval);
 
   return <UserAvatarLink pubkey={approval.pubkey} ref={ref} size="xs" />;
 }

@@ -15,7 +15,7 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
-  const ref = useEventIntersectionRef(event);
+  const ref = useEventIntersectionRef<HTMLImageElement>(event);
 
   return <GalleryImage {...props} event={event} ref={ref} />;
 }
