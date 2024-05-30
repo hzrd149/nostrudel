@@ -54,6 +54,13 @@ export default class ChunkedRequest {
 
   async loadNextChunk() {
     if (this.loading) return;
+
+    // check if its possible to subscribe to this relay
+    if (!relayPoolService.canSubscribe(this.relay)) {
+      this.log("Cant subscribe to relay, aborting");
+      return;
+    }
+
     this.loading = true;
 
     if (!this.relay.connected) {
@@ -92,6 +99,9 @@ export default class ChunkedRequest {
           sub.close();
           this.process.active = false;
           res(gotEvents);
+        },
+        onclose: (reason) => {
+          relayPoolService.handleRelayNotice(this.relay, reason);
         },
       });
     });

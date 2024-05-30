@@ -129,11 +129,11 @@ function NostrRelayTray() {
           </Button>
         )}
       </CardHeader>
-        <CardBody p="4" pt="0">
+      <CardBody p="4" pt="0">
         <Text mb="2">A cool little app that runs a local relay in your systems tray</Text>
         <Text>Maximum capacity: Unlimited</Text>
         <Text>Performance: As fast as your computer</Text>
-        </CardBody>
+      </CardBody>
     </Card>
   );
 }
@@ -171,11 +171,11 @@ function CitrineRelay() {
           </Button>
         )}
       </CardHeader>
-        <CardBody p="4" pt="0">
+      <CardBody p="4" pt="0">
         <Text mb="2">A cool little app that runs a local relay in your phone</Text>
         <Text>Maximum capacity: Unlimited</Text>
         <Text>Performance: As fast as your phone</Text>
-        </CardBody>
+      </CardBody>
     </Card>
   );
 }
@@ -302,13 +302,7 @@ export default function CacheRelayView() {
       </Text>
       <InternalRelay />
       {WasmRelay.SUPPORTED && <WasmWorkerRelay />}
-      {
-        navigator.userAgent.includes("Android") ? (
-          <CitrineRelay />
-        ) : (
-          <NostrRelayTray />
-        )
-      }
+      {navigator.userAgent.includes("Android") ? <CitrineRelay /> : <NostrRelayTray />}
       {window.satellite && <SatelliteRelay />}
       {window.CACHE_RELAY_ENABLED && <HostedRelay />}
       <Button w="full" variant="link" p="4" onClick={showAdvanced.onToggle}>

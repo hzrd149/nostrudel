@@ -1,3 +1,4 @@
+import { useLocalStorage } from "react-use";
 import {
   Flex,
   FormControl,
@@ -13,12 +14,14 @@ import {
   FormErrorMessage,
   Code,
   Switch,
+  Select,
 } from "@chakra-ui/react";
 import { useFormContext } from "react-hook-form";
 import { safeUrl } from "../../helpers/parse";
 import { AppSettings } from "../../services/settings/migrations";
 import { createRequestProxyUrl } from "../../helpers/request";
 import { SpyIcon } from "../../components/icons";
+import { RelayAuthMode } from "../../classes/relay-pool";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -45,6 +48,10 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, formState } = useFormContext<AppSettings>();
 
+  const [defaultAuthMode, setDefaultAuthMode] = useLocalStorage<RelayAuthMode>("default-relay-auth-mode", "ask", {
+    raw: true,
+  });
+
   return (
     <AccordionItem>
       <h2>
@@ -58,6 +65,23 @@ export default function PrivacySettings() {
       </h2>
       <AccordionPanel>
         <Flex direction="column" gap="4">
+          <FormControl>
+            <FormLabel>Default authorization behavior</FormLabel>
+            <Select
+              size="sm"
+              w="xs"
+              rounded="md"
+              flexShrink={0}
+              value={defaultAuthMode || "ask"}
+              onChange={(e) => setDefaultAuthMode(e.target.value as RelayAuthMode)}
+            >
+              <option value="always">Always authenticate</option>
+              <option value="ask">Ask every time</option>
+              <option value="never">Never authenticate</option>
+            </Select>
+            <FormHelperText>How should the app handle relays requesting identification</FormHelperText>
+          </FormControl>
+
           <FormControl isInvalid={!!formState.errors.twitterRedirect}>
             <FormLabel>Nitter instance</FormLabel>
             <Input

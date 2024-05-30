@@ -15,7 +15,7 @@ import { Link as RouterLink } from "react-router-dom";
 import AccountSwitcher from "./account-switcher";
 import useCurrentAccount from "../../hooks/use-current-account";
 import NavItems from "./nav-items";
-import TaskManagerButton from "./task-manager-button";
+import TaskManagerButtons from "./task-manager-buttons";
 
 export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "children">) {
   const account = useCurrentAccount();
@@ -40,7 +40,7 @@ export default function MobileSideDrawer({ ...props }: Omit<DrawerProps, "childr
               Sign in
             </Button>
           )}
-          <TaskManagerButton mt="auto" flexShrink={0} py="2" />
+          <TaskManagerButtons mt="auto" flexShrink={0} />
         </DrawerBody>
       </DrawerContent>
     </Drawer>

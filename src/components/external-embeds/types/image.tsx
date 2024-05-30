@@ -133,7 +133,7 @@ export function EmbeddedImage({ src, event, imageProps, ...props }: EmbeddedImag
   );
 }
 
-export const GalleryImage = forwardRef<HTMLImageElement|null, EmbeddedImageProps>(
+export const GalleryImage = forwardRef<HTMLImageElement | null, EmbeddedImageProps>(
   ({ src, event, imageProps, ...props }, ref) => {
     const thumbnail = useImageThumbnail(src);
 

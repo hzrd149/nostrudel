@@ -15,7 +15,7 @@ export function getPageTopic(page: NostrEvent) {
 
 export function getPageSummary(page: NostrEvent, fallback = true) {
   const summary = page.tags.find((t) => t[0] === "summary")?.[1];
-  return summary || (fallback ? page.content.split("\n")[0] : '');
+  return summary || (fallback ? page.content.split("\n")[0] : "");
 }
 
 export function getPageForks(page: NostrEvent) {

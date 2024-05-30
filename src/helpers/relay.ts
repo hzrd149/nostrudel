@@ -97,27 +97,6 @@ export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<st
   return filtersByRelay;
 }
 
-// NOTE: this is a hack because nostr-tools does not expose the "challenge" field on relays
-export function getChallenge(relay: AbstractRelay): string {
-  // @ts-expect-error
-  return relay.challenge;
-}
-
-export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SubscriptionOptions = {}) {
-  return new Promise<NostrEvent[]>((res) => {
-    const events: NostrEvent[] = [];
-    const sub = relay.subscribe(filters, {
-      ...opts,
-      onevent: (e) => events.push(e),
-      oneose: () => {
-        sub.close();
-        res(events);
-      },
-      onclose: () => res(events),
-    });
-  });
-}
-
 // copied from nostr-tools, SimplePool#subscribeMany
 export function subscribeMany(relays: string[], filters: Filter[], params: SubscribeManyParams): SubCloser {
   const _knownIds = new Set<string>();

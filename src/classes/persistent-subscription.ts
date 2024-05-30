@@ -44,6 +44,9 @@ export default class PersistentSubscription {
     //   this.subscription.close();
     // }
 
+    // check if its possible to subscribe to this relay
+    if (!relayPoolService.canSubscribe(this.relay)) return;
+
     this.closed = false;
     this.eosed = false;
     this.process.active = true;
@@ -59,7 +62,9 @@ export default class PersistentSubscription {
         onclose: (reason) => {
           if (!this.closed) {
             // unexpected close, reconnect?
-            console.log("Unexpected closed", this.relay, reason);
+            // console.log("Unexpected closed", this.relay, reason);
+
+            relayPoolService.handleRelayNotice(this.relay, reason);
 
             this.closed = true;
             this.process.active = false;

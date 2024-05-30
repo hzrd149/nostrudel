@@ -1,9 +1,9 @@
 import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
 
-import relayPoolService from "../services/relay-pool";
+import relayPoolService from "../../services/relay-pool";
 import { AbstractRelay } from "nostr-tools";
-import useSubject from "../hooks/use-subject";
+import useSubject from "../../hooks/use-subject";
 
 const getStatusText = (relay: AbstractRelay, connecting = false) => {
   if (connecting) return "Connecting...";

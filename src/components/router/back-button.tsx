@@ -6,7 +6,7 @@ import { ChevronLeftIcon } from "../icons";
 export default function BackButton({ ...props }: Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
   const navigate = useNavigate();
   return (
-    <IconButton icon={<ChevronLeftIcon />} aria-label="Back" {...props} onClick={() => navigate(-1)}>
+    <IconButton icon={<ChevronLeftIcon boxSize={6} />} aria-label="Back" {...props} onClick={() => navigate(-1)}>
       Back
     </IconButton>
   );
@@ -14,5 +14,7 @@ export default function BackButton({ ...props }: Omit<IconButtonProps, "onClick"
 
 export function BackIconButton({ ...props }: Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
   const navigate = useNavigate();
-  return <IconButton icon={<ChevronLeftIcon />} aria-label="Back" {...props} onClick={() => navigate(-1)} />;
+  return (
+    <IconButton icon={<ChevronLeftIcon boxSize={6} />} aria-label="Back" {...props} onClick={() => navigate(-1)} />
+  );
 }

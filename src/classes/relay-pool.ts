@@ -8,12 +8,16 @@ import Subject, { PersistentSubject } from "./subject";
 import verifyEventMethod from "../services/verify-event";
 import SuperMap from "./super-map";
 import processManager from "../services/process-manager";
+import signingService from "../services/signing";
+import accountService from "../services/account";
 
 export type Notice = {
   message: string;
   date: number;
   relay: AbstractRelay;
 };
+
+export type RelayAuthMode = "always" | "ask" | "never";
 
 export default class RelayPool {
   relays = new Map<string, AbstractRelay>();
@@ -25,8 +29,11 @@ export default class RelayPool {
   connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
   connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
 
+  challenges = new SuperMap<AbstractRelay, Subject<string>>(() => new Subject<string>());
   authForPublish = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
   authForSubscribe = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
+
+  authenticated = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
 
   log = logger.extend("RelayPool");
 
@@ -62,7 +69,10 @@ export default class RelayPool {
     const key = url.toString();
     if (!this.relays.has(key)) {
       const r = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
-      r._onauth = (challenge) => this.onRelayChallenge.next([r, challenge]);
+      r._onauth = (challenge) => {
+        this.onRelayChallenge.next([r, challenge]);
+        this.challenges.get(r).next(challenge);
+      };
       r.onnotice = (notice) => this.handleRelayNotice(r, notice);
 
       this.relays.set(key, r);
@@ -112,12 +122,94 @@ export default class RelayPool {
     }
   }
 
+  getRelayAuthStorageKey(relayOrUrl: string | URL | AbstractRelay) {
+    let relay = this.getRelay(relayOrUrl);
+    return `${relay!.url}-auth-mode`;
+  }
+  getRelayAuthMode(relayOrUrl: string | URL | AbstractRelay): RelayAuthMode | undefined {
+    let relay = this.getRelay(relayOrUrl);
+    if (!relay) return;
+
+    const defaultMode = (localStorage.getItem(`default-auth-mode`) as RelayAuthMode) ?? undefined;
+    const mode = (localStorage.getItem(this.getRelayAuthStorageKey(relay)) as RelayAuthMode) ?? undefined;
+
+    return mode || defaultMode;
+  }
+  setRelayAuthMode(relayOrUrl: string | URL | AbstractRelay, mode: RelayAuthMode) {
+    let relay = this.getRelay(relayOrUrl);
+    if (!relay) return;
+
+    localStorage.setItem(this.getRelayAuthStorageKey(relay), mode);
+  }
+
+  pendingAuth = new Map<AbstractRelay, Promise<string | undefined>>();
+  async authenticate(
+    relayOrUrl: string | URL | AbstractRelay,
+    sign: Parameters<AbstractRelay["auth"]>[0],
+    quite = true,
+  ) {
+    let relay = this.getRelay(relayOrUrl);
+    if (!relay) return;
+
+    const pending = this.pendingAuth.get(relay);
+    if (pending) return pending;
+
+    if (this.getRelayAuthMode(relay) === "never") throw new Error("Auth disabled for relay");
+
+    if (!relay.connected) throw new Error("Not connected");
+
+    const promise = new Promise<string | undefined>(async (res) => {
+      if (!relay) return;
+
+      try {
+        const message = await relay.auth(sign);
+        this.authenticated.get(relay).next(true);
+        res(message);
+      } catch (e) {
+        e = e || new Error("Unknown error");
+        if (e instanceof Error) {
+          this.log(`Failed to authenticate to ${relay.url}`, e.message);
+        }
+        this.authenticated.get(relay).next(false);
+        if (!quite) throw e;
+      }
+
+      this.pendingAuth.delete(relay);
+    });
+
+    this.pendingAuth.set(relay, promise);
+
+    return await promise;
+  }
+
+  canSubscribe(relayOrUrl: string | URL | AbstractRelay) {
+    let relay = this.getRelay(relayOrUrl);
+    if (!relay) return false;
+
+    return this.authForSubscribe.get(relay).value !== false;
+  }
+
   handleRelayNotice(relay: AbstractRelay, message: string) {
     const subject = this.notices.get(relay);
     subject.next([...subject.value, { message, date: dayjs().unix(), relay }]);
 
-    const authForSubscribe = this.authForSubscribe.get(relay);
-    if (!authForSubscribe.value) authForSubscribe.next(true);
+    if (message.includes("auth-required")) {
+      const authForSubscribe = this.authForSubscribe.get(relay);
+      if (!authForSubscribe.value) authForSubscribe.next(true);
+
+      const account = accountService.current.value;
+      if (account) {
+        const authMode = this.getRelayAuthMode(relay);
+
+        if (authMode === "always") {
+          this.authenticate(relay, (draft) => {
+            return signingService.requestSignature(draft, account);
+          }).then(() => {
+            this.log(`Automatically authenticated to ${relay.url}`);
+          });
+        }
+      }
+    }
   }
 
   disconnectFromUnused() {

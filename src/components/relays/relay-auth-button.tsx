@@ -1,43 +1,83 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import {
+  Button,
+  ButtonProps,
+  IconButton,
+  IconButtonProps,
+  useForceUpdate,
+  useInterval,
+  useToast,
+} from "@chakra-ui/react";
 import { AbstractRelay } from "nostr-tools";
-import { Button, useToast } from "@chakra-ui/react";
 
 import relayPoolService from "../../services/relay-pool";
 import { useSigningContext } from "../../providers/global/signing-provider";
+import PasscodeLock from "../icons/passcode-lock";
+import useSubject from "../../hooks/use-subject";
+import CheckCircleBroken from "../icons/check-circle-broken";
 
-export default function RelayAuthButton({ relay }: { relay: string | URL | AbstractRelay }) {
+export function useRelayChallenge(relay: AbstractRelay) {
+  return useSubject(relayPoolService.challenges.get(relay));
+}
+
+export function useRelayAuthMethod(relay: AbstractRelay) {
   const toast = useToast();
   const { requestSignature } = useSigningContext();
-  const r = relayPoolService.getRelay(relay);
-  if (!r) return null;
+  const challenge = useRelayChallenge(relay);
 
-  // @ts-expect-error
-  const [challenge, setChallenge] = useState(r.challenge ?? "");
-  useEffect(() => {
-    const sub = relayPoolService.onRelayChallenge.subscribe(([relay, challenge]) => {
-      if (r === relay) setChallenge(challenge);
-    });
-
-    return () => sub.unsubscribe();
-  }, [r]);
+  const authenticated = useSubject(relayPoolService.authenticated.get(relay));
 
   const [loading, setLoading] = useState(false);
   const auth = useCallback(async () => {
     setLoading(true);
     try {
-      const message = await r.auth(requestSignature);
+      const message = await relayPoolService.authenticate(relay, requestSignature, false);
       toast({ description: message || "Success", status: "success" });
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }
     setLoading(false);
-  }, [r, requestSignature]);
+  }, [relay, requestSignature]);
 
-  if (challenge)
+  return { loading, auth, challenge, authenticated };
+}
+
+export function IconRelayAuthButton({
+  relay,
+  ...props
+}: { relay: string | URL | AbstractRelay } & Omit<IconButtonProps, "icon" | "aria-label" | "title">) {
+  const r = relayPoolService.getRelay(relay);
+  if (!r) return null;
+
+  const update = useForceUpdate();
+  useInterval(update, 500);
+
+  const { challenge, auth, loading, authenticated } = useRelayAuthMethod(r);
+
+  if (authenticated) {
     return (
-      <Button onClick={auth} isLoading={loading}>
-        Authenticate
-      </Button>
+      <IconButton
+        icon={<CheckCircleBroken boxSize={6} />}
+        aria-label="Authenticated"
+        title="Authenticated"
+        colorScheme="green"
+        {...props}
+      />
     );
+  }
+
+  if (r.connected && challenge) {
+    return (
+      <IconButton
+        icon={<PasscodeLock boxSize={6} />}
+        onClick={auth}
+        isLoading={loading}
+        aria-label="Authenticate with relay"
+        title="Authenticate"
+        {...props}
+      />
+    );
+  }
+
   return null;
 }

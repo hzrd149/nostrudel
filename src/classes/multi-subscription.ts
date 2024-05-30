@@ -76,7 +76,6 @@ export default class MultiSubscription {
       this.relays.add(relay);
     }
 
-    this.process.relays = new Set(this.relays);
     this.updateSubscriptions();
   }
 

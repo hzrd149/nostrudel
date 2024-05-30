@@ -1,7 +1,5 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import {
-  Button,
-  ButtonGroup,
   Flex,
   Heading,
   Spacer,
@@ -14,7 +12,6 @@ import {
   Text,
   useForceUpdate,
   useInterval,
-  useToast,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 
@@ -25,12 +22,12 @@ import useSubject from "../../../hooks/use-subject";
 
 import ProcessBranch from "../processes/process/process-tree";
 import processManager from "../../../services/process-manager";
-import RelayAuthButton from "../../../components/relays/relay-auth-button";
-import { RelayStatus } from "../../../components/relay-status";
+import { IconRelayAuthButton } from "../../../components/relays/relay-auth-button";
+import { RelayStatus } from "../../../components/relays/relay-status";
 import Timestamp from "../../../components/timestamp";
+import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
 
 export default function InspectRelayView() {
-  const toast = useToast();
   const { url } = useParams();
   if (!url) throw new Error("Missing url param");
 
@@ -38,15 +35,6 @@ export default function InspectRelayView() {
   useInterval(update, 500);
 
   const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
-  const connecting = useSubject(relayPoolService.connecting.get(relay));
-
-  const connect = useCallback(async () => {
-    try {
-      await relayPoolService.requestConnect(relay, false);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
-  }, [toast]);
 
   const rootProcesses = processManager.getRootProcessesForRelay(relay);
   const notices = useSubject(relayPoolService.notices.get(relay));
@@ -58,12 +46,8 @@ export default function InspectRelayView() {
         <Heading size="md">{url}</Heading>
         <RelayStatus relay={relay} />
         <Spacer />
-        <ButtonGroup size="sm">
-          <RelayAuthButton relay={relay} />
-          <Button variant="outline" colorScheme={connecting ? "orange" : "green"} onClick={connect}>
-            {connecting ? "Connecting..." : relay.connected ? "Connected" : "Connect"}
-          </Button>
-        </ButtonGroup>
+        <IconRelayAuthButton relay={relay} size="sm" variant="ghost" />
+        <RelayConnectSwitch relay={relay} />
       </Flex>
 
       <Tabs position="relative" variant="unstyled">
@@ -84,9 +68,9 @@ export default function InspectRelayView() {
             ))}
           </TabPanel>
           <TabPanel p="0">
-            {notices.map((notice) => (
-              <Text fontFamily="monospace" key={notice.date + notice.message}>
-                [<Timestamp timestamp={notice.date} />] {notice.message}
+            {notices.map((notice, i) => (
+              <Text fontFamily="monospace" key={notice.date + i}>
+                {notice.message} <Timestamp timestamp={notice.date} color="gray.500" />
               </Text>
             ))}
           </TabPanel>

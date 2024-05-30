@@ -12,7 +12,7 @@ import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";
 import { useTaskManagerContext } from "../../views/task-manager/provider";
-import TaskManagerButton from "./task-manager-button";
+import TaskManagerButtons from "./task-manager-buttons";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -89,7 +89,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           </Button>
         )}
       </Flex>
-      <TaskManagerButton mt="auto" flexShrink={0} py="2" />
+      <TaskManagerButtons mt="auto" flexShrink={0} />
     </Flex>
   );
 }
