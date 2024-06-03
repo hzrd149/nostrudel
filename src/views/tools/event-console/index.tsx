@@ -15,9 +15,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AbstractRelay, NostrEvent, Relay, Subscription } from "nostr-tools";
+import { AbstractRelay, NostrEvent, Subscription } from "nostr-tools";
 import { useLocalStorage } from "react-use";
-import { Subscription as IDBSubscription, CacheRelay } from "nostr-idb";
+import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import stringify from "json-stringify-deterministic";
 import { useSearchParams } from "react-router-dom";
@@ -37,7 +37,7 @@ import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
 import { safeJson } from "../../../helpers/parse";
-import WasmRelay from "../../../services/wasm-relay";
+import relayPoolService from "../../../services/relay-pool";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -56,7 +56,7 @@ export default function EventConsoleView() {
   const helpModal = useDisclosure();
   const queryRelay = useDisclosure({ defaultIsOpen: params.has("relay") });
   const [relayURL, setRelayURL] = useState(params.get("relay") || "");
-  const [relay, setRelay] = useState<Relay | null>(null);
+  const [relay, setRelay] = useState<AbstractRelay | null>(null);
 
   const [sub, setSub] = useState<Subscription | IDBSubscription | null>(null);
 
@@ -91,21 +91,19 @@ export default function EventConsoleView() {
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {
-          if (relay) relay.close();
-          r = new Relay(url.toString());
-          await r.connect();
+          r = await relayPoolService.requestRelay(url);
+          await relayPoolService.requestConnect(r);
           setRelay(r);
         } else r = relay;
       } else {
-        if (relay) {
-          relay.close();
-          setRelay(null);
-        }
+        if (relay) setRelay(null);
       }
 
       await new Promise<void>((res) => {
         let buffer: NostrEvent[] = [];
         const flush = _throttle(() => setEvents([...buffer]), 1000 / 10, { trailing: true });
+
+        setError("");
 
         const s = r.subscribe([filter], {
           onevent: (e) => {
@@ -115,6 +113,9 @@ export default function EventConsoleView() {
           oneose: () => {
             setEvents([...buffer]);
             res();
+          },
+          onclose: (reason) => {
+            if (!buffer.length) setError(reason);
           },
         });
         setSub(s);
@@ -188,7 +189,14 @@ export default function EventConsoleView() {
             <AlertTitle>Error</AlertTitle>
             <AlertDescription whiteSpace="pre">{error}</AlertDescription>
           </Box>
-          <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={() => setError("")} />
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-1}
+            top={-1}
+            onClick={() => setError("")}
+            ml="auto"
+          />
         </Alert>
       )}
 

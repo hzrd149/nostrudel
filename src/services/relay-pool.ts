@@ -7,7 +7,7 @@ setInterval(() => {
   if (document.visibilityState === "visible") {
     relayPoolService.disconnectFromUnused();
   }
-}, 30_000);
+}, 60_000);
 
 offlineMode.subscribe((offline) => {
   if (offline) {
