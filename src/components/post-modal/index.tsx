@@ -111,7 +111,7 @@ export default function PostModal({
   watch("difficulty");
 
   // cache form to localStorage
-  useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
+  useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
 

@@ -61,11 +61,13 @@ export default function CreateWikiPageView() {
   useEffect(() => {
     if (!fork) return;
 
-    setValue("topic", getPageTopic(fork));
-    setValue("title", getPageTitle(fork) ?? "");
-    setValue("summary", getPageSummary(fork));
-    setValue("content", fork.content);
-  }, [fork, setValue]);
+    reset({
+      topic: getPageTopic(fork),
+      title: getPageTitle(fork) ?? "",
+      summary: getPageSummary(fork, false) ?? "",
+      content: fork.content,
+    });
+  }, [fork, reset]);
 
   const cacheKey = forkAddress
     ? "wiki-" + forkAddress.identifier + ":" + forkAddress.pubkey + "-fork"
@@ -77,7 +79,7 @@ export default function CreateWikiPageView() {
     cacheKey,
     // @ts-expect-error
     getValues,
-    setValue,
+    reset,
     formState,
   );
 

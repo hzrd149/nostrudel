@@ -44,7 +44,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
     "wiki-" + topic,
     // @ts-expect-error
     getValues,
-    setValue,
+    reset,
     formState,
   );
 

@@ -25,6 +25,7 @@ import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import useCacheForm from "../../../hooks/use-cache-form";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -41,11 +42,14 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   const { requestSignature } = useSigningContext();
 
   const threadMembers = useMemo(() => getThreadMembers(item, account?.pubkey), [item, account?.pubkey]);
-  const { setValue, getValues, watch, handleSubmit } = useForm({
+  const { setValue, getValues, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       content: "",
     },
+    mode: "all",
   });
+  const clearCache = useCacheForm<{ content: string }>(`reply-${item.event.id}`, getValues, reset, formState);
+
   const contentMentions = getPubkeysMentionedInContent(getValues().content);
   const notifyPubkeys = unique([...threadMembers, ...contentMentions]);
 
@@ -88,6 +92,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
     const pub = await publish("Reply", { ...draft, created_at: dayjs().unix() });
 
     if (pub && onSubmitted) onSubmitted(pub.event);
+    clearCache();
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);

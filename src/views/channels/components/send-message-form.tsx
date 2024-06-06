@@ -49,7 +49,7 @@ export default function ChannelMessageForm({
 
     setLoadingMessage("Signing...");
     await publish("Send DM", draft, undefined, false);
-    reset();
+    reset({ content: "" });
 
     // refocus input
     setTimeout(() => textAreaRef.current?.focus(), 50);

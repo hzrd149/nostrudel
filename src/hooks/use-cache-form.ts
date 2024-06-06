@@ -1,63 +1,78 @@
-import { useCallback, useMemo, useRef } from "react";
-import { FieldValues, UseFormGetValues, UseFormSetValue, UseFormStateReturn } from "react-hook-form";
-import { useMount, useUnmount } from "react-use";
-import { logger } from "../helpers/debug";
-import { useTimeout } from "@chakra-ui/react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { FieldValues, UseFormGetValues, UseFormReset, UseFormStateReturn } from "react-hook-form";
+import { useBeforeUnload } from "react-router-dom";
 
-// TODO: make these caches expire
+import { logger } from "../helpers/debug";
+
 export default function useCacheForm<TFieldValues extends FieldValues = FieldValues>(
   key: string | null,
   getValues: UseFormGetValues<TFieldValues>,
-  setValue: UseFormSetValue<TFieldValues>,
+  reset: UseFormReset<TFieldValues>,
   state: UseFormStateReturn<TFieldValues>,
+  opts?: { clearOnKeyChange: boolean },
 ) {
   const log = useMemo(() => (key ? logger.extend(`CachedForm:${key}`) : () => {}), [key]);
   const storageKey = key && "cached-form-" + key;
 
-  useMount(() => {
-    if (storageKey === null) return;
+  const stateRef = useRef<UseFormStateReturn<TFieldValues>>(state);
+  stateRef.current = state;
+
+  // NOTE: this watches the dirty state
+  state.isDirty;
+  state.isSubmitted;
+
+  useEffect(() => {
+    if (!storageKey) return;
+
+    // restore form on key change or mount
     try {
       const cached = localStorage.getItem(storageKey);
+
+      // remove the item and keep it in memory
       localStorage.removeItem(storageKey);
 
       if (cached) {
-        log("Restoring form");
         const values = JSON.parse(cached) as TFieldValues;
-        for (const [key, value] of Object.entries(values)) {
-          // @ts-ignore
-          setValue(key, value, { shouldDirty: true });
-        }
+
+        log("Restoring form");
+        reset(values, { keepDefaultValues: true });
+      } else if (opts?.clearOnKeyChange) {
+        log("Clearing form");
+        reset();
       }
     } catch (e) {}
-  });
 
-  const stateRef = useRef<UseFormStateReturn<TFieldValues>>(state);
-  stateRef.current = state;
-  useUnmount(() => {
-    if (storageKey === null) return;
-    if (!stateRef.current.isDirty) return;
+    // save previous key on change or unmount
+    return () => {
+      if (stateRef.current.isSubmitted) {
+        log("Removing because submitted");
+        localStorage.removeItem(storageKey);
+      } else if (stateRef.current.isDirty) {
+        const values = getValues();
+        log("Saving form", values);
+        localStorage.setItem(storageKey, JSON.stringify(values));
+      }
+    };
+  }, [storageKey, log, opts?.clearOnKeyChange]);
 
-    if (!stateRef.current.isSubmitted) {
-      log("Saving form", getValues());
-      localStorage.setItem(storageKey, JSON.stringify(getValues()));
-    } else if (localStorage.getItem(storageKey)) {
-      log("Removing cache because form was submitted");
+  const saveOnClose = useCallback(() => {
+    if (!storageKey) return;
+
+    if (stateRef.current.isSubmitted) {
+      log("Removing because submitted");
       localStorage.removeItem(storageKey);
+    } else if (stateRef.current.isDirty) {
+      const values = getValues();
+      log("Saving form", values);
+      localStorage.setItem(storageKey, JSON.stringify(values));
     }
-  });
+  }, [log, getValues, storageKey]);
 
-  const autoSave = useCallback(() => {
-    if (storageKey === null) return;
-    if (!stateRef.current.isSubmitted) {
-      log("Autosave", getValues());
-      localStorage.setItem(storageKey, JSON.stringify(getValues()));
-    }
-  }, [storageKey]);
-
-  useTimeout(autoSave, 5_000);
+  useBeforeUnload(saveOnClose);
 
   return useCallback(() => {
-    if (storageKey === null) return;
+    if (!storageKey) return;
+
     localStorage.removeItem(storageKey);
   }, [storageKey]);
 }
