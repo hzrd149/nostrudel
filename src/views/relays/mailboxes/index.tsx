@@ -47,7 +47,8 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 function MailboxesPage() {
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
-  const { inbox, outbox, event } = useUserMailboxes(account.pubkey, { alwaysRequest: true, ignoreCache: true }) || {};
+  const { inbox, outbox, event } =
+    useUserMailboxes(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true }) || {};
 
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
