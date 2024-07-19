@@ -21,23 +21,24 @@ import UserLink from "../../components/user/user-link";
 import { CompactNoteContent } from "../../components/compact-note-content";
 import Timestamp from "../../components/timestamp";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
   const navigate = useNavigateInDrawer();
+  const address = useShareableEventAddress(event);
   const onClick = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
-      navigate(`/n/${getSharableEventAddress(event)}`);
+      navigate(`/n/${address}`);
     },
-    [navigate],
+    [navigate, address],
   );
 
   return (
@@ -47,7 +48,7 @@ function ReplyEntry({ event }: { event: NostrEvent }) {
         <Timestamp timestamp={event.created_at} />
       </Flex>
       <CompactNoteContent event={event} maxLength={100} />
-      <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} onClick={onClick} />
+      <HoverLinkOverlay as={RouterLink} to={`/n/${address}`} onClick={onClick} />
     </LinkBox>
   );
 }

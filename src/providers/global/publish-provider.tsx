@@ -11,7 +11,6 @@ import { getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
 import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
-import { handleEventFromRelay } from "../../services/event-relays";
 import deleteEventService from "../../services/delete-events";
 import userMailboxesService from "../../services/user-mailboxes";
 
@@ -85,10 +84,6 @@ export default function PublishProvider({ children }: PropsWithChildren) {
 
         const pub = new PublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
-
-        pub.onResult.subscribe(({ relay, success }) => {
-          if (success) handleEventFromRelay(relay, signed);
-        });
 
         // send it to the local relay
         if (localRelay) localRelay.publish(signed);

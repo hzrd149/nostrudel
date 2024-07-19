@@ -11,16 +11,16 @@ import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { NoteLink } from "../../note/note-link";
 import Timestamp from "../../timestamp";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useSubject(appSettings);
   const navigate = useNavigateInDrawer();
-  const to = `/n/${getSharableEventAddress(event)}`;
+  const to = `/n/${relayHintService.getSharableEventAddress(event)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

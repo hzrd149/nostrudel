@@ -35,7 +35,6 @@ import BadgeAwardCard from "./components/badge-award-card";
 import TimelineLoader from "../../classes/timeline-loader";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import { EventRelays } from "../../components/note/event-relays";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
   const awards = useSubject(timeline.timeline);
@@ -107,8 +106,6 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
         <Heading size="md">{getBadgeName(badge)}</Heading>
 
         <Spacer />
-
-        <EventRelays event={badge} />
 
         <BadgeMenu aria-label="More options" badge={badge} />
       </Flex>

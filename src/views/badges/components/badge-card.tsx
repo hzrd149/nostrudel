@@ -5,7 +5,6 @@ import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import BadgeMenu from "./badge-menu";
@@ -13,9 +12,10 @@ import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import Timestamp from "../../../components/timestamp";
 import useEventCount from "../../../hooks/use-event-count";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
-  const naddr = getSharableEventAddress(badge);
+  const address = useShareableEventAddress(badge);
   const image = getBadgeImage(badge);
   const navigate = useNavigate();
 
@@ -27,11 +27,11 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
   return (
     <Card ref={ref} variant="outline" {...props}>
       {image && (
-        <Image src={image.src} cursor="pointer" onClick={() => navigate(`/badges/${naddr}`)} borderRadius="lg" />
+        <Image src={image.src} cursor="pointer" onClick={() => navigate(`/badges/${address}`)} borderRadius="lg" />
       )}
       <CardHeader display="flex" alignItems="center" p="2" pb="0">
         <Heading size="md">
-          <Link as={RouterLink} to={`/badges/${naddr}`}>
+          <Link as={RouterLink} to={`/badges/${address}`}>
             {getBadgeName(badge)}
           </Link>
         </Heading>

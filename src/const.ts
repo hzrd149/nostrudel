@@ -9,3 +9,4 @@ export const SEARCH_RELAYS = safeRelayUrls([
 ]);
 export const WIKI_RELAYS = safeRelayUrls(["wss://relay.wikifreedia.xyz/"]);
 export const COMMON_CONTACT_RELAY = safeRelayUrl("wss://purplepag.es") as string;
+export const COMMON_CONTACT_RELAYS = [COMMON_CONTACT_RELAY];

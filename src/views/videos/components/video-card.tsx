@@ -4,8 +4,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/flare";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function VideoCard({ video, ...props }: Omit<CardProps, "children"> & { video: NostrEvent }) {
   const title = getVideoTitle(video);
@@ -14,6 +14,7 @@ export default function VideoCard({ video, ...props }: Omit<CardProps, "children
   const summary = getVideoSummary(video);
 
   const ref = useEventIntersectionRef(video);
+  const address = useShareableEventAddress(video);
 
   return (
     <Card as={LinkBox} {...props}>
@@ -25,7 +26,7 @@ export default function VideoCard({ video, ...props }: Omit<CardProps, "children
         backgroundSize="cover"
       />
       <CardHeader p="2">
-        <HoverLinkOverlay as={RouterLink} to={`/videos/${getSharableEventAddress(video)}`}>
+        <HoverLinkOverlay as={RouterLink} to={`/videos/${address}`}>
           <Heading size="sm" isTruncated>
             {title}
           </Heading>

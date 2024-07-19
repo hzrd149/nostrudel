@@ -19,7 +19,6 @@ import { kinds } from "nostr-tools";
 import { NostrEvent, isETag } from "../../../types/nostr-event";
 import { getEventCommunityPointer, getPostSubject } from "../../../helpers/nostr/communities";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { CompactNoteContent } from "../../../components/compact-note-content";
 import { parseHardcodedNoteContent } from "../../../helpers/nostr/event";
@@ -30,6 +29,7 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSingleEvent from "../../../hooks/use-single-event";
 import CommunityPostMenu from "./community-post-menu";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export function ApprovalIcon({ approval }: { approval: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLAnchorElement>(approval);
@@ -45,9 +45,10 @@ export type CommunityPostPropTypes = {
 
 function PostSubject({ event }: { event: NostrEvent }) {
   const subject = getPostSubject(event);
+  const address = useShareableEventAddress(event);
 
   const navigate = useNavigateInDrawer();
-  const to = `/n/${getSharableEventAddress(event)}`;
+  const to = `/n/${address}`;
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();

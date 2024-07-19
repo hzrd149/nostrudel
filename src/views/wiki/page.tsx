@@ -31,14 +31,14 @@ import { ExternalLinkIcon } from "../../components/icons";
 import FileSearch01 from "../../components/icons/file-search-01";
 import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
-import QuoteRepostButton from "../../components/note/quote-repost-button";
+import QuoteEventButton from "../../components/note/quote-event-button";
 import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
-import { getSharableEventAddress } from "../../helpers/nip19";
+import relayHintService from "../../services/event-relay-hint";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -111,7 +111,11 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
               </Button>
             )}
             {page.pubkey !== account?.pubkey && (
-              <Button as={RouterLink} colorScheme="primary" to={`/wiki/create?fork=${getSharableEventAddress(page)}`}>
+              <Button
+                as={RouterLink}
+                colorScheme="primary"
+                to={`/wiki/create?fork=${relayHintService.getSharableEventAddress(page)}`}
+              >
                 Fork
               </Button>
             )}
@@ -119,7 +123,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
           <Flex alignItems="flex-end" gap="2" ml="auto">
             <EventVoteButtons event={page} inline chevrons={false} />
             <ButtonGroup size="sm">
-              <QuoteRepostButton event={page} />
+              <QuoteEventButton event={page} />
               <NoteZapButton event={page} showEventPreview={false} />
               <WikiPageMenu page={page} aria-label="Page Options" />
             </ButtonGroup>

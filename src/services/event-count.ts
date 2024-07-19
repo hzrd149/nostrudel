@@ -1,18 +1,18 @@
+import { Filter } from "nostr-tools";
 import stringify from "json-stringify-deterministic";
 
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
-import { NostrRequestFilter } from "../types/nostr-relay";
 import { localRelay } from "./local-relay";
 
 class EventCountService {
   subjects = new SuperMap<string, Subject<number>>(() => new Subject<number>());
 
-  stringifyFilter(filter: NostrRequestFilter) {
+  stringifyFilter(filter: Filter | Filter[]) {
     return stringify(filter);
   }
 
-  requestCount(filter: NostrRequestFilter, alwaysRequest = false) {
+  requestCount(filter: Filter | Filter[], alwaysRequest = false) {
     const key = this.stringifyFilter(filter);
     const sub = this.subjects.get(key);
 
@@ -26,7 +26,7 @@ class EventCountService {
     return sub;
   }
 
-  getCount(filter: NostrRequestFilter) {
+  getCount(filter: Filter | Filter[]) {
     const key = this.stringifyFilter(filter);
     const sub = this.subjects.get(key);
     return sub;

@@ -5,7 +5,6 @@ import { ParsedStream } from "../../../../helpers/nostr/stream";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../../providers/local/intersection-observer";
 import { LightningIcon } from "../../../../components/icons";
 import { getParsedZap } from "../../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../../helpers/bolt11";

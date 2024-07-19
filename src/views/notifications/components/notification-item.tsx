@@ -1,5 +1,5 @@
 import { ReactNode, forwardRef, memo, useMemo } from "react";
-import { AvatarGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
+import { AvatarGroup, ButtonGroup, Flex, IconButton, IconButtonProps, Text, useDisclosure } from "@chakra-ui/react";
 import { kinds, nip18, nip25 } from "nostr-tools";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -25,6 +25,7 @@ import useSingleEvent from "../../../hooks/use-single-event";
 import NotificationIconEntry from "./notification-icon-entry";
 import { CategorizedEvent, NotificationType, typeSymbol } from "../../../classes/notifications";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
 export const ExpandableToggleButton = ({
   toggle,
@@ -128,7 +129,10 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
         </AvatarGroup>
         <Text>{readablizeSats(zap.payment.amount / 1000)} sats</Text>
         {zap.request.content && <Text>{zap.request.content}</Text>}
-        {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" ml="auto" toggle={expanded} />}
+        <ButtonGroup size="sm" variant="ghost" ml="auto">
+          {eventJSX !== null && <ExpandableToggleButton aria-label="Toggle event" toggle={expanded} />}
+          <ZapReceiptMenu zap={zap.event} aria-label="More Options" />
+        </ButtonGroup>
       </Flex>
       {expanded.isOpen && eventJSX}
     </NotificationIconEntry>

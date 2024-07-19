@@ -19,7 +19,6 @@ import useCacheForm from "../../hooks/use-cache-form";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { WIKI_PAGE_KIND, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import MarkdownEditor from "./components/markdown-editor";
@@ -27,6 +26,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
 import FormatButton from "./components/format-toolbar";
 import dictionaryService from "../../services/dictionary";
+import relayHintService from "../../services/event-relay-hint";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const toast = useToast();
@@ -64,7 +64,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
       dictionaryService.handleEvent(pub.event);
       clearFormCache();
-      navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`, { replace: true });
+      navigate(`/wiki/page/${relayHintService.getSharableEventAddress(pub.event)}`, { replace: true });
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
     }

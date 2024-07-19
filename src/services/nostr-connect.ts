@@ -3,14 +3,14 @@ import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
+import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
+import createDefer, { Deferred } from "../classes/deferred";
 import MultiSubscription from "../classes/multi-subscription";
 import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
 import { logger } from "../helpers/debug";
-import { DraftNostrEvent, NostrEvent, isPTag } from "../types/nostr-event";
-import createDefer, { Deferred } from "../classes/deferred";
+import { alwaysVerify } from "./verify-event";
 import { NostrConnectAccount } from "./account";
 import { safeRelayUrl } from "../helpers/relay";
-import { alwaysVerify } from "./verify-event";
 import { truncateId } from "../helpers/string";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {

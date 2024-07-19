@@ -14,12 +14,11 @@ import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import POWIcon from "../../../components/pow/pow-icon";
 import RepostButton from "../../../components/note/timeline-note/components/repost-button";
-import QuoteRepostButton from "../../../components/note/quote-repost-button";
+import QuoteEventButton from "../../../components/note/quote-event-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
 import BookmarkButton from "../../../components/note/bookmark-button";
@@ -30,6 +29,7 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import relayHintService from "../../../services/event-relay-hint";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -68,7 +68,12 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <POWIcon event={post.event} boxSize={5} />
-      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
+      <Link
+        as={RouterLink}
+        whiteSpace="nowrap"
+        color="current"
+        to={`/n/${relayHintService.getSharableEventAddress(post.event)}`}
+      >
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       {replies.length > 0 ? (
@@ -109,7 +114,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <ButtonGroup variant="ghost" size="sm">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
         <RepostButton event={post.event} />
-        <QuoteRepostButton event={post.event} />
+        <QuoteEventButton event={post.event} />
         <NoteZapButton event={post.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}

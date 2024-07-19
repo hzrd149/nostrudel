@@ -2,18 +2,18 @@ import { AbstractRelay, NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import SuperMap from "../classes/super-map";
-import { logger } from "../helpers/debug";
-import { getEventCoordinate } from "../helpers/nostr/event";
-import { localRelay } from "./local-relay";
 import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
 import BatchKindPubkeyLoader, { createCoordinate } from "../classes/batch-kind-pubkey-loader";
+import Process from "../classes/process";
+import { logger } from "../helpers/debug";
+import { getEventCoordinate } from "../helpers/nostr/event";
+import { localRelay } from "./local-relay";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
 import { truncateId } from "../helpers/string";
-import UserSquare from "../components/icons/user-square";
-import Process from "../classes/process";
 import processManager from "./process-manager";
+import UserSquare from "../components/icons/user-square";
 
 export type RequestOptions = {
   /** Always request the event from the relays */

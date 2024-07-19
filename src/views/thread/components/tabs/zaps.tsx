@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
 
 import { ThreadItem } from "../../../../helpers/thread";
 import { ParsedZap } from "../../../../helpers/nostr/zaps";
@@ -10,6 +10,7 @@ import { LightningIcon } from "../../../../components/icons";
 import { readablizeSats } from "../../../../helpers/bolt11";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
+import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
 
 const ZapEvent = memo(({ zap }: { zap: ParsedZap }) => {
   if (!zap.payment.amount) return null;
@@ -28,6 +29,10 @@ const ZapEvent = memo(({ zap }: { zap: ParsedZap }) => {
           <Timestamp timestamp={zap.event.created_at} ml="2" />
           <TextNoteContents event={zap.request} />
         </Box>
+
+        <ButtonGroup ml="auto" size="sm" variant="ghost">
+          <ZapReceiptMenu zap={zap.event} aria-label="More Options" />
+        </ButtonGroup>
       </Flex>
     </TrustProvider>
   );

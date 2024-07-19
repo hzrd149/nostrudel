@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -13,14 +13,16 @@ import OpenInAppMenuItem from "../common-menu-items/open-in-app";
 import MuteUserMenuItem from "../common-menu-items/mute-user";
 import DeleteEventMenuItem from "../common-menu-items/delete-event";
 import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import Recording02 from "../icons/recording-02";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
+import relayHintService from "../../services/event-relay-hint";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const translationsModal = useDisclosure();
   const publish = usePublishEvent();
+
+  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event])
 
   const broadcast = useCallback(async () => {
     await publish("Broadcast", event);
@@ -38,14 +40,14 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
         <MenuItem
           as={RouterLink}
           icon={<Recording02 />}
-          to={`/tools/transform/${getSharableEventAddress(event)}?tab=tts`}
+          to={`/tools/transform/${address}?tab=tts`}
         >
           Text to speech
         </MenuItem>
         <MenuItem
           as={RouterLink}
           icon={<Translate01 />}
-          to={`/tools/transform/${getSharableEventAddress(event)}?tab=translation`}
+          to={`/tools/transform/${address}?tab=translation`}
         >
           Translate
         </MenuItem>

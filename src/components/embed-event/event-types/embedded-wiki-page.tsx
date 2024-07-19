@@ -18,10 +18,10 @@ import { NostrEvent } from "../../../types/nostr-event";
 import UserLink from "../../user/user-link";
 import { getPageForks, getPageSummary, getPageTitle } from "../../../helpers/nostr/wiki";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import Timestamp from "../../timestamp";
 import GitBranch01 from "../../icons/git-branch-01";
 import UserName from "../../user/user-name";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedWikiPage({ page: page, ...props }: Omit<CardProps, "children"> & { page: NostrEvent }) {
   const { address } = useMemo(() => getPageForks(page), [page]);
@@ -31,7 +31,7 @@ export default function EmbeddedWikiPage({ page: page, ...props }: Omit<CardProp
     <Card as={LinkBox} {...props}>
       <CardHeader p="2" pb="0" display="flex" gap="2" alignItems="center">
         <Heading size="md">
-          <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
+          <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${relayHintService.getSharableEventAddress(page)}`}>
             {getPageTitle(page)}
           </HoverLinkOverlay>
         </Heading>

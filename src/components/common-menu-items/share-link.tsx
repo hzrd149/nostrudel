@@ -1,22 +1,18 @@
+import { useCallback } from "react";
 import { MenuItem, useToast } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../types/nostr-event";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import { ShareIcon } from "../icons";
-import { Signature } from "@noble/secp256k1";
-import { descriptors } from "chart.js/dist/core/core.defaults";
 import useUserMetadata from "../../hooks/use-user-metadata";
-import { useCallback } from "react";
 import { getDisplayName } from "../../helpers/nostr/user-metadata";
-
-let urlShareFailed = false;
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 
 export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
-  const address = getSharableEventAddress(event);
+  const address = useShareableEventAddress(event);
   const metadata = useUserMetadata(event.pubkey);
 
-  const share = useCallback(async () => {
+  const handleClick = useCallback(async () => {
     const data: ShareData = {
       url: "https://njump.me/" + address,
       title: event.tags.find((t) => t[0] === "title")?.[1] || "Nostr note by " + getDisplayName(metadata, event.pubkey),
@@ -40,7 +36,7 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
 
   return (
     address && (
-      <MenuItem onClick={share} icon={<ShareIcon />}>
+      <MenuItem onClick={handleClick} icon={<ShareIcon />}>
         Share Link
       </MenuItem>
     )

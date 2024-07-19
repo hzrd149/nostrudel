@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   Flex,
@@ -22,14 +23,13 @@ import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
-import { useState } from "react";
+import relayHintService from "../../../services/event-relay-hint";
 
 function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; award: NostrEvent }) {
-  const naddr = getSharableEventAddress(badge);
+  const naddr = relayHintService.getSharableEventAddress(badge);
   const modal = useDisclosure();
   const description = getBadgeDescription(badge);
 

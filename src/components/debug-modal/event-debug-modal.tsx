@@ -5,10 +5,7 @@ import {
   ModalContent,
   ModalBody,
   ModalCloseButton,
-  Flex,
-  Button,
   Heading,
-  Text,
   AccordionItem,
   Accordion,
   AccordionPanel,
@@ -18,21 +15,17 @@ import {
   ModalHeader,
   Code,
   AccordionPanelProps,
-  Card,
 } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/event";
+import { getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import useSubject from "../../hooks/use-subject";
-import { getEventRelays } from "../../services/event-relays";
-import { RelayFavicon } from "../relay-favicon";
 import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
+import relayHintService from "../../services/event-relay-hint";
 
 function Section({
   label,
@@ -75,8 +68,6 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
     setLoading(false);
   }, []);
 
-  const eventRelays = useSubject(getEventRelays(getEventUID(event)));
-
   return (
     <Modal size="6xl" {...props}>
       <ModalOverlay />
@@ -88,7 +79,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section label="IDs">
               <RawValue heading="Event Id" value={event.id} />
               <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
-              <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
+              <RawValue heading="NIP-19 Pointer" value={relayHintService.getSharableEventAddress(event)} />
             </Section>
 
             <Section
@@ -114,18 +105,6 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <DebugEventTags event={event} />
               <Heading size="sm">Tags referenced in content</Heading>
               <JsonCode data={getContentTagRefs(event.content, event.tags)} />
-            </Section>
-            <Section label="Relays">
-              <Heading size="sm">Seen on:</Heading>
-              {eventRelays.map((url) => (
-                <Flex gap="2" key={url} alignItems="center">
-                  <RelayFavicon size="sm" relay={url} />
-                  <Text fontWeight="bold">{url}</Text>
-                </Flex>
-              ))}
-              <Button onClick={broadcast} mr="auto" colorScheme="primary" isLoading={loading}>
-                Broadcast
-              </Button>
             </Section>
           </Accordion>
         </ModalBody>

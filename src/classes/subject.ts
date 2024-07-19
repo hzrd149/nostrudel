@@ -1,5 +1,6 @@
 import Observable from "zen-observable";
 import { nanoid } from "nanoid";
+
 import ControlledObservable from "./controlled-observable";
 
 /** An observable that is always open and stores the last value */

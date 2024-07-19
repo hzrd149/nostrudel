@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
+import { Filter } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -12,7 +13,6 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import useParsedStreams from "../../hooks/use-parsed-streams";
-import { NostrRequestFilter } from "../../types/nostr-relay";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -36,7 +36,7 @@ function StreamsPage() {
   );
 
   const { filter, listId } = usePeopleListContext();
-  const query = useMemo<NostrRequestFilter | undefined>(() => {
+  const query = useMemo<Filter | Filter[] | undefined>(() => {
     if (!filter) return undefined;
     return [
       { authors: filter.authors, kinds: [STREAM_KIND] },

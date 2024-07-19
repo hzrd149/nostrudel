@@ -3,10 +3,10 @@ import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
-import { offlineMode } from "../services/offline-mode";
 import Subject, { PersistentSubject } from "./subject";
-import verifyEventMethod from "../services/verify-event";
 import SuperMap from "./super-map";
+import verifyEventMethod from "../services/verify-event";
+import { offlineMode } from "../services/offline-mode";
 import processManager from "../services/process-manager";
 import signingService from "../services/signing";
 import accountService from "../services/account";

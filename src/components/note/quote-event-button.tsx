@@ -2,30 +2,28 @@ import { useContext } from "react";
 import { ButtonProps, IconButton } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { QuoteRepostIcon } from "../icons";
+import { QuoteEventIcon } from "../icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
-import { getSharableEventAddress } from "../../helpers/nip19";
+import relayHintService from "../../services/event-relay-hint";
 
-export type QuoteRepostButtonProps = Omit<ButtonProps, "children" | "onClick"> & {
-  event: NostrEvent;
-};
-
-export default function QuoteRepostButton({
+export default function QuoteEventButton({
   event,
   "aria-label": ariaLabel,
-  title = "Quote repost",
+  title = "Quote Note",
   ...props
-}: QuoteRepostButtonProps) {
+}: Omit<ButtonProps, "children" | "onClick"> & {
+  event: NostrEvent;
+}) {
   const { openModal } = useContext(PostModalContext);
 
   const handleClick = () => {
-    const nevent = getSharableEventAddress(event);
+    const nevent = relayHintService.getSharableEventAddress(event);
     openModal({ cacheFormKey: null, initContent: "\nnostr:" + nevent });
   };
 
   return (
     <IconButton
-      icon={<QuoteRepostIcon />}
+      icon={<QuoteEventIcon />}
       onClick={handleClick}
       aria-label={ariaLabel || title}
       title={title}

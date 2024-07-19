@@ -43,6 +43,7 @@ import LoadingNostrLink from "../loading-nostr-link";
 import EmbeddedRepost from "./event-types/embedded-repost";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import EmbeddedWikiPage from "./event-types/embedded-wiki-page";
+import EmbeddedZapRecept from "./event-types/embedded-zap-receipt";
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -97,6 +98,8 @@ export function EmbedEvent({
         return <EmbeddedRepost repost={event} {...cardProps} />;
       case WIKI_PAGE_KIND:
         return <EmbeddedWikiPage page={event} {...cardProps} />;
+      case kinds.Zap:
+        return <EmbeddedZapRecept zap={event} {...cardProps} />;
     }
 
     return <EmbeddedUnknown event={event} {...cardProps} />;

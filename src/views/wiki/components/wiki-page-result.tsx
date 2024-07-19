@@ -4,13 +4,13 @@ import { NostrEvent, nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../../helpers/nostr/wiki";
 import UserLink from "../../../components/user/user-link";
 import FileSearch01 from "../../../components/icons/file-search-01";
 import GitBranch01 from "../../../components/icons/git-branch-01";
 import UserName from "../../../components/user/user-name";
 import UserAvatar from "../../../components/user/user-avatar";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function WikiPageResult({ page, compare }: { page: NostrEvent; compare?: NostrEvent }) {
   const topic = getPageTopic(page);
@@ -22,7 +22,7 @@ export default function WikiPageResult({ page, compare }: { page: NostrEvent; co
       <Box overflow="hidden">
         <Flex gap="2" wrap="wrap">
           <Heading size="md">
-            <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${getSharableEventAddress(page)}`}>
+            <HoverLinkOverlay as={RouterLink} to={`/wiki/page/${relayHintService.getSharableEventAddress(page)}`}>
               {getPageTitle(page)}
             </HoverLinkOverlay>
           </Heading>

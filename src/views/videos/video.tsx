@@ -28,7 +28,7 @@ import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
 import NoteZapButton from "../../components/note/note-zap-button";
-import QuoteRepostButton from "../../components/note/quote-repost-button";
+import QuoteEventButton from "../../components/note/quote-event-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();
@@ -77,7 +77,7 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
             <UserFollowButton pubkey={video.pubkey} size="sm" />
             <ButtonGroup ml="auto" size="sm" variant="ghost">
               <SimpleBookmarkButton event={video} aria-label="Bookmark video" title="Bookmark video" />
-              <QuoteRepostButton event={video} />
+              <QuoteEventButton event={video} />
             </ButtonGroup>
             <VideoMenu video={video} aria-label="More options" size="sm" />
           </Flex>

@@ -8,11 +8,11 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
   const toast = useToast();
@@ -23,7 +23,7 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
   const { openAddress } = useContext(AppHandlerContext);
 
   const open = () => {
-    const naddr = getSharableEventAddress(article);
+    const naddr = relayHintService.getSharableEventAddress(article);
     if (naddr) openAddress(naddr);
     else toast({ status: "error", description: "Failed to get address" });
   };

@@ -1,9 +1,4 @@
-import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
 import { AbstractRelay, Filter, SubCloser, SubscribeManyParams, Subscription } from "nostr-tools";
-
-import { NostrQuery, NostrRequestFilter } from "../types/nostr-relay";
-import { NostrEvent } from "../types/nostr-event";
-import relayPoolService from "../services/relay-pool";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {
@@ -59,11 +54,11 @@ export function safeRelayUrls(urls: Iterable<string>): string[] {
 }
 
 export function splitNostrFilterByPubkeys(
-  filter: NostrRequestFilter,
+  filter: Filter | Filter[],
   relayPubkeyMap: Record<string, string[]>,
-): Record<string, NostrRequestFilter> {
+): Record<string, Filter | Filter[]> {
   if (Array.isArray(filter)) {
-    const dir: Record<string, NostrQuery[]> = {};
+    const dir: Record<string, Filter[]> = {};
 
     for (const query of filter) {
       const split = splitQueryByPubkeys(query, relayPubkeyMap);
@@ -77,8 +72,8 @@ export function splitNostrFilterByPubkeys(
   } else return splitQueryByPubkeys(filter, relayPubkeyMap);
 }
 
-export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<string, string[]>) {
-  const filtersByRelay: Record<string, NostrQuery> = {};
+export function splitQueryByPubkeys(query: Filter, relayPubkeyMap: Record<string, string[]>) {
+  const filtersByRelay: Record<string, Filter> = {};
 
   const allPubkeys = new Set(Object.values(relayPubkeyMap).flat());
   for (const [relay, pubkeys] of Object.entries(relayPubkeyMap)) {
@@ -142,6 +137,7 @@ export function subscribeMany(relays: string[], filters: Filter[], params: Subsc
 
       let relay: AbstractRelay;
       try {
+        const { default: relayPoolService } = await import("../services/relay-pool");
         relay = relayPoolService.requestRelay(url);
         await relayPoolService.requestConnect(relay);
         // changed from nostr-tools

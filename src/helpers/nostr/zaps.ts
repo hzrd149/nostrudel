@@ -42,6 +42,10 @@ export function isProfileZap(event: NostrEvent) {
   return !isNoteZap(event) && event.tags.some(isPTag);
 }
 
+export function getZapRecipient(event: NostrEvent) {
+  return event.tags.find((t) => t[0] === "p" && t[1])?.[1];
+}
+
 export function totalZaps(zaps: ParsedZap[]) {
   return zaps.reduce((t, zap) => t + (zap.payment.amount || 0), 0);
 }

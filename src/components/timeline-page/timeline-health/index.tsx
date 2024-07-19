@@ -17,7 +17,6 @@ import {
 
 import TimelineLoader from "../../../classes/timeline-loader";
 import useSubject from "../../../hooks/use-subject";
-import { getEventRelays } from "../../../services/event-relays";
 import { NostrEvent } from "../../../types/nostr-event";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note/note-link";
@@ -31,8 +30,8 @@ function EventRow({
   relays,
   ...props
 }: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
-  const sub = useMemo(() => getEventRelays(event.id), [event.id]);
-  const seenRelays = useSubject(sub);
+  // const sub = useMemo(() => getEventRelays(event.id), [event.id]);
+  const seenRelays = true; //useSubject(sub);
   const publish = usePublishEvent();
 
   const ref = useEventIntersectionRef(event);
@@ -65,7 +64,7 @@ function EventRow({
         {broadcasting ? <Spinner size="xs" /> : <BroadcastEventIcon />}
       </Td>
       {relays.map((relay) => (
-        <Td key={relay} title={relay} p="2" backgroundColor={seenRelays.includes(relay) ? yes : no}>
+        <Td key={relay} title={relay} p="2" backgroundColor={/*seenRelays.includes(relay)*/ true ? yes : no}>
           <RelayFavicon relay={relay} size="2xs" />
         </Td>
       ))}

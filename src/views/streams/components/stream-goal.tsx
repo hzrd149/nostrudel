@@ -4,22 +4,22 @@ import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link } from "@cha
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import { getGoalName } from "../../../helpers/nostr/goal";
 import GoalProgress from "../../goals/components/goal-progress";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import GoalTopZappers from "../../goals/components/goal-top-zappers";
 import GoalZapButton from "../../goals/components/goal-zap-button";
 import useStreamGoal from "../../../hooks/use-stream-goal";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function StreamGoal({ stream, ...props }: Omit<CardProps, "children"> & { stream: ParsedStream }) {
   const goal = useStreamGoal(stream);
 
   if (!goal) return null;
-  const nevent = getSharableEventAddress(goal);
+  const address = relayHintService.getSharableEventAddress(goal);
 
   return (
     <Card direction="column" gap="1" {...props}>
       <CardHeader px="2" pt="2" pb="0">
         <Heading size="md">
-          <Link as={RouterLink} to={`/goals/${nevent}`}>
+          <Link as={RouterLink} to={`/goals/${address}`}>
             {getGoalName(goal)}
           </Link>
         </Heading>

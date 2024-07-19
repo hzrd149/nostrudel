@@ -24,12 +24,14 @@ import MarkdownContent from "./components/markdown";
 import { WIKI_RELAYS } from "../../const";
 import UserName from "../../components/user/user-name";
 import WikiPageMenu from "./components/wiki-page-menu";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import { ExternalLinkIcon } from "../../components/icons";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 
 function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent }) {
   const vertical = useBreakpointValue({ base: true, lg: false }) ?? false;
   const identical = base.content.trim() === diff.content.trim();
+  const baseAddress = useShareableEventAddress(base);
+  const diffAddress = useShareableEventAddress(diff);
 
   return (
     <VerticalPageLayout>
@@ -40,7 +42,7 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
           <ButtonGroup float="right" size="sm">
             <IconButton
               as={RouterLink}
-              to={`/wiki/page/${getSharableEventAddress(base)}`}
+              to={`/wiki/page/${baseAddress}`}
               icon={<ExternalLinkIcon />}
               aria-label="Open Page"
             />
@@ -57,7 +59,7 @@ function WikiComparePage({ base, diff }: { base: NostrEvent; diff: NostrEvent })
           <ButtonGroup float="right" size="sm">
             <IconButton
               as={RouterLink}
-              to={`/wiki/page/${getSharableEventAddress(diff)}`}
+              to={`/wiki/page/${diffAddress}`}
               icon={<ExternalLinkIcon />}
               aria-label="Open Page"
             />

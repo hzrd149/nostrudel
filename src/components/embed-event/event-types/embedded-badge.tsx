@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Card,
@@ -14,12 +15,12 @@ import {
 
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedBadge({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
-  const naddr = getSharableEventAddress(badge);
+  const naddr = useMemo(() => relayHintService.getSharableEventAddress(badge), [badge]);
   const image = getBadgeImage(badge);
 
   return (

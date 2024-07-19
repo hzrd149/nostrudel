@@ -23,10 +23,9 @@ import { Event, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import createDefer, { Deferred } from "../../classes/deferred";
-import useEventRelays from "../../hooks/use-event-relays";
 import { RelayFavicon } from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
-import { getEventCoordinate, getEventUID, isReplaceable } from "../../helpers/nostr/event";
+import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import { Tag } from "../../types/nostr-event";
 import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";
@@ -53,8 +52,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const [defer, setDefer] = useState<Deferred<void>>();
   const [reason, setReason] = useState("");
 
-  const eventRelays = useEventRelays(event && getEventUID(event));
-  const writeRelays = useWriteRelays(eventRelays);
+  const writeRelays = useWriteRelays();
 
   const deleteEvent = useCallback((event: Event) => {
     setEvent(event);

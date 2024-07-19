@@ -13,6 +13,7 @@ import {
   LinearScale,
   CategoryScale,
 } from "chart.js";
+import { Filter } from "nostr-tools";
 import _throttle from "lodash.throttle";
 
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -22,7 +23,6 @@ import { groupByTime } from "../../../helpers/notification";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import EventStore from "../../../classes/event-store";
 import { getSortedKinds, sortByDate } from "../../../helpers/nostr/event";
-import { NostrQuery } from "../../../types/nostr-relay";
 import relayPoolService from "../../../services/relay-pool";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../components/charts/event-kinds-table";
@@ -107,7 +107,7 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const [loading, setLoading] = useState(false);
   const loadMore = useCallback(() => {
     setLoading(true);
-    const query: NostrQuery = { limit: 500 };
+    const query: Filter = { limit: 500 };
     const last = store.getLastEvent();
     if (last) query.until = last.created_at;
 

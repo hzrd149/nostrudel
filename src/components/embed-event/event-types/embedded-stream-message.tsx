@@ -1,4 +1,4 @@
-import { Box, Card, CardProps, Divider, Flex, Link, Text } from "@chakra-ui/react";
+import { Card, CardProps, Divider, Flex, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent, isATag } from "../../../types/nostr-event";
@@ -8,7 +8,7 @@ import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-m
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { getSharableEventAddress } from "../../../helpers/nip19";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedStreamMessage({
   message,
@@ -25,7 +25,7 @@ export default function EmbeddedStreamMessage({
           <Flex gap="2" alignItems="center">
             <Link
               as={RouterLink}
-              to={`/streams/${getSharableEventAddress(streamEvent) ?? ""}`}
+              to={`/streams/${relayHintService.getSharableEventAddress(streamEvent) ?? ""}`}
               fontWeight="bold"
               fontSize="lg"
             >

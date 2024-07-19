@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
@@ -8,7 +8,6 @@ import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/event";
 import useUserLists from "../../hooks/use-user-lists";
 import NewListModal from "./components/new-list-modal";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import {
   BOOKMARK_LIST_KIND,
   COMMUNITIES_LIST_KIND,
@@ -19,6 +18,7 @@ import {
 } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import relayHintService from "../../services/event-relay-hint";
 
 function ListsHomePage() {
   const account = useCurrentAccount()!;
@@ -102,7 +102,7 @@ function ListsHomePage() {
         <NewListModal
           isOpen
           onClose={newList.onClose}
-          onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}
+          onCreated={(list) => navigate(`/lists/${relayHintService.getSharableEventAddress(list)}`)}
         />
       )}
     </VerticalPageLayout>

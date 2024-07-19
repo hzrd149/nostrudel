@@ -1,4 +1,5 @@
 import { nip04, getPublicKey, finalizeEvent } from "nostr-tools";
+import { hexToBytes } from "@noble/hashes/utils";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
@@ -6,7 +7,6 @@ import db from "./db";
 import serialPortService from "./serial-port";
 import amberSignerService from "./amber-signer";
 import nostrConnectService from "./nostr-connect";
-import { hexToBytes } from "@noble/hashes/utils";
 import { alwaysVerify } from "./verify-event";
 
 const decryptedKeys = new Map<string, string | Promise<string>>();

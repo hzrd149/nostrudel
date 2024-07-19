@@ -1,5 +1,5 @@
-import { memo, useEffect, useMemo } from "react";
-import { Button, ButtonGroup, Flex, IconButton, Input, useDisclosure } from "@chakra-ui/react";
+import { memo, useMemo } from "react";
+import { Button, ButtonGroup, Flex, IconButton, Input } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -15,6 +15,7 @@ import NotificationItem from "./components/notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../components/icons";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import { NotificationType, typeSymbol } from "../../classes/notifications";
 
 const DATE_FORMAT = "YYYY-MM-DD";
@@ -94,15 +95,11 @@ const NotificationsTimeline = memo(
 function NotificationsPage() {
   const { timeline } = useNotifications();
 
-  const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-replies") !== "false" });
-  const showMentions = useDisclosure({
-    defaultIsOpen: localStorage.getItem("notifications-show-mentions") !== "false",
-  });
-  const showZaps = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-zaps") !== "false" });
-  const showReposts = useDisclosure({ defaultIsOpen: localStorage.getItem("notifications-show-reposts") !== "false" });
-  const showReactions = useDisclosure({
-    defaultIsOpen: localStorage.getItem("notifications-show-reactions") !== "false",
-  });
+  const showReplies = useLocalStorageDisclosure("notifications-show-replies");
+  const showMentions = useLocalStorageDisclosure("notifications-show-mentions");
+  const showZaps = useLocalStorageDisclosure("notifications-show-zaps");
+  const showReposts = useLocalStorageDisclosure("notifications-show-reposts");
+  const showReactions = useLocalStorageDisclosure("notifications-show-reactions");
 
   const today = dayjs().format(DATE_FORMAT);
   const { value: day, setValue: setDay } = useRouteSearchValue(
@@ -141,15 +138,6 @@ function NotificationsPage() {
         .format(DATE_FORMAT);
     });
   };
-
-  // save toggles to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem("notifications-show-replies", String(showReplies.isOpen));
-    localStorage.setItem("notifications-show-mentions", String(showMentions.isOpen));
-    localStorage.setItem("notifications-show-zaps", String(showZaps.isOpen));
-    localStorage.setItem("notifications-show-reposts", String(showReposts.isOpen));
-    localStorage.setItem("notifications-show-reactions", String(showReactions.isOpen));
-  }, [showReplies.isOpen, showMentions.isOpen, showZaps.isOpen, showReposts.isOpen, showReactions.isOpen]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
