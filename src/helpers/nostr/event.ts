@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
-import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/lib/types/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";
@@ -62,6 +62,19 @@ export function isRepost(event: NostrEvent | DraftNostrEvent) {
   // @ts-expect-error
   event[isRepostSymbol] = isRepost;
   return isRepost;
+}
+
+export function getContentPointers(content: string) {
+  const pointers: DecodeResult[] = [];
+
+  const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
+  for (const [_, _prefix, link] of linkMatches) {
+    const decoded = safeDecode(link);
+    if (!decoded) continue;
+    pointers.push(decoded);
+  }
+
+  return pointers;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useCallback, useState } from "react";
+import { PropsWithChildren, ReactNode, useMemo } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -19,10 +19,9 @@ import {
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
+import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
-import { usePublishEvent } from "../../providers/global/publish-provider";
 import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
 import relayHintService from "../../services/event-relay-hint";
@@ -60,13 +59,7 @@ function JsonCode({ data }: { data: any }) {
 }
 
 export default function EventDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
-  const publish = usePublishEvent();
-  const [loading, setLoading] = useState(false);
-  const broadcast = useCallback(async () => {
-    setLoading(true);
-    await publish("Broadcast", event);
-    setLoading(false);
-  }, []);
+  const contentRefs = useMemo(() => getContentPointers(event.content), [event]);
 
   return (
     <Modal size="6xl" {...props}>
@@ -90,6 +83,18 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
                 {event.content}
               </Code>
+
+              <Heading size="md" px="2">
+                embeds
+              </Heading>
+              {contentRefs.map((pointer, i) => (
+                <>
+                  <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
+                    {pointer.type + "\n"}
+                    {JSON.stringify(pointer.data, null, 2)}
+                  </Code>
+                </>
+              ))}
             </Section>
             <Section
               label="JSON"
