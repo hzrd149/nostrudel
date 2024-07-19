@@ -80,7 +80,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>((
 
   return (
     <NotificationIconEntry ref={ref} icon={<Heart boxSize={8} color="red.400" />}>
-      <Flex gap="2" alignItems="center">
+      <Flex gap="2" alignItems="center" pl="2">
         <AvatarGroup size="sm">
           <UserAvatarLink pubkey={event.pubkey} />
         </AvatarGroup>
@@ -123,7 +123,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent }>(({ eve
 
   return (
     <NotificationIconEntry ref={ref} icon={<LightningIcon boxSize={8} color="yellow.400" />}>
-      <Flex gap="2" alignItems="center">
+      <Flex gap="2" alignItems="center" pl="2">
         <AvatarGroup size="sm">
           <UserAvatarLink pubkey={zap.request.pubkey} />
         </AvatarGroup>
