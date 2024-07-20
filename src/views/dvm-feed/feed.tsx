@@ -33,7 +33,7 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import { CodeIcon } from "../../components/icons";
 import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import DVMParams from "./components/dvm-params";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";

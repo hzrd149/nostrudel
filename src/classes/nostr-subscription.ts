@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
-import { Filter, NostrEvent, Relay, Subscription } from "nostr-tools";
+import { Filter, NostrEvent, Relay } from "nostr-tools";
+import { Subscription } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../services/relay-pool";
 import ControlledObservable from "./controlled-observable";

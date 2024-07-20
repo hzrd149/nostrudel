@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import type { DecodeResult } from "nostr-tools/lib/types/nip19";
+import type { DecodeResult } from "nostr-tools/nip19";
 import { CardProps, Spinner } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 

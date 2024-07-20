@@ -1,7 +1,7 @@
 import { Card, CardProps, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
 import { Link as RouterLink, To } from "react-router-dom";
 import { useMemo } from "react";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";

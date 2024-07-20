@@ -1,6 +1,6 @@
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { EventPointer } from "nostr-tools/lib/types/nip19";
+import { EventPointer } from "nostr-tools/nip19";
 import {
   Box,
   Card,

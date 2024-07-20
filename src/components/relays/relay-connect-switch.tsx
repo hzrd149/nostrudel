@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from "react";
 import { Switch, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
-import { AbstractRelay } from "nostr-tools";
+import { type AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../../services/relay-pool";
 import useSubject from "../../hooks/use-subject";

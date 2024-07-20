@@ -1,6 +1,6 @@
 import { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { SimpleRelay } from "nostr-idb";
-import { AbstractRelay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 let lastId = 0;
 export default class Process {

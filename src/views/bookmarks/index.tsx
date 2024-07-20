@@ -1,4 +1,4 @@
-import { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { Button, ButtonGroup, Flex, Heading, SkeletonText, Spinner } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 

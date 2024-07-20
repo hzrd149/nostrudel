@@ -1,5 +1,6 @@
-import { AbstractRelay, kinds } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";

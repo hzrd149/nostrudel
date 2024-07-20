@@ -1,7 +1,7 @@
-import { nip04, getPublicKey, finalizeEvent } from "nostr-tools";
+import { nip04, getPublicKey, finalizeEvent, EventTemplate } from "nostr-tools";
 import { hexToBytes } from "@noble/hashes/utils";
 
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
+import { NostrEvent } from "../types/nostr-event";
 import { Account } from "./account";
 import db from "./db";
 import serialPortService from "./serial-port";
@@ -96,7 +96,7 @@ class SigningService {
     return await p;
   }
 
-  async requestSignature(draft: DraftNostrEvent, account: Account) {
+  async requestSignature(draft: EventTemplate, account: Account) {
     const checkSig = (signed: NostrEvent) => {
       if (signed.pubkey !== account.pubkey) throw new Error("Signed with the wrong pubkey");
     };

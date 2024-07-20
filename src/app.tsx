@@ -76,6 +76,7 @@ import MailboxesView from "./views/relays/mailboxes";
 import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
+import WebRtcRelaysView from "./views/relays/webrtc";
 import UserDMsTab from "./views/user/dms";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
@@ -291,6 +292,7 @@ const router = createHashRouter([
           { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
+          { path: "webrtc", element: <WebRtcRelaysView /> },
           { path: "sets", element: <BrowseRelaySetsView /> },
           { path: ":id", element: <RelaySetView /> },
         ],

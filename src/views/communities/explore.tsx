@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../../components/icons";
 import { parseCoordinate } from "../../helpers/nostr/event";
 import UserAvatarLink from "../../components/user/user-avatar-link";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 
 export function useUsersJoinedCommunitiesLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);

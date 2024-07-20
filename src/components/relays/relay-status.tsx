@@ -1,8 +1,8 @@
 import { Badge, useForceUpdate } from "@chakra-ui/react";
 import { useInterval } from "react-use";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../../services/relay-pool";
-import { AbstractRelay } from "nostr-tools";
 import useSubject from "../../hooks/use-subject";
 
 const getStatusText = (relay: AbstractRelay, connecting = false) => {

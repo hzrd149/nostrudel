@@ -1,4 +1,5 @@
-import { AbstractRelay, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import { WIKI_PAGE_KIND } from "../helpers/nostr/wiki";
 import { logger } from "../helpers/debug";

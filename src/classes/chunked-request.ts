@@ -1,5 +1,6 @@
 import { Debugger } from "debug";
-import { AbstractRelay, Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import { nanoid } from "nanoid";

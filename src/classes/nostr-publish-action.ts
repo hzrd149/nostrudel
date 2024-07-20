@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
-import { NostrEvent, AbstractRelay } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";

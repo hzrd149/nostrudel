@@ -1,4 +1,5 @@
-import { AbstractRelay, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 
 import SuperMap from "../classes/super-map";

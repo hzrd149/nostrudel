@@ -1,5 +1,5 @@
 import { nip19 } from "nostr-tools";
-import type { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
+import type { AddressPointer, EventPointer } from "nostr-tools/nip19";
 
 import { NostrEvent, isDTag } from "../types/nostr-event";
 import relayScoreboardService from "./relay-scoreboard";

@@ -12,6 +12,7 @@ import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
 import Image01 from "../../components/icons/image-01";
+import Server05 from "../../components/icons/server-05";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -69,6 +70,15 @@ export default function RelaysView() {
             </Button>
           </>
         )}
+        {/* <Button
+          variant="outline"
+          as={RouterLink}
+          to="/relays/webrtc"
+          leftIcon={<Server05 boxSize={6} />}
+          colorScheme={location.pathname.startsWith("/relays/webrtc") ? "primary" : undefined}
+        >
+          WebRTC Relays
+        </Button> */}
         {nip05?.exists && (
           <Button
             variant="outline"

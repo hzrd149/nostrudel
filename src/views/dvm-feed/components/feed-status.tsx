@@ -26,7 +26,7 @@ import { DraftNostrEvent } from "../../../types/nostr-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 

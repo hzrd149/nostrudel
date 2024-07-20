@@ -1,4 +1,5 @@
-import { NostrEvent, AbstractRelay } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
 

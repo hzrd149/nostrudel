@@ -18,8 +18,8 @@ import {
   useInterval,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { AbstractRelay } from "nostr-tools";
 import { useLocalStorage } from "react-use";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../../../services/relay-pool";
 import { RelayFavicon } from "../../../components/relay-favicon";

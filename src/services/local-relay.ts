@@ -1,5 +1,6 @@
 import { CacheRelay, openDB } from "nostr-idb";
-import { AbstractRelay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
+
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";

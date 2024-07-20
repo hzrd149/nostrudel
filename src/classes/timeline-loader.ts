@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Debugger } from "debug";
-import { AbstractRelay, Filter, NostrEvent } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 
 import MultiSubscription from "./multi-subscription";

@@ -15,7 +15,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AbstractRelay, NostrEvent, Subscription } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
 import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
@@ -93,7 +94,7 @@ export default function EventConsoleView() {
         if (!relay || relay.url !== url.toString()) {
           r = await relayPoolService.requestRelay(url);
           await relayPoolService.requestConnect(r);
-          setRelay(r);
+          setRelay(r as AbstractRelay);
         } else r = relay;
       } else {
         if (relay) setRelay(null);

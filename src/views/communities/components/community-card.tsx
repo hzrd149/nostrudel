@@ -23,7 +23,7 @@ import useCountCommunityMembers from "../../../hooks/use-count-community-members
 import { readablizeSats } from "../../../helpers/bolt11";
 import User01 from "../../../components/icons/user-01";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {

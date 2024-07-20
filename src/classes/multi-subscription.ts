@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid";
+import { Filter } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import { NostrEvent } from "../types/nostr-event";
 import relayPoolService from "../services/relay-pool";
 import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
-import { AbstractRelay, Filter } from "nostr-tools";
 import { offlineMode } from "../services/offline-mode";
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";

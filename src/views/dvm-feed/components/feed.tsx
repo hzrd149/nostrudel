@@ -1,6 +1,6 @@
 import { ChainedDVMJob, getEventIdsFromJobs } from "../../../helpers/nostr/dvm";
 import FeedStatus from "./feed-status";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 import useSingleEvents from "../../../hooks/use-single-events";
 import TimelineItem from "../../../components/timeline-page/generic-note-timeline/timeline-item";
 

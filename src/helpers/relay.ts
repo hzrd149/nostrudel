@@ -1,4 +1,6 @@
-import { AbstractRelay, Filter, SubCloser, SubscribeManyParams, Subscription } from "nostr-tools";
+import { Filter } from "nostr-tools";
+import { SubCloser, SubscribeManyParams } from "nostr-tools/abstract-pool";
+import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {

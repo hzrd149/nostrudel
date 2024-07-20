@@ -1,14 +1,6 @@
 import { useCallback, useState } from "react";
-import {
-  Button,
-  ButtonProps,
-  IconButton,
-  IconButtonProps,
-  useForceUpdate,
-  useInterval,
-  useToast,
-} from "@chakra-ui/react";
-import { AbstractRelay } from "nostr-tools";
+import { IconButton, IconButtonProps, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
+import { type AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../../services/relay-pool";
 import { useSigningContext } from "../../providers/global/signing-provider";

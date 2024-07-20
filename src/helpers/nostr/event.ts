@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
-import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
 import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";

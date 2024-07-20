@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { kinds, nip19 } from "nostr-tools";
-import type { DecodeResult } from "nostr-tools/lib/types/nip19";
+import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
 import UserLink from "../../../components/user/user-link";

@@ -5,7 +5,7 @@ import { Box, BoxProps } from "@chakra-ui/react";
 
 import useUserMetadata from "../../../hooks/use-user-metadata";
 
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../hooks/use-dvm-metadata";
 
 type DVMAvatarProps = {

@@ -1,4 +1,5 @@
 import _throttle from "lodash.throttle";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
@@ -7,7 +8,6 @@ import { logger } from "../helpers/debug";
 import Subject from "../classes/subject";
 import relayPoolService from "./relay-pool";
 import Process from "../classes/process";
-import { AbstractRelay } from "nostr-tools";
 import processManager from "./process-manager";
 import Code02 from "../components/icons/code-02";
 import BatchEventLoader from "../classes/batch-event-loader";

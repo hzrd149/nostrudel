@@ -1,4 +1,4 @@
-import { AbstractRelay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import Process from "../classes/process";
 import relayPoolService from "./relay-pool";
 

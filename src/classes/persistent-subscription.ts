@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
-import { AbstractRelay, Filter, Relay, Subscription, SubscriptionParams } from "nostr-tools";
+import { Filter, Relay } from "nostr-tools";
+import { AbstractRelay, Subscription, SubscriptionParams } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../services/relay-pool";
 import Process from "./process";

@@ -1,4 +1,4 @@
-import { AbstractRelay } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
