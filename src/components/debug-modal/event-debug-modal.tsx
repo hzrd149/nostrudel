@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useMemo } from "react";
+import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -15,6 +15,7 @@ import {
   ModalHeader,
   Code,
   AccordionPanelProps,
+  Button,
 } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
@@ -25,6 +26,7 @@ import RawValue from "./raw-value";
 import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
 import relayHintService from "../../services/event-relay-hint";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function Section({
   label,
@@ -60,6 +62,13 @@ function JsonCode({ data }: { data: any }) {
 
 export default function EventDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
   const contentRefs = useMemo(() => getContentPointers(event.content), [event]);
+  const publish = usePublishEvent();
+  const [loading, setLoading] = useState(false);
+  const broadcast = useCallback(async () => {
+    setLoading(true);
+    await publish("Broadcast", event);
+    setLoading(false);
+  }, []);
 
   return (
     <Modal size="6xl" {...props}>
@@ -84,17 +93,21 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
                 {event.content}
               </Code>
 
-              <Heading size="md" px="2">
-                embeds
-              </Heading>
-              {contentRefs.map((pointer, i) => (
+              {contentRefs.length > 0 && (
                 <>
-                  <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
-                    {pointer.type + "\n"}
-                    {JSON.stringify(pointer.data, null, 2)}
-                  </Code>
+                  <Heading size="md" px="2">
+                    embeds
+                  </Heading>
+                  {contentRefs.map((pointer, i) => (
+                    <>
+                      <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
+                        {pointer.type + "\n"}
+                        {JSON.stringify(pointer.data, null, 2)}
+                      </Code>
+                    </>
+                  ))}
                 </>
-              ))}
+              )}
             </Section>
             <Section
               label="JSON"
@@ -110,6 +123,11 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <DebugEventTags event={event} />
               <Heading size="sm">Tags referenced in content</Heading>
               <JsonCode data={getContentTagRefs(event.content, event.tags)} />
+            </Section>
+            <Section label="Relays">
+              <Button onClick={broadcast} mr="auto" colorScheme="primary" isLoading={loading}>
+                Broadcast
+              </Button>
             </Section>
           </Accordion>
         </ModalBody>

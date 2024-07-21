@@ -28,7 +28,7 @@ export default function DebugModalProvider({ children }: PropsWithChildren) {
   );
   const close = useCallback(() => {
     setEvent(undefined);
-    router.navigate(marker.index.current ?? -1);
+    if (marker.index.current) router.navigate(marker.index.current);
     marker.reset();
   }, [marker.reset, marker.index, router.navigate]);
 
