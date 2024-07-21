@@ -1,5 +1,5 @@
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -13,6 +13,7 @@ import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
 import Image01 from "../../components/icons/image-01";
 import Server05 from "../../components/icons/server-05";
+import { Suspense } from "react";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -125,7 +126,9 @@ export default function RelaysView() {
       return (
         <Flex gap="2" minH="100vh" overflow="hidden">
           {nav}
-          <Outlet />
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
         </Flex>
       );
   };

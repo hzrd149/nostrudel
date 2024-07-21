@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ButtonGroup, IconButton, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { TrashIcon } from "../icons";
 
@@ -9,6 +9,7 @@ export default function EventKindsTable({
   kinds: Record<string, number>;
   deleteKind?: (kind: string) => Promise<void>;
 }) {
+  const [deleting, setDeleting] = useState<string>();
   const sorted = useMemo(
     () =>
       Object.entries(kinds)
@@ -24,7 +25,7 @@ export default function EventKindsTable({
           <Tr>
             <Th isNumeric>Kind</Th>
             <Th isNumeric>Count</Th>
-            {deleteKind && <Th></Th>}
+            {deleteKind && <Th w="4"></Th>}
           </Tr>
         </Thead>
         <Tbody>
@@ -36,11 +37,15 @@ export default function EventKindsTable({
                 <Td isNumeric>
                   <ButtonGroup size="xs">
                     <IconButton
+                      isLoading={deleting === kind}
                       icon={<TrashIcon />}
                       aria-label="Delete kind"
                       colorScheme="red"
                       variant="ghost"
-                      onClick={() => deleteKind(kind)}
+                      onClick={() => {
+                        setDeleting(kind);
+                        deleteKind(kind).finally(() => setDeleting(undefined));
+                      }}
                     />
                   </ButtonGroup>
                 </Td>

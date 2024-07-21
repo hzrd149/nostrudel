@@ -1,5 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  ButtonGroup,
+  Card,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Text,
+} from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { localRelay } from "../../../../services/local-relay";
@@ -8,6 +21,8 @@ import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-ch
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
+import useSubject from "../../../../hooks/use-subject";
+import localSettings from "../../../../services/local-settings";
 
 export default function WasmDatabasePage() {
   const relay = localRelay;
@@ -16,6 +31,7 @@ export default function WasmDatabasePage() {
   if (!worker) return null;
 
   const [summary, setSummary] = useState<Record<string, number>>();
+  const persistForDays = useSubject(localSettings.wasmPersistForDays);
 
   const total = summary ? Object.values(summary).reduce((t, v) => t + v, 0) : undefined;
 
@@ -50,6 +66,17 @@ export default function WasmDatabasePage() {
     return worker.query(["REQ", "export", {}]);
   }, [worker]);
 
+  const deleteKind = useCallback(
+    async (kind: string) => {
+      const k = parseInt(kind);
+      if (confirm(`Are you sure you want to delete all kind ${k} events?`)) {
+        await worker.delete(["REQ", "delete-" + k, { kinds: [k] }]);
+        refresh();
+      }
+    },
+    [worker, refresh],
+  );
+
   useEffect(() => {
     refresh();
   }, []);
@@ -62,6 +89,25 @@ export default function WasmDatabasePage() {
         <ImportEventsButton onLoad={importEvents} />
         <ExportEventsButton getEvents={exportEvents} />
       </ButtonGroup>
+
+      <FormControl>
+        <FormLabel>Remove events older than X days</FormLabel>
+        <NumberInput
+          maxW="xs"
+          value={persistForDays ?? undefined}
+          onChange={(s, v) => {
+            if (Number.isFinite(v)) localSettings.wasmPersistForDays.next(v);
+            else localSettings.wasmPersistForDays.clear();
+          }}
+          step={1000}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </FormControl>
       <Flex gap="2" wrap="wrap" alignItems="flex-start" w="full">
         {summary && (
           <>
@@ -70,7 +116,7 @@ export default function WasmDatabasePage() {
               <EventKindsPieChart kinds={summary} />
             </Card>
             <Card p="2" minW="sm" maxW="md" flex={1}>
-              <EventKindsTable kinds={summary} />
+              <EventKindsTable kinds={summary} deleteKind={deleteKind} />
             </Card>
           </>
         )}

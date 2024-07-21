@@ -1,15 +1,32 @@
 import { useState } from "react";
 import { addEvents, countEvents, countEventsByKind, getEventUID, updateUsed } from "nostr-idb";
-import { Button, ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Text,
+} from "@chakra-ui/react";
 import { useAsync } from "react-use";
 import { NostrEvent } from "nostr-tools";
 
-import { localDatabase, localRelay } from "../../../../services/local-relay";
+import { localDatabase } from "../../../../services/local-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
 import { clearCacheData, deleteDatabase } from "../../../../services/db";
+import useSubject from "../../../../hooks/use-subject";
+import localSettings from "../../../../services/local-settings";
 
 async function importEvents(events: NostrEvent[]) {
   await addEvents(localDatabase, events);
@@ -25,6 +42,8 @@ async function exportEvents() {
 export default function InternalDatabasePage() {
   const { value: count } = useAsync(async () => await countEvents(localDatabase), []);
   const { value: kinds } = useAsync(async () => await countEventsByKind(localDatabase), []);
+
+  const maxEvents = useSubject(localSettings.idbMaxEvents);
 
   const [clearing, setClearing] = useState(false);
   const handleClearData = async () => {
@@ -55,6 +74,24 @@ export default function InternalDatabasePage() {
           Delete database
         </Button>
       </ButtonGroup>
+      <FormControl>
+        <FormLabel>Maximum number of events</FormLabel>
+        <NumberInput
+          maxW="xs"
+          value={maxEvents}
+          onChange={(s, v) => {
+            if (Number.isFinite(v)) localSettings.idbMaxEvents.next(v);
+            else localSettings.idbMaxEvents.clear();
+          }}
+          step={1000}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </FormControl>
       <Flex gap="2" wrap="wrap" alignItems="flex-start" w="full">
         {kinds && (
           <>
