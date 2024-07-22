@@ -124,7 +124,7 @@ export function TimelineNote({
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
-            <ZapBubbles event={event} />
+            <ZapBubbles event={event} w="full" />
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
               <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>
