@@ -16,6 +16,10 @@ fi
 if [ -n "$REQUEST_PROXY" ]; then
   REQUEST_PROXY_URL="$REQUEST_PROXY"
 
+  if [ "$REQUEST_PROXY" = "true" ]; then
+    REQUEST_PROXY_URL="127.0.0.1:8080"
+  fi
+
   echo "Request proxy set to $REQUEST_PROXY"
   sed -i 's/REQUEST_PROXY = ""/REQUEST_PROXY = "\/request-proxy"/g' /usr/share/nginx/html/index.html
   PROXY_PASS_BLOCK="$PROXY_PASS_BLOCK
@@ -119,6 +123,11 @@ echo "$NGINX_CONF" > $CONF_FILE
 _term() {
   echo "Caught SIGTERM signal!"
 
+  # stop node server
+  if [ "$REQUEST_PROXY" = "true" ]; then
+    kill -SIGTERM "$node_process" 2>/dev/null
+  fi
+
   # stop tor if started
   if [ "$TOR_PROXY" = "true" ]; then
     kill -SIGTERM "$tor_process" 2>/dev/null
@@ -127,6 +136,12 @@ _term() {
   # stop nginx
   kill -SIGTERM "$nginx_process" 2>/dev/null
 }
+
+if [ "$REQUEST_PROXY" = "true" ]; then
+  echo "Starting local request proxy"
+  node server/index.js &
+  node_process=$!
+fi
 
 nginx -g 'daemon off;' &
 nginx_process=$!

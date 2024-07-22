@@ -8,10 +8,10 @@ services:
     image: purplei2p/i2pd:release-2.51.0
   tor-proxy:
     image: dockage/tor-privoxy:latest
-  # cors:
-  #   image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5
-  #   environment:
-  #     CORSANYWHERE_REQUIRE_HEADERS: "host"
+  cors:
+    image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5
+    environment:
+      CORSANYWHERE_REQUIRE_HEADERS: "host"
   imageproxy:
     image: ghcr.io/willnorris/imageproxy:v0.11.2
   relay:
@@ -31,6 +31,6 @@ services:
       IMAGE_PROXY: imageproxy:8080
       TOR_PROXY: tor-proxy:9050
       I2P_PROXY: i2p-proxy:4444
-      REQUEST_PROXY: "true"
+      REQUEST_PROXY: cors:8080
     ports:
       - 8080:80

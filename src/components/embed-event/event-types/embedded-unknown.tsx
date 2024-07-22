@@ -23,7 +23,7 @@ import { AppHandlerContext } from "../../../providers/route/app-handler-provider
 import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const address = useMemo(()=> relayHintService.getSharableEventAddress(event), [event])
+  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
   const { openAddress } = useContext(AppHandlerContext);
 
   const alt = event.tags.find((t) => t[0] === "alt")?.[1];

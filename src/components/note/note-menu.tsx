@@ -22,7 +22,7 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
   const translationsModal = useDisclosure();
   const publish = usePublishEvent();
 
-  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event])
+  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
 
   const broadcast = useCallback(async () => {
     await publish("Broadcast", event);
@@ -37,18 +37,10 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
         <MuteUserMenuItem event={event} />
         <DeleteEventMenuItem event={event} />
 
-        <MenuItem
-          as={RouterLink}
-          icon={<Recording02 />}
-          to={`/tools/transform/${address}?tab=tts`}
-        >
+        <MenuItem as={RouterLink} icon={<Recording02 />} to={`/tools/transform/${address}?tab=tts`}>
           Text to speech
         </MenuItem>
-        <MenuItem
-          as={RouterLink}
-          icon={<Translate01 />}
-          to={`/tools/transform/${address}?tab=translation`}
-        >
+        <MenuItem as={RouterLink} icon={<Translate01 />} to={`/tools/transform/${address}?tab=translation`}>
           Translate
         </MenuItem>
 
