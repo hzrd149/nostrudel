@@ -33,6 +33,7 @@ import {
   ExternalLinkIcon,
   KeyIcon,
   LightningIcon,
+  VerifiedIcon,
 } from "../../../components/icons";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
@@ -51,6 +52,7 @@ import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
+import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
 
 function buildDescriptionContent(description: string) {
   let content: EmbedableContent = [description.trim()];
@@ -196,7 +198,7 @@ export default function UserAboutTab() {
 
         {metadata?.lud16 && (
           <Flex gap="2">
-            <LightningIcon />
+            <LightningIcon boxSize="1.2em" />
             <Link href={getLudEndpoint(metadata.lud16)} isExternal>
               {metadata.lud16}
             </Link>
@@ -205,7 +207,7 @@ export default function UserAboutTab() {
         {nip05URL && (
           <Box>
             <Flex gap="2">
-              <AtIcon />
+              <VerifiedIcon boxSize="1.2em" />
               <Link href={nip05URL} isExternal>
                 <UserDnsIdentity pubkey={pubkey} />
               </Link>
@@ -215,7 +217,7 @@ export default function UserAboutTab() {
         )}
         {metadata?.website && (
           <Flex gap="2">
-            <ExternalLinkIcon />
+            <ExternalLinkIcon boxSize="1.2em" />
             <Link href={metadata.website} target="_blank" color="blue.500" isExternal>
               {metadata.website}
             </Link>
@@ -223,7 +225,7 @@ export default function UserAboutTab() {
         )}
         {npub && (
           <Flex gap="2">
-            <KeyIcon />
+            <KeyIcon boxSize="1.2em" />
             <Text>{truncatedId(npub, 10)}</Text>
             <CopyIconButton value={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
             <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
