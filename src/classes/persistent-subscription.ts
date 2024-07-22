@@ -6,6 +6,7 @@ import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import FilterFunnel01 from "../components/icons/filter-funnel-01";
 import processManager from "../services/process-manager";
+import { isFilterEqual } from "../helpers/nostr/filter";
 
 export default class PersistentSubscription {
   id: string;
@@ -73,7 +74,7 @@ export default class PersistentSubscription {
           this.params.onclose?.(reason);
         },
       });
-    } else {
+    } else if (isFilterEqual(this.subscription.filters, this.filters) === false) {
       this.subscription.filters = this.filters;
       // NOTE: reset the eosed flag since nostr-tools dose not
       this.subscription.eosed = false;
