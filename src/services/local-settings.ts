@@ -104,9 +104,18 @@ class NullableNumberLocalStorageEntry extends NullableLocalStorageEntry<number> 
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
 const wasmPersistForDays = new NullableNumberLocalStorageEntry("wasm-relay-oldest-event", 365);
 
+// note behavior
+const enableNoteThreadDrawer = new LocalStorageEntry(
+  "enable-note-thread-drawer",
+  false,
+  (raw) => raw === "true",
+  (v) => String(v),
+);
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
+  enableNoteThreadDrawer,
 };
 
 if (import.meta.env.DEV) {

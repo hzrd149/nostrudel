@@ -19,9 +19,13 @@ import {
 
 import { AppSettings } from "../../services/settings/migrations";
 import { AppearanceIcon } from "../../components/icons";
+import useSubject from "../../hooks/use-subject";
+import localSettings from "../../services/local-settings";
 
 export default function DisplaySettings() {
   const { register } = useFormContext<AppSettings>();
+
+  const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
 
   return (
     <AccordionItem>
@@ -128,6 +132,21 @@ export default function DisplaySettings() {
             </Flex>
             <FormHelperText>
               <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
+              <FormLabel htmlFor="enableNoteDrawer" mb="0">
+                Open embedded notes in side drawer
+              </FormLabel>
+              <Switch
+                id="enableNoteDrawer"
+                checked={enableNoteDrawer}
+                onChange={() => localSettings.enableNoteThreadDrawer.next(!localSettings.enableNoteThreadDrawer.value)}
+              />
+            </Flex>
+            <FormHelperText>
+              <span>Enabled: Clicking on an embedded note will open it in a side drawer</span>
             </FormHelperText>
           </FormControl>
           <FormControl>

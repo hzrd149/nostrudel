@@ -26,11 +26,13 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import localSettings from "../../services/local-settings";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
-  const navigate = useNavigateInDrawer();
+  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const address = useShareableEventAddress(event);
   const onClick = useCallback<MouseEventHandler>(
     (e) => {

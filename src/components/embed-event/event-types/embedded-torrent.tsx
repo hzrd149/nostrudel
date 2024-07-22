@@ -14,7 +14,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
@@ -26,9 +26,12 @@ import { formatBytes } from "../../../helpers/number";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import relayHintService from "../../../services/event-relay-hint";
+import useSubject from "../../../hooks/use-subject";
+import localSettings from "../../../services/local-settings";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
-  const navigate = useNavigateInDrawer();
+  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const link = `/torrents/${relayHintService.getSharableEventAddress(torrent)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
