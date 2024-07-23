@@ -142,13 +142,13 @@ const webRtcLocalIdentity = new LocalStorageEntry(
 const webRtcSignalingRelays = new LocalStorageEntry(
   "nostr-webrtc-signaling-relays",
   DEFAULT_SIGNAL_RELAYS,
-  (raw) => raw.split(","),
+  (raw) => raw.split(",").filter((u) => !!u),
   (value) => value.join(","),
 );
 const webRtcRecentConnections = new LocalStorageEntry(
   "nostr-webrtc-recent-connections",
   [],
-  (raw) => raw.split(","),
+  (raw) => raw.split(",").filter((u) => !!u),
   (value) => value.join(","),
 );
 

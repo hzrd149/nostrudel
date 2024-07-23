@@ -80,7 +80,7 @@ export default class NostrWebRtcBroker extends EventEmitter<EventMap> {
       this.signers.set(event.pubkey, signer);
     }
 
-    const peer = new NostrWebRTCPeer(signer, this.pool, this.defaultRelays);
+    const peer = new NostrWebRTCPeer(signer, this.pool, this.defaultRelays, this.iceServers);
     this.peers.set(event.pubkey, peer);
     await peer.answerCall(event);
 
