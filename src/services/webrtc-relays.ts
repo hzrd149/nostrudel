@@ -99,7 +99,7 @@ class WebRtcRelaysService {
 const signer = new SimpleSigner(localSettings.webRtcLocalIdentity.value);
 
 const webRtcRelaysService = new WebRtcRelaysService(
-  new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol"]),
+  new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol", "wss://nostrue.com"]),
   localRelay as AbstractRelay | null,
 );
 

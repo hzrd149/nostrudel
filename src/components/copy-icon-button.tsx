@@ -14,7 +14,7 @@ export const CopyIconButton = ({ value, icon, ...props }: CopyIconButtonProps) =
 
   return (
     <IconButton
-      icon={copied ? <CheckIcon /> : icon || <CopyToClipboardIcon />}
+      icon={copied ? <CheckIcon boxSize="1.5em" /> : icon || <CopyToClipboardIcon boxSize="1.2em" />}
       onClick={() => {
         const v: string | undefined = typeof value === "function" ? value() : value;
 
