@@ -77,6 +77,7 @@ import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import ContactListRelaysView from "./views/relays/contact-list";
 import WebRtcRelaysView from "./views/relays/webrtc";
+import WebRtcConnectView from "./views/relays/webrtc/connect";
 import UserDMsTab from "./views/user/dms";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import ThreadsNotificationsView from "./views/notifications/threads";
@@ -91,6 +92,7 @@ import LoginNostrAddressView from "./views/signin/address";
 import LoginNostrAddressCreate from "./views/signin/address/create";
 import DatabaseView from "./views/relays/cache/database";
 import TaskManagerProvider from "./views/task-manager/provider";
+import WebRtcPairView from "./views/relays/webrtc/pair";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -292,7 +294,14 @@ const router = createHashRouter([
           { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
-          { path: "webrtc", element: <WebRtcRelaysView /> },
+          {
+            path: "webrtc",
+            children: [
+              { path: "connect", element: <WebRtcConnectView /> },
+              { path: "pair", element: <WebRtcPairView /> },
+              { path: "", element: <WebRtcRelaysView /> },
+            ],
+          },
           { path: "sets", element: <BrowseRelaySetsView /> },
           { path: ":id", element: <RelaySetView /> },
         ],

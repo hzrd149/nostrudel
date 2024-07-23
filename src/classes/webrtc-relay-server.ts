@@ -18,6 +18,13 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
   // A map of subscriptions
   subscriptions = new Map<string, Subscription>();
 
+  stats = {
+    events: {
+      sent: 0,
+      received: 0,
+    },
+  };
+
   constructor(peer: NostrWebRTCPeer, upstream: AbstractRelay) {
     super();
     this.peer = peer;
@@ -42,11 +49,13 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
       // Pass the data to appropriate handler
       switch (data[0]) {
         case "REQ":
-        case "COUNT":
           await this.handleSubscriptionMessage(data);
           break;
         case "EVENT":
-          await this.handleEventMessage(data);
+          // only handle publish EVENT methods
+          if (typeof data[1] !== "string") {
+            await this.handleEventMessage(data);
+          }
           break;
         case "CLOSE":
           await this.handleCloseMessage(data);
@@ -68,7 +77,10 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
       sub.fire();
     } else {
       sub = this.upstream.subscribe(filters, {
-        onevent: (event) => this.send(["EVENT", id, event]),
+        onevent: (event) => {
+          this.stats.events.sent++;
+          this.send(["EVENT", id, event]);
+        },
         onclose: (reason) => this.send(["CLOSED", id, reason]),
         oneose: () => this.send(["EOSE", id]),
       });
@@ -90,6 +102,7 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
 
     try {
       const result = await this.upstream.publish(event);
+      this.stats.events.received++;
       this.peer.send(JSON.stringify(["OK", event.id, true, result]));
     } catch (error) {
       if (error instanceof Error) this.peer.send(JSON.stringify(["OK", event.id, false, error.message]));

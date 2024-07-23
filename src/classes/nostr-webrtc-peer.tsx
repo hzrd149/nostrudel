@@ -37,7 +37,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   relays: string[] = [];
   iceServers: RTCIceServer[] = [];
 
-  connection?: RTCPeerConnection;
+  connection: RTCPeerConnection;
   channel?: RTCDataChannel;
 
   subscription?: SubCloser;
@@ -65,11 +65,8 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
     if (iceServers) this.iceServers = iceServers;
     if (relays) this.relays = relays;
-  }
 
-  private createConnection() {
-    if (this.connection) return this.connection;
-
+    // create connection
     this.connection = new RTCPeerConnection({ iceServers: this.iceServers });
     this.log("Created local connection");
 
@@ -78,20 +75,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
         this.candidateQueue.push(candidate.toJSON());
       } else this.flushCandidateQueue();
     };
-
     this.connection.onicegatheringstatechange = this.flushCandidateQueue.bind(this);
-
-    this.connection.ondatachannel = ({ channel }) => {
-      this.log("Got data channel", channel.id, channel.label);
-
-      if (channel.label !== "nostr") return;
-
-      this.channel = channel;
-      this.channel.onclose = this.onChannelStateChange.bind(this);
-      this.channel.onopen = this.onChannelStateChange.bind(this);
-      this.channel.onmessage = this.handleChannelMessage.bind(this);
-    };
-
     this.connection.onconnectionstatechange = (event) => {
       switch (this.connection?.connectionState) {
         case "connected":
@@ -103,7 +87,17 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
       }
     };
 
-    return this.connection;
+    // receive data channel
+    this.connection.ondatachannel = ({ channel }) => {
+      this.log("Got data channel", channel.id, channel.label);
+
+      if (channel.label !== "nostr") return;
+
+      this.channel = channel;
+      this.channel.onclose = this.onChannelStateChange.bind(this);
+      this.channel.onopen = this.onChannelStateChange.bind(this);
+      this.channel.onmessage = this.handleChannelMessage.bind(this);
+    };
   }
 
   private async flushCandidateQueue() {
@@ -127,7 +121,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   async makeCall(peer: string) {
     if (this.peer) throw new Error("Already calling peer");
 
-    const pc = this.createConnection();
+    const pc = this.connection;
 
     this.channel = pc.createDataChannel("nostr", { ordered: true });
     this.channel.onopen = this.onChannelStateChange.bind(this);
@@ -191,7 +185,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   }
 
   async handleAnswer(event: NostrEvent) {
-    const pc = this.createConnection();
+    const pc = this.connection;
 
     if (!pc.localDescription) throw new Error("Got answer without offering");
 
@@ -207,7 +201,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   }
 
   async answerCall(event: NostrEvent) {
-    const pc = this.createConnection();
+    const pc = this.connection;
 
     this.log(`Answering call ${event.id} from ${event.pubkey}`);
 
@@ -270,7 +264,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
   private async handleICEEvent(event: NostrEvent) {
     if (!this.connection) throw new Error("Got ICE event without connection");
-    const pc = this.createConnection();
+    const pc = this.connection;
 
     const plaintext = await this.signer.nip44.decrypt(event.pubkey, event.content);
     const candidates = JSON.parse(plaintext) as RTCIceCandidateInit[];

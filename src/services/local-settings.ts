@@ -2,6 +2,7 @@ import { generateSecretKey } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import { PersistentSubject } from "../classes/subject";
+import { DEFAULT_SIGNAL_RELAYS } from "../const";
 
 class NullableLocalStorageEntry<T = string> extends PersistentSubject<T | null> {
   key: string;
@@ -131,12 +132,6 @@ const enableNoteThreadDrawer = new LocalStorageEntry(
 );
 
 // webrtc relay
-const webRtcUseLocalIdentity = new LocalStorageEntry(
-  "nostr-webrtc-use-identity",
-  true,
-  (raw) => raw === "true",
-  (v) => String(v),
-);
 const webRtcLocalIdentity = new LocalStorageEntry(
   "nostr-webrtc-identity",
   generateSecretKey(),
@@ -144,13 +139,26 @@ const webRtcLocalIdentity = new LocalStorageEntry(
   (key) => bytesToHex(key),
   true,
 );
+const webRtcSignalingRelays = new LocalStorageEntry(
+  "nostr-webrtc-signaling-relays",
+  DEFAULT_SIGNAL_RELAYS,
+  (raw) => raw.split(","),
+  (value) => value.join(","),
+);
+const webRtcRecentConnections = new LocalStorageEntry(
+  "nostr-webrtc-recent-connections",
+  [],
+  (raw) => raw.split(","),
+  (value) => value.join(","),
+);
 
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
   enableNoteThreadDrawer,
-  webRtcUseLocalIdentity,
   webRtcLocalIdentity,
+  webRtcSignalingRelays,
+  webRtcRecentConnections,
 };
 
 if (import.meta.env.DEV) {

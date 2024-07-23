@@ -71,7 +71,7 @@ export default function RelaysView() {
             </Button>
           </>
         )}
-        {/* <Button
+        <Button
           variant="outline"
           as={RouterLink}
           to="/relays/webrtc"
@@ -79,7 +79,7 @@ export default function RelaysView() {
           colorScheme={location.pathname.startsWith("/relays/webrtc") ? "primary" : undefined}
         >
           WebRTC Relays
-        </Button> */}
+        </Button>
         {nip05?.exists && (
           <Button
             variant="outline"

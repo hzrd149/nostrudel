@@ -1,37 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import {
+  Alert,
+  AlertIcon,
   Button,
   ButtonGroup,
   Flex,
-  FormControl,
-  FormLabel,
   Heading,
-  Input,
+  Link,
+  Text,
   useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
-import { getPublicKey, nip19 } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
 import BackButton from "../../../components/router/back-button";
-import { QrCodeIcon } from "../../../components/icons";
 import webRtcRelaysService from "../../../services/webrtc-relays";
-import useSubject from "../../../hooks/use-subject";
-import localSettings from "../../../services/local-settings";
-import { CopyIconButton } from "../../../components/copy-icon-button";
-import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
-import UserAvatar from "../../../components/user/user-avatar";
-import UserName from "../../../components/user/user-name";
+import { QrCodeIcon } from "../../../components/icons";
+import Connection from "./components/connection";
 
-function WebRtcRelaysPage() {
+export default function WebRtcRelaysView() {
   const update = useForceUpdate();
-  const identity = useSubject(localSettings.webRtcLocalIdentity);
-  const pubkey = useMemo(() => getPublicKey(identity), [identity]);
-  const npub = useMemo(() => nip19.npubEncode(pubkey), [pubkey]);
-
-  const uri = "webrtc+nostr:" + npub;
-
-  const [connectURI, setConnectURI] = useState("");
-
+  useInterval(update, 1000);
   useEffect(() => {
     webRtcRelaysService.broker.on("call", update);
 
@@ -40,83 +29,50 @@ function WebRtcRelaysPage() {
     };
   }, [update]);
 
-  useInterval(update, 1000);
+  const unanswered = webRtcRelaysService.pendingIncoming.length;
 
   return (
     <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px={{ base: "2", lg: 0 }}>
       <Flex gap="2" alignItems="center" wrap="wrap">
         <BackButton hideFrom="lg" size="sm" />
         <Heading size="lg">WebRTC Relays</Heading>
+
+        <ButtonGroup size="sm" ml="auto">
+          <Button as={RouterLink} to="/relays/webrtc/pair" leftIcon={<QrCodeIcon />}>
+            Pair{unanswered > 0 ? ` (${unanswered})` : ""}
+          </Button>
+          <Button as={RouterLink} to="/relays/webrtc/connect" colorScheme="primary">
+            Connect
+          </Button>
+        </ButtonGroup>
       </Flex>
 
-      <FormControl>
-        <FormLabel>WebRTC Connection URI</FormLabel>
-        <Flex gap="2" alignItems="center">
-          <UserAvatar pubkey={pubkey} size="sm" />
-          <Input readOnly userSelect="all" value={uri} />
-          <CopyIconButton value={uri} aria-label="Copy Npub" />
-        </Flex>
-      </FormControl>
+      <Text fontStyle="italic" mt="-2">
+        WebRTC Relays are temporary relays that can be accessed over{" "}
+        <Link href="https://webrtc.org/" target="_blank" color="blue.500">
+          WebRTC
+        </Link>
+      </Text>
 
-      <Heading size="md">Connect:</Heading>
-      <Flex gap="2">
-        <Input placeholder="webrtc+nostr:npub1..." value={connectURI} onChange={(e) => setConnectURI(e.target.value)} />
-        <QRCodeScannerButton onData={(data) => setConnectURI(data)} />
-        <Button
-          colorScheme="primary"
-          onClick={() => {
-            webRtcRelaysService.connect(connectURI);
-            setConnectURI("");
-          }}
-        >
-          Connect
-        </Button>
-      </Flex>
-
-      {webRtcRelaysService.answered.length > 0 && (
-        <>
-          <Heading size="md">Connections:</Heading>
-          {webRtcRelaysService.answered.map((event) => (
-            <Flex key={event.id} borderWidth="1px" rounded="md" p="2" alignItems="center" gap="2">
-              <UserAvatar pubkey={event.pubkey} size="sm" />
-              <UserName pubkey={event.pubkey} />
-              <Button size="sm" ml="auto" colorScheme="red">
-                Close
-              </Button>
-            </Flex>
-          ))}
-        </>
-      )}
-
-      {webRtcRelaysService.unanswered.length > 0 && (
-        <>
-          <Heading size="md">Connection Requests:</Heading>
-          {webRtcRelaysService.unanswered.map((event) => (
-            <Flex key={event.id} borderWidth="1px" rounded="md" p="2" alignItems="center" gap="2">
-              <UserAvatar pubkey={event.pubkey} size="sm" />
-              <UserName pubkey={event.pubkey} />
-              <Button
-                size="sm"
-                ml="auto"
-                colorScheme="green"
-                onClick={() => {
-                  webRtcRelaysService.acceptCall(event);
-                  update();
-                }}
-              >
-                Accept
-              </Button>
-            </Flex>
-          ))}
-        </>
+      <Heading size="md" mt="2">
+        Connections:
+      </Heading>
+      {webRtcRelaysService.answered.length > 0 ? (
+        webRtcRelaysService.answered.map(({ call, peer, pubkey }) => (
+          <Connection
+            key={pubkey}
+            peer={peer}
+            call={call}
+            client={webRtcRelaysService.clients.get(pubkey)!}
+            server={webRtcRelaysService.servers.get(pubkey)!}
+          />
+        ))
+      ) : (
+        <Alert status="info">
+          <AlertIcon />
+          No connections yet, use the "Invite" or "Connect" buttons to connect to peer
+        </Alert>
       )}
     </Flex>
   );
-}
-
-export default function WebRtcRelaysView() {
-  if (webRtcRelaysService) {
-    return <WebRtcRelaysPage />;
-  }
-  return <Heading>WebRTC Relays don't work without</Heading>;
 }

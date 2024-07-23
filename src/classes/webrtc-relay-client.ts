@@ -1,3 +1,4 @@
+import { NostrEvent } from "nostr-tools";
 import NostrWebRTCPeer from "./nostr-webrtc-peer";
 import { AbstractRelay, AbstractRelayConstructorOptions } from "nostr-tools/abstract-relay";
 
@@ -95,6 +96,13 @@ export class WebRtcWebSocket extends EventTarget implements WebSocket {
 }
 
 export default class WebRtcRelayClient extends AbstractRelay {
+  stats = {
+    events: {
+      published: 0,
+      received: 0,
+    },
+  };
+
   constructor(peer: NostrWebRTCPeer, opts: AbstractRelayConstructorOptions) {
     super("wss://example.com", opts);
 
@@ -107,6 +115,11 @@ export default class WebRtcRelayClient extends AbstractRelay {
     this._WebSocket = function () {
       return new WebRtcWebSocket(peer);
     };
+  }
+
+  publish(event: NostrEvent): Promise<string> {
+    this.stats.events.published++;
+    return super.publish(event);
   }
 }
 

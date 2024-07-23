@@ -9,20 +9,39 @@ import verifyEventMethod from "./verify-event";
 import SimpleSigner from "../classes/simple-signer";
 import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
+import NostrWebRTCPeer from "../classes/nostr-webrtc-peer";
 
 class WebRtcRelaysService {
   log = logger.extend("NostrWebRtcBroker");
   broker: NostrWebRtcBroker;
+  pubkey?: string;
   upstream: AbstractRelay | null;
 
   approved: string[] = [];
 
   calls: NostrEvent[] = [];
   get answered() {
-    return this.calls.filter((event) => this.broker.peers.has(event.pubkey));
+    const answered: { call: NostrEvent; peer: NostrWebRTCPeer; pubkey: string }[] = [];
+    for (const call of this.calls) {
+      const peer = this.broker.peers.get(call.pubkey);
+      if (peer && peer.peer && peer.connection.connectionState !== "new") {
+        answered.push({ call, peer, pubkey: peer.peer });
+      }
+    }
+    return answered;
   }
-  get unanswered() {
-    return this.calls.filter((event) => this.broker.peers.has(event.pubkey) === false);
+  get pendingOutgoing() {
+    const pending: { call: NostrEvent; peer: NostrWebRTCPeer }[] = [];
+    for (const call of this.calls) {
+      const pubkey = call.tags.find((t) => (t[0] = "p" && t[1]))?.[1];
+      if (!pubkey) continue;
+      const peer = this.broker.peers.get(pubkey);
+      if (peer && peer.connection.connectionState === "new") pending.push({ call, peer });
+    }
+    return pending;
+  }
+  get pendingIncoming() {
+    return this.calls.filter((event) => event.pubkey !== this.pubkey && this.broker.peers.has(event.pubkey) === false);
   }
 
   clients = new Map<string, WebRtcRelayClient>();
@@ -35,11 +54,18 @@ class WebRtcRelaysService {
   constructor(broker: NostrWebRtcBroker, upstream: AbstractRelay | null) {
     this.upstream = upstream;
     this.broker = broker;
+
+    this.getPubkey();
+  }
+
+  private async getPubkey() {
+    const pubkey = await this.broker.signer.getPublicKey();
+    this.pubkey = pubkey;
   }
 
   async handleCall(event: NostrEvent) {
     if (!this.calls.includes(event)) {
-      this.log(`Received request from ${event.pubkey}`);
+      this.log(`Received call from ${event.pubkey}`);
       this.calls.push(event);
     }
 
@@ -62,7 +88,7 @@ class WebRtcRelaysService {
   }
 
   async acceptCall(event: NostrEvent) {
-    this.log(`Accepting connection from ${event.pubkey}`);
+    this.log(`Approving calls from ${event.pubkey}`);
     this.approved.push(event.pubkey);
     await this.handleCall(event);
   }
@@ -71,6 +97,9 @@ class WebRtcRelaysService {
     this.log(`Connecting to ${uri}`);
     const peer = await this.broker.requestConnection(uri);
     if (!peer.peer) return;
+
+    // add to the list of calls
+    if (peer.offerEvent) this.calls.push(peer.offerEvent);
 
     if (this.upstream) {
       const server = new WebRtcRelayServer(peer, this.upstream);

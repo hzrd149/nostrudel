@@ -1,10 +1,11 @@
+import { NostrEvent } from "nostr-tools";
+
 import accountService from "./account";
 import { RelayMode } from "../classes/relay";
 import userMailboxesService from "./user-mailboxes";
 import { PersistentSubject } from "../classes/subject";
 import { logger } from "../helpers/debug";
 import RelaySet from "../classes/relay-set";
-import { NostrEvent } from "nostr-tools";
 import { safeRelayUrls } from "../helpers/relay";
 
 export type RelayDirectory = Record<string, { read: boolean; write: boolean }>;
@@ -22,6 +23,10 @@ export const recommendedReadRelays = new RelaySet(
 export const recommendedWriteRelays = new RelaySet(
   safeRelayUrls(["wss://relay.damus.io/", "wss://nos.lol/", "wss://purplerelay.com/"]),
 );
+
+function isHttpRelay(url: string) {
+  return url.includes("ws://");
+}
 
 class ClientRelayService {
   readRelays = new PersistentSubject(new RelaySet());
@@ -67,8 +72,8 @@ class ClientRelayService {
   }
 
   saveRelays() {
-    localStorage.setItem("read-relays", this.readRelays.value.urls.join(","));
-    localStorage.setItem("write-relays", this.writeRelays.value.urls.join(","));
+    localStorage.setItem("read-relays", this.readRelays.value.urls.filter(isHttpRelay).join(","));
+    localStorage.setItem("write-relays", this.writeRelays.value.urls.filter(isHttpRelay).join(","));
   }
 
   get outbox(): Iterable<string> {
