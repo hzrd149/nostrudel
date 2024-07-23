@@ -24,10 +24,6 @@ export const recommendedWriteRelays = new RelaySet(
   safeRelayUrls(["wss://relay.damus.io/", "wss://nos.lol/", "wss://purplerelay.com/"]),
 );
 
-function isHttpRelay(url: string) {
-  return url.includes("ws://");
-}
-
 class ClientRelayService {
   readRelays = new PersistentSubject(new RelaySet());
   writeRelays = new PersistentSubject(new RelaySet());
@@ -72,8 +68,8 @@ class ClientRelayService {
   }
 
   saveRelays() {
-    localStorage.setItem("read-relays", this.readRelays.value.urls.filter(isHttpRelay).join(","));
-    localStorage.setItem("write-relays", this.writeRelays.value.urls.filter(isHttpRelay).join(","));
+    localStorage.setItem("read-relays", this.readRelays.value.urls.join(","));
+    localStorage.setItem("write-relays", this.writeRelays.value.urls.join(","));
   }
 
   get outbox(): Iterable<string> {
