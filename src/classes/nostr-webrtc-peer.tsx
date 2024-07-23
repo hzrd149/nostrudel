@@ -1,23 +1,15 @@
 import { Debugger } from "debug";
 import EventEmitter from "eventemitter3";
 import dayjs from "dayjs";
-import {
-  EventTemplate,
-  Filter,
-  NostrEvent,
-  SimplePool,
-  finalizeEvent,
-  generateSecretKey,
-  getPublicKey,
-  nip44,
-} from "nostr-tools";
+import { EventTemplate, Filter, NostrEvent } from "nostr-tools";
 import { SubCloser, SubscribeManyParams } from "nostr-tools/abstract-pool";
 
-import { logger } from "../../../helpers/debug";
+import { logger } from "../helpers/debug";
 
-const RTCDescriptionEventKind = 25050;
-const RTCICEEventKind = 25051;
-type Signer = {
+export const RTCDescriptionEventKind = 25050;
+export const RTCICEEventKind = 25051;
+
+export type Signer = {
   getPublicKey: () => Promise<string> | string;
   signEvent: (event: EventTemplate) => Promise<NostrEvent> | NostrEvent;
   nip44: {
@@ -26,42 +18,18 @@ type Signer = {
   };
 };
 
-type Pool = {
+export type Pool = {
   subscribeMany(relays: string[], filters: Filter[], params: SubscribeManyParams): SubCloser;
   publish(relays: string[], event: NostrEvent): Promise<string>[];
 };
 
 type EventMap = {
-  connect: [];
-  disconnect: [];
-  incomingCall: [NostrEvent];
+  connected: [];
+  disconnected: [];
   message: [string];
 };
 
-class SimpleSigner {
-  key: Uint8Array;
-  constructor() {
-    this.key = generateSecretKey();
-  }
-
-  async getPublicKey() {
-    return getPublicKey(this.key);
-  }
-  async signEvent(event: EventTemplate) {
-    return finalizeEvent(event, this.key);
-  }
-
-  nip44 = {
-    encrypt: async (pubkey: string, plaintext: string) =>
-      nip44.v2.encrypt(plaintext, nip44.v2.utils.getConversationKey(this.key, pubkey)),
-    decrypt: async (pubkey: string, ciphertext: string) =>
-      nip44.v2.decrypt(ciphertext, nip44.v2.utils.getConversationKey(this.key, pubkey)),
-  };
-}
-
-const defaultPool = new SimplePool();
-
-class WebRTCPeer extends EventEmitter<EventMap> {
+export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   log: Debugger;
   signer: Signer;
   pool: Pool;
@@ -72,7 +40,6 @@ class WebRTCPeer extends EventEmitter<EventMap> {
   connection?: RTCPeerConnection;
   channel?: RTCDataChannel;
 
-  listening = false;
   subscription?: SubCloser;
 
   async isCaller() {
@@ -90,9 +57,9 @@ class WebRTCPeer extends EventEmitter<EventMap> {
 
   private candidateQueue: RTCIceCandidateInit[] = [];
 
-  constructor(signer: Signer, pool: Pool = defaultPool, relays?: string[], iceServers?: RTCIceServer[]) {
+  constructor(signer: Signer, pool: Pool, relays?: string[], iceServers?: RTCIceServer[]) {
     super();
-    this.log = logger.extend(`webrtc`);
+    this.log = logger.extend(`NostrWebRTCPeer`);
     this.signer = signer;
     this.pool = pool;
 
@@ -115,7 +82,7 @@ class WebRTCPeer extends EventEmitter<EventMap> {
     this.connection.onicegatheringstatechange = this.flushCandidateQueue.bind(this);
 
     this.connection.ondatachannel = ({ channel }) => {
-      this.log("Got data channel", channel);
+      this.log("Got data channel", channel.id, channel.label);
 
       if (channel.label !== "nostr") return;
 
@@ -123,6 +90,17 @@ class WebRTCPeer extends EventEmitter<EventMap> {
       this.channel.onclose = this.onChannelStateChange.bind(this);
       this.channel.onopen = this.onChannelStateChange.bind(this);
       this.channel.onmessage = this.handleChannelMessage.bind(this);
+    };
+
+    this.connection.onconnectionstatechange = (event) => {
+      switch (this.connection?.connectionState) {
+        case "connected":
+          this.emit("connected");
+          break;
+        case "disconnected":
+          this.emit("disconnected");
+          break;
+      }
     };
 
     return this.connection;
@@ -140,7 +118,7 @@ class WebRTCPeer extends EventEmitter<EventMap> {
         created_at: dayjs().unix(),
       });
 
-      this.log(`Publishing ICE candidates`, this.candidateQueue);
+      this.log(`Publishing ${this.candidateQueue.length} ICE candidates`);
       await this.pool.publish(this.relays, iceEvent);
       this.candidateQueue = [];
     }
@@ -149,7 +127,6 @@ class WebRTCPeer extends EventEmitter<EventMap> {
   async makeCall(peer: string) {
     if (this.peer) throw new Error("Already calling peer");
 
-    this.stopListening();
     const pc = this.createConnection();
 
     this.channel = pc.createDataChannel("nostr", { ordered: true });
@@ -168,7 +145,7 @@ class WebRTCPeer extends EventEmitter<EventMap> {
       created_at: dayjs().unix(),
     });
 
-    this.log("Created offer", offer);
+    this.log("Created offer");
 
     // listen for answers and ice events
     this.subscription = this.pool.subscribeMany(
@@ -199,14 +176,14 @@ class WebRTCPeer extends EventEmitter<EventMap> {
           }
         },
         onclose: () => {
-          this.log("Subscription Closed");
+          this.log("Signaling subscription closed");
         },
       },
     );
 
     this.peer = peer;
 
-    this.log("Publishing event", offerEvent);
+    this.log("Publishing event", offerEvent.id);
     await this.pool.publish(this.relays, offerEvent);
     await pc.setLocalDescription(offer);
 
@@ -222,7 +199,7 @@ class WebRTCPeer extends EventEmitter<EventMap> {
     const answer = JSON.parse(plaintext) as RTCSessionDescriptionInit;
     if (answer.type !== "answer") throw new Error("Unexpected rtc description type");
 
-    this.log("Got answer", answer);
+    this.log("Got answer");
 
     await pc.setRemoteDescription(answer);
 
@@ -230,7 +207,6 @@ class WebRTCPeer extends EventEmitter<EventMap> {
   }
 
   async answerCall(event: NostrEvent) {
-    this.stopListening();
     const pc = this.createConnection();
 
     this.log(`Answering call ${event.id} from ${event.pubkey}`);
@@ -240,6 +216,8 @@ class WebRTCPeer extends EventEmitter<EventMap> {
     if (offer.type !== "offer") throw new Error("Unexpected rtc description type");
 
     this.relays = event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]);
+    this.log(`Switching to callers signaling relays`, this.relays);
+
     await pc.setRemoteDescription(offer);
 
     const answer = await pc.createAnswer();
@@ -254,7 +232,7 @@ class WebRTCPeer extends EventEmitter<EventMap> {
       created_at: dayjs().unix(),
     });
 
-    this.log("Created answer", answer);
+    this.log("Created answer");
 
     this.peer = event.pubkey;
     this.offerEvent = event;
@@ -275,12 +253,12 @@ class WebRTCPeer extends EventEmitter<EventMap> {
           }
         },
         onclose: () => {
-          this.log("Subscription Closed");
+          this.log("Signaling subscription closed");
         },
       },
     );
 
-    this.log("Publishing event", answerEvent);
+    this.log("Publishing event", answerEvent.id);
 
     await this.pool.publish(this.relays, answerEvent);
     await pc.setLocalDescription(answer);
@@ -297,37 +275,11 @@ class WebRTCPeer extends EventEmitter<EventMap> {
     const plaintext = await this.signer.nip44.decrypt(event.pubkey, event.content);
     const candidates = JSON.parse(plaintext) as RTCIceCandidateInit[];
 
-    this.log("Got candidates", candidates);
+    this.log(`Got ${candidates.length} candidates`);
 
     for (let candidate of candidates) {
       await pc.addIceCandidate(candidate);
     }
-  }
-
-  async listenForCall() {
-    if (this.listening) throw new Error("Already listening");
-
-    this.listening = true;
-    this.subscription = this.pool.subscribeMany(
-      this.relays,
-      [{ kinds: [RTCDescriptionEventKind], "#p": [await this.signer.getPublicKey()], since: dayjs().unix() }],
-      {
-        onevent: (event) => {
-          this.emit("incomingCall", event);
-        },
-        onclose: () => {
-          this.listening = false;
-        },
-      },
-    );
-  }
-
-  stopListening() {
-    if (!this.listening) return;
-
-    if (this.subscription) this.subscription.close();
-    this.subscription = undefined;
-    this.listening = false;
   }
 
   private onChannelStateChange() {
@@ -343,14 +295,15 @@ class WebRTCPeer extends EventEmitter<EventMap> {
     this.channel?.send(message);
   }
 
-  disconnect() {
+  hangup() {
     this.log("Closing data channel");
     if (this.channel) this.channel.close();
+    this.log("Closing connection");
     if (this.connection) this.connection.close();
   }
 }
 
-// @ts-expect-error
-window.SimpleSigner = SimpleSigner;
-// @ts-expect-error
-window.WebRTCPeer = WebRTCPeer;
+if (import.meta.env.DEV) {
+  // @ts-expect-error
+  window.WebRTCPeer = NostrWebRTCPeer;
+}

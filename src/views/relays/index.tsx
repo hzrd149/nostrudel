@@ -91,15 +91,19 @@ export default function RelaysView() {
             NIP-05 Relays
           </Button>
         )}
-        <Button
-          variant="outline"
-          as={RouterLink}
-          to="/relays/contacts"
-          leftIcon={<UserSquare boxSize={6} />}
-          colorScheme={location.pathname.startsWith("/relays/contacts") ? "primary" : undefined}
-        >
-          Contact List Relays
-        </Button>
+        {account && (
+          <>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/contacts"
+              leftIcon={<UserSquare boxSize={6} />}
+              colorScheme={location.pathname.startsWith("/relays/contacts") ? "primary" : undefined}
+            >
+              Contact List Relays
+            </Button>
+          </>
+        )}
         {/* {account && (
           <>
             <Heading size="sm" mt="2">

@@ -1,3 +1,6 @@
+import { generateSecretKey } from "nostr-tools";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+
 import { PersistentSubject } from "../classes/subject";
 
 class NullableLocalStorageEntry<T = string> extends PersistentSubject<T | null> {
@@ -49,25 +52,40 @@ class LocalStorageEntry<T = string> extends PersistentSubject<T> {
   decode?: (raw: string) => T;
   encode?: (value: T) => string | null;
 
-  constructor(key: string, fallback: T, decode?: (raw: string) => T, encode?: (value: T) => string | null) {
+  setDefault = false;
+
+  constructor(
+    key: string,
+    fallback: T,
+    decode?: (raw: string) => T,
+    encode?: (value: T) => string | null,
+    setDefault = false,
+  ) {
     let value = fallback;
     if (localStorage.hasOwnProperty(key)) {
       const raw = localStorage.getItem(key);
 
       if (decode && raw) value = decode(raw);
       else if (raw) value = raw as T;
+    } else if (setDefault) {
+      const encoded = encode ? encode(fallback) : String(fallback);
+      if (!encoded) throw new Error("encode can not return null when setDefault is set");
+      localStorage.setItem(key, encoded);
     }
 
     super(value);
+
     this.key = key;
     this.decode = decode;
     this.encode = encode;
     this.fallback = fallback;
+    this.setDefault = setDefault;
   }
 
   next(value: T) {
     const encoded = this.encode ? this.encode(value) : String(value);
     if (encoded !== null) localStorage.setItem(this.key, encoded);
+    else if (this.setDefault && encoded) localStorage.setItem(this.key, encoded);
     else localStorage.removeItem(this.key);
 
     super.next(value);
@@ -112,10 +130,27 @@ const enableNoteThreadDrawer = new LocalStorageEntry(
   (v) => String(v),
 );
 
+// webrtc relay
+const webRtcUseLocalIdentity = new LocalStorageEntry(
+  "nostr-webrtc-use-identity",
+  true,
+  (raw) => raw === "true",
+  (v) => String(v),
+);
+const webRtcLocalIdentity = new LocalStorageEntry(
+  "nostr-webrtc-identity",
+  generateSecretKey(),
+  (raw) => hexToBytes(raw),
+  (key) => bytesToHex(key),
+  true,
+);
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
   enableNoteThreadDrawer,
+  webRtcUseLocalIdentity,
+  webRtcLocalIdentity,
 };
 
 if (import.meta.env.DEV) {

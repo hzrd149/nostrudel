@@ -17,7 +17,7 @@ export default function useThreadTimelineLoader(
   const refs = focusedEvent && getThreadReferences(focusedEvent);
   const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent?.id });
 
-  const readRelays = unique([...relays, ...(rootPointer?.relays ?? [])]);
+  const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
 
   const timelineId = `${rootPointer?.id}-thread`;
   const timeline = useTimelineLoader(
