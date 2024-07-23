@@ -18,6 +18,7 @@ export default class NostrWebRtcBroker extends EventEmitter<EventMap> {
   signer: Signer;
   pool: Pool;
   defaultRelays: string[];
+  iceServers: RTCIceServer[] = [];
 
   peers = new Map<string, NostrWebRTCPeer>();
   signers = new Map<string, Signer>();
@@ -53,7 +54,12 @@ export default class NostrWebRtcBroker extends EventEmitter<EventMap> {
     if (relays.length > 0) this.relays.set(pubkey, relays);
     else this.relays.set(pubkey, this.defaultRelays);
 
-    const peer = new NostrWebRTCPeer(signer, this.pool, relays.length > 0 ? relays : this.defaultRelays);
+    const peer = new NostrWebRTCPeer(
+      signer,
+      this.pool,
+      relays.length > 0 ? relays : this.defaultRelays,
+      this.iceServers,
+    );
     this.peers.set(pubkey, peer);
     await peer.makeCall(pubkey);
 

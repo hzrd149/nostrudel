@@ -12,3 +12,17 @@ export const COMMON_CONTACT_RELAY = safeRelayUrl("wss://purplepag.es") as string
 export const COMMON_CONTACT_RELAYS = [COMMON_CONTACT_RELAY];
 
 export const DEFAULT_SIGNAL_RELAYS = safeRelayUrls(["wss://nostrue.com/", "wss://relay.damus.io"]);
+
+export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
+  {
+    urls: ["stun:freeturn.net:3479"],
+  },
+  {
+    urls: ["turn:freeturn.net:3479"],
+    username: "free",
+    credential: "free",
+  },
+  {
+    urls: ["stun:stun.l.google.com:19302"],
+  },
+];

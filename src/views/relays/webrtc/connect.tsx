@@ -1,5 +1,16 @@
 import { useEffect } from "react";
-import { Alert, AlertIcon, Button, Flex, Heading, Input, Text, useForceUpdate, useInterval } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  Button,
+  CloseButton,
+  Flex,
+  Heading,
+  Input,
+  Text,
+  useForceUpdate,
+  useInterval,
+} from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import BackButton from "../../../components/router/back-button";
@@ -78,6 +89,13 @@ export default function WebRtcConnectView() {
               >
                 Connect
               </Button>
+              <CloseButton
+                onClick={() =>
+                  localSettings.webRtcRecentConnections.next(
+                    localSettings.webRtcRecentConnections.value.filter((u) => u !== uri),
+                  )
+                }
+              />
             </Flex>
           ))}
         </>

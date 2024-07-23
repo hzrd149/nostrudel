@@ -10,6 +10,7 @@ import SimpleSigner from "../classes/simple-signer";
 import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
 import NostrWebRTCPeer from "../classes/nostr-webrtc-peer";
+import { DEFAULT_ICE_SERVERS } from "../const";
 
 class WebRtcRelaysService {
   log = logger.extend("NostrWebRtcBroker");
@@ -126,11 +127,10 @@ class WebRtcRelaysService {
 }
 
 const signer = new SimpleSigner(localSettings.webRtcLocalIdentity.value);
+const broker = new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol", "wss://nostrue.com"]);
+broker.iceServers = DEFAULT_ICE_SERVERS;
 
-const webRtcRelaysService = new WebRtcRelaysService(
-  new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol", "wss://nostrue.com"]),
-  localRelay as AbstractRelay | null,
-);
+const webRtcRelaysService = new WebRtcRelaysService(broker, localRelay as AbstractRelay | null);
 
 webRtcRelaysService.start();
 
