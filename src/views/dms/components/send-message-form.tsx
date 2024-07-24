@@ -92,7 +92,7 @@ export default function SendMessageForm({
             ref={textAreaRef}
             onPaste={onPaste}
             onKeyDown={(e) => {
-              if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+              if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
             }}
           />
           <Button type="submit">Send</Button>

@@ -87,7 +87,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         instanceRef={(inst) => (textAreaRef.current = inst)}
         onPaste={onPaste}
         onKeyDown={(e) => {
-          if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
         }}
       />
       <Flex gap="2" alignItems="center">

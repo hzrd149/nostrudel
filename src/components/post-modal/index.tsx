@@ -194,7 +194,7 @@ export default function PostModal({
           instanceRef={(inst) => (textAreaRef.current = inst)}
           onPaste={onPaste}
           onKeyDown={(e) => {
-            if (e.ctrlKey && e.key === "Enter") submit();
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
           }}
         />
         {previewDraft.content.length > 0 && (
