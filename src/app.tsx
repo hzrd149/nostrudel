@@ -441,6 +441,7 @@ const router = createHashRouter([
 
 export const App = () => (
   <ErrorBoundary>
+    <GlobalStyles />
     <TaskManagerProvider parentRouter={router}>
       <DrawerSubViewProvider parentRouter={router}>
         <Suspense fallback={<Spinner />}>
