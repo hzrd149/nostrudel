@@ -16,6 +16,10 @@
     "build-icons": "node ./scripts/build-icons.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^6.1.1",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/core": "^6.1.1",
+    "@capacitor/ios": "^6.1.1",
     "@cashu/cashu-ts": "^0.9.0",
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/breakpoint-utils": "^2.0.8",
@@ -101,6 +105,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.1.1",
     "@changesets/cli": "^2.27.1",
     "@types/chroma-js": "^2.4.3",
     "@types/debug": "^4.1.12",

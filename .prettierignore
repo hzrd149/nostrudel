@@ -2,3 +2,19 @@ node_modules
 dist
 public/lib
 stats.html
+
+# Android copied from ./android/.gitignore
+# Gradle files
+android/.gradle/
+android/build/
+android/app/build/
+# Cordova plugins for Capacitor
+android/capacitor-cordova-android-plugins
+
+# Copied web assets
+android/app/src/main/assets/public
+
+# Generated Config files
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
