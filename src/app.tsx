@@ -1,23 +1,26 @@
 import { lazy, Suspense } from "react";
 import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
-import { css, Global } from "@emotion/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import Layout from "./components/layout";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
+import { RouteProviders } from "./providers/route";
+import GlobalStyles from "./styles";
 
 import HomeView from "./views/home/index";
-import DVMFeedHomeView from "./views/dvm-feed/index";
+const DVMFeedHomeView = lazy(() => import("./views/dvm-feed/index"));
+const DVMFeedView = lazy(() => import("./views/dvm-feed/feed"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
-import HashTagView from "./views/hashtag";
+const HashTagView = lazy(() => import("./views/hashtag"));
 import ThreadView from "./views/thread";
 import NotificationsView from "./views/notifications";
-import DirectMessagesView from "./views/dms";
-import DirectMessageChatView from "./views/dms/chat";
+import ThreadsNotificationsView from "./views/notifications/threads";
+const DirectMessagesView = lazy(() => import("./views/dms"));
+const DirectMessageChatView = lazy(() => import("./views/dms/chat"));
 
 import SigninView from "./views/signin";
 import SignupView from "./views/signup";
@@ -25,6 +28,9 @@ import LoginStartView from "./views/signin/start";
 import LoginNpubView from "./views/signin/npub";
 import LoginNip05View from "./views/signin/nip05";
 import LoginNsecView from "./views/signin/nsec";
+import LoginNostrConnectView from "./views/signin/nostr-connect";
+import LoginNostrAddressView from "./views/signin/address";
+import LoginNostrAddressCreate from "./views/signin/address/create";
 
 import UserView from "./views/user";
 import UserNotesTab from "./views/user/notes";
@@ -39,32 +45,33 @@ import UserListsTab from "./views/user/lists";
 import UserGoalsTab from "./views/user/goals";
 import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
+import UserDMsTab from "./views/user/dms";
 const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
 import ListsHomeView from "./views/lists";
 import ListView from "./views/lists/list";
 import BrowseListView from "./views/lists/browse";
 
-import EmojiPacksBrowseView from "./views/emoji-packs/browse";
-import EmojiPackView from "./views/emoji-packs/emoji-pack";
-import UserEmojiPacksTab from "./views/user/emoji-packs";
-import EmojiPacksView from "./views/emoji-packs";
+const EmojiPacksBrowseView = lazy(() => import("./views/emoji-packs/browse"));
+const EmojiPackView = lazy(() => import("./views/emoji-packs/emoji-pack"));
+const UserEmojiPacksTab = lazy(() => import("./views/user/emoji-packs"));
+const EmojiPacksView = lazy(() => import("./views/emoji-packs"));
 
-import GoalsView from "./views/goals";
-import GoalsBrowseView from "./views/goals/browse";
-import GoalDetailsView from "./views/goals/goal-details";
+const GoalsView = lazy(() => import("./views/goals"));
+const GoalsBrowseView = lazy(() => import("./views/goals/browse"));
+const GoalDetailsView = lazy(() => import("./views/goals/goal-details"));
 
-import BadgesView from "./views/badges";
-import BadgesBrowseView from "./views/badges/browse";
-import BadgeDetailsView from "./views/badges/badge-details";
+const BadgesView = lazy(() => import("./views/badges"));
+const BadgesBrowseView = lazy(() => import("./views/badges/browse"));
+const BadgeDetailsView = lazy(() => import("./views/badges/badge-details"));
 
-import CommunitiesHomeView from "./views/communities";
-import CommunitiesExploreView from "./views/communities/explore";
-import CommunityFindByNameView from "./views/community/find-by-name";
-import CommunityView from "./views/community/index";
-import CommunityPendingView from "./views/community/views/pending";
-import CommunityNewestView from "./views/community/views/newest";
-import CommunityTrendingView from "./views/community/views/trending";
+const CommunitiesHomeView = lazy(() => import("./views/communities"));
+const CommunitiesExploreView = lazy(() => import("./views/communities/explore"));
+const CommunityFindByNameView = lazy(() => import("./views/community/find-by-name"));
+const CommunityView = lazy(() => import("./views/community/index"));
+const CommunityPendingView = lazy(() => import("./views/community/views/pending"));
+const CommunityNewestView = lazy(() => import("./views/community/views/newest"));
+const CommunityTrendingView = lazy(() => import("./views/community/views/trending"));
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
@@ -75,31 +82,23 @@ import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
 import MediaServersView from "./views/relays/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
-import ContactListRelaysView from "./views/relays/contact-list";
-import WebRtcRelaysView from "./views/relays/webrtc";
-import WebRtcConnectView from "./views/relays/webrtc/connect";
-import UserDMsTab from "./views/user/dms";
-import LoginNostrConnectView from "./views/signin/nostr-connect";
-import ThreadsNotificationsView from "./views/notifications/threads";
-import DVMFeedView from "./views/dvm-feed/feed";
-import OtherStuffView from "./views/other-stuff";
-import { RouteProviders } from "./providers/route";
-import LaunchpadView from "./views/launchpad";
-import VideosView from "./views/videos";
-import VideoDetailsView from "./views/videos/video";
-import BookmarksView from "./views/bookmarks";
-import LoginNostrAddressView from "./views/signin/address";
-import LoginNostrAddressCreate from "./views/signin/address/create";
 import DatabaseView from "./views/relays/cache/database";
+import ContactListRelaysView from "./views/relays/contact-list";
+const WebRtcRelaysView = lazy(() => import("./views/relays/webrtc"));
+const WebRtcConnectView = lazy(() => import("./views/relays/webrtc/connect"));
+const WebRtcPairView = lazy(() => import("./views/relays/webrtc/pair"));
+
+import OtherStuffView from "./views/other-stuff";
+import LaunchpadView from "./views/launchpad";
+const VideosView = lazy(() => import("./views/videos"));
+const VideoDetailsView = lazy(() => import("./views/videos/video"));
+import BookmarksView from "./views/bookmarks";
 import TaskManagerProvider from "./views/task-manager/provider";
-import WebRtcPairView from "./views/relays/webrtc/pair";
-import GlobalStyles from "./styles";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
-const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
 const NetworkDMGraphView = lazy(() => import("./views/tools/network-dm-graph"));
 const UnknownTimelineView = lazy(() => import("./views/tools/unknown-event-feed"));
@@ -113,6 +112,7 @@ const CorrectionsFeedView = lazy(() => import("./views/tools/corrections"));
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
 const StreamView = lazy(() => import("./views/streams/stream"));
+const StreamModerationView = lazy(() => import("./views/streams/dashboard"));
 
 const SearchView = lazy(() => import("./views/search"));
 const MapView = lazy(() => import("./views/map"));
