@@ -93,6 +93,7 @@ import LoginNostrAddressCreate from "./views/signin/address/create";
 import DatabaseView from "./views/relays/cache/database";
 import TaskManagerProvider from "./views/task-manager/provider";
 import WebRtcPairView from "./views/relays/webrtc/pair";
+import GlobalStyles from "./styles";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -130,31 +131,6 @@ const WikiSearchView = lazy(() => import("./views/wiki/search"));
 const WikiCompareView = lazy(() => import("./views/wiki/compare"));
 const CreateWikiPageView = lazy(() => import("./views/wiki/create"));
 const EditWikiPageView = lazy(() => import("./views/wiki/edit"));
-
-const overrideReactTextareaAutocompleteStyles = css`
-  .rta__autocomplete {
-    z-index: var(--chakra-zIndices-popover);
-    font-size: var(--chakra-fontSizes-md);
-  }
-  .rta__list {
-    background: var(--chakra-colors-chakra-subtle-bg);
-    color: var(--chakra-colors-chakra-body-text);
-    border: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
-    border-radius: var(--chakra-sizes-1);
-    overflow: hidden;
-  }
-  .rta__entity {
-    background: none;
-    color: inherit;
-    padding: var(--chakra-sizes-1) var(--chakra-sizes-2);
-  }
-  .rta__entity--selected {
-    background: var(--chakra-ring-color);
-  }
-  .rta__item:not(:last-child) {
-    border-bottom: var(--chakra-borders-1px) var(--chakra-colors-chakra-border-color);
-  }
-`;
 
 const RootPage = () => {
   useSetColorMode();
@@ -467,7 +443,7 @@ export const App = () => (
   <ErrorBoundary>
     <TaskManagerProvider parentRouter={router}>
       <DrawerSubViewProvider parentRouter={router}>
-        <Global styles={overrideReactTextareaAutocompleteStyles} />
+        <GlobalStyles />
         <Suspense fallback={<Spinner />}>
           <RouterProvider router={router} />
         </Suspense>

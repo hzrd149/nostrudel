@@ -23,6 +23,7 @@ import { useInterval } from "react-use";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import { parsePaymentRequest } from "../../../helpers/bolt11";
 import { V4VStreamIcon, V4VStopIcon } from "../../../components/icons";
+import { fetchWithProxy } from "../../../helpers/request";
 
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);
@@ -46,7 +47,7 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
         const callbackUrl = new URL(metadata.callback);
         callbackUrl.searchParams.append("amount", String(amountMsats));
 
-        const { pr: payRequest } = await fetch(callbackUrl).then((res) => res.json());
+        const { pr: payRequest } = await fetchWithProxy(callbackUrl).then((res) => res.json());
 
         if (payRequest as string) {
           const parsed = parsePaymentRequest(payRequest);

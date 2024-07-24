@@ -49,6 +49,7 @@ import ExpandableEmbed from "../expandable-embed";
 import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
 import replaceableEventsService from "../../../services/replaceable-events";
 import clientRelaysService from "../../../services/client-relays";
+import { fetchWithProxy } from "../../../helpers/request";
 
 export type TrustImageProps = ImageProps;
 
@@ -262,7 +263,7 @@ function VerifyImageButton({ src, original }: { src: URL; original: string }) {
 
       setLoading(true);
       try {
-        const buff = await fetch(src).then((res) => res.arrayBuffer());
+        const buff = await fetchWithProxy(src).then((res) => res.arrayBuffer());
         const downloaded = bytesToHex(sha256.create().update(new Uint8Array(buff)).digest());
         setDownloaded(downloaded);
 

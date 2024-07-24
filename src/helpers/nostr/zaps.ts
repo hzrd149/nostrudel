@@ -5,6 +5,7 @@ import { ParsedInvoice, parsePaymentRequest } from "../bolt11";
 import { Kind0ParsedContent } from "./user-metadata";
 import { nip57, utils } from "nostr-tools";
 import verifyEvent from "../../services/verify-event";
+import { fetchWithProxy } from "../request";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null | string> {
@@ -22,7 +23,7 @@ export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null
       return null;
     }
 
-    let res = await fetch(lnurl);
+    let res = await fetchWithProxy(lnurl);
     let body = await res.json();
 
     if (body.allowsNostr && body.nostrPubkey) {

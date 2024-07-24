@@ -1,3 +1,5 @@
+import { fetchWithProxy } from "../helpers/request";
+
 export type NostrBandUserStats = {
   pubkey: string;
   pub_note_count: number;
@@ -62,7 +64,7 @@ class TrustedUserStatsService {
 
   async fetchUserStats(pubkey: string) {
     try {
-      const stats = await fetch(`https://api.nostr.band/v0/stats/profile/${pubkey}`).then(
+      const stats = await fetchWithProxy(`https://api.nostr.band/v0/stats/profile/${pubkey}`).then(
         (res) => res.json() as Promise<{ stats: Record<string, NostrBandUserStats> }>,
       );
 

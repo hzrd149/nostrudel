@@ -3,12 +3,13 @@ import { Input, InputProps } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 
 import { unique } from "../helpers/array";
+import { fetchWithProxy } from "../helpers/request";
 
 export type RelayUrlInputProps = Omit<InputProps, "type">;
 
 export const RelayUrlInput = forwardRef(({ ...props }: Omit<InputProps, "type">, ref) => {
   const { value: relaysJson } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
+    fetchWithProxy("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
   );
   const relaySuggestions = unique(relaysJson ?? []);
 

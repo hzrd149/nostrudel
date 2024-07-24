@@ -9,6 +9,7 @@ import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import GhostSideBar from "./ghost/sidebar";
+import { CAP_IS_WEB } from "../../env";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -16,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <ReloadPrompt mb="2" />
+      {CAP_IS_WEB && <ReloadPrompt mb="2" />}
       <Flex direction={{ base: "column", md: "row" }} minH="100vh">
         <Spacer display={["none", null, "block"]} />
         {!isMobile && <DesktopSideNav position="sticky" top="0" flexShrink={0} />}
