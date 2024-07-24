@@ -13,7 +13,8 @@
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
     "analyze": "npx vite-bundle-visualizer -o ./stats.html",
-    "build-icons": "node ./scripts/build-icons.mjs"
+    "build-icons": "node ./scripts/build-icons.mjs",
+    "build-native-icons": "npx @capacitor/assets generate --android --iconBackgroundColor '#8DB600' --iconBackgroundColorDark '#8DB600' --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#0e0e0e'"
   },
   "dependencies": {
     "@capacitor-community/http": "^1.4.1",
@@ -107,6 +108,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.1",
     "@changesets/cli": "^2.27.1",
     "@types/chroma-js": "^2.4.3",
