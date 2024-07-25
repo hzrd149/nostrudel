@@ -53,6 +53,7 @@ export default function LoginStartView() {
       toast({ status: "warning", title: "Cant find extension" });
     }
   };
+
   const signinWithSerial = async () => {
     if (serialPortService.supported) {
       try {
@@ -124,8 +125,8 @@ export default function LoginStartView() {
         </ButtonGroup>
       )}
       {amberSignerService.supported && (
-        <ButtonGroup colorScheme="orange">
-          <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} w="xs">
+        <ButtonGroup colorScheme="orange" w="full">
+          <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
             Use Amber
           </Button>
           <IconButton

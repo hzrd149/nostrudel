@@ -57,8 +57,19 @@ export type NostrConnectErrorResponse = {
 };
 
 // FIXME list all requested perms
-const Perms =
-  "nip04_encrypt,nip04_decrypt,sign_event:0,sign_event:1,sign_event:3,sign_event:4,sign_event:6,sign_event:7";
+const Perms = [
+  "get_public_key",
+  "nip04_encrypt",
+  "nip04_decrypt",
+  "nip44_encrypt",
+  "nip44_decrypt",
+  "sign_event:0",
+  "sign_event:1",
+  "sign_event:3",
+  "sign_event:4",
+  "sign_event:6",
+  "sign_event:7",
+].join(",");
 
 export class NostrConnectClient {
   sub: MultiSubscription;
