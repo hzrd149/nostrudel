@@ -2,9 +2,9 @@ import { Suspense, lazy, useCallback } from "react";
 import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
 
 import { type QrScannerModalProps } from "./qr-scanner-modal";
-import { QrCodeIcon } from "../icons";
 import { CAP_IS_NATIVE } from "../../env";
 import { logger } from "../../helpers/debug";
+import { QrCodeIcon } from "../icons";
 
 const QrScannerModal = lazy(() => import("./qr-scanner-modal"));
 const log = logger.extend("QRCodeScanner");
@@ -61,7 +61,7 @@ async function scanWithNative() {
   });
 
   const barcode = barcodes[0];
-  if (!barcode) throw new Error("Cant find barcode");
+  if (!barcode) return null;
   if (barcode.valueType !== "TEXT") throw new Error("Incorrect barcode format");
   return barcode.rawValue;
 }
@@ -73,7 +73,8 @@ export default function QRCodeScannerButton({ onData }: { onData: QrScannerModal
   const handleClick = useCallback(async () => {
     if (CAP_IS_NATIVE) {
       try {
-        onData(await scanWithNative());
+        const result = await scanWithNative();
+        if (result) onData(result);
       } catch (error) {
         log(error);
         if (import.meta.env.DEV && error instanceof Error) toast({ status: "error", description: error.message });

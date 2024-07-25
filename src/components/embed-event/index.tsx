@@ -18,32 +18,34 @@ import {
 } from "../../helpers/nostr/lists";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
+import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { safeDecode } from "../../helpers/nip19";
 
-import RelayCard from "../../views/relays/components/relay-card";
-import EmbeddedStream from "./event-types/embedded-stream";
-import EmbeddedEmojiPack from "./event-types/embedded-emoji-pack";
-import EmbeddedGoal, { EmbeddedGoalOptions } from "./event-types/embedded-goal";
-import EmbeddedUnknown from "./event-types/embedded-unknown";
-import EmbeddedList from "./event-types/embedded-list";
-import EmbeddedArticle from "./event-types/embedded-article";
-import EmbeddedBadge from "./event-types/embedded-badge";
-import EmbeddedStreamMessage from "./event-types/embedded-stream-message";
-import EmbeddedCommunity from "./event-types/embedded-community";
-import EmbeddedReaction from "./event-types/embedded-reaction";
-import EmbeddedDM from "./event-types/embedded-dm";
-import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
-import EmbeddedTorrent from "./event-types/embedded-torrent";
-import EmbeddedTorrentComment from "./event-types/embedded-torrent-comment";
-import EmbeddedChannel from "./event-types/embedded-channel";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
-import EmbeddedFlareVideo from "./event-types/embedded-flare-video";
-import LoadingNostrLink from "../loading-nostr-link";
-import EmbeddedRepost from "./event-types/embedded-repost";
-import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
-import EmbeddedWikiPage from "./event-types/embedded-wiki-page";
-import EmbeddedZapRecept from "./event-types/embedded-zap-receipt";
+import { type EmbeddedGoalOptions } from "./event-types/embedded-goal";
+
+const RelayCard = lazy(() => import("../../views/relays/components/relay-card"));
+const EmbeddedStream = lazy(() => import("./event-types/embedded-stream"));
+const EmbeddedEmojiPack = lazy(() => import("./event-types/embedded-emoji-pack"));
+const EmbeddedGoal = lazy(() => import("./event-types/embedded-goal"));
+const EmbeddedUnknown = lazy(() => import("./event-types/embedded-unknown"));
+const EmbeddedList = lazy(() => import("./event-types/embedded-list"));
+const EmbeddedArticle = lazy(() => import("./event-types/embedded-article"));
+const EmbeddedBadge = lazy(() => import("./event-types/embedded-badge"));
+const EmbeddedStreamMessage = lazy(() => import("./event-types/embedded-stream-message"));
+const EmbeddedCommunity = lazy(() => import("./event-types/embedded-community"));
+const EmbeddedReaction = lazy(() => import("./event-types/embedded-reaction"));
+const EmbeddedDM = lazy(() => import("./event-types/embedded-dm"));
+const EmbeddedTorrent = lazy(() => import("./event-types/embedded-torrent"));
+const EmbeddedTorrentComment = lazy(() => import("./event-types/embedded-torrent-comment"));
+const EmbeddedChannel = lazy(() => import("./event-types/embedded-channel"));
+const EmbeddedFlareVideo = lazy(() => import("./event-types/embedded-flare-video"));
+const LoadingNostrLink = lazy(() => import("../loading-nostr-link"));
+const EmbeddedRepost = lazy(() => import("./event-types/embedded-repost"));
+const EmbeddedWikiPage = lazy(() => import("./event-types/embedded-wiki-page"));
+const EmbeddedZapRecept = lazy(() => import("./event-types/embedded-zap-receipt"));
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {

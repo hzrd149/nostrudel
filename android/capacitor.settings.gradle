@@ -5,6 +5,9 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 include ':capacitor-community-http'
 project(':capacitor-community-http').projectDir = new File('../node_modules/@capacitor-community/http/android')
 
+include ':capacitor-community-sqlite'
+project(':capacitor-community-sqlite').projectDir = new File('../node_modules/@capacitor-community/sqlite/android')
+
 include ':capacitor-mlkit-barcode-scanning'
 project(':capacitor-mlkit-barcode-scanning').projectDir = new File('../node_modules/@capacitor-mlkit/barcode-scanning/android')
 

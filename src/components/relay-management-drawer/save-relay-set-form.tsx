@@ -24,8 +24,8 @@ export function SaveRelaySetForm({
   const publish = usePublishEvent();
   const { register, formState, handleSubmit } = useForm({
     defaultValues: {
-      name: relaySet ? getListName(relaySet) ?? "" : "",
-      description: relaySet ? getListDescription(relaySet) ?? "" : "",
+      name: relaySet ? (getListName(relaySet) ?? "") : "",
+      description: relaySet ? (getListDescription(relaySet) ?? "") : "",
     },
     mode: "all",
     resetOptions: { keepDirtyValues: true },

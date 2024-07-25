@@ -1,5 +1,6 @@
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
@@ -8,7 +9,10 @@ import MemoryRelay from "../classes/memory-relay";
 import { fakeVerifyEvent } from "./verify-event";
 import relayPoolService from "./relay-pool";
 import localSettings from "./local-settings";
-import dayjs from "dayjs";
+import { CAP_IS_NATIVE } from "../env";
+
+import CapacitorSQLiteRelay from "./cap-sqlite-relay/relay";
+import database from "./cap-sqlite-relay/database";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -44,15 +48,22 @@ export const localDatabase = await openDB();
 function createInternalRelay() {
   return new CacheRelay(localDatabase, { maxEvents: localSettings.idbMaxEvents.value });
 }
+async function createCapacitorRelay() {
+  log("Loading Capacitor Database");
+  // const { default: database } = await import("./cap-sqlite-relay/database");
+  return new CapacitorSQLiteRelay(database);
+}
+
 async function createRelay() {
   const localRelayURL = localStorage.getItem("localRelay");
 
   if (localRelayURL) {
     if (localRelayURL === ":none:") {
       return null;
-    }
-    if (localRelayURL === ":memory:") {
+    } else if (localRelayURL === ":memory:") {
       return new MemoryRelay();
+    } else if (localRelayURL === ":capacitor-sqlite:" && CAP_IS_NATIVE) {
+      return await createCapacitorRelay();
     } else if (localRelayURL === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
       return new WasmRelay();
     } else if (localRelayURL.startsWith("nostr-idb://")) {
@@ -60,6 +71,8 @@ async function createRelay() {
     } else if (safeRelayUrl(localRelayURL)) {
       return new AbstractRelay(safeRelayUrl(localRelayURL)!, { verifyEvent: fakeVerifyEvent });
     }
+  } else if (CAP_IS_NATIVE) {
+    return await createCapacitorRelay();
   } else if (window.satellite) {
     return new AbstractRelay(await window.satellite.getLocalRelay(), { verifyEvent: fakeVerifyEvent });
   } else if (window.CACHE_RELAY_ENABLED) {
@@ -72,10 +85,10 @@ async function createRelay() {
 }
 
 async function connectRelay() {
-  const relay = await createRelay();
-  if (!relay) return relay;
-
   try {
+    const relay = await createRelay();
+    if (!relay) return relay;
+
     await relay.connect();
     log("Connected");
 
