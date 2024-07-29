@@ -1,6 +1,13 @@
+import { Account } from "../classes/accounts/account";
+import AmberAccount from "../classes/accounts/amber-account";
+import ExtensionAccount from "../classes/accounts/extension-account";
+import NostrConnectAccount from "../classes/accounts/nostr-connect-account";
+import NsecAccount from "../classes/accounts/nsec-account";
+import PasswordAccount from "../classes/accounts/password-account";
+import PubkeyAccount from "../classes/accounts/pubkey-account";
+import SerialPortAccount from "../classes/accounts/serial-port-account";
 import { PersistentSubject } from "../classes/subject";
 import db from "./db";
-import { NostrConnectClient } from "./nostr-connect";
 import { AppSettings } from "./settings/migrations";
 
 type CommonAccount = {
@@ -14,36 +21,6 @@ export type LocalAccount = CommonAccount & {
   secKey: ArrayBuffer;
   iv: Uint8Array;
 };
-export type PubkeyAccount = CommonAccount & {
-  type: "pubkey";
-  readonly: true;
-};
-export type ExtensionAccount = CommonAccount & {
-  type: "extension";
-  readonly: false;
-};
-export type SerialAccount = CommonAccount & {
-  type: "serial";
-  readonly: false;
-};
-export type AmberAccount = CommonAccount & {
-  type: "amber";
-  readonly: false;
-};
-export type NostrConnectAccount = CommonAccount & {
-  type: "nostr-connect";
-  clientSecretKey: string;
-  signerRelays: string[];
-  readonly: false;
-};
-
-export type Account =
-  | ExtensionAccount
-  | LocalAccount
-  | NostrConnectAccount
-  | SerialAccount
-  | AmberAccount
-  | PubkeyAccount;
 
 class AccountService {
   loading = new PersistentSubject(true);
@@ -52,24 +29,48 @@ class AccountService {
   isGhost = new PersistentSubject(false);
 
   constructor() {
-    db.getAll("accounts").then((accounts) => {
+    db.getAll("accounts").then((accountData) => {
+      const accounts: Account[] = [];
+
+      for (const data of accountData) {
+        try {
+          const account = this.createAccountFromDatabaseRecord(data);
+          if (account) accounts.push(account);
+        } catch (error) {}
+      }
+
       this.accounts.next(accounts);
 
       const lastAccount = localStorage.getItem("lastAccount");
       if (lastAccount && this.hasAccount(lastAccount)) {
         this.switchAccount(lastAccount);
-      }
+      } else localStorage.removeItem("lastAccount");
 
       this.loading.next(false);
     });
   }
 
+  private createAccountFromDatabaseRecord(data: { type: string; pubkey: string }) {
+    switch (data.type) {
+      case "local":
+        return new PasswordAccount(data.pubkey).fromJSON(data);
+      case "nsec":
+        return new NsecAccount(data.pubkey).fromJSON(data);
+      case "pubkey":
+        return new PubkeyAccount(data.pubkey).fromJSON(data);
+      case "extension":
+        return new ExtensionAccount(data.pubkey).fromJSON(data);
+      case "amber":
+        return new AmberAccount(data.pubkey).fromJSON(data);
+      case "serial":
+        return new SerialPortAccount(data.pubkey).fromJSON(data);
+      case "nostr-connect":
+        return new NostrConnectAccount(data.pubkey).fromJSON(data);
+    }
+  }
+
   startGhost(pubkey: string) {
-    const ghostAccount: Account = {
-      type: "pubkey",
-      pubkey,
-      readonly: true,
-    };
+    const ghostAccount = new PubkeyAccount(pubkey);
 
     const lastPubkey = this.current.value?.pubkey;
     if (lastPubkey && this.hasAccount(lastPubkey)) localStorage.setItem("lastAccount", lastPubkey);
@@ -101,32 +102,22 @@ class AccountService {
       this.accounts.next(this.accounts.value.concat(account));
     }
 
-    db.put("accounts", account);
+    db.put("accounts", account.toJSON());
   }
-  addFromNostrConnect(client: NostrConnectClient) {
-    if (!client.pubkey) throw new Error("Cant add client without pubkey");
-    this.addAccount({
-      type: "nostr-connect",
-      signerRelays: client.relays,
-      clientSecretKey: client.secretKey,
-      pubkey: client.pubkey,
-      readonly: false,
-    });
-  }
-  removeAccount(pubkey: string) {
+  removeAccount(account: Account | string) {
+    const pubkey = account instanceof Account ? account.pubkey : account;
     this.accounts.next(this.accounts.value.filter((acc) => acc.pubkey !== pubkey));
 
     db.delete("accounts", pubkey);
   }
 
+  saveAccount(account: Account) {
+    return db.put("accounts", account.toJSON());
+  }
+
   updateAccountLocalSettings(pubkey: string, settings: AppSettings) {
     const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
-    if (account) {
-      const updated = { ...account, localSettings: settings };
-
-      // update account
-      this.addAccount(updated);
-    }
+    if (account) account.localSettings = settings;
   }
 
   switchAccount(pubkey: string) {
@@ -153,7 +144,16 @@ const accountService = new AccountService();
 
 if (import.meta.env.DEV) {
   // @ts-ignore
-  window.identity = accountService;
+  window.accountService = accountService;
 }
+
+// temporary fix for converting old sublt crypto accounts to ncryptsec
+setInterval(() => {
+  for (const account of accountService.accounts.value) {
+    if (account instanceof PasswordAccount && account.signer.ncryptsec && account.signer.buffer) {
+      accountService.saveAccount(account);
+    }
+  }
+}, 10_000);
 
 export default accountService;

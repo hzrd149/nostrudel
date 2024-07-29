@@ -25,8 +25,7 @@ const DirectMessageChatView = lazy(() => import("./views/dms/chat"));
 import SigninView from "./views/signin";
 import SignupView from "./views/signup";
 import LoginStartView from "./views/signin/start";
-import LoginNpubView from "./views/signin/npub";
-import LoginNip05View from "./views/signin/nip05";
+import LoginNpubView from "./views/signin/pubkey";
 import LoginNsecView from "./views/signin/nsec";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import LoginNostrAddressView from "./views/signin/address";
@@ -164,7 +163,6 @@ const router = createHashRouter([
     children: [
       { path: "", element: <LoginStartView /> },
       { path: "npub", element: <LoginNpubView /> },
-      { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
       {
         path: "address",

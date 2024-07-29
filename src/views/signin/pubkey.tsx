@@ -2,29 +2,24 @@ import { useState } from "react";
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-import { RelayUrlInput } from "../../components/relay-url-input";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";
-import { COMMON_CONTACT_RELAY } from "../../const";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
+import PubkeyAccount from "../../classes/accounts/pubkey-account";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
-  const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
+  // const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
 
     const pubkey = normalizeToHexPubkey(npub);
-    if (!pubkey) {
-      return toast({ status: "error", title: "Invalid npub" });
-    }
+    if (!pubkey) return toast({ status: "error", title: "Invalid npub" });
 
-    if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount({ type: "pubkey", pubkey, relays: [relayUrl], readonly: true });
-    }
+    accountService.addAccount(new PubkeyAccount(pubkey));
     accountService.switchAccount(pubkey);
   };
 
@@ -43,7 +38,7 @@ export default function LoginNpubView() {
           </Link>
         </FormHelperText>
       </FormControl>
-      <FormControl>
+      {/* <FormControl>
         <FormLabel>Bootstrap relay</FormLabel>
         <RelayUrlInput
           placeholder="wss://nostr.example.com"
@@ -52,7 +47,7 @@ export default function LoginNpubView() {
           onChange={(e) => setRelayUrl(e.target.value)}
         />
         <FormHelperText>The first relay to connect to.</FormHelperText>
-      </FormControl>
+      </FormControl> */}
       <Flex justifyContent="space-between" gap="2">
         <Button variant="link" onClick={() => navigate("../")}>
           Back

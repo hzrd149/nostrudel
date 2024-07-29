@@ -1,34 +1,29 @@
 import { Badge, BadgeProps } from "@chakra-ui/react";
-import { Account } from "../services/account";
+import { Account } from "../classes/accounts/account";
 
 export default function AccountInfoBadge({ account, ...props }: BadgeProps & { account: Account }) {
-  if (account.type === "extension") {
-    return (
-      <Badge {...props} variant="solid" colorScheme="green">
-        extension
-      </Badge>
-    );
+  let color = "gray";
+  switch (account.type) {
+    case "extension":
+      color = "green";
+      break;
+    case "serial":
+      color = "teal";
+      break;
+    case "local":
+      color = "orange";
+      break;
+    case "nsec":
+      color = "red";
+      break;
+    case "pubkey":
+      color = "blue";
+      break;
   }
-  if (account.type === "serial") {
-    return (
-      <Badge {...props} variant="solid" colorScheme="teal">
-        serial
-      </Badge>
-    );
-  }
-  if (account.type === "local") {
-    return (
-      <Badge {...props} variant="solid" colorScheme="red">
-        nsec
-      </Badge>
-    );
-  }
-  if (account.readonly) {
-    return (
-      <Badge {...props} variant="solid" colorScheme="blue">
-        read-only
-      </Badge>
-    );
-  }
-  return null;
+
+  return (
+    <Badge {...props} variant="solid" colorScheme={color}>
+      {account.type}
+    </Badge>
+  );
 }

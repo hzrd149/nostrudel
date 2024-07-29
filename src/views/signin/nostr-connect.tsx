@@ -14,21 +14,23 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import accountService from "../../services/account";
-import nostrConnectService, { NostrConnectClient } from "../../services/nostr-connect";
+import nostrConnectService from "../../services/nostr-connect";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import QrCodeSvg from "../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../components/copy-icon-button";
+import NostrConnectSigner from "../../classes/signers/nostr-connect-signer";
+import NostrConnectAccount from "../../classes/accounts/nostr-connect-account";
 
 function ClientConnectForm() {
   const navigate = useNavigate();
   const urlInputRef = useRef<HTMLInputElement | null>(null);
   const [relay, setRelay] = useState("wss://relay.nsec.app/");
-  const [client, setClient] = useState<NostrConnectClient>();
+  const [signer, setSigner] = useState<NostrConnectSigner>();
   const [listening, setListening] = useState(false);
 
   const connectionURL = useMemo(() => {
-    if (!client || !relay) return "";
+    if (!signer || !relay) return "";
 
     const host = location.protocol + "//" + location.host;
     const params = new URLSearchParams();
@@ -37,15 +39,16 @@ function ClientConnectForm() {
     params.set("url", host);
     params.set("image", new URL("/apple-touch-icon.png", host).toString());
 
-    return `nostrconnect://${client.publicKey}?` + params.toString();
-  }, [relay, client]);
+    return `nostrconnect://${signer.publicKey}?` + params.toString();
+  }, [relay, signer]);
 
   const create = useCallback(() => {
-    const c = new NostrConnectClient(undefined, [relay]);
-    setClient(c);
+    const c = new NostrConnectSigner(undefined, [relay]);
+    setSigner(c);
     c.listen().then(() => {
       nostrConnectService.saveClient(c);
-      accountService.addFromNostrConnect(c);
+      const account = new NostrConnectAccount(c.pubkey!, c);
+      accountService.addAccount(account);
       accountService.switchAccount(c.pubkey!);
     });
     setListening(true);
@@ -53,7 +56,7 @@ function ClientConnectForm() {
 
   return (
     <>
-      {client ? (
+      {signer ? (
         <>
           <a href={connectionURL} target="_blank">
             <QrCodeSvg content={connectionURL} />
@@ -106,7 +109,7 @@ export default function LoginNostrConnectView() {
 
     try {
       setLoading("Connecting...");
-      let client: NostrConnectClient;
+      let client: NostrConnectSigner;
       if (connection.startsWith("bunker://")) {
         if (connection.includes("@")) client = nostrConnectService.fromBunkerAddress(connection);
         else client = nostrConnectService.fromBunkerURI(connection);
@@ -119,7 +122,8 @@ export default function LoginNostrConnectView() {
       } else throw new Error("Unknown format");
 
       nostrConnectService.saveClient(client);
-      accountService.addFromNostrConnect(client);
+      const account = new NostrConnectAccount(client.pubkey!, client);
+      accountService.addAccount(account);
       accountService.switchAccount(client.pubkey!);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

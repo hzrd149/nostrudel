@@ -4,9 +4,9 @@ import { Button, ButtonGroup, Flex, Heading, SimpleGrid, Text, useForceUpdate, u
 
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
-import NostrWebRTCPeer from "../../../../classes/nostr-webrtc-peer";
-import WebRtcRelayClient from "../../../../classes/webrtc-relay-client";
-import WebRtcRelayServer from "../../../../classes/webrtc-relay-server";
+import WebRtcRelayClient from "../../../../classes/webrtc/webrtc-relay-client";
+import WebRtcRelayServer from "../../../../classes/webrtc/webrtc-relay-server";
+import NostrWebRTCPeer from "../../../../classes/webrtc/nostr-webrtc-peer";
 import { localRelay } from "../../../../services/local-relay";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import useUserContactList from "../../../../hooks/use-user-contact-list";

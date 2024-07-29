@@ -8,8 +8,8 @@ import {
   Button,
   Flex,
   FormControl,
-  FormHelperText,
   FormLabel,
+  IconButton,
   Input,
   InputGroup,
   InputRightElement,
@@ -17,75 +17,63 @@ import {
 } from "@chakra-ui/react";
 import { generateSecretKey, getPublicKey, nip19 } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
+import { hexToBytes } from "@noble/hashes/utils";
+import { useForm } from "react-hook-form";
+import { decrypt } from "nostr-tools/nip49";
 
-import { RelayUrlInput } from "../../components/relay-url-input";
-import { isHex, safeDecode } from "../../helpers/nip19";
+import { isHexKey, safeDecode } from "../../helpers/nip19";
 import accountService from "../../services/account";
-import signingService from "../../services/signing";
-import { COMMON_CONTACT_RELAY } from "../../const";
-import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import NsecAccount from "../../classes/accounts/nsec-account";
+import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
+import { Account } from "../../classes/accounts/account";
+import PasswordAccount from "../../classes/accounts/password-account";
+import Eye from "../../components/icons/eye";
+import EyeOff from "../../components/icons/eye-off";
 
 export default function LoginNsecView() {
   const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
-  const [error, setError] = useState(false);
-  const [inputValue, setInputValue] = useState("");
 
-  const [hexKey, setHexKey] = useState("");
-  const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
-
-  const [npub, setNpub] = useState("");
+  const { register, handleSubmit, setValue } = useForm({ defaultValues: { value: "" }, mode: "all" });
 
   const generateNewKey = useCallback(() => {
-    const hex = generateSecretKey();
-    const pubkey = getPublicKey(hex);
-    setHexKey(bytesToHex(hex));
-    setInputValue(nip19.nsecEncode(hex));
-    setNpub(nip19.npubEncode(pubkey));
+    const key = generateSecretKey();
+    setValue("value", nip19.nsecEncode(key));
     setShow(true);
-  }, [setHexKey, setInputValue, setShow]);
+  }, [setValue, setShow]);
 
-  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      setInputValue(e.target.value);
+  const submit = handleSubmit(async ({ value }) => {
+    let account: Account;
+    if (isHexKey(value)) {
+      account = NsecAccount.fromKey(hexToBytes(value));
+    } else if (value.startsWith("ncryptsec")) {
+      const password = window.prompt("Decryption password");
+      if (password === null) throw new Error("Password required");
+      const key = decrypt(value, password);
+      account = PasswordAccount.fromNcryptsec(getPublicKey(key), value);
+    } else if (value.startsWith("nsec")) {
+      const decode = safeDecode(value);
+      if (decode?.type !== "nsec") throw new Error();
+      const key = decode.data;
 
-      try {
-        let hex: string | null = null;
-        if (isHex(e.target.value)) hex = e.target.value;
-        else {
-          const decode = safeDecode(e.target.value);
-          if (decode && decode.type === "nsec") hex = bytesToHex(decode.data);
-        }
-
-        if (hex) {
-          const pubkey = getPublicKey(hexToBytes(hex));
-          setHexKey(hex);
-          setNpub(nip19.npubEncode(pubkey));
-          setError(false);
-        } else {
-          setError(true);
-        }
-      } catch (e) {
-        setError(true);
+      const password = window.prompt("Local encryption password. This password is used to keep your secret key safe");
+      if (password) {
+        const a = new PasswordAccount(getPublicKey(key));
+        a.signer.key = key;
+        a.signer.setPassword(password);
+        account = a;
+      } else {
+        account = NsecAccount.fromKey(decode.data);
       }
-    },
-    [setInputValue, setHexKey, setNpub, setError],
-  );
+    } else throw new Error("Invalid key");
 
-  const handleSubmit: React.FormEventHandler<HTMLDivElement> = async (e) => {
-    e.preventDefault();
-
-    if (!hexKey) return;
-    const pubkey = getPublicKey(hexToBytes(hexKey));
-
-    const encrypted = await signingService.encryptSecKey(hexKey);
-    accountService.addAccount({ type: "local", pubkey, relays: [relayUrl], ...encrypted, readonly: false });
-    accountService.switchAccount(pubkey);
-  };
+    accountService.addAccount(account);
+    accountService.switchAccount(account.pubkey);
+  });
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
+    <Flex as="form" direction="column" gap="4" onSubmit={submit} w="full">
       <Alert status="warning" maxWidth="30rem">
         <AlertIcon />
         <Box>
@@ -112,40 +100,30 @@ export default function LoginNsecView() {
       </Alert>
 
       <FormControl>
-        <FormLabel>Enter user secret key (nsec)</FormLabel>
-        <InputGroup size="md">
-          <Input
-            pr="4.5rem"
-            type={show ? "text" : "password"}
-            placeholder="nsec or hex"
-            isRequired
-            value={inputValue}
-            onChange={handleInputChange}
-            isInvalid={error}
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={() => setShow((v) => !v)}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
-        </InputGroup>
+        <FormLabel>Enter user secret key</FormLabel>
+        <Flex gap="2">
+          <InputGroup size="md">
+            <Input
+              type={show ? "text" : "password"}
+              placeholder="hex, nsec or ncryptsec"
+              {...register("value", { required: true })}
+              isRequired
+            />
+            <InputRightElement>
+              <IconButton
+                h="1.75rem"
+                size="sm"
+                variant="ghost"
+                onClick={() => setShow((v) => !v)}
+                icon={show ? <EyeOff boxSize={5} /> : <Eye boxSize={5} />}
+                aria-label="Reveal password"
+              />
+            </InputRightElement>
+          </InputGroup>
+          <QRCodeScannerButton onData={(v) => setValue("value", v)} />
+        </Flex>
       </FormControl>
 
-      <FormControl>
-        <FormLabel>Pubkey Key (npub)</FormLabel>
-        <Input type="text" readOnly isDisabled value={npub} />
-      </FormControl>
-
-      <FormControl>
-        <FormLabel>Bootstrap relay</FormLabel>
-        <RelayUrlInput
-          placeholder="wss://nostr.example.com"
-          isRequired
-          value={relayUrl}
-          onChange={(e) => setRelayUrl(e.target.value)}
-        />
-        <FormHelperText>The first relay to connect to.</FormHelperText>
-      </FormControl>
       <Flex justifyContent="space-between" gap="2">
         <Button variant="link" onClick={() => navigate("../")}>
           Back

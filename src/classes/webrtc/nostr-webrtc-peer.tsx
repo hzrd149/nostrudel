@@ -3,8 +3,7 @@ import EventEmitter from "eventemitter3";
 import dayjs from "dayjs";
 import { EventTemplate, Filter, NostrEvent } from "nostr-tools";
 import { SubCloser, SubscribeManyParams } from "nostr-tools/abstract-pool";
-
-import { logger } from "../helpers/debug";
+import { logger } from "../../helpers/debug";
 
 export const RTCDescriptionEventKind = 25050;
 export const RTCICEEventKind = 25051;

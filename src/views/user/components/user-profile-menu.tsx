@@ -23,6 +23,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import userMailboxesService from "../../../services/user-mailboxes";
 import { useContext } from "react";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
+import PubkeyAccount from "../../../classes/accounts/pubkey-account";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -40,12 +41,7 @@ export const UserProfileMenu = ({
   const loginAsUser = () => {
     const relays = userMailboxesService.getMailboxes(pubkey).value?.outbox.urls;
     if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount({
-        type: "pubkey",
-        pubkey,
-        relays,
-        readonly: true,
-      });
+      accountService.addAccount(new PubkeyAccount(pubkey));
     }
     accountService.switchAccount(pubkey);
   };

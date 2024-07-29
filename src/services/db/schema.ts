@@ -3,7 +3,6 @@ import { DBSchema } from "idb";
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayInformationDocument } from "../relay-info";
 import { AppSettings } from "../settings/migrations";
-import { Account } from "../account";
 
 export interface SchemaV1 {
   userMetadata: {
@@ -120,7 +119,21 @@ export interface SchemaV6 extends SchemaV5 {
   };
 }
 
-export interface SchemaV7 extends Omit<SchemaV6, "account"> {
+type Account = {
+  type: string;
+  pubkey: string;
+  relays?: string[];
+  localSettings?: AppSettings;
+  readonly: boolean;
+  // local
+  secKey?: ArrayBuffer;
+  iv?: Uint8Array;
+  // nostr-connect
+  clientSecretKey?: string;
+  signerRelays?: string[];
+};
+
+export interface SchemaV7 extends Omit<SchemaV6, "accounts"> {
   accounts: {
     key: string;
     value: Account;

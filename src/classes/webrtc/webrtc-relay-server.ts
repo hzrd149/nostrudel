@@ -3,7 +3,7 @@ import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
 
 import NostrWebRTCPeer from "./nostr-webrtc-peer";
-import { logger } from "../helpers/debug";
+import { logger } from "../../helpers/debug";
 
 type EventMap = {
   call: [NostrEvent];
