@@ -100,7 +100,7 @@ export default function LoginNostrAddressCreate() {
 
       const account = new NostrConnectAccount(signer.pubkey!, signer);
 
-      nostrConnectService.saveClient(signer);
+      nostrConnectService.saveSigner(signer);
       accountService.addAccount(account);
       accountService.switchAccount(account.pubkey);
     } catch (e) {

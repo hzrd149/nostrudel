@@ -1,6 +1,5 @@
-import { EventTemplate } from "nostr-tools";
+import { EventTemplate, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../types/nostr-event";
 import { Account } from "../classes/accounts/account";
 import PasswordAccount from "../classes/accounts/password-account";
 

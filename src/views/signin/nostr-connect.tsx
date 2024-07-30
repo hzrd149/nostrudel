@@ -46,7 +46,7 @@ function ClientConnectForm() {
     const c = new NostrConnectSigner(undefined, [relay]);
     setSigner(c);
     c.listen().then(() => {
-      nostrConnectService.saveClient(c);
+      nostrConnectService.saveSigner(c);
       const account = new NostrConnectAccount(c.pubkey!, c);
       accountService.addAccount(account);
       accountService.switchAccount(c.pubkey!);
@@ -121,7 +121,7 @@ export default function LoginNostrConnectView() {
         await client.connect(hexToken);
       } else throw new Error("Unknown format");
 
-      nostrConnectService.saveClient(client);
+      nostrConnectService.saveSigner(client);
       const account = new NostrConnectAccount(client.pubkey!, client);
       accountService.addAccount(account);
       accountService.switchAccount(client.pubkey!);

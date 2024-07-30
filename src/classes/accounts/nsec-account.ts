@@ -33,7 +33,7 @@ export default class NsecAccount extends Account {
   fromJSON(data: any): this {
     const parse = nip19.decode(data.nsec);
 
-    if (parse.type === "nsec") throw new Error("Unknown nsec type");
+    if (parse.type !== "nsec") throw new Error("Unknown nsec type");
     this.signer = new SimpleSigner(parse.data as Uint8Array);
 
     return this;

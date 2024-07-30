@@ -49,7 +49,7 @@ export default function LoginNostrAddressView() {
         const signer = nostrConnectService.fromHostedBunker(nip05.pubkey, relays);
         await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-        nostrConnectService.saveClient(signer);
+        nostrConnectService.saveSigner(signer);
         const account = new NostrConnectAccount(signer.pubkey!, signer);
         accountService.addAccount(account);
         accountService.switchAccount(signer.pubkey!);

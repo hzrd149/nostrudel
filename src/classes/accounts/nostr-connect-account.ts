@@ -24,7 +24,7 @@ export default class NostrConnectAccount extends Account {
     this.signer = nostrConnectService.createSigner(data.pubkey, data.signerRelays, data.clientSecretKey);
 
     // presume the client has already connected
-    nostrConnectService.saveClient(data.pubKey);
+    nostrConnectService.saveSigner(data.pubKey);
 
     return this;
   }

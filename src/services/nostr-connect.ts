@@ -51,15 +51,15 @@ class NostrConnectService {
   log = logger.extend("NostrConnect");
   clients: NostrConnectSigner[] = [];
 
-  getClient(pubkey: string) {
+  getSigner(pubkey: string) {
     return this.clients.find((client) => client.pubkey === pubkey);
   }
-  saveClient(client: NostrConnectSigner) {
+  saveSigner(client: NostrConnectSigner) {
     if (!this.clients.includes(client)) this.clients.push(client);
   }
 
   createSigner(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
-    if (this.getClient(pubkey)) throw new Error("A client for that pubkey already exists");
+    if (this.getSigner(pubkey)) throw new Error("A client for that pubkey already exists");
 
     const client = new NostrConnectSigner(pubkey, relays, secretKey, provider);
     client.log = this.log.extend(pubkey);
@@ -70,7 +70,7 @@ class NostrConnectService {
   }
 
   fromHostedBunker(pubkey: string, relays: string[], provider?: string) {
-    return this.getClient(pubkey) || this.createSigner(pubkey, relays, undefined, provider);
+    return this.createSigner(pubkey, relays, undefined, provider);
   }
   /** create client from: pubkey@wss://relay.com (with optional bunker://) */
   fromBunkerAddress(address: string) {
@@ -81,7 +81,7 @@ class NostrConnectService {
     if (!pathRelay) throw new Error("Missing relay");
     if (!pubkey || !isHexKey(pubkey)) throw new Error("Missing pubkey");
 
-    return this.getClient(pubkey) || this.createSigner(pubkey, [pathRelay]);
+    return this.createSigner(pubkey, [pathRelay]);
   }
   /** create client from: bunker://<pubkey>?relay=<relay> */
   fromBunkerURI(uri: string) {
@@ -93,7 +93,7 @@ class NostrConnectService {
     const relays = url.searchParams.getAll("relay");
     if (relays.length === 0) throw new Error("Missing relays");
 
-    return this.getClient(pubkey) || this.createSigner(pubkey, relays);
+    return this.createSigner(pubkey, relays);
   }
   /** create client from: pubkey#token */
   fromBunkerToken(pubkeyWithToken: string) {
@@ -104,8 +104,7 @@ class NostrConnectService {
     const relays = ["wss://relay.nsecbunker.com", "wss://nos.lol"];
     if (relays.length === 0) throw new Error("Missing relays");
 
-    const client = this.getClient(pubkey) || this.createSigner(pubkey, relays);
-    return client;
+    return this.createSigner(pubkey, relays);
   }
 }
 
