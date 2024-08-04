@@ -95,11 +95,11 @@ const NotificationsTimeline = memo(
 function NotificationsPage() {
   const { timeline } = useNotifications();
 
-  const showReplies = useLocalStorageDisclosure("notifications-show-replies");
-  const showMentions = useLocalStorageDisclosure("notifications-show-mentions");
-  const showZaps = useLocalStorageDisclosure("notifications-show-zaps");
-  const showReposts = useLocalStorageDisclosure("notifications-show-reposts");
-  const showReactions = useLocalStorageDisclosure("notifications-show-reactions");
+  const showReplies = useLocalStorageDisclosure("notifications-show-replies", true);
+  const showMentions = useLocalStorageDisclosure("notifications-show-mentions", true);
+  const showZaps = useLocalStorageDisclosure("notifications-show-zaps", true);
+  const showReposts = useLocalStorageDisclosure("notifications-show-reposts", true);
+  const showReactions = useLocalStorageDisclosure("notifications-show-reactions", true);
 
   const today = dayjs().format(DATE_FORMAT);
   const { value: day, setValue: setDay } = useRouteSearchValue(

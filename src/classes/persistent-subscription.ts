@@ -14,10 +14,12 @@ export default class PersistentSubscription {
   relay: Relay;
   filters: Filter[];
   closed = true;
-  eosed = false;
   params: Partial<SubscriptionParams>;
 
   subscription: Subscription | null = null;
+  get eosed() {
+    return !!this.subscription?.eosed;
+  }
 
   constructor(relay: AbstractRelay, params?: Partial<SubscriptionParams>) {
     this.id = nanoid(8);
@@ -40,17 +42,10 @@ export default class PersistentSubscription {
 
     if (!(await relayPoolService.waitForOpen(this.relay))) return;
 
-    // recreate the subscription since nostream and other relays reject subscription updates
-    // if (this.subscription?.closed === false) {
-    //   this.closed = true;
-    //   this.subscription.close();
-    // }
-
     // check if its possible to subscribe to this relay
     if (!relayPoolService.canSubscribe(this.relay)) return;
 
     this.closed = false;
-    this.eosed = false;
     this.process.active = true;
 
     // recreate the subscription if its closed since nostr-tools cant reopen a sub
@@ -58,14 +53,10 @@ export default class PersistentSubscription {
       this.subscription = this.relay.subscribe(this.filters, {
         ...this.params,
         oneose: () => {
-          this.eosed = true;
           this.params.oneose?.();
         },
         onclose: (reason) => {
           if (!this.closed) {
-            // unexpected close, reconnect?
-            // console.log("Unexpected closed", this.relay, reason);
-
             relayPoolService.handleRelayNotice(this.relay, reason);
 
             this.closed = true;
