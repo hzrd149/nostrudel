@@ -8,10 +8,10 @@ import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 import { DraftNostrEvent } from "../../../types/nostr-event";
-import { useDecryptionContext } from "../../../providers/global/decryption-provider";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCacheForm from "../../../hooks/use-cache-form";
+import decryptionCacheService from "../../../services/decryption-cache";
 
 export default function SendMessageForm({
   pubkey,
@@ -20,7 +20,6 @@ export default function SendMessageForm({
 }: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const { requestEncrypt } = useSigningContext();
-  const { getOrCreateContainer } = useDecryptionContext();
 
   const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
@@ -64,7 +63,9 @@ export default function SendMessageForm({
       reset({ content: "" });
 
       // add plaintext to decryption context
-      getOrCreateContainer(pubkey, encrypted).plaintext.next(values.content);
+      decryptionCacheService
+        .getOrCreateContainer(pub.event.id, "nip04", pubkey, encrypted)
+        .plaintext.next(values.content);
 
       // refocus input
       setTimeout(() => textAreaRef.current?.focus(), 50);

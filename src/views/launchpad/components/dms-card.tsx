@@ -19,11 +19,12 @@ import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/decryption-provider";
 import Timestamp from "../../../components/timestamp";
+import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import decryptionCacheService from "../../../services/decryption-cache";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
-  const { plaintext } = useDecryptionContainer(pubkey, message.content);
+  const { plaintext } = useKind4Decrypt(message);
   return <Text isTruncated>{plaintext || "<Encrypted>"}</Text>;
 }
 
@@ -50,7 +51,6 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
 export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
-  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
 
   const timeline = useDMTimeline();
 
@@ -74,12 +74,15 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         const last = conversation.messages.find((m) => m.pubkey === conversation.correspondent);
         if (!last) return;
 
-        const container = getOrCreateContainer(conversation.correspondent, last.content);
-        if (container.plaintext.value === undefined) return addToQueue(container);
+        const container = decryptionCacheService.getOrCreateContainer(
+          last.id,
+          "nip04",
+          conversation.correspondent,
+          last.content,
+        );
+        return decryptionCacheService.requestDecrypt(container);
       })
       .filter(Boolean);
-
-    startQueue();
 
     setLoading(true);
     Promise.all(promises).finally(() => setLoading(false));

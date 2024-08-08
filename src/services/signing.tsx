@@ -26,7 +26,7 @@ class SigningService {
     return signed;
   }
 
-  async requestEncrypt(plaintext: string, pubkey: string, account: Account) {
+  async nip04Encrypt(plaintext: string, pubkey: string, account: Account) {
     if (account.readonly) throw new Error("Can not encrypt in readonly mode");
     await this.unlockAccount(account);
 
@@ -35,13 +35,31 @@ class SigningService {
     return account.signer.nip04.encrypt(pubkey, plaintext);
   }
 
-  async requestDecrypt(ciphertext: string, pubkey: string, account: Account) {
+  async nip04Decrypt(ciphertext: string, pubkey: string, account: Account) {
     if (account.readonly) throw new Error("Can not decrypt in readonly mode");
     await this.unlockAccount(account);
 
     if (!account.signer) throw new Error("Account missing signer");
     if (!account.signer.nip04) throw new Error("Signer does not support NIP-04");
     return account.signer.nip04.decrypt(pubkey, ciphertext);
+  }
+
+  async nip44Encrypt(plaintext: string, pubkey: string, account: Account) {
+    if (account.readonly) throw new Error("Can not encrypt in readonly mode");
+    await this.unlockAccount(account);
+
+    if (!account.signer) throw new Error("Account missing signer");
+    if (!account.signer.nip44) throw new Error("Signer does not support NIP-44");
+    return account.signer.nip44.encrypt(pubkey, plaintext);
+  }
+
+  async nip44Decrypt(ciphertext: string, pubkey: string, account: Account) {
+    if (account.readonly) throw new Error("Can not decrypt in readonly mode");
+    await this.unlockAccount(account);
+
+    if (!account.signer) throw new Error("Account missing signer");
+    if (!account.signer.nip44) throw new Error("Signer does not support NIP-44");
+    return account.signer.nip44.decrypt(pubkey, ciphertext);
   }
 }
 

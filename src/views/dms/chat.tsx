@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 import { NostrEvent, kinds } from "nostr-tools";
 
-import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
+import { ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import useSubject from "../../hooks/use-subject";
@@ -14,7 +14,6 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
-import { useDecryptionContext } from "../../providers/global/decryption-provider";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
@@ -27,7 +26,8 @@ import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-app-settings";
 import { truncateId } from "../../helpers/string";
 import useRouterMarker from "../../hooks/use-router-marker";
-import BackButton, { BackIconButton } from "../../components/router/back-button";
+import { BackIconButton } from "../../components/router/back-button";
+import decryptionCacheService from "../../services/decryption-cache";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -52,7 +52,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
@@ -104,12 +103,10 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const decryptAll = async () => {
     const promises = timeline.timeline.value
       .map((message) => {
-        const container = getOrCreateContainer(pubkey, message.content);
-        if (container.plaintext.value === undefined) return addToQueue(container);
+        const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
+        return decryptionCacheService.requestDecrypt(container);
       })
       .filter(Boolean);
-
-    startQueue();
 
     setLoading(true);
     Promise.all(promises).finally(() => setLoading(false));

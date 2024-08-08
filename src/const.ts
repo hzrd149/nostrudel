@@ -25,6 +25,11 @@ export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   {
     urls: ["stun:stun.l.google.com:19302"],
   },
+  {
+    urls: ["turn:172.234.18.173:3478"],
+    username: "free",
+    credential: "free",
+  },
 ];
 
 export const NOSTR_CONNECT_PERMISSIONS = [
