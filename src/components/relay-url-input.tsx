@@ -6,10 +6,21 @@ import { unique } from "../helpers/array";
 
 export type RelayUrlInputProps = Omit<InputProps, "type">;
 
-export const RelayUrlInput = forwardRef(({ ...props }: Omit<InputProps, "type">, ref) => {
-  const { value: relaysJson } = useAsync(async () =>
-    fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>),
-  );
+export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] } & Omit<InputProps, "type">, ref) => {
+  const { value: relaysJson } = useAsync(async () => {
+    let online = await fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>);
+    if (!nips) return online;
+
+    for (const nip of nips) {
+      if (online.length === 0) break;
+      const supported = await fetch("https://api.nostr.watch/v1/nip/" + nip).then(
+        (res) => res.json() as Promise<string[]>,
+      );
+      online = online.filter((url) => supported.includes(url));
+    }
+    return online;
+  }, [nips?.join("|")]);
+
   const relaySuggestions = unique(relaysJson ?? []);
 
   return (

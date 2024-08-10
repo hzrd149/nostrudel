@@ -93,6 +93,7 @@ const VideosView = lazy(() => import("./views/videos"));
 const VideoDetailsView = lazy(() => import("./views/videos/video"));
 import BookmarksView from "./views/bookmarks";
 import TaskManagerProvider from "./views/task-manager/provider";
+import SearchRelaysView from "./views/relays/search";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -265,6 +266,7 @@ const router = createHashRouter([
             ],
           },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "search", element: <SearchRelaysView /> },
           { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },

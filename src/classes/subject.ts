@@ -42,6 +42,14 @@ export default class Subject<T> {
   map<R>(callback: (value: T) => R, defaultValue?: R): Subject<R> {
     const child = new Subject(defaultValue);
 
+    if (this.value !== undefined) {
+      try {
+        child.next(callback(this.value));
+      } catch (e) {
+        child.error(e);
+      }
+    }
+
     this.subscribe((value) => {
       try {
         child.next(callback(value));

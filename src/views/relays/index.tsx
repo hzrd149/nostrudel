@@ -6,7 +6,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import Database01 from "../../components/icons/database-01";
-import { AtIcon, RelayIcon } from "../../components/icons";
+import { AtIcon, RelayIcon, SearchIcon } from "../../components/icons";
 import Mail02 from "../../components/icons/mail-02";
 import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../hooks/use-user-contact-relays";
@@ -68,6 +68,15 @@ export default function RelaysView() {
               colorScheme={location.pathname.startsWith("/relays/media-servers") ? "primary" : undefined}
             >
               Media Servers
+            </Button>
+            <Button
+              variant="outline"
+              as={RouterLink}
+              to="/relays/search"
+              leftIcon={<SearchIcon boxSize={6} />}
+              colorScheme={location.pathname.startsWith("/relays/search") ? "primary" : undefined}
+            >
+              Search Relays
             </Button>
           </>
         )}
