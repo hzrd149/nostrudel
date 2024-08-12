@@ -21,7 +21,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import BackButton from "../../../components/router/back-button";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";
+import { cloneList, getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import AddRelayForm from "../app/add-relay-form";
@@ -98,7 +98,7 @@ export default function SearchRelaysView() {
 
   const makeDefault = async (url: string) => {
     try {
-      const draft = searchRelayList || emptySearchRelayList();
+      const draft = searchRelayList ? cloneList(searchRelayList) : emptySearchRelayList();
       draft.tags = Array.from(draft.tags).sort((a, b) => (a[1] === url ? -1 : 1));
       await publish("Set default search relay", draft);
     } catch (error) {
