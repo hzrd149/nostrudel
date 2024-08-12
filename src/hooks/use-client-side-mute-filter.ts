@@ -13,8 +13,9 @@ export default function useClientSideMuteFilter() {
 
   return useCallback(
     (event: NostrEvent) => {
+      if (event.pubkey === account?.pubkey) return false;
       return wordMuteFilter(event) || mustListFilter(event);
     },
-    [wordMuteFilter, mustListFilter],
+    [wordMuteFilter, mustListFilter, account?.pubkey],
   );
 }
