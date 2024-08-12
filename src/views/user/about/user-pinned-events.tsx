@@ -6,7 +6,7 @@ import { EmbedEventPointer } from "../../../components/embed-event";
 
 export default function UserPinnedEvents({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
-  const { events, list } = useUserPinList(pubkey, contextRelays);
+  const { events, list } = useUserPinList(pubkey, contextRelays, { alwaysRequest: true });
   const showAll = useDisclosure();
 
   if (events.length === 0) return null;
