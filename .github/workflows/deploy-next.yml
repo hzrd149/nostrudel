@@ -36,9 +36,9 @@ jobs:
         uses: reggionick/s3-deploy@v4
         with:
           folder: dist
-          bucket: ${{ secrets.S3_BUCKET }}
-          bucket-region: us-east-1
-          dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          bucket: "${{ secrets.S3_BUCKET }}"
+          bucket-region: "${{ secrets.S3_BUCKET_REGION }}"
+          dist-id: "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
           invalidation: /
           delete-removed: true
           no-cache: true
