@@ -48,17 +48,10 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
     setError(undefined);
     setSearching(true);
     search
-      .search(
-        [
-          { search: query, kinds: [kinds.Metadata], limit: 50 },
-          { search: query, kinds: [kinds.ShortTextNote], limit: 100 },
-          { search: query, kinds: [kinds.LongFormArticle], limit: 20 },
-        ],
-        {
-          onevent: (event) => setResults((arr) => [...arr, event]),
-          oneose: () => setSearching(false),
-        },
-      )
+      .search([{ search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 }], {
+        onevent: (event) => setResults((arr) => [...arr, event]),
+        oneose: () => setSearching(false),
+      })
       .catch((err) => setError(err));
 
     return () => search.cancel();
