@@ -5,7 +5,14 @@ import { Account } from "./account";
 
 export default class NostrConnectAccount extends Account {
   readonly type = "nostr-connect";
-  signer: NostrConnectSigner;
+
+  protected declare _signer: NostrConnectSigner;
+  public get signer(): NostrConnectSigner {
+    return this._signer;
+  }
+  public set signer(value: NostrConnectSigner) {
+    this._signer = value;
+  }
 
   constructor(pubkey: string, signer?: NostrConnectSigner) {
     super(pubkey);

@@ -3,7 +3,14 @@ import { Account } from "./account";
 
 export default class PasswordAccount extends Account {
   readonly type = "local";
-  declare signer: PasswordSigner;
+
+  protected declare _signer: PasswordSigner;
+  public get signer(): PasswordSigner {
+    return this._signer;
+  }
+  public set signer(value: PasswordSigner) {
+    this._signer = value;
+  }
 
   constructor(pubkey: string) {
     super(pubkey);
