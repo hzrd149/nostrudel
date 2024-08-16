@@ -1,12 +1,19 @@
 import { NostrEvent } from "nostr-tools";
 import _throttle from "lodash.throttle";
-import { logger } from "../helpers/debug";
 
-export class PubkeyGraph {
+import { logger } from "../helpers/debug";
+import EventEmitter from "eventemitter3";
+
+type EventMap = {
+  computed: [];
+};
+
+export class PubkeyGraph extends EventEmitter<EventMap> {
   /** the pubkey at the center of it all */
   root: string;
   log = logger.extend("PubkeyGraph");
 
+  /** a map of what pubkeys follow other pubkeys */
   connections = new Map<string, string[]>();
   distance = new Map<string, number>();
 
@@ -14,6 +21,7 @@ export class PubkeyGraph {
   connectionCount = new Map<string, number>();
 
   constructor(root: string) {
+    super();
     this.root = root;
   }
 
@@ -128,6 +136,8 @@ export class PubkeyGraph {
     next.add(this.root);
     walkLevel(0);
     console.timeEnd("walk");
+
+    this.emit("computed");
   }
 
   getPaths(pubkey: string, maxLength = 2) {

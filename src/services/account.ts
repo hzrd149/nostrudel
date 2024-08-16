@@ -7,6 +7,7 @@ import PasswordAccount from "../classes/accounts/password-account";
 import PubkeyAccount from "../classes/accounts/pubkey-account";
 import SerialPortAccount from "../classes/accounts/serial-port-account";
 import { PersistentSubject } from "../classes/subject";
+import { logger } from "../helpers/debug";
 import db from "./db";
 import { AppSettings } from "./settings/migrations";
 
@@ -23,6 +24,7 @@ export type LocalAccount = CommonAccount & {
 };
 
 class AccountService {
+  log = logger.extend("AccountService");
   loading = new PersistentSubject(true);
   accounts = new PersistentSubject<Account[]>([]);
   current = new PersistentSubject<Account | null>(null);
@@ -36,7 +38,9 @@ class AccountService {
         try {
           const account = this.createAccountFromDatabaseRecord(data);
           if (account) accounts.push(account);
-        } catch (error) {}
+        } catch (error) {
+          this.log("Failed to load account", data, error);
+        }
       }
 
       this.accounts.next(accounts);

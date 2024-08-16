@@ -1,5 +1,5 @@
 import { AddressPointer } from "nostr-tools/nip19";
-import useDVMMetadata from "../../../hooks/use-dvm-metadata";
+import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
 import { Select } from "@chakra-ui/react";
 
 export default function DVMParams({

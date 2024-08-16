@@ -22,23 +22,23 @@ import {
   flattenJobChain,
   chainJobs,
   groupEventsIntoJobs,
-} from "../../helpers/nostr/dvm";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import useSubject from "../../hooks/use-subject";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { CodeIcon } from "../../components/icons";
+} from "../../../helpers/nostr/dvm";
+import { DraftNostrEvent } from "../../../types/nostr-event";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
+import useSubject from "../../../hooks/use-subject";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import { CodeIcon } from "../../../components/icons";
 import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
 import { AddressPointer } from "nostr-tools/nip19";
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import DVMParams from "./components/dvm-params";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import { getHumanReadableCoordinate } from "../../services/replaceable-events";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { getHumanReadableCoordinate } from "../../../services/replaceable-events";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "hour").unix());
@@ -95,7 +95,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2">
-        <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
+        <Button leftIcon={<ChevronLeftIcon boxSize={6} />} onClick={() => navigate(-1)}>
           Back
         </Button>
         <DVMParams pointer={pointer} params={params} onChange={setParams} />

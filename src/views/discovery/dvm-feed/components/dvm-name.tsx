@@ -2,10 +2,10 @@ import { Link, LinkProps, Text, TextProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import useUserMetadata from "../../../hooks/use-user-metadata";
-import { getDisplayName } from "../../../helpers/nostr/user-metadata";
+import useUserMetadata from "../../../../hooks/use-user-metadata";
+import { getDisplayName } from "../../../../helpers/nostr/user-metadata";
 import { AddressPointer } from "nostr-tools/nip19";
-import useDVMMetadata from "../../../hooks/use-dvm-metadata";
+import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
 
 export function DVMName({
   pointer,

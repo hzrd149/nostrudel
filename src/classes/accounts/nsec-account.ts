@@ -4,7 +4,14 @@ import { Account } from "./account";
 
 export default class NsecAccount extends Account {
   readonly type = "nsec";
-  declare signer?: SimpleSigner;
+
+  protected declare _signer?: SimpleSigner | undefined;
+  public get signer(): SimpleSigner | undefined {
+    return this._signer;
+  }
+  public set signer(value: SimpleSigner | undefined) {
+    this._signer = value;
+  }
 
   constructor(pubkey: string) {
     super(pubkey);

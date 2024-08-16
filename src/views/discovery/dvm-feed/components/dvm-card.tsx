@@ -3,13 +3,13 @@ import { Link as RouterLink, To } from "react-router-dom";
 import { useMemo } from "react";
 import { AddressPointer } from "nostr-tools/nip19";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import { NostrEvent } from "../../../../types/nostr-event";
+import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import { DVMAvatarLink } from "./dvm-avatar";
-import { getEventAddressPointer } from "../../../helpers/nostr/event";
+import { getEventAddressPointer } from "../../../../helpers/nostr/event";
 import { DVMName } from "./dvm-name";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
+import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 
 export default function DVMCard({
   appData,

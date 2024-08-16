@@ -7,11 +7,14 @@ import Layout from "./components/layout";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import { RouteProviders } from "./providers/route";
+import RequireCurrentAccount from "./providers/route/require-current-account";
 import GlobalStyles from "./styles";
 
 import HomeView from "./views/home/index";
-const DVMFeedHomeView = lazy(() => import("./views/dvm-feed/index"));
-const DVMFeedView = lazy(() => import("./views/dvm-feed/feed"));
+const DiscoveryHomeView = lazy(() => import("./views/discovery/index"));
+const DVMFeedView = lazy(() => import("./views/discovery/dvm-feed/feed"));
+const BlindspotHomeView = lazy(() => import("./views/discovery/blindspot"));
+const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -316,10 +319,22 @@ const router = createHashRouter([
         ],
       },
       {
-        path: "dvm",
+        path: "discovery",
         children: [
-          { path: ":addr", element: <DVMFeedView /> },
-          { path: "", element: <DVMFeedHomeView /> },
+          { path: "", element: <DiscoveryHomeView /> },
+          { path: "dvm/:addr", element: <DVMFeedView /> },
+          {
+            path: "blindspot",
+            element: (
+              <RequireCurrentAccount>
+                <Outlet />
+              </RequireCurrentAccount>
+            ),
+            children: [
+              { path: "", element: <BlindspotHomeView /> },
+              { path: ":pubkey", element: <BlindspotFeedView /> },
+            ],
+          },
         ],
       },
       { path: "search", element: <SearchView /> },

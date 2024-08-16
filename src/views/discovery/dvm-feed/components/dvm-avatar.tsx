@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Box, BoxProps } from "@chakra-ui/react";
 
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserMetadata from "../../../../hooks/use-user-metadata";
 
 import { AddressPointer } from "nostr-tools/nip19";
-import useDVMMetadata from "../../../hooks/use-dvm-metadata";
+import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
 
 type DVMAvatarProps = {
   pointer: AddressPointer;

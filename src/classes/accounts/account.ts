@@ -4,8 +4,15 @@ import { Nip07Signer } from "../../types/nostr-extensions";
 export class Account {
   readonly type: string = "unknown";
   pubkey: string;
-  signer?: Nip07Signer;
   localSettings?: AppSettings;
+
+  protected _signer?: Nip07Signer | undefined;
+  public get signer(): Nip07Signer | undefined {
+    return this._signer;
+  }
+  public set signer(value: Nip07Signer | undefined) {
+    this._signer = value;
+  }
 
   get readonly() {
     return !this.signer;

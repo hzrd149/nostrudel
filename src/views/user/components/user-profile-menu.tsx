@@ -24,6 +24,7 @@ import userMailboxesService from "../../../services/user-mailboxes";
 import { useContext } from "react";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import PubkeyAccount from "../../../classes/accounts/pubkey-account";
+import Telescope from "../../../components/icons/telescope";
 
 export const UserProfileMenu = ({
   pubkey,
@@ -59,6 +60,13 @@ export const UserProfileMenu = ({
         )}
         <MenuItem icon={<DirectMessagesIcon fontSize="1.5em" />} as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`}>
           Direct messages
+        </MenuItem>
+        <MenuItem
+          icon={<Telescope fontSize="1.5em" />}
+          as={RouterLink}
+          to={`/discovery/blindspot/${nip19.npubEncode(pubkey)}`}
+        >
+          Blind spot
         </MenuItem>
         <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
           Login as user

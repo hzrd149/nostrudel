@@ -1,8 +1,8 @@
-import { ChainedDVMJob, getEventIdsFromJobs } from "../../../helpers/nostr/dvm";
+import { ChainedDVMJob, getEventIdsFromJobs } from "../../../../helpers/nostr/dvm";
 import FeedStatus from "./feed-status";
 import { AddressPointer } from "nostr-tools/nip19";
-import useSingleEvents from "../../../hooks/use-single-events";
-import TimelineItem from "../../../components/timeline-page/generic-note-timeline/timeline-item";
+import useSingleEvents from "../../../../hooks/use-single-events";
+import TimelineItem from "../../../../components/timeline-page/generic-note-timeline/timeline-item";
 
 function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
   const eventIds = getEventIdsFromJobs(chain);
