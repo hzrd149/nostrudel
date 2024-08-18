@@ -6238,10 +6238,10 @@ normalize-package-data@^2.5.0:
     semver "2 || 3 || 4 || 5"
     validate-npm-package-license "^3.0.1"
 
-nostr-idb@^2.1.5:
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/nostr-idb/-/nostr-idb-2.1.5.tgz#672b0a7689b6fd17fbf5cd9e466cabd388c436e1"
-  integrity sha512-4ZD8qT5Yud3OF7pEbQ7JzRIG+nRJlaskYD8BMNN0TDzAt7WTZQMRKV85UhocX3MXB6EuYZkxsN0VyI1qItWtLA==
+nostr-idb@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/nostr-idb/-/nostr-idb-2.1.6.tgz#d62dcbc9c332b7e1be17a7aa7ae4091b39276183"
+  integrity sha512-1iWqeL1+bVWVmkYLHB6vDt36VxPCbdIzoHqUBEp+8ElXXgmLYIwq9V9y+n1BYHZTV6E95/sOs02PRb3eRMJ/jw==
   dependencies:
     debug "^4.3.6"
     idb "^8.0.0"

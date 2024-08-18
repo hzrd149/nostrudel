@@ -103,7 +103,9 @@ export default class MultiSubscription {
 
         if (subscription) {
           subscription.filters = this.filters;
-          subscription.update();
+          subscription.update().catch((err) => {
+            // eat error
+          });
         }
       }
     }
@@ -123,7 +125,9 @@ export default class MultiSubscription {
         (!isFilterEqual(this.cacheSubscription.filters, this.filters) || this.cacheSubscription.closed)
       ) {
         this.cacheSubscription.filters = this.filters;
-        this.cacheSubscription.update();
+        this.cacheSubscription.update().catch((err) => {
+          // eat error
+        });
       }
     } else if (this.cacheSubscription?.closed === false) {
       this.cacheSubscription.close();

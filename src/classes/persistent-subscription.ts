@@ -37,13 +37,14 @@ export default class PersistentSubscription {
     processManager.registerProcess(this.process);
   }
 
+  /** attempts to update the subscription */
   async update() {
-    if (!this.filters || this.filters.length === 0) return this;
+    if (!this.filters || this.filters.length === 0) throw new Error("Missing filters");
 
-    if (!(await relayPoolService.waitForOpen(this.relay))) return;
+    if (!(await relayPoolService.waitForOpen(this.relay))) throw new Error("Failed to connect to relay");
 
     // check if its possible to subscribe to this relay
-    if (!relayPoolService.canSubscribe(this.relay)) return;
+    if (!relayPoolService.canSubscribe(this.relay)) throw new Error("Cant subscribe to relay");
 
     this.closed = false;
     this.process.active = true;
@@ -70,9 +71,7 @@ export default class PersistentSubscription {
       // NOTE: reset the eosed flag since nostr-tools dose not
       this.subscription.eosed = false;
       this.subscription.fire();
-    }
-
-    return this;
+    } else throw new Error("Subscription filters have not changed");
   }
   close() {
     if (this.closed) return this;
