@@ -22,7 +22,7 @@ export function getTorrentTitle(torrent: NostrEvent) {
   return title;
 }
 export function getTorrentBtih(torrent: NostrEvent) {
-  const btih = torrent.tags.find((a) => a[0] === "btih")?.[1];
+  const btih = torrent.tags.find((a) => a[0] === "btih" || a[0] === "x")?.[1];
   if (!btih) throw new Error("Missing btih");
   return btih;
 }
