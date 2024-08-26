@@ -107,7 +107,7 @@ export default function NewTorrentView() {
       content: values.description,
       tags: [
         ["title", values.title],
-        ["btih", values.btih],
+        ["x", values.btih],
         ...values.tags.map((v) => ["t", v]),
         ...values.files.map((f) => ["file", f.name, String(f.size)]),
       ],
