@@ -17,7 +17,7 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
   const stateRef = useRef<UseFormStateReturn<TFieldValues>>(state);
   stateRef.current = state;
 
-  // NOTE: this watches the dirty state
+  // NOTE: this watches the state
   state.isDirty;
   state.isSubmitted;
 

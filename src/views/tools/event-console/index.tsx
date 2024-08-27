@@ -151,7 +151,7 @@ export default function EventConsoleView() {
       <Flex gap="2" alignItems="center" wrap="wrap">
         <BackButton size="sm" />
         <Heading size="md">Event Console</Heading>
-        <Switch size="sm" checked={queryRelay.isOpen} onChange={queryRelay.onToggle}>
+        <Switch size="sm" isChecked={queryRelay.isOpen} onChange={queryRelay.onToggle}>
           Query Relay
         </Switch>
         {queryRelay.isOpen && (

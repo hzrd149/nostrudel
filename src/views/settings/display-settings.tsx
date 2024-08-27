@@ -25,6 +25,7 @@ import localSettings from "../../services/local-settings";
 export default function DisplaySettings() {
   const { register } = useFormContext<AppSettings>();
 
+  const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
 
   return (
@@ -125,6 +126,21 @@ export default function DisplaySettings() {
           </FormControl>
           <FormControl>
             <Flex alignItems="center">
+              <FormLabel htmlFor="hideZapBubbles" mb="0">
+                Hide individual zaps on notes
+              </FormLabel>
+              <Switch
+                id="hideZapBubbles"
+                isChecked={hideZapBubbles}
+                onChange={() => localSettings.hideZapBubbles.next(!localSettings.hideZapBubbles.value)}
+              />
+            </Flex>
+            <FormHelperText>
+              <span>Enabled: Hides individual zaps on notes in the timeline</span>
+            </FormHelperText>
+          </FormControl>
+          <FormControl>
+            <Flex alignItems="center">
               <FormLabel htmlFor="show-content-warning" mb="0">
                 Show content warning
               </FormLabel>
@@ -141,7 +157,7 @@ export default function DisplaySettings() {
               </FormLabel>
               <Switch
                 id="enableNoteDrawer"
-                checked={enableNoteDrawer}
+                isChecked={enableNoteDrawer}
                 onChange={() => localSettings.enableNoteThreadDrawer.next(!localSettings.enableNoteThreadDrawer.value)}
               />
             </Flex>
