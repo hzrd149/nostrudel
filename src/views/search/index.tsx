@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
 import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
 
@@ -23,10 +23,13 @@ export function SearchPage() {
   const searchQuery = params.get("q") || "";
   const searchRelay = params.get("relay") || searchRelays[0];
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues: { query: searchQuery, relay: searchRelay },
     mode: "all",
   });
+
+  // reset the relay when the search relay changes
+  useEffect(() => setValue("relay", searchRelay), [searchRelay]);
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
