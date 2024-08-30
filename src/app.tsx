@@ -269,6 +269,7 @@ const router = createHashRouter([
           { path: "privacy", element: <PrivacySettings /> },
           { path: "lightning", element: <LightningSettings /> },
           { path: "performance", element: <PerformanceSettings /> },
+          { path: "media-servers", element: <MediaServersView /> },
         ],
       },
       {

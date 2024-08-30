@@ -12,8 +12,11 @@ import {
   PerformanceIcon,
   SpyIcon,
 } from "../../components/icons";
+import useCurrentAccount from "../../hooks/use-current-account";
+import Image01 from "../../components/icons/image-01";
 
 export default function SettingsView() {
+  const account = useCurrentAccount();
   const match = useMatch("/settings");
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
@@ -30,6 +33,13 @@ export default function SettingsView() {
             <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
               Posts
             </SimpleNavItem>
+            {account && (
+              <>
+                <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={6} />}>
+                  Media Servers
+                </SimpleNavItem>
+              </>
+            )}
             <SimpleNavItem to="/settings/performance" leftIcon={<PerformanceIcon boxSize={5} />}>
               Performance
             </SimpleNavItem>
