@@ -1,3 +1,4 @@
+import { kinds } from "nostr-tools";
 import { safeRelayUrl, safeRelayUrls } from "./helpers/relay";
 
 export const DEFAULT_SEARCH_RELAYS = safeRelayUrls([
@@ -44,4 +45,12 @@ export const NOSTR_CONNECT_PERMISSIONS = [
   "sign_event:4",
   "sign_event:6",
   "sign_event:7",
+];
+
+export const NEVER_ATTACH_CLIENT_TAG = [kinds.EncryptedDirectMessage];
+export const ENABLE_CLIENT_TAG = import.meta.env.VITE_ENABLE_CLIENT_TAG !== "false";
+export const NIP_89_CLIENT_TAG = [
+  "client",
+  "noStrudel",
+  "31990:266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5:1686066542546",
 ];

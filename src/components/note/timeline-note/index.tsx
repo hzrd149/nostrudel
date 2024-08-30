@@ -47,6 +47,7 @@ import ZapBubbles from "./components/zap-bubbles";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import relayHintService from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
+import NotePublishedUsing from "../note-published-using";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -108,6 +109,7 @@ export function TimelineNote({
                 <Timestamp timestamp={event.created_at} />
               </Link>
               <POWIcon event={event} boxSize={5} />
+              <NotePublishedUsing event={event} />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               {!hideDrawerButton && (

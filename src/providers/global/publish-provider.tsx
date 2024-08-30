@@ -13,6 +13,8 @@ import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
 import deleteEventService from "../../services/delete-events";
 import userMailboxesService from "../../services/user-mailboxes";
+import localSettings from "../../services/local-settings";
+import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_TAG } from "../../const";
 
 type PublishContextType = {
   log: PublishAction[];
@@ -78,7 +80,16 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         let signed: NostrEvent;
         if (!Object.hasOwn(event, "sig")) {
           let draft: EventTemplate = event as EventTemplate;
+
+          // add pubkey relay hints
           draft = userMailboxesService.addPubkeyRelayHints(draft);
+
+          // add client tag
+          if (localSettings.addClientTag.value && !NEVER_ATTACH_CLIENT_TAG.includes(event.kind)) {
+            draft.tags = [...draft.tags.filter((t) => t[0] !== "client"), NIP_89_CLIENT_TAG];
+          }
+
+          // request signature
           signed = await requestSignature(draft);
         } else signed = event as NostrEvent;
 

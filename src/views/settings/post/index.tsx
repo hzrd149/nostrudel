@@ -19,6 +19,7 @@ import {
   AlertTitle,
   AlertDescription,
   Heading,
+  Switch,
 } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
 
@@ -28,6 +29,8 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useSettingsForm from "../use-settings-form";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
+import localSettings from "../../../services/local-settings";
+import useSubject from "../../../hooks/use-subject";
 
 export default function PostSettings() {
   const account = useCurrentAccount();
@@ -63,6 +66,8 @@ export default function PostSettings() {
       { shouldTouch: true, shouldDirty: true },
     );
   };
+
+  const addClientTag = useSubject(localSettings.addClientTag);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>
@@ -156,6 +161,26 @@ export default function PostSettings() {
           />
           <FormHelperText>
             <span>How much Proof of work to mine when writing notes. setting this to 0 will disable it</span>
+          </FormHelperText>
+        </FormControl>
+
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="autoShowMedia" mb="0">
+              Add client tag
+            </FormLabel>
+            <Switch
+              id="autoShowMedia"
+              isChecked={addClientTag}
+              onChange={() => localSettings.addClientTag.next(!localSettings.addClientTag.value)}
+            />
+          </Flex>
+          <FormHelperText>
+            Enabled: Attach the{" "}
+            <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
+              NIP-89
+            </Link>{" "}
+            client tag to events
           </FormHelperText>
         </FormControl>
       </Flex>

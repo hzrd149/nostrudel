@@ -30,6 +30,7 @@ import ZapBubbles from "../../../components/note/timeline-note/components/zap-bu
 import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import relayHintService from "../../../services/event-relay-hint";
+import NotePublishedUsing from "../../../components/note/note-published-using";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -45,6 +46,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
 
   const muteFilter = useClientSideMuteFilter();
 
+  const isFocused = level === -1;
   const replies = post.replies.filter((r) => !muteFilter(r.event));
   const numberOfReplies = countReplies(replies);
   const isMuted = muteFilter(post.event);
@@ -67,7 +69,6 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
-      <POWIcon event={post.event} boxSize={5} />
       <Link
         as={RouterLink}
         whiteSpace="nowrap"
@@ -76,19 +77,23 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       >
         <Timestamp timestamp={post.event.created_at} />
       </Link>
-      {replies.length > 0 ? (
-        <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
-          ({numberOfReplies})
-        </Button>
-      ) : (
-        <IconButton
-          variant="ghost"
-          onClick={expanded.onToggle}
-          icon={expanded.isOpen ? <Minus /> : <Expand01 />}
-          aria-label={expanded.isOpen ? "Collapse" : "Expand"}
-          title={expanded.isOpen ? "Collapse" : "Expand"}
-        />
-      )}
+      <POWIcon event={post.event} boxSize={5} />
+      <NotePublishedUsing event={post.event} />
+      <Spacer />
+      {!isFocused &&
+        (replies.length > 0 ? (
+          <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
+            ({numberOfReplies})
+          </Button>
+        ) : (
+          <IconButton
+            variant="ghost"
+            onClick={expanded.onToggle}
+            icon={expanded.isOpen ? <Minus /> : <Expand01 />}
+            aria-label={expanded.isOpen ? "Collapse" : "Expand"}
+            title={expanded.isOpen ? "Collapse" : "Expand"}
+          />
+        ))}
     </Flex>
   );
 
@@ -153,7 +158,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
         )}
       </Flex>
       {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
-      {level === -1 ? (
+      {isFocused ? (
         <DetailsTabs post={post} />
       ) : (
         expanded.isOpen &&

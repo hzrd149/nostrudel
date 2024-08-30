@@ -1,8 +1,7 @@
 import { generateSecretKey } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
-import { PersistentSubject } from "../classes/subject";
-import { DEFAULT_SIGNAL_RELAYS } from "../const";
+import { ENABLE_CLIENT_TAG, DEFAULT_SIGNAL_RELAYS } from "../const";
 import {
   BooleanLocalStorageEntry,
   NullableNumberLocalStorageEntry,
@@ -45,6 +44,9 @@ const webRtcRecentConnections = new LocalStorageEntry(
   (value) => value.join(","),
 );
 
+// posting
+const addClientTag = new BooleanLocalStorageEntry("add-client-tag", ENABLE_CLIENT_TAG);
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
@@ -53,6 +55,7 @@ const localSettings = {
   webRtcLocalIdentity,
   webRtcSignalingRelays,
   webRtcRecentConnections,
+  addClientTag,
 };
 
 if (import.meta.env.DEV) {
