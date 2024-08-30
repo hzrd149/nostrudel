@@ -19,6 +19,7 @@ export default class PasswordAccount extends Account {
 
   static fromNcryptsec(pubkey: string, ncryptsec: string) {
     const account = new PasswordAccount(pubkey);
+    account.pubkey = pubkey;
     return account.fromJSON({ ncryptsec });
   }
 

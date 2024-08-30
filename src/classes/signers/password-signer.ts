@@ -130,6 +130,16 @@ export default class PasswordSigner implements Nip07Signer {
     this.ncryptsec = encrypt(this.key, password);
   }
 
+  public async testPassword(password: string) {
+    if (this.ncryptsec) {
+      const key = decrypt(this.ncryptsec, password);
+      if (!key) throw new Error("Failed to decrypt key");
+    } else if (this.buffer && this.iv) {
+      const key = await subltCryptoDecryptSecKey(this.buffer, this.iv, password);
+      if (!key) throw new Error("Failed to decrypt key");
+    } else throw new Error("Missing array buffer and iv");
+  }
+
   public async unlock(password: string) {
     if (this.key) return;
 

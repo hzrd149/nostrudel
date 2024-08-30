@@ -124,12 +124,25 @@ class AccountService {
     if (account) account.localSettings = settings;
   }
 
-  switchAccount(pubkey: string) {
-    const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
-    if (account) {
-      this.current.next(account);
+  switchAccount(account: Account | string) {
+    const newCurrent =
+      typeof account === "string" ? this.accounts.value.find((acc) => acc.pubkey === account) : account;
+
+    if (newCurrent) {
+      this.current.next(newCurrent);
       this.isGhost.next(false);
-      localStorage.setItem("lastAccount", pubkey);
+      localStorage.setItem("lastAccount", newCurrent.pubkey);
+    }
+  }
+
+  replaceAccount(oldPubkey: string, newAccount: Account, change = true) {
+    const account = this.accounts.value.find((acc) => acc.pubkey === oldPubkey);
+
+    if (account) {
+      this.current.next(newAccount);
+      this.accounts.next([...this.accounts.value.filter((acc) => acc !== account), newAccount]);
+      this.isGhost.next(false);
+      localStorage.setItem("lastAccount", newAccount.pubkey);
     }
   }
 

@@ -102,6 +102,7 @@ import LightningSettings from "./views/settings/lightning";
 import PerformanceSettings from "./views/settings/performance";
 import PrivacySettings from "./views/settings/privacy";
 import PostSettings from "./views/settings/post";
+import AccountSettings from "./views/settings/accounts";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -265,6 +266,14 @@ const router = createHashRouter([
         children: [
           { path: "", element: <DisplaySettings /> },
           { path: "post", element: <PostSettings /> },
+          {
+            path: "accounts",
+            element: (
+              <RequireCurrentAccount>
+                <AccountSettings />
+              </RequireCurrentAccount>
+            ),
+          },
           { path: "display", element: <DisplaySettings /> },
           { path: "privacy", element: <PrivacySettings /> },
           { path: "lightning", element: <LightningSettings /> },
