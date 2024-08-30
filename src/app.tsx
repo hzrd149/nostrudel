@@ -97,6 +97,11 @@ const VideoDetailsView = lazy(() => import("./views/videos/video"));
 import BookmarksView from "./views/bookmarks";
 import TaskManagerProvider from "./views/task-manager/provider";
 import SearchRelaysView from "./views/relays/search";
+import DisplaySettings from "./views/settings/display";
+import LightningSettings from "./views/settings/lightning";
+import PerformanceSettings from "./views/settings/performance";
+import PrivacySettings from "./views/settings/privacy";
+import PostSettings from "./views/settings/post";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -254,7 +259,18 @@ const router = createHashRouter([
         element: <ThreadView />,
       },
       { path: "other-stuff", element: <OtherStuffView /> },
-      { path: "settings", element: <SettingsView /> },
+      {
+        path: "settings",
+        element: <SettingsView />,
+        children: [
+          { path: "", element: <DisplaySettings /> },
+          { path: "post", element: <PostSettings /> },
+          { path: "display", element: <DisplaySettings /> },
+          { path: "privacy", element: <PrivacySettings /> },
+          { path: "lightning", element: <LightningSettings /> },
+          { path: "performance", element: <PerformanceSettings /> },
+        ],
+      },
       {
         path: "relays",
         element: <RelaysView />,
