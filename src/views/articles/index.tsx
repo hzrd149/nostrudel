@@ -38,7 +38,7 @@ function ArticlesHomePage() {
 
   const timeline = useTimelineLoader(`${listId ?? "global"}-articles`, relays, query, { eventFilter });
 
-  const articles = useSubject(timeline.timeline).filter((article) => !!getArticleTitle(article));
+  const articles = useSubject(timeline.timeline).filter((article) => !!getArticleTitle(article) && !!article.content);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (

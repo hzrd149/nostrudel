@@ -44,7 +44,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
       </Box>
       {image && <Image src={image} maxW="6xl" w="full" mx="auto" maxH="60vh" />}
       <Box mx="auto" maxW="4xl" w="full">
-        <ZapBubbles event={article} />
+        <ZapBubbles event={article} mb="2" />
         <Flex gap="2">
           <NoteZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
           <NoteReactions event={article} size="sm" variant="ghost" />
