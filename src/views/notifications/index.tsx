@@ -103,16 +103,17 @@ const NotificationsTimeline = memo(
     const navigateNextUnread = () => {
       const focusedEvent = filteredEvents.find((e) => e.id === focused);
 
-      if (focusedEvent) {
-        const idx = filteredEvents.indexOf(focusedEvent);
-        for (let i = idx; i < filteredEvents.length; i++) {
-          if (readStatusService.getStatus(filteredEvents[i].id).value === false) {
-            setFocus(filteredEvents[i].id);
-            break;
-          }
+      const idx = focusedEvent ? filteredEvents.indexOf(focusedEvent) : 0;
+      for (let i = idx; i < filteredEvents.length; i++) {
+        if (readStatusService.getStatus(filteredEvents[i].id).value === false) {
+          setFocus(filteredEvents[i].id);
+          break;
         }
       }
     };
+    const navigateTop = () => setFocus(filteredEvents[0]?.id ?? "");
+    const navigateEnd = () => setFocus(filteredEvents[filteredEvents.length - 1]?.id ?? "");
+
     useKeyPressEvent("ArrowUp", navigatePrev);
     useKeyPressEvent("ArrowDown", navigateNext);
     useKeyPressEvent("ArrowLeft", navigatePrev);
@@ -121,8 +122,10 @@ const NotificationsTimeline = memo(
     useKeyPressEvent("h", navigatePrev);
     useKeyPressEvent("j", navigateNext);
     useKeyPressEvent("l", navigateNextUnread);
-    useKeyPressEvent("H", () => setFocus(filteredEvents[0]?.id ?? ""));
-    useKeyPressEvent("L", () => setFocus(filteredEvents[filteredEvents.length - 1]?.id ?? ""));
+    useKeyPressEvent("H", navigateTop);
+    useKeyPressEvent("Home", navigateTop);
+    useKeyPressEvent("L", navigateEnd);
+    useKeyPressEvent("End", navigateEnd);
 
     if (filteredEvents.length === 0)
       return (

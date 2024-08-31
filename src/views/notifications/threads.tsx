@@ -12,8 +12,7 @@ import { useNotifications } from "../../providers/global/notifications-provider"
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
 import { NostrEvent } from "../../types/nostr-event";
-import NotificationIconEntry from "./components/notification-icon-entry";
-import { ChevronLeftIcon, ReplyIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -27,6 +26,7 @@ import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 import localSettings from "../../services/local-settings";
+import GitBranch01 from "../../components/icons/git-branch-01";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
@@ -67,29 +67,32 @@ function ThreadGroup({ rootId, events }: { rootId: string; events: NostrEvent[] 
   const ref = useEventIntersectionRef(events[events.length - 1]);
 
   return (
-    <NotificationIconEntry icon={<ReplyIcon boxSize={8} />}>
-      <AvatarGroup size="sm">
-        {pubkeys.map((pubkey) => (
-          <UserAvatarLink key={pubkey} pubkey={pubkey} />
+    <Flex>
+      <GitBranch01 boxSize={8} color="green.500" mr="2" />
+      <Flex direction="column" gap="2">
+        <AvatarGroup size="sm">
+          {pubkeys.map((pubkey) => (
+            <UserAvatarLink key={pubkey} pubkey={pubkey} />
+          ))}
+        </AvatarGroup>
+        <Box>
+          <Text fontWeight="bold">
+            {pubkeys.length > 1 ? pubkeys.length + " people" : pubkeys.length + " person"} replied in thread:
+          </Text>
+          {rootEvent && <CompactNoteContent event={rootEvent} maxLength={100} color="GrayText" />}
+        </Box>
+        {(events.length > 3 && !showAll.isOpen ? events.slice(0, 3) : events).map((event) => (
+          <ReplyEntry key={event.id} event={event} />
         ))}
-      </AvatarGroup>
-      <Box>
-        <Text fontWeight="bold">
-          {pubkeys.length > 1 ? pubkeys.length + " people" : pubkeys.length + " person"} replied in thread:
-        </Text>
-        {rootEvent && <CompactNoteContent event={rootEvent} maxLength={100} color="GrayText" />}
-      </Box>
-      {(events.length > 3 && !showAll.isOpen ? events.slice(0, 3) : events).map((event) => (
-        <ReplyEntry key={event.id} event={event} />
-      ))}
-      {!showAll.isOpen && events.length > 3 && (
-        <ButtonGroup>
-          <Button variant="link" py="2" onClick={showAll.onOpen} colorScheme="primary" fontWeight="bold">
-            +{events.length - 3} more
-          </Button>
-        </ButtonGroup>
-      )}
-    </NotificationIconEntry>
+        {!showAll.isOpen && events.length > 3 && (
+          <ButtonGroup>
+            <Button variant="link" py="2" onClick={showAll.onOpen} colorScheme="primary" fontWeight="bold">
+              +{events.length - 3} more
+            </Button>
+          </ButtonGroup>
+        )}
+      </Flex>
+    </Flex>
   );
 }
 
@@ -118,7 +121,7 @@ function ThreadsNotificationsPage() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Flex gap="2">
-          <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
+          <Button leftIcon={<ChevronLeftIcon boxSize={6} />} onClick={() => navigate(-1)}>
             Back
           </Button>
           <PeopleListSelection />
