@@ -42,7 +42,7 @@ const NotificationIconEntry = memo(
       }, [read, expanded]);
 
       return (
-        <Flex direction="column" bg={expanded || read === false ? "whiteAlpha.100" : undefined} rounded="md">
+        <Flex direction="column" bg={expanded || !read ? "whiteAlpha.100" : undefined} rounded="md">
           <Flex
             gap="2"
             alignItems="center"
