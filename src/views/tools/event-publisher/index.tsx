@@ -117,7 +117,7 @@ export default function EventPublisherView() {
         <Flex gap="2" alignItems="center" wrap="wrap">
           <BackButton size="sm" />
           <Heading size="md">Event Publisher</Heading>
-          <Switch size="sm" checked={customRelay.isOpen} onChange={customRelay.onToggle}>
+          <Switch size="sm" isChecked={customRelay.isOpen} onChange={customRelay.onToggle}>
             Publish to Relay
           </Switch>
           {customRelay.isOpen && (

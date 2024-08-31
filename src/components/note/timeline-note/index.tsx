@@ -46,6 +46,8 @@ import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import relayHintService from "../../../services/event-relay-hint";
+import localSettings from "../../../services/local-settings";
+import NotePublishedUsing from "../note-published-using";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -68,6 +70,7 @@ export function TimelineNote({
 }: TimelineNoteProps) {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useSubject(appSettings);
+  const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 
   const ref = useEventIntersectionRef(event);
@@ -106,6 +109,7 @@ export function TimelineNote({
                 <Timestamp timestamp={event.created_at} />
               </Link>
               <POWIcon event={event} boxSize={5} />
+              <NotePublishedUsing event={event} />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               {!hideDrawerButton && (
@@ -124,7 +128,7 @@ export function TimelineNote({
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
-            <ZapBubbles event={event} w="full" />
+            {!hideZapBubbles && <ZapBubbles event={event} w="full" />}
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
               <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>

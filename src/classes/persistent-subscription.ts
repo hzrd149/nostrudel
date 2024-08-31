@@ -14,10 +14,12 @@ export default class PersistentSubscription {
   relay: Relay;
   filters: Filter[];
   closed = true;
-  eosed = false;
   params: Partial<SubscriptionParams>;
 
   subscription: Subscription | null = null;
+  get eosed() {
+    return !!this.subscription?.eosed;
+  }
 
   constructor(relay: AbstractRelay, params?: Partial<SubscriptionParams>) {
     this.id = nanoid(8);
@@ -35,22 +37,16 @@ export default class PersistentSubscription {
     processManager.registerProcess(this.process);
   }
 
+  /** attempts to update the subscription */
   async update() {
-    if (!this.filters || this.filters.length === 0) return this;
+    if (!this.filters || this.filters.length === 0) throw new Error("Missing filters");
 
-    if (!(await relayPoolService.waitForOpen(this.relay))) return;
-
-    // recreate the subscription since nostream and other relays reject subscription updates
-    // if (this.subscription?.closed === false) {
-    //   this.closed = true;
-    //   this.subscription.close();
-    // }
+    if (!(await relayPoolService.waitForOpen(this.relay))) throw new Error("Failed to connect to relay");
 
     // check if its possible to subscribe to this relay
-    if (!relayPoolService.canSubscribe(this.relay)) return;
+    if (!relayPoolService.canSubscribe(this.relay)) throw new Error("Cant subscribe to relay");
 
     this.closed = false;
-    this.eosed = false;
     this.process.active = true;
 
     // recreate the subscription if its closed since nostr-tools cant reopen a sub
@@ -58,14 +54,10 @@ export default class PersistentSubscription {
       this.subscription = this.relay.subscribe(this.filters, {
         ...this.params,
         oneose: () => {
-          this.eosed = true;
           this.params.oneose?.();
         },
         onclose: (reason) => {
           if (!this.closed) {
-            // unexpected close, reconnect?
-            // console.log("Unexpected closed", this.relay, reason);
-
             relayPoolService.handleRelayNotice(this.relay, reason);
 
             this.closed = true;
@@ -79,9 +71,7 @@ export default class PersistentSubscription {
       // NOTE: reset the eosed flag since nostr-tools dose not
       this.subscription.eosed = false;
       this.subscription.fire();
-    }
-
-    return this;
+    } else throw new Error("Subscription filters have not changed");
   }
   close() {
     if (this.closed) return this;

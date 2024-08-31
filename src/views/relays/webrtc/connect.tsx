@@ -15,12 +15,12 @@ import { useForm } from "react-hook-form";
 
 import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
+import NostrWebRtcBroker from "../../../classes/webrtc/nostr-webrtc-broker";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import localSettings from "../../../services/local-settings";
 import useSubject from "../../../hooks/use-subject";
-import NostrWebRtcBroker from "../../../classes/nostr-webrtc-broker";
 
 export default function WebRtcConnectView() {
   const update = useForceUpdate();

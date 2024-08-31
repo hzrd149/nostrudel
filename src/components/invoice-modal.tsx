@@ -61,7 +61,7 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
       <Flex gap="2">
         <Input value={invoice} readOnly />
         <IconButton
-          icon={<QrCodeIcon />}
+          icon={<QrCodeIcon boxSize={6} />}
           aria-label="Show QrCode"
           onClick={showQr.onToggle}
           variant="solid"

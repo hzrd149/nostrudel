@@ -2,14 +2,14 @@ import { NostrEvent, SimplePool } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import { logger } from "../helpers/debug";
-import NostrWebRtcBroker from "../classes/nostr-webrtc-broker";
-import WebRtcRelayClient from "../classes/webrtc-relay-client";
-import WebRtcRelayServer from "../classes/webrtc-relay-server";
+import NostrWebRtcBroker from "../classes/webrtc/nostr-webrtc-broker";
+import WebRtcRelayClient from "../classes/webrtc/webrtc-relay-client";
+import WebRtcRelayServer from "../classes/webrtc/webrtc-relay-server";
+import NostrWebRTCPeer from "../classes/webrtc/nostr-webrtc-peer";
 import verifyEventMethod from "./verify-event";
-import SimpleSigner from "../classes/simple-signer";
+import SimpleSigner from "../classes/signers/simple-signer";
 import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
-import NostrWebRTCPeer from "../classes/nostr-webrtc-peer";
 import { DEFAULT_ICE_SERVERS } from "../const";
 
 class WebRtcRelaysService {

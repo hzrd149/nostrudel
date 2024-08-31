@@ -72,7 +72,7 @@ function CommunitiesExplorePage() {
           Back
         </Button>
         <PeopleListSelection hideGlobalOption />
-        <Switch onChange={showMore.onToggle} checked={showMore.isOpen}>
+        <Switch onChange={showMore.onToggle} isChecked={showMore.isOpen}>
           Show More
         </Switch>
       </Flex>

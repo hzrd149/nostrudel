@@ -16,16 +16,16 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { useDMTimeline } from "../../providers/global/dms-provider";
 import UserName from "../../components/user/user-name";
-import { useDecryptionContainer } from "../../providers/global/decryption-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useEventIntersectionRef(message);
 
-  const { plaintext } = useDecryptionContainer(pubkey, message.content);
+  const { plaintext } = useKind4Decrypt(message);
   return (
     <Text isTruncated ref={ref}>
       {plaintext || "<Encrypted>"}

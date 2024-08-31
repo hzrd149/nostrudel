@@ -48,7 +48,7 @@ export default function NavItems() {
   else if (location.pathname === "/") active = "notes";
   else if (location.pathname.startsWith("/notifications")) active = "notifications";
   else if (location.pathname.startsWith("/launchpad")) active = "launchpad";
-  else if (location.pathname.startsWith("/dvm")) active = "dvm";
+  else if (location.pathname.startsWith("/discovery")) active = "discovery";
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
@@ -120,9 +120,9 @@ export default function NavItems() {
       </Button>
       <Button
         as={RouterLink}
-        to="/dvm"
+        to="/discovery"
         leftIcon={<PuzzlePiece01 boxSize={6} />}
-        colorScheme={active === "dvm" ? "primary" : undefined}
+        colorScheme={active === "discovery" ? "primary" : undefined}
         {...buttonProps}
       >
         Discover

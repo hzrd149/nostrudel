@@ -189,15 +189,19 @@ function MediaServersPage() {
         ))}
       </Flex>
 
-      <Heading size="sm" mt="2">
-        Add media server
-      </Heading>
-      <Flex as="form" onSubmit={submit} gap="2">
-        <Input {...register("server", { required: true })} required placeholder="https://cdn.satellite.earth" />
-        <Button type="submit" colorScheme="primary">
-          Add
-        </Button>
-      </Flex>
+      {mediaUploadService === "blossom" && (
+        <>
+          <Heading size="sm" mt="2">
+            Add media server
+          </Heading>
+          <Flex as="form" onSubmit={submit} gap="2">
+            <Input {...register("server", { required: true })} required placeholder="https://cdn.satellite.earth" />
+            <Button type="submit" colorScheme="primary">
+              Add
+            </Button>
+          </Flex>
+        </>
+      )}
 
       {confirmServer && (
         <Modal isOpen onClose={() => setConfirmServer("")} size="6xl">

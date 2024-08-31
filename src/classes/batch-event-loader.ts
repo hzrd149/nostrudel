@@ -90,7 +90,7 @@ export default class BatchEventLoader {
     this.start();
   }
 
-  update() {
+  async update() {
     // copy everything from next to pending
     for (const [key, defer] of this.next) this.pending.set(key, defer);
     this.next.clear();
@@ -99,9 +99,14 @@ export default class BatchEventLoader {
     if (this.pending.size > 0) {
       this.log(`Updating filters ${this.pending.size} events`);
 
-      this.subscription.filters = [{ ids: Array.from(this.pending.keys()) }];
-      this.subscription.update();
-      this.process.active = true;
+      try {
+        this.process.active = true;
+        this.subscription.filters = [{ ids: Array.from(this.pending.keys()) }];
+        await this.subscription.update();
+      } catch (error) {
+        if (error instanceof Error) this.log(`Failed to update subscription`, error.message);
+        this.process.active = false;
+      }
     } else {
       this.log("Closing");
       this.subscription.close();

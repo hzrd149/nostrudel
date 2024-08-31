@@ -42,14 +42,14 @@ export function SigningProvider({ children }: { children: React.ReactNode }) {
   const requestDecrypt = useCallback(
     async (data: string, pubkey: string) => {
       if (!current) throw new Error("No account");
-      return await signingService.requestDecrypt(data, pubkey, current);
+      return await signingService.nip04Decrypt(data, pubkey, current);
     },
     [toast, current],
   );
   const requestEncrypt = useCallback(
     async (data: string, pubkey: string) => {
       if (!current) throw new Error("No account");
-      return await signingService.requestEncrypt(data, pubkey, current);
+      return await signingService.nip04Encrypt(data, pubkey, current);
     },
     [toast, current],
   );

@@ -10,6 +10,7 @@ import replaceableEventsService from "./replaceable-events";
 import userAppSettings from "./settings/user-app-settings";
 import userMailboxesService from "./user-mailboxes";
 import userMetadataService from "./user-metadata";
+import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 
 const log = logger.extend("user-event-sync");
 
@@ -21,6 +22,9 @@ function downloadEvents() {
   userMetadataService.requestMetadata(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
   userMailboxesService.requestMailboxes(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
   userAppSettings.requestAppSettings(account.pubkey, relays, { alwaysRequest: true });
+  replaceableEventsService.requestEvent(relays, USER_BLOSSOM_SERVER_LIST_KIND, account.pubkey, undefined, {
+    alwaysRequest: true,
+  });
 
   log("Loading contacts list");
   replaceableEventsService.requestEvent(

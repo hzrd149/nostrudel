@@ -1,8 +1,6 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { generateSecretKey, getPublicKey } from "nostr-tools";
-import { bytesToHex } from "@noble/hashes/utils";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -18,10 +16,10 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import accountService from "../../services/account";
-import signingService from "../../services/signing";
 import CategorySelect from "./components/category-select";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import NsecAccount from "../../classes/accounts/nsec-account";
 
 function Warning() {
   const navigate = useNavigate();
@@ -32,11 +30,9 @@ function Warning() {
   const createAnonAccount = async () => {
     setLoading(true);
     try {
-      const secKey = generateSecretKey();
-      const encrypted = await signingService.encryptSecKey(bytesToHex(secKey));
-      const pubkey = getPublicKey(secKey);
-      accountService.addAccount({ type: "local", ...encrypted, pubkey, readonly: false });
-      accountService.switchAccount(pubkey);
+      const account = NsecAccount.newKey();
+      accountService.addAccount(account);
+      accountService.switchAccount(account.pubkey);
       navigate("/relays");
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });

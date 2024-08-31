@@ -111,7 +111,7 @@ export default class BatchIdentifierLoader {
     if (this.next.size > 0) this.requestUpdate();
   }
 
-  update() {
+  async update() {
     // copy everything from next to pending
     for (const [identifier, defer] of this.next) this.pending.set(identifier, defer);
     this.next.clear();
@@ -127,11 +127,16 @@ export default class BatchIdentifierLoader {
         dTags.push(identifier);
       }
 
-      this.subscription.filters = [];
-      if (dTags.length > 0) this.subscription.filters.push({ "#d": dTags, kinds: this.kinds });
+      try {
+        this.process.active = true;
+        this.subscription.filters = [];
+        if (dTags.length > 0) this.subscription.filters.push({ "#d": dTags, kinds: this.kinds });
 
-      this.subscription.update();
-      this.process.active = true;
+        await this.subscription.update();
+      } catch (error) {
+        if (error instanceof Error) this.log(`Failed to update subscription`, error.message);
+        this.process.active = false;
+      }
     } else {
       this.log("Closing");
       this.subscription.close();

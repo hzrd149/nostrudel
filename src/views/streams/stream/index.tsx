@@ -85,7 +85,7 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
+        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon boxSize={6} />}>
           Back
         </Button>
         <UserAvatarLink pubkey={stream.host} size="sm" display={{ base: "none", md: "block" }} />

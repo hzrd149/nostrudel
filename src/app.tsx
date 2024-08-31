@@ -7,11 +7,14 @@ import Layout from "./components/layout";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import { RouteProviders } from "./providers/route";
+import RequireCurrentAccount from "./providers/route/require-current-account";
 import GlobalStyles from "./styles";
 
 import HomeView from "./views/home/index";
-const DVMFeedHomeView = lazy(() => import("./views/dvm-feed/index"));
-const DVMFeedView = lazy(() => import("./views/dvm-feed/feed"));
+const DiscoveryHomeView = lazy(() => import("./views/discovery/index"));
+const DVMFeedView = lazy(() => import("./views/discovery/dvm-feed/feed"));
+const BlindspotHomeView = lazy(() => import("./views/discovery/blindspot"));
+const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -25,8 +28,7 @@ const DirectMessageChatView = lazy(() => import("./views/dms/chat"));
 import SigninView from "./views/signin";
 import SignupView from "./views/signup";
 import LoginStartView from "./views/signin/start";
-import LoginNpubView from "./views/signin/npub";
-import LoginNip05View from "./views/signin/nip05";
+import LoginNpubView from "./views/signin/pubkey";
 import LoginNsecView from "./views/signin/nsec";
 import LoginNostrConnectView from "./views/signin/nostr-connect";
 import LoginNostrAddressView from "./views/signin/address";
@@ -94,6 +96,13 @@ const VideosView = lazy(() => import("./views/videos"));
 const VideoDetailsView = lazy(() => import("./views/videos/video"));
 import BookmarksView from "./views/bookmarks";
 import TaskManagerProvider from "./views/task-manager/provider";
+import SearchRelaysView from "./views/relays/search";
+import DisplaySettings from "./views/settings/display";
+import LightningSettings from "./views/settings/lightning";
+import PerformanceSettings from "./views/settings/performance";
+import PrivacySettings from "./views/settings/privacy";
+import PostSettings from "./views/settings/post";
+import AccountSettings from "./views/settings/accounts";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -164,7 +173,6 @@ const router = createHashRouter([
     children: [
       { path: "", element: <LoginStartView /> },
       { path: "npub", element: <LoginNpubView /> },
-      { path: "nip05", element: <LoginNip05View /> },
       { path: "nsec", element: <LoginNsecView /> },
       {
         path: "address",
@@ -252,7 +260,27 @@ const router = createHashRouter([
         element: <ThreadView />,
       },
       { path: "other-stuff", element: <OtherStuffView /> },
-      { path: "settings", element: <SettingsView /> },
+      {
+        path: "settings",
+        element: <SettingsView />,
+        children: [
+          { path: "", element: <DisplaySettings /> },
+          { path: "post", element: <PostSettings /> },
+          {
+            path: "accounts",
+            element: (
+              <RequireCurrentAccount>
+                <AccountSettings />
+              </RequireCurrentAccount>
+            ),
+          },
+          { path: "display", element: <DisplaySettings /> },
+          { path: "privacy", element: <PrivacySettings /> },
+          { path: "lightning", element: <LightningSettings /> },
+          { path: "performance", element: <PerformanceSettings /> },
+          { path: "media-servers", element: <MediaServersView /> },
+        ],
+      },
       {
         path: "relays",
         element: <RelaysView />,
@@ -267,6 +295,7 @@ const router = createHashRouter([
             ],
           },
           { path: "mailboxes", element: <MailboxesView /> },
+          { path: "search", element: <SearchRelaysView /> },
           { path: "media-servers", element: <MediaServersView /> },
           { path: "nip05", element: <NIP05RelaysView /> },
           { path: "contacts", element: <ContactListRelaysView /> },
@@ -316,10 +345,22 @@ const router = createHashRouter([
         ],
       },
       {
-        path: "dvm",
+        path: "discovery",
         children: [
-          { path: ":addr", element: <DVMFeedView /> },
-          { path: "", element: <DVMFeedHomeView /> },
+          { path: "", element: <DiscoveryHomeView /> },
+          { path: "dvm/:addr", element: <DVMFeedView /> },
+          {
+            path: "blindspot",
+            element: (
+              <RequireCurrentAccount>
+                <Outlet />
+              </RequireCurrentAccount>
+            ),
+            children: [
+              { path: "", element: <BlindspotHomeView /> },
+              { path: ":pubkey", element: <BlindspotFeedView /> },
+            ],
+          },
         ],
       },
       { path: "search", element: <SearchView /> },

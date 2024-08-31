@@ -48,7 +48,7 @@ export default function EventRow({ event }: { event: NostrEvent }) {
             {raw.isOpen && (
               <CopyIconButton value={stringify(event, { space: "  " })} aria-label="Copy json" size="sm" />
             )}
-            <Switch size="sm" checked={!raw.isOpen} onChange={raw.onToggle}>
+            <Switch size="sm" isChecked={!raw.isOpen} onChange={raw.onToggle}>
               Raw
             </Switch>
           </Flex>

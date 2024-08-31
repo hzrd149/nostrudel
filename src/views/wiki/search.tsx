@@ -9,7 +9,7 @@ import { Subscription, getEventUID } from "nostr-idb";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { subscribeMany } from "../../helpers/relay";
-import { SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
+import { DEFAULT_SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { localRelay } from "../../services/local-relay";
 import WikiPageResult from "./components/wiki-page-result";
@@ -41,7 +41,7 @@ export default function WikiSearchView() {
       seen.add(getEventUID(event));
     };
 
-    const remoteSearchSub = subscribeMany([...SEARCH_RELAYS, ...WIKI_RELAYS], [filter], {
+    const remoteSearchSub = subscribeMany([...DEFAULT_SEARCH_RELAYS, ...WIKI_RELAYS], [filter], {
       onevent: handleEvent,
       oneose: () => remoteSearchSub.close(),
     });

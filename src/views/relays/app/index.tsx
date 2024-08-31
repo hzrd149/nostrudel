@@ -1,13 +1,14 @@
-import { useCallback, useMemo } from "react";
+import { MouseEventHandler, useCallback, useMemo } from "react";
 
-import { Button, ButtonGroup, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, ButtonGroup, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 import useSubject from "../../../hooks/use-subject";
 import { offlineMode } from "../../../services/offline-mode";
 import WifiOff from "../../../components/icons/wifi-off";
 import Wifi from "../../../components/icons/wifi";
 import BackButton from "../../../components/router/back-button";
 import AddRelayForm from "./add-relay-form";
-import clientRelaysService from "../../../services/client-relays";
+import clientRelaysService, { recommendedReadRelays, recommendedWriteRelays } from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
 import RelaySet from "../../../classes/relay-set";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
@@ -17,7 +18,45 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
-import { WarningIcon } from "@chakra-ui/icons";
+import SelectRelaySet from "./select-relay-set";
+import { safeRelayUrls } from "../../../helpers/relay";
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
+
+const JapaneseRelays = safeRelayUrls([
+  "wss://r.kojira.io",
+  "wss://nrelay-jp.c-stellar.net",
+  "wss://nostr.fediverse.jp",
+  "wss://nostr.holybea.com",
+  "wss://relay-jp.nostr.wirednet.jp",
+]);
+
+function RelaySetCard({ label, read, write }: { label: string; read: Iterable<string>; write: Iterable<string> }) {
+  const handleClick = useCallback<MouseEventHandler>((e) => {
+    e.preventDefault();
+    clientRelaysService.readRelays.next(RelaySet.from(read));
+    clientRelaysService.writeRelays.next(RelaySet.from(write));
+    clientRelaysService.saveRelays();
+  }, []);
+
+  return (
+    <Card w="full" variant="outline">
+      <CardHeader px="4" pt="4" pb="2">
+        <Heading size="sm">
+          <HoverLinkOverlay href="#" onClick={handleClick}>
+            {label}:
+          </HoverLinkOverlay>
+        </Heading>
+      </CardHeader>
+      <CardBody px="4" pt="0" pb="4">
+        {RelaySet.from(read, write).urls.map((url) => (
+          <Text key={url} whiteSpace="pre" isTruncated>
+            {url}
+          </Text>
+        ))}
+      </CardBody>
+    </Card>
+  );
+}
 
 export default function AppRelays() {
   const account = useCurrentAccount();
@@ -67,7 +106,7 @@ export default function AppRelays() {
       )}
 
       <Heading size="md" mt="2">
-        Import from:
+        Set from:
       </Heading>
       <Flex wrap="wrap" gap="2">
         {window.nostr && (
@@ -114,14 +153,22 @@ export default function AppRelays() {
           </Button>
         )}
       </Flex>
-      {/* {account && (
+      {account && (
         <>
           <Heading size="md" mt="2">
             Use relay set
           </Heading>
           <SelectRelaySet onChange={(cord, set) => set && clientRelaysService.setRelaysFromRelaySet(set)} />
         </>
-      )} */}
+      )}
+
+      <Heading size="md" mt="2">
+        Presets:
+      </Heading>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+        <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
+        <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
+      </SimpleGrid>
     </Flex>
   );
 }

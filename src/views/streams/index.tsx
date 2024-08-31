@@ -60,7 +60,7 @@ function StreamsPage() {
     <VerticalPageLayout>
       <Flex gap="2" wrap="wrap" alignItems="center">
         <PeopleListSelection />
-        <Switch checked={showEnded.isOpen} onChange={showEnded.onToggle}>
+        <Switch isChecked={showEnded.isOpen} onChange={showEnded.onToggle}>
           Show Ended
         </Switch>
       </Flex>

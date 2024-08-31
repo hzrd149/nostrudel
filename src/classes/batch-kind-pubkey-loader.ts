@@ -102,7 +102,7 @@ export default class BatchKindPubkeyLoader {
     if (this.next.size > 0) this.start();
   }
 
-  update() {
+  async update() {
     // copy everything from next to pending
     for (const [key, defer] of this.next) this.pending.set(key, defer);
     this.next.clear();
@@ -132,9 +132,14 @@ export default class BatchKindPubkeyLoader {
           .join(", "),
       );
 
-      this.subscription.filters = Array.from(Object.values(filters));
-      this.subscription.update();
-      this.process.active = true;
+      try {
+        this.process.active = true;
+        this.subscription.filters = Array.from(Object.values(filters));
+        await this.subscription.update();
+      } catch (error) {
+        if (error instanceof Error) this.log(`Subscription failed to update`, error.message);
+        this.process.active = false;
+      }
     } else {
       this.log("Closing");
       this.subscription.close();
