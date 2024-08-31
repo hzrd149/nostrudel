@@ -23,6 +23,7 @@ export default function DisplaySettings() {
 
   const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const showPubkeyColor = useSubject(localSettings.showPubkeyColor);
 
   return (
     <VerticalPageLayout flex={1}>
@@ -67,6 +68,24 @@ export default function DisplaySettings() {
           </Select>
           <FormHelperText>
             <span>Setting this will restrict the width of app on desktop</span>
+          </FormHelperText>
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="maxPageWidth" mb="0">
+            Show user pubkey key color
+          </FormLabel>
+          <Select
+            id="maxPageWidth"
+            maxW="sm"
+            value={showPubkeyColor}
+            onChange={(e) => localSettings.showPubkeyColor.next(e.target.value)}
+          >
+            <option value="none">None</option>
+            <option value="avatar">Avatar</option>
+            <option value="underline">Underline</option>
+          </Select>
+          <FormHelperText>
+            <span>How the public key color should be shown on users</span>
           </FormHelperText>
         </FormControl>
         <FormControl>

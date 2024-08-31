@@ -11,6 +11,8 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
 import styled from "@emotion/styled";
+import useSubject from "../../hooks/use-subject";
+import localSettings from "../../services/local-settings";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -33,19 +35,9 @@ export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> &
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ pubkey, noProxy, relay, size, ...props }, ref) => {
     const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
-    const color = "#" + pubkey.slice(0, 6); //useDnsIdentityColor(pubkey);
 
     return (
-      <MetadataAvatar
-        pubkey={pubkey}
-        metadata={metadata}
-        noProxy={noProxy}
-        ref={ref}
-        borderColor={size !== "xs" ? color : undefined}
-        borderStyle="none"
-        size={size}
-        {...props}
-      >
+      <MetadataAvatar pubkey={pubkey} metadata={metadata} noProxy={noProxy} ref={ref} size={size} {...props}>
         {size !== "xs" && (
           <UserDnsIdentityIcon
             pubkey={pubkey}
@@ -66,11 +58,16 @@ UserAvatar.displayName = "UserAvatar";
 const SquareAvatar = styled(Avatar)`
   img {
     border-radius: var(--chakra-radii-lg);
+  }
+`;
+const SquareAvatarWithBorder = styled(SquareAvatar)`
+  img {
     border-width: 0.18rem;
     border-color: inherit;
     border-style: solid;
   }
 `;
+
 export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
   metadata?: Kind0ParsedContent;
   pubkey?: string;
@@ -96,15 +93,22 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
       }
     }, [metadata?.picture, imageProxy, proxyUserMedia, hideUsernames, account]);
 
-    const AvatarComponent = square ? SquareAvatar : Avatar;
+    const showPubkeyColor = useSubject(localSettings.showPubkeyColor);
+    const color = pubkey ? "#" + pubkey.slice(0, 6) : undefined;
+
+    const showColor = showPubkeyColor === "avatar" && color !== undefined && props.size !== "xs";
+
+    const AvatarComponent = square ? (showColor ? SquareAvatarWithBorder : SquareAvatar) : Avatar;
 
     return (
       <AvatarComponent
+        ref={ref}
         src={picture}
         icon={pubkey ? <UserIdenticon pubkey={pubkey} /> : undefined}
         // overflow="hidden"
         title={getDisplayName(metadata, pubkey ?? "")}
-        ref={ref}
+        borderColor={showColor ? color : undefined}
+        borderStyle="none"
         {...props}
       >
         {children}
