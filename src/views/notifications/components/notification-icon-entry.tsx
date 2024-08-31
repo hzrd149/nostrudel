@@ -5,8 +5,9 @@ import Timestamp from "../../../components/timestamp";
 import UserName from "../../../components/user/user-name";
 import { CheckIcon } from "../../../components/icons";
 import FocusedContext from "../focused-context";
+import useReadStatus from "../../../hooks/use-read-status";
 
-// const ONE_MONTH = 60 * 60 * 24 * 30;
+const ONE_MONTH = 60 * 60 * 24 * 30;
 
 type NotificationIconEntryProps = PropsWithChildren<{
   icon: ReactNode;
@@ -21,7 +22,7 @@ const NotificationIconEntry = memo(
   forwardRef<HTMLDivElement, NotificationIconEntryProps>(
     ({ children, icon, pubkey, timestamp, summary, id, onClick }, ref) => {
       const { id: focused, focus } = useContext(FocusedContext);
-      // const [read, setRead] = useReadStatus(id, ONE_MONTH);
+      const [read, setRead] = useReadStatus(id, ONE_MONTH);
 
       const expanded = focused === id;
 
@@ -35,12 +36,13 @@ const NotificationIconEntry = memo(
         }
       }, [expanded]);
 
-      // useEffect(() => {
-      //   if (!read && expanded) setRead(true);
-      // }, [read, expanded]);
+      // set read when expanded
+      useEffect(() => {
+        if (!read && expanded) setRead(true);
+      }, [read, expanded]);
 
       return (
-        <Flex direction="column" bg={expanded ? "whiteAlpha.100" : undefined} rounded="md">
+        <Flex direction="column" bg={expanded || read === false ? "whiteAlpha.100" : undefined} rounded="md">
           <Flex
             gap="2"
             alignItems="center"
@@ -58,7 +60,7 @@ const NotificationIconEntry = memo(
             <UserName pubkey={pubkey} hideBelow="md" />
             <Text isTruncated>{summary}</Text>
             <Spacer />
-            {/* {read && <CheckIcon boxSize={5} color="green.500" />} */}
+            {read && <CheckIcon boxSize={5} color="green.500" />}
             <Timestamp timestamp={timestamp} />
           </Flex>
 

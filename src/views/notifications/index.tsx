@@ -1,5 +1,5 @@
 import { memo, ReactNode, useContext, useMemo } from "react";
-import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
+import { BreadcrumbLink, Button, ButtonGroup, Divider, Flex, Switch, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 import { useKeyPressEvent } from "react-use";
@@ -19,6 +19,7 @@ import { NotificationType, typeSymbol } from "../../classes/notifications";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import FocusedContext from "./focused-context";
 import useRouteStateValue from "../../hooks/use-route-state-value";
+import readStatusService from "../../services/read-status";
 
 // const DATE_FORMAT = "YYYY-MM-DD";
 
@@ -40,6 +41,7 @@ const NotificationsTimeline = memo(
   }) => {
     const { notifications } = useNotifications();
     const { people } = usePeopleListContext();
+    const { id: focused, focus: setFocus } = useContext(FocusedContext);
     const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
     // const minTimestamp = dayjs(day, DATE_FORMAT).startOf("day").unix();
     // const maxTimestamp = dayjs(day, DATE_FORMAT).endOf("day").unix();
@@ -78,7 +80,6 @@ const NotificationsTimeline = memo(
     );
 
     // VIM controls
-    const { id: focused, focus: setFocus } = useContext(FocusedContext);
     const navigatePrev = () => {
       const focusedEvent = filteredEvents.find((e) => e.id === focused);
 
@@ -93,20 +94,33 @@ const NotificationsTimeline = memo(
     const navigateNext = () => {
       const focusedEvent = filteredEvents.find((e) => e.id === focused);
 
+      const i = focusedEvent ? filteredEvents.indexOf(focusedEvent) : -1;
+      if (i < filteredEvents.length - 2) {
+        const next = filteredEvents[i + 1];
+        if (next) setFocus(next.id);
+      }
+    };
+    const navigateNextUnread = () => {
+      const focusedEvent = filteredEvents.find((e) => e.id === focused);
+
       if (focusedEvent) {
-        const i = filteredEvents.indexOf(focusedEvent);
-        if (i !== -1 && i < filteredEvents.length - 2) {
-          const next = filteredEvents[i + 1];
-          if (next) setFocus(next.id);
+        const idx = filteredEvents.indexOf(focusedEvent);
+        for (let i = idx; i < filteredEvents.length; i++) {
+          if (readStatusService.getStatus(filteredEvents[i].id).value === false) {
+            setFocus(filteredEvents[i].id);
+            break;
+          }
         }
       }
     };
     useKeyPressEvent("ArrowUp", navigatePrev);
     useKeyPressEvent("ArrowDown", navigateNext);
+    useKeyPressEvent("ArrowLeft", navigatePrev);
+    useKeyPressEvent("ArrowRight", navigateNextUnread);
     useKeyPressEvent("k", navigatePrev);
     useKeyPressEvent("h", navigatePrev);
     useKeyPressEvent("j", navigateNext);
-    useKeyPressEvent("l", navigateNext);
+    useKeyPressEvent("l", navigateNextUnread);
     useKeyPressEvent("H", () => setFocus(filteredEvents[0]?.id ?? ""));
     useKeyPressEvent("L", () => setFocus(filteredEvents[filteredEvents.length - 1]?.id ?? ""));
 
@@ -214,7 +228,7 @@ function NotificationsPage() {
           />
         </Flex> */}
 
-        <Flex gap="2" wrap="wrap" flex={1}>
+        <Flex gap="2" wrap="wrap" flex={1} alignItems="center">
           <NotificationTypeToggles
             showReplies={showReplies}
             showMentions={showMentions}

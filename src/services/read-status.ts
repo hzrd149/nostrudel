@@ -70,7 +70,7 @@ class ReadStatusService {
     const defaultTTL = dayjs().add(1, "day").unix();
     for (const [key, subject] of this.status) {
       if (subject.value !== undefined) {
-        trans.store.add({ key, read: subject.value, ttl: this.ttl.get(key) ?? defaultTTL });
+        trans.store.put({ key, read: subject.value, ttl: this.ttl.get(key) ?? defaultTTL });
         count++;
       }
     }
