@@ -6,6 +6,8 @@ import { useNotifications } from "../../../providers/global/notifications-provid
 import useSubject from "../../../hooks/use-subject";
 import { NotificationType, typeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";
+import { useCallback } from "react";
+import { NostrEvent } from "nostr-tools";
 
 export default function NotificationsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
@@ -21,6 +23,13 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
 
   const limit = events.length > 20 ? events.slice(0, 20) : events;
 
+  const handleClick = useCallback(
+    (event: NostrEvent) => {
+      navigate("/notifications", { state: { focused: event.id } });
+    },
+    [navigate],
+  );
+
   return (
     <Card variant="outline" {...props}>
       <CardHeader display="flex" justifyContent="space-between" alignItems="center" pb="2">
@@ -33,7 +42,7 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
         {limit.map((event) => (
-          <NotificationItem event={event} key={event.id} />
+          <NotificationItem event={event} key={event.id} onClick={handleClick} />
         ))}
         <Button as={RouterLink} to="/notifications" flexShrink={0} variant="link" size="lg" py="6">
           View More

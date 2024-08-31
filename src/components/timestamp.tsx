@@ -7,7 +7,7 @@ export default function Timestamp({ timestamp, ...props }: { timestamp: number }
 
   let display = date.format("L");
 
-  if (now.diff(date, "week") <= 2) {
+  if (now.diff(date, "week") <= 6) {
     if (now.diff(date, "d") >= 1) {
       display = Math.round(now.diff(date, "d") * 10) / 10 + `d`;
     } else if (now.diff(date, "h") >= 1) {

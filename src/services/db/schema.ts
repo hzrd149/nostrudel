@@ -141,3 +141,15 @@ export interface SchemaV7 extends Omit<SchemaV6, "accounts"> {
 }
 
 export interface SchemaV8 extends Omit<SchemaV7, "replaceableEvents"> {}
+
+export interface SchemaV9 extends SchemaV8 {
+  read: {
+    key: string;
+    value: {
+      key: string;
+      ttl: number;
+      read: boolean;
+    };
+    indexes: { ttl: number };
+  };
+}
