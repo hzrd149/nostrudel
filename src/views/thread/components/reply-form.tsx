@@ -45,6 +45,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
     },
     mode: "all",
   });
+
   const clearCache = useCacheForm<{ content: string }>(`reply-${item.event.id}`, getValues, reset, formState);
 
   const contentMentions = getPubkeysMentionedInContent(getValues().content);

@@ -1,15 +1,15 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
 import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8 } from "./schema";
+import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8, SchemaV9 } from "./schema";
 import { logger } from "../../helpers/debug";
 import { localDatabase } from "../local-relay";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 8;
-const db = await openDB<SchemaV8>(dbName, version, {
+const version = 9;
+const db = await openDB<SchemaV9>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -170,6 +170,13 @@ const db = await openDB<SchemaV8>(dbName, version, {
     if (oldVersion < 8) {
       const v7 = db as unknown as IDBPDatabase<SchemaV7>;
       v7.deleteObjectStore("replaceableEvents");
+    }
+
+    if (oldVersion < 9) {
+      const v9 = db as unknown as IDBPDatabase<SchemaV9>;
+
+      const readStore = v9.createObjectStore("read", { keyPath: "key" });
+      readStore.createIndex("ttl", "ttl");
     }
   },
 });

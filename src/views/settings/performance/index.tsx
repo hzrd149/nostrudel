@@ -114,16 +114,16 @@ export default function PerformanceSettings() {
           <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
         </FormControl>
         <VerifyEventSettings />
+        <Button
+          ml="auto"
+          isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
+          isDisabled={!formState.isDirty}
+          colorScheme="primary"
+          type="submit"
+        >
+          Save Settings
+        </Button>
       </Flex>
-      <Button
-        ml="auto"
-        isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
-        isDisabled={!formState.isDirty}
-        colorScheme="primary"
-        type="submit"
-      >
-        Save Settings
-      </Button>
     </VerticalPageLayout>
   );
 }

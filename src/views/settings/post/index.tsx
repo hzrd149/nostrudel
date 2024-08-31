@@ -183,16 +183,16 @@ export default function PostSettings() {
             client tag to events
           </FormHelperText>
         </FormControl>
+        <Button
+          ml="auto"
+          isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
+          isDisabled={!formState.isDirty}
+          colorScheme="primary"
+          type="submit"
+        >
+          Save Settings
+        </Button>
       </Flex>
-      <Button
-        ml="auto"
-        isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
-        isDisabled={!formState.isDirty}
-        colorScheme="primary"
-        type="submit"
-      >
-        Save Settings
-      </Button>
     </VerticalPageLayout>
   );
 }

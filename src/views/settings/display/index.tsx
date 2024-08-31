@@ -170,16 +170,16 @@ export default function DisplaySettings() {
             <span>Be careful its easy to hide all notes if you add common words.</span>
           </FormHelperText>
         </FormControl>
+        <Button
+          ml="auto"
+          isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
+          isDisabled={!formState.isDirty}
+          colorScheme="primary"
+          type="submit"
+        >
+          Save Settings
+        </Button>
       </Flex>
-      <Button
-        ml="auto"
-        isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
-        isDisabled={!formState.isDirty}
-        colorScheme="primary"
-        type="submit"
-      >
-        Save Settings
-      </Button>
     </VerticalPageLayout>
   );
 }
