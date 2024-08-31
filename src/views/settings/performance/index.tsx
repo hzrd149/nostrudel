@@ -9,20 +9,17 @@ import {
   FormErrorMessage,
   Select,
   Button,
-  Text,
   Heading,
 } from "@chakra-ui/react";
-import { useLocalStorage } from "react-use";
 
 import { safeUrl } from "../../../helpers/parse";
-import { selectedMethod } from "../../../services/verify-event";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
+import useSubject from "../../../hooks/use-subject";
+import localSettings from "../../../services/local-settings";
 
 function VerifyEventSettings() {
-  const [verifyEventMethod, setVerifyEventMethod] = useLocalStorage<string>("verify-event-method", "internal", {
-    raw: true,
-  });
+  const verifyEventMethod = useSubject(localSettings.verifyEventMethod);
 
   return (
     <>
@@ -30,7 +27,11 @@ function VerifyEventSettings() {
         <FormLabel htmlFor="verifyEventMethod" mb="0">
           Verify event method
         </FormLabel>
-        <Select value={verifyEventMethod} onChange={(e) => setVerifyEventMethod(e.target.value)} maxW="sm">
+        <Select
+          value={verifyEventMethod}
+          onChange={(e) => localSettings.verifyEventMethod.next(e.target.value)}
+          maxW="sm"
+        >
           <option value="wasm">WebAssembly</option>
           <option value="internal">Internal</option>
           <option value="none">None</option>
@@ -38,17 +39,6 @@ function VerifyEventSettings() {
         <FormHelperText>Default: All events signatures are checked</FormHelperText>
         <FormHelperText>WebAssembly: Events signatures are checked in a separate thread</FormHelperText>
         <FormHelperText>None: Only Profiles, Follows, and replaceable event signatures are checked</FormHelperText>
-
-        {selectedMethod !== verifyEventMethod && (
-          <>
-            <Text color="blue.500" mt="2">
-              NOTE: You must reload the app for this setting to take effect
-            </Text>
-            <Button colorScheme="primary" size="sm" onClick={() => location.reload()}>
-              Reload App
-            </Button>
-          </>
-        )}
       </FormControl>
     </>
   );

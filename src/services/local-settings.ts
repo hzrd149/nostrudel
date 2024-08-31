@@ -47,6 +47,9 @@ const webRtcRecentConnections = new LocalStorageEntry(
 // posting
 const addClientTag = new BooleanLocalStorageEntry("add-client-tag", ENABLE_CLIENT_TAG);
 
+// performance
+const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
@@ -56,6 +59,7 @@ const localSettings = {
   webRtcSignalingRelays,
   webRtcRecentConnections,
   addClientTag,
+  verifyEventMethod,
 };
 
 if (import.meta.env.DEV) {
