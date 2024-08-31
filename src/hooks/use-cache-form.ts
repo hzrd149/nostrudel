@@ -14,12 +14,14 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
   const log = useMemo(() => (key ? logger.extend(`CachedForm:${key}`) : () => {}), [key]);
   const storageKey = key && "cached-form-" + key;
 
-  const stateRef = useRef<UseFormStateReturn<TFieldValues>>(state);
-  stateRef.current = state;
+  const isSubmitted = useRef<boolean>(state.isSubmitted);
+  isSubmitted.current = state.isSubmitted;
 
-  // NOTE: this watches the state
-  state.isDirty;
-  state.isSubmitted;
+  const isSubmitting = useRef<boolean>(state.isSubmitting);
+  isSubmitting.current = state.isSubmitting;
+
+  const isDirty = useRef<boolean>(state.isDirty);
+  isDirty.current = state.isDirty;
 
   useEffect(() => {
     if (!storageKey) return;
@@ -44,10 +46,10 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
 
     // save previous key on change or unmount
     return () => {
-      if (stateRef.current.isSubmitted) {
+      if (isSubmitted.current || isSubmitting.current) {
         log("Removing because submitted");
         localStorage.removeItem(storageKey);
-      } else if (stateRef.current.isDirty) {
+      } else if (isDirty.current) {
         const values = getValues();
         log("Saving form", values);
         localStorage.setItem(storageKey, JSON.stringify(values));
@@ -58,10 +60,10 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
   const saveOnClose = useCallback(() => {
     if (!storageKey) return;
 
-    if (stateRef.current.isSubmitted) {
+    if (isSubmitted.current || isSubmitting.current) {
       log("Removing because submitted");
       localStorage.removeItem(storageKey);
-    } else if (stateRef.current.isDirty) {
+    } else if (isDirty.current) {
       const values = getValues();
       log("Saving form", values);
       localStorage.setItem(storageKey, JSON.stringify(values));
