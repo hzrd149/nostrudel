@@ -24,8 +24,8 @@ class ReadStatusService {
     if (ttl) this.setTTL(key, ttl);
     else this.setTTL(key, dayjs().add(1, "day").unix());
 
-    if (subject.value === undefined && !this.queue.has(key)) {
-      this.queue.add(key);
+    if (subject.value === undefined && !this.readQueue.has(key)) {
+      this.readQueue.add(key);
       this.throttleRead();
     }
 
@@ -37,51 +37,60 @@ class ReadStatusService {
     else this.setTTL(key, dayjs().add(1, "day").unix());
 
     this.status.get(key).next(read);
+    this.writeQueue.add(key);
     this.throttleWrite();
   }
 
-  queue = new Set<string>();
-  private throttleRead = _throttle(this.read.bind(this), 1000);
+  private readQueue = new Set<string>();
+  private throttleRead = _throttle(this.read.bind(this), 100);
   async read() {
-    if (this.queue.size === 0) return;
+    if (this.readQueue.size === 0) return;
 
     const trans = db.transaction("read");
 
-    this.log(`Loading ${this.queue.size} from database`);
+    this.log(`Loading ${this.readQueue.size} from database`);
 
     await Promise.all(
-      Array.from(this.queue).map(async (key) => {
+      Array.from(this.readQueue).map(async (key) => {
+        this.readQueue.delete(key);
         const subject = this.status.get(key);
         const status = await trans.store.get(key);
+
+        this.log(key, status);
+
         if (status) {
           subject.next(status.read);
           if (status.ttl) this.setTTL(key, status.ttl);
         } else subject.next(false);
       }),
     );
-    this.queue.clear();
   }
 
-  throttleWrite = _throttle(this.write.bind(this), 1000);
+  private writeQueue = new Set<string>();
+  private throttleWrite = _throttle(this.write.bind(this), 100);
   async write() {
+    if (this.writeQueue.size === 0) return;
+
     const trans = db.transaction("read", "readwrite");
 
     let count = 0;
     const defaultTTL = dayjs().add(1, "day").unix();
-    for (const [key, subject] of this.status) {
+    for (const key of this.writeQueue) {
+      const subject = this.status.get(key);
       if (subject.value !== undefined) {
         trans.store.put({ key, read: subject.value, ttl: this.ttl.get(key) ?? defaultTTL });
         count++;
       }
     }
 
+    this.writeQueue.clear();
     await trans.done;
 
     this.log(`Wrote ${count} to database`);
   }
 
   async prune() {
-    const expired = await db.getAllKeysFromIndex("read", "ttl", IDBKeyRange.lowerBound(dayjs().unix(), true));
+    const expired = await db.getAllKeysFromIndex("read", "ttl", IDBKeyRange.upperBound(dayjs().unix()));
 
     if (expired.length === 0) return;
 
@@ -95,7 +104,6 @@ class ReadStatusService {
 
 const readStatusService = new ReadStatusService();
 
-setInterval(readStatusService.write.bind(readStatusService), 10_000);
 setInterval(readStatusService.prune.bind(readStatusService), 30_000);
 
 if (import.meta.env.DEV) {

@@ -1,5 +1,7 @@
-import { Box, Flex, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
 import { PropsWithChildren, ReactNode, forwardRef, memo, useCallback, useContext, useEffect } from "react";
+import { Box, Flex, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
+import dayjs from "dayjs";
+
 import UserAvatar from "../../../components/user/user-avatar";
 import Timestamp from "../../../components/timestamp";
 import UserName from "../../../components/user/user-name";
@@ -7,7 +9,7 @@ import { CheckIcon } from "../../../components/icons";
 import FocusedContext from "../focused-context";
 import useReadStatus from "../../../hooks/use-read-status";
 
-const ONE_MONTH = 60 * 60 * 24 * 30;
+const ONE_MONTH = dayjs().add(1, "month").unix();
 
 type NotificationIconEntryProps = PropsWithChildren<{
   icon: ReactNode;
@@ -54,7 +56,7 @@ const NotificationIconEntry = memo(
             onFocus={onClick ? undefined : focusSelf}
             onClick={onClick}
             userSelect="none"
-            bg={expanded || !read ? focusColor : undefined}
+            bg={!read ? focusColor : undefined}
           >
             <Box>{icon}</Box>
             <UserAvatar pubkey={pubkey} size="sm" />
