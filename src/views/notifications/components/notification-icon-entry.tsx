@@ -1,4 +1,4 @@
-import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Box, Flex, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
 import { PropsWithChildren, ReactNode, forwardRef, memo, useCallback, useContext, useEffect } from "react";
 import UserAvatar from "../../../components/user/user-avatar";
 import Timestamp from "../../../components/timestamp";
@@ -23,6 +23,7 @@ const NotificationIconEntry = memo(
     ({ children, icon, pubkey, timestamp, summary, id, onClick }, ref) => {
       const { id: focused, focus } = useContext(FocusedContext);
       const [read, setRead] = useReadStatus(id, ONE_MONTH);
+      const focusColor = useColorModeValue("blackAlpha.100", "whiteAlpha.100");
 
       const expanded = focused === id;
 
@@ -42,7 +43,7 @@ const NotificationIconEntry = memo(
       }, [read, expanded]);
 
       return (
-        <Flex direction="column" bg={expanded || !read ? "whiteAlpha.100" : undefined} rounded="md">
+        <Flex direction="column" bg={expanded ? "whiteAlpha.100" : undefined} rounded="md">
           <Flex
             gap="2"
             alignItems="center"
@@ -53,7 +54,7 @@ const NotificationIconEntry = memo(
             onFocus={onClick ? undefined : focusSelf}
             onClick={onClick}
             userSelect="none"
-            bg={expanded ? "whiteAlpha.100" : undefined}
+            bg={expanded || !read ? focusColor : undefined}
           >
             <Box>{icon}</Box>
             <UserAvatar pubkey={pubkey} size="sm" />
