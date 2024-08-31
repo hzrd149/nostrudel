@@ -53,6 +53,7 @@ export const internalApps: App[] = [
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   { title: "Videos", description: "Browse flare videos", icon: Film02, id: "videos", to: "/videos" },
+  { title: "Articles", description: "Browse articles", icon: Edit04, id: "articles", to: "/articles" },
 ];
 
 export const internalTools: App[] = [

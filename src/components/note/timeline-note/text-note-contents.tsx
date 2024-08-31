@@ -34,6 +34,7 @@ import {
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
+import { embedNostrWikiLinks } from "../../external-embeds/types/wiki";
 
 function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   let content: EmbedableContent = [event.content.trim()];
@@ -75,6 +76,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
   content = embedNostrHashtags(content, event);
   content = embedNipDefinitions(content);
   content = embedEmoji(content, event);
+  content = embedNostrWikiLinks(content);
 
   return content;
 }

@@ -103,6 +103,8 @@ import PerformanceSettings from "./views/settings/performance";
 import PrivacySettings from "./views/settings/privacy";
 import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
+import ArticlesHomeView from "./views/articles";
+import ArticleView from "./views/articles/article";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -405,6 +407,13 @@ const router = createHashRouter([
         children: [
           { path: "", element: <CommunitiesHomeView /> },
           { path: "explore", element: <CommunitiesExploreView /> },
+        ],
+      },
+      {
+        path: "articles",
+        children: [
+          { path: "", element: <ArticlesHomeView /> },
+          { path: ":naddr", element: <ArticleView /> },
         ],
       },
       {
