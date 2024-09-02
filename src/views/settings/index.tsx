@@ -1,4 +1,4 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { Divider, Flex, Heading, Link } from "@chakra-ui/react";
 import { Outlet, useMatch } from "react-router-dom";
 
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
@@ -7,6 +7,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import {
   AppearanceIcon,
   DatabaseIcon,
+  GithubIcon,
   LightningIcon,
   NotesIcon,
   PerformanceIcon,
@@ -15,6 +16,7 @@ import {
 import useCurrentAccount from "../../hooks/use-current-account";
 import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
+import VersionButton from "../../components/version-button";
 
 export default function SettingsView() {
   const account = useCurrentAccount();
@@ -58,6 +60,15 @@ export default function SettingsView() {
             <SimpleNavItem to="/relays/cache/database" leftIcon={<DatabaseIcon boxSize={5} />}>
               Database Tools
             </SimpleNavItem>
+
+            <Divider />
+
+            <Flex alignItems="center">
+              <Link isExternal href="https://github.com/hzrd149/nostrudel" flex={1}>
+                <GithubIcon /> Github
+              </Link>
+              <VersionButton />
+            </Flex>
           </Flex>
         </Flex>
         {!isMobile && (
