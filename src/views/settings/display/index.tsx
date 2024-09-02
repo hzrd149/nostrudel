@@ -23,7 +23,6 @@ export default function DisplaySettings() {
 
   const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
-  const showPubkeyColor = useSubject(localSettings.showPubkeyColor);
 
   return (
     <VerticalPageLayout flex={1}>
@@ -74,12 +73,7 @@ export default function DisplaySettings() {
           <FormLabel htmlFor="maxPageWidth" mb="0">
             Show user pubkey key color
           </FormLabel>
-          <Select
-            id="maxPageWidth"
-            maxW="sm"
-            value={showPubkeyColor}
-            onChange={(e) => localSettings.showPubkeyColor.next(e.target.value)}
-          >
+          <Select id="maxPageWidth" maxW="sm" {...register("showPubkeyColor")}>
             <option value="none">None</option>
             <option value="avatar">Avatar</option>
             <option value="underline">Underline</option>

@@ -18,9 +18,7 @@ export type UserLinkProps = LinkProps & {
 export default function UserLink({ pubkey, showAt, tab, ...props }: UserLinkProps) {
   const metadata = useUserMetadata(pubkey);
   const account = useCurrentAccount();
-  const { hideUsernames, removeEmojisInUsernames } = useAppSettings();
-
-  const showPubkeyColor = useSubject(localSettings.showPubkeyColor);
+  const { hideUsernames, removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);
 
   return (

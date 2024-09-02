@@ -9,9 +9,6 @@ import {
 } from "../classes/local-settings/types";
 import { LocalStorageEntry } from "../classes/local-settings/entry";
 
-// display
-const showPubkeyColor = new LocalStorageEntry("show-pubkey-color", "avatar"); // avatar, underline, none
-
 // local relay
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
 const wasmPersistForDays = new NullableNumberLocalStorageEntry("wasm-relay-oldest-event", 365);
@@ -54,7 +51,6 @@ const addClientTag = new BooleanLocalStorageEntry("add-client-tag", ENABLE_CLIEN
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
 
 const localSettings = {
-  showPubkeyColor,
   idbMaxEvents,
   wasmPersistForDays,
   enableNoteThreadDrawer,

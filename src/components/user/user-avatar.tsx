@@ -76,7 +76,7 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
 };
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
   ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
-    const { imageProxy, proxyUserMedia, hideUsernames } = useAppSettings();
+    const { imageProxy, proxyUserMedia, hideUsernames, showPubkeyColor } = useAppSettings();
     const account = useCurrentAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;
@@ -93,7 +93,6 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
       }
     }, [metadata?.picture, imageProxy, proxyUserMedia, hideUsernames, account]);
 
-    const showPubkeyColor = useSubject(localSettings.showPubkeyColor);
     const color = pubkey ? "#" + pubkey.slice(0, 6) : undefined;
 
     const showColor = showPubkeyColor === "avatar" && color !== undefined && props.size !== "xs";
