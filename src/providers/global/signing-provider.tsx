@@ -3,10 +3,11 @@ import React, { useCallback, useContext, useMemo } from "react";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { DraftNostrEvent } from "../../types/nostr-event";
+import { EventTemplate, VerifiedEvent } from "nostr-tools";
 
 export type SigningContextType = {
-  requestSignature: (draft: DraftNostrEvent) => Promise<NostrEvent>;
+  requestSignature: (draft: EventTemplate | DraftNostrEvent) => Promise<VerifiedEvent>;
   requestDecrypt: (data: string, pubkey: string) => Promise<string>;
   requestEncrypt: (data: string, pubkey: string) => Promise<string>;
 };
@@ -41,14 +42,14 @@ export function SigningProvider({ children }: { children: React.ReactNode }) {
   const requestDecrypt = useCallback(
     async (data: string, pubkey: string) => {
       if (!current) throw new Error("No account");
-      return await signingService.requestDecrypt(data, pubkey, current);
+      return await signingService.nip04Decrypt(data, pubkey, current);
     },
     [toast, current],
   );
   const requestEncrypt = useCallback(
     async (data: string, pubkey: string) => {
       if (!current) throw new Error("No account");
-      return await signingService.requestEncrypt(data, pubkey, current);
+      return await signingService.nip04Encrypt(data, pubkey, current);
     },
     [toast, current],
   );

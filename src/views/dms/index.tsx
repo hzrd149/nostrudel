@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
@@ -11,23 +11,21 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { KnownConversation, groupIntoConversations, hasResponded, identifyConversation } from "../../helpers/nostr/dms";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { useDMTimeline } from "../../providers/global/dm-timeline";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import { useDMTimeline } from "../../providers/global/dms-provider";
 import UserName from "../../components/user/user-name";
-import { useDecryptionContainer } from "../../providers/global/dycryption-provider";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
-  const ref = useRef<HTMLParagraphElement | null>(null);
-  useRegisterIntersectionEntity(ref, message.id);
+  const ref = useEventIntersectionRef(message);
 
-  const { plaintext } = useDecryptionContainer(pubkey, message.content);
+  const { plaintext } = useKind4Decrypt(message);
   return (
     <Text isTruncated ref={ref}>
       {plaintext || "<Encrypted>"}
@@ -40,8 +38,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
   const lastReceived = conversation.messages.find((m) => m.pubkey === conversation.correspondent);
   const lastMessage = conversation.messages[0];
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, lastMessage.id);
+  const ref = useEventIntersectionRef(lastMessage);
 
   return (
     <LinkBox as={Card} size="sm" ref={ref}>
@@ -50,7 +47,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
         <Flex direction="column" gap="1" overflow="hidden" flex={1}>
           <Flex gap="2" alignItems="center" overflow="hidden">
             <UserName pubkey={conversation.correspondent} isTruncated />
-            <UserDnsIdentityIcon onlyIcon pubkey={conversation.correspondent} />
+            <UserDnsIdentity onlyIcon pubkey={conversation.correspondent} />
             <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />
             {hasResponded(conversation) && <CheckIcon boxSize={4} color="green.500" />}
           </Flex>

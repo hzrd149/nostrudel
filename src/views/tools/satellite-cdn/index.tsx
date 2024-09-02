@@ -166,10 +166,8 @@ export default function SatelliteCDNView() {
       );
 
     if (search) {
-      const filteredFiles = account.files.filter((f) =>
-        f.name.toLocaleLowerCase().includes(search.toLocaleLowerCase().trim()),
-      );
-      const sortedFiles = matchSorter(filteredFiles, search.toLocaleLowerCase().trim(), { keys: ["name"] });
+      const filteredFiles = account.files.filter((f) => f.name?.toLowerCase().includes(search.toLowerCase().trim()));
+      const sortedFiles = matchSorter(filteredFiles, search.toLowerCase().trim(), { keys: ["name"] });
       return <FilesTable files={sortedFiles} />;
     } else return <FilesTable files={account.files} />;
   };

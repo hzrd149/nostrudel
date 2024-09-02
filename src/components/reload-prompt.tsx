@@ -11,7 +11,8 @@ export function ReloadPrompt(props: Omit<AlertProps, "children" | "status">) {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(r) {
-      console.log("SW Registered: " + r);
+      console.log("SW Registered");
+      console.log(r);
 
       if (r) {
         setInterval(() => r.update(), intervalMS);
@@ -21,7 +22,8 @@ export function ReloadPrompt(props: Omit<AlertProps, "children" | "status">) {
       toast({ status: "success", title: "App Installed", duration: 2000, isClosable: true });
     },
     onRegisterError(error) {
-      console.log("SW registration error", error);
+      console.log("SW registration error");
+      console.log(error);
     },
   });
 

@@ -1,28 +1,25 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/event";
 import { getGoalClosedDate, getGoalName } from "../../../helpers/nostr/goal";
 import GoalMenu from "./goal-menu";
 import GoalProgress from "./goal-progress";
 import GoalContents from "./goal-contents";
-import dayjs from "dayjs";
 import GoalZapButton from "./goal-zap-button";
 import GoalTopZappers from "./goal-top-zappers";
 import Timestamp from "../../../components/timestamp";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 function GoalCard({ goal, ...props }: Omit<CardProps, "children"> & { goal: NostrEvent }) {
-  const nevent = getSharableEventAddress(goal);
+  const address = useShareableEventAddress(goal);
 
   // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(goal));
+  const ref = useEventIntersectionRef(goal);
 
   const closed = getGoalClosedDate(goal);
 
@@ -30,7 +27,7 @@ function GoalCard({ goal, ...props }: Omit<CardProps, "children"> & { goal: Nost
     <Card ref={ref} variant="outline" {...props}>
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
-          <Link as={RouterLink} to={`/goals/${nevent}`}>
+          <Link as={RouterLink} to={`/goals/${address}`}>
             {getGoalName(goal)}
           </Link>
         </Heading>

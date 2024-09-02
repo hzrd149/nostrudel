@@ -121,7 +121,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
               try {
                 const id = await dnsIdentityService.fetchIdentity(address);
                 if (!id) return "Cant find NIP-05 ID";
-                if (id.pubkey !== account.pubkey) return "Pubkey dose not match";
+                if (id.pubkey !== account.pubkey) return "Pubkey does not match";
               } catch (e) {
                 return "Failed to fetch ID";
               }

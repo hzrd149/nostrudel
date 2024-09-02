@@ -4,7 +4,7 @@ import { nip19 } from "nostr-tools";
 
 import { UserAvatar, UserAvatarProps } from "./user-avatar";
 
-export const UserAvatarLink = forwardRef<HTMLAnchorElement, UserAvatarProps>(({ pubkey, ...props }, ref) => (
+export const UserAvatarLink = forwardRef<HTMLAnchorElement | null, UserAvatarProps>(({ pubkey, ...props }, ref) => (
   <Link to={`/u/${nip19.npubEncode(pubkey)}`} ref={ref}>
     <UserAvatar pubkey={pubkey} {...props} />
   </Link>

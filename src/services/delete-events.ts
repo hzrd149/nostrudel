@@ -1,7 +1,6 @@
-import { kinds } from "nostr-tools";
+import { NostrEvent, kinds } from "nostr-tools";
+import { getEventUID } from "nostr-idb";
 
-import { getEventUID } from "../helpers/nostr/event";
-import { NostrEvent } from "../types/nostr-event";
 import ControlledObservable from "../classes/controlled-observable";
 
 const deleteEventStream = new ControlledObservable<NostrEvent>();
@@ -11,7 +10,7 @@ function handleEvent(deleteEvent: NostrEvent) {
   deleteEventStream.next(deleteEvent);
 }
 
-function doseMatch(deleteEvent: NostrEvent, event: NostrEvent) {
+function doesMatch(deleteEvent: NostrEvent, event: NostrEvent) {
   const id = getEventUID(event);
   return deleteEvent.tags.some((t) => (t[0] === "a" || t[0] === "e") && t[1] === id);
 }
@@ -19,7 +18,7 @@ function doseMatch(deleteEvent: NostrEvent, event: NostrEvent) {
 const deleteEventService = {
   stream: deleteEventStream,
   handleEvent,
-  doseMatch,
+  doesMatch,
 };
 
 export default deleteEventService;

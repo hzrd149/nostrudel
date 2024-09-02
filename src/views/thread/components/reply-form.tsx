@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput, useToast } from "@chakra-ui/react";
+import { useMemo, useRef } from "react";
+import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 import { kinds } from "nostr-tools";
@@ -16,15 +16,15 @@ import {
   getPubkeysMentionedInContent,
 } from "../../../helpers/nostr/post";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
-import { TrustProvider } from "../../../providers/local/trust";
-import { nostrBuildUploadImage } from "../../../helpers/nostr-build";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import useCacheForm from "../../../hooks/use-cache-form";
+import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -34,18 +34,20 @@ export type ReplyFormProps = {
 };
 
 export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
-  const toast = useToast();
   const publish = usePublishEvent();
   const account = useCurrentAccount();
   const emojis = useContextEmojis();
-  const { requestSignature } = useSigningContext();
 
   const threadMembers = useMemo(() => getThreadMembers(item, account?.pubkey), [item, account?.pubkey]);
-  const { setValue, getValues, watch, handleSubmit } = useForm({
+  const { setValue, getValues, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       content: "",
     },
+    mode: "all",
   });
+
+  const clearCache = useCacheForm<{ content: string }>(`reply-${item.event.id}`, getValues, reset, formState);
+
   const contentMentions = getPubkeysMentionedInContent(getValues().content);
   const notifyPubkeys = unique([...threadMembers, ...contentMentions]);
 
@@ -53,28 +55,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
 
   const textAreaRef = useRef<RefType | null>(null);
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const uploadImage = useCallback(
-    async (imageFile: File) => {
-      try {
-        if (!imageFile.type.includes("image")) throw new Error("Only images are supported");
-
-        setUploading(true);
-        const response = await nostrBuildUploadImage(imageFile, requestSignature);
-        const imageUrl = response.url;
-
-        const content = getValues().content;
-        const position = textAreaRef.current?.getCaretPosition();
-        if (position !== undefined) {
-          setValue("content", content.slice(0, position) + imageUrl + content.slice(position), { shouldDirty: true });
-        } else setValue("content", content + imageUrl, { shouldDirty: true });
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
-      }
-      setUploading(false);
-    },
-    [setValue, getValues],
-  );
+  const { onPaste, onFileInputChange, uploading } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
 
   const draft = useMemo(() => {
     let updated = finalizeNote({ kind: replyKind, content: getValues().content, created_at: dayjs().unix(), tags: [] });
@@ -85,9 +66,10 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   }, [getValues().content, emojis]);
 
   const submit = handleSubmit(async (values) => {
-    const pub = await publish("Reply", draft);
+    const pub = await publish("Reply", { ...draft, created_at: dayjs().unix() });
 
     if (pub && onSubmitted) onSubmitted(pub.event);
+    clearCache();
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -104,24 +86,13 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         value={getValues().content}
         onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
         instanceRef={(inst) => (textAreaRef.current = inst)}
-        onPaste={(e) => {
-          const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-          if (imageFile) uploadImage(imageFile);
-        }}
+        onPaste={onPaste}
         onKeyDown={(e) => {
-          if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
         }}
       />
       <Flex gap="2" alignItems="center">
-        <VisuallyHiddenInput
-          type="file"
-          accept="image/*"
-          ref={imageUploadRef}
-          onChange={(e) => {
-            const img = e.target.files?.[0];
-            if (img) uploadImage(img);
-          }}
-        />
+        <VisuallyHiddenInput type="file" accept="image/*" ref={imageUploadRef} onChange={onFileInputChange} />
         <IconButton
           icon={<UploadImageIcon />}
           aria-label="Upload Image"

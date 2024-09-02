@@ -30,6 +30,7 @@ import ThreadView from "../views/thread";
 import { ChevronLeftIcon, ChevronRightIcon, ExternalLinkIcon } from "../components/icons";
 import { logger } from "../helpers/debug";
 import { RouteProviders } from "./route";
+import useRouterMarker from "../hooks/use-router-marker";
 
 const TorrentDetailsView = lazy(() => import("../views/torrents/torrent"));
 
@@ -117,22 +118,6 @@ export function useNavigateInDrawer() {
 }
 
 const log = logger.extend("DrawerRouter");
-
-export function useRouterMarker(router: Router) {
-  const index = useRef<number | null>(null);
-  const set = useCallback((v = 0) => (index.current = v), []);
-  const reset = useCallback(() => (index.current = null), []);
-
-  useEffect(() => {
-    return router.subscribe((event) => {
-      if (index.current === null) return;
-      if (event.historyAction === "PUSH") index.current++;
-      else if (event.historyAction === "POP") index.current--;
-    });
-  }, [router]);
-
-  return useMemo(() => ({ index, set, reset }), [index, set, reset]);
-}
 
 export default function DrawerSubViewProvider({
   children,

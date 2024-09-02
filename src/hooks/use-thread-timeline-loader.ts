@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { kinds } from "nostr-tools";
+import { kinds as eventKinds } from "nostr-tools";
 
 import useSubject from "./use-subject";
 import useSingleEvent from "./use-single-event";
@@ -12,21 +12,21 @@ import { unique } from "../helpers/array";
 export default function useThreadTimelineLoader(
   focusedEvent: NostrEvent | undefined,
   relays: Iterable<string>,
-  kind: number = kinds.ShortTextNote,
+  kinds?: number[],
 ) {
   const refs = focusedEvent && getThreadReferences(focusedEvent);
   const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent?.id });
 
-  const readRelays = unique([...relays, ...(rootPointer?.relays ?? [])]);
+  const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
 
-  const timelineId = `${rootPointer?.id}-replies`;
+  const timelineId = `${rootPointer?.id}-thread`;
   const timeline = useTimelineLoader(
     timelineId,
     readRelays,
     rootPointer
       ? {
           "#e": [rootPointer.id],
-          kinds: [kind],
+          kinds: kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote],
         }
       : undefined,
   );

@@ -1,25 +1,36 @@
-import { createCoordinate } from "../classes/batch-kind-loader";
-import { NostrEvent } from "../types/nostr-event";
-import { getEventRelays } from "./event-relays";
+import { nip19 } from "nostr-tools";
+import type { AddressPointer, EventPointer } from "nostr-tools/nip19";
+
+import { NostrEvent, isDTag } from "../types/nostr-event";
 import relayScoreboardService from "./relay-scoreboard";
-import type { AddressPointer, EventPointer } from "nostr-tools/lib/types/nip19";
+import userMailboxesService from "./user-mailboxes";
+import singleEventService from "./single-event";
+import { isReplaceable } from "../helpers/nostr/event";
 
-function pickBestRelays(relays: string[]) {
+function pickBestRelays(relays: Iterable<string>) {
   // ignore local relays
-  relays = relays.filter((url) => !url.includes("://localhost") && !url.includes("://192.168"));
-
-  return relayScoreboardService.getRankedRelays(relays);
+  const urls = Array.from(relays).filter((url) => !url.includes("://localhost") && !url.includes("://192.168"));
+  return relayScoreboardService.getRankedRelays(urls);
 }
 
 function getAddressPointerRelayHint(pointer: AddressPointer): string | undefined {
-  let relays = getEventRelays(createCoordinate(pointer.kind, pointer.pubkey, pointer.identifier)).value;
-  return pickBestRelays(relays)[0];
+  const authorRelays = userMailboxesService.getMailboxes(pointer.pubkey).value;
+  return pickBestRelays(authorRelays?.outbox || [])[0];
 }
 
 function getEventPointerRelayHints(pointerOrId: string | EventPointer): string[] {
-  let relays =
-    typeof pointerOrId === "string" ? getEventRelays(pointerOrId).value : getEventRelays(pointerOrId.id).value;
-  return pickBestRelays(relays);
+  if (typeof pointerOrId === "string") {
+    const event = singleEventService.getSubject(pointerOrId).value;
+    if (event) {
+      const authorRelays = userMailboxesService.getMailboxes(event.pubkey).value;
+      return pickBestRelays(authorRelays?.outbox || []);
+    }
+  } else if (pointerOrId.author) {
+    const authorRelays = userMailboxesService.getMailboxes(pointerOrId.author).value;
+    return pickBestRelays(authorRelays?.outbox || []);
+  }
+
+  return [];
 }
 function getEventPointerRelayHint(pointerOrId: string | EventPointer): string | undefined {
   return getEventPointerRelayHints(pointerOrId)[0];
@@ -30,11 +41,21 @@ function getEventRelayHint(event: NostrEvent): string | undefined {
 }
 
 function getEventRelayHints(event: NostrEvent, count = 2): string[] {
-  // NOTE: in the future try to use the events authors relays
+  const authorRelays = userMailboxesService.getMailboxes(event.pubkey).value?.outbox || [];
 
-  let relays = getEventRelays(event.id).value;
+  return pickBestRelays(authorRelays).slice(0, count);
+}
 
-  return pickBestRelays(relays).slice(0, count);
+function getSharableEventAddress(event: NostrEvent, relays?: Iterable<string>) {
+  relays = relays || relayHintService.getEventRelayHints(event, 2);
+
+  if (isReplaceable(event.kind)) {
+    const d = event.tags.find(isDTag)?.[1];
+    if (!d) return null;
+    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays: Array.from(relays) });
+  } else {
+    return nip19.neventEncode({ id: event.id, kind: event.kind, relays: Array.from(relays), author: event.pubkey });
+  }
 }
 
 const relayHintService = {
@@ -42,6 +63,7 @@ const relayHintService = {
   getEventRelayHint,
   getEventPointerRelayHint,
   getEventPointerRelayHints,
+  getSharableEventAddress,
   getAddressPointerRelayHint,
   pickBestRelays,
 };

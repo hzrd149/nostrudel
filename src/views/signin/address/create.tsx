@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
   Button,
   Card,
   CardBody,
@@ -35,6 +30,8 @@ import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { safeJson } from "../../../helpers/parse";
+import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
+import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as Kind0ParsedContent;
@@ -90,20 +87,22 @@ export default function LoginNostrAddressCreate() {
       if (!metadata.nip05) throw new Error("Provider missing nip05 address");
       const nip05 = await dnsIdentityService.fetchIdentity(metadata.nip05);
       if (!nip05 || nip05.pubkey !== selected.pubkey) throw new Error("Invalid provider");
-      if (nip05.name !== "_") throw new Error("Provider dose not own the domain");
-      if (!nip05.hasNip46) throw new Error("Provider dose not support NIP-46");
-      const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays);
+      if (nip05.name !== "_") throw new Error("Provider does not own the domain");
+      if (!nip05.hasNip46) throw new Error("Provider does not support NIP-46");
+      const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays || []);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 
-      const client = nostrConnectService.createClient("", relays, undefined, nip05.pubkey);
+      const signer = nostrConnectService.createSigner("", relays, undefined, nip05.pubkey);
 
-      const createPromise = client.createAccount(name, nip05.domain);
+      const createPromise = signer.createAccount(name, nip05.domain, undefined, NOSTR_CONNECT_PERMISSIONS);
       await createPromise;
-      await client.connect();
+      await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-      nostrConnectService.saveClient(client);
-      accountService.addFromNostrConnect(client);
-      accountService.switchAccount(client.pubkey);
+      const account = new NostrConnectAccount(signer.pubkey!, signer);
+
+      nostrConnectService.saveSigner(signer);
+      accountService.addAccount(account);
+      accountService.switchAccount(account.pubkey);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

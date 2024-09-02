@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
-import { kinds } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useDebounce, useObservable } from "react-use";
@@ -24,10 +24,10 @@ import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import EventStore from "../../classes/event-store";
-import NostrRequest from "../../classes/nostr-request";
 import { isPTag } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { subscribeMany } from "../../helpers/relay";
 
 type NodeType = { id: string; image?: string; name?: string };
 
@@ -51,13 +51,15 @@ function NetworkDMGraphPage() {
       if (!contacts) return;
 
       store.clear();
-      const request = new NostrRequest(relays);
-      request.onEvent.subscribe((e) => store.addEvent(e));
-      request.start({
+      const filter: Filter = {
         authors: contactsPubkeys,
         kinds: [kinds.EncryptedDirectMessage],
         since,
         until,
+      };
+      const sub = subscribeMany(Array.from(relays), [filter], {
+        onevent: (event) => store.addEvent(event),
+        oneose: () => sub.close(),
       });
     },
     2 * 1000,

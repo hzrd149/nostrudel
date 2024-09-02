@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import type { ProfilePointer } from "nostr-tools/lib/types/nip19";
+import type { ProfilePointer } from "nostr-tools/nip19";
 import { isHexKey } from "../helpers/nip19";
 
 export default function useParamsProfilePointer(key: string = "pubkey"): ProfilePointer {

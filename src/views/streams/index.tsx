@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
+import { Filter } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -10,9 +11,8 @@ import { STREAM_KIND } from "../../helpers/nostr/stream";
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import useParsedStreams from "../../hooks/use-parsed-streams";
-import { NostrRequestFilter } from "../../types/nostr-relay";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -36,7 +36,7 @@ function StreamsPage() {
   );
 
   const { filter, listId } = usePeopleListContext();
-  const query = useMemo<NostrRequestFilter | undefined>(() => {
+  const query = useMemo<Filter | Filter[] | undefined>(() => {
     if (!filter) return undefined;
     return [
       { authors: filter.authors, kinds: [STREAM_KIND] },
@@ -60,7 +60,7 @@ function StreamsPage() {
     <VerticalPageLayout>
       <Flex gap="2" wrap="wrap" alignItems="center">
         <PeopleListSelection />
-        <Switch checked={showEnded.isOpen} onChange={showEnded.onToggle}>
+        <Switch isChecked={showEnded.isOpen} onChange={showEnded.onToggle}>
           Show Ended
         </Switch>
       </Flex>

@@ -5,15 +5,15 @@ import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRT
 import { parseCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
 
-export const MUTE_LIST_KIND = 10000;
-export const PIN_LIST_KIND = 10001;
-export const BOOKMARK_LIST_KIND = 10003;
-export const COMMUNITIES_LIST_KIND = 10004;
-export const CHANNELS_LIST_KIND = 10005;
+export const MUTE_LIST_KIND = kinds.Mutelist;
+export const PIN_LIST_KIND = kinds.Pinlist;
+export const BOOKMARK_LIST_KIND = kinds.BookmarkList;
+export const COMMUNITIES_LIST_KIND = kinds.CommunitiesList;
+export const CHANNELS_LIST_KIND = kinds.PublicChatsList;
 
-export const PEOPLE_LIST_KIND = 30000;
+export const PEOPLE_LIST_KIND = kinds.Followsets;
 export const NOTE_LIST_KIND = 30001;
-export const BOOKMARK_LIST_SET_KIND = 30003;
+export const BOOKMARK_LIST_SET_KIND = kinds.Bookmarksets;
 
 export function getListName(event: NostrEvent) {
   if (event.kind === kinds.Contacts) return "Following";
@@ -72,7 +72,6 @@ export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): n
 export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
-/** @deprecated */
 export function getRelaysFromList(event: NostrEvent | DraftNostrEvent) {
   if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
   else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
@@ -119,7 +118,7 @@ export function listAddPerson(
   relay?: string,
   petname?: string,
 ): DraftNostrEvent {
-  if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("person already in list");
+  if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("Person already in list");
   const pTag: PTag = ["p", pubkey, relay ?? "", petname ?? ""];
   while (pTag[pTag.length - 1] === "") pTag.pop();
 
@@ -141,7 +140,7 @@ export function listRemovePerson(list: NostrEvent | DraftNostrEvent, pubkey: str
 }
 
 export function listAddEvent(list: NostrEvent | DraftNostrEvent, event: string, relay?: string): DraftNostrEvent {
-  if (list.tags.some((t) => t[0] === "e" && t[1] === event)) throw new Error("event already in list");
+  if (list.tags.some((t) => t[0] === "e" && t[1] === event)) throw new Error("Event already in list");
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
@@ -156,6 +155,25 @@ export function listRemoveEvent(list: NostrEvent | DraftNostrEvent, event: strin
     kind: list.kind,
     content: list.content,
     tags: list.tags.filter((t) => !(t[0] === "e" && t[1] === event)),
+  };
+}
+
+export function listAddRelay(list: NostrEvent | DraftNostrEvent, relay: string): DraftNostrEvent {
+  if (list.tags.some((t) => t[0] === "e" && t[1] === relay)) throw new Error("Relay already in list");
+  return {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: [...list.tags, ["relay", relay]],
+  };
+}
+
+export function listRemoveRelay(list: NostrEvent | DraftNostrEvent, relay: string): DraftNostrEvent {
+  return {
+    created_at: dayjs().unix(),
+    kind: list.kind,
+    content: list.content,
+    tags: list.tags.filter((t) => !(t[0] === "relay" && t[1] === relay)),
   };
 }
 

@@ -17,23 +17,27 @@ import {
   Text,
   TextProps,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import Timestamp from "../../../components/timestamp";
 import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
-import ThreadButton from "./thread-button";
+import ThreadButton from "../../../components/message/thread-button";
 import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
-import { useDecryptionContext } from "../../../providers/global/dycryption-provider";
 import DirectMessageBlock from "./direct-message-block";
+import decryptionCacheService from "../../../services/decryption-cache";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
     <DecryptPlaceholder message={message} variant="link" py="4" px="6rem" zIndex={1}>
-      {(plaintext) => <Text isTruncated>{plaintext}</Text>}
+      {(plaintext) => (
+        <Text isTruncated {...props}>
+          {plaintext}
+        </Text>
+      )}
     </DecryptPlaceholder>
   );
 }
@@ -98,7 +102,6 @@ export default function ThreadDrawer({
   ...props
 }: Omit<DrawerProps, "children"> & { threadId: string; pubkey: string }) {
   const { threads, getRoot } = useThreadsContext();
-  const { startQueue, getOrCreateContainer, addToQueue } = useDecryptionContext();
 
   const thread = threads[threadId];
   const [loading, setLoading] = useState(false);
@@ -107,17 +110,20 @@ export default function ThreadDrawer({
 
     const promises = thread.messages
       .map((message) => {
-        const container = getOrCreateContainer(pubkey, message.content);
-        if (container.plaintext.value === undefined) return addToQueue(container);
+        const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
+        if (container.plaintext.value === undefined) return decryptionCacheService.requestDecrypt(container);
       })
       .filter(Boolean);
 
     if (thread.root) {
-      const rootContainer = getOrCreateContainer(pubkey, thread.root.content);
-      if (rootContainer.plaintext.value === undefined) addToQueue(rootContainer);
+      const rootContainer = decryptionCacheService.getOrCreateContainer(
+        thread.root.id,
+        "nip04",
+        pubkey,
+        thread.root.content,
+      );
+      if (rootContainer.plaintext.value === undefined) decryptionCacheService.requestDecrypt(rootContainer);
     }
-
-    startQueue();
 
     setLoading(true);
     Promise.all(promises).finally(() => setLoading(false));

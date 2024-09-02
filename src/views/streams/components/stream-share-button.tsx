@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { Button, ButtonProps } from "@chakra-ui/react";
 
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { PostModalContext } from "../../../providers/route/post-modal-provider";
 import { RepostIcon } from "../../../components/icons";
 import { ParsedStream } from "../../../helpers/nostr/stream";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export type StreamShareButtonProps = Omit<ButtonProps, "children" | "onClick"> & {
   stream: ParsedStream;
@@ -19,8 +19,8 @@ export default function StreamShareButton({
   const { openModal } = useContext(PostModalContext);
 
   const handleClick = () => {
-    const nevent = getSharableEventAddress(stream.event);
-    openModal({ initContent: "\nnostr:" + nevent });
+    const address = useShareableEventAddress(stream.event);
+    openModal({ initContent: "\nnostr:" + address });
   };
 
   return (

@@ -1,21 +1,29 @@
 import { Debugger } from "debug";
 import { Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
+import { nanoid } from "nanoid";
 
-import NostrRequest from "./nostr-request";
 import Subject from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import deleteEventService from "../services/delete-events";
 import { mergeFilter } from "../helpers/nostr/filter";
 import { isATag, isETag } from "../types/nostr-event";
+import relayPoolService from "../services/relay-pool";
+import Process from "./process";
+import processManager from "../services/process-manager";
+import LayersThree01 from "../components/icons/layers-three-01";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
 
 export default class ChunkedRequest {
-  relay: string;
+  id: string;
+  process: Process;
+  relay: AbstractRelay;
   filters: Filter[];
   chunkSize = DEFAULT_CHUNK_SIZE;
   private log: Debugger;
@@ -26,44 +34,78 @@ export default class ChunkedRequest {
   /** set to true when the next chunk produces 0 events */
   complete = false;
 
+  private lastChunkIdx = 0;
   onChunkFinish = new Subject<number>();
 
-  constructor(relay: string, filters: Filter[], log?: Debugger) {
-    this.relay = relay;
+  constructor(relay: SimpleRelay | AbstractRelay, filters: Filter[], log?: Debugger) {
+    this.id = nanoid(8);
+    this.process = new Process("ChunkedRequest", this, [relay]);
+    this.process.icon = LayersThree01;
+    this.relay = relay as AbstractRelay;
     this.filters = filters;
 
-    this.log = log || logger.extend(relay);
-    this.events = new EventStore(relay);
+    this.log = log || logger.extend(relay.url);
+    this.events = new EventStore(relay.url);
 
     // TODO: find a better place for this
     this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
+
+    processManager.registerProcess(this.process);
   }
 
-  loadNextChunk() {
+  async loadNextChunk() {
+    if (this.loading) return;
+
+    // check if its possible to subscribe to this relay
+    if (!relayPoolService.canSubscribe(this.relay)) {
+      this.log("Cant subscribe to relay, aborting");
+      return;
+    }
+
     this.loading = true;
+
+    if (!this.relay.connected) {
+      this.log("relay not connected, aborting");
+      relayPoolService.requestConnect(this.relay);
+      return;
+    }
+
     let filters: Filter[] = mergeFilter(this.filters, { limit: this.chunkSize });
     let oldestEvent = this.getLastEvent();
     if (oldestEvent) {
       filters = mergeFilter(filters, { until: oldestEvent.created_at - 1 });
     }
 
-    const request = new NostrRequest([this.relay]);
-
     let gotEvents = 0;
-    request.onEvent.subscribe((e) => {
-      this.handleEvent(e);
-      gotEvents++;
-    });
-    request.onComplete.then(() => {
-      this.loading = false;
-      if (gotEvents === 0) {
-        this.complete = true;
-        this.log("Complete");
-      } else this.log(`Got ${gotEvents} events`);
-      this.onChunkFinish.next(gotEvents);
-    });
 
-    request.start(filters);
+    this.process.active = true;
+    await new Promise<number>((res) => {
+      const sub = this.relay.subscribe(filters, {
+        // @ts-expect-error
+        id: this.id + "-" + this.lastChunkIdx++,
+        onevent: (event) => {
+          this.handleEvent(event);
+          gotEvents++;
+        },
+        oneose: () => {
+          this.loading = false;
+          if (gotEvents === 0) {
+            this.complete = true;
+            this.log("Complete");
+          } else {
+            this.log(`Got ${gotEvents} events`);
+          }
+
+          this.onChunkFinish.next(gotEvents);
+          sub.close();
+          this.process.active = false;
+          res(gotEvents);
+        },
+        onclose: (reason) => {
+          relayPoolService.handleRelayNotice(this.relay, reason);
+        },
+      });
+    });
   }
 
   private handleEvent(event: NostrEvent) {
@@ -79,15 +121,16 @@ export default class ChunkedRequest {
     if (eventId) this.events.deleteEvent(eventId);
   }
 
-  cleanup() {
-    for (const sub of this.subs) sub.unsubscribe();
-    this.subs = [];
-  }
-
   getFirstEvent(nth = 0, eventFilter?: EventFilter) {
     return this.events.getFirstEvent(nth, eventFilter);
   }
   getLastEvent(nth = 0, eventFilter?: EventFilter) {
     return this.events.getLastEvent(nth, eventFilter);
+  }
+
+  destroy() {
+    for (const sub of this.subs) sub.unsubscribe();
+    this.subs = [];
+    processManager.unregisterProcess(this.process);
   }
 }

@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   ButtonGroup,
@@ -15,29 +14,27 @@ import {
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
-import { getEventUID } from "../../../helpers/nostr/event";
 import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
 import EmojiPackMenu from "./emoji-pack-menu";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojisFromPack(pack);
-  const naddr = getSharableEventAddress(pack);
+  const address = useShareableEventAddress(pack);
 
   // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(pack));
+  const ref = useEventIntersectionRef(pack);
 
   return (
     <Card ref={ref} variant="outline" {...props}>
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
-          <HoverLinkOverlay as={RouterLink} to={`/emojis/${naddr}`}>
+          <HoverLinkOverlay as={RouterLink} to={`/emojis/${address}`}>
             {getPackName(pack)}
           </HoverLinkOverlay>
         </Heading>

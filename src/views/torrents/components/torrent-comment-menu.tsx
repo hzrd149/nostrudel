@@ -1,6 +1,6 @@
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
+import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
@@ -9,14 +9,13 @@ import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu
 
 export default function TorrentCommentMenu({
   comment,
-  detailsClick,
   ...props
-}: { comment: NostrEvent; detailsClick?: () => void } & Omit<MenuIconButtonProps, "children">) {
+}: { comment: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <>
       <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={comment} />
-        <CopyShareLinkMenuItem event={comment} />
+        <ShareLinkMenuItem event={comment} />
         <CopyEmbedCodeMenuItem event={comment} />
         <MuteUserMenuItem event={comment} />
         <DeleteEventMenuItem event={comment} />

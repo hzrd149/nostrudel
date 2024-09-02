@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { kinds } from "nostr-tools";
-import { Flex } from "@chakra-ui/react";
+import { Flex, SimpleGrid } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSubject from "../../hooks/use-subject";
@@ -43,11 +43,13 @@ function ChannelsHomePage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {channels.map((channel) => (
-          <ErrorBoundary key={channel.id}>
-            <ChannelCard channel={channel} additionalRelays={relays} />
-          </ErrorBoundary>
-        ))}
+        <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
+          {channels.map((channel) => (
+            <ErrorBoundary key={channel.id}>
+              <ChannelCard channel={channel} additionalRelays={relays} />
+            </ErrorBoundary>
+          ))}
+        </SimpleGrid>
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

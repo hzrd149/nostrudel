@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import { UnlockIcon } from "../../../components/icons";
-import { useDecryptionContainer } from "../../../providers/global/dycryption-provider";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
-import { NostrEvent } from "../../../types/nostr-event";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useAppSettings from "../../../hooks/use-app-settings";
+import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
 
 export default function DecryptPlaceholder({
   children,
@@ -17,14 +15,9 @@ export default function DecryptPlaceholder({
   children: (decrypted: string) => JSX.Element;
   message: NostrEvent;
 } & Omit<ButtonProps, "children">): JSX.Element {
-  const account = useCurrentAccount();
   const { autoDecryptDMs } = useAppSettings();
-  const isOwn = account?.pubkey === message.pubkey;
   const [loading, setLoading] = useState(false);
-  const { requestDecrypt, plaintext, error } = useDecryptionContainer(
-    isOwn ? getDMRecipient(message) : getDMSender(message),
-    message.content,
-  );
+  const { requestDecrypt, plaintext, error } = useKind4Decrypt(message);
 
   const decrypt = async () => {
     setLoading(true);

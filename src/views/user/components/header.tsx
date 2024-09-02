@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { EditIcon, GhostIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
-import { getUserDisplayName } from "../../../helpers/nostr/user-metadata";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useUserMetadata from "../../../hooks/use-user-metadata";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import accountService from "../../../services/account";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import UserName from "../../../components/user/user-name";
 
 export default function Header({
   pubkey,
@@ -34,9 +34,9 @@ export default function Header({
       <Flex gap="2" alignItems="center">
         <UserAvatar pubkey={pubkey} size="sm" noProxy mr="2" />
         <Heading size="md" isTruncated>
-          {getUserDisplayName(metadata, pubkey)}
+          <UserName pubkey={pubkey} />
         </Heading>
-        <UserDnsIdentityIcon pubkey={pubkey} onlyIcon={showFullNip05} />
+        <UserDnsIdentity pubkey={pubkey} onlyIcon={showFullNip05} />
         <Spacer />
         {isSelf && !account.readonly && (
           <IconButton

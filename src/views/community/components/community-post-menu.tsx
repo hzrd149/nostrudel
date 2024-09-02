@@ -4,7 +4,7 @@ import { nip19 } from "nostr-tools";
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { NostrEvent } from "../../../types/nostr-event";
 import { CopyToClipboardIcon } from "../../../components/icons";
-import CopyShareLinkMenuItem from "../../../components/common-menu-items/copy-share-link";
+import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
@@ -20,7 +20,7 @@ export default function CommunityPostMenu({
     <>
       <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={event} />
-        <CopyShareLinkMenuItem event={event} />
+        <ShareLinkMenuItem event={event} />
         <MenuItem
           onClick={() => {
             const text = nip19.noteEncode(event.id);

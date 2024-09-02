@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:20.11 as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -15,14 +15,14 @@ ENV VITE_COMMIT_HASH=""
 ENV VITE_APP_VERSION="custom"
 RUN yarn build
 
-FROM nginx:stable-alpine-slim
+FROM nginx:stable-alpine-slim AS main
 EXPOSE 80
+
+WORKDIR /app
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-ENV CACHE_RELAY=""
-ENV IMAGE_PROXY=""
-ENV CORS_PROXY=""
-ADD ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod a+x /usr/local/bin/docker-entrypoint.sh
+# setup entrypoint
+ADD ./docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod a+x docker-entrypoint.sh
 
-ENTRYPOINT "/usr/local/bin/docker-entrypoint.sh"
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

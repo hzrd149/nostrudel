@@ -15,10 +15,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent, Relay, Subscription } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
 import { useLocalStorage } from "react-use";
-import { Subscription as IDBSubscription, CacheRelay } from "nostr-idb";
+import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
+import stringify from "json-stringify-deterministic";
+import { useSearchParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
@@ -30,11 +33,12 @@ import EventRow from "./event-row";
 import { processFilter } from "./process";
 import HelpModal from "./help-modal";
 import HelpCircle from "../../../components/icons/help-circle";
-import stringify from "json-stringify-deterministic";
-import { DownloadIcon } from "../../../components/icons";
+import { DownloadIcon, ShareIcon } from "../../../components/icons";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
+import { safeJson } from "../../../helpers/parse";
+import relayPoolService from "../../../services/relay-pool";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -47,16 +51,27 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 });
 
 export default function EventConsoleView() {
+  const [params, setParams] = useSearchParams();
   const historyDrawer = useDisclosure();
   const [history, setHistory] = useLocalStorage<string[]>("console-history", []);
   const helpModal = useDisclosure();
-  const queryRelay = useDisclosure();
-  const [relayURL, setRelayURL] = useState("");
-  const [relay, setRelay] = useState<Relay | null>(null);
+  const queryRelay = useDisclosure({ defaultIsOpen: params.has("relay") });
+  const [relayURL, setRelayURL] = useState(params.get("relay") || "");
+  const [relay, setRelay] = useState<AbstractRelay | null>(null);
 
   const [sub, setSub] = useState<Subscription | IDBSubscription | null>(null);
 
-  const [query, setQuery] = useState(() => history?.[0] || JSON.stringify({ kinds: [1], limit: 20 }, null, 2));
+  const [query, setQuery] = useState(() => {
+    if (params.has("filter")) {
+      const str = params.get("filter");
+      if (str) {
+        const f = safeJson(str, null);
+        if (f) return JSON.stringify(f, null, 2);
+      }
+    }
+    if (history?.[0]) return history?.[0];
+    return JSON.stringify({ kinds: [1], limit: 20 }, null, 2);
+  });
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,25 +87,24 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      let r: Relay | CacheRelay = localRelay;
+      if (!localRelay) throw new Error("Local relay disabled");
+      let r = localRelay!;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {
-          if (relay) relay.close();
-          r = new Relay(url.toString());
-          await r.connect();
-          setRelay(r);
+          r = await relayPoolService.requestRelay(url);
+          await relayPoolService.requestConnect(r);
+          setRelay(r as AbstractRelay);
         } else r = relay;
       } else {
-        if (relay) {
-          relay.close();
-          setRelay(null);
-        }
+        if (relay) setRelay(null);
       }
 
       await new Promise<void>((res) => {
         let buffer: NostrEvent[] = [];
         const flush = _throttle(() => setEvents([...buffer]), 1000 / 10, { trailing: true });
+
+        setError("");
 
         const s = r.subscribe([filter], {
           onevent: (e) => {
@@ -100,6 +114,9 @@ export default function EventConsoleView() {
           oneose: () => {
             setEvents([...buffer]);
             res();
+          },
+          onclose: (reason) => {
+            if (!buffer.length) setError(reason);
           },
         });
         setSub(s);
@@ -122,12 +139,19 @@ export default function EventConsoleView() {
     window.open(url, "_blank");
   };
 
+  const updateSharedURL = () => {
+    const p = new URLSearchParams(params);
+    p.set("filter", query);
+    p.set("relay", relayURL);
+    setParams(p, { replace: true });
+  };
+
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center" wrap="wrap">
         <BackButton size="sm" />
         <Heading size="md">Event Console</Heading>
-        <Switch size="sm" checked={queryRelay.isOpen} onChange={queryRelay.onToggle}>
+        <Switch size="sm" isChecked={queryRelay.isOpen} onChange={queryRelay.onToggle}>
           Query Relay
         </Switch>
         {queryRelay.isOpen && (
@@ -141,6 +165,9 @@ export default function EventConsoleView() {
         )}
         <ButtonGroup ml="auto">
           <IconButton icon={<HelpCircle />} aria-label="Help" title="Help" size="sm" onClick={helpModal.onOpen} />
+          {queryRelay.isOpen && (
+            <IconButton icon={<ShareIcon />} aria-label="Share" size="sm" onClick={updateSharedURL} />
+          )}
           <IconButton
             icon={<ClockRewind />}
             aria-label="History"
@@ -163,7 +190,14 @@ export default function EventConsoleView() {
             <AlertTitle>Error</AlertTitle>
             <AlertDescription whiteSpace="pre">{error}</AlertDescription>
           </Box>
-          <CloseButton alignSelf="flex-start" position="relative" right={-1} top={-1} onClick={() => setError("")} />
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-1}
+            top={-1}
+            onClick={() => setError("")}
+            ml="auto"
+          />
         </Alert>
       )}
 

@@ -1,5 +1,5 @@
 import { NostrEvent } from "../types/nostr-event";
-import { EventReferences, getThreadReferences } from "./nostr/event";
+import { getNip10References, ThreadReferences } from "./nostr/threading";
 
 export function countReplies(replies: ThreadItem[]): number {
   return replies.reduce((c, item) => c + countReplies(item.replies), 0) + replies.length;
@@ -13,7 +13,7 @@ export type ThreadItem = {
   /** the parent event this is replying to */
   replyingTo?: ThreadItem;
   /** refs from nostr event */
-  refs: EventReferences;
+  refs: ThreadReferences;
   /** direct child replies */
   replies: ThreadItem[];
 };
@@ -37,7 +37,7 @@ export function buildThread(events: NostrEvent[]) {
 
   const replies = new Map<string, ThreadItem>();
   for (const event of events) {
-    const refs = getThreadReferences(event);
+    const refs = getNip10References(event);
 
     if (refs.reply?.e) {
       idToChildren[refs.reply.e.id] = idToChildren[refs.reply.e.id] || [];

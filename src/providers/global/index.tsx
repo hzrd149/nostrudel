@@ -4,13 +4,13 @@ import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-app-settings";
-import NotificationTimelineProvider from "./notification-timeline";
+import NotificationsProvider from "./notifications-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
 import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
-import DecryptionProvider from "./dycryption-provider";
-import DMTimelineProvider from "./dm-timeline";
+import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
+import WebOfTrustProvider from "./web-of-trust-provider";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -25,17 +25,17 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
       <BreakpointProvider>
         <SigningProvider>
           <PublishProvider>
-            <DecryptionProvider>
-              <NotificationTimelineProvider>
-                <DMTimelineProvider>
-                  <DefaultEmojiProvider>
-                    <UserEmojiProvider>
-                      <AllUserSearchDirectoryProvider>{children}</AllUserSearchDirectoryProvider>
-                    </UserEmojiProvider>
-                  </DefaultEmojiProvider>
-                </DMTimelineProvider>
-              </NotificationTimelineProvider>
-            </DecryptionProvider>
+            <NotificationsProvider>
+              <DMTimelineProvider>
+                <DefaultEmojiProvider>
+                  <UserEmojiProvider>
+                    <AllUserSearchDirectoryProvider>
+                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                    </AllUserSearchDirectoryProvider>
+                  </UserEmojiProvider>
+                </DefaultEmojiProvider>
+              </DMTimelineProvider>
+            </NotificationsProvider>
           </PublishProvider>
         </SigningProvider>
       </BreakpointProvider>

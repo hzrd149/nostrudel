@@ -1,37 +1,24 @@
-import { Text, Tooltip } from "@chakra-ui/react";
+import { forwardRef } from "react";
+import { IconProps } from "@chakra-ui/react";
 
 import useDnsIdentity from "../../hooks/use-dns-identity";
 import useUserMetadata from "../../hooks/use-user-metadata";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
 
-export function UserDnsIdentityIcon({ pubkey, onlyIcon }: { pubkey: string; onlyIcon?: boolean }) {
+const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconProps>(({ pubkey, ...props }, ref) => {
   const metadata = useUserMetadata(pubkey);
   const identity = useDnsIdentity(metadata?.nip05);
 
-  if (!metadata?.nip05) {
-    return null;
+  if (!metadata?.nip05) return null;
+
+  if (identity === undefined) {
+    return <VerificationFailed color="yellow.500" {...props} ref={ref} />;
+  } else if (identity.exists === false || identity.pubkey === undefined) {
+    return <VerificationMissing color="red.500" {...props} ref={ref} />;
+  } else if (pubkey === identity.pubkey) {
+    return <VerifiedIcon color="purple.500" {...props} ref={ref} />;
+  } else {
+    return <VerificationFailed color="red.500" {...props} ref={ref} />;
   }
-
-  const renderIcon = () => {
-    if (identity === undefined) {
-      return <VerificationFailed color="yellow.500" />;
-    } else if (identity === null) {
-      return <VerificationMissing color="red.500" />;
-    } else if (pubkey === identity.pubkey) {
-      return <VerifiedIcon color="purple.500" />;
-    } else {
-      return <VerificationFailed color="red.500" />;
-    }
-  };
-
-  if (onlyIcon) {
-    return <Tooltip label={metadata.nip05}>{renderIcon()}</Tooltip>;
-  }
-  return (
-    <Text as="span" whiteSpace="nowrap">
-      {metadata.nip05.startsWith("_@") ? metadata.nip05.substr(2) : metadata.nip05} {renderIcon()}
-    </Text>
-  );
-}
-
+});
 export default UserDnsIdentityIcon;

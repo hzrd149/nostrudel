@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useMemo } from "react";
 
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getGoalName } from "../../../helpers/nostr/goal";
 import UserAvatarLink from "../../user/user-avatar-link";
@@ -9,6 +9,7 @@ import UserLink from "../../user/user-link";
 import GoalProgress from "../../../views/goals/components/goal-progress";
 import GoalZapButton from "../../../views/goals/components/goal-zap-button";
 import GoalTopZappers from "../../../views/goals/components/goal-top-zappers";
+import relayHintService from "../../../services/event-relay-hint";
 
 export type EmbeddedGoalOptions = {
   showActions?: boolean;
@@ -17,7 +18,7 @@ export type EmbeddedGoalOptions = {
 export type EmbeddedGoalProps = Omit<CardProps, "children"> & { goal: NostrEvent } & EmbeddedGoalOptions;
 
 export default function EmbeddedGoal({ goal, showActions = true, ...props }: EmbeddedGoalProps) {
-  const nevent = getSharableEventAddress(goal);
+  const nevent = useMemo(() => relayHintService.getSharableEventAddress(goal), [goal]);
 
   return (
     <Card {...props}>

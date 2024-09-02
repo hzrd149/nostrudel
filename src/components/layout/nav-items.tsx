@@ -1,12 +1,10 @@
-import { Box, Button, ButtonProps, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, ButtonProps, Icon, Link, Text, others, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import dayjs from "dayjs";
 
 import {
   DirectMessagesIcon,
-  CommunityIcon,
-  LiveStreamIcon,
   NotificationsIcon,
   ProfileIcon,
   RelayIcon,
@@ -15,7 +13,6 @@ import {
   LogoutIcon,
   NotesIcon,
   LightningIcon,
-  ChannelsIcon,
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
@@ -26,7 +23,10 @@ import Package from "../icons/package";
 import Rocket02 from "../icons/rocket-02";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import KeyboardShortcut from "../keyboard-shortcut";
-import Mail02 from "../icons/mail-02";
+import useRecentIds from "../../hooks/use-recent-ids";
+import { internalApps, internalTools } from "../../views/other-stuff/apps";
+import { App, AppIcon } from "../../views/other-stuff/component/app-card";
+import { useMemo } from "react";
 
 export default function NavItems() {
   const location = useLocation();
@@ -43,10 +43,12 @@ export default function NavItems() {
     variant: "link",
   };
 
-  let active = "notes";
-  if (location.pathname.startsWith("/notifications")) active = "notifications";
+  let active = "";
+  if (location.pathname.startsWith("/n/")) active = "notes";
+  else if (location.pathname === "/") active = "notes";
+  else if (location.pathname.startsWith("/notifications")) active = "notifications";
   else if (location.pathname.startsWith("/launchpad")) active = "launchpad";
-  else if (location.pathname.startsWith("/dvm")) active = "dvm";
+  else if (location.pathname.startsWith("/discovery")) active = "discovery";
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
@@ -75,6 +77,26 @@ export default function NavItems() {
     active = "profile";
   }
 
+  const { recent: recentApps } = useRecentIds("apps");
+  const otherStuff = useMemo(() => {
+    const internal = [...internalApps, ...internalTools];
+    const apps = recentApps.map((id) => internal.find((app) => app.id === id)).filter(Boolean) as App[];
+    if (apps.length > 3) {
+      apps.length = 3;
+    } else {
+      if (apps.length < 3 && !apps.some((a) => a.id === "streams")) {
+        apps.push(internal.find((app) => app.id === "streams")!);
+      }
+      if (apps.length < 3 && !apps.some((a) => a.id === "communities")) {
+        apps.push(internal.find((app) => app.id === "communities")!);
+      }
+      if (apps.length < 3 && !apps.some((a) => a.id === "channels")) {
+        apps.push(internal.find((app) => app.id === "channels")!);
+      }
+    }
+    return apps;
+  }, [recentApps]);
+
   return (
     <>
       <Button
@@ -98,9 +120,9 @@ export default function NavItems() {
       </Button>
       <Button
         as={RouterLink}
-        to="/dvm"
+        to="/discovery"
         leftIcon={<PuzzlePiece01 boxSize={6} />}
-        colorScheme={active === "dvm" ? "primary" : undefined}
+        colorScheme={active === "discovery" ? "primary" : undefined}
         {...buttonProps}
       >
         Discover
@@ -162,33 +184,18 @@ export default function NavItems() {
       <Text position="relative" py="2" color="GrayText">
         Other Stuff
       </Text>
-      <Button
-        as={RouterLink}
-        to="/streams"
-        leftIcon={<LiveStreamIcon boxSize={6} />}
-        colorScheme={active === "streams" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Streams
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/communities"
-        leftIcon={<CommunityIcon boxSize={6} />}
-        colorScheme={active === "communities" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Communities
-      </Button>
-      <Button
-        as={RouterLink}
-        to="/channels"
-        leftIcon={<ChannelsIcon boxSize={6} />}
-        colorScheme={active === "channels" ? "primary" : undefined}
-        {...buttonProps}
-      >
-        Channels
-      </Button>
+      {otherStuff.map((app) => (
+        <Button
+          key={app.id}
+          as={RouterLink}
+          to={app.to}
+          leftIcon={<AppIcon size="6" app={app} />}
+          colorScheme={typeof app.to === "string" && location.pathname.startsWith(app.to) ? "primary" : undefined}
+          {...buttonProps}
+        >
+          {app.title}
+        </Button>
+      ))}
       <Button
         as={RouterLink}
         to="/other-stuff"

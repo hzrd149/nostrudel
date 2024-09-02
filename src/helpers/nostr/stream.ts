@@ -3,9 +3,12 @@ import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
 import { unique } from "../array";
 import { ensureNotifyContentMentions } from "./post";
 import { getEventCoordinate } from "./event";
+import { kinds } from "nostr-tools";
 
-export const STREAM_KIND = 30311;
-export const STREAM_CHAT_MESSAGE_KIND = 1311;
+/** @deprecated use kinds.LiveEvent instead */
+export const STREAM_KIND = kinds.LiveEvent;
+/** @deprecated use kinds.LiveChatMessage instead */
+export const STREAM_CHAT_MESSAGE_KIND = kinds.LiveChatMessage;
 
 export type ParsedStream = {
   event: NostrEvent;

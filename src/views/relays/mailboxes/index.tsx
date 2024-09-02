@@ -1,36 +1,22 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Flex,
-  Heading,
-  IconButton,
-  Link,
-  Text,
-} from "@chakra-ui/react";
+import { useCallback } from "react";
+import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
-import { RelayUrlInput } from "../../../components/relay-url-input";
-import { RelayFavicon } from "../../../components/relay-favicon";
+import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
 import { RelayMode } from "../../../classes/relay";
-import { useCallback } from "react";
 import { NostrEvent } from "../../../types/nostr-event";
-import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { useForm } from "react-hook-form";
-import { safeRelayUrl } from "../../../helpers/relay";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { COMMON_CONTACT_RELAY } from "../../../const";
 import BackButton from "../../../components/router/back-button";
+import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import AddRelayForm from "../app/add-relay-form";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
@@ -41,7 +27,7 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 
   return (
     <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
-      <RelayFavicon relay={relay} size="xs" />
+      <MediaServerFavicon server={relay} size="xs" />
       <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} isTruncated>
         {relay}
       </Link>
@@ -61,7 +47,8 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 function MailboxesPage() {
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
-  const { inbox, outbox, event } = useUserMailboxes(account.pubkey, { alwaysRequest: true, ignoreCache: true }) || {};
+  const { inbox, outbox, event } =
+    useUserMailboxes(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true }) || {};
 
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
@@ -76,6 +63,7 @@ function MailboxesPage() {
       <Flex gap="2" alignItems="center">
         <BackButton hideFrom="lg" size="sm" />
         <Heading size="lg">Mailboxes</Heading>
+        {event && <DebugEventButton event={event} size="sm" ml="auto" />}
       </Flex>
       <Text fontStyle="italic" mt="-2">
         Mailbox relays are a way for other users to find your events, or send you events. they are defined in{" "}

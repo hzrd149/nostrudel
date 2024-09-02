@@ -2,64 +2,74 @@ import dayjs from "dayjs";
 import db from "./db";
 import _throttle from "lodash.throttle";
 
-import { fetchWithCorsFallback } from "../helpers/cors";
+import { fetchWithProxy } from "../helpers/request";
 import SuperMap from "../classes/super-map";
 import Subject from "../classes/subject";
 
 export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
-  return { name: parts[0], domain: parts[1] };
+  if (parts.length === 1) return { name: "_", domain: parts[0] };
+  else return { name: parts[0], domain: parts[1] };
 }
 
 type IdentityJson = {
-  names: Record<string, string | undefined>;
+  names?: Record<string, string | undefined>;
   relays?: Record<string, string[]>;
   nip46?: Record<string, string[]>;
 };
 export type DnsIdentity = {
   name: string;
   domain: string;
-  pubkey: string;
-  relays: string[];
+  /** If the nostr.json file exists */
+  exists: boolean;
+  /** pubkey found for name */
+  pubkey?: string;
+  /** relays found for name */
+  relays?: string[];
   hasNip46?: boolean;
   nip46Relays?: string[];
 };
 
-function getIdentityFromJson(name: string, domain: string, json: IdentityJson): DnsIdentity | undefined {
+function getIdentityFromJson(name: string, domain: string, json: IdentityJson): DnsIdentity {
+  if (!json.names) return { name, domain, exists: true };
   const pubkey = json.names[name];
-  if (!pubkey) return;
+  if (!pubkey) return { name, domain, exists: true };
 
   const relays: string[] = json.relays?.[pubkey] ?? [];
   const hasNip46 = !!json.nip46;
   const nip46Relays = json.nip46?.[pubkey];
-  return { name, domain, pubkey, relays, nip46Relays, hasNip46 };
+  return { name, domain, pubkey, relays, nip46Relays, hasNip46, exists: true };
 }
 
 class DnsIdentityService {
-  identities = new SuperMap<string, Subject<DnsIdentity | null>>(() => new Subject());
+  // undefined === loading
+  identities = new SuperMap<string, Subject<DnsIdentity | undefined>>(() => new Subject());
 
-  async fetchIdentity(address: string) {
+  async fetchIdentity(address: string): Promise<DnsIdentity> {
     const { name, domain } = parseAddress(address);
-    if (!name || !domain) throw new Error("invalid address");
+    if (!name || !domain) throw new Error("invalid address " + address);
 
-    const json = await fetchWithCorsFallback(`https://${domain}/.well-known/nostr.json?name=${name}`)
-      .then((res) => res.json() as Promise<IdentityJson>)
-      .then((json) => {
-        // convert all keys in names, and relays to lower case
-        if (json.names) {
-          for (const [name, pubkey] of Object.entries(json.names)) {
-            delete json.names[name];
-            json.names[name.toLowerCase()] = pubkey;
-          }
+    const res = await fetchWithProxy(`https://${domain}/.well-known/nostr.json?name=${name}`);
+
+    // if request was rejected consider identity invalid
+    if (res.status >= 400 && res.status < 500) return { name, domain, exists: false };
+
+    const json = await (res.json() as Promise<IdentityJson>).then((json) => {
+      // convert all keys in names, and relays to lower case
+      if (json.names) {
+        for (const [name, pubkey] of Object.entries(json.names)) {
+          delete json.names[name];
+          json.names[name.toLowerCase()] = pubkey;
         }
-        if (json.relays) {
-          for (const [name, pubkey] of Object.entries(json.relays)) {
-            delete json.relays[name];
-            json.relays[name.toLowerCase()] = pubkey;
-          }
+      }
+      if (json.relays) {
+        for (const [name, pubkey] of Object.entries(json.relays)) {
+          delete json.relays[name];
+          json.relays[name.toLowerCase()] = pubkey;
         }
-        return json;
-      });
+      }
+      return json;
+    });
 
     await this.addToCache(domain, json);
 
@@ -67,12 +77,14 @@ class DnsIdentityService {
   }
 
   async addToCache(domain: string, json: IdentityJson) {
+    if (!json.names) return;
+
     const now = dayjs().unix();
     const transaction = db.transaction("dnsIdentifiers", "readwrite");
 
     for (const name of Object.keys(json.names)) {
       const identity = getIdentityFromJson(name, domain, json);
-      if (identity) {
+      if (identity && identity.exists && identity.pubkey) {
         const address = `${name}@${domain}`;
 
         // add to memory cache
@@ -80,7 +92,16 @@ class DnsIdentityService {
 
         // ad to db cache
         if (transaction.store.put) {
-          await transaction.store.put({ ...identity, updated: now }, address);
+          await transaction.store.put(
+            {
+              name: identity.name,
+              domain: identity.domain,
+              pubkey: identity.pubkey,
+              relays: identity.relays ?? [],
+              updated: now,
+            },
+            address,
+          );
         }
       }
     }
@@ -95,14 +116,14 @@ class DnsIdentityService {
     this.loading.add(address);
 
     db.get("dnsIdentifiers", address).then((fromDb) => {
-      if (fromDb) sub.next(fromDb);
+      if (fromDb) sub.next({ exists: true, ...fromDb });
       this.loading.delete(address);
     });
 
     if (!sub.value || alwaysFetch) {
       this.fetchIdentity(address)
         .then((identity) => {
-          sub.next(identity ?? null);
+          sub.next(identity);
         })
         .finally(() => {
           this.loading.delete(address);

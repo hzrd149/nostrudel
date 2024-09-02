@@ -22,15 +22,20 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
+  ModalCloseButton,
+  Alert,
+  AlertIcon,
+  ButtonGroup,
+  Text,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { kinds } from "nostr-tools";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
-import NostrPublishAction from "../../classes/nostr-publish-action";
-import { PublishDetails } from "../publish-details";
-import { TrustProvider } from "../../providers/local/trust";
+import PublishAction from "../../classes/nostr-publish-action";
+import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
+import { TrustProvider } from "../../providers/local/trust-provider";
 import {
   correctContentMentions,
   createEmojiTags,
@@ -54,6 +59,9 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
+import useSubject from "../../hooks/use-subject";
+import localSettings from "../../services/local-settings";
+import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 
 type FormValues = {
   subject: string;
@@ -83,8 +91,10 @@ export default function PostModal({
   const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
+  const addClientTag = useSubject(localSettings.addClientTag);
+  const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
-  const [publishAction, setPublishAction] = useState<NostrPublishAction>();
+  const [publishAction, setPublishAction] = useState<PublishAction>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 
@@ -100,6 +110,9 @@ export default function PostModal({
     },
     mode: "all",
   });
+
+  // watch form state
+  formState.isDirty;
   watch("content");
   watch("nsfw");
   watch("nsfwReason");
@@ -107,7 +120,7 @@ export default function PostModal({
   watch("difficulty");
 
   // cache form to localStorage
-  useCacheForm<FormValues>(cacheFormKey, getValues, setValue, formState);
+  useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
 
@@ -190,7 +203,7 @@ export default function PostModal({
           instanceRef={(inst) => (textAreaRef.current = inst)}
           onPaste={onPaste}
           onKeyDown={(e) => {
-            if (e.ctrlKey && e.key === "Enter") submit();
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
           }}
         />
         {previewDraft.content.length > 0 && (
@@ -214,7 +227,7 @@ export default function PostModal({
               onChange={onFileInputChange}
             />
             <IconButton
-              icon={<UploadImageIcon />}
+              icon={<UploadImageIcon boxSize={6} />}
               aria-label="Upload Image"
               title="Upload Image"
               onClick={() => imageUploadRef.current?.click()}
@@ -231,9 +244,6 @@ export default function PostModal({
           {mentions.length > 0 && <UserAvatarStack label="Mentions" pubkeys={mentions} />}
           <Button onClick={onClose} variant="ghost">
             Cancel
-          </Button>
-          <Button onClick={() => reset()} isDisabled={!formState.isDirty}>
-            Reset
           </Button>
           <Button
             colorScheme="primary"
@@ -298,9 +308,29 @@ export default function PostModal({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
+        {publishAction && <ModalCloseButton />}
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
           {renderContent()}
         </ModalBody>
+
+        {!addClientTag && promptAddClientTag.isOpen && (
+          <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
+            <AlertIcon hideBelow="lg" />
+            <Text>
+              Enable{" "}
+              <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
+                NIP-89
+              </Link>{" "}
+              client tags and let other users know what app your using to write notes
+            </Text>
+            <ButtonGroup ml="auto" size="sm" variant="ghost">
+              <Button onClick={promptAddClientTag.onClose}>Close</Button>
+              <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
+                Enable
+              </Button>
+            </ButtonGroup>
+          </Alert>
+        )}
       </ModalContent>
     </Modal>
   );

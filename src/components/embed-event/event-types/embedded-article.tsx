@@ -1,17 +1,5 @@
-import { useContext } from "react";
-import {
-  Box,
-  Card,
-  CardBody,
-  CardProps,
-  Flex,
-  Heading,
-  Image,
-  LinkBox,
-  LinkOverlay,
-  Tag,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text, useToast } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 import {
   getArticleImage,
@@ -20,22 +8,22 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
-import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
+import ArticleTags from "../../../views/articles/components/article-tags";
+import HoverLinkOverlay from "../../hover-link-overlay";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
   const title = getArticleTitle(article);
   const image = getArticleImage(article);
   const summary = getArticleSummary(article);
 
-  const naddr = getSharableEventAddress(article);
-  const { openAddress } = useContext(AppHandlerContext);
+  const naddr = useShareableEventAddress(article);
 
   return (
-    <Card as={LinkBox} size="sm" onClick={() => naddr && openAddress(naddr)} cursor="pointer" {...props}>
+    <Card as={LinkBox} size="sm" {...props}>
       {image && (
         <Box
           backgroundImage={image}
@@ -56,15 +44,14 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
           <UserLink pubkey={article.pubkey} fontWeight="bold" isTruncated />
           <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
         </Flex>
-        <Heading size="md">{title}</Heading>
+        <Heading size="md">
+          <HoverLinkOverlay as={RouterLink} to={`/articles/${naddr}`}>
+            {title}
+          </HoverLinkOverlay>
+        </Heading>
         <Text mb="2">{summary}</Text>
-        {article.tags
-          .filter((t) => t[0] === "t" && t[1])
-          .map(([_, hashtag]: string[], i) => (
-            <Tag key={hashtag + i} mr="2" mb="2">
-              #{hashtag}
-            </Tag>
-          ))}
+
+        <ArticleTags article={article} />
       </CardBody>
     </Card>
   );

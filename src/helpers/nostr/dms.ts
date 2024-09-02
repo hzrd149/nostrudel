@@ -1,12 +1,12 @@
 import dayjs from "dayjs";
-import { NostrEvent, isPTag } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { sortByDate } from "./event";
 
 export function getDMSender(event: NostrEvent) {
   return event.pubkey;
 }
 export function getDMRecipient(event: NostrEvent) {
-  const pubkey = event.tags.find(isPTag)?.[1];
+  const pubkey = event.tags.find((t) => t[0] === "p")?.[1];
   if (!pubkey) throw new Error("Missing recipient pubkey");
   return pubkey;
 }
@@ -47,8 +47,8 @@ export function hasResponded(conversion: KnownConversation) {
   const latestReceived = conversion.messages.find((m) => getDMSender(m) === conversion.correspondent);
   const latestSent = conversion.messages.find((m) => getDMSender(m) === conversion.myself);
 
-  if (latestReceived && latestSent && latestSent.created_at > latestReceived.created_at) return false;
-  return true;
+  if (latestReceived && latestSent && latestSent.created_at > latestReceived.created_at) return true;
+  return false;
 }
 
 export function sortConversationsByLastReceived(conversations: KnownConversation[]) {

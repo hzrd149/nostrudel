@@ -1,5 +1,5 @@
 import { CSSProperties, MouseEventHandler, ReactEventHandler, useCallback } from "react";
-import { useTrustContext } from "../providers/local/trust";
+import { useTrustContext } from "../providers/local/trust-provider";
 
 export default function useElementTrustBlur(): {
   style: CSSProperties;

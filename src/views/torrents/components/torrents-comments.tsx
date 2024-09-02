@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
@@ -6,9 +6,7 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useAppSettings from "../../../hooks/use-app-settings";
 import {
   Alert,
@@ -24,25 +22,24 @@ import {
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
 import Minus from "../../../components/icons/minus";
 import Expand01 from "../../../components/icons/expand-01";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { ReplyIcon } from "../../../components/icons";
 import ReplyForm from "../../thread/components/reply-form";
-import EventInteractionDetailsModal from "../../../components/event-interactions-modal";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import TorrentCommentMenu from "./torrent-comment-menu";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: level < 2 || post.replies.length <= 1 });
   const replyForm = useDisclosure();
-  const detailsModal = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
@@ -67,7 +64,7 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
     <Flex gap="2" alignItems="center">
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentityIcon pubkey={post.event.pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
       <Timestamp timestamp={post.event.created_at} />
       {replies.length > 0 ? (
         <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
@@ -110,15 +107,14 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
-        <TorrentCommentMenu comment={post.event} aria-label="More Options" detailsClick={detailsModal.onOpen} />
+        <TorrentCommentMenu comment={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>
   );
 
   const colorProps = useThreadColorLevelProps(level);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, post.event.id);
+  const ref = useEventIntersectionRef(post.event);
 
   return (
     <>
@@ -151,14 +147,13 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
           ))}
         </Flex>
       )}
-      {detailsModal.isOpen && <EventInteractionDetailsModal isOpen onClose={detailsModal.onClose} event={post.event} />}
     </>
   );
 });
 
 export default function TorrentComments({ torrent }: { torrent: NostrEvent }) {
   const readRelays = useReadRelays();
-  const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, TORRENT_COMMENT_KIND);
+  const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, [TORRENT_COMMENT_KIND]);
 
   const thread = useMemo(() => buildThread(events), [events]);
   const rootItem = thread.get(torrent.id);

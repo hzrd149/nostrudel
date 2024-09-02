@@ -1,19 +1,15 @@
-import { useRef } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 import RelayCard from "../../../views/relays/components/relay-card";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { safeRelayUrl } from "../../../helpers/relay";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function RelayRecommendation({ event }: { event: NostrEvent }) {
   const safeUrl = safeRelayUrl(event.content);
-
-  // if there is a parent intersection observer, register this card
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, event.id);
+  const ref = useEventIntersectionRef(event);
 
   return (
     <Flex gap="2" direction="column" ref={ref}>

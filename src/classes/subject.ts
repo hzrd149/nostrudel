@@ -1,5 +1,6 @@
 import Observable from "zen-observable";
 import { nanoid } from "nanoid";
+
 import ControlledObservable from "./controlled-observable";
 
 /** An observable that is always open and stores the last value */
@@ -28,8 +29,26 @@ export default class Subject<T> {
   }
   subscribe: Observable<T>["subscribe"];
 
+  once(next: (value: T) => void) {
+    const sub = this.subscribe((v) => {
+      if (v !== undefined) {
+        next(v);
+        sub.unsubscribe();
+      }
+    });
+    return sub;
+  }
+
   map<R>(callback: (value: T) => R, defaultValue?: R): Subject<R> {
     const child = new Subject(defaultValue);
+
+    if (this.value !== undefined) {
+      try {
+        child.next(callback(this.value));
+      } catch (e) {
+        child.error(e);
+      }
+    }
 
     this.subscribe((value) => {
       try {

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { SatelliteCDNFile } from "../../../helpers/satellite-cdn";
 import { PostModalContext } from "../../../providers/route/post-modal-provider";
 import { ButtonProps, IconButton } from "@chakra-ui/react";
-import { QuoteRepostIcon } from "../../../components/icons";
+import { QuoteEventIcon } from "../../../components/icons";
 
 export type ShareFileButtonProps = Omit<ButtonProps, "children" | "onClick"> & {
   file: SatelliteCDNFile;
@@ -22,7 +22,7 @@ export default function ShareFileButton({
 
   return (
     <IconButton
-      icon={<QuoteRepostIcon />}
+      icon={<QuoteEventIcon />}
       onClick={handleClick}
       aria-label={ariaLabel || title}
       title={title}

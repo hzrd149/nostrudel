@@ -1,14 +1,11 @@
-import { PropsWithChildren, ReactNode, useCallback, useState } from "react";
+import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalBody,
   ModalCloseButton,
-  Flex,
-  Button,
   Heading,
-  Text,
   AccordionItem,
   Accordion,
   AccordionPanel,
@@ -18,21 +15,18 @@ import {
   ModalHeader,
   Code,
   AccordionPanelProps,
-  Card,
+  Button,
 } from "@chakra-ui/react";
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
-import { getContentTagRefs, getEventUID, getThreadReferences } from "../../helpers/nostr/event";
+import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
-import { getSharableEventAddress } from "../../helpers/nip19";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import useSubject from "../../hooks/use-subject";
-import { getEventRelays } from "../../services/event-relays";
-import { RelayFavicon } from "../relay-favicon";
 import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
+import relayHintService from "../../services/event-relay-hint";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function Section({
   label,
@@ -67,6 +61,7 @@ function JsonCode({ data }: { data: any }) {
 }
 
 export default function EventDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
+  const contentRefs = useMemo(() => getContentPointers(event.content), [event]);
   const publish = usePublishEvent();
   const [loading, setLoading] = useState(false);
   const broadcast = useCallback(async () => {
@@ -75,8 +70,6 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
     setLoading(false);
   }, []);
 
-  const eventRelays = useSubject(getEventRelays(getEventUID(event)));
-
   return (
     <Modal size="6xl" {...props}>
       <ModalOverlay />
@@ -84,11 +77,11 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
         <ModalHeader p="4">{event.id}</ModalHeader>
         <ModalCloseButton />
         <ModalBody p="0">
-          <Accordion allowToggle>
+          <Accordion allowToggle defaultIndex={event.content ? 1 : 2}>
             <Section label="IDs">
               <RawValue heading="Event Id" value={event.id} />
               <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
-              <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
+              <RawValue heading="NIP-19 Pointer" value={relayHintService.getSharableEventAddress(event)} />
             </Section>
 
             <Section
@@ -99,6 +92,22 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
                 {event.content}
               </Code>
+
+              {contentRefs.length > 0 && (
+                <>
+                  <Heading size="md" px="2">
+                    embeds
+                  </Heading>
+                  {contentRefs.map((pointer, i) => (
+                    <>
+                      <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
+                        {pointer.type + "\n"}
+                        {JSON.stringify(pointer.data, null, 2)}
+                      </Code>
+                    </>
+                  ))}
+                </>
+              )}
             </Section>
             <Section
               label="JSON"
@@ -116,13 +125,6 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <JsonCode data={getContentTagRefs(event.content, event.tags)} />
             </Section>
             <Section label="Relays">
-              <Heading size="sm">Seen on:</Heading>
-              {eventRelays.map((url) => (
-                <Flex gap="2" key={url} alignItems="center">
-                  <RelayFavicon size="sm" relay={url} />
-                  <Text fontWeight="bold">{url}</Text>
-                </Flex>
-              ))}
               <Button onClick={broadcast} mr="auto" colorScheme="primary" isLoading={loading}>
                 Broadcast
               </Button>

@@ -1,8 +1,6 @@
-import { SimpleRelay, SubscriptionOptions } from "nostr-idb";
 import { Filter } from "nostr-tools";
-
-import { NostrQuery, NostrRequestFilter } from "../types/nostr-relay";
-import { NostrEvent } from "../types/nostr-event";
+import { SubCloser, SubscribeManyParams } from "nostr-tools/abstract-pool";
+import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {
@@ -58,11 +56,11 @@ export function safeRelayUrls(urls: Iterable<string>): string[] {
 }
 
 export function splitNostrFilterByPubkeys(
-  filter: NostrRequestFilter,
+  filter: Filter | Filter[],
   relayPubkeyMap: Record<string, string[]>,
-): Record<string, NostrRequestFilter> {
+): Record<string, Filter | Filter[]> {
   if (Array.isArray(filter)) {
-    const dir: Record<string, NostrQuery[]> = {};
+    const dir: Record<string, Filter[]> = {};
 
     for (const query of filter) {
       const split = splitQueryByPubkeys(query, relayPubkeyMap);
@@ -76,8 +74,8 @@ export function splitNostrFilterByPubkeys(
   } else return splitQueryByPubkeys(filter, relayPubkeyMap);
 }
 
-export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<string, string[]>) {
-  const filtersByRelay: Record<string, NostrQuery> = {};
+export function splitQueryByPubkeys(query: Filter, relayPubkeyMap: Record<string, string[]>) {
+  const filtersByRelay: Record<string, Filter> = {};
 
   const allPubkeys = new Set(Object.values(relayPubkeyMap).flat());
   for (const [relay, pubkeys] of Object.entries(relayPubkeyMap)) {
@@ -96,17 +94,81 @@ export function splitQueryByPubkeys(query: NostrQuery, relayPubkeyMap: Record<st
   return filtersByRelay;
 }
 
-export function relayRequest(relay: SimpleRelay, filters: Filter[], opts: SubscriptionOptions = {}) {
-  return new Promise<NostrEvent[]>((res) => {
-    const events: NostrEvent[] = [];
-    const sub = relay.subscribe(filters, {
-      ...opts,
-      onevent: (e) => events.push(e),
-      oneose: () => {
+// copied from nostr-tools, SimplePool#subscribeMany
+export function subscribeMany(relays: string[], filters: Filter[], params: SubscribeManyParams): SubCloser {
+  const _knownIds = new Set<string>();
+  const subs: Subscription[] = [];
+
+  // batch all EOSEs into a single
+  const eosesReceived: boolean[] = [];
+  let handleEose = (i: number) => {
+    eosesReceived[i] = true;
+    if (eosesReceived.filter((a) => a).length === relays.length) {
+      params.oneose?.();
+      handleEose = () => {};
+    }
+  };
+  // batch all closes into a single
+  const closesReceived: string[] = [];
+  let handleClose = (i: number, reason: string) => {
+    handleEose(i);
+    closesReceived[i] = reason;
+    if (closesReceived.filter((a) => a).length === relays.length) {
+      params.onclose?.(closesReceived);
+      handleClose = () => {};
+    }
+  };
+
+  const localAlreadyHaveEventHandler = (id: string) => {
+    if (params.alreadyHaveEvent?.(id)) {
+      return true;
+    }
+    const have = _knownIds.has(id);
+    _knownIds.add(id);
+    return have;
+  };
+
+  // open a subscription in all given relays
+  const allOpened = Promise.all(
+    relays.map(validateRelayURL).map(async (url, i, arr) => {
+      if (arr.indexOf(url) !== i) {
+        // duplicate
+        handleClose(i, "duplicate url");
+        return;
+      }
+
+      let relay: AbstractRelay;
+      try {
+        const { default: relayPoolService } = await import("../services/relay-pool");
+        relay = relayPoolService.requestRelay(url);
+        await relayPoolService.requestConnect(relay);
+        // changed from nostr-tools
+        // relay = await this.ensureRelay(url, {
+        //   connectionTimeout: params.maxWait ? Math.max(params.maxWait * 0.8, params.maxWait - 1000) : undefined,
+        // });
+      } catch (err) {
+        handleClose(i, (err as any)?.message || String(err));
+        return;
+      }
+
+      let subscription = relay.subscribe(filters, {
+        ...params,
+        oneose: () => handleEose(i),
+        onclose: (reason) => handleClose(i, reason),
+        alreadyHaveEvent: localAlreadyHaveEventHandler,
+        eoseTimeout: params.maxWait,
+      });
+
+      subs.push(subscription);
+    }),
+  );
+
+  return {
+    async close() {
+      await allOpened;
+      subs.forEach((sub) => {
         sub.close();
-        res(events);
-      },
-      onclose: () => res(events),
-    });
-  });
+      });
+    },
+  };
 }

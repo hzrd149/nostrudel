@@ -6,3 +6,4 @@ dist
 scripts
 screenshots
 relay
+server/node_modules

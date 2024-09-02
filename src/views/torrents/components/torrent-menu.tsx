@@ -9,6 +9,7 @@ import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import QuoteEventMenuItem from "../../../components/common-menu-items/quote-event";
 
 export default function TorrentMenu({
   torrent,
@@ -20,6 +21,7 @@ export default function TorrentMenu({
     <>
       <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={torrent} />
+        <QuoteEventMenuItem event={torrent} />
         <CopyEmbedCodeMenuItem event={torrent} />
         <MuteUserMenuItem event={torrent} />
         <DeleteEventMenuItem event={torrent} />

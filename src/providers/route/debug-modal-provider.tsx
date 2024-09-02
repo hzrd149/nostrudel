@@ -3,8 +3,8 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo, use
 
 import EventDebugModal from "../../components/debug-modal/event-debug-modal";
 import useRouteStateValue from "../../hooks/use-route-state-value";
-import { useRouterMarker } from "../drawer-sub-view-provider";
 import { UNSAFE_DataRouterContext } from "react-router-dom";
+import useRouterMarker from "../../hooks/use-router-marker";
 
 export const DebugModalContext = createContext({
   open: (event: NostrEvent) => {},
@@ -28,7 +28,7 @@ export default function DebugModalProvider({ children }: PropsWithChildren) {
   );
   const close = useCallback(() => {
     setEvent(undefined);
-    router.navigate(marker.index.current ?? -1);
+    if (marker.index.current) router.navigate(marker.index.current);
     marker.reset();
   }, [marker.reset, marker.index, router.navigate]);
 

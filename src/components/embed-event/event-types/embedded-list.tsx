@@ -3,15 +3,17 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getListDescription, getListName, isSpecialListKind } from "../../../helpers/nostr/lists";
-import { getSharableEventAddress } from "../../../helpers/nip19";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
-import { createCoordinate } from "../../../classes/batch-kind-loader";
+import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
+import relayHintService from "../../../services/event-relay-hint";
 
 export default function EmbeddedList({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
-  const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
+  const link = isSpecialListKind(list.kind)
+    ? createCoordinate(list.kind, list.pubkey)
+    : relayHintService.getSharableEventAddress(list);
   const description = getListDescription(list);
 
   return (

@@ -39,7 +39,7 @@ export default function ChannelMessageForm({
     let draft: DraftNostrEvent = {
       kind: kinds.ChannelMessage,
       content: values.content,
-      tags: [["e", channel.id]],
+      tags: [["e", rootId || channel.id, "", "root"]],
       created_at: dayjs().unix(),
     };
 
@@ -47,13 +47,9 @@ export default function ChannelMessageForm({
     draft = createEmojiTags(draft, emojis);
     draft = ensureNotifyPubkeys(draft, contentMentions);
 
-    if (rootId) {
-      draft.tags.push(["e", rootId, "", "root"]);
-    }
-
     setLoadingMessage("Signing...");
     await publish("Send DM", draft, undefined, false);
-    reset();
+    reset({ content: "" });
 
     // refocus input
     setTimeout(() => textAreaRef.current?.focus(), 50);
@@ -80,7 +76,7 @@ export default function ChannelMessageForm({
             ref={textAreaRef}
             onPaste={onPaste}
             onKeyDown={(e) => {
-              if (e.ctrlKey && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+              if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
             }}
           />
           <Button type="submit">Send</Button>

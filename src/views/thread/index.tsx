@@ -3,7 +3,7 @@ import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { ThreadPost } from "./components/thread-post";
+import ThreadPost from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { ThreadItem, buildThread } from "../../helpers/thread";
@@ -14,10 +14,10 @@ import useSingleEvent from "../../hooks/use-single-event";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import LoadingNostrLink from "../../components/loading-nostr-link";
 import UserName from "../../components/user/user-name";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
 import TimelineNote from "../../components/note/timeline-note";
+import relayHintService from "../../services/event-relay-hint";
 
 function CollapsedReplies({
   pointer,
@@ -43,7 +43,7 @@ function CollapsedReplies({
         <UserAvatarLink pubkey={post.event.pubkey} size="xs" />
         <UserName pubkey={post.event.pubkey} fontWeight="bold" />
         {root.id !== pointer.id && <ReplyIcon />}
-        <Link as={RouterLink} to={`/n/${getSharableEventAddress(post.event)}`} isTruncated>
+        <Link as={RouterLink} to={`/n/${relayHintService.getSharableEventAddress(post.event)}`} isTruncated>
           {post.event.content}
         </Link>
       </Card>

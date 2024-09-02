@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { kinds, nip19 } from "nostr-tools";
-import type { DecodeResult } from "nostr-tools/lib/types/nip19";
+import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 
 import UserLink from "../../../components/user/user-link";
@@ -19,7 +19,7 @@ import {
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import UserCard from "../components/user-card";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { TrustProvider } from "../../../providers/local/trust";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import ListMenu from "../components/list-menu";
 import ListFavoriteButton from "../components/list-favorite-button";
 import ListFeedButton from "../components/list-feed-button";

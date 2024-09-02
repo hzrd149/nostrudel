@@ -45,9 +45,9 @@ import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import { getEventCoordinate, sortByDate } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ApprovedEvent from "../community/components/community-approved-post";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { createCoordinate } from "../../classes/batch-kind-loader";
+import { createCoordinate } from "../../classes/batch-kind-pubkey-loader";
 
 function CommunitiesHomePage() {
   const publish = usePublishEvent();
@@ -85,7 +85,7 @@ function CommunitiesHomePage() {
 
     const pub = await publish("Create Community", draft, values.relays, false);
 
-    navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
+    if (pub) navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
   const timeline = useTimelineLoader(

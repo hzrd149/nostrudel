@@ -1,8 +1,6 @@
 import { getPublicKey, nip19 } from "nostr-tools";
 
-import { NostrEvent, Tag, isATag, isDTag, isETag, isPTag } from "../types/nostr-event";
-import { isReplaceable } from "./nostr/event";
-import relayHintService from "../services/event-relay-hint";
+import { Tag, isATag, isETag, isPTag } from "../types/nostr-event";
 import { safeRelayUrls } from "./relay";
 
 export function isHex(str?: string) {
@@ -41,18 +39,6 @@ export function normalizeToHexPubkey(hex: string) {
   const decode = safeDecode(hex);
   if (!decode) return null;
   return getPubkeyFromDecodeResult(decode) ?? null;
-}
-
-export function getSharableEventAddress(event: NostrEvent) {
-  const relays = relayHintService.getEventRelayHints(event, 2);
-
-  if (isReplaceable(event.kind)) {
-    const d = event.tags.find(isDTag)?.[1];
-    if (!d) return null;
-    return nip19.naddrEncode({ kind: event.kind, identifier: d, pubkey: event.pubkey, relays });
-  } else {
-    return nip19.neventEncode({ id: event.id, kind: event.kind, relays, author: event.pubkey });
-  }
 }
 
 export function encodeDecodeResult(result: nip19.DecodeResult) {

@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo } from "react";
 import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
@@ -8,19 +8,16 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import useSubject from "../../hooks/use-subject";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { getEventUID } from "../../helpers/nostr/event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { NostrEvent } from "../../types/nostr-event";
 import SuperMap from "../../classes/super-map";
 import { createListLink } from "../lists/components/list-card";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 function ListLink({ list }: { list: NostrEvent }) {
-  const ref = useRef<HTMLAnchorElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(list));
+  const ref = useEventIntersectionRef<HTMLAnchorElement>(list);
 
   return (
     <Link as={RouterLink} ref={ref} color="blue.500" to={createListLink(list)}>

@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
+import { NostrEvent } from "nostr-tools";
 
 import TimelineLoader from "../../classes/timeline-loader";
-import { NostrEvent } from "../../types/nostr-event";
 import useSubject from "../../hooks/use-subject";
 
 export type Thread = {

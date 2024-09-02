@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid";
-import { Filter, NostrEvent } from "nostr-tools";
+import { Filter, NostrEvent, Relay } from "nostr-tools";
+import { Subscription } from "nostr-tools/abstract-relay";
 
-import Relay, { IncomingEOSE, OutgoingMessage } from "./relay";
 import relayPoolService from "../services/relay-pool";
 import ControlledObservable from "./controlled-observable";
 
+/** @deprecated use relay.subscribe instead */
 export default class NostrSubscription {
   static INIT = "initial";
   static OPEN = "open";
@@ -16,39 +17,24 @@ export default class NostrSubscription {
   relay: Relay;
   state = NostrSubscription.INIT;
 
-  onEvent = new ControlledObservable<NostrEvent>();
-  onEOSE = new ControlledObservable<IncomingEOSE>();
+  subscription: Subscription | null = null;
 
-  private subs: ZenObservable.Subscription[] = [];
+  onEvent = new ControlledObservable<NostrEvent>();
+  onEOSE = new ControlledObservable<number>();
 
   constructor(relayUrl: string | URL, filters?: Filter[], name?: string) {
-    this.id = nanoid();
+    this.id = nanoid(8);
     this.filters = filters;
     this.name = name;
 
     this.relay = relayPoolService.requestRelay(relayUrl);
-
-    this.subs.push(
-      this.relay.onEvent.subscribe((message) => {
-        if (this.state === NostrSubscription.OPEN && message[1] === this.id) {
-          this.onEvent.next(message[2]);
-        }
-      }),
-    );
-    this.subs.push(
-      this.relay.onEOSE.subscribe((eose) => {
-        if (this.state === NostrSubscription.OPEN && eose[1] === this.id) this.onEOSE.next(eose);
-      }),
-    );
   }
 
-  send(message: OutgoingMessage) {
-    this.relay.send(message);
-  }
   setFilters(filters: Filter[]) {
     this.filters = filters;
-    if (this.state === NostrSubscription.OPEN) {
-      this.send(["REQ", this.id, ...this.filters]);
+    if (this.state === NostrSubscription.OPEN && this.subscription) {
+      this.subscription.filters = this.filters;
+      this.subscription.fire();
     }
     return this;
   }
@@ -58,9 +44,10 @@ export default class NostrSubscription {
     if (this.state === NostrSubscription.OPEN) return this;
 
     this.state = NostrSubscription.OPEN;
-    this.send(["REQ", this.id, ...this.filters]);
-
-    relayPoolService.addClaim(this.relay.url, this);
+    this.subscription = this.relay.subscribe(this.filters, {
+      onevent: (event) => this.onEvent.next(event),
+      oneose: () => this.onEOSE.next(Math.random()),
+    });
 
     return this;
   }
@@ -70,12 +57,7 @@ export default class NostrSubscription {
     // set state
     this.state = NostrSubscription.CLOSED;
     // send close message
-    this.send(["CLOSE", this.id]);
-    // unsubscribe from relay messages
-    relayPoolService.removeClaim(this.relay.url, this);
-
-    for (const sub of this.subs) sub.unsubscribe();
-    this.subs = [];
+    this.subscription?.close();
 
     return this;
   }

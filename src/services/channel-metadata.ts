@@ -1,13 +1,12 @@
 import dayjs from "dayjs";
 import debug, { Debugger } from "debug";
-import _throttle from "lodash/throttle";
-import { kinds } from "nostr-tools";
+import _throttle from "lodash.throttle";
+import { Filter, kinds } from "nostr-tools";
 
 import NostrSubscription from "../classes/nostr-subscription";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import Subject from "../classes/subject";
-import { NostrQuery } from "../types/nostr-relay";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
@@ -103,7 +102,7 @@ class ChannelMetadataRelayLoader {
     // update the subscription
     if (needsUpdate) {
       if (this.requested.size > 0) {
-        const query: NostrQuery = {
+        const query: Filter = {
           kinds: [kinds.ChannelMetadata],
           "#e": Array.from(this.requested.keys()),
         };

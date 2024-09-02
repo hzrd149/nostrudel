@@ -14,6 +14,7 @@ import { useRelayInfo } from "../../hooks/use-relay-info";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { RelayShareButton } from "../relays/components/relay-share-button";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import { truncateId } from "../../helpers/string";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
   const { info } = useRelayInfo(url);
@@ -59,7 +60,7 @@ const UserRelaysTab = () => {
   const mailboxes = useUserMailboxes(pubkey);
 
   const readRelays = useReadRelays(mailboxes?.outbox);
-  const timeline = useTimelineLoader(`${pubkey}-relay-reviews`, readRelays, {
+  const timeline = useTimelineLoader(`${truncateId(pubkey)}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
     "#l": ["review/relay"],

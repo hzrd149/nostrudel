@@ -7,7 +7,7 @@ import UserLink from "../../components/user/user-link";
 import { containerProps } from "./common";
 import { UserFollowButton } from "../../components/user/user-follow-button";
 import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 
 type TrendingApi = {
   profiles: {
@@ -45,7 +45,7 @@ export default function FinishedStep() {
               <UserAvatarLink pubkey={pubkey} />
               <Flex direction="column" overflow="hidden">
                 <UserLink pubkey={pubkey} fontWeight="bold" fontSize="lg" isTruncated />
-                <UserDnsIdentityIcon pubkey={pubkey} />
+                <UserDnsIdentity pubkey={pubkey} />
               </Flex>
               <UserFollowButton pubkey={pubkey} flexShrink={0} ml="auto" />
             </Flex>

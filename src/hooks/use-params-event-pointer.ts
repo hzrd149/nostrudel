@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import type { EventPointer } from "nostr-tools/lib/types/nip19";
+import type { EventPointer } from "nostr-tools/nip19";
 
 import { isHexKey } from "../helpers/nip19";
 

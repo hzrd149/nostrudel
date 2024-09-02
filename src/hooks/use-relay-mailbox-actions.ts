@@ -9,7 +9,7 @@ import { usePublishEvent } from "../providers/global/publish-provider";
 export default function useRelayMailboxActions(relay: string) {
   const publish = usePublishEvent();
   const account = useCurrentAccount();
-  const { event, inbox, outbox } = useUserMailboxes(account?.pubkey, { alwaysRequest: true }) || {};
+  const { event, inbox, outbox } = useUserMailboxes(account?.pubkey, undefined, { alwaysRequest: true }) || {};
 
   const addMode = useCallback(
     async (mode: RelayMode) => {

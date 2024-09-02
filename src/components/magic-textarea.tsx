@@ -13,7 +13,8 @@ import { matchSorter } from "match-sorter";
 import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
 import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user/user-avatar";
-import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
+import UserDnsIdentity from "./user/user-dns-identity";
+import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -39,7 +40,7 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     return (
       <span>
         <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
-        <UserDnsIdentityIcon pubkey={entity.pubkey} onlyIcon />
+        <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
     );
   } else return null;
@@ -59,6 +60,7 @@ const Loading: ReactTextareaAutocompleteProps<
 >["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
 function useAutocompleteTriggers() {
+  const webOfTrust = useWebOfTrust();
   const emojis = useContextEmojis();
   const getDirectory = useUserSearchDirectoryContext();
 
@@ -73,7 +75,16 @@ function useAutocompleteTriggers() {
     "@": {
       dataProvider: async (token: string) => {
         const dir = await getDirectory();
-        return matchSorter(dir, token.trim(), { keys: ["names"] }).slice(0, 10);
+        return matchSorter(dir, token.trim(), {
+          keys: ["names"],
+          sorter: (items) =>
+            webOfTrust
+              ? webOfTrust.sortByDistanceAndConnections(
+                  items.sort((a, b) => b.rank - a.rank),
+                  (i) => i.item.pubkey,
+                )
+              : items,
+        }).slice(0, 10);
       },
       component: Item,
       output,

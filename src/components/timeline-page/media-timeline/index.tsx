@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
@@ -7,17 +7,15 @@ import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImageProps, GalleryImage } from "../../embed-types";
-import { TrustProvider } from "../../../providers/local/trust";
+import { EmbeddedImageProps, GalleryImage } from "../../external-embeds";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getEventUID } from "../../../helpers/nostr/event";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
-  const ref = useRef<HTMLImageElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef<HTMLImageElement>(event);
 
   return <GalleryImage {...props} event={event} ref={ref} />;
 }

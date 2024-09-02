@@ -1,15 +1,16 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { Box, Button, ButtonGroup, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 
-import { getUserDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import useSubject from "../../hooks/use-subject";
 import useUserMetadata from "../../hooks/use-user-metadata";
-import accountService, { Account } from "../../services/account";
+import accountService from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
-import AccountInfoBadge from "../account-info-badge";
+import AccountTypeBadge from "../account-info-badge";
 import useCurrentAccount from "../../hooks/use-current-account";
+import { Account } from "../../classes/accounts/account";
 
 function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;
@@ -25,8 +26,8 @@ function AccountItem({ account, onClick }: { account: Account; onClick?: () => v
       <Flex as="button" onClick={handleClick} flex={1} gap="2" overflow="hidden" alignItems="center">
         <UserAvatar pubkey={pubkey} size="md" />
         <Flex direction="column" overflow="hidden" alignItems="flex-start">
-          <Text isTruncated>{getUserDisplayName(metadata, pubkey)}</Text>
-          <AccountInfoBadge fontSize="0.7em" account={account} />
+          <Text isTruncated>{getDisplayName(metadata, pubkey)}</Text>
+          <AccountTypeBadge fontSize="0.7em" account={account} />
         </Flex>
       </Flex>
       <IconButton
@@ -56,19 +57,18 @@ export default function AccountSwitcher() {
     <Flex direction="column" gap="2">
       <Box
         as="button"
-        borderRadius="30"
+        borderRadius="lg"
         borderWidth={1}
         display="flex"
         gap="2"
         mb="2"
         alignItems="center"
         flexGrow={1}
-        overflow="hidden"
         onClick={onToggle}
       >
         <UserAvatar pubkey={account.pubkey} noProxy size="md" />
         <Text whiteSpace="nowrap" fontWeight="bold" fontSize="lg" isTruncated>
-          {getUserDisplayName(metadata, account.pubkey)}
+          {getDisplayName(metadata, account.pubkey)}
         </Text>
         <Flex ml="auto" alignItems="center" justifyContent="center" aspectRatio={1} h="3rem">
           {isOpen ? <ChevronUpIcon fontSize="1.5rem" /> : <ChevronDownIcon fontSize="1.5rem" />}
@@ -79,15 +79,22 @@ export default function AccountSwitcher() {
           {otherAccounts.map((account) => (
             <AccountItem key={account.pubkey} account={account} onClick={onClose} />
           ))}
-          <Button
-            leftIcon={<AddIcon />}
-            onClick={() => {
-              accountService.logout(false);
-              navigate("/signin", { state: { from: location.pathname } });
-            }}
-          >
-            Add Account
-          </Button>
+          <ButtonGroup>
+            <Button as={RouterLink} to="/settings/accounts" w="full">
+              Manage
+            </Button>
+            <IconButton
+              icon={<AddIcon boxSize={6} />}
+              aria-label="Add Account"
+              onClick={() => {
+                accountService.logout(false);
+                navigate("/signin", { state: { from: location.pathname } });
+              }}
+              colorScheme="primary"
+            >
+              Add Account
+            </IconButton>
+          </ButtonGroup>
         </>
       )}
     </Flex>

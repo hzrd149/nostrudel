@@ -1,11 +1,10 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { kinds } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { NostrEvent } from "../../types/nostr-event";
-import { NostrQuery } from "../../types/nostr-relay";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export type ListId = "following" | "global" | string;
@@ -17,7 +16,7 @@ export type PeopleListContextType = {
   listEvent?: NostrEvent;
   people: Person[] | undefined;
   setSelected: (list: ListId) => void;
-  filter: NostrQuery | undefined;
+  filter: Filter | undefined;
 };
 const PeopleListContext = createContext<PeopleListContextType>({
   setSelected: () => {},
@@ -60,7 +59,7 @@ export default function PeopleListProvider({ children, initList }: PeopleListPro
 
   const people = listEvent && getPubkeysFromList(listEvent);
 
-  const filter = useMemo<NostrQuery | undefined>(() => {
+  const filter = useMemo<Filter | undefined>(() => {
     if (selected === "global") return {};
     if (!people) return undefined;
     return { authors: people.map((p) => p.pubkey) };

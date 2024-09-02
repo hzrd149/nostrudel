@@ -34,7 +34,8 @@ noStrudels docker image has a few options for connecting to other services runni
 
 - `CACHE_RELAY`: if set the client will use the relay to cache all of its events instead of storing them in the browser cache
 - `IMAGE_PROXY`: can be set to a local [imageproxy](https://github.com/willnorris/imageproxy) instance so the app can resize profile images
-- `CORS_PROXY`: can be set to a local [cors-anywhere](https://github.com/Rob--W/cors-anywhere) instance so the app can proxy http request
+- `REQUEST_PROXY`: can be set to a local [cors-anywhere](https://github.com/Rob--W/cors-anywhere) instance so the app can proxy http request
+- `PROXY_FIRST`: if this is set to `true` all http requests will go through the request proxy first
 
 You can find a full example of all these services in the [docker-compose.yaml](./docker-compose.yaml)
 

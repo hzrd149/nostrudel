@@ -1,7 +1,5 @@
-// NOTE: this should be an option in the main feed
-// Also this can be used as a way of discovering apps when NIP-89 is implemented
 import { Button, Flex } from "@chakra-ui/react";
-import { memo, useCallback, useRef } from "react";
+import { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
@@ -11,14 +9,11 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { getEventUID } from "../../helpers/nostr/event";
 import { EmbedEvent } from "../../components/embed-event";
 import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import {
@@ -29,10 +24,10 @@ import {
   PEOPLE_LIST_KIND,
   PIN_LIST_KIND,
 } from "../../helpers/nostr/lists";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const UnknownEvent = memo(({ event }: { event: NostrEvent }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   return (
     <div ref={ref}>

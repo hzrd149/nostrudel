@@ -5,16 +5,9 @@ const relayPoolService = new RelayPool();
 
 setInterval(() => {
   if (document.visibilityState === "visible") {
-    relayPoolService.reconnectRelays();
-    relayPoolService.pruneRelays();
+    relayPoolService.disconnectFromUnused();
   }
-}, 1000 * 15);
-
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    relayPoolService.reconnectRelays();
-  }
-});
+}, 60_000);
 
 offlineMode.subscribe((offline) => {
   if (offline) {

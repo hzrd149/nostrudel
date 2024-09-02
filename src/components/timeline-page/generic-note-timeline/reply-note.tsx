@@ -1,13 +1,11 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import TimelineNote from "../../note/timeline-note";
-import { getEventUID } from "nostr-idb";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function ReplyNote({ event }: { event: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(event));
+  const ref = useEventIntersectionRef(event);
 
   return (
     <div ref={ref}>

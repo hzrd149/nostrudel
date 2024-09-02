@@ -14,14 +14,14 @@ import {
 } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 import dayjs from "dayjs";
-import type { AddressPointer } from "nostr-tools/lib/types/nip19";
+import type { AddressPointer } from "nostr-tools/nip19";
 
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../../icons";
 import relayHintService from "../../../../services/event-relay-hint";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import useUserCommunitiesList from "../../../../hooks/use-user-communities-list";
-import { createCoordinate } from "../../../../classes/batch-kind-loader";
+import { createCoordinate } from "../../../../classes/batch-kind-pubkey-loader";
 import { EmbedEvent } from "../../../embed-event";
 
 function buildRepost(event: NostrEvent): EventTemplate {

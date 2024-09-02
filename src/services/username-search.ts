@@ -4,9 +4,12 @@ import db from "./db";
 import replaceableEventsService from "./replaceable-events";
 import userMetadataService from "./user-metadata";
 import { logger } from "../helpers/debug";
+import Subject from "../classes/subject";
 
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
 const log = logger.extend("UsernameSearch");
+
+export const userSearchUpdate = new Subject();
 
 const writeSearchQueue = new Set<string>();
 const writeSearchData = _throttle(async () => {
@@ -26,6 +29,7 @@ const writeSearchData = _throttle(async () => {
   }
   transaction.commit();
   await transaction.done;
+  userSearchUpdate.next(Math.random());
 }, WRITE_USER_SEARCH_BATCH_TIME);
 
 replaceableEventsService.events.onEvent.subscribe((event) => {

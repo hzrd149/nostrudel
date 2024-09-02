@@ -25,7 +25,7 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 import UserLink from "../../../components/user/user-link";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user/user-avatar";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
 import { CHANNELS_LIST_KIND } from "../../../helpers/nostr/lists";
@@ -37,7 +37,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
     <Card as={LinkBox} direction="row" alignItems="center" gap="2" p="2">
       <UserAvatar pubkey={pubkey} size="sm" />
       <HoverLinkOverlay as={UserLink} pubkey={pubkey} fontWeight="bold" />
-      <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
+      <UserDnsIdentity pubkey={pubkey} onlyIcon />
     </Card>
   );
 }

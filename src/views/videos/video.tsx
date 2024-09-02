@@ -13,7 +13,7 @@ import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 import { UserFollowButton } from "../../components/user/user-follow-button";
 import VideoMenu from "./components/video-menu";
 import SimpleLikeButton from "../../components/event-reactions/simple-like-button";
@@ -28,7 +28,7 @@ import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
 import NoteZapButton from "../../components/note/note-zap-button";
-import QuoteRepostButton from "../../components/note/quote-repost-button";
+import QuoteEventButton from "../../components/note/quote-event-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();
@@ -73,11 +73,11 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
           <Flex gap="2" alignItems="center">
             <UserAvatarLink pubkey={video.pubkey} size="sm" />
             <UserLink pubkey={video.pubkey} fontSize="lg" tab="videos" />
-            <UserDnsIdentityIcon pubkey={video.pubkey} onlyIcon />
+            <UserDnsIdentity pubkey={video.pubkey} onlyIcon />
             <UserFollowButton pubkey={video.pubkey} size="sm" />
             <ButtonGroup ml="auto" size="sm" variant="ghost">
               <SimpleBookmarkButton event={video} aria-label="Bookmark video" title="Bookmark video" />
-              <QuoteRepostButton event={video} />
+              <QuoteEventButton event={video} />
             </ButtonGroup>
             <VideoMenu video={video} aria-label="More options" size="sm" />
           </Flex>

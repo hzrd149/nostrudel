@@ -6,13 +6,13 @@ import { NostrEvent } from "../../../types/nostr-event";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import UserLink from "../../user/user-link";
 import UserAvatar from "../../user/user-avatar";
-import useEventNaddr from "../../../hooks/use-event-naddr";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import Timestamp from "../../timestamp";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 
 export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const stream = parseStreamEvent(event);
-  const naddr = useEventNaddr(stream.event, stream.relays);
+  const naddr = useShareableEventAddress(stream.event, stream.relays);
   const isVertical = useBreakpointValue({ base: true, md: false });
   const navigate = useNavigate();
 

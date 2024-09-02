@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useMemo, useRef } from "react";
+import { MouseEventHandler, useCallback, useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -8,12 +8,11 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotificationTimeline } from "../../providers/global/notification-timeline";
+import { useNotifications } from "../../providers/global/notifications-provider";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
 import { NostrEvent } from "../../types/nostr-event";
-import NotificationIconEntry from "./components/notification-icon-entry";
-import { ChevronLeftIcon, ReplyIcon } from "../../components/icons";
+import { ChevronLeftIcon } from "../../components/icons";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -21,25 +20,27 @@ import UserLink from "../../components/user/user-link";
 import { CompactNoteContent } from "../../components/compact-note-content";
 import Timestamp from "../../components/timestamp";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
-import { getSharableEventAddress } from "../../helpers/nip19";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
-import { getEventUID } from "../../helpers/nostr/event";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import localSettings from "../../services/local-settings";
+import GitBranch01 from "../../components/icons/git-branch-01";
 
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
-  const navigate = useNavigateInDrawer();
+  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
+  const address = useShareableEventAddress(event);
   const onClick = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();
       e.stopPropagation();
-      navigate(`/n/${getSharableEventAddress(event)}`);
+      navigate(`/n/${address}`);
     },
-    [navigate],
+    [navigate, address],
   );
 
   return (
@@ -49,7 +50,7 @@ function ReplyEntry({ event }: { event: NostrEvent }) {
         <Timestamp timestamp={event.created_at} />
       </Flex>
       <CompactNoteContent event={event} maxLength={100} />
-      <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} onClick={onClick} />
+      <HoverLinkOverlay as={RouterLink} to={`/n/${address}`} onClick={onClick} />
     </LinkBox>
   );
 }
@@ -63,33 +64,35 @@ function ThreadGroup({ rootId, events }: { rootId: string; events: NostrEvent[] 
 
   const rootEvent = useSingleEvent(rootId);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(events[events.length - 1]));
+  const ref = useEventIntersectionRef(events[events.length - 1]);
 
   return (
-    <NotificationIconEntry icon={<ReplyIcon boxSize={8} />}>
-      <AvatarGroup size="sm">
-        {pubkeys.map((pubkey) => (
-          <UserAvatarLink key={pubkey} pubkey={pubkey} />
+    <Flex>
+      <GitBranch01 boxSize={8} color="green.500" mr="2" />
+      <Flex direction="column" gap="2">
+        <AvatarGroup size="sm">
+          {pubkeys.map((pubkey) => (
+            <UserAvatarLink key={pubkey} pubkey={pubkey} />
+          ))}
+        </AvatarGroup>
+        <Box>
+          <Text fontWeight="bold">
+            {pubkeys.length > 1 ? pubkeys.length + " people" : pubkeys.length + " person"} replied in thread:
+          </Text>
+          {rootEvent && <CompactNoteContent event={rootEvent} maxLength={100} color="GrayText" />}
+        </Box>
+        {(events.length > 3 && !showAll.isOpen ? events.slice(0, 3) : events).map((event) => (
+          <ReplyEntry key={event.id} event={event} />
         ))}
-      </AvatarGroup>
-      <Box>
-        <Text fontWeight="bold">
-          {pubkeys.length > 1 ? pubkeys.length + " people" : pubkeys.length + " person"} replied in thread:
-        </Text>
-        {rootEvent && <CompactNoteContent event={rootEvent} maxLength={100} color="GrayText" />}
-      </Box>
-      {(events.length > 3 && !showAll.isOpen ? events.slice(0, 3) : events).map((event) => (
-        <ReplyEntry key={event.id} event={event} />
-      ))}
-      {!showAll.isOpen && events.length > 3 && (
-        <ButtonGroup>
-          <Button variant="link" py="2" onClick={showAll.onOpen} colorScheme="primary" fontWeight="bold">
-            +{events.length - 3} more
-          </Button>
-        </ButtonGroup>
-      )}
-    </NotificationIconEntry>
+        {!showAll.isOpen && events.length > 3 && (
+          <ButtonGroup>
+            <Button variant="link" py="2" onClick={showAll.onOpen} colorScheme="primary" fontWeight="bold">
+              +{events.length - 3} more
+            </Button>
+          </ButtonGroup>
+        )}
+      </Flex>
+    </Flex>
   );
 }
 
@@ -99,7 +102,7 @@ function ThreadsNotificationsPage() {
   const { people } = usePeopleListContext();
   const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-  const timeline = useNotificationTimeline();
+  const { timeline } = useNotifications();
   const callback = useTimelineCurserIntersectionCallback(timeline);
   const events = useSubject(timeline?.timeline);
 
@@ -118,7 +121,7 @@ function ThreadsNotificationsPage() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Flex gap="2">
-          <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
+          <Button leftIcon={<ChevronLeftIcon boxSize={6} />} onClick={() => navigate(-1)}>
             Back
           </Button>
           <PeopleListSelection />

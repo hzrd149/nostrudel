@@ -7,8 +7,8 @@ import DesktopSideNav from "./desktop-side-nav";
 import MobileBottomNav from "./mobile-bottom-nav";
 import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
-import GhostToolbar from "./ghost-toolbar";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import GhostSideBar from "./ghost/sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -34,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <ErrorBoundary>{children}</ErrorBoundary>
         </Container>
-        {!isMobile && <Box flexShrink={1} maxW="15rem" flex={1} />}
+        {!isMobile && isGhost ? <GhostSideBar maxW="lg" minW="md" /> : <Box flexShrink={1} maxW="15rem" flex={1} />}
         {isMobile && (
           <MobileBottomNav
             position="fixed"
@@ -47,7 +47,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
         <Spacer display={["none", null, "block"]} />
       </Flex>
-      {isGhost && <GhostToolbar />}
     </>
   );
 }

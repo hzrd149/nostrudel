@@ -21,9 +21,9 @@ import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserLink from "../../../components/user/user-link";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 function UserCard({ pubkey }: { pubkey: string }) {
@@ -32,7 +32,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
       <UserAvatarLink pubkey={pubkey} />
       <Flex direction="column" flex={1} overflow="hidden">
         <UserLink pubkey={pubkey} fontWeight="bold" />
-        <UserDnsIdentityIcon pubkey={pubkey} />
+        <UserDnsIdentity pubkey={pubkey} />
       </Flex>
     </Flex>
   );

@@ -7,10 +7,12 @@ import dnsIdentityService, { DnsIdentity } from "../../../services/dns-identity"
 import { CheckIcon } from "../../../components/icons";
 import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
-import { COMMON_CONTACT_RELAY } from "../../../const";
+import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
+import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
+import PubkeyAccount from "../../../classes/accounts/pubkey-account";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
@@ -39,24 +41,22 @@ export default function LoginNostrAddressView() {
     if (!nip05) return;
 
     try {
-      if (nip05.hasNip46) {
+      if (nip05.hasNip46 && nip05.pubkey) {
         setLoading("Connecting...");
-        const relays = safeRelayUrls(nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays);
-        const client = nostrConnectService.fromHostedBunker(nip05.pubkey, relays, rootNip05?.pubkey);
-        await client.connect();
+        const relays = safeRelayUrls(
+          nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays || [],
+        );
+        const signer = nostrConnectService.fromHostedBunker(nip05.pubkey, relays);
+        await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-        nostrConnectService.saveClient(client);
-        accountService.addFromNostrConnect(client);
-        accountService.switchAccount(client.pubkey);
-      } else {
-        accountService.addAccount({
-          type: "pubkey",
-          pubkey: nip05.pubkey,
-          relays: [...nip05.relays, COMMON_CONTACT_RELAY],
-          readonly: true,
-        });
+        nostrConnectService.saveSigner(signer);
+        const account = new NostrConnectAccount(signer.pubkey!, signer);
+        accountService.addAccount(account);
+        accountService.switchAccount(signer.pubkey!);
+      } else if (nip05.pubkey) {
+        accountService.addAccount(new PubkeyAccount(nip05.pubkey));
         accountService.switchAccount(nip05.pubkey);
-      }
+      } else throw Error("Cant find address");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

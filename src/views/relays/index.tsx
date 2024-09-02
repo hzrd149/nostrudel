@@ -1,18 +1,20 @@
-import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Outlet, useLocation } from "react-router-dom";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
-import { getListName } from "../../helpers/nostr/lists";
-import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import Database01 from "../../components/icons/database-01";
-import { AtIcon, RelayIcon } from "../../components/icons";
+import { AtIcon, RelayIcon, SearchIcon } from "../../components/icons";
 import Mail02 from "../../components/icons/mail-02";
 import { useUserDNSIdentity } from "../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
+import Image01 from "../../components/icons/image-01";
+import Server05 from "../../components/icons/server-05";
+import { Suspense } from "react";
+import SimpleNavItem from "../../components/simple-nav-item";
 
 export default function RelaysView() {
   const account = useCurrentAccount();
@@ -26,59 +28,40 @@ export default function RelaysView() {
   const renderContent = () => {
     const nav = (
       <Flex gap="2" direction="column" minW="60" overflowY="auto" overflowX="hidden" w={vertical ? "full" : undefined}>
-        <Button
-          as={RouterLink}
-          variant="outline"
-          colorScheme={
-            (location.pathname === "/relays" && !vertical) || location.pathname === "/relays/app"
-              ? "primary"
-              : undefined
-          }
-          to="/relays/app"
-          leftIcon={<RelayIcon boxSize={6} />}
-        >
+        <SimpleNavItem to="/relays/app" leftIcon={<RelayIcon boxSize={6} />}>
           App Relays
-        </Button>
-        <Button
-          as={RouterLink}
-          variant="outline"
-          colorScheme={location.pathname === "/relays/cache" ? "primary" : undefined}
-          to="/relays/cache"
-          leftIcon={<Database01 boxSize={6} />}
-        >
+        </SimpleNavItem>
+        <SimpleNavItem to="/relays/cache" leftIcon={<Database01 boxSize={6} />}>
           Cache Relay
-        </Button>
+        </SimpleNavItem>
         {account && (
-          <Button
-            variant="outline"
-            as={RouterLink}
-            to="/relays/mailboxes"
-            leftIcon={<Mail02 boxSize={6} />}
-            colorScheme={location.pathname === "/relays/mailboxes" ? "primary" : undefined}
-          >
-            Mailboxes
-          </Button>
+          <>
+            <SimpleNavItem to="/relays/mailboxes" leftIcon={<Mail02 boxSize={6} />}>
+              Mailboxes
+            </SimpleNavItem>
+            <SimpleNavItem to="/relays/media-servers" leftIcon={<Image01 boxSize={6} />}>
+              Media Servers
+            </SimpleNavItem>
+            <SimpleNavItem to="/relays/search" leftIcon={<SearchIcon boxSize={6} />}>
+              Search Relays
+            </SimpleNavItem>
+          </>
         )}
-        {nip05 && (
-          <Button
-            variant="outline"
-            as={RouterLink}
-            to="/relays/nip05"
-            leftIcon={<AtIcon boxSize={6} />}
-            colorScheme={location.pathname === "/relays/nip05" ? "primary" : undefined}
-          >
+        <SimpleNavItem to="/relays/webrtc" leftIcon={<Server05 boxSize={6} />}>
+          WebRTC Relays
+        </SimpleNavItem>
+        {nip05?.exists && (
+          <SimpleNavItem to="/relays/nip05" leftIcon={<AtIcon boxSize={6} />}>
             NIP-05 Relays
-          </Button>
+          </SimpleNavItem>
         )}
-        <Button
-          variant="outline"
-          as={RouterLink}
-          to="/relays/contacts"
-          leftIcon={<UserSquare boxSize={6} />}
-          colorScheme={location.pathname === "/relays/contacts" ? "primary" : undefined}
-        >
-          Contact List Relays
-        </Button>
+        {account && (
+          <>
+            <SimpleNavItem to="/relays/contacts" leftIcon={<UserSquare boxSize={6} />}>
+              Contact List Relays
+            </SimpleNavItem>
+          </>
+        )}
         {/* {account && (
           <>
             <Heading size="sm" mt="2">
@@ -98,6 +81,7 @@ export default function RelaysView() {
         )} */}
       </Flex>
     );
+
     if (vertical) {
       if (location.pathname !== "/relays") return <Outlet />;
       else return nav;
@@ -105,7 +89,9 @@ export default function RelaysView() {
       return (
         <Flex gap="2" minH="100vh" overflow="hidden">
           {nav}
-          <Outlet />
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
         </Flex>
       );
   };

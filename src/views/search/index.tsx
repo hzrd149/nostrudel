@@ -1,55 +1,51 @@
-import { useCallback, useEffect, useState } from "react";
-import { Button, ButtonGroup, Flex, IconButton, Input, Link } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect } from "react";
+import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
+import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
 
-import { SEARCH_RELAYS } from "../../const";
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
-import { CommunityIcon, CopyToClipboardIcon, NotesIcon } from "../../components/icons";
+import { CopyToClipboardIcon, SearchIcon, SettingsIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import User01 from "../../components/icons/user-01";
-import Feather from "../../components/icons/feather";
-import ProfileSearchResults from "./profile-results";
-import NoteSearchResults from "./note-results";
-import ArticleSearchResults from "./article-results";
-import CommunitySearchResults from "./community-results";
 import PeopleListProvider from "../../providers/local/people-list-provider";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
-import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
+import { useForm } from "react-hook-form";
+import SearchResults from "./components/search-results";
+import useSearchRelays from "../../hooks/use-search-relays";
 
 export function SearchPage() {
   const navigate = useNavigate();
+  const searchRelays = useSearchRelays();
 
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
-  const typeParam = useRouteSearchValue("type", "users");
-  const queryParam = useRouteSearchValue("q", "");
+  const [params, setParams] = useSearchParams();
+  const searchQuery = params.get("q") || "";
+  const searchRelay = params.get("relay") || searchRelays[0];
 
-  const [searchInput, setSearchInput] = useState(queryParam.value);
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: { query: searchQuery, relay: searchRelay },
+    mode: "all",
+  });
 
-  // update the input value when search changes
-  useEffect(() => {
-    setSearchInput(queryParam.value);
-  }, [queryParam.value]);
+  // reset the relay when the search relay changes
+  useEffect(() => setValue("relay", searchRelay), [searchRelay]);
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
 
     if (cleanText.startsWith("nostr:") || cleanText.startsWith("web+nostr:") || safeDecode(text)) {
       navigate({ pathname: "/l/" + encodeURIComponent(text) }, { replace: true });
-      return;
+      return true;
     }
 
     const hashTagMatch = getMatchHashtag().exec(cleanText);
     if (hashTagMatch) {
       navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() }, { replace: true });
-      return;
+      return true;
     }
 
-    queryParam.setValue(cleanText);
+    return false;
   };
 
   const readClipboard = useCallback(async () => {
@@ -57,89 +53,60 @@ export function SearchPage() {
   }, []);
 
   // set the search when the form is submitted
-  const handleSubmit = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    handleSearchText(searchInput);
-  };
+  const submit = handleSubmit((values) => {
+    if (!handleSearchText(values.query)) {
+      const newParams = new URLSearchParams(params);
+      newParams.set("q", values.query);
+      newParams.set("relay", values.relay);
+      setParams(newParams);
+    }
+  });
 
-  let SearchResults = ProfileSearchResults;
-  switch (typeParam.value) {
-    case "users":
-      SearchResults = ProfileSearchResults;
-      break;
-    case "notes":
-      SearchResults = NoteSearchResults;
-      break;
-    case "articles":
-      SearchResults = ArticleSearchResults;
-      break;
-    case "communities":
-      SearchResults = CommunitySearchResults;
-      break;
-  }
+  const shouldSearch = searchQuery && searchRelay;
 
   return (
     <VerticalPageLayout>
-      <form onSubmit={handleSubmit}>
-        <Flex gap="2" wrap="wrap">
-          <Flex gap="2" grow={1}>
-            <QRCodeScannerButton onData={handleSearchText} />
-            {!!navigator.clipboard?.readText && (
-              <IconButton onClick={readClipboard} icon={<CopyToClipboardIcon />} aria-label="Read clipboard" />
-            )}
-            <Input
-              type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              autoFocus={autoFocusSearch}
+      <Flex as="form" gap="2" wrap="wrap" onSubmit={submit}>
+        <ButtonGroup>
+          <QRCodeScannerButton onData={handleSearchText} />
+          {!!navigator.clipboard?.readText && (
+            <IconButton
+              onClick={readClipboard}
+              icon={<CopyToClipboardIcon boxSize={5} />}
+              aria-label="Read clipboard"
             />
-            <Button type="submit">Search</Button>
-          </Flex>
-        </Flex>
-      </form>
-
-      <Flex gap="2">
-        <PeopleListSelection size="sm" />
-        <ButtonGroup size="sm" isAttached variant="outline" flexWrap="wrap">
-          <Button
-            leftIcon={<User01 />}
-            colorScheme={typeParam.value === "users" ? "primary" : undefined}
-            onClick={() => typeParam.setValue("users")}
-          >
-            Users
-          </Button>
-          <Button
-            leftIcon={<NotesIcon />}
-            colorScheme={typeParam.value === "notes" ? "primary" : undefined}
-            onClick={() => typeParam.setValue("notes")}
-          >
-            Notes
-          </Button>
-          <Button
-            leftIcon={<Feather />}
-            colorScheme={typeParam.value === "articles" ? "primary" : undefined}
-            onClick={() => typeParam.setValue("articles")}
-          >
-            Articles
-          </Button>
-          <Button
-            leftIcon={<CommunityIcon />}
-            colorScheme={typeParam.value === "communities" ? "primary" : undefined}
-            onClick={() => typeParam.setValue("communities")}
-          >
-            Communities
-          </Button>
+          )}
+        </ButtonGroup>
+        <Input
+          type="search"
+          isRequired
+          autoFocus={autoFocusSearch}
+          w="auto"
+          flexGrow={1}
+          {...register("query", { required: true, minLength: 3 })}
+          autoComplete="off"
+        />
+        <Select w="auto" {...register("relay")}>
+          {searchRelays.map((url) => (
+            <option key={url} value={url}>
+              {url}
+            </option>
+          ))}
+        </Select>
+        <ButtonGroup>
+          <IconButton type="submit" aria-label="Search" icon={<SearchIcon boxSize={5} />} colorScheme="primary" />
+          <IconButton
+            as={RouterLink}
+            type="button"
+            aria-label="Advanced"
+            icon={<SettingsIcon boxSize={5} />}
+            to="/relays/search"
+          />
         </ButtonGroup>
       </Flex>
 
-      <Flex direction="column" gap="4">
-        {queryParam.value ? (
-          <SearchResults search={queryParam.value} />
-        ) : (
-          <Link isExternal href="https://nostr.band" color="blue.500" mx="auto">
-            Advanced Search
-          </Link>
-        )}
+      <Flex direction="column" gap="2">
+        {shouldSearch ? <SearchResults relay={searchRelay} query={searchQuery} /> : null}
       </Flex>
     </VerticalPageLayout>
   );
@@ -147,10 +114,8 @@ export function SearchPage() {
 
 export default function SearchView() {
   return (
-    <AdditionalRelayProvider relays={SEARCH_RELAYS}>
-      <PeopleListProvider initList="global">
-        <SearchPage />
-      </PeopleListProvider>
-    </AdditionalRelayProvider>
+    <PeopleListProvider initList="global">
+      <SearchPage />
+    </PeopleListProvider>
   );
 }

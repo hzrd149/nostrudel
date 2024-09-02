@@ -4,7 +4,6 @@ import { kinds } from "nostr-tools";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { RepostIcon } from "../../../icons";
 import useEventCount from "../../../../hooks/use-event-count";
-import useEventExists from "../../../../hooks/use-event-exists";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import RepostModal from "./repost-modal";
 
@@ -12,10 +11,8 @@ export default function RepostButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const account = useCurrentAccount();
-  const hasReposted = useEventExists(
+  const hasReposted = useEventCount(
     account ? { "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] } : undefined,
-    [], //only check the cache
-    false,
   );
   const repostCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
 

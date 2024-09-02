@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import type { AddressPointer } from "nostr-tools/lib/types/nip19";
+import type { AddressPointer } from "nostr-tools/nip19";
 
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
 

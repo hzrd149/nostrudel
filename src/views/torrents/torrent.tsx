@@ -42,7 +42,7 @@ import { getThreadReferences } from "../../helpers/nostr/event";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import NoteZapButton from "../../components/note/note-zap-button";
-import QuoteRepostButton from "../../components/note/quote-repost-button";
+import QuoteEventButton from "../../components/note/quote-event-button";
 import { TextNoteContents } from "../../components/note/timeline-note/text-note-contents";
 
 function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
@@ -75,7 +75,7 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
         </Flex>
         <ButtonGroup variant="ghost" size="sm">
           <NoteZapButton event={torrent} />
-          <QuoteRepostButton event={torrent} />
+          <QuoteEventButton event={torrent} />
           <Button as={Link} leftIcon={<Magnet boxSize={5} />} href={getTorrentMagnetLink(torrent)} isExternal>
             Download torrent
           </Button>

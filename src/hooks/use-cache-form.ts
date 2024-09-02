@@ -1,43 +1,80 @@
-import { useCallback, useRef } from "react";
-import { FieldValues, UseFormGetValues, UseFormSetValue, UseFormStateReturn } from "react-hook-form";
-import { useMount, useUnmount } from "react-use";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { FieldValues, UseFormGetValues, UseFormReset, UseFormStateReturn } from "react-hook-form";
+import { useBeforeUnload } from "react-router-dom";
 
-// TODO: make these caches expire
+import { logger } from "../helpers/debug";
+
 export default function useCacheForm<TFieldValues extends FieldValues = FieldValues>(
   key: string | null,
   getValues: UseFormGetValues<TFieldValues>,
-  setValue: UseFormSetValue<TFieldValues>,
+  reset: UseFormReset<TFieldValues>,
   state: UseFormStateReturn<TFieldValues>,
+  opts?: { clearOnKeyChange: boolean },
 ) {
-  const storageKey = key && key + "-form-values";
+  const log = useMemo(() => (key ? logger.extend(`CachedForm:${key}`) : () => {}), [key]);
+  const storageKey = key && "cached-form-" + key;
 
-  useMount(() => {
-    if (storageKey === null) return;
+  const isSubmitted = useRef<boolean>(state.isSubmitted);
+  isSubmitted.current = state.isSubmitted;
+
+  const isSubmitting = useRef<boolean>(state.isSubmitting);
+  isSubmitting.current = state.isSubmitting;
+
+  const isDirty = useRef<boolean>(state.isDirty);
+  isDirty.current = state.isDirty;
+
+  useEffect(() => {
+    if (!storageKey) return;
+
+    // restore form on key change or mount
     try {
       const cached = localStorage.getItem(storageKey);
+
+      // remove the item and keep it in memory
       localStorage.removeItem(storageKey);
 
       if (cached) {
         const values = JSON.parse(cached) as TFieldValues;
-        for (const [key, value] of Object.entries(values)) {
-          // @ts-ignore
-          setValue(key, value, { shouldDirty: true });
-        }
+
+        log("Restoring form");
+        reset(values, { keepDefaultValues: true });
+      } else if (opts?.clearOnKeyChange) {
+        log("Clearing form");
+        reset();
       }
     } catch (e) {}
-  });
 
-  const stateRef = useRef<UseFormStateReturn<TFieldValues>>(state);
-  stateRef.current = state;
-  useUnmount(() => {
-    if (storageKey === null) return;
-    if (stateRef.current.isDirty && !stateRef.current.isSubmitted) {
-      localStorage.setItem(storageKey, JSON.stringify(getValues()));
-    } else localStorage.removeItem(storageKey);
-  });
+    // save previous key on change or unmount
+    return () => {
+      if (isSubmitted.current || isSubmitting.current) {
+        log("Removing because submitted");
+        localStorage.removeItem(storageKey);
+      } else if (isDirty.current) {
+        const values = getValues();
+        log("Saving form", values);
+        localStorage.setItem(storageKey, JSON.stringify(values));
+      }
+    };
+  }, [storageKey, log, opts?.clearOnKeyChange]);
+
+  const saveOnClose = useCallback(() => {
+    if (!storageKey) return;
+
+    if (isSubmitted.current || isSubmitting.current) {
+      log("Removing because submitted");
+      localStorage.removeItem(storageKey);
+    } else if (isDirty.current) {
+      const values = getValues();
+      log("Saving form", values);
+      localStorage.setItem(storageKey, JSON.stringify(values));
+    }
+  }, [log, getValues, storageKey]);
+
+  useBeforeUnload(saveOnClose);
 
   return useCallback(() => {
-    if (storageKey === null) return;
+    if (!storageKey) return;
+
     localStorage.removeItem(storageKey);
   }, [storageKey]);
 }

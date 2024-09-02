@@ -13,7 +13,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
 import { debounce } from "../../helpers/function";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import MapTimeline from "./timeline";
 

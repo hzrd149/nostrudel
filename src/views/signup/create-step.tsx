@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { getPublicKey, generateSecretKey, finalizeEvent, kinds } from "nostr-tools";
+import { generateSecretKey, finalizeEvent, kinds } from "nostr-tools";
 import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
 import { bytesToHex } from "@noble/hashes/utils";
 import dayjs from "dayjs";
 
 import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { containerProps } from "./common";
-import { nostrBuildUploadImage } from "../../helpers/nostr-build";
+import { nostrBuildUploadImage } from "../../helpers/media-upload/nostr-build";
 import accountService from "../../services/account";
-import signingService from "../../services/signing";
 import { COMMON_CONTACT_RELAY } from "../../const";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import NsecAccount from "../../classes/accounts/nsec-account";
 
 export default function CreateStep({
   metadata,
@@ -62,10 +62,9 @@ export default function CreateStep({
       await publish("Create Profile", kind0, [...relays, COMMON_CONTACT_RELAY]);
 
       // login
-      const pubkey = getPublicKey(hex);
-      const encrypted = await signingService.encryptSecKey(bytesToHex(hex));
-      accountService.addAccount({ type: "local", pubkey, relays, ...encrypted, readonly: false });
-      accountService.switchAccount(pubkey);
+      const account = NsecAccount.newKey();
+      accountService.addAccount(account);
+      accountService.switchAccount(account.pubkey);
 
       // set relays
       const draft: DraftNostrEvent = {

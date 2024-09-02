@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo } from "react";
 import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -16,8 +16,6 @@ import {
 } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
-import { getEventUID } from "../../../helpers/nostr/event";
 import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -25,11 +23,11 @@ import useCountCommunityMembers from "../../../hooks/use-count-community-members
 import { readablizeSats } from "../../../helpers/bolt11";
 import User01 from "../../../components/icons/user-01";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { AddressPointer } from "nostr-tools/lib/types/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { community: NostrEvent }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(community));
+  const ref = useEventIntersectionRef(community);
 
   const name = getCommunityName(community);
   const countMembers = useCountCommunityMembers(community);

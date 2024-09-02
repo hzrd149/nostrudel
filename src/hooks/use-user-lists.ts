@@ -5,6 +5,7 @@ import { useReadRelays } from "./use-client-relays";
 import useSubject from "./use-subject";
 import useTimelineLoader from "./use-timeline-loader";
 import { NostrEvent } from "../types/nostr-event";
+import { truncateId } from "../helpers/string";
 
 export default function useUserLists(pubkey?: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);
@@ -12,7 +13,7 @@ export default function useUserLists(pubkey?: string, additionalRelays?: Iterabl
     return !isJunkList(event);
   }, []);
   const timeline = useTimelineLoader(
-    `${pubkey}-lists`,
+    `${truncateId(pubkey ?? "anon")}-lists`,
     readRelays,
     pubkey
       ? {

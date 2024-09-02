@@ -1,6 +1,7 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { memo, useCallback, useRef } from "react";
+import { memo, useCallback } from "react";
 import { kinds } from "nostr-tools";
+import { useNavigate } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -8,20 +9,17 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider, {
-  useRegisterIntersectionEntity,
-} from "../../providers/local/intersection-observer";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useSubject from "../../hooks/use-subject";
 import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
-import { useNavigate } from "react-router-dom";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const DirectMessage = memo(({ dm }: { dm: NostrEvent }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, dm.id);
+  const ref = useEventIntersectionRef(dm);
 
   return (
     <div ref={ref}>

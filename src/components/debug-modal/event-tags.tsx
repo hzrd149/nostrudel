@@ -8,7 +8,7 @@ import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/ev
 import { EmbedEventPointer } from "../embed-event";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserLink from "../user/user-link";
-import { UserDnsIdentityIcon } from "../user/user-dns-identity-icon";
+import UserDnsIdentity from "../user/user-dns-identity";
 
 function EventTag({ tag }: { tag: Tag }) {
   const expand = useDisclosure();
@@ -62,7 +62,7 @@ function EventTag({ tag }: { tag: Tag }) {
             <Box>
               <UserLink pubkey={pubkey} fontWeight="bold" />
               <br />
-              <UserDnsIdentityIcon pubkey={pubkey} />
+              <UserDnsIdentity pubkey={pubkey} />
             </Box>
           </Flex>
         )}
@@ -81,7 +81,7 @@ export default function DebugEventTags({ event }: { event: NostrEvent }) {
 
   return (
     <>
-      <Button variant="link" color="GrayText" fontFamily="monospace" onClick={expand.onToggle}>
+      <Button variant="link" color="GrayText" fontFamily="monospace" onClick={expand.onToggle} isTruncated>
         [{expand.isOpen ? "-" : "+"}] Tags ({event.tags.length})
       </Button>
       {expand.isOpen && (

@@ -7,7 +7,7 @@ import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
 import TimelineLoader from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "./timeline-action-and-status";
+import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";

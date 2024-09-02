@@ -1,9 +1,9 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
-import { kinds } from "nostr-tools";
+import { NostrEvent, kinds } from "nostr-tools";
 
-import { ChevronLeftIcon, ThreadIcon } from "../../components/icons";
+import { ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import useSubject from "../../hooks/use-subject";
@@ -12,20 +12,22 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline-page/timeline-action-and-status";
-import { UserDnsIdentityIcon } from "../../components/user/user-dns-identity-icon";
-import { useDecryptionContext } from "../../providers/global/dycryption-provider";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import { useRouterMarker } from "../../providers/drawer-sub-view-provider";
 import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-app-settings";
+import { truncateId } from "../../helpers/string";
+import useRouterMarker from "../../hooks/use-router-marker";
+import { BackIconButton } from "../../components/router/back-button";
+import decryptionCacheService from "../../services/decryption-cache";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
@@ -50,7 +52,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
-  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
@@ -73,35 +74,39 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      const from = event.pubkey;
+      const to = event.tags.find((t) => t[0] === "p")?.[1];
+
+      return (from === account.pubkey && to === pubkey) || (from === pubkey && to === account.pubkey);
+    },
+    [account, pubkey],
+  );
+
   const otherMailboxes = useUserMailboxes(pubkey);
   const mailboxes = useUserMailboxes(account.pubkey);
   const timeline = useTimelineLoader(
-    `${pubkey}-${account.pubkey}-messages`,
+    `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
     RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
-        "#p": [account.pubkey],
-        authors: [pubkey],
-      },
-      {
-        kinds: [kinds.EncryptedDirectMessage],
-        "#p": [pubkey],
-        authors: [account.pubkey],
+        "#p": [account.pubkey, pubkey],
+        authors: [pubkey, account.pubkey],
       },
     ],
+    { eventFilter },
   );
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
     const promises = timeline.timeline.value
       .map((message) => {
-        const container = getOrCreateContainer(pubkey, message.content);
-        if (container.plaintext.value === undefined) return addToQueue(container);
+        const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
+        return decryptionCacheService.requestDecrypt(container);
       })
       .filter(Boolean);
-
-    startQueue();
 
     setLoading(true);
     Promise.all(promises).finally(() => setLoading(false));
@@ -114,16 +119,10 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       <IntersectionObserverProvider callback={callback}>
         <Card size="sm" flexShrink={0} p="2" flexDirection="row">
           <Flex gap="2" alignItems="center">
-            <IconButton
-              variant="ghost"
-              icon={<ChevronLeftIcon />}
-              aria-label="Back"
-              onClick={() => navigate(-1)}
-              hideFrom="xl"
-            />
+            <BackIconButton />
             <UserAvatar pubkey={pubkey} size="sm" />
             <UserLink pubkey={pubkey} fontWeight="bold" />
-            <UserDnsIdentityIcon pubkey={pubkey} onlyIcon />
+            <UserDnsIdentity pubkey={pubkey} onlyIcon />
           </Flex>
           <ButtonGroup ml="auto">
             {!autoDecryptDMs && (

@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { useDMTimeline } from "../../../providers/global/dm-timeline";
+import { useDMTimeline } from "../../../providers/global/dms-provider";
 import useSubject from "../../../hooks/use-subject";
 import {
   KnownConversation,
@@ -17,13 +18,13 @@ import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
-import { nip19 } from "nostr-tools";
-import { useDecryptionContainer, useDecryptionContext } from "../../../providers/global/dycryption-provider";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
+import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import decryptionCacheService from "../../../services/decryption-cache";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
-  const { plaintext } = useDecryptionContainer(pubkey, message.content);
+  const { plaintext } = useKind4Decrypt(message);
   return <Text isTruncated>{plaintext || "<Encrypted>"}</Text>;
 }
 
@@ -38,7 +39,7 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
           <HoverLinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}`}>
             <UserName pubkey={conversation.correspondent} />
           </HoverLinkOverlay>
-          <UserDnsIdentityIcon pubkey={conversation.correspondent} onlyIcon />
+          <UserDnsIdentity pubkey={conversation.correspondent} onlyIcon />
         </Flex>
         {lastReceived && <MessagePreview message={lastReceived} pubkey={conversation.correspondent} />}
       </Flex>
@@ -50,7 +51,6 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
 export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
-  const { getOrCreateContainer, addToQueue, startQueue } = useDecryptionContext();
 
   const timeline = useDMTimeline();
 
@@ -59,7 +59,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
     const grouped = groupIntoConversations(messages)
       .map((c) => identifyConversation(c, account.pubkey))
       .filter((c) => {
-        if (c.messages.some((m) => m.pubkey === c.correspondent)) return hasResponded(c);
+        if (c.messages.some((m) => m.pubkey === c.correspondent)) return !hasResponded(c);
         else return false;
       });
     const sorted = sortConversationsByLastReceived(grouped);
@@ -74,12 +74,15 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         const last = conversation.messages.find((m) => m.pubkey === conversation.correspondent);
         if (!last) return;
 
-        const container = getOrCreateContainer(conversation.correspondent, last.content);
-        if (container.plaintext.value === undefined) return addToQueue(container);
+        const container = decryptionCacheService.getOrCreateContainer(
+          last.id,
+          "nip04",
+          conversation.correspondent,
+          last.content,
+        );
+        return decryptionCacheService.requestDecrypt(container);
       })
       .filter(Boolean);
-
-    startQueue();
 
     setLoading(true);
     Promise.all(promises).finally(() => setLoading(false));
@@ -102,6 +105,9 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         {conversations.slice(0, 4).map((conversation) => (
           <Conversation key={conversation.pubkeys.join("-")} conversation={conversation} />
         ))}
+        <Button as={RouterLink} to="/dm" flexShrink={0} variant="link" size="lg" py="4">
+          View More
+        </Button>
       </CardBody>
     </Card>
   );

@@ -13,6 +13,7 @@ import {
 import { Button, Flex, FlexProps, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useUnmount } from "react-use";
 import { Link as RouterLink } from "react-router-dom";
+import styled from "@emotion/styled";
 
 import Lightbox, { RenderSlideContainerProps, Slide } from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
@@ -32,9 +33,7 @@ declare module "yet-another-react-lightbox" {
 import { NostrEvent } from "../types/nostr-event";
 import UserAvatarLink from "./user/user-avatar-link";
 import UserLink from "./user/user-link";
-import { UserDnsIdentityIcon } from "./user/user-dns-identity-icon";
-import styled from "@emotion/styled";
-import { getSharableEventAddress } from "../helpers/nip19";
+import relayHintService from "../services/event-relay-hint";
 
 type RefType = MutableRefObject<HTMLElement | null>;
 
@@ -101,13 +100,12 @@ function getRefPath(ref: RefType) {
 }
 
 function EventSlideHeader({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
-  const encoded = useMemo(() => getSharableEventAddress(event), [event]);
+  const encoded = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
 
   return (
     <Flex gap="2" alignItems="center" p="2" {...props}>
       <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
       <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-      <UserDnsIdentityIcon pubkey={event.pubkey} onlyIcon />
       <Spacer />
       <Button as={RouterLink} to={`/n/${encoded}`} colorScheme="primary" size="sm">
         View Note

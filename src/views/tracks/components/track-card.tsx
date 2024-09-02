@@ -1,8 +1,5 @@
-import { useRef } from "react";
 import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Tag } from "@chakra-ui/react";
 
-import { getEventUID } from "../../../helpers/nostr/event";
-import { useRegisterIntersectionEntity } from "../../../providers/local/intersection-observer";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getHashtags } from "../../../helpers/nostr/stemstr";
 import { CompactNoteContent } from "../../../components/compact-note-content";
@@ -13,23 +10,23 @@ import { ReplyIcon } from "../../../components/icons";
 import TrackStemstrButton from "./track-stemstr-button";
 import TrackDownloadButton from "./track-download-button";
 import TrackPlayer from "./track-player";
-import { UserDnsIdentityIcon } from "../../../components/user/user-dns-identity-icon";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import TrackMenu from "./track-menu";
-import QuoteRepostButton from "../../../components/note/quote-repost-button";
+import QuoteEventButton from "../../../components/note/quote-event-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function TrackCard({ track, ...props }: { track: NostrEvent } & Omit<CardProps, "children">) {
   const hashtags = getHashtags(track);
 
-  const ref = useRef<HTMLDivElement | null>(null);
-  useRegisterIntersectionEntity(ref, getEventUID(track));
+  const ref = useEventIntersectionRef(track);
 
   return (
     <Card variant="outline" ref={ref} {...props}>
       <CardHeader display="flex" alignItems="center" p="2" pb="0" gap="2">
         <UserAvatarLink pubkey={track.pubkey} size="sm" />
         <UserLink pubkey={track.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-        <UserDnsIdentityIcon pubkey={track.pubkey} onlyIcon />
+        <UserDnsIdentity pubkey={track.pubkey} onlyIcon />
         <Timestamp ml="auto" timestamp={track.created_at} />
       </CardHeader>
       <CardBody p="2" display="flex" gap="2" flexDirection="column">
@@ -48,7 +45,7 @@ export default function TrackCard({ track, ...props }: { track: NostrEvent } & O
           <Button leftIcon={<ReplyIcon />} isDisabled>
             Comment
           </Button>
-          <QuoteRepostButton event={track} />
+          <QuoteEventButton event={track} />
           <NoteZapButton event={track} />
         </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">
