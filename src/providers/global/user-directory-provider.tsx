@@ -2,6 +2,8 @@ import { PropsWithChildren, createContext, useCallback, useContext } from "react
 import { useAsync } from "react-use";
 
 import db from "../../services/db";
+import useSubject from "../../hooks/use-subject";
+import { userSearchUpdate } from "../../services/username-search";
 
 export type UserDirectory = { pubkey: string; names: string[] }[];
 export type GetDirectoryFn = () => UserDirectory;
@@ -12,7 +14,8 @@ export function useUserSearchDirectoryContext() {
 }
 
 export function AllUserSearchDirectoryProvider({ children }: PropsWithChildren) {
-  const { value: users } = useAsync(() => db.getAll("userSearch"));
+  const update = useSubject(userSearchUpdate);
+  const { value: users } = useAsync(() => db.getAll("userSearch"), [update]);
   const getDirectory = useCallback(() => users as UserDirectory, [users]);
 
   return <UserSearchDirectoryProvider getDirectory={getDirectory}>{children}</UserSearchDirectoryProvider>;
