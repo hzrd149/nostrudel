@@ -13,6 +13,8 @@ import SearchForm from "./components/search-form";
 import KeyboardShortcut from "../../components/keyboard-shortcut";
 import DMsCard from "./components/dms-card";
 import NotificationsCard from "./components/notifications-card";
+import ToolsCard from "./components/tools-card";
+import StreamsCard from "./components/streams-card";
 
 function LaunchpadPage() {
   const { openModal } = useContext(PostModalContext);
@@ -39,8 +41,10 @@ function LaunchpadPage() {
         <SearchForm flex={1} />
       </Flex>
       <FeedsCard w="full" />
-      <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
+      <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="40vh" />
       <DMsCard w={{ base: "full", md: "40%" }} />
+      <StreamsCard w={{ base: "full", md: "40%" }} />
+      <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
     </VerticalPageLayout>
   );
 }

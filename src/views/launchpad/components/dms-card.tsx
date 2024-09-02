@@ -105,6 +105,9 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         {conversations.slice(0, 4).map((conversation) => (
           <Conversation key={conversation.pubkeys.join("-")} conversation={conversation} />
         ))}
+        <Button as={RouterLink} to="/dm" flexShrink={0} variant="link" size="lg" py="4">
+          View More
+        </Button>
       </CardBody>
     </Card>
   );

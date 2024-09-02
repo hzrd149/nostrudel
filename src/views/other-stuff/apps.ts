@@ -58,6 +58,27 @@ export const internalApps: App[] = [
 
 export const internalTools: App[] = [
   {
+    title: "Event Console",
+    description: "Find events based on nostr filters",
+    icon: SearchIcon,
+    id: "console",
+    to: "/tools/console",
+  },
+  {
+    title: "Event Publisher",
+    description: "Write and publish events",
+    icon: UploadCloud01,
+    id: "publisher",
+    to: "/tools/publisher ",
+  },
+  {
+    title: "Unknown Events",
+    description: "A timeline of unknown events",
+    icon: MessageQuestionSquare,
+    id: "unknown",
+    to: "/tools/unknown",
+  },
+  {
     title: "Satellite CDN",
     description: "Scalable media hosting for the nostr ecosystem",
     image: "https://satellite.earth/image.png",
@@ -92,27 +113,6 @@ export const internalTools: App[] = [
     icon: ShieldOff,
     id: "dm-timeline",
     to: "/tools/dm-timeline",
-  },
-  {
-    title: "Unknown Events",
-    description: "A timeline of unknown events",
-    icon: MessageQuestionSquare,
-    id: "unknown",
-    to: "/tools/unknown",
-  },
-  {
-    title: "Event Console",
-    description: "Find events based on nostr filters",
-    icon: SearchIcon,
-    id: "console",
-    to: "/tools/console",
-  },
-  {
-    title: "Event Publisher",
-    description: "Write and publish events",
-    icon: UploadCloud01,
-    id: "publisher",
-    to: "/tools/publisher ",
   },
   {
     title: "Corrections Feed",
