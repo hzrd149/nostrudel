@@ -23,6 +23,10 @@ import {
   SliderFilledTrack,
   SliderThumb,
   ModalCloseButton,
+  Alert,
+  AlertIcon,
+  ButtonGroup,
+  Text,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -55,6 +59,9 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
+import useSubject from "../../hooks/use-subject";
+import localSettings from "../../services/local-settings";
+import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 
 type FormValues = {
   subject: string;
@@ -84,6 +91,8 @@ export default function PostModal({
   const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
+  const addClientTag = useSubject(localSettings.addClientTag);
+  const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<PublishAction>();
   const emojis = useContextEmojis();
@@ -303,6 +312,25 @@ export default function PostModal({
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
           {renderContent()}
         </ModalBody>
+
+        {!addClientTag && promptAddClientTag.isOpen && (
+          <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
+            <AlertIcon hideBelow="lg" />
+            <Text>
+              Enable{" "}
+              <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
+                NIP-89
+              </Link>{" "}
+              client tags and let other users know what app your using to write notes
+            </Text>
+            <ButtonGroup ml="auto" size="sm" variant="ghost">
+              <Button onClick={promptAddClientTag.onClose}>Close</Button>
+              <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
+                Enable
+              </Button>
+            </ButtonGroup>
+          </Alert>
+        )}
       </ModalContent>
     </Modal>
   );

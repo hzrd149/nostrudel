@@ -13,7 +13,6 @@ COPY . .
 
 ENV VITE_COMMIT_HASH=""
 ENV VITE_APP_VERSION="custom"
-ENV ENABLE_CLIENT_TAG="false"
 RUN yarn build
 
 FROM nginx:stable-alpine-slim AS main
