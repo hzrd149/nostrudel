@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.40.1
+
+### Patch Changes
+
+- 2d74bc7: Add "mark read" button to notifications view
+- 43d02ee: Fix nostr-relay-tray connection issues
+
 ## 0.40.0
 
 ### Minor Changes
