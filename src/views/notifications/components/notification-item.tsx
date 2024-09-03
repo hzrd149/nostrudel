@@ -66,7 +66,7 @@ const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClic
         onClick={onClick}
       >
         {pointer && <EmbedEventPointer pointer={pointer} />}
-        <TimelineNote event={event} showReplyLine={false} />
+        <TimelineNote event={event} showReplyLine={false} showReplyButton />
       </NotificationIconEntry>
     );
   },

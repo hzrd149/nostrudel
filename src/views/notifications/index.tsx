@@ -1,7 +1,7 @@
-import { memo, ReactNode, useContext, useMemo } from "react";
+import { memo, ReactNode, useCallback, useContext, useMemo } from "react";
 import { BreadcrumbLink, Button, ButtonGroup, Divider, Flex, Switch, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useKeyPressEvent } from "react-use";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
@@ -22,6 +22,23 @@ import useRouteStateValue from "../../hooks/use-route-state-value";
 import readStatusService from "../../services/read-status";
 
 // const DATE_FORMAT = "YYYY-MM-DD";
+
+function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
+  const readAll = useCallback(() => {
+    for (const id of ids) readStatusService.setRead(id);
+  }, [ids]);
+
+  return (
+    <Flex gap="4" p="2" key={date.unix() + "-marker"} alignItems="center">
+      <Divider />
+      <Text whiteSpace="pre">{date.fromNow()}</Text>
+      <Divider />
+      <Button variant="link" ml="2" onClick={readAll} flexShrink={0}>
+        Mark Read
+      </Button>
+    </Flex>
+  );
+}
 
 const NotificationsTimeline = memo(
   ({
@@ -91,6 +108,17 @@ const NotificationsTimeline = memo(
         }
       }
     };
+    const navigatePrevUnread = () => {
+      const focusedEvent = filteredEvents.find((e) => e.id === focused);
+
+      const idx = focusedEvent ? filteredEvents.indexOf(focusedEvent) : 0;
+      for (let i = idx; i >= 0; i--) {
+        if (readStatusService.getStatus(filteredEvents[i].id).value === false) {
+          setFocus(filteredEvents[i].id);
+          break;
+        }
+      }
+    };
     const navigateNext = () => {
       const focusedEvent = filteredEvents.find((e) => e.id === focused);
 
@@ -116,10 +144,10 @@ const NotificationsTimeline = memo(
 
     useKeyPressEvent("ArrowUp", navigatePrev);
     useKeyPressEvent("ArrowDown", navigateNext);
-    useKeyPressEvent("ArrowLeft", navigatePrev);
+    useKeyPressEvent("ArrowLeft", navigatePrevUnread);
     useKeyPressEvent("ArrowRight", navigateNextUnread);
     useKeyPressEvent("k", navigatePrev);
-    useKeyPressEvent("h", navigatePrev);
+    useKeyPressEvent("h", navigatePrevUnread);
     useKeyPressEvent("j", navigateNext);
     useKeyPressEvent("l", navigateNextUnread);
     useKeyPressEvent("H", navigateTop);
@@ -137,20 +165,17 @@ const NotificationsTimeline = memo(
     const items: ReactNode[] = [];
 
     let prev = dayjs();
+    let ids: string[] = [];
     for (const event of filteredEvents) {
       // insert markers at every day
       if (prev.diff(dayjs.unix(event.created_at), "d") > 0) {
         prev = dayjs.unix(event.created_at);
 
-        items.push(
-          <Flex gap="4" p="2" key={prev.unix() + "-marker"} alignItems="center">
-            <Divider />
-            <Text whiteSpace="pre">{prev.fromNow()}</Text>
-            <Divider />
-          </Flex>,
-        );
+        ids = [];
+        items.push(<TimeMarker key={prev.unix() + "-marker"} date={prev} ids={ids} />);
       }
 
+      ids.push(event.id);
       items.push(<NotificationItem key={event.id} event={event} />);
     }
 

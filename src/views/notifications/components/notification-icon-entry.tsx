@@ -64,7 +64,7 @@ const NotificationIconEntry = memo(
             <Text isTruncated>{summary}</Text>
             <Spacer />
             {read && <CheckIcon boxSize={5} color="green.500" />}
-            <Timestamp timestamp={timestamp} />
+            <Timestamp timestamp={timestamp} whiteSpace="pre" />
           </Flex>
 
           {expanded && (

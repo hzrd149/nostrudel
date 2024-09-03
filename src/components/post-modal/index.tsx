@@ -321,7 +321,7 @@ export default function PostModal({
               <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
                 NIP-89
               </Link>{" "}
-              client tags and let other users know what app your using to write notes
+              client tags and let other users know what app you're using to write notes
             </Text>
             <ButtonGroup ml="auto" size="sm" variant="ghost">
               <Button onClick={promptAddClientTag.onClose}>Close</Button>
