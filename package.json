@@ -93,6 +93,7 @@
     "three": "^0.160.0",
     "three-spritetext": "^1.8.2",
     "three-stdlib": "^2.29.11",
+    "tiny-lru": "^11.2.11",
     "webln": "^0.3.2",
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { AbstractRelay, Subscription, SubscriptionParams } from "nostr-tools/abstract-relay";
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
+import { LRU } from "tiny-lru";
 
 import relayPoolService from "../../../services/relay-pool";
 import ProfileSearchResults from "./profile-results";
@@ -35,6 +36,8 @@ function createSearchAction(url: string | AbstractRelay) {
   return { search, cancel };
 }
 
+const searchCache = new LRU<NostrEvent[]>(10);
+
 export default function SearchResults({ query, relay }: { query: string; relay: string | AbstractRelay }) {
   const [results, setResults] = useState<NostrEvent[]>([]);
 
@@ -44,17 +47,32 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
 
   useEffect(() => {
     if (query.length < 3) return;
-    setResults([]);
-    setError(undefined);
-    setSearching(true);
-    search
-      .search([{ search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 }], {
-        onevent: (event) => setResults((arr) => [...arr, event]),
-        oneose: () => setSearching(false),
-      })
-      .catch((err) => setError(err));
 
-    return () => search.cancel();
+    setError(undefined);
+    if (searchCache.has(query + relay)) {
+      // restore search from cache
+      const events = searchCache.get(query + relay)!;
+      setResults(events);
+      setSearching(false);
+    } else {
+      // run a new search
+      setResults([]);
+      setSearching(true);
+      search
+        .search([{ search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 }], {
+          onevent: (event) => {
+            setResults((arr) => {
+              const newArr = [...arr, event];
+              searchCache.set(query + relay, newArr);
+              return newArr;
+            });
+          },
+          oneose: () => setSearching(false),
+        })
+        .catch((err) => setError(err));
+
+      return () => search.cancel();
+    }
   }, [query, search]);
 
   const profiles = results.filter((e) => e.kind === kinds.Metadata);
