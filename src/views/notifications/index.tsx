@@ -1,8 +1,7 @@
 import { memo, ReactNode, useCallback, useContext, useMemo } from "react";
-import { BreadcrumbLink, Button, ButtonGroup, Divider, Flex, Switch, Text } from "@chakra-ui/react";
+import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
-import { useKeyPressEvent } from "react-use";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -20,6 +19,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import FocusedContext from "./focused-context";
 import useRouteStateValue from "../../hooks/use-route-state-value";
 import readStatusService from "../../services/read-status";
+import useKeyPressNav from "../../hooks/use-key-press-nav";
 
 // const DATE_FORMAT = "YYYY-MM-DD";
 
@@ -142,18 +142,18 @@ const NotificationsTimeline = memo(
     const navigateTop = () => setFocus(filteredEvents[0]?.id ?? "");
     const navigateEnd = () => setFocus(filteredEvents[filteredEvents.length - 1]?.id ?? "");
 
-    useKeyPressEvent("ArrowUp", navigatePrev);
-    useKeyPressEvent("ArrowDown", navigateNext);
-    useKeyPressEvent("ArrowLeft", navigatePrevUnread);
-    useKeyPressEvent("ArrowRight", navigateNextUnread);
-    useKeyPressEvent("k", navigatePrev);
-    useKeyPressEvent("h", navigatePrevUnread);
-    useKeyPressEvent("j", navigateNext);
-    useKeyPressEvent("l", navigateNextUnread);
-    useKeyPressEvent("H", navigateTop);
-    useKeyPressEvent("Home", navigateTop);
-    useKeyPressEvent("L", navigateEnd);
-    useKeyPressEvent("End", navigateEnd);
+    useKeyPressNav("ArrowUp", navigatePrev);
+    useKeyPressNav("ArrowDown", navigateNext);
+    useKeyPressNav("ArrowLeft", navigatePrevUnread);
+    useKeyPressNav("ArrowRight", navigateNextUnread);
+    useKeyPressNav("k", navigatePrev);
+    useKeyPressNav("h", navigatePrevUnread);
+    useKeyPressNav("j", navigateNext);
+    useKeyPressNav("l", navigateNextUnread);
+    useKeyPressNav("H", navigateTop);
+    useKeyPressNav("Home", navigateTop);
+    useKeyPressNav("L", navigateEnd);
+    useKeyPressNav("End", navigateEnd);
 
     if (filteredEvents.length === 0)
       return (

@@ -8,7 +8,7 @@ import { NostrEvent, isATag, isETag } from "../../../types/nostr-event";
 import { getParsedZap } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { getThreadReferences, parseCoordinate } from "../../../helpers/nostr/event";
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { TrustProvider } from "../../../providers/local/trust-provider";
@@ -33,6 +33,7 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import { truncateId } from "../../../helpers/string";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import ArticleCard from "../../articles/components/article-card";
 
 export const ExpandableToggleButton = ({
   toggle,
@@ -73,19 +74,34 @@ const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClic
 );
 
 const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
-  ({ event, onClick }, ref) => (
-    <NotificationIconEntry
-      ref={ref}
-      icon={<AtIcon boxSize={8} color="purple.400" />}
-      id={event.id}
-      pubkey={event.pubkey}
-      timestamp={event.created_at}
-      summary={event.content}
-      onClick={onClick}
-    >
-      <TimelineNote event={event} showReplyButton />
-    </NotificationIconEntry>
-  ),
+  ({ event, onClick }, ref) => {
+    let content: ReactNode;
+    switch (event.kind) {
+      case kinds.LongFormArticle:
+        content = <ArticleCard article={event} />;
+        break;
+      case kinds.ShortTextNote:
+        content = <TimelineNote event={event} showReplyButton />;
+        break;
+      default:
+        content = <EmbedEvent event={event} />;
+        break;
+    }
+
+    return (
+      <NotificationIconEntry
+        ref={ref}
+        icon={<AtIcon boxSize={8} color="purple.400" />}
+        id={event.id}
+        pubkey={event.pubkey}
+        timestamp={event.created_at}
+        summary={event.content}
+        onClick={onClick}
+      >
+        {content}
+      </NotificationIconEntry>
+    );
+  },
 );
 
 const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
