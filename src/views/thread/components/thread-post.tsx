@@ -21,7 +21,7 @@ import RepostButton from "../../../components/note/timeline-note/components/repo
 import QuoteEventButton from "../../../components/note/quote-event-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
-import BookmarkButton from "../../../components/note/bookmark-button";
+import BookmarkEventButton from "../../../components/note/bookmark-event";
 import NoteMenu from "../../../components/note/note-menu";
 import NoteCommunityMetadata from "../../../components/note/timeline-note/note-community-metadata";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
@@ -126,7 +126,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
         <NoteProxyLink event={post.event} />
-        <BookmarkButton event={post.event} aria-label="Bookmark" />
+        <BookmarkEventButton event={post.event} aria-label="Bookmark" />
         <NoteMenu event={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>

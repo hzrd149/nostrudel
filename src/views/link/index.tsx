@@ -60,6 +60,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${link}`} replace />;
       if (k === kinds.ChannelCreation) return <Navigate to={`/channels/${link}`} replace />;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
+      if (k === kinds.LongFormArticle) return <Navigate to={`/articles/${link}`} replace />;
       if (k === WIKI_PAGE_KIND) return <Navigate to={`/wiki/page/${link}`} replace />;
 
       if (!event && decoded.type === "naddr") return <LoadUnknownAddress pointer={decoded.data} link={link} />;

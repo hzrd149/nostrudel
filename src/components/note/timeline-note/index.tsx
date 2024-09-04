@@ -29,7 +29,7 @@ import QuoteEventButton from "../quote-event-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import BookmarkButton from "../bookmark-button";
+import BookmarkEventButton from "../bookmark-event";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../../views/thread/components/reply-form";
@@ -143,7 +143,7 @@ export function TimelineNote({
               <Box flexGrow={1} />
               <ButtonGroup size="sm" variant="ghost">
                 <NoteProxyLink event={event} />
-                <BookmarkButton event={event} aria-label="Bookmark note" />
+                <BookmarkEventButton event={event} aria-label="Bookmark note" />
                 <NoteMenu event={event} aria-label="More Options" />
               </ButtonGroup>
             </Flex>

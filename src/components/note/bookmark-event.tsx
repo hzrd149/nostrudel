@@ -28,7 +28,10 @@ import NewListModal from "../../views/lists/components/new-list-modal";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 
-export default function BookmarkButton({ event, ...props }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
+export default function BookmarkEventButton({
+  event,
+  ...props
+}: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
   const publish = usePublishEvent();
   const newListModal = useDisclosure();
   const account = useCurrentAccount();

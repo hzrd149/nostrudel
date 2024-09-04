@@ -20,6 +20,7 @@ import ArticleTags from "./components/article-tags";
 import NoteReactions from "../../components/note/timeline-note/components/note-reactions";
 import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
+import BookmarkEventButton from "../../components/note/bookmark-event";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
@@ -41,6 +42,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
           <Text>{dayjs.unix(published ?? article.created_at).format("LL")}</Text>
         </Box>
         <ArticleTags article={article} />
+        <BookmarkEventButton event={article} aria-label="Bookmark" variant="ghost" float="right" size="sm" />
       </Box>
       {image && <Image src={image} maxW="6xl" w="full" mx="auto" maxH="60vh" />}
       <Box mx="auto" maxW="4xl" w="full">
