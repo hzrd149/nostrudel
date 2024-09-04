@@ -68,17 +68,7 @@ const NotificationIconEntry = memo(
           </Flex>
 
           {expanded && (
-            <Flex
-              direction="column"
-              w="full"
-              gap="2"
-              overflow="hidden"
-              minH={{ base: "calc(100vh - 10rem)", lg: "xs" }}
-              p="2"
-              maxH="calc(100vh - 10rem)"
-              overflowY="auto"
-              overflowX="hidden"
-            >
+            <Flex direction="column" w="full" gap="2" overflow="hidden" p="2">
               {children}
             </Flex>
           )}
