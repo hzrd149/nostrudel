@@ -22,6 +22,7 @@ import {
   renderSoundCloudUrl,
   renderSpotifyUrl,
   renderStemstrUrl,
+  renderStreamUrl,
   renderTidalUrl,
   renderTwitterUrl,
   renderVideoUrl,
@@ -53,6 +54,7 @@ const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & 
       renderSoundCloudUrl,
       renderImageUrl,
       renderVideoUrl,
+      renderStreamUrl,
       renderAudioUrl,
       renderGenericUrl,
     ]);

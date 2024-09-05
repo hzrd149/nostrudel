@@ -31,6 +31,7 @@ import {
   renderModelUrl,
   renderCodePenURL,
   renderArchiveOrgURL,
+  renderStreamUrl,
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
@@ -57,6 +58,7 @@ function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderStreamUrl,
     renderAudioUrl,
     renderModelUrl,
     renderCodePenURL,

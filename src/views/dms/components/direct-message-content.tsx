@@ -13,6 +13,7 @@ import {
   renderSoundCloudUrl,
   renderSpotifyUrl,
   renderStemstrUrl,
+  renderStreamUrl,
   renderTidalUrl,
   renderTwitterUrl,
   renderVideoUrl,
@@ -46,6 +47,7 @@ export default function DirectMessageContent({
     renderSoundCloudUrl,
     renderImageUrl,
     renderVideoUrl,
+    renderStreamUrl,
     renderAudioUrl,
     renderGenericUrl,
   ]);
