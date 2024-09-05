@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, forwardRef, memo, useCallback, useContext, useEffect } from "react";
+import { PropsWithChildren, ReactNode, forwardRef, memo, useCallback, useContext, useEffect, useRef } from "react";
 import { Box, Flex, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
@@ -32,10 +32,12 @@ const NotificationIconEntry = memo(
       const focusSelf = useCallback(() => focus(id), [id, focus]);
 
       // scroll element to stop when opened
+      const headerRef = useRef<HTMLDivElement | null>(null);
       useEffect(() => {
         if (expanded) {
-          // @ts-expect-error
-          ref.current?.scrollIntoView();
+          setTimeout(() => {
+            headerRef.current?.scrollIntoView();
+          }, 2);
         }
       }, [expanded]);
 
@@ -45,11 +47,17 @@ const NotificationIconEntry = memo(
       }, [read, expanded]);
 
       return (
-        <Flex direction="column" bg={expanded ? "whiteAlpha.100" : undefined} rounded="md">
+        <Flex
+          direction="column"
+          bg={expanded ? "whiteAlpha.100" : undefined}
+          rounded="md"
+          flexGrow={1}
+          overflow="hidden"
+          ref={ref}
+        >
           <Flex
             gap="2"
             alignItems="center"
-            ref={ref}
             cursor="pointer"
             p="2"
             tabIndex={0}
@@ -57,6 +65,8 @@ const NotificationIconEntry = memo(
             onClick={onClick}
             userSelect="none"
             bg={!read ? focusColor : undefined}
+            ref={headerRef}
+            overflow="hidden"
           >
             <Box>{icon}</Box>
             <UserAvatar pubkey={pubkey} size="sm" />

@@ -30,7 +30,7 @@ export default function UserNotesTab() {
     [showReplies.isOpen, showReposts.isOpen, timelineEventFilter],
   );
   const timeline = useTimelineLoader(
-    truncatedId(pubkey) + "-notes",
+    pubkey + "-notes",
     readRelays,
     {
       authors: [pubkey],

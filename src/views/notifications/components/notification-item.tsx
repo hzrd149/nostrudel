@@ -1,5 +1,15 @@
 import { ReactNode, forwardRef, memo, useCallback, useMemo } from "react";
-import { AvatarGroup, ButtonGroup, Flex, IconButton, IconButtonProps, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Box,
+  BoxProps,
+  ButtonGroup,
+  Flex,
+  FlexProps,
+  IconButton,
+  IconButtonProps,
+  Text,
+} from "@chakra-ui/react";
 import { kinds, nip18, nip25 } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/nip19";
 
@@ -224,7 +234,16 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?
   },
 );
 
-const NotificationItem = ({ event, onClick }: { event: CategorizedEvent; onClick?: (event: NostrEvent) => void }) => {
+const NotificationItem = ({
+  event,
+  visible,
+  onClick,
+  ...props
+}: Omit<FlexProps, "children" | "onClick"> & {
+  event: CategorizedEvent;
+  onClick?: (event: NostrEvent) => void;
+  visible: boolean;
+}) => {
   const ref = useEventIntersectionRef(event);
 
   const handleClick = useCallback(() => {
@@ -232,32 +251,37 @@ const NotificationItem = ({ event, onClick }: { event: CategorizedEvent; onClick
   }, [onClick, event]);
 
   let content: ReactNode | null = null;
-  switch (event[typeSymbol]) {
-    case NotificationType.Reply:
-      content = <ReplyNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Mention:
-      content = <MentionNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Reaction:
-      content = <ReactionNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Repost:
-      content = <RepostNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Zap:
-      content = <ZapNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    default:
-      content = <EmbeddedUnknown event={event} />;
-      break;
+  if (visible) {
+    switch (event[typeSymbol]) {
+      case NotificationType.Reply:
+        content = <ReplyNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Mention:
+        content = <MentionNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Reaction:
+        content = <ReactionNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Repost:
+        content = <RepostNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Zap:
+        content = <ZapNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      default:
+        content = <EmbeddedUnknown event={event} />;
+        break;
+    }
   }
+
   return (
-    content && (
-      <ErrorBoundary>
-        <TrustProvider event={event}>{content}</TrustProvider>
-      </ErrorBoundary>
-    )
+    <Flex ref={ref} overflow="hidden" flexShrink={0} {...props}>
+      {content && (
+        <ErrorBoundary>
+          <TrustProvider event={event}>{content}</TrustProvider>
+        </ErrorBoundary>
+      )}
+    </Flex>
   );
 };
 

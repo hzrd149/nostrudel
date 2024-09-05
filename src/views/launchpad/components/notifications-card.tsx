@@ -40,9 +40,9 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
         </Heading>
         <KeyboardShortcut letter="i" requireMeta ml="auto" onPress={() => navigate("/notifications")} />
       </CardHeader>
-      <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column">
+      <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" flexDirection="column">
         {limit.map((event) => (
-          <NotificationItem event={event} key={event.id} onClick={handleClick} />
+          <NotificationItem event={event} key={event.id} onClick={handleClick} visible />
         ))}
         <Button as={RouterLink} to="/notifications" flexShrink={0} variant="link" size="lg" py="4">
           View More

@@ -13,50 +13,53 @@ import { useMount, useUnmount } from "react-use";
 
 import Subject from "../../classes/subject";
 
-export type ExtendedIntersectionObserverEntry = { entry: IntersectionObserverEntry; id: string | undefined };
-export type ExtendedIntersectionObserverCallback = (
-  entries: ExtendedIntersectionObserverEntry[],
-  observer: IntersectionObserver,
-) => void;
-
 const IntersectionObserverContext = createContext<{
   observer?: IntersectionObserver;
-  setElementId: (element: Element, id: any) => void;
   // NOTE: hard codded string type
-  subject: Subject<ExtendedIntersectionObserverEntry[]>;
-}>({ setElementId: () => {}, subject: new Subject() });
+  subject: Subject<IntersectionObserverEntry[]>;
+}>({ subject: new Subject() });
 
 export function useIntersectionObserver() {
   return useContext(IntersectionObserverContext);
 }
 
-export function useRegisterIntersectionEntity(ref: MutableRefObject<Element | null>, id?: string) {
-  const { observer, setElementId } = useIntersectionObserver();
+export function getEntryDetails(entry: IntersectionObserverEntry) {
+  if (entry.target instanceof HTMLElement) {
+    const { id, ts } = entry.target.dataset;
+    if (id && ts) return { id, ts };
+  }
+}
+
+export function useIntersectionEntityDetails(ref: MutableRefObject<HTMLElement | null>, id?: string, date?: number) {
+  const { observer } = useIntersectionObserver();
 
   useEffect(() => {
     if (observer && ref.current) {
       observer.observe(ref.current);
-      if (id) {
-        setElementId(ref.current, id);
-        if (import.meta.env.DEV) ref.current.setAttribute("data-event-id", id);
-      }
+
+      if (id) ref.current.dataset.id = id;
+      if (date) ref.current.dataset.ts = String(date);
     }
   }, [observer]);
+
   useUnmount(() => {
     if (observer && ref.current) observer.unobserve(ref.current);
   });
 }
 
-/** @deprecated */
-export function useIntersectionMapCallback(
+export function useCachedIntersectionMapCallback(
   callback: (map: Map<string, IntersectionObserverEntry>) => void,
   watch: DependencyList,
 ) {
-  const map = useMemo(() => new Map<string, IntersectionObserverEntry>(), []);
-  return useCallback<ExtendedIntersectionObserverCallback>(
-    (entries) => {
-      for (const { id, entry } of entries) id && map.set(id, entry);
-      callback(map);
+  const cache = useMemo(() => new Map<string, IntersectionObserverEntry>(), []);
+
+  return useCallback<IntersectionObserverCallback>(
+    (entries, observer) => {
+      for (const entry of entries) {
+        const details = getEntryDetails(entry);
+        if (details?.id) cache.set(details.id, entry);
+      }
+      callback(cache);
     },
     [callback, ...watch],
   );
@@ -72,21 +75,16 @@ export default function IntersectionObserverProvider({
   root?: MutableRefObject<HTMLElement | null>;
   rootMargin?: IntersectionObserverInit["rootMargin"];
   threshold?: IntersectionObserverInit["threshold"];
-  callback: ExtendedIntersectionObserverCallback;
+  callback: IntersectionObserverCallback;
 }) {
-  const elementIds = useMemo(() => new WeakMap<Element, string>(), []);
-  const [subject] = useState(() => new Subject<ExtendedIntersectionObserverEntry[]>([]));
+  const [subject] = useState(() => new Subject<IntersectionObserverEntry[]>([]));
 
   const handleIntersection = useCallback<IntersectionObserverCallback>(
     (entries, observer) => {
-      const extendedEntries = entries.map((entry) => {
-        return { entry, id: elementIds.get(entry.target) };
-      });
-      callback(extendedEntries, observer);
-
-      subject.next(extendedEntries);
+      callback(entries, observer);
+      subject.next(entries);
     },
-    [subject],
+    [subject, callback],
   );
 
   const [observer, setObserver] = useState<IntersectionObserver>(
@@ -103,20 +101,12 @@ export default function IntersectionObserverProvider({
     if (observer) observer.disconnect();
   });
 
-  const setElementId = useCallback(
-    (element: Element, id: string) => {
-      elementIds.set(element, id);
-    },
-    [elementIds],
-  );
-
   const context = useMemo(
     () => ({
       observer,
-      setElementId,
       subject,
     }),
-    [observer, setElementId, subject],
+    [observer, subject],
   );
 
   return <IntersectionObserverContext.Provider value={context}>{children}</IntersectionObserverContext.Provider>;
