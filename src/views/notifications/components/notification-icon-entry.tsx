@@ -1,4 +1,14 @@
-import { PropsWithChildren, ReactNode, forwardRef, memo, useCallback, useContext, useEffect, useRef } from "react";
+import {
+  MouseEventHandler,
+  PropsWithChildren,
+  ReactNode,
+  forwardRef,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { Box, Flex, Spacer, Text, useColorModeValue } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
@@ -8,6 +18,7 @@ import UserName from "../../../components/user/user-name";
 import { CheckIcon } from "../../../components/icons";
 import FocusedContext from "../focused-context";
 import useReadStatus from "../../../hooks/use-read-status";
+import { usePrevious } from "react-use";
 
 const ONE_MONTH = dayjs().add(1, "month").unix();
 
@@ -28,18 +39,25 @@ const NotificationIconEntry = memo(
       const focusColor = useColorModeValue("blackAlpha.100", "whiteAlpha.100");
 
       const expanded = focused === id;
-
-      const focusSelf = useCallback(() => focus(id), [id, focus]);
-
-      // scroll element to stop when opened
       const headerRef = useRef<HTMLDivElement | null>(null);
+
+      const handleClick = useCallback<MouseEventHandler<HTMLDivElement>>(
+        (e) => {
+          focus(expanded ? "" : id);
+          if (onClick) onClick();
+        },
+        [id, focus, expanded],
+      );
+
+      // scroll into view when opened
+      const prev = usePrevious(focused);
       useEffect(() => {
-        if (expanded) {
+        if (prev && prev !== focused && focused === id) {
           setTimeout(() => {
             headerRef.current?.scrollIntoView();
           }, 2);
         }
-      }, [expanded]);
+      }, [prev, focused]);
 
       // set read when expanded
       useEffect(() => {
@@ -61,8 +79,7 @@ const NotificationIconEntry = memo(
             cursor="pointer"
             p="2"
             tabIndex={0}
-            onFocus={onClick ? undefined : focusSelf}
-            onClick={onClick}
+            onClick={handleClick}
             userSelect="none"
             bg={!read ? focusColor : undefined}
             ref={headerRef}

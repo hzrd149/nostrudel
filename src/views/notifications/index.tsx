@@ -67,7 +67,7 @@ const NotificationsTimeline = memo(
     const cacheKey = useTimelineLocationCacheKey();
     const numberCache = useNumberCache(cacheKey);
 
-    const minItems = Math.round(window.innerHeight / 48);
+    const minItems = Math.round(window.innerHeight / 48) * 2;
     const dates = useTimelineDates(events, numberCache, minItems / 2, minItems);
 
     // measure and cache the hight of every entry
@@ -115,13 +115,14 @@ const NotificationsTimeline = memo(
         items.push(<TimeMarker key={prev.unix() + "-marker"} date={prev} ids={ids} />);
       }
 
+      const visible = event.created_at <= dates.max && event.created_at >= dates.min;
       ids.push(event.id);
       items.push(
         <NotificationItem
           key={event.id}
           event={event}
-          visible={event.created_at <= dates.max && event.created_at >= dates.min}
-          minHeight={numberCache.get(getEventUID(event)) + "px"}
+          visible={visible}
+          minHeight={visible ? undefined : numberCache.get(getEventUID(event)) + "px"}
         />,
       );
     }
