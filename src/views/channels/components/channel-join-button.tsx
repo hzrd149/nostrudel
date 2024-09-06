@@ -28,9 +28,9 @@ export default function ChannelJoinButton({
 
     let draft: DraftNostrEvent;
     if (isSubscribed) {
-      draft = listRemoveEvent(favList, channel.id);
+      draft = listRemoveEvent(favList, channel);
     } else {
-      draft = listAddEvent(favList, channel.id);
+      draft = listAddEvent(favList, channel);
     }
 
     await publish(isSubscribed ? "Leave Channel" : "Join Channel", draft);

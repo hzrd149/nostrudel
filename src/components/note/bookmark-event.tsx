@@ -51,10 +51,10 @@ export default function BookmarkEventButton({
       const removeFromList = lists.find((list) => inLists.includes(list) && !cords.includes(getEventCoordinate(list)));
 
       if (addToList) {
-        const draft = listAddEvent(addToList, event.id);
+        const draft = listAddEvent(addToList, event);
         await publish("Add to list", draft);
       } else if (removeFromList) {
-        const draft = listRemoveEvent(removeFromList, event.id);
+        const draft = listRemoveEvent(removeFromList, event);
         await publish("Remove from list", draft);
       }
       setLoading(false);

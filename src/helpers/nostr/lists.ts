@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
-import { kinds, nip19 } from "nostr-tools";
+import { EventTemplate, NostrEvent, kinds, nip19 } from "nostr-tools";
 
-import { DraftNostrEvent, NostrEvent, PTag, isATag, isDTag, isETag, isPTag, isRTag } from "../../types/nostr-event";
-import { parseCoordinate, replaceOrAddSimpleTag } from "./event";
+import { PTag, isATag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
+import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
+import { getPointerFromTag } from "../nip19";
 
 export const MUTE_LIST_KIND = kinds.Mutelist;
 export const PIN_LIST_KIND = kinds.Pinlist;
@@ -27,13 +28,13 @@ export function getListName(event: NostrEvent) {
     event.tags.find(isDTag)?.[1]
   );
 }
-export function setListName(draft: DraftNostrEvent, name: string) {
+export function setListName(draft: EventTemplate, name: string) {
   replaceOrAddSimpleTag(draft, "name", name);
 }
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
 }
-export function setListDescription(draft: DraftNostrEvent, description: string) {
+export function setListDescription(draft: EventTemplate, description: string) {
   replaceOrAddSimpleTag(draft, "description", description);
 }
 
@@ -54,7 +55,7 @@ export function isSpecialListKind(kind: number) {
   );
 }
 
-export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEvent {
+export function cloneList(list: NostrEvent, keepCreatedAt = false): EventTemplate {
   return {
     kind: list.kind,
     content: list.content,
@@ -63,35 +64,33 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): DraftNostrEv
   };
 }
 
-export function getPubkeysFromList(event: NostrEvent | DraftNostrEvent) {
+export function getPubkeysFromList(event: NostrEvent | EventTemplate) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
-export function getEventPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.EventPointer[] {
-  return event.tags.filter(isETag).map((t) => (t[2] ? { id: t[1], relays: [t[2]] } : { id: t[1] }));
-}
-export function getReferencesFromList(event: NostrEvent | DraftNostrEvent) {
+export function getReferencesFromList(event: NostrEvent | EventTemplate) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
-export function getRelaysFromList(event: NostrEvent | DraftNostrEvent) {
+export function getRelaysFromList(event: NostrEvent | EventTemplate) {
   if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
   else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
 }
-export function getCoordinatesFromList(event: NostrEvent | DraftNostrEvent) {
+export function getCoordinatesFromList(event: NostrEvent | EventTemplate) {
   return event.tags.filter(isATag).map((t) => ({ coordinate: t[1], relay: t[2] }));
 }
-export function getAddressPointersFromList(event: NostrEvent | DraftNostrEvent): nip19.AddressPointer[] {
-  const pointers: nip19.AddressPointer[] = [];
-
-  for (const tag of event.tags) {
-    if (!tag[1]) continue;
-    const relay = tag[2];
-    const parsed = parseCoordinate(tag[1]);
-    if (!parsed?.identifier) continue;
-
-    pointers.push({ ...parsed, identifier: parsed?.identifier, relays: relay ? [relay] : undefined });
-  }
-
-  return pointers;
+export function getEventPointersFromList(event: NostrEvent | EventTemplate): nip19.EventPointer[] {
+  return event.tags
+    .map(getPointerFromTag)
+    .filter((r) => r?.type === "nevent")
+    .map((r) => r.data);
+}
+export function getAddressPointersFromList(event: NostrEvent | EventTemplate): nip19.AddressPointer[] {
+  return event.tags
+    .map(getPointerFromTag)
+    .filter((r) => r?.type === "naddr")
+    .map((r) => r.data);
+}
+export function getPointersFromList(event: NostrEvent | EventTemplate) {
+  return event.tags.map(getPointerFromTag).filter((r) => r !== null);
 }
 
 export function isRelayInList(list: NostrEvent, relay: string) {
@@ -102,8 +101,16 @@ export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
   if (!pubkey || !list) return false;
   return list.tags.some((t) => t[0] === "p" && t[1] === pubkey);
 }
+export function isEventInList(list?: NostrEvent, event?: NostrEvent) {
+  if (!event || !list) return false;
 
-export function createEmptyContactList(): DraftNostrEvent {
+  if (kinds.isParameterizedReplaceableKind(event.kind)) {
+    const cord = getEventCoordinate(event);
+    return list.tags.some((t) => t[0] === "a" && t[1] === cord);
+  } else return list.tags.some((t) => t[0] === "e" && t[1] === event.id);
+}
+
+export function createEmptyContactList(): EventTemplate {
   return {
     created_at: dayjs().unix(),
     content: "",
@@ -113,11 +120,11 @@ export function createEmptyContactList(): DraftNostrEvent {
 }
 
 export function listAddPerson(
-  list: NostrEvent | DraftNostrEvent,
+  list: NostrEvent | EventTemplate,
   pubkey: string,
   relay?: string,
   petname?: string,
-): DraftNostrEvent {
+): EventTemplate {
   if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("Person already in list");
   const pTag: PTag = ["p", pubkey, relay ?? "", petname ?? ""];
   while (pTag[pTag.length - 1] === "") pTag.pop();
@@ -130,7 +137,7 @@ export function listAddPerson(
   };
 }
 
-export function listRemovePerson(list: NostrEvent | DraftNostrEvent, pubkey: string): DraftNostrEvent {
+export function listRemovePerson(list: NostrEvent | EventTemplate, pubkey: string): EventTemplate {
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
@@ -139,26 +146,32 @@ export function listRemovePerson(list: NostrEvent | DraftNostrEvent, pubkey: str
   };
 }
 
-export function listAddEvent(list: NostrEvent | DraftNostrEvent, event: string, relay?: string): DraftNostrEvent {
-  if (list.tags.some((t) => t[0] === "e" && t[1] === event)) throw new Error("Event already in list");
+export function listAddEvent(list: NostrEvent | EventTemplate, event: NostrEvent, relay?: string): EventTemplate {
+  const tag = kinds.isParameterizedReplaceableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
+  if (relay) tag.push(relay);
+
+  if (list.tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) throw new Error("Event already in list");
+
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
     content: list.content,
-    tags: [...list.tags, relay ? ["e", event, relay] : ["e", event]],
+    tags: [...list.tags, tag],
   };
 }
 
-export function listRemoveEvent(list: NostrEvent | DraftNostrEvent, event: string): DraftNostrEvent {
+export function listRemoveEvent(list: NostrEvent | EventTemplate, event: NostrEvent): EventTemplate {
+  const tag = kinds.isParameterizedReplaceableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
+
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
     content: list.content,
-    tags: list.tags.filter((t) => !(t[0] === "e" && t[1] === event)),
+    tags: list.tags.filter((t) => !(t[0] === tag[0] && t[1] === tag[1])),
   };
 }
 
-export function listAddRelay(list: NostrEvent | DraftNostrEvent, relay: string): DraftNostrEvent {
+export function listAddRelay(list: NostrEvent | EventTemplate, relay: string): EventTemplate {
   if (list.tags.some((t) => t[0] === "e" && t[1] === relay)) throw new Error("Relay already in list");
   return {
     created_at: dayjs().unix(),
@@ -168,7 +181,7 @@ export function listAddRelay(list: NostrEvent | DraftNostrEvent, relay: string):
   };
 }
 
-export function listRemoveRelay(list: NostrEvent | DraftNostrEvent, relay: string): DraftNostrEvent {
+export function listRemoveRelay(list: NostrEvent | EventTemplate, relay: string): EventTemplate {
   return {
     created_at: dayjs().unix(),
     kind: list.kind,
@@ -177,11 +190,7 @@ export function listRemoveRelay(list: NostrEvent | DraftNostrEvent, relay: strin
   };
 }
 
-export function listAddCoordinate(
-  list: NostrEvent | DraftNostrEvent,
-  coordinate: string,
-  relay?: string,
-): DraftNostrEvent {
+export function listAddCoordinate(list: NostrEvent | EventTemplate, coordinate: string, relay?: string): EventTemplate {
   if (list.tags.some((t) => t[0] === "a" && t[1] === coordinate)) throw new Error("Event already in list");
 
   return {
@@ -192,7 +201,7 @@ export function listAddCoordinate(
   };
 }
 
-export function listRemoveCoordinate(list: NostrEvent | DraftNostrEvent, coordinate: string): DraftNostrEvent {
+export function listRemoveCoordinate(list: NostrEvent | EventTemplate, coordinate: string): EventTemplate {
   return {
     created_at: dayjs().unix(),
     kind: list.kind,

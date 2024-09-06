@@ -2,6 +2,7 @@ import { getPublicKey, nip19 } from "nostr-tools";
 
 import { Tag, isATag, isETag, isPTag } from "../types/nostr-event";
 import { safeRelayUrls } from "./relay";
+import { parseCoordinate } from "./nostr/event";
 
 export function isHex(str?: string) {
   if (str?.match(/^[0-9a-f]+$/i)) return true;
@@ -61,39 +62,30 @@ export function encodeDecodeResult(result: nip19.DecodeResult) {
 }
 
 export function getPointerFromTag(tag: Tag): nip19.DecodeResult | null {
-  if (isETag(tag)) {
-    if (!tag[1]) return null;
-    return {
-      type: "nevent",
-      data: {
-        id: tag[1],
-        relays: tag[2] ? [tag[2]] : undefined,
-      },
-    };
-  } else if (isATag(tag)) {
-    const [_, coordinate, relay] = tag;
-    const parts = coordinate.split(":") as (string | undefined)[];
-    const kind = parts[0] && parseInt(parts[0]);
-    const pubkey = parts[1];
-    const d = parts[2];
+  switch (tag[0]) {
+    case "e": {
+      if (!tag[1]) return null;
 
-    if (!kind) return null;
-    if (!pubkey) return null;
-    if (!d) return null;
+      const pointer: nip19.DecodeResult = { type: "nevent", data: { id: tag[1] } };
+      if (tag[2]) pointer.data.relays = [tag[2]];
+      return pointer;
+    }
+    case "a": {
+      const parsed = parseCoordinate(tag[1]);
+      if (!parsed?.identifier) return null;
 
-    return {
-      type: "naddr",
-      data: {
-        kind,
-        pubkey,
-        identifier: d,
-        relays: relay ? [relay] : undefined,
-      },
-    };
-  } else if (isPTag(tag)) {
-    const [_, pubkey, relay] = tag;
-    if (!pubkey) return null;
-    return { type: "nprofile", data: { pubkey, relays: relay ? [relay] : undefined } };
+      const pointer: nip19.DecodeResult = {
+        type: "naddr",
+        data: { pubkey: parsed.pubkey, identifier: parsed.identifier, kind: parsed.kind },
+      };
+      if (tag[2]) pointer.data.relays = [tag[2]];
+      return pointer;
+    }
+    case "p": {
+      const [_, pubkey, relay] = tag;
+      if (!pubkey) return null;
+      return { type: "nprofile", data: { pubkey, relays: relay ? [relay] : undefined } };
+    }
   }
   return null;
 }

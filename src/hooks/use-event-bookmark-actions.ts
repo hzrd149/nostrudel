@@ -37,7 +37,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
     if (!isBookmarked) return;
 
     if (isReplaceable(event.kind)) draft = listRemoveCoordinate(draft, getEventCoordinate(event));
-    else draft = listRemoveEvent(draft, event.id);
+    else draft = listRemoveEvent(draft, event);
 
     await publish("Remove Bookmark", draft);
     setLoading(false);
@@ -54,7 +54,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
 
     if (isBookmarked) return;
     if (isReplaceable(event.kind)) draft = listAddCoordinate(draft, getEventCoordinate(event));
-    else draft = listAddEvent(draft, event.id);
+    else draft = listAddEvent(draft, event);
 
     await publish("Bookmark Note", draft);
     setLoading(false);

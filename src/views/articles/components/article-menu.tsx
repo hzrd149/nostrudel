@@ -14,6 +14,7 @@ import Recording02 from "../../../components/icons/recording-02";
 import Translate01 from "../../../components/icons/translate-01";
 import { BroadcastEventIcon } from "../../../components/icons";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import PinEventMenuItem from "../../../components/common-menu-items/pin-event";
 
 export default function ArticleMenu({
   article,
@@ -34,6 +35,7 @@ export default function ArticleMenu({
         <ShareLinkMenuItem event={article} />
         <CopyEmbedCodeMenuItem event={article} />
         <DeleteEventMenuItem event={article} />
+        <PinEventMenuItem event={article} />
 
         {/* <MenuItem as={RouterLink} icon={<Recording02 />} to={`/tools/transform/${address}?tab=tts`}>
           Text to speech
@@ -41,7 +43,6 @@ export default function ArticleMenu({
         <MenuItem as={RouterLink} icon={<Translate01 />} to={`/tools/transform/${address}?tab=translation`}>
           Translate
         </MenuItem> */}
-
         <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast
         </MenuItem>
