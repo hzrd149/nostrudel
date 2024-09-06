@@ -37,6 +37,7 @@ type FormData = {
   displayName?: string;
   username?: string;
   picture?: string;
+  banner?: string;
   about?: string;
   website?: string;
   nip05?: string;
@@ -106,6 +107,18 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
           />
         </FormControl>
         <Avatar src={watch("picture")} size="lg" ignoreFallback />
+      </Flex>
+      <Flex gap="2" alignItems="center">
+        <FormControl isInvalid={!!errors.banner}>
+          <FormLabel>Banner</FormLabel>
+          <Input
+            autoComplete="off"
+            isDisabled={isSubmitting}
+            placeholder="https://domain.com/path/banner.png"
+            {...register("banner", { maxLength: 150 })}
+          />
+        </FormControl>
+        <Avatar src={watch("banner")} size="lg" ignoreFallback />
       </Flex>
       <FormControl isInvalid={!!errors.nip05}>
         <FormLabel>NIP-05 ID</FormLabel>
@@ -196,6 +209,7 @@ export const ProfileEditView = () => {
       displayName: metadata?.displayName || metadata?.display_name,
       username: metadata?.name,
       picture: metadata?.picture,
+      banner: metadata?.banner,
       about: metadata?.about,
       website: metadata?.website,
       nip05: metadata?.nip05,
@@ -208,6 +222,7 @@ export const ProfileEditView = () => {
     const newMetadata: Kind0ParsedContent = {
       name: data.username,
       picture: data.picture,
+      banner: data.banner,
     };
     if (data.displayName) newMetadata.displayName = newMetadata.display_name = data.displayName;
     if (data.about) newMetadata.about = data.about;
