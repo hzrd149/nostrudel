@@ -46,6 +46,7 @@ function VerifyEventSettings() {
 
 export default function PerformanceSettings() {
   const { register, submit, formState } = useSettingsForm();
+  const enableKeyboardShortcuts = useSubject(localSettings.enableKeyboardShortcuts);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>
@@ -103,6 +104,18 @@ export default function PerformanceSettings() {
             <Switch id="showReactions" {...register("showReactions")} />
           </Flex>
           <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
+        </FormControl>
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="enableKeyboardShortcuts" mb="0">
+              Enable keyboard shortcuts
+            </FormLabel>
+            <Switch
+              id="enableKeyboardShortcuts"
+              isChecked={enableKeyboardShortcuts}
+              onChange={(e) => localSettings.enableKeyboardShortcuts.next(e.currentTarget.checked)}
+            />
+          </Flex>
         </FormControl>
         <FormControl>
           <Flex alignItems="center">

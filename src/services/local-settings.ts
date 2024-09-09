@@ -49,6 +49,7 @@ const addClientTag = new BooleanLocalStorageEntry("add-client-tag", false);
 
 // performance
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
+const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
 const localSettings = {
   idbMaxEvents,
@@ -60,6 +61,7 @@ const localSettings = {
   webRtcRecentConnections,
   addClientTag,
   verifyEventMethod,
+  enableKeyboardShortcuts,
 };
 
 if (import.meta.env.DEV) {
