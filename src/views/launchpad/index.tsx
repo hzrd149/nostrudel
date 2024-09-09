@@ -40,11 +40,22 @@ function LaunchpadPage() {
         </Button>
         <SearchForm flex={1} />
       </Flex>
-      <FeedsCard w="full" />
-      <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="40vh" />
-      <DMsCard w={{ base: "full", md: "40%" }} />
-      <StreamsCard w={{ base: "full", md: "40%" }} />
-      <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
+
+      <ErrorBoundary>
+        <FeedsCard w="full" />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="40vh" />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <DMsCard w={{ base: "full", md: "40%" }} />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <StreamsCard w={{ base: "full", md: "40%" }} />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
+      </ErrorBoundary>
     </VerticalPageLayout>
   );
 }
