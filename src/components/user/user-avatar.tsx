@@ -1,5 +1,5 @@
 import { forwardRef, memo, useMemo } from "react";
-import { Avatar, AvatarBadge, AvatarProps } from "@chakra-ui/react";
+import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 
 import useUserMetadata from "../../hooks/use-user-metadata";
@@ -11,8 +11,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
 import styled from "@emotion/styled";
-import useSubject from "../../hooks/use-subject";
-import localSettings from "../../services/local-settings";
+import useUserMuteList from "../../hooks/use-user-mute-list";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -35,9 +34,20 @@ export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> &
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ pubkey, noProxy, relay, size, ...props }, ref) => {
     const metadata = useUserMetadata(pubkey, relay ? [relay] : undefined);
+    const account = useCurrentAccount();
+    const muteList = useUserMuteList(account?.pubkey);
+
+    const muted = muteList?.tags.some((t) => t[0] === "p" && t[1] === pubkey);
 
     return (
-      <MetadataAvatar pubkey={pubkey} metadata={metadata} noProxy={noProxy} ref={ref} size={size} {...props}>
+      <MetadataAvatar
+        pubkey={pubkey}
+        metadata={muted ? undefined : metadata}
+        noProxy={noProxy}
+        ref={ref}
+        size={size}
+        {...props}
+      >
         {size !== "xs" && (
           <UserDnsIdentityIcon
             pubkey={pubkey}
