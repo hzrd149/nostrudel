@@ -2400,33 +2400,33 @@
     bn.js "^4.11.8"
     buffer "^6.0.3"
 
-"@getalby/bitcoin-connect-react@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.4.1.tgz#fa55a9c82b106ac4e54f229be324f2311d246da1"
-  integrity sha512-OEDdzRlI2F5YGYTKufyriGg/Mk5QZt34o0BoBQw+Du+XIjzNBo9CY3QG+EMd6HTwadpli6WgnzPf1VOkNL0soQ==
+"@getalby/bitcoin-connect-react@^3.6.2":
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect-react/-/bitcoin-connect-react-3.6.2.tgz#8f9416b9e761a25664571ee8be6f17bb7983c75e"
+  integrity sha512-5XeqBoiT7BuZHwGWSsCAMOrEqDrgJyyyOFnBi/hZZ+AsMBXRVqhgwst07Zbf4t7bNyXvphEYRTgisMvDQ42ErQ==
   dependencies:
-    "@getalby/bitcoin-connect" "^3.4.1"
+    "@getalby/bitcoin-connect" "^3.6.2"
 
-"@getalby/bitcoin-connect@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.4.1.tgz#b12b27ecf6c5b7ddbafd962a99880a32ce639a25"
-  integrity sha512-RLfBAMKVWcEjWFU8OidqFDpass2piTjtY/bCaDFYiB79pMCtzGpS/HjfBdqgPITgM0b5kQUySdKylDBfVAnMgw==
+"@getalby/bitcoin-connect@^3.6.2":
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/@getalby/bitcoin-connect/-/bitcoin-connect-3.6.2.tgz#2395b4a91d00dcfec5b9c2e6f5e998f1b2c66e03"
+  integrity sha512-JttIpbKWbkS5WA62S2xHQ2I6Ld5azJi99BLVcgjJoM6szpE4tlSuZi+oASduG8XTFMsiQ1GU57nqfiVXrv9ZyA==
   dependencies:
     "@getalby/lightning-tools" "^5.0.3"
-    "@getalby/sdk" "^3.5.1"
+    "@getalby/sdk" "^3.6.1"
     "@lightninglabs/lnc-web" "^0.3.1-alpha"
     qrcode-generator "^1.4.4"
-    zustand "^4.5.2"
+    zustand "^4.5.4"
 
 "@getalby/lightning-tools@^5.0.3":
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/@getalby/lightning-tools/-/lightning-tools-5.0.3.tgz#4cc6ef1253a30fb4913af89b842645e0c04994bf"
   integrity sha512-QG3/SBI5n2py5IgsjP3K+c8eq55eiI3PQB12yo9Pot0b5hcN7TNNoTKn0fgLJjO1iEVCUkF513kDOpjjXwK0hQ==
 
-"@getalby/sdk@^3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@getalby/sdk/-/sdk-3.5.1.tgz#2549f416e200d42bfa83e4d2f9999305eac5ba8c"
-  integrity sha512-Qz9GgXMoVpupDLqbzA2CHpru+9yqijQrxeRN7CDfV6l39js/BGwin93MFTh7eFj2TsMo+i8JeM3BVn+SJn/iRg==
+"@getalby/sdk@^3.6.1":
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@getalby/sdk/-/sdk-3.7.0.tgz#bff8ce2b2138a5860f24d48323c1219ecb6dbf5d"
+  integrity sha512-GorSxIErXm5nbM819Ib3aOyjqH0N4YyUqcD7yAQAgm/ejPpV8vTV0btp2cYl1XtYyHzZEcffDMt8luCOYCekJw==
   dependencies:
     eventemitter3 "^5.0.1"
     nostr-tools "^1.17.0"
@@ -7984,10 +7984,10 @@ use-sidecar@^1.1.2:
     detect-node-es "^1.1.0"
     tslib "^2.0.0"
 
-use-sync-external-store@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
-  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
+use-sync-external-store@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
+  integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
 
 uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"
@@ -8403,12 +8403,12 @@ zen-observable@^0.10.0:
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.10.0.tgz#ee10eba75272897dbee5f152ab26bb5e0107f0c8"
   integrity sha512-iI3lT0iojZhKwT5DaFy2Ce42n3yFcLdFyOh01G7H0flMY60P8MJuVFEoJoNwXlmAyQ45GrjL6AcZmmlv8A5rbw==
 
-zustand@^4.5.2:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.5.2.tgz#fddbe7cac1e71d45413b3682cdb47b48034c3848"
-  integrity sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==
+zustand@^4.5.4:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.5.5.tgz#f8c713041543715ec81a2adda0610e1dc82d4ad1"
+  integrity sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==
   dependencies:
-    use-sync-external-store "1.2.0"
+    use-sync-external-store "1.2.2"
 
 zwitch@^1.0.0:
   version "1.0.5"
