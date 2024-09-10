@@ -1,5 +1,5 @@
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
-import { Button, ButtonGroup, Flex, Heading, SkeletonText, Spinner } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, SimpleGrid, SkeletonText, Spinner } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -55,7 +55,7 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 }
 
 function BookmarksPage({ pubkey }: { pubkey: string }) {
-  const { list } = userUserBookmarksList(pubkey);
+  const { list } = userUserBookmarksList(pubkey, undefined, { alwaysRequest: true });
 
   if (!list) return <Spinner />;
 
