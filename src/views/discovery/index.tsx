@@ -71,7 +71,7 @@ function DiscoveryHomePage() {
                 Relays
               </HoverLinkOverlay>
             </Heading>
-            <Text>What are other users seeing that you are not?</Text>
+            <Text>See what notes are on relays and where they are</Text>
           </Flex>
         </Card>
       </SimpleGrid>
