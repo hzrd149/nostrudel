@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { LiveVideoPlayer } from "../../../components/live-video-player";
+import LiveVideoPlayer from "../../../components/live-video-player";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 
 function LiveVideoCard({ stream }: { stream: ParsedStream }) {

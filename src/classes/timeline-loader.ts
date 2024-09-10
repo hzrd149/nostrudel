@@ -35,6 +35,7 @@ export default class TimelineLoader {
 
   loadNextBlockBuffer = 2;
   eventFilter?: EventFilter;
+  useCache = true;
 
   name: string;
   process: Process;
@@ -81,7 +82,7 @@ export default class TimelineLoader {
     if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
 
     this.events.addEvent(event);
-    if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
+    if (!fromCache && this.useCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
 
     if (fromCache) this.seenInCache.add(event.id);
   }
@@ -133,7 +134,7 @@ export default class TimelineLoader {
 
     // recreate cache chunk loader
     if (this.cacheLoader) this.disconnectFromChunkLoader(this.cacheLoader);
-    if (localRelay) {
+    if (localRelay && this.useCache) {
       this.cacheLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("cache-relay"));
       this.connectToChunkLoader(this.cacheLoader);
     }

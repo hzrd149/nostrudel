@@ -51,7 +51,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       let k = decoded.data.kind || event?.kind;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
       if (k === TORRENT_KIND) return <Navigate to={`/torrents/${link}`} replace />;
-      if (k === STREAM_KIND) return <Navigate to={`/streams/${link}`} replace />;
+      if (k === kinds.LiveEvent) return <Navigate to={`/streams/${link}`} replace />;
       if (k === EMOJI_PACK_KIND) return <Navigate to={`/emojis/${link}`} replace />;
       if (k === NOTE_LIST_KIND) return <Navigate to={`/lists/${link}`} replace />;
       if (k === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${link}`} replace />;

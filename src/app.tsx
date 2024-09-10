@@ -15,6 +15,7 @@ const DiscoveryHomeView = lazy(() => import("./views/discovery/index"));
 const DVMFeedView = lazy(() => import("./views/discovery/dvm-feed/feed"));
 const BlindspotHomeView = lazy(() => import("./views/discovery/blindspot"));
 const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"));
+const RelayDiscoveryView = lazy(() => import("./views/discovery/relays/index"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -225,6 +226,14 @@ const router = createHashRouter([
     element: (
       <RouteProviders>
         <LaunchpadView />
+      </RouteProviders>
+    ),
+  },
+  {
+    path: "/discovery/relays",
+    element: (
+      <RouteProviders>
+        <RelayDiscoveryView />
       </RouteProviders>
     ),
   },
