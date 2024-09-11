@@ -48,7 +48,7 @@ export default function UserReactionsTab() {
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelays(contextRelays);
 
-  const timeline = useTimelineLoader(`${pubkey}-likes`, readRelays, { authors: [pubkey], kinds: [7] });
+  const timeline = useTimelineLoader(`${pubkey}-reactions`, readRelays, { authors: [pubkey], kinds: [7] });
 
   const reactions = useSubject(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
