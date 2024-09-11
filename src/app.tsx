@@ -253,7 +253,7 @@ const router = createHashRouter([
           { path: "tracks", element: <UserTracksTab /> },
           { path: "videos", element: <UserVideosTab /> },
           { path: "zaps", element: <UserZapsTab /> },
-          { path: "likes", element: <UserReactionsTab /> },
+          { path: "reactions", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
