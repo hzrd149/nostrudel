@@ -1,11 +1,8 @@
-import React, { useRef, useState } from "react";
-import { Button, ButtonGroup, Flex, Heading, Progress, Text } from "@chakra-ui/react";
-import { getEventHash, nip13 } from "nostr-tools";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import CheckCircle from "../icons/check-circle";
+import { useRef, useState } from "react";
 import { useMount } from "react-use";
-
-const BATCH_NUMBER = 1000;
+import { Button, ButtonGroup, Flex, Heading, Progress, Text } from "@chakra-ui/react";
+import { EventTemplate, getEventHash, nip13, UnsignedEvent } from "nostr-tools";
+import CheckCircle from "../icons/check-circle";
 
 type MinerCleanup = () => void;
 
@@ -20,10 +17,10 @@ function getNumThreads() {
 }
 
 function miner(
-  draft: DraftNostrEvent & { pubkey: string },
+  draft: UnsignedEvent,
   target: number,
   onProgress: (hash: string, difficulty: number) => void,
-  onComplete: (draft: DraftNostrEvent) => void,
+  onComplete: (draft: UnsignedEvent & { id: string }) => void,
   stopMiner: MinerCleanup, // Pass the stopMiner function to the miner
 ): MinerCleanup {
   if (typeof Worker !== "undefined") {
@@ -75,9 +72,9 @@ function miner(
 }
 
 interface MinePOWProps {
-  draft: DraftNostrEvent & { pubkey: string };
+  draft: UnsignedEvent;
   targetPOW: number;
-  onComplete: (draft: DraftNostrEvent) => void;
+  onComplete: (draft: UnsignedEvent & { id: string }) => void;
   onCancel: () => void;
   onSkip?: () => void;
   successDelay?: number;

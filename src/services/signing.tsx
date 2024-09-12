@@ -1,4 +1,4 @@
-import { EventTemplate, NostrEvent } from "nostr-tools";
+import { EventTemplate, getEventHash, NostrEvent, UnsignedEvent } from "nostr-tools";
 
 import { Account } from "../classes/accounts/account";
 import PasswordAccount from "../classes/accounts/password-account";
@@ -10,6 +10,13 @@ class SigningService {
       if (!password) throw new Error("Password required");
       await account.signer.unlock(password);
     }
+  }
+
+  async finalizeDraft(draft: EventTemplate, account: Account): Promise<UnsignedEvent> {
+    return {
+      ...draft,
+      pubkey: account.pubkey,
+    };
   }
 
   async requestSignature(draft: EventTemplate, account: Account) {

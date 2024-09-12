@@ -4,15 +4,19 @@ import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import signingService from "../../services/signing";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import { EventTemplate, VerifiedEvent } from "nostr-tools";
+import { EventTemplate, UnsignedEvent, VerifiedEvent } from "nostr-tools";
 
 export type SigningContextType = {
-  requestSignature: (draft: EventTemplate | DraftNostrEvent) => Promise<VerifiedEvent>;
-  requestDecrypt: (data: string, pubkey: string) => Promise<string>;
-  requestEncrypt: (data: string, pubkey: string) => Promise<string>;
+  finalizeDraft(draft: EventTemplate): Promise<UnsignedEvent>;
+  requestSignature(draft: EventTemplate | DraftNostrEvent): Promise<VerifiedEvent>;
+  requestDecrypt(data: string, pubkey: string): Promise<string>;
+  requestEncrypt(data: string, pubkey: string): Promise<string>;
 };
 
 export const SigningContext = React.createContext<SigningContextType>({
+  finalizeDraft: () => {
+    throw new Error("not setup yet");
+  },
   requestSignature: () => {
     throw new Error("not setup yet");
   },
@@ -32,6 +36,13 @@ export function SigningProvider({ children }: { children: React.ReactNode }) {
   const toast = useToast();
   const current = useSubject(accountService.current);
 
+  const finalizeDraft = useCallback(
+    async (draft: EventTemplate) => {
+      if (!current) throw new Error("No account");
+      return await signingService.finalizeDraft(draft, current);
+    },
+    [toast, current],
+  );
   const requestSignature = useCallback(
     async (draft: DraftNostrEvent) => {
       if (!current) throw new Error("No account");
@@ -55,8 +66,8 @@ export function SigningProvider({ children }: { children: React.ReactNode }) {
   );
 
   const context = useMemo(
-    () => ({ requestSignature, requestDecrypt, requestEncrypt }),
-    [requestSignature, requestDecrypt, requestEncrypt],
+    () => ({ requestSignature, requestDecrypt, requestEncrypt, finalizeDraft }),
+    [requestSignature, requestDecrypt, requestEncrypt, finalizeDraft],
   );
 
   return <SigningContext.Provider value={context}>{children}</SigningContext.Provider>;

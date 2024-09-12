@@ -3,7 +3,7 @@ import { getEventUID } from "nostr-idb";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
-import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
+import { ATag, ETag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
 import { safeJson } from "../parse";
@@ -36,7 +36,7 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
 }
 
 const isReplySymbol = Symbol("isReply");
-export function isReply(event: NostrEvent | DraftNostrEvent) {
+export function isReply(event: NostrEvent | EventTemplate) {
   // @ts-expect-error
   if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
 
@@ -46,12 +46,12 @@ export function isReply(event: NostrEvent | DraftNostrEvent) {
   event[isReplySymbol] = isReply;
   return isReply;
 }
-export function isPTagMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+export function isPTagMentionedInContent(event: NostrEvent | EventTemplate, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
 const isRepostSymbol = Symbol("isRepost");
-export function isRepost(event: NostrEvent | DraftNostrEvent) {
+export function isRepost(event: NostrEvent | EventTemplate) {
   // @ts-expect-error
   if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
 
@@ -211,7 +211,7 @@ export function sortByDate(a: NostrEvent, b: NostrEvent) {
 }
 
 /** create a copy of the event with a new created_at  */
-export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): DraftNostrEvent {
+export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): EventTemplate {
   return {
     kind: event?.kind ?? kind,
     created_at: dayjs().unix(),
@@ -221,14 +221,14 @@ export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): 
 }
 
 /** ensure an event has a d tag */
-export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
+export function ensureDTag(draft: EventTemplate, d: string = nanoid()) {
   if (!draft.tags.some(isDTag)) {
     draft.tags.push(["d", d]);
   }
 }
 
 /** either replaces the existing tag or adds a new one */
-export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, value: string) {
+export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, value: string) {
   if (draft.tags.some((t) => t[0] === tagName)) {
     draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));
   } else {
