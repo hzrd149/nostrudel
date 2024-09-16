@@ -5,7 +5,6 @@ import {
   Button,
   ButtonGroup,
   ButtonGroupProps,
-  ButtonProps,
   Card,
   CardBody,
   CardFooter,
@@ -22,16 +21,15 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CacheRelay } from "nostr-idb";
+import { CacheRelay, clearDB } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
 import BackButton from "../../../components/router/back-button";
-import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../services/local-relay";
+import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localDatabase, localRelay } from "../../../services/local-relay";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import WasmRelay from "../../../services/wasm-relay";
 import MemoryRelay from "../../../classes/memory-relay";
 import Trash01 from "../../../components/icons/trash-01";
-import { deleteDatabase } from "../../../services/db";
 
 function EnableWithDelete({
   enable,
@@ -78,7 +76,7 @@ function InternalRelay() {
   };
 
   const wipe = async () => {
-    await deleteDatabase();
+    await clearDB(localDatabase);
   };
 
   return (
