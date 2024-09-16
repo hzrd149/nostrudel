@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Button,
   ButtonGroup,
   Card,
   Flex,
@@ -77,6 +78,18 @@ export default function WasmDatabasePage() {
     [worker, refresh],
   );
 
+  const [deleting, setDeleting] = useState(false);
+  const deleteDatabase = useCallback(async () => {
+    try {
+      setDeleting(true);
+      if (localRelay instanceof WasmRelay) {
+        await localRelay.wipe();
+        location.reload();
+      }
+    } catch (error) {}
+    setDeleting(false);
+  }, []);
+
   useEffect(() => {
     refresh();
   }, []);
@@ -88,6 +101,9 @@ export default function WasmDatabasePage() {
       <ButtonGroup flexWrap="wrap">
         <ImportEventsButton onLoad={importEvents} />
         <ExportEventsButton getEvents={exportEvents} />
+        <Button colorScheme="red" onClick={deleteDatabase} isLoading={deleting}>
+          Delete database
+        </Button>
       </ButtonGroup>
 
       <FormControl>

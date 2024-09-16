@@ -1,7 +1,11 @@
+import { useCallback, useState } from "react";
 import { useAsync } from "react-use";
 import {
   Box,
   Button,
+  ButtonGroup,
+  ButtonGroupProps,
+  ButtonProps,
   Card,
   CardBody,
   CardFooter,
@@ -9,7 +13,12 @@ import {
   Divider,
   Flex,
   Heading,
+  IconButton,
   Link,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -18,9 +27,48 @@ import { Link as RouterLink } from "react-router-dom";
 
 import BackButton from "../../../components/router/back-button";
 import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../services/local-relay";
-import WasmRelay from "../../../services/wasm-relay";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
+import WasmRelay from "../../../services/wasm-relay";
 import MemoryRelay from "../../../classes/memory-relay";
+import Trash01 from "../../../components/icons/trash-01";
+import { deleteDatabase } from "../../../services/db";
+
+function EnableWithDelete({
+  enable,
+  enabled,
+  wipe,
+  ...props
+}: Omit<ButtonGroupProps, "children"> & {
+  enable: () => void;
+  enabled: boolean;
+  wipe: () => Promise<void>;
+}) {
+  const [deleting, setDeleting] = useState(false);
+  const wipeDatabase = useCallback(async () => {
+    try {
+      setDeleting(true);
+      await wipe();
+      location.reload();
+    } catch (error) {}
+    setDeleting(false);
+  }, []);
+
+  return (
+    <ButtonGroup isAttached {...props}>
+      <Button colorScheme="primary" onClick={enable} isDisabled={enabled}>
+        {enabled ? "Enabled" : "Enable"}
+      </Button>
+      <Menu>
+        <MenuButton as={IconButton} icon={<ChevronDownIcon />} aria-label="More options" />
+        <MenuList>
+          <MenuItem icon={<Trash01 />} color="red.500" onClick={wipeDatabase}>
+            Clear Database
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </ButtonGroup>
+  );
+}
 
 function InternalRelay() {
   const enabled = localRelay instanceof CacheRelay;
@@ -29,13 +77,15 @@ function InternalRelay() {
     location.reload();
   };
 
+  const wipe = async () => {
+    await deleteDatabase();
+  };
+
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Browser Cache</Heading>
-        <Button size="sm" colorScheme="primary" ml="auto" onClick={enable} isDisabled={enabled}>
-          {enabled ? "Enabled" : "Enable"}
-        </Button>
+        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} />
       </CardHeader>
       <CardBody p="4" pt="0">
         <Text mb="2">Use the browsers built-in database to cache events.</Text>
@@ -60,13 +110,22 @@ function WasmWorkerRelay() {
     location.reload();
   };
 
+  const wipe = async () => {
+    if (localRelay instanceof WasmRelay) {
+      await localRelay.wipe();
+    } else {
+      // import and delete database
+      console.log("Importing worker to wipe database");
+      const { default: worker } = await import("../../../services/wasm-relay/worker");
+      await worker.wipe();
+    }
+  };
+
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Internal SQLite Cache</Heading>
-        <Button size="sm" colorScheme="primary" ml="auto" onClick={enable} isDisabled={enabled}>
-          {enabled ? "Enabled" : "Enable"}
-        </Button>
+        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} />
       </CardHeader>
       <CardBody p="4" pt="0">
         <Text mb="2">
@@ -112,7 +171,7 @@ function NostrRelayTray() {
         <Link color="blue.500" href="https://github.com/CodyTseng/nostr-relay-tray" isExternal>
           GitHub
         </Link>
-        {available ? (
+        {available || enabled ? (
           <Button size="sm" colorScheme="primary" ml="auto" isLoading={checking} onClick={enable} isDisabled={enabled}>
             {enabled ? "Enabled" : "Enable"}
           </Button>
