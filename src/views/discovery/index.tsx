@@ -13,6 +13,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import Telescope from "../../components/icons/telescope";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
+import { RelayIcon } from "../../components/icons";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();
@@ -50,17 +51,30 @@ function DVMFeeds() {
 function DiscoveryHomePage() {
   return (
     <VerticalPageLayout>
-      <Card as={LinkBox} display="block" p="4" maxW="lg">
-        <Telescope boxSize={16} float="left" ml="2" my="2" mr="6" />
-        <Flex direction="column">
-          <Heading size="md">
-            <HoverLinkOverlay as={RouterLink} to="/discovery/blindspot">
-              Blind spots
-            </HoverLinkOverlay>
-          </Heading>
-          <Text>What are other users seeing that you are not?</Text>
-        </Flex>
-      </Card>
+      <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
+        <Card as={LinkBox} display="block" p="4" maxW="lg">
+          <Telescope boxSize={16} float="left" ml="2" my="2" mr="6" />
+          <Flex direction="column">
+            <Heading size="md">
+              <HoverLinkOverlay as={RouterLink} to="/discovery/blindspot">
+                Blind spots
+              </HoverLinkOverlay>
+            </Heading>
+            <Text>What are other users seeing that you are not?</Text>
+          </Flex>
+        </Card>
+        <Card as={LinkBox} display="block" p="4" maxW="lg">
+          <RelayIcon boxSize={16} float="left" ml="2" my="2" mr="6" />
+          <Flex direction="column">
+            <Heading size="md">
+              <HoverLinkOverlay as={RouterLink} to="/discovery/relays">
+                Relays
+              </HoverLinkOverlay>
+            </Heading>
+            <Text>See what notes are on relays and where they are</Text>
+          </Flex>
+        </Card>
+      </SimpleGrid>
       <DVMFeeds />
     </VerticalPageLayout>
   );

@@ -56,8 +56,6 @@ class ReadStatusService {
         const subject = this.status.get(key);
         const status = await trans.store.get(key);
 
-        this.log(key, status);
-
         if (status) {
           subject.next(status.read);
           if (status.ttl) this.setTTL(key, status.ttl);

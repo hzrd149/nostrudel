@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Heading, Text, useColorModeValue, useTheme } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text, useColorModeValue, useTheme, useToast } from "@chakra-ui/react";
 
 import {
   Chart as ChartJS,
@@ -97,6 +97,7 @@ function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartDat
 export default function RelayDetailsTab({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Details`);
 
+  const toast = useToast();
   const theme = useTheme();
   const token = theme.semanticTokens.colors["chakra-body-text"];
   const color = useColorModeValue(token._light, token._dark) as string;
@@ -118,7 +119,8 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
         throttleUpdate();
       },
       oneose: () => sub.close(),
-      onclose: () => {
+      onclose: (reason) => {
+        if (reason !== "closed by caller") toast({ status: "error", description: reason });
         setLoading(false);
       },
     });

@@ -7,7 +7,6 @@ import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import { fakeVerifyEvent } from "./verify-event";
-import relayPoolService from "./relay-pool";
 import localSettings from "./local-settings";
 import { CAP_IS_NATIVE } from "../env";
 
@@ -95,14 +94,11 @@ async function connectRelay() {
     if (relay instanceof AbstractRelay) {
       // set the base timeout to 2 second
       relay.baseEoseTimeout = 2000;
-
-      relayPoolService.relays.set(relay.url, relay);
-      relay.onnotice = (notice) => relayPoolService.handleRelayNotice(relay, notice);
     }
 
     return relay;
   } catch (e) {
-    log("Failed to connect to local relay, falling back to internal");
+    log("Failed to connect to local relay, falling back to internal", e);
     return createInternalRelay();
   }
 }

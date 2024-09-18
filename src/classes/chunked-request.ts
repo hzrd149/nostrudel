@@ -65,8 +65,9 @@ export default class ChunkedRequest {
     this.loading = true;
 
     if (!this.relay.connected) {
-      this.log("relay not connected, aborting");
+      this.log("requesting relay connection");
       relayPoolService.requestConnect(this.relay);
+      this.loading = false;
       return;
     }
 

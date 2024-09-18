@@ -180,7 +180,7 @@ export default function PostSettings() {
             <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
               NIP-89
             </Link>{" "}
-            client tag to events
+            client tags on events
           </FormHelperText>
         </FormControl>
         <Button

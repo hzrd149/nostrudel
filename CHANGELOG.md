@@ -1,5 +1,88 @@
 # nostrudel
 
+## 0.41.0
+
+### Minor Changes
+
+- 50b636c: Add option to wipe wasm relay database
+- 8614cb6: Update `@snort/worker-relay` WASM relay
+- a016adf: Add Support for embedding HLS videos
+- 6ff03b5: Support pinning articles
+- c5e7035: Add relay discovery map
+- 5f789d2: Add option to disable keyboard shortcuts
+
+### Patch Changes
+
+- 331ec5d: Fixed search results not being cached
+- 1353ccd: Fix amber signer missing pubkey
+- d4286ee: Fix some tidal embeds not playing
+- 37bf63e: Hide avatars of muted users
+- 359dbcb: Fix bookmark view not showing latest bookmarks
+- 7e8855d: Fixed client sending filters with empty #a tags
+- fff8a1d: Fix client tag breaking POW on notes
+- b3a52cb: Add noStrudel NIP-05 to domain
+- cfa77a5: Update bitcoin connect
+- c5e7035: Fix relay notes showing notes from other relays from cache
+- a702121: Improve notifications timeline rendering performance
+- fc6d36b: Add bookmark button to articles
+- 3768645: Fixed keyboard shortcuts activating when replying to notification
+
+## 0.40.1
+
+### Patch Changes
+
+- 2d74bc7: Add "mark read" button to notifications view
+- 43d02ee: Fix nostr-relay-tray connection issues
+
+## 0.40.0
+
+### Minor Changes
+
+- a38efa5: Add support for NIP-49 (ncryptsec)
+- 085e12a: Display NIP-89 client tags on events
+- 03bec50: Add wiki pages
+- f53f5ca: Add support for wiki links in text notes
+- f53f5ca: Add simple article view
+- d03b329: Show read status on notifications
+- 5add281: Add blindspots discovery feed
+- f9ba9cb: Remove "Setup Relays" overlay when starting app
+- 4c3d041: Show individual zaps on notes
+- 1eb6c49: Show notifications on launchpad
+- c648923: Add Streams and Tools to launchpad
+- 4c3d041: Add details tabs under thread post
+- f9443af: Make user avatars square
+- d20f698: Add Multi-threaded PoW Hashing thanks to [Thoreau](https://github.com/thoreaufyi)
+- 6862854: Add option to hide emojis in usernames
+- 8bb7fc1: Rebuilt settings view tabs
+- 9deb032: Add option to hide zap bubbles on notes
+- 8d46272: Add blossom media upload option
+- 92b950a: Add support for native android and ios sharing
+- c137b3d: Add support for NIP-51 search relay list
+- 423632f: Add option to prune older events in wasm relay
+- 781948a: Use Relay class from nostr-tools
+- b4c4c7a: Show relay authentication requests
+- 91c9ad1: Fallback to users blossom servers on broken image links with sha256
+- 7a486bb: Add menu to zap events
+- 958a850: Add option to use nostr-wasm to verify events
+- 24c664e: Add NIP-46 connection initiated by client
+- fa6bc0e: Make "Show embeds" option work again
+- 8a24016: Add No cache relay option
+- 8a24016: Add In-Memory cache relay option
+- 8defd66: Add support for @snort/worker-relay as a cache relay
+- 289fff2: Remove CORS_PROXY env option in docker image
+- 8faf3e4: Add task manager modal for debugging
+- 7506141: Show timelines, subscriptions, and services in task manager
+- 289fff2: Add REQUEST_PROXY, TOR_PROXY, and I2P_PROXY env options in docker image
+
+### Patch Changes
+
+- 3da4c3f: Support embedding media from IPFS
+- 81aefc5: Fix null relay hints in DMs
+- 5c49114: Fix users own events being hidden by muted words
+- 51c8aff: Fix random events showing up as DM messages
+- f36a82a: Fix app prompting NIP-07 extension to unlock when app opens
+- fbcfa42: Remove corsproxy.io as default service for CORS proxy
+
 ## 0.39.0
 
 ### Minor Changes

@@ -15,12 +15,13 @@ self.onmessage = (event) => {
   const mine = () => {
     for (let i = 0; i < BATCH_NUMBER; i++) {
       nonceTag[1] = String(nonce);
-      const hash = getEventHash(newDraft);
-      const difficulty = nip13.getPow(hash);
+      newDraft.id = getEventHash(newDraft);
+      const difficulty = nip13.getPow(newDraft.id);
+
       if (difficulty > bestDifficulty) {
         bestDifficulty = difficulty;
-        bestHash = hash;
-        postMessage({ type: "progress", hash, difficulty });
+        bestHash = newDraft.id;
+        postMessage({ type: "progress", hash: newDraft.id, difficulty });
       }
 
       if (difficulty >= target) {

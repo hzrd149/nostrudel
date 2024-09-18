@@ -99,6 +99,7 @@ export function renderTidalUrl(match: URL) {
         width="100%"
         height={isList ? 400 : 96}
         title={isList ? "Tidal List Embed" : "Tidal Embed"}
+        allow="encrypted-media *;"
         style={setZIndex}
       ></iframe>
     </ExpandableEmbed>

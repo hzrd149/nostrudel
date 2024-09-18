@@ -53,9 +53,31 @@ export const internalApps: App[] = [
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   { title: "Videos", description: "Browse flare videos", icon: Film02, id: "videos", to: "/videos" },
+  { title: "Articles", description: "Browse articles", icon: Edit04, id: "articles", to: "/articles" },
 ];
 
 export const internalTools: App[] = [
+  {
+    title: "Event Console",
+    description: "Find events based on nostr filters",
+    icon: SearchIcon,
+    id: "console",
+    to: "/tools/console",
+  },
+  {
+    title: "Event Publisher",
+    description: "Write and publish events",
+    icon: UploadCloud01,
+    id: "publisher",
+    to: "/tools/publisher ",
+  },
+  {
+    title: "Unknown Events",
+    description: "A timeline of unknown events",
+    icon: MessageQuestionSquare,
+    id: "unknown",
+    to: "/tools/unknown",
+  },
   {
     title: "Satellite CDN",
     description: "Scalable media hosting for the nostr ecosystem",
@@ -91,27 +113,6 @@ export const internalTools: App[] = [
     icon: ShieldOff,
     id: "dm-timeline",
     to: "/tools/dm-timeline",
-  },
-  {
-    title: "Unknown Events",
-    description: "A timeline of unknown events",
-    icon: MessageQuestionSquare,
-    id: "unknown",
-    to: "/tools/unknown",
-  },
-  {
-    title: "Event Console",
-    description: "Find events based on nostr filters",
-    icon: SearchIcon,
-    id: "console",
-    to: "/tools/console",
-  },
-  {
-    title: "Event Publisher",
-    description: "Write and publish events",
-    icon: UploadCloud01,
-    id: "publisher",
-    to: "/tools/publisher ",
   },
   {
     title: "Corrections Feed",

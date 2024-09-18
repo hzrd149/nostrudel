@@ -34,6 +34,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
   );
   const timeline = useTimelineLoader(`${relay}-notes`, [relay], filter ? { ...filter, kinds: k } : undefined, {
     eventFilter,
+    useCache: false,
   });
 
   const header = (

@@ -1,13 +1,13 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
+import { EventTemplate, NostrEvent, UnsignedEvent, getEventHash, kinds } from "nostr-tools";
 
 import { useSigningContext } from "./signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import PublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
-import { getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
+import { cloneEvent, getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
 import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
@@ -18,23 +18,24 @@ import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_TAG } from "../../const";
 
 type PublishContextType = {
   log: PublishAction[];
+  finalizeDraft(draft: EventTemplate | NostrEvent): Promise<UnsignedEvent>;
   publishEvent(
     label: string,
-    event: EventTemplate | NostrEvent,
+    event: EventTemplate | UnsignedEvent | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays: false,
   ): Promise<PublishAction>;
   publishEvent(
     label: string,
-    event: EventTemplate | NostrEvent,
+    event: EventTemplate | UnsignedEvent | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays?: boolean,
   ): Promise<PublishAction>;
   publishEvent(
     label: string,
-    event: EventTemplate | NostrEvent,
+    event: EventTemplate | UnsignedEvent | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
     onlyAdditionalRelays?: boolean,
@@ -42,6 +43,9 @@ type PublishContextType = {
 };
 export const PublishContext = createContext<PublishContextType>({
   log: [],
+  finalizeDraft: () => {
+    throw new Error("Publish provider not setup");
+  },
   publishEvent: async () => {
     throw new Error("Publish provider not setup");
   },
@@ -50,11 +54,32 @@ export const PublishContext = createContext<PublishContextType>({
 export function usePublishEvent() {
   return useContext(PublishContext).publishEvent;
 }
+export function useFinalizeDraft() {
+  return useContext(PublishContext).finalizeDraft;
+}
 
 export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [log, setLog] = useState<PublishAction[]>([]);
-  const { requestSignature } = useSigningContext();
+  const { requestSignature, finalizeDraft: signerFinalize } = useSigningContext();
+
+  const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(
+    (event: EventTemplate | NostrEvent) => {
+      let draft = cloneEvent(event.kind, event);
+
+      // add pubkey relay hints
+      draft = userMailboxesService.addPubkeyRelayHints(draft);
+
+      // add client tag
+      if (localSettings.addClientTag.value && !NEVER_ATTACH_CLIENT_TAG.includes(draft.kind)) {
+        draft.tags = [...draft.tags.filter((t) => t[0] !== "client"), NIP_89_CLIENT_TAG];
+      }
+
+      // request signature
+      return signerFinalize(draft);
+    },
+    [signerFinalize],
+  );
 
   const publishEvent = useCallback(
     async (
@@ -77,21 +102,11 @@ export default function PublishProvider({ children }: PropsWithChildren) {
           );
         }
 
-        let signed: NostrEvent;
-        if (!Object.hasOwn(event, "sig")) {
-          let draft: EventTemplate = event as EventTemplate;
+        // add pubkey to event
+        if (!Object.hasOwn(event, "pubkey")) event = await finalizeDraft(event);
 
-          // add pubkey relay hints
-          draft = userMailboxesService.addPubkeyRelayHints(draft);
-
-          // add client tag
-          if (localSettings.addClientTag.value && !NEVER_ATTACH_CLIENT_TAG.includes(event.kind)) {
-            draft.tags = [...draft.tags.filter((t) => t[0] !== "client"), NIP_89_CLIENT_TAG];
-          }
-
-          // request signature
-          signed = await requestSignature(draft);
-        } else signed = event as NostrEvent;
+        // sign event
+        let signed = !Object.hasOwn(event, "sig") ? await requestSignature(event) : (event as NostrEvent);
 
         const pub = new PublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
@@ -109,15 +124,16 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (!quite) throw e;
       }
     },
-    [toast, setLog, requestSignature],
+    [toast, setLog, requestSignature, finalizeDraft],
   ) as PublishContextType["publishEvent"];
 
   const context = useMemo<PublishContextType>(
     () => ({
       publishEvent,
+      finalizeDraft,
       log,
     }),
-    [publishEvent, log],
+    [publishEvent, finalizeDraft, log],
   );
 
   return <PublishContext.Provider value={context}>{children}</PublishContext.Provider>;

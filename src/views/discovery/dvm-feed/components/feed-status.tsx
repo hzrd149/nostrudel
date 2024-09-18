@@ -73,7 +73,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
   const response = lastJob.responses.find((r) => r.pubkey === pointer.pubkey);
   if (response?.result) return <NextPageButton pointer={pointer} chain={chain} />;
 
-  const cardProps = { minW: "2xl", mx: "auto" };
+  const cardProps = { w: "full", maxW: "2xl", mx: "auto", overflow: "hidden" };
   const cardHeader = (
     <CardHeader p="4" alignItems="center" display="flex" gap="2">
       <DVMAvatarLink pointer={pointer} w="12" />
@@ -109,7 +109,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
       );
     case "processing":
       return (
-        <Alert status="info" w="auto" {...cardProps}>
+        <Alert status="info" {...cardProps}>
           <AlertIcon boxSize={8} />
           <Box>
             <AlertTitle>Processing</AlertTitle>
@@ -119,7 +119,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
       );
     case "error":
       return (
-        <Alert status="error" w="auto" {...cardProps}>
+        <Alert status="error" {...cardProps}>
           <AlertIcon boxSize={8} />
           <Box>
             <AlertTitle>Error!</AlertTitle>

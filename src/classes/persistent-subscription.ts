@@ -13,12 +13,15 @@ export default class PersistentSubscription {
   process: Process;
   relay: Relay;
   filters: Filter[];
-  closed = true;
+  connecting = false;
   params: Partial<SubscriptionParams>;
 
   subscription: Subscription | null = null;
   get eosed() {
     return !!this.subscription?.eosed;
+  }
+  get closed() {
+    return !this.subscription || this.subscription.closed;
   }
 
   constructor(relay: AbstractRelay, params?: Partial<SubscriptionParams>) {
@@ -40,14 +43,20 @@ export default class PersistentSubscription {
   /** attempts to update the subscription */
   async update() {
     if (!this.filters || this.filters.length === 0) throw new Error("Missing filters");
-
-    if (!(await relayPoolService.waitForOpen(this.relay))) throw new Error("Failed to connect to relay");
+    if (this.connecting) throw new Error("Cant update while connecting");
 
     // check if its possible to subscribe to this relay
     if (!relayPoolService.canSubscribe(this.relay)) throw new Error("Cant subscribe to relay");
 
-    this.closed = false;
     this.process.active = true;
+
+    this.connecting = true;
+    if ((await relayPoolService.waitForOpen(this.relay)) === false) {
+      this.connecting = false;
+      this.process.active = false;
+      throw new Error("Failed to connect to relay");
+    }
+    this.connecting = false;
 
     // recreate the subscription if its closed since nostr-tools cant reopen a sub
     if (!this.subscription || this.subscription.closed) {
@@ -60,7 +69,6 @@ export default class PersistentSubscription {
           if (!this.closed) {
             relayPoolService.handleRelayNotice(this.relay, reason);
 
-            this.closed = true;
             this.process.active = false;
           }
           this.params.onclose?.(reason);
@@ -74,9 +82,6 @@ export default class PersistentSubscription {
     } else throw new Error("Subscription filters have not changed");
   }
   close() {
-    if (this.closed) return this;
-
-    this.closed = true;
     if (this.subscription?.closed === false) this.subscription.close();
     this.process.active = false;
 

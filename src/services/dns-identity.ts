@@ -8,7 +8,8 @@ import Subject from "../classes/subject";
 
 export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
-  return { name: parts[0], domain: parts[1] };
+  if (parts.length === 1) return { name: "_", domain: parts[0] };
+  else return { name: parts[0], domain: parts[1] };
 }
 
 type IdentityJson = {

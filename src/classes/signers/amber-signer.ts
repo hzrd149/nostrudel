@@ -84,8 +84,10 @@ export default class AmberSigner implements Nip07Signer {
     if (this.pubkey) return this.pubkey;
 
     const result = await this.intentRequest(AmberSigner.createGetPublicKeyIntent());
-    if (isHexKey(result)) return result;
-    else if (result.startsWith("npub") || result.startsWith("nprofile")) {
+    if (isHexKey(result)) {
+      this.pubkey = result;
+      return result;
+    } else if (result.startsWith("npub") || result.startsWith("nprofile")) {
       const decode = nip19.decode(result);
       const pubkey = getPubkeyFromDecodeResult(decode);
       if (!pubkey) throw new Error("Expected npub from clipboard");

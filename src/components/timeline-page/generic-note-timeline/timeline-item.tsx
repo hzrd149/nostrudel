@@ -5,7 +5,6 @@ import { Box, Text } from "@chakra-ui/react";
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
 import RepostEvent from "./repost-event";
-import ArticleNote from "./article-note";
 import StreamNote from "./stream-note";
 import RelayRecommendation from "./relay-recommendation";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
@@ -28,9 +27,6 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
     case kinds.Repost:
     case kinds.GenericRepost:
       content = <RepostEvent event={event} />;
-      break;
-    case kinds.LongFormArticle:
-      content = <ArticleNote article={event} />;
       break;
     case STREAM_KIND:
       content = <StreamNote event={event} />;

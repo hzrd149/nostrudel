@@ -51,7 +51,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       let k = decoded.data.kind || event?.kind;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
       if (k === TORRENT_KIND) return <Navigate to={`/torrents/${link}`} replace />;
-      if (k === STREAM_KIND) return <Navigate to={`/streams/${link}`} replace />;
+      if (k === kinds.LiveEvent) return <Navigate to={`/streams/${link}`} replace />;
       if (k === EMOJI_PACK_KIND) return <Navigate to={`/emojis/${link}`} replace />;
       if (k === NOTE_LIST_KIND) return <Navigate to={`/lists/${link}`} replace />;
       if (k === PEOPLE_LIST_KIND) return <Navigate to={`/lists/${link}`} replace />;
@@ -60,6 +60,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${link}`} replace />;
       if (k === kinds.ChannelCreation) return <Navigate to={`/channels/${link}`} replace />;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
+      if (k === kinds.LongFormArticle) return <Navigate to={`/articles/${link}`} replace />;
       if (k === WIKI_PAGE_KIND) return <Navigate to={`/wiki/page/${link}`} replace />;
 
       if (!event && decoded.type === "naddr") return <LoadUnknownAddress pointer={decoded.data} link={link} />;

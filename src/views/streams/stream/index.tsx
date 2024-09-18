@@ -17,13 +17,13 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useParams, Navigate, useSearchParams, useNavigate } from "react-router-dom";
-import { nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 import { Global, css } from "@emotion/react";
 
-import { ParsedStream, STREAM_KIND, parseStreamEvent } from "../../../helpers/nostr/stream";
+import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { unique } from "../../../helpers/array";
-import { LiveVideoPlayer } from "../../../components/live-video-player";
+import LiveVideoPlayer from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -248,7 +248,7 @@ export default function StreamView() {
     try {
       const parsed = nip19.decode(naddr);
       if (parsed.type !== "naddr") throw new Error("Invalid stream address");
-      if (parsed.data.kind !== STREAM_KIND) throw new Error("Invalid stream kind");
+      if (parsed.data.kind !== kinds.LiveEvent) throw new Error("Invalid stream kind");
 
       const addrRelays = parsed.data.relays ?? [];
       return replaceableEventsService.requestEvent(

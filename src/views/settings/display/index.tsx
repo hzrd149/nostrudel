@@ -70,6 +70,19 @@ export default function DisplaySettings() {
           </FormHelperText>
         </FormControl>
         <FormControl>
+          <FormLabel htmlFor="maxPageWidth" mb="0">
+            Show user pubkey key color
+          </FormLabel>
+          <Select id="maxPageWidth" maxW="sm" {...register("showPubkeyColor")}>
+            <option value="none">None</option>
+            <option value="avatar">Avatar</option>
+            <option value="underline">Underline</option>
+          </Select>
+          <FormHelperText>
+            <span>How the public key color should be shown on users</span>
+          </FormHelperText>
+        </FormControl>
+        <FormControl>
           <Flex alignItems="center">
             <FormLabel htmlFor="blurImages" mb="0">
               Blur media from strangers

@@ -1,5 +1,5 @@
-import { nip19 } from "nostr-tools";
-import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
+import { EventTemplate, nip19 } from "nostr-tools";
+import { NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
 import { getThreadReferences } from "./event";
 import { safeDecode } from "../nip19";
@@ -40,8 +40,8 @@ function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string
 }
 
 /** adds the "root" and "reply" E tags */
-export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
-  const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function addReplyTags(draft: EventTemplate, replyTo: NostrEvent) {
+  const updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   const refs = getThreadReferences(replyTo);
   const rootId = refs.root?.e?.id ?? replyTo.id;
@@ -56,8 +56,8 @@ export function addReplyTags(draft: DraftNostrEvent, replyTo: NostrEvent) {
 }
 
 /** ensure a list of pubkeys are present on an event */
-export function ensureNotifyPubkeys(draft: DraftNostrEvent, pubkeys: string[]) {
-  const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function ensureNotifyPubkeys(draft: EventTemplate, pubkeys: string[]) {
+  const updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   for (const pubkey of pubkeys) {
     updated.tags = addTag(updated.tags, ["p", pubkey, "", "mention"], false);
@@ -98,7 +98,7 @@ export function getPubkeysMentionedInContent(content: string) {
   return unique(pubkeys);
 }
 
-export function ensureNotifyContentMentions(draft: DraftNostrEvent) {
+export function ensureNotifyContentMentions(draft: EventTemplate) {
   const mentions = getPubkeysMentionedInContent(draft.content);
   return mentions.length > 0 ? ensureNotifyPubkeys(draft, mentions) : draft;
 }
@@ -124,9 +124,9 @@ export function getAllEventsMentionedInContent(content: string) {
 
   return events;
 }
-export function ensureTagContentMentions(draft: DraftNostrEvent) {
+export function ensureTagContentMentions(draft: EventTemplate) {
   const mentions = getAllEventsMentionedInContent(draft.content);
-  const updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+  const updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   for (const pointer of mentions) {
     updated.tags = AddEtag(updated.tags, pointer.id, pointer.relays?.[0] ?? "", "mention", false);
@@ -135,8 +135,8 @@ export function ensureTagContentMentions(draft: DraftNostrEvent) {
   return updated;
 }
 
-export function createHashtagTags(draft: DraftNostrEvent) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function createHashtagTags(draft: EventTemplate) {
+  const updatedDraft: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   // create tags for all occurrences of #hashtag
   const matches = updatedDraft.content.matchAll(getMatchHashtag());
@@ -150,8 +150,8 @@ export function createHashtagTags(draft: DraftNostrEvent) {
   return updatedDraft;
 }
 
-export function createEmojiTags(draft: DraftNostrEvent, emojis: Emoji[]) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function createEmojiTags(draft: EventTemplate, emojis: Emoji[]) {
+  const updatedDraft: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   // create tags for all occurrences of #hashtag
   const matches = updatedDraft.content.matchAll(getMatchEmoji());
@@ -165,8 +165,8 @@ export function createEmojiTags(draft: DraftNostrEvent, emojis: Emoji[]) {
   return updatedDraft;
 }
 
-export function setZapSplit(draft: DraftNostrEvent, split: EventSplit) {
-  const updatedDraft: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function setZapSplit(draft: EventTemplate, split: EventSplit) {
+  const updatedDraft: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
   // TODO: get best input relay for user
   const zapTags = split.map((p) => ["zap", p.pubkey, "", String(p.percent * 100)]);
@@ -175,8 +175,8 @@ export function setZapSplit(draft: DraftNostrEvent, split: EventSplit) {
   return updatedDraft;
 }
 
-export function finalizeNote(draft: DraftNostrEvent) {
-  let updated: DraftNostrEvent = { ...draft, tags: Array.from(draft.tags) };
+export function finalizeNote(draft: EventTemplate) {
+  let updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
   updated = userMailboxesService.addPubkeyRelayHints(updated);

@@ -15,6 +15,7 @@ const DiscoveryHomeView = lazy(() => import("./views/discovery/index"));
 const DVMFeedView = lazy(() => import("./views/discovery/dvm-feed/feed"));
 const BlindspotHomeView = lazy(() => import("./views/discovery/blindspot"));
 const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"));
+const RelayDiscoveryView = lazy(() => import("./views/discovery/relays/index"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -103,6 +104,8 @@ import PerformanceSettings from "./views/settings/performance";
 import PrivacySettings from "./views/settings/privacy";
 import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
+import ArticlesHomeView from "./views/articles";
+import ArticleView from "./views/articles/article";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -227,6 +230,14 @@ const router = createHashRouter([
     ),
   },
   {
+    path: "/discovery/relays",
+    element: (
+      <RouteProviders>
+        <RelayDiscoveryView />
+      </RouteProviders>
+    ),
+  },
+  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -242,7 +253,7 @@ const router = createHashRouter([
           { path: "tracks", element: <UserTracksTab /> },
           { path: "videos", element: <UserVideosTab /> },
           { path: "zaps", element: <UserZapsTab /> },
-          { path: "likes", element: <UserReactionsTab /> },
+          { path: "reactions", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
           { path: "followers", element: <UserFollowersTab /> },
           { path: "following", element: <UserFollowingTab /> },
@@ -405,6 +416,13 @@ const router = createHashRouter([
         children: [
           { path: "", element: <CommunitiesHomeView /> },
           { path: "explore", element: <CommunitiesExploreView /> },
+        ],
+      },
+      {
+        path: "articles",
+        children: [
+          { path: "", element: <ArticlesHomeView /> },
+          { path: ":naddr", element: <ArticleView /> },
         ],
       },
       {

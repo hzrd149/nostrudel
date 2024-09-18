@@ -6,7 +6,6 @@ import { kinds } from "nostr-tools";
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
 import { NostrEvent } from "../../types/nostr-event";
-import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
 import { GOAL_KIND } from "../../helpers/nostr/goal";
 import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
 import {
@@ -23,29 +22,29 @@ import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { safeDecode } from "../../helpers/nip19";
+import type { EmbeddedGoalOptions } from "./event-types/embedded-goal";
 
-import { type EmbeddedGoalOptions } from "./event-types/embedded-goal";
+import LoadingNostrLink from "../loading-nostr-link";
+import RelayCard from "../../views/relays/components/relay-card";
+import EmbeddedRepost from "./event-types/embedded-repost";
+import EmbeddedList from "./event-types/embedded-list";
+import EmbeddedReaction from "./event-types/embedded-reaction";
+import EmbeddedDM from "./event-types/embedded-dm";
+import EmbeddedUnknown from "./event-types/embedded-unknown";
 
-const RelayCard = lazy(() => import("../../views/relays/components/relay-card"));
-const EmbeddedStream = lazy(() => import("./event-types/embedded-stream"));
-const EmbeddedEmojiPack = lazy(() => import("./event-types/embedded-emoji-pack"));
 const EmbeddedGoal = lazy(() => import("./event-types/embedded-goal"));
-const EmbeddedUnknown = lazy(() => import("./event-types/embedded-unknown"));
-const EmbeddedList = lazy(() => import("./event-types/embedded-list"));
 const EmbeddedArticle = lazy(() => import("./event-types/embedded-article"));
-const EmbeddedBadge = lazy(() => import("./event-types/embedded-badge"));
-const EmbeddedStreamMessage = lazy(() => import("./event-types/embedded-stream-message"));
 const EmbeddedCommunity = lazy(() => import("./event-types/embedded-community"));
-const EmbeddedReaction = lazy(() => import("./event-types/embedded-reaction"));
-const EmbeddedDM = lazy(() => import("./event-types/embedded-dm"));
+const EmbeddedBadge = lazy(() => import("./event-types/embedded-badge"));
 const EmbeddedTorrent = lazy(() => import("./event-types/embedded-torrent"));
 const EmbeddedTorrentComment = lazy(() => import("./event-types/embedded-torrent-comment"));
 const EmbeddedChannel = lazy(() => import("./event-types/embedded-channel"));
 const EmbeddedFlareVideo = lazy(() => import("./event-types/embedded-flare-video"));
-const LoadingNostrLink = lazy(() => import("../loading-nostr-link"));
-const EmbeddedRepost = lazy(() => import("./event-types/embedded-repost"));
-const EmbeddedWikiPage = lazy(() => import("./event-types/embedded-wiki-page"));
+const EmbeddedEmojiPack = lazy(() => import("./event-types/embedded-emoji-pack"));
 const EmbeddedZapRecept = lazy(() => import("./event-types/embedded-zap-receipt"));
+const EmbeddedWikiPage = lazy(() => import("./event-types/embedded-wiki-page"));
+const EmbeddedStream = lazy(() => import("./event-types/embedded-stream"));
+const EmbeddedStreamMessage = lazy(() => import("./event-types/embedded-stream-message"));
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
 
 export type EmbedProps = {
@@ -65,7 +64,7 @@ export function EmbedEvent({
         return <EmbeddedReaction event={event} {...cardProps} />;
       case kinds.EncryptedDirectMessage:
         return <EmbeddedDM dm={event} {...cardProps} />;
-      case STREAM_KIND:
+      case kinds.LiveEvent:
         return <EmbeddedStream event={event} {...cardProps} />;
       case GOAL_KIND:
         return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
@@ -81,7 +80,7 @@ export function EmbedEvent({
         return <EmbeddedArticle article={event} {...cardProps} />;
       case kinds.BadgeDefinition:
         return <EmbeddedBadge badge={event} {...cardProps} />;
-      case STREAM_CHAT_MESSAGE_KIND:
+      case kinds.LiveChatMessage:
         return <EmbeddedStreamMessage message={event} {...cardProps} />;
       case COMMUNITY_DEFINITION_KIND:
         return <EmbeddedCommunity community={event} {...cardProps} />;

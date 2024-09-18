@@ -132,7 +132,7 @@ export default class BatchRelationLoader {
         this.process.active = true;
         this.subscription.filters = [];
         if (ids.length > 0) this.subscription.filters.push({ "#e": ids, kinds: this.kinds });
-        if (ids.length > 0) this.subscription.filters.push({ "#a": cords, kinds: this.kinds });
+        if (cords.length > 0) this.subscription.filters.push({ "#a": cords, kinds: this.kinds });
 
         await this.subscription.update();
       } catch (error) {

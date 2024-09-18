@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
 import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 import { safeDecode } from "../../helpers/nip19";
 import { getMatchHashtag } from "../../helpers/regexp";
@@ -9,7 +10,6 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider from "../../providers/local/people-list-provider";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
-import { useForm } from "react-hook-form";
 import SearchResults from "./components/search-results";
 import useSearchRelays from "../../hooks/use-search-relays";
 

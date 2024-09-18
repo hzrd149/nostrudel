@@ -8,7 +8,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import ArticleNote from "../../components/timeline-page/generic-note-timeline/article-note";
+import ArticleCard from "../articles/components/article-card";
 
 export default function UserArticlesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -26,7 +26,7 @@ export default function UserArticlesTab() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         {articles.map((article) => (
-          <ArticleNote key={article.id} article={article} />
+          <ArticleCard key={article.id} article={article} />
         ))}
         <TimelineActionAndStatus timeline={timeline} />
       </VerticalPageLayout>

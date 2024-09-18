@@ -8,7 +8,7 @@ export enum VideoStatus {
 }
 
 // copied from zap.stream
-export function LiveVideoPlayer({
+export default function LiveVideoPlayer({
   stream,
   autoPlay,
   poster,

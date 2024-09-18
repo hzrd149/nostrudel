@@ -2,7 +2,7 @@ name: Deploy Next Version
 on:
   push:
     branches:
-      - next
+      - master
 
 concurrency:
   group: "pages"

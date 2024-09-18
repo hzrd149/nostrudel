@@ -48,7 +48,6 @@ export const NOSTR_CONNECT_PERMISSIONS = [
 ];
 
 export const NEVER_ATTACH_CLIENT_TAG = [kinds.EncryptedDirectMessage];
-export const ENABLE_CLIENT_TAG = import.meta.env.VITE_ENABLE_CLIENT_TAG !== "false";
 export const NIP_89_CLIENT_TAG = [
   "client",
   "noStrudel",

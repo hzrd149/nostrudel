@@ -3,7 +3,7 @@ import { getEventUID } from "nostr-idb";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 
-import { ATag, DraftNostrEvent, ETag, isATag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
+import { ATag, ETag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
 import { safeJson } from "../parse";
@@ -11,6 +11,7 @@ import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";
 import RelaySet from "../../classes/relay-set";
 import { truncateId } from "../string";
+import { getNip10References } from "./threading";
 
 export { truncateId as truncatedId };
 
@@ -35,22 +36,22 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
 }
 
 const isReplySymbol = Symbol("isReply");
-export function isReply(event: NostrEvent | DraftNostrEvent) {
+export function isReply(event: NostrEvent | EventTemplate) {
   // @ts-expect-error
   if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
 
   if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
-  const isReply = !!getThreadReferences(event).reply;
+  const isReply = !!getNip10References(event).reply;
   // @ts-expect-error
   event[isReplySymbol] = isReply;
   return isReply;
 }
-export function isPTagMentionedInContent(event: NostrEvent | DraftNostrEvent, pubkey: string) {
+export function isPTagMentionedInContent(event: NostrEvent | EventTemplate, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
 }
 
 const isRepostSymbol = Symbol("isRepost");
-export function isRepost(event: NostrEvent | DraftNostrEvent) {
+export function isRepost(event: NostrEvent | EventTemplate) {
   // @ts-expect-error
   if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
 
@@ -123,94 +124,8 @@ export function filterTagsByContentRefs(content: string, tags: Tag[], referenced
   return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-export function interpretThreadTags(event: NostrEvent | DraftNostrEvent) {
-  const eTags = event.tags.filter(isETag);
-  const aTags = event.tags.filter(isATag);
-
-  // find the root and reply tags.
-  let rootETag = eTags.find((t) => t[3] === "root");
-  let replyETag = eTags.find((t) => t[3] === "reply");
-
-  let rootATag = aTags.find((t) => t[3] === "root");
-  let replyATag = aTags.find((t) => t[3] === "reply");
-
-  if (!rootETag || !replyETag) {
-    // a direct reply does not need a "reply" reference
-    // https://github.com/nostr-protocol/nips/blob/master/10.md
-
-    // this is not necessarily to spec. but if there is only one id (root or reply) then assign it to both
-    // this handles the cases where a client only set a "reply" tag and no root
-    rootETag = replyETag = rootETag || replyETag;
-  }
-  if (!rootATag || !replyATag) {
-    rootATag = replyATag = rootATag || replyATag;
-  }
-
-  if (!rootETag && !replyETag) {
-    const contentTagRefs = getContentTagRefs(event.content, eTags);
-
-    // legacy behavior
-    // https://github.com/nostr-protocol/nips/blob/master/10.md#positional-e-tags-deprecated
-    const legacyETags = eTags.filter((t) => {
-      // ignore it if there is a type
-      if (t[3]) return false;
-      if (contentTagRefs.includes(t)) return false;
-      return true;
-    });
-
-    if (legacyETags.length >= 1) {
-      // first tag is the root
-      rootETag = legacyETags[0];
-      // last tag is reply
-      replyETag = legacyETags[legacyETags.length - 1] ?? rootETag;
-    }
-  }
-
-  return {
-    root: rootETag || rootATag ? { e: rootETag, a: rootATag } : undefined,
-    reply: replyETag || replyATag ? { e: replyETag, a: replyATag } : undefined,
-  } as {
-    root?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
-    reply?: { e: ETag; a: undefined } | { e: undefined; a: ATag } | { e: ETag; a: ATag };
-  };
-}
-
-export type ThreadReferences = {
-  root?:
-    | { e: EventPointer; a: undefined }
-    | { e: undefined; a: AddressPointer }
-    | { e: EventPointer; a: AddressPointer };
-  reply?:
-    | { e: EventPointer; a: undefined }
-    | { e: undefined; a: AddressPointer }
-    | { e: EventPointer; a: AddressPointer };
-};
-export const threadRefsSymbol = Symbol("threadRefs");
-export type EventWithThread = (NostrEvent | DraftNostrEvent) & { [threadRefsSymbol]: ThreadReferences };
-
-export function getThreadReferences(event: NostrEvent | DraftNostrEvent): ThreadReferences {
-  // @ts-expect-error
-  if (Object.hasOwn(event, threadRefsSymbol)) return event[threadRefsSymbol];
-
-  const e = event as EventWithThread;
-  const tags = interpretThreadTags(e);
-
-  const threadRef = {
-    root: tags.root && {
-      e: tags.root.e && eTagToEventPointer(tags.root.e),
-      a: tags.root.a && aTagToAddressPointer(tags.root.a),
-    },
-    reply: tags.reply && {
-      e: tags.reply.e && eTagToEventPointer(tags.reply.e),
-      a: tags.reply.a && aTagToAddressPointer(tags.reply.a),
-    },
-  } as ThreadReferences;
-
-  // @ts-expect-error
-  event[threadRefsSymbol] = threadRef;
-
-  return threadRef;
-}
+/** @deprecated */
+export { getNip10References as getThreadReferences };
 
 export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
@@ -296,7 +211,7 @@ export function sortByDate(a: NostrEvent, b: NostrEvent) {
 }
 
 /** create a copy of the event with a new created_at  */
-export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): DraftNostrEvent {
+export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): EventTemplate {
   return {
     kind: event?.kind ?? kind,
     created_at: dayjs().unix(),
@@ -306,14 +221,14 @@ export function cloneEvent(kind: number, event?: DraftNostrEvent | NostrEvent): 
 }
 
 /** ensure an event has a d tag */
-export function ensureDTag(draft: DraftNostrEvent, d: string = nanoid()) {
+export function ensureDTag(draft: EventTemplate, d: string = nanoid()) {
   if (!draft.tags.some(isDTag)) {
     draft.tags.push(["d", d]);
   }
 }
 
 /** either replaces the existing tag or adds a new one */
-export function replaceOrAddSimpleTag(draft: DraftNostrEvent, tagName: string, value: string) {
+export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, value: string) {
   if (draft.tags.some((t) => t[0] === tagName)) {
     draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));
   } else {
@@ -348,6 +263,10 @@ export function getSortedKinds(events: NostrEvent[]) {
     .map(([kind, events]) => ({ kind, count: events.length }))
     .sort((a, b) => b.count - a.count)
     .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
+}
+
+export function getTagValue(event: NostrEvent, tag: string){
+  return event.tags.find(t => t[0]===tag && t.length>=2)?.[1]
 }
 
 export { getEventUID };

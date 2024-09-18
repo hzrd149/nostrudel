@@ -1,7 +1,7 @@
 import { generateSecretKey } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
-import { ENABLE_CLIENT_TAG, DEFAULT_SIGNAL_RELAYS } from "../const";
+import { DEFAULT_SIGNAL_RELAYS } from "../const";
 import {
   BooleanLocalStorageEntry,
   NullableNumberLocalStorageEntry,
@@ -45,10 +45,11 @@ const webRtcRecentConnections = new LocalStorageEntry(
 );
 
 // posting
-const addClientTag = new BooleanLocalStorageEntry("add-client-tag", ENABLE_CLIENT_TAG);
+const addClientTag = new BooleanLocalStorageEntry("add-client-tag", false);
 
 // performance
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
+const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
 const localSettings = {
   idbMaxEvents,
@@ -60,6 +61,7 @@ const localSettings = {
   webRtcRecentConnections,
   addClientTag,
   verifyEventMethod,
+  enableKeyboardShortcuts,
 };
 
 if (import.meta.env.DEV) {

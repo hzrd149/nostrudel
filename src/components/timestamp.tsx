@@ -5,7 +5,7 @@ export default function Timestamp({ timestamp, ...props }: { timestamp: number }
   const date = dayjs.unix(timestamp);
   const now = dayjs();
 
-  let display = date.format("L");
+  let display = date.format("ll");
 
   if (now.diff(date, "week") <= 6) {
     if (now.diff(date, "d") >= 1) {

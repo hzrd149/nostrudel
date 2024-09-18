@@ -7,7 +7,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
 import NoteTranslationModal from "../../views/tools/transform-note/translation";
 import Translate01 from "../icons/translate-01";
-import PinNoteMenuItem from "../common-menu-items/pin-note";
+import PinEventMenuItem from "../common-menu-items/pin-event";
 import ShareLinkMenuItem from "../common-menu-items/share-link";
 import OpenInAppMenuItem from "../common-menu-items/open-in-app";
 import MuteUserMenuItem from "../common-menu-items/mute-user";
@@ -47,7 +47,7 @@ export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Om
         <MenuItem onClick={broadcast} icon={<BroadcastEventIcon />}>
           Broadcast
         </MenuItem>
-        <PinNoteMenuItem event={event} />
+        <PinEventMenuItem event={event} />
         <DebugEventMenuItem event={event} />
       </DotsMenuButton>
 

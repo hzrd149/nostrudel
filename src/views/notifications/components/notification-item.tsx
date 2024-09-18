@@ -1,5 +1,15 @@
 import { ReactNode, forwardRef, memo, useCallback, useMemo } from "react";
-import { AvatarGroup, ButtonGroup, Flex, IconButton, IconButtonProps, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Box,
+  BoxProps,
+  ButtonGroup,
+  Flex,
+  FlexProps,
+  IconButton,
+  IconButtonProps,
+  Text,
+} from "@chakra-ui/react";
 import { kinds, nip18, nip25 } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/nip19";
 
@@ -8,7 +18,7 @@ import { NostrEvent, isATag, isETag } from "../../../types/nostr-event";
 import { getParsedZap } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { getThreadReferences, parseCoordinate } from "../../../helpers/nostr/event";
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { TrustProvider } from "../../../providers/local/trust-provider";
@@ -33,6 +43,7 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import { truncateId } from "../../../helpers/string";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import ArticleCard from "../../articles/components/article-card";
 
 export const ExpandableToggleButton = ({
   toggle,
@@ -66,26 +77,41 @@ const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClic
         onClick={onClick}
       >
         {pointer && <EmbedEventPointer pointer={pointer} />}
-        <TimelineNote event={event} showReplyLine={false} />
+        <TimelineNote event={event} showReplyLine={false} showReplyButton />
       </NotificationIconEntry>
     );
   },
 );
 
 const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
-  ({ event, onClick }, ref) => (
-    <NotificationIconEntry
-      ref={ref}
-      icon={<AtIcon boxSize={8} color="purple.400" />}
-      id={event.id}
-      pubkey={event.pubkey}
-      timestamp={event.created_at}
-      summary={event.content}
-      onClick={onClick}
-    >
-      <TimelineNote event={event} showReplyButton />
-    </NotificationIconEntry>
-  ),
+  ({ event, onClick }, ref) => {
+    let content: ReactNode;
+    switch (event.kind) {
+      case kinds.LongFormArticle:
+        content = <ArticleCard article={event} />;
+        break;
+      case kinds.ShortTextNote:
+        content = <TimelineNote event={event} showReplyButton />;
+        break;
+      default:
+        content = <EmbedEvent event={event} />;
+        break;
+    }
+
+    return (
+      <NotificationIconEntry
+        ref={ref}
+        icon={<AtIcon boxSize={8} color="purple.400" />}
+        id={event.id}
+        pubkey={event.pubkey}
+        timestamp={event.created_at}
+        summary={event.content}
+        onClick={onClick}
+      >
+        {content}
+      </NotificationIconEntry>
+    );
+  },
 );
 
 const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
@@ -208,7 +234,16 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?
   },
 );
 
-const NotificationItem = ({ event, onClick }: { event: CategorizedEvent; onClick?: (event: NostrEvent) => void }) => {
+const NotificationItem = ({
+  event,
+  visible,
+  onClick,
+  ...props
+}: Omit<FlexProps, "children" | "onClick"> & {
+  event: CategorizedEvent;
+  onClick?: (event: NostrEvent) => void;
+  visible: boolean;
+}) => {
   const ref = useEventIntersectionRef(event);
 
   const handleClick = useCallback(() => {
@@ -216,32 +251,37 @@ const NotificationItem = ({ event, onClick }: { event: CategorizedEvent; onClick
   }, [onClick, event]);
 
   let content: ReactNode | null = null;
-  switch (event[typeSymbol]) {
-    case NotificationType.Reply:
-      content = <ReplyNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Mention:
-      content = <MentionNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Reaction:
-      content = <ReactionNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Repost:
-      content = <RepostNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    case NotificationType.Zap:
-      content = <ZapNotification event={event} onClick={onClick && handleClick} ref={ref} />;
-      break;
-    default:
-      content = <EmbeddedUnknown event={event} />;
-      break;
+  if (visible) {
+    switch (event[typeSymbol]) {
+      case NotificationType.Reply:
+        content = <ReplyNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Mention:
+        content = <MentionNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Reaction:
+        content = <ReactionNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Repost:
+        content = <RepostNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      case NotificationType.Zap:
+        content = <ZapNotification event={event} onClick={onClick && handleClick} />;
+        break;
+      default:
+        content = <EmbeddedUnknown event={event} />;
+        break;
+    }
   }
+
   return (
-    content && (
-      <ErrorBoundary>
-        <TrustProvider event={event}>{content}</TrustProvider>
-      </ErrorBoundary>
-    )
+    <Flex ref={ref} overflow="hidden" flexShrink={0} {...props}>
+      {content && (
+        <ErrorBoundary>
+          <TrustProvider event={event}>{content}</TrustProvider>
+        </ErrorBoundary>
+      )}
+    </Flex>
   );
 };
 

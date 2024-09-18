@@ -9,6 +9,7 @@ type Options = {
   /** @deprecated */
   enabled?: boolean;
   eventFilter?: EventFilter;
+  useCache?: boolean;
   cursor?: number;
   customSort?: (a: NostrEvent, b: NostrEvent) => number;
 };
@@ -20,6 +21,9 @@ export default function useTimelineLoader(
   opts?: Options,
 ) {
   const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
+
+  // set use cache
+  if (opts?.useCache !== undefined) timeline.useCache = opts?.useCache;
 
   // update relays
   useEffect(() => {

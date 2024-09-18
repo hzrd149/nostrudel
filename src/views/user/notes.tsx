@@ -8,7 +8,6 @@ import { useAdditionalRelayContext } from "../../providers/local/additional-rela
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { STREAM_KIND } from "../../helpers/nostr/stream";
 import TimelineViewType from "../../components/timeline-page/timeline-view-type";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
@@ -31,11 +30,11 @@ export default function UserNotesTab() {
     [showReplies.isOpen, showReposts.isOpen, timelineEventFilter],
   );
   const timeline = useTimelineLoader(
-    truncatedId(pubkey) + "-notes",
+    pubkey + "-notes",
     readRelays,
     {
       authors: [pubkey],
-      kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.LongFormArticle, STREAM_KIND, 2],
+      kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, 2],
     },
     { eventFilter },
   );

@@ -22,8 +22,8 @@ export default defineConfig({
       //   enabled: true,
       // },
       workbox: {
-        // This increase the cache limit to 3mB
-        maximumFileSizeToCacheInBytes: 2097152 * 1.5,
+        // This increase the cache limit to 4mB
+        maximumFileSizeToCacheInBytes: 2097152 * 2,
       },
       manifest: {
         name: "noStrudel",

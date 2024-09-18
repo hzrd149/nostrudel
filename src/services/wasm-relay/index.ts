@@ -87,6 +87,10 @@ export default class WasmRelay implements SimpleRelay {
       this.subscriptions.delete(id);
     }
   }
+
+  wipe() {
+    return this.worker?.wipe();
+  }
 }
 
 class WasmRelaySubscription {
