@@ -1,5 +1,32 @@
 # nostrudel
 
+## 0.41.0
+
+### Minor Changes
+
+- 50b636c: Add option to wipe wasm relay database
+- 8614cb6: Update `@snort/worker-relay` WASM relay
+- a016adf: Add Support for embedding HLS videos
+- 6ff03b5: Support pinning articles
+- c5e7035: Add relay discovery map
+- 5f789d2: Add option to disable keyboard shortcuts
+
+### Patch Changes
+
+- 331ec5d: Fixed search results not being cached
+- 1353ccd: Fix amber signer missing pubkey
+- d4286ee: Fix some tidal embeds not playing
+- 37bf63e: Hide avatars of muted users
+- 359dbcb: Fix bookmark view not showing latest bookmarks
+- 7e8855d: Fixed client sending filters with empty #a tags
+- fff8a1d: Fix client tag breaking POW on notes
+- b3a52cb: Add noStrudel NIP-05 to domain
+- cfa77a5: Update bitcoin connect
+- c5e7035: Fix relay notes showing notes from other relays from cache
+- a702121: Improve notifications timeline rendering performance
+- fc6d36b: Add bookmark button to articles
+- 3768645: Fixed keyboard shortcuts activating when replying to notification
+
 ## 0.40.1
 
 ### Patch Changes
