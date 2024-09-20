@@ -23,6 +23,7 @@ export default function DisplaySettings() {
 
   const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const showBrandLogo = useSubject(localSettings.showBrandLogo);
 
   return (
     <VerticalPageLayout flex={1}>
@@ -163,6 +164,21 @@ export default function DisplaySettings() {
           </Flex>
           <FormHelperText>
             <span>Enabled: Clicking on an embedded note will open it in a side drawer</span>
+          </FormHelperText>
+        </FormControl>
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="showBrandLogo" mb="0">
+              Show noStrudel logo
+            </FormLabel>
+            <Switch
+              id="showBrandLogo"
+              isChecked={showBrandLogo}
+              onChange={(e) => localSettings.showBrandLogo.next(e.currentTarget.checked)}
+            />
+          </Flex>
+          <FormHelperText>
+            <span>Show / Hide the noStrudel logo in the side nav</span>
           </FormHelperText>
         </FormControl>
         <FormControl>

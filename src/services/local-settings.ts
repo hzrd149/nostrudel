@@ -51,6 +51,9 @@ const addClientTag = new BooleanLocalStorageEntry("add-client-tag", false);
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
 const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
+// display settings
+const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
@@ -62,6 +65,7 @@ const localSettings = {
   addClientTag,
   verifyEventMethod,
   enableKeyboardShortcuts,
+  showBrandLogo,
 };
 
 if (import.meta.env.DEV) {
