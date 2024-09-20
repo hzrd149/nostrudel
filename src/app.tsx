@@ -238,6 +238,14 @@ const router = createHashRouter([
     ),
   },
   {
+    path: "/tools/publisher",
+    element: (
+      <RouteProviders>
+        <EventPublisherView />
+      </RouteProviders>
+    ),
+  },
+  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -392,7 +400,6 @@ const router = createHashRouter([
           { path: "satellite-cdn", element: <SatelliteCDNView /> },
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
-          { path: "publisher", element: <EventPublisherView /> },
           { path: "corrections", element: <CorrectionsFeedView /> },
         ],
       },

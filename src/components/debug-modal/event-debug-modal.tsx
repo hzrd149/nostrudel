@@ -17,6 +17,7 @@ import {
   AccordionPanelProps,
   Button,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { ModalProps } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
@@ -27,6 +28,7 @@ import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
 import relayHintService from "../../services/event-relay-hint";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { EditIcon } from "../icons";
 
 function Section({
   label,
@@ -112,7 +114,22 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section
               label="JSON"
               p="0"
-              actions={<CopyIconButton aria-label="copy json" value={JSON.stringify(event, null, 2)} size="sm" />}
+              actions={
+                <>
+                  <Button
+                    leftIcon={<EditIcon />}
+                    as={RouterLink}
+                    to="/tools/publisher"
+                    size="sm"
+                    state={{ draft: event }}
+                    colorScheme="primary"
+                    mr="2"
+                  >
+                    Edit
+                  </Button>
+                  <CopyIconButton aria-label="copy json" value={JSON.stringify(event, null, 2)} size="sm" />
+                </>
+              }
             >
               <JsonCode data={event} />
             </Section>

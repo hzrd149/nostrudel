@@ -55,6 +55,7 @@
     "emoji-regex": "^10.3.0",
     "emojilib": "^3",
     "framer-motion": "^10.16.0",
+    "handlebars": "^4.7.8",
     "hls.js": "^1.4.14",
     "i18n-iso-countries": "^7.12.0",
     "idb": "^8.0.0",
