@@ -112,7 +112,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section
               label="JSON"
               p="0"
-              actions={<CopyIconButton aria-label="copy json" value={JSON.stringify(event)} size="sm" />}
+              actions={<CopyIconButton aria-label="copy json" value={JSON.stringify(event, null, 2)} size="sm" />}
             >
               <JsonCode data={event} />
             </Section>
