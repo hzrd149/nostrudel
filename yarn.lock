@@ -3267,9 +3267,16 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-"applesauce-core@link:../applesauce/packages/core":
-  version "0.0.0"
-  uid ""
+applesauce-core@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/applesauce-core/-/applesauce-core-0.1.0.tgz#961b06c0419feb228b63e21bd0146c271005c56b"
+  integrity sha512-zvTnhPNqWCS4+Gdp8wTrFY76IcDReE/UJo2k7suriYQW9wtk1USjBvDFtpkiAcAB8obggDEtEJ9ZF3N2ojHZ+w==
+  dependencies:
+    debug "^4.3.7"
+    json-stringify-deterministic "^1.0.12"
+    nanoid "^5.0.7"
+    nostr-tools "^2.7.2"
+    tiny-lru "^11.2.11"
 
 argparse@^1.0.7:
   version "1.0.10"
