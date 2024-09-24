@@ -4,14 +4,14 @@ import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link } 
 import { getDecodedToken, Token, CashuMint } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
 import { getMint } from "../../services/cashu-mints";
 
 function RedeemButton({ token }: { token: string }) {
   const account = useCurrentAccount()!;
-  const metadata = useUserMetadata(account.pubkey);
+  const metadata = useUserProfile(account.pubkey);
 
   const lnurl = metadata?.lud16 ?? "";
   const url = `https://redeem.cashu.me?token=${encodeURIComponent(token)}&lightning=${encodeURIComponent(

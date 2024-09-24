@@ -1,7 +1,7 @@
 import useDnsIdentity from "./use-dns-identity";
-import useUserMetadata from "./use-user-metadata";
+import useUserProfile from "./use-user-profile";
 
 export function useUserDNSIdentity(pubkey?: string) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   return useDnsIdentity(metadata?.nip05);
 }

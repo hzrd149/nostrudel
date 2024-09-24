@@ -12,7 +12,7 @@ export async function getZapEndpoint(metadata: Kind0ParsedContent): Promise<null
     let lnurl: string = "";
     let { lud06, lud16 } = metadata;
     if (lud06) {
-      let { words } = bech32.decode(lud06, 1000);
+      let { words } = bech32.decode(lud06 as `${string}1${string}`, 1000);
       let data = bech32.fromWords(words);
       lnurl = utils.utf8Decoder.decode(data);
     } else if (lud16) {

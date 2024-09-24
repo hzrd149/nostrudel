@@ -3,7 +3,8 @@ import { COMMON_CONTACT_RELAY } from "../const";
 import { RequestOptions } from "../services/replaceable-events";
 import userMailboxesService from "../services/user-mailboxes";
 import { useReadRelays } from "./use-client-relays";
-import useSubject from "./use-subject";
+import { queryStore } from "../services/event-store";
+import { useObservable } from "./use-observable";
 
 export default function useUserMailboxes(
   pubkey?: string,
@@ -11,13 +12,16 @@ export default function useUserMailboxes(
   opts?: RequestOptions,
 ) {
   const readRelays = useReadRelays([...additionalRelays, COMMON_CONTACT_RELAY]);
-  const sub = pubkey ? userMailboxesService.requestMailboxes(pubkey, readRelays, opts) : undefined;
-  const value = useSubject(sub);
-  return value;
+  if (pubkey) {
+    userMailboxesService.requestMailboxes(pubkey, readRelays, opts);
+  }
+
+  const observable = pubkey ? queryStore.getMailboxes(pubkey) : undefined;
+  return useObservable(observable);
 }
 export function useUserInbox(pubkey?: string, additionalRelays: Iterable<string> = [], opts?: RequestOptions) {
-  return useUserMailboxes(pubkey, additionalRelays, opts)?.inbox ?? new RelaySet();
+  return useUserMailboxes(pubkey, additionalRelays, opts)?.inboxes;
 }
 export function useUserOutbox(pubkey?: string, additionalRelays: Iterable<string> = [], opts?: RequestOptions) {
-  return useUserMailboxes(pubkey, additionalRelays, opts)?.outbox ?? new RelaySet();
+  return useUserMailboxes(pubkey, additionalRelays, opts)?.outboxes;
 }

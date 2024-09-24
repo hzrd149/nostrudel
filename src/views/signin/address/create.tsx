@@ -25,7 +25,7 @@ import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityService from "../../../services/dns-identity";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";
@@ -71,7 +71,7 @@ export default function LoginNostrAddressCreate() {
   const [name, setName] = useState("");
   const providers = useNip05Providers();
   const [selected, setSelected] = useState<NostrEvent>();
-  const userMetadata = useUserMetadata(selected?.pubkey);
+  const userMetadata = useUserProfile(selected?.pubkey);
   const providerMetadata = useMemo<Kind0ParsedContent | undefined>(
     () => selected && safeJson(selected.content, undefined),
     [selected],

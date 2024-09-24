@@ -18,6 +18,7 @@ import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import AlignHorizontalCentre02 from "../components/icons/align-horizontal-centre-02";
 import processManager from "../services/process-manager";
+import { eventStore } from "../services/event-store";
 
 const BLOCK_SIZE = 100;
 
@@ -80,6 +81,8 @@ export default class TimelineLoader {
   private handleEvent(event: NostrEvent, fromCache = false) {
     // if this is a replaceable event, mirror it over to the replaceable event service
     if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
+
+    eventStore.add(event);
 
     this.events.addEvent(event);
     if (!fromCache && this.useCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);

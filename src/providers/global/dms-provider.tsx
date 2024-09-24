@@ -37,7 +37,7 @@ export default function DMTimelineProvider({ children }: PropsWithChildren) {
 
   const timeline = useTimelineLoader(
     `${truncateId(account?.pubkey ?? "anon")}-dms`,
-    inbox,
+    inbox ?? [],
     account?.pubkey
       ? [
           { authors: [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },

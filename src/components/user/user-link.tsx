@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useSubject from "../../hooks/use-subject";
@@ -16,7 +16,7 @@ export type UserLinkProps = LinkProps & {
 };
 
 export default function UserLink({ pubkey, showAt, tab, ...props }: UserLinkProps) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const account = useCurrentAccount();
   const { hideUsernames, removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);

@@ -34,7 +34,7 @@ class WebRtcRelaysService {
   get pendingOutgoing() {
     const pending: { call: NostrEvent; peer: NostrWebRTCPeer }[] = [];
     for (const call of this.calls) {
-      const pubkey = call.tags.find((t) => (t[0] = "p" && t[1]))?.[1];
+      const pubkey = call.tags.find((t) => t[0] === "p" && t[1])?.[1];
       if (!pubkey) continue;
       const peer = this.broker.peers.get(pubkey);
       if (peer && peer.connection.connectionState === "new") pending.push({ call, peer });

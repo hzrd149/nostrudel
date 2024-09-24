@@ -26,7 +26,7 @@ export default function MessageBubble({
   renderContent,
   ...props
 }: MessageBubbleProps) {
-  const reactions = useEventReactions(message.id) ?? [];
+  const reactions = useEventReactions(message) ?? [];
   const hasReactions = reactions.length > 0;
 
   let actionPosition = showHeader ? "header" : "inline";
@@ -38,7 +38,7 @@ export default function MessageBubble({
     <>
       <NoteZapButton event={message} />
       <AddReactionButton event={message} portal />
-      {showThreadButton && <IconThreadButton event={message} label="Open Thread" />}
+      {showThreadButton && <IconThreadButton event={message} aria-label="Open Thread" />}
     </>
   );
 

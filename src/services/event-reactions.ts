@@ -12,6 +12,7 @@ import { LightningIcon } from "../components/icons";
 import processManager from "./process-manager";
 import BatchRelationLoader from "../classes/batch-relation-loader";
 import { logger } from "../helpers/debug";
+import { eventStore } from "./event-store";
 
 class EventReactionsService {
   log = logger.extend("EventReactionsService");
@@ -74,6 +75,8 @@ class EventReactionsService {
   }
 
   handleEvent(event: NostrEvent) {
+    eventStore.add(event);
+
     // pretend it came from the local relay
     if (localRelay) this.loaders.get(localRelay as AbstractRelay).handleEvent(event);
   }

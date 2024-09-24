@@ -1,11 +1,11 @@
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import { LightningIcon } from "../../../components/icons";
 import ZapModal from "../../../components/event-zap-modal";
 import { useInvoiceModalContext } from "../../../providers/route/invoice-modal";
 
 export default function UserZapButton({ pubkey, ...props }: { pubkey: string } & Omit<IconButtonProps, "aria-label">) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { requestPay } = useInvoiceModalContext();
   if (!metadata) return null;

@@ -6,17 +6,17 @@ import { getEventUID } from "nostr-idb";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { useNotifications } from "../../../providers/global/notifications-provider";
-import useSubject from "../../../hooks/use-subject";
 import { NotificationType, typeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
+import { useObservable } from "../../../hooks/use-observable";
 
 export default function NotificationsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
   const { notifications } = useNotifications();
 
   const events =
-    useSubject(notifications?.timeline)?.filter(
+    useObservable(notifications?.timeline)?.filter(
       (event) =>
         event[typeSymbol] === NotificationType.Mention ||
         event[typeSymbol] === NotificationType.Reply ||

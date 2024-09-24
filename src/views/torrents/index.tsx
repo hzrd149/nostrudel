@@ -14,7 +14,7 @@ import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useCurrentAccount from "../../hooks/use-current-account";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import accountService from "../../services/account";
 import CategorySelect from "./components/category-select";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
@@ -25,7 +25,7 @@ function Warning() {
   const navigate = useNavigate();
   const toast = useToast();
   const account = useCurrentAccount()!;
-  const metadata = useUserMetadata(account.pubkey);
+  const metadata = useUserProfile(account.pubkey);
   const [loading, setLoading] = useState(false);
   const createAnonAccount = async () => {
     setLoading(true);

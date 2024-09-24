@@ -12,6 +12,7 @@ import Process from "./process";
 import Dataflow01 from "../components/icons/dataflow-01";
 import processManager from "../services/process-manager";
 import { localRelay } from "../services/local-relay";
+import { eventStore } from "../services/event-store";
 
 export default class MultiSubscription {
   static OPEN = "open";
@@ -94,7 +95,7 @@ export default class MultiSubscription {
       if (!subscription || !isFilterEqual(subscription.filters, this.filters) || subscription.closed) {
         if (!subscription) {
           subscription = new PersistentSubscription(relay, {
-            onevent: (event) => this.handleEvent(event),
+            onevent: (event) => this.handleEvent(eventStore.add(event, relay.url)),
           });
 
           this.process.addChild(subscription.process);
@@ -114,7 +115,7 @@ export default class MultiSubscription {
       // create cache sub if it does not exist
       if (!this.cacheSubscription && localRelay) {
         this.cacheSubscription = new PersistentSubscription(localRelay as AbstractRelay, {
-          onevent: (event) => this.handleEvent(event, true),
+          onevent: (event) => this.handleEvent(eventStore.add(event, localRelay!.url), true),
         });
         this.process.addChild(this.cacheSubscription.process);
       }

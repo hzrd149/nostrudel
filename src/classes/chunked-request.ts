@@ -15,6 +15,7 @@ import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import processManager from "../services/process-manager";
 import LayersThree01 from "../components/icons/layers-three-01";
+import { eventStore } from "../services/event-store";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
@@ -111,6 +112,9 @@ export default class ChunkedRequest {
 
   private handleEvent(event: NostrEvent) {
     if (!matchFilters(this.filters, event)) return;
+
+    event = eventStore.add(event, this.relay.url);
+
     return this.events.addEvent(event);
   }
 

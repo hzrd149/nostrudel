@@ -10,6 +10,7 @@ import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
 import processManager from "../services/process-manager";
 import createDefer, { Deferred } from "./deferred";
+import { eventStore } from "../services/event-store";
 
 export function createCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${pubkey}${d ? ":" + d : ""}`;
@@ -78,6 +79,8 @@ export default class BatchKindPubkeyLoader {
   );
 
   private handleEvent(event: NostrEvent) {
+    event = eventStore.add(event, this.relay.url);
+
     const key = getEventUID(event);
 
     const defer = this.pending.get(key);

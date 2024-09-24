@@ -1,6 +1,6 @@
 import { Text, TextProps, Tooltip } from "@chakra-ui/react";
 
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
 
 export default function UserDnsIdentity({
@@ -8,7 +8,7 @@ export default function UserDnsIdentity({
   onlyIcon,
   ...props
 }: { pubkey: string; onlyIcon?: boolean } & Omit<TextProps, "children">) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   if (!metadata?.nip05) return null;
 
   if (onlyIcon) {

@@ -16,9 +16,11 @@ import {
   Code,
   AccordionPanelProps,
   Button,
+  Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { ModalProps } from "@chakra-ui/react";
+import { getSeenRelays } from "applesauce-core/helpers";
 import { nip19 } from "nostr-tools";
 
 import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
@@ -29,6 +31,7 @@ import DebugEventTags from "./event-tags";
 import relayHintService from "../../services/event-relay-hint";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { EditIcon } from "../icons";
+import { RelayFavicon } from "../relay-favicon";
 
 function Section({
   label,
@@ -142,6 +145,12 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <JsonCode data={getContentTagRefs(event.content, event.tags)} />
             </Section>
             <Section label="Relays">
+              <Text>Seen on:</Text>
+              {Array.from(getSeenRelays(event) ?? []).map((url) => (
+                <Text gap="1" key={url}>
+                  <RelayFavicon relay={url} size="xs" /> {url}
+                </Text>
+              ))}
               <Button onClick={broadcast} mr="auto" colorScheme="primary" isLoading={loading}>
                 Broadcast
               </Button>

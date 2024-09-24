@@ -1,14 +1,20 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import singleEventService from "../services/single-event";
 import { useReadRelays } from "./use-client-relays";
-import useSubjects from "./use-subjects";
+import { eventStore } from "../services/event-store";
+import { useObservable } from "./use-observable";
 
 export default function useSingleEvents(ids?: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);
-  const subjects = useMemo(() => {
-    return ids?.map((id) => singleEventService.requestEvent(id, readRelays)) ?? [];
+  useEffect(() => {
+    if (!ids) return;
+
+    for (const id of ids) {
+      singleEventService.requestEvent(id, readRelays);
+    }
   }, [ids, readRelays.urls.join("|")]);
 
-  return useSubjects(subjects);
+  const observable = useMemo(() => (ids ? eventStore.timeline([{ ids }]) : undefined), [ids?.join("|")]);
+  return useObservable(observable) ?? [];
 }

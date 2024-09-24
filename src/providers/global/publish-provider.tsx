@@ -15,6 +15,7 @@ import deleteEventService from "../../services/delete-events";
 import userMailboxesService from "../../services/user-mailboxes";
 import localSettings from "../../services/local-settings";
 import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_TAG } from "../../const";
+import { eventStore } from "../../services/event-store";
 
 type PublishContextType = {
   log: PublishAction[];
@@ -115,6 +116,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (localRelay) localRelay.publish(signed);
 
         // pass it to other services
+        eventStore.add(signed);
         if (isReplaceable(signed.kind)) replaceableEventsService.handleEvent(signed);
         if (signed.kind === kinds.Reaction) eventReactionsService.handleEvent(signed);
         if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);

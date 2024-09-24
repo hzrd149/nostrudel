@@ -1,6 +1,7 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
+import { kinds } from "nostr-tools";
 
-import { Button, ButtonGroup, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import useSubject from "../../../hooks/use-subject";
 import { offlineMode } from "../../../services/offline-mode";
@@ -14,13 +15,13 @@ import RelaySet from "../../../classes/relay-set";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import RelayControl from "./relay-control";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import SelectRelaySet from "./select-relay-set";
 import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 
 const JapaneseRelays = safeRelayUrls([
   "wss://r.kojira.io",
@@ -63,7 +64,7 @@ export default function AppRelays() {
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
   const offline = useSubject(offlineMode);
-  const { event: nip65 } = useUserMailboxes(account?.pubkey) ?? {};
+  const nip65 = useReplaceableEvent(account?.pubkey ? { kind: kinds.RelayList, pubkey: account?.pubkey } : undefined);
   const nip05 = useUserDNSIdentity(account?.pubkey);
   const contactRelays = useUserContactRelays(account?.pubkey);
 

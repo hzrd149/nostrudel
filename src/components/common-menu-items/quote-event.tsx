@@ -4,7 +4,7 @@ import { kinds, nip19 } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { QuoteEventIcon } from "../icons";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import relayHintService from "../../services/event-relay-hint";
 import { getParsedZap } from "../../helpers/nostr/zaps";
@@ -12,7 +12,7 @@ import { getParsedZap } from "../../helpers/nostr/zaps";
 export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
   const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
-  const metadata = useUserMetadata(event.pubkey);
+  const metadata = useUserProfile(event.pubkey);
   const { openModal } = useContext(PostModalContext);
 
   const share = useCallback(async () => {

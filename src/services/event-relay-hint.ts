@@ -4,8 +4,8 @@ import type { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { NostrEvent, isDTag } from "../types/nostr-event";
 import relayScoreboardService from "./relay-scoreboard";
 import userMailboxesService from "./user-mailboxes";
-import singleEventService from "./single-event";
 import { isReplaceable } from "../helpers/nostr/event";
+import { eventStore } from "./event-store";
 
 function pickBestRelays(relays: Iterable<string>) {
   // ignore local relays
@@ -20,7 +20,7 @@ function getAddressPointerRelayHint(pointer: AddressPointer): string | undefined
 
 function getEventPointerRelayHints(pointerOrId: string | EventPointer): string[] {
   if (typeof pointerOrId === "string") {
-    const event = singleEventService.getSubject(pointerOrId).value;
+    const event = eventStore.getEvent(pointerOrId);
     if (event) {
       const authorRelays = userMailboxesService.getMailboxes(event.pubkey).value;
       return pickBestRelays(authorRelays?.outbox || []);

@@ -15,7 +15,7 @@ import {
   ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
@@ -33,7 +33,7 @@ export const UserProfileMenu = ({
 }: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
   const toast = useToast();
   const account = useCurrentAccount();
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);

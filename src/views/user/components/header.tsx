@@ -5,7 +5,7 @@ import { EditIcon, GhostIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import accountService from "../../../services/account";
@@ -20,7 +20,7 @@ export default function Header({
   showRelaySelectionModal: () => void;
 }) {
   const navigate = useNavigate();
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
 
   const account = useCurrentAccount();
   const isSelf = pubkey === account?.pubkey;

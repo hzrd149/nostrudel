@@ -7,11 +7,11 @@ import { nip19 } from "nostr-tools";
 
 import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
 import UserAvatar from "../user/user-avatar";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import { getDisplayName } from "../../helpers/nostr/user-metadata";
 
 function UserOption({ pubkey }: { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
 
   return (
     <Flex as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}`} p="2" gap="2" alignItems="center">

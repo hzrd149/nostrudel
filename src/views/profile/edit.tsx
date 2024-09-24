@@ -18,7 +18,7 @@ import { isLNURL } from "../../helpers/lnurl";
 import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import dnsIdentityService from "../../services/dns-identity";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
@@ -202,7 +202,7 @@ export const ProfileEditView = () => {
   const publish = usePublishEvent();
   const readRelays = useReadRelays();
   const account = useCurrentAccount()!;
-  const metadata = useUserMetadata(account.pubkey, readRelays, { alwaysRequest: true });
+  const metadata = useUserProfile(account.pubkey, readRelays, { alwaysRequest: true });
 
   const defaultValues = useMemo<FormData>(
     () => ({

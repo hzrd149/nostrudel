@@ -10,7 +10,7 @@ import { ButtonProps } from "@chakra-ui/react";
 
 export default function SimpleLikeButton({ event, ...props }: Omit<ButtonProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();
-  const reactions = useEventReactions(event.id) ?? [];
+  const reactions = useEventReactions(event) ?? [];
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);
 
   const addReaction = useAddReaction(event, grouped);

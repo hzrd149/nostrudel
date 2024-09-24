@@ -62,7 +62,7 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!account?.pubkey) return;
-    const n = new AccountNotifications(account.pubkey, timeline.events);
+    const n = new AccountNotifications(account.pubkey);
     setNotifications(n);
     if (import.meta.env.DEV) {
       // @ts-expect-error
@@ -70,10 +70,9 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
     }
 
     return () => {
-      n.destroy();
       setNotifications(undefined);
     };
-  }, [account?.pubkey, timeline.events]);
+  }, [account?.pubkey]);
 
   const context = useMemo(() => ({ timeline, notifications }), [timeline, notifications]);
 

@@ -8,6 +8,7 @@ import relayPoolService from "../../../services/relay-pool";
 import ProfileSearchResults from "./profile-results";
 import NoteSearchResults from "./note-results";
 import ArticleSearchResults from "./article-results";
+import { eventStore } from "../../../services/event-store";
 
 function createSearchAction(url: string | AbstractRelay) {
   let sub: Subscription | undefined = undefined;
@@ -33,7 +34,7 @@ function createSearchAction(url: string | AbstractRelay) {
     if (sub) sub.close();
   };
 
-  return { search, cancel };
+  return { search, cancel, relay: url };
 }
 
 const searchCache = new LRU<NostrEvent[]>(10);
@@ -61,6 +62,8 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
       search
         .search([{ search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 }], {
           onevent: (event) => {
+            event = eventStore.add(event, typeof search.relay === "string" ? search.relay : search.relay.url);
+
             setResults((arr) => {
               const newArr = [...arr, event];
               searchCache.set(query + relay, newArr);

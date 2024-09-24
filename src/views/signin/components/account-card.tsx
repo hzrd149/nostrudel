@@ -2,7 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Text } from "@chakra-ui/react";
 
 import { getDisplayName } from "../../../helpers/nostr/user-metadata";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import accountService from "../../../services/account";
 import UserAvatar from "../../../components/user/user-avatar";
 import AccountTypeBadge from "../../../components/account-info-badge";
@@ -11,7 +11,7 @@ import { Account } from "../../../classes/accounts/account";
 export default function AccountCard({ account }: { account: Account }) {
   const pubkey = account.pubkey;
   // this wont load unless the data is cached since there are no relay connections yet
-  const metadata = useUserMetadata(pubkey, []);
+  const metadata = useUserProfile(pubkey, []);
 
   return (
     <Box

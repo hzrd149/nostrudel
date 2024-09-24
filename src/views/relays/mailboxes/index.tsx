@@ -17,6 +17,8 @@ import BackButton from "../../../components/router/back-button";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import AddRelayForm from "../app/add-relay-form";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { kinds } from "nostr-tools";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
@@ -47,8 +49,8 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 function MailboxesPage() {
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
-  const { inbox, outbox, event } =
-    useUserMailboxes(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true }) || {};
+  const mailboxes = useUserMailboxes(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true });
+  const event = useReplaceableEvent({ kind: kinds.RelayList, pubkey: account.pubkey });
 
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
@@ -84,9 +86,11 @@ function MailboxesPage() {
       <Text fontStyle="italic" mt="-2">
         These relays are used by other users to send DMs and notes to you
       </Text>
-      {inbox?.urls
+      {Array.from(mailboxes?.inboxes ?? [])
         .sort()
-        .map((url) => <RelayLine key={url} relay={url} mode={RelayMode.READ} list={event ?? undefined} />)}
+        .map((url) => (
+          <RelayLine key={url} relay={url} mode={RelayMode.READ} list={event ?? undefined} />
+        ))}
       <AddRelayForm onSubmit={(r) => addRelay(r, RelayMode.READ)} />
 
       <Flex gap="2" mt="4">
@@ -96,9 +100,11 @@ function MailboxesPage() {
       <Text fontStyle="italic" mt="-2">
         noStrudel will always publish to these relays so other users can find your notes
       </Text>
-      {outbox?.urls
+      {Array.from(mailboxes?.outboxes ?? [])
         .sort()
-        .map((url) => <RelayLine key={url} relay={url} mode={RelayMode.WRITE} list={event ?? undefined} />)}
+        .map((url) => (
+          <RelayLine key={url} relay={url} mode={RelayMode.WRITE} list={event ?? undefined} />
+        ))}
       <AddRelayForm onSubmit={(r) => addRelay(r, RelayMode.WRITE)} />
     </Flex>
   );

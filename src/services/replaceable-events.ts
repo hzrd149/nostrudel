@@ -15,6 +15,7 @@ import { alwaysVerify } from "./verify-event";
 import { truncateId } from "../helpers/string";
 import processManager from "./process-manager";
 import UserSquare from "../components/icons/user-square";
+import { eventStore } from "./event-store";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -61,6 +62,8 @@ class ReplaceableEventsService {
   handleEvent(event: NostrEvent, fromCache = false) {
     if (!fromCache && !alwaysVerify(event)) return;
     const cord = getEventCoordinate(event);
+
+    eventStore.add(event);
 
     const subject = this.subjects.get(cord);
     const current = subject.value;

@@ -1,15 +1,23 @@
-import { useMemo } from "react";
+import { NostrEvent } from "nostr-tools";
+import { getEventUID } from "applesauce-core/helpers";
+
 import eventReactionsService from "../services/event-reactions";
 import { useReadRelays } from "./use-client-relays";
-import useSubject from "./use-subject";
+import { queryStore } from "../services/event-store";
+import { useObservable } from "./use-observable";
+import { useEffect } from "react";
 
-export default function useEventReactions(eventId: string, additionalRelays?: Iterable<string>, alwaysRequest = true) {
+export default function useEventReactions(
+  event: NostrEvent,
+  additionalRelays?: Iterable<string>,
+  alwaysRequest = true,
+) {
   const relays = useReadRelays(additionalRelays);
 
-  const subject = useMemo(
-    () => eventReactionsService.requestReactions(eventId, relays, alwaysRequest),
-    [eventId, relays.urls.join("|"), alwaysRequest],
-  );
+  useEffect(() => {
+    eventReactionsService.requestReactions(getEventUID(event), relays, alwaysRequest);
+  }, [event, relays, alwaysRequest]);
 
-  return useSubject(subject);
+  const observable = queryStore.getReactions(event);
+  return useObservable(observable);
 }

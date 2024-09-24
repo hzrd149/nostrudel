@@ -88,7 +88,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const mailboxes = useUserMailboxes(account.pubkey);
   const timeline = useTimelineLoader(
     `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
+    RelaySet.from(mailboxes?.inboxes, mailboxes?.outboxes, otherMailboxes?.inboxes, otherMailboxes?.outboxes),
     [
       {
         kinds: [kinds.EncryptedDirectMessage],

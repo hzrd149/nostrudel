@@ -32,7 +32,7 @@ import { usePublishEvent } from "../../../../providers/global/publish-provider";
 
 function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const publish = usePublishEvent();
-  const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
+  const dvmRelays = useUserMailboxes(pointer.pubkey)
   const readRelays = useReadRelays();
 
   const lastJob = chain[chain.length - 1];
@@ -49,7 +49,7 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
       ],
     };
 
-    await publish("Next Page", draft, dvmRelays);
+    await publish("Next Page", draft, dvmRelays?.inboxes);
   };
 
   const response = getResponseFromDVM(lastJob, pointer.pubkey);

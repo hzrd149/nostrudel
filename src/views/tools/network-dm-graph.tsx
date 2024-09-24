@@ -22,7 +22,7 @@ import RequireCurrentAccount from "../../providers/route/require-current-account
 import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import EventStore from "../../classes/event-store";
 import { isPTag } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
@@ -69,7 +69,7 @@ function NetworkDMGraphPage() {
     fetchData();
   }, [relays, store, contactsPubkeys, since, until]);
 
-  const selfMetadata = useUserMetadata(account.pubkey);
+  const selfMetadata = useUserProfile(account.pubkey);
   const usersMetadata = useUsersMetadata(contactsPubkeys);
 
   const newEventTrigger = useObservable(store.onEvent);

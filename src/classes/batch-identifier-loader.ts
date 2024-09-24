@@ -11,6 +11,7 @@ import createDefer, { Deferred } from "./deferred";
 import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
 import Subject from "./subject";
+import { eventStore } from "../services/event-store";
 
 /** Batches requests for events with #d tags from a single relay */
 export default class BatchIdentifierLoader {
@@ -81,6 +82,8 @@ export default class BatchIdentifierLoader {
   );
 
   handleEvent(event: NostrEvent) {
+    event = eventStore.add(event, this.relay.url);
+
     // add event to cache
     for (const tag of event.tags) {
       if (tag[0] === "d" && tag[1]) {

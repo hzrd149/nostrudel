@@ -9,6 +9,7 @@ import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
 import processManager from "../services/process-manager";
 import createDefer, { Deferred } from "./deferred";
+import { eventStore } from "../services/event-store";
 
 /** This class is used to batch requests for single events from a relay */
 export default class BatchEventLoader {
@@ -72,6 +73,8 @@ export default class BatchEventLoader {
   );
 
   private handleEvent(event: NostrEvent) {
+    event = eventStore.add(event, this.relay.url);
+
     const key = event.id;
 
     this.events.addEvent(event);

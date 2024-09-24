@@ -21,7 +21,7 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
   const streamRelays = useReadRelays(useAdditionalRelayContext());
   const hostReadRelays = useUserInbox(stream.host);
 
-  const relays = useMemo(() => unique([...streamRelays, ...hostReadRelays]), [hostReadRelays, streamRelays]);
+  const relays = useMemo(() => unique([...streamRelays, ...(hostReadRelays ?? [])]), [hostReadRelays, streamRelays]);
 
   const { setValue, handleSubmit, formState, reset, getValues, watch } = useForm({
     defaultValues: { content: "" },

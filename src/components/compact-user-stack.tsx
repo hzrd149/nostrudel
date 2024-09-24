@@ -17,10 +17,10 @@ import { nip19 } from "nostr-tools";
 
 import UserAvatar from "./user/user-avatar";
 import { getDisplayName } from "../helpers/nostr/user-metadata";
-import useUserMetadata from "../hooks/use-user-metadata";
+import useUserProfile from "../hooks/use-user-profile";
 
 function UserTag({ pubkey, ...props }: { pubkey: string } & Omit<TagProps, "children">) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const npub = nip19.npubEncode(pubkey);
 
   const displayName = getDisplayName(metadata, pubkey);

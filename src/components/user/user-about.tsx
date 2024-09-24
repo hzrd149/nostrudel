@@ -2,11 +2,11 @@ import { useMemo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import { embedNostrLinks, renderGenericUrl } from "../external-embeds";
 
 export default function UserAbout({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
 
   const aboutContent = useMemo(() => {
     if (!metadata?.about) return null;

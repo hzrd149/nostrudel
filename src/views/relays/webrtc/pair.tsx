@@ -31,7 +31,7 @@ import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import { useAsync } from "react-use";
 
 function NameForm() {
@@ -39,7 +39,7 @@ function NameForm() {
   const { register, handleSubmit, formState, reset } = useForm({ defaultValues: { name: "" }, mode: "all" });
 
   const { value: pubkey } = useAsync(async () => webRtcRelaysService.broker.signer.getPublicKey());
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   useEffect(() => {
     if (metadata?.name) reset({ name: metadata.name }, { keepDirty: false, keepTouched: false });
   }, [metadata?.name]);

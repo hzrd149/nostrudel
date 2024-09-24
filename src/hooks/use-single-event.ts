@@ -1,13 +1,17 @@
+import { useEffect } from "react";
+
 import singleEventService from "../services/single-event";
 import { useReadRelays } from "./use-client-relays";
-import { useMemo } from "react";
-import useSubject from "./use-subject";
+import { queryStore } from "../services/event-store";
+import { useObservable } from "./use-observable";
 
 export default function useSingleEvent(id?: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);
-  const subject = useMemo(() => {
-    if (id) return singleEventService.requestEvent(id, readRelays);
+
+  useEffect(() => {
+    if (id) singleEventService.requestEvent(id, readRelays);
   }, [id, readRelays.urls.join("|")]);
 
-  return useSubject(subject);
+  const observable = id ? queryStore.getEvent(id) : undefined;
+  return useObservable(observable);
 }

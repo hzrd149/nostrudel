@@ -24,7 +24,7 @@ import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import { embedNostrLinks, renderGenericUrl } from "../../../components/external-embeds";
 import {
   ChevronDownIcon,
@@ -64,7 +64,7 @@ function buildDescriptionContent(description: string) {
 }
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const dnsIdentity = useUserDNSIdentity(pubkey);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
@@ -105,7 +105,7 @@ export default function UserAboutTab() {
   const contextRelays = useAdditionalRelayContext();
   const colorModal = useDisclosure();
 
-  const metadata = useUserMetadata(pubkey, contextRelays);
+  const metadata = useUserProfile(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);

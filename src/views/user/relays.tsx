@@ -59,7 +59,7 @@ const UserRelaysTab = () => {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const mailboxes = useUserMailboxes(pubkey);
 
-  const readRelays = useReadRelays(mailboxes?.outbox);
+  const readRelays = useReadRelays(mailboxes?.outboxes);
   const timeline = useTimelineLoader(`${truncateId(pubkey)}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
@@ -72,7 +72,7 @@ const UserRelaysTab = () => {
 
   const otherReviews = reviews.filter((e) => {
     const url = e.tags.find((t) => t[0] === "r")?.[1];
-    return url && !mailboxes?.relays.has(url);
+    return url && !mailboxes?.inboxes.has(url) && !mailboxes?.outboxes.has(url);
   });
 
   return (
@@ -81,7 +81,7 @@ const UserRelaysTab = () => {
         Inboxes
       </Heading>
       <VStack divider={<StackDivider />} py="2" align="stretch">
-        {mailboxes?.inbox.urls.map((url) => (
+        {Array.from(mailboxes?.inboxes ?? []).map((url) => (
           <ErrorBoundary>
             <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
           </ErrorBoundary>
@@ -91,7 +91,7 @@ const UserRelaysTab = () => {
         Outboxes
       </Heading>
       <VStack divider={<StackDivider />} py="2" align="stretch">
-        {mailboxes?.outbox.urls.map((url) => (
+        {Array.from(mailboxes?.outboxes ?? []).map((url) => (
           <ErrorBoundary>
             <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
           </ErrorBoundary>

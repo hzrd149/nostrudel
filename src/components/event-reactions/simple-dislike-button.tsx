@@ -13,7 +13,7 @@ export default function SimpleDislikeButton({
   ...props
 }: Omit<ButtonProps, "children"> & { event: NostrEvent }) {
   const account = useCurrentAccount();
-  const reactions = useEventReactions(event.id) ?? [];
+  const reactions = useEventReactions(event) ?? [];
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);
 
   const addReaction = useAddReaction(event, grouped);

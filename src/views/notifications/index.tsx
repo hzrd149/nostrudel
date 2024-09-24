@@ -25,7 +25,7 @@ import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
 import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
 import useVimNavigation from "./use-vim-navigation";
 import { PersistentSubject } from "../../classes/subject";
-import useRouteStateValue from "../../hooks/use-route-state-value";
+import { useObservable } from "../../hooks/use-observable";
 
 function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
   const readAll = useCallback(() => {
@@ -62,7 +62,7 @@ const NotificationsTimeline = memo(
     const { people } = usePeopleListContext();
     const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-    const events = useSubject(notifications?.timeline) ?? [];
+    const events = useObservable(notifications?.timeline) ?? [];
 
     const cacheKey = useTimelineLocationCacheKey();
     const numberCache = useNumberCache(cacheKey);

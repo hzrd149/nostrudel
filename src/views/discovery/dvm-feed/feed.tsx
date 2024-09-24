@@ -47,7 +47,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const account = useCurrentAccount()!;
   const debugModal = useDisclosure();
 
-  const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
+  const dvmRelays = useUserMailboxes(pointer.pubkey)?.outboxes;
   const readRelays = useReadRelays(dvmRelays);
   const timeline = useTimelineLoader(
     `${getHumanReadableCoordinate(pointer.kind, pointer.pubkey, pointer.identifier)}-jobs`,

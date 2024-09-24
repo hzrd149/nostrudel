@@ -7,7 +7,7 @@ import { useBreakpointValue } from "../../../../providers/global/breakpoint-prov
 import useEventReactions from "../../../../hooks/use-event-reactions";
 
 export default function NoteReactions({ event, ...props }: Omit<ButtonGroupProps, "children"> & { event: NostrEvent }) {
-  const reactions = useEventReactions(event.id) ?? [];
+  const reactions = useEventReactions(event) ?? [];
   const max = useBreakpointValue({ base: undefined, md: 4 });
 
   return (

@@ -13,7 +13,7 @@ import useUserContactList from "../../hooks/use-user-contact-list";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import replaceableEventsService from "../../services/replaceable-events";
 import useSubjects from "../../hooks/use-subjects";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import { ChevronLeftIcon } from "../../components/icons";
 
 export function useUsersMuteLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
@@ -30,7 +30,7 @@ function NetworkGraphPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
 
-  const selfMetadata = useUserMetadata(account.pubkey);
+  const selfMetadata = useUserProfile(account.pubkey);
   const contacts = useUserContactList(account.pubkey);
   const contactsPubkeys = useMemo(
     () => (contacts ? getPubkeysFromList(contacts).map((p) => p.pubkey) : []),

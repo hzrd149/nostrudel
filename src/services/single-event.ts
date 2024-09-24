@@ -12,18 +12,19 @@ import processManager from "./process-manager";
 import Code02 from "../components/icons/code-02";
 import BatchEventLoader from "../classes/batch-event-loader";
 import EventStore from "../classes/event-store";
+import { eventStore } from "./event-store";
 
 class SingleEventService {
   process: Process;
   log = logger.extend("SingleEventService");
 
-  events = new EventStore();
-  subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
+  // events = new EventStore();
+  // subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   loaders = new SuperMap<AbstractRelay, BatchEventLoader>((relay) => {
     const loader = new BatchEventLoader(relay, this.log.extend(relay.url));
     this.process.addChild(loader.process);
-    this.events.connect(loader.events);
+    // this.events.connect(loader.events);
     return loader;
   });
 
@@ -38,14 +39,14 @@ class SingleEventService {
     processManager.registerProcess(this.process);
 
     // when an event is added to the store, pass it along to the subjects
-    this.events.onEvent.subscribe((event) => {
-      this.subjects.get(event.id).next(event);
-    });
+    // this.events.onEvent.subscribe((event) => {
+    //   this.subjects.get(event.id).next(event);
+    // });
   }
 
-  getSubject(id: string) {
-    return this.subjects.get(id);
-  }
+  // getSubject(id: string) {
+  //   return this.subjects.get(id);
+  // }
 
   private loadEventFromRelays(id: string) {
     const relays = this.pendingRelays.get(id);
@@ -57,8 +58,9 @@ class SingleEventService {
 
   loadingFromCache = new Set<string>();
   requestEvent(id: string, urls: Iterable<string | URL | AbstractRelay>) {
-    const subject = this.subjects.get(id);
-    if (subject.value) return subject;
+    if (eventStore.hasEvent(id)) return;
+    // const subject = this.subjects.get(id);
+    // if (subject.value) return subject;
 
     const relays = relayPoolService.getRelays(urls);
     for (const relay of relays) this.pendingRelays.get(id).add(relay);
@@ -79,12 +81,14 @@ class SingleEventService {
       }
     } else this.loadEventFromRelays(id);
 
-    return subject;
+    // return subject;
   }
 
   handleEvent(event: NostrEvent, fromCache = false) {
-    this.events.addEvent(event);
+    // this.events.addEvent(event);
     this.pendingRelays.delete(event.id);
+
+    eventStore.add(event);
 
     if (!fromCache && localRelay) localRelay.publish(event);
   }
