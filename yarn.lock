@@ -3117,10 +3117,17 @@
   resolved "https://registry.yarnpkg.com/@types/webxr/-/webxr-0.5.20.tgz#b16b681af314ec011b2e8221b0a072d691c04953"
   integrity sha512-JGpU6qiIJQKUuVSKx1GtQnHJGxRjtfGIhzO2ilq43VZZS//f1h1Sgexbdk+Lq+7569a6EYhOWrUpIruR/1Enmg==
 
-"@types/zen-observable@^0.8.7":
+"@types/zen-observable@*", "@types/zen-observable@^0.8.7":
   version "0.8.7"
   resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.7.tgz#114e2ffc8d5be4915fdd5bc90668fc0ceaadb760"
   integrity sha512-LKzNTjj+2j09wAo/vvVjzgw5qckJJzhdGgWHW7j69QIGdq/KnZrMAMIHQiWGl3Ccflh5/CudBAntTPYdprPltA==
+
+"@types/zen-push@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@types/zen-push/-/zen-push-0.1.4.tgz#93e9dc4aa3cba3905fb25640fad285adec1fe941"
+  integrity sha512-FB0u2p9qwYRItXTio+Jwn+usx4zWIgdDXwMcSiZtjEFru/mIfJb9SedruzbBvEGHvq77sGt2e5cursvheyYcRQ==
+  dependencies:
+    "@types/zen-observable" "*"
 
 "@uiw/codemirror-extensions-basic-setup@4.23.3":
   version "4.23.3"
@@ -3267,16 +3274,17 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-applesauce-core@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/applesauce-core/-/applesauce-core-0.1.0.tgz#961b06c0419feb228b63e21bd0146c271005c56b"
-  integrity sha512-zvTnhPNqWCS4+Gdp8wTrFY76IcDReE/UJo2k7suriYQW9wtk1USjBvDFtpkiAcAB8obggDEtEJ9ZF3N2ojHZ+w==
+applesauce-core@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/applesauce-core/-/applesauce-core-0.2.0.tgz#662333b0a97ceb76d7eeaae4cb614959334eb1d0"
+  integrity sha512-fSDdn5jokiHbnJmxFLcRu2cn2bf2Y7Z4OVZ0cc9CkAsIsnmbM4abWMUoKERM0ilD/C9423naElkr5cyGik4UJA==
   dependencies:
+    "@types/zen-push" "^0.1.4"
     debug "^4.3.7"
     json-stringify-deterministic "^1.0.12"
     nanoid "^5.0.7"
     nostr-tools "^2.7.2"
-    tiny-lru "^11.2.11"
+    zen-push "^0.3.1"
 
 argparse@^1.0.7:
   version "1.0.10"
@@ -7956,6 +7964,18 @@ zen-observable@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.10.0.tgz#ee10eba75272897dbee5f152ab26bb5e0107f0c8"
   integrity sha512-iI3lT0iojZhKwT5DaFy2Ce42n3yFcLdFyOh01G7H0flMY60P8MJuVFEoJoNwXlmAyQ45GrjL6AcZmmlv8A5rbw==
+
+zen-observable@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.9.0.tgz#fd67c72b908af2bba323227e2d8812e04d60d94d"
+  integrity sha512-xBrvSw1htnb2VEYpgjG7etqztHSZ4KyKzJgFh/rucI7QzkbxD0rVNmIni6lia6KhWs7RBbBBLZksGKrCSaDAMQ==
+
+zen-push@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/zen-push/-/zen-push-0.3.1.tgz#522e93279103de376a3f09461d04f35f778f5258"
+  integrity sha512-6XNTSVz8Z/5+8BzOQFQr+HOr/j7K+ZJfc4tdCCmuiq8y2Ph+aODqagZnXKbKIFZrQ3nSIcdek9gAuEe+p3zJUg==
+  dependencies:
+    zen-observable "^0.9.0"
 
 zustand@^4.5.4:
   version "4.5.5"
