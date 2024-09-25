@@ -69,7 +69,7 @@ export const internalTools: App[] = [
     description: "Write and publish events",
     icon: UploadCloud01,
     id: "publisher",
-    to: "/tools/publisher ",
+    to: "/tools/publisher",
   },
   {
     title: "Unknown Events",
