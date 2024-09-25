@@ -38,7 +38,6 @@ import RequireCurrentAccount from "../../../providers/route/require-current-acco
 import VariableEditor from "./components/variable-editor";
 import EventTemplateEditor from "./components/event-template-editor";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
-import { cloneEvent } from "../../../helpers/nostr/event";
 
 function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const toast = useToast();
@@ -100,33 +99,17 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
     if (!finalized || !(finalized as NostrEvent).sig) return;
     try {
       setLoading(true);
-      const valid = verifyEvent(draft as NostrEvent);
+      let event: NostrEvent;
+
+      if ((finalized as NostrEvent).sig) event = finalized as NostrEvent;
+      else event = await requestSignature(processEvent(finalized, variables, account));
+
+      const valid = verifyEvent(event);
       if (!valid) throw new Error("Invalid event");
       if (customRelayURL) {
         await publish("Custom Event", finalized, [customRelayURL], true, true);
       } else {
         await publish("Custom Event", finalized);
-      }
-      setFinalized(undefined);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-    setLoading(false);
-  };
-
-  const yolo = async () => {
-    try {
-      if (!account) return;
-
-      setLoading(true);
-      const event = await requestSignature(processEvent(draft, variables, account));
-
-      const valid = verifyEvent(event);
-      if (!valid) throw new Error("Invalid event");
-      if (customRelayURL) {
-        await publish("Custom Event", event, [customRelayURL], true, true);
-      } else {
-        await publish("Custom Event", event);
       }
       setFinalized(undefined);
     } catch (e) {
@@ -263,9 +246,6 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
             <ModalFooter>
               <Button mr={2} onClick={() => setFinalized(undefined)}>
                 Cancel
-              </Button>
-              <Button colorScheme="primary" onClick={yolo} isLoading={loading}>
-                Yolo
               </Button>
             </ModalFooter>
           </ModalContent>
