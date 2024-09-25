@@ -12,25 +12,25 @@ export function isImageURL(url: string | URL) {
   const u = new URL(url);
   const ipfsFilename = u.searchParams.get("filename");
 
-  return IMAGE_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
+  return IMAGE_EXT.some((ext) => u.pathname.toLowerCase().endsWith(ext) || ipfsFilename?.toLowerCase().endsWith(ext));
 }
 export function isVideoURL(url: string | URL) {
   const u = new URL(url);
   const ipfsFilename = u.searchParams.get("filename");
 
-  return VIDEO_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
+  return VIDEO_EXT.some((ext) => u.pathname.toLowerCase().endsWith(ext) || ipfsFilename?.toLowerCase().endsWith(ext));
 }
 export function isStreamURL(url: string | URL) {
   const u = new URL(url);
   const ipfsFilename = u.searchParams.get("filename");
 
-  return STREAM_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
+  return STREAM_EXT.some((ext) => u.pathname.toLowerCase().endsWith(ext) || ipfsFilename?.toLowerCase().endsWith(ext));
 }
 export function isAudioURL(url: string | URL) {
   const u = new URL(url);
   const ipfsFilename = u.searchParams.get("filename");
 
-  return AUDIO_EXT.some((ext) => u.pathname.endsWith(ext) || ipfsFilename?.endsWith(ext));
+  return AUDIO_EXT.some((ext) => u.pathname.toLowerCase().endsWith(ext) || ipfsFilename?.toLowerCase().endsWith(ext));
 }
 
 export function replaceDomain(url: string | URL, replacementUrl: string | URL) {
