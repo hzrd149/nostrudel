@@ -51,6 +51,10 @@ const addClientTag = new BooleanLocalStorageEntry("add-client-tag", false);
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
 const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
+// privacy
+const defaultAuthenticationMode = new LocalStorageEntry("default-relay-auth-mode", "ask"); // ask, always, never
+const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
+
 // display settings
 const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
 
@@ -66,6 +70,8 @@ const localSettings = {
   verifyEventMethod,
   enableKeyboardShortcuts,
   showBrandLogo,
+  defaultAuthenticationMode,
+  proactivelyAuthenticate,
 };
 
 if (import.meta.env.DEV) {

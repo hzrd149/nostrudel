@@ -32,6 +32,8 @@ import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import processManager from "../../../services/process-manager";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import Timestamp from "../../../components/timestamp";
+import localSettings from "../../../services/local-settings";
+import useSubject from "../../../hooks/use-subject";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (
@@ -50,11 +52,15 @@ function RelayCard({ relay }: { relay: AbstractRelay }) {
 function RelayAuthCard({ relay }: { relay: AbstractRelay }) {
   const { authenticated } = useRelayAuthMethod(relay);
 
+  const defaultMode = useSubject(localSettings.defaultAuthenticationMode);
+
   const processes = processManager.getRootProcessesForRelay(relay);
-  const [authMode, setAuthMode] = useLocalStorage<RelayAuthMode>(
+  const [authMode, setAuthMode] = useLocalStorage<RelayAuthMode | "">(
     relayPoolService.getRelayAuthStorageKey(relay),
-    "ask",
-    { raw: true },
+    "",
+    {
+      raw: true,
+    },
   );
 
   return (
@@ -74,9 +80,10 @@ function RelayAuthCard({ relay }: { relay: AbstractRelay }) {
         w="auto"
         rounded="md"
         flexShrink={0}
-        value={authMode || "ask"}
+        value={authMode}
         onChange={(e) => setAuthMode(e.target.value as RelayAuthMode)}
       >
+        <option value="">Default ({defaultMode})</option>
         <option value="always">Always</option>
         <option value="ask">Ask</option>
         <option value="never">Never</option>
