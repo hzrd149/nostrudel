@@ -32,15 +32,18 @@ jobs:
       - name: Redirect 404 to Index for SPA
         run: cp dist/index.html dist/404.html
 
-      - name: Deploy
-        uses: reggionick/s3-deploy@v4
-        with:
-          folder: dist
-          bucket: "${{ secrets.S3_BUCKET }}"
-          bucket-region: us-east-1
-          dist-id: "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
-          invalidation: /
-          delete-removed: true
-          no-cache: true
-          private: true
-          files-to-include: "{.*/**,**}"
+      # - name: Deploy
+      #   uses: reggionick/s3-deploy@v4
+      #   with:
+      #     folder: dist
+      #     bucket: "${{ secrets.S3_BUCKET }}"
+      #     bucket-region: us-east-1
+      #     dist-id: "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+      #     invalidation: /
+      #     delete-removed: true
+      #     no-cache: true
+      #     private: true
+      #     files-to-include: "{.*/**,**}"
+
+      - name: Deploy nsite
+        run: npx -y nsite-cli upload dist --purge --privatekey ${{ secrets.NSITE_KEY }}
