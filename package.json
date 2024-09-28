@@ -113,6 +113,7 @@
     "@types/debug": "^4.1.12",
     "@types/dom-serial": "^1.0.6",
     "@types/identicon.js": "^2.3.4",
+    "@types/json-schema": "^7.0.15",
     "@types/leaflet": "^1.9.8",
     "@types/leaflet.locatecontrol": "^0.74.4",
     "@types/lodash.throttle": "^4.1.9",
