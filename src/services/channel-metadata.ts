@@ -11,6 +11,7 @@ import { logger } from "../helpers/debug";
 import db from "./db";
 import createDefer, { Deferred } from "../classes/deferred";
 import { getChannelPointer } from "../helpers/nostr/channel";
+import { eventStore } from "./event-store";
 
 type Pubkey = string;
 type Relay = string;
@@ -135,6 +136,8 @@ class ChannelMetadataService {
   dbLog = this.log.extend("database");
 
   handleEvent(event: NostrEvent, saveToCache = true) {
+    eventStore.add(event);
+
     const channelId = getChannelPointer(event)?.id;
     if (!channelId) return;
 

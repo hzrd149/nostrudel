@@ -67,7 +67,7 @@ export default function ChannelMetadataDrawer({
   channel,
   ...props
 }: Omit<DrawerProps, "children"> & { channel: NostrEvent }) {
-  const { metadata } = useChannelMetadata(channel.id);
+  const metadata = useChannelMetadata(channel.id);
   const relays = useReadRelays(useAdditionalRelayContext());
 
   return (
@@ -93,7 +93,7 @@ export default function ChannelMetadataDrawer({
           <Heading size="sm" mt="2">
             About
           </Heading>
-          <Text whiteSpace="pre">{metadata.about}</Text>
+          <Text whiteSpace="pre">{metadata?.about}</Text>
           <Heading size="sm" mt="2">
             Members
           </Heading>

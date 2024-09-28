@@ -31,7 +31,7 @@ export default function ChannelCard({
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: Iterable<string> }) {
   const readRelays = useReadRelays(additionalRelays);
-  const { metadata } = useChannelMetadata(channel.id, readRelays);
+  const metadata = useChannelMetadata(channel.id, readRelays);
 
   const ref = useEventIntersectionRef(channel);
 

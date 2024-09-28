@@ -17,21 +17,18 @@ import {
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayDebugButton, RelayMetadata } from "../components/relay-card";
 import SupportedNIPs from "../components/supported-nips";
-import { ExternalLinkIcon } from "../../../components/icons";
 import RelayReviewForm from "./relay-review-form";
 import RelayReviews from "./relay-reviews";
 import RelayNotes from "./relay-notes";
 import PeopleListProvider from "../../../providers/local/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import { RelayFavicon } from "../../../components/relay-favicon";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { safeRelayUrl } from "../../../helpers/relay";
 import RelayUsersTab from "./relay-users";
-import RelayListButton from "../../../components/relay-list-button";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 
 function RelayPage({ relay }: { relay: string }) {
-  const { info } = useRelayInfo(relay);
+  const { info } = useRelayInfo(relay, true);
   const showReviewForm = useDisclosure();
 
   const uiURL = useMemo(() => {

@@ -42,7 +42,7 @@
     "@uiw/codemirror-theme-github": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
-    "applesauce-core": "^0.2.0",
+    "applesauce-core": "^0.3.0",
     "bech32": "^2.0.0",
     "blossom-client-sdk": "^0.7.0",
     "blossom-drive-sdk": "^0.4.0",
@@ -63,6 +63,7 @@
     "idb": "^8.0.0",
     "identicon.js": "^2.3.3",
     "iso-language-codes": "^2.0.0",
+    "json-schema": "^0.4.0",
     "json-stringify-deterministic": "^1.0.12",
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.79.0",
@@ -138,5 +139,6 @@
   "funding": {
     "type": "lightning",
     "url": "lightning:nostrudel@geyser.fund"
-  }
+  },
+  "packageManager": "pnpm@9.6.0"
 }

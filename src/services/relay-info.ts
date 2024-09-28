@@ -39,12 +39,12 @@ async function fetchInfo(relay: string) {
 }
 
 const memoryCache = new Map<string, RelayInformationDocument>();
-async function getInfo(relay: string) {
+async function getInfo(relay: string, alwaysFetch = false) {
   const url = validateRelayURL(relay).toString();
-  if (memoryCache.has(url)) return memoryCache.get(url)!;
+  if (memoryCache.has(url) && !alwaysFetch) return memoryCache.get(url)!;
 
   const cached = await db.get("relayInfo", url);
-  if (cached) {
+  if (cached && !alwaysFetch) {
     memoryCache.set(url, cached);
     return cached as RelayInformationDocument;
   }
@@ -53,10 +53,10 @@ async function getInfo(relay: string) {
 }
 
 const pending: Record<string, ReturnType<typeof getInfo> | undefined> = {};
-function dedupedGetIdentity(relay: string) {
+function dedupedGetIdentity(relay: string, alwaysFetch = false) {
   const request = pending[relay];
   if (request) return request;
-  return (pending[relay] = getInfo(relay).then((v) => {
+  return (pending[relay] = getInfo(relay, alwaysFetch).then((v) => {
     delete pending[relay];
     return v;
   }));

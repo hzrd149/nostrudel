@@ -12,6 +12,6 @@ export default function useSingleEvent(id?: string, additionalRelays?: Iterable<
     if (id) singleEventService.requestEvent(id, readRelays);
   }, [id, readRelays.urls.join("|")]);
 
-  const observable = id ? queryStore.getEvent(id) : undefined;
+  const observable = id ? queryStore.event(id) : undefined;
   return useObservable(observable);
 }

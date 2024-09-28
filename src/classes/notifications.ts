@@ -35,7 +35,7 @@ export default class AccountNotifications {
 
     this.timeline = stateful(
       throttle(
-        queryStore.getTimeline([
+        queryStore.timeline([
           {
             "#p": [pubkey],
             kinds: [

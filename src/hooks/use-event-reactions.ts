@@ -18,6 +18,6 @@ export default function useEventReactions(
     eventReactionsService.requestReactions(getEventUID(event), relays, alwaysRequest);
   }, [event, relays, alwaysRequest]);
 
-  const observable = queryStore.getReactions(event);
+  const observable = queryStore.reactions(event);
   return useObservable(observable);
 }

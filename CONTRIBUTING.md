@@ -15,7 +15,7 @@ Thank you for considering contributing to the project! I welcome contributions f
 
 ## Guidelines
 
-- All code if formatted with prettier. you can run `yarn run format` to format the project
+- All code if formatted with prettier. you can run `pnpm run format` to format the project
 - Write clear and concise commit messages
 
 ## Issues and Bug Reports

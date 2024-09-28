@@ -1,4 +1,3 @@
-import RelaySet from "../classes/relay-set";
 import { COMMON_CONTACT_RELAY } from "../const";
 import { RequestOptions } from "../services/replaceable-events";
 import userMailboxesService from "../services/user-mailboxes";
@@ -16,7 +15,7 @@ export default function useUserMailboxes(
     userMailboxesService.requestMailboxes(pubkey, readRelays, opts);
   }
 
-  const observable = pubkey ? queryStore.getMailboxes(pubkey) : undefined;
+  const observable = pubkey ? queryStore.mailboxes(pubkey) : undefined;
   return useObservable(observable);
 }
 export function useUserInbox(pubkey?: string, additionalRelays: Iterable<string> = [], opts?: RequestOptions) {

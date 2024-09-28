@@ -16,6 +16,6 @@ export default function useUserProfile(pubkey?: string, additionalRelays?: Itera
     if (pubkey) userMetadataService.requestMetadata(pubkey, readRelays, opts);
   }, [pubkey, readRelays]);
 
-  const observable = pubkey ? queryStore.getProfile(pubkey) : undefined;
+  const observable = pubkey ? queryStore.profile(pubkey) : undefined;
   return useObservable(observable);
 }
