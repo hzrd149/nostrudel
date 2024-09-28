@@ -22,7 +22,7 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
             <Link as={RouterLink} to="/relays/app">
               app relays
             </Link>
-            ! Reading and publishing notes wont work very well!
+            ! Reading and publishing notes won't work very well!
           </Text>
           <Spacer />
           <Button as={RouterLink} to="/relays/app" size="sm" colorScheme="primary">
