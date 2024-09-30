@@ -20,6 +20,7 @@ ENV VITE_COMMIT_HASH=""
 ENV VITE_APP_VERSION="Custom"
 
 COPY tsconfig.json .
+COPY index.html .
 COPY public ./public
 COPY src ./src
 RUN pnpm build
