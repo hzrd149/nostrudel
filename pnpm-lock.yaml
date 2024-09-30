@@ -90,9 +90,15 @@ importers:
       '@webscopeio/react-textarea-autocomplete':
         specifier: ^4.9.2
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      applesauce-channel:
+        specifier: ^0.5.0
+        version: 0.5.0(typescript@5.6.2)
       applesauce-core:
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.6.2)
+        specifier: ^0.5.0
+        version: 0.5.0(typescript@5.6.2)
+      applesauce-signer:
+        specifier: ^0.5.0
+        version: 0.5.0(typescript@5.6.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2182,9 +2188,6 @@ packages:
   '@types/zen-observable@0.8.7':
     resolution: {integrity: sha512-LKzNTjj+2j09wAo/vvVjzgw5qckJJzhdGgWHW7j69QIGdq/KnZrMAMIHQiWGl3Ccflh5/CudBAntTPYdprPltA==}
 
-  '@types/zen-push@0.1.4':
-    resolution: {integrity: sha512-FB0u2p9qwYRItXTio+Jwn+usx4zWIgdDXwMcSiZtjEFru/mIfJb9SedruzbBvEGHvq77sGt2e5cursvheyYcRQ==}
-
   '@uiw/codemirror-extensions-basic-setup@4.23.3':
     resolution: {integrity: sha512-nEMjgbCyeLx+UQgOGAAoUWYFE34z5TlyaKNszuig/BddYFDb0WKcgmC37bDFxR2dZssf3K/lwGWLpXnGKXePbA==}
     peerDependencies:
@@ -2280,8 +2283,14 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-core@0.4.0:
-    resolution: {integrity: sha512-UvzmM+mh9D5g697NHJv6x9bzkXk64uaiFLiIJR5Yb+FpYYOsIRJZGT73fVmgVC8EAWkItZ9jYS25IUi4a0cgrg==}
+  applesauce-channel@0.5.0:
+    resolution: {integrity: sha512-0B4ldPKzO7RFfWpOyQnqf1JIAk2JKTx88atSGPtbZGYWM9kfG2FzBIEaaamKbQ12dfZqNzZRWvCFMww+5jX1Eg==}
+
+  applesauce-core@0.5.0:
+    resolution: {integrity: sha512-PqjiTsxBWnrlyBe9mP5KNJs9L7AQjrqWJoj/F52IqxdYgGjli3FubfV/lwjq+UQzwK22CMiwPoxTG3jLDlfpaw==}
+
+  applesauce-signer@0.5.0:
+    resolution: {integrity: sha512-MF1I0KQ0nm3vq/Z/lXL0279KqTJcu0BctvKSORNUBeV0GTlDsDdvrsYyKmsjJVVJunr8xhuOrsPvAew5dT54Lw==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -7101,10 +7110,6 @@ snapshots:
 
   '@types/zen-observable@0.8.7': {}
 
-  '@types/zen-push@0.1.4':
-    dependencies:
-      '@types/zen-observable': 0.8.7
-
   '@uiw/codemirror-extensions-basic-setup@4.23.3(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.1))(@codemirror/commands@6.6.2)(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)':
     dependencies:
       '@codemirror/autocomplete': 6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.1)
@@ -7209,14 +7214,35 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-core@0.4.0(typescript@5.6.2):
+  applesauce-channel@0.5.0(typescript@5.6.2):
     dependencies:
-      '@types/zen-push': 0.1.4
+      applesauce-core: 0.5.0(typescript@5.6.2)
+      nostr-tools: 2.7.2(typescript@5.6.2)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  applesauce-core@0.5.0(typescript@5.6.2):
+    dependencies:
       debug: 4.3.7
       json-stringify-deterministic: 1.0.12
       nanoid: 5.0.7
       nostr-tools: 2.7.2(typescript@5.6.2)
+      zen-observable: 0.10.0
       zen-push: 0.3.1
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  applesauce-signer@0.5.0(typescript@5.6.2):
+    dependencies:
+      '@noble/hashes': 1.5.0
+      '@noble/secp256k1': 1.7.1
+      '@scure/base': 1.1.9
+      '@types/dom-serial': 1.0.6
+      applesauce-core: 0.5.0(typescript@5.6.2)
+      debug: 4.3.7
+      nostr-tools: 2.7.2(typescript@5.6.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -11,16 +10,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
-import { encrypt } from "nostr-tools/nip49";
+import { useForm } from "react-hook-form";
 
-import SimpleSigner from "../../../classes/signers/simple-signer";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import EyeOff from "../../../components/icons/eye-off";
 import Eye from "../../../components/icons/eye";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import PasswordSigner from "../../../classes/signers/password-signer";
-import { useForm } from "react-hook-form";
 
 const fake = Array(48).fill("x");
 

@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { Queries } from "applesauce-core/query-store";
+import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel";
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -28,9 +28,9 @@ import { truncateId } from "../../helpers/string";
 import { useStoreQuery } from "../../hooks/use-store-query";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
-  const messages = useStoreQuery(Queries.ChannelMessagesQuery, [channel]) ?? [];
-  const mutes = useStoreQuery(Queries.ChannelMutedQuery, [channel]);
-  const hidden = useStoreQuery(Queries.ChannelHiddenQuery, [channel]);
+  const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];
+  const mutes = useStoreQuery(ChannelMutedQuery, [channel]);
+  const hidden = useStoreQuery(ChannelHiddenQuery, [channel]);
 
   const filteredMessages = useMemo(
     () =>

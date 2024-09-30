@@ -11,11 +11,11 @@ import {
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { Nip07Interface } from "applesauce-signer";
 
 import MultiSubscription from "../multi-subscription";
 import { logger } from "../../helpers/debug";
 import createDefer, { Deferred } from "../deferred";
-import { Nip07Signer } from "../../types/nostr-extensions";
 
 export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
   return !!response.error;
@@ -66,7 +66,7 @@ export type NostrConnectErrorResponse = {
   error: string;
 };
 
-export default class NostrConnectSigner implements Nip07Signer {
+export default class NostrConnectSigner implements Nip07Interface {
   sub: MultiSubscription;
   log = logger.extend("NostrConnectSigner");
 

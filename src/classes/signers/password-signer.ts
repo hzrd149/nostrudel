@@ -1,8 +1,8 @@
 import { EventTemplate, finalizeEvent, getPublicKey, nip04, nip44 } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { encrypt, decrypt } from "nostr-tools/nip49";
+import { Nip07Interface } from "applesauce-signer";
 
-import { Nip07Signer } from "../../types/nostr-extensions";
 import createDefer, { Deferred } from "../deferred";
 import db from "../../services/db";
 
@@ -75,7 +75,7 @@ async function subltCryptoDecryptSecKey(buffer: ArrayBuffer, iv: Uint8Array, pas
   }
 }
 
-export default class PasswordSigner implements Nip07Signer {
+export default class PasswordSigner implements Nip07Interface {
   key: Uint8Array | null = null;
 
   // legacy

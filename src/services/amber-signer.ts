@@ -1,13 +1,8 @@
+import { AmberClipboardSigner } from "applesauce-signer";
 import { alwaysVerify } from "./verify-event";
-import AmberSigner from "../classes/signers/amber-signer";
 
-/** @deprecated nip NostrConnectClient instead */
-const amberSignerService = new AmberSigner();
+/** @deprecated use AmberClipboardSigner class instead */
+const amberSignerService = new AmberClipboardSigner();
 amberSignerService.verifyEvent = alwaysVerify;
-
-if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.amberSignerService = amberSignerService;
-}
 
 export default amberSignerService;

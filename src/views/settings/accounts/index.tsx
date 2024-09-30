@@ -1,16 +1,6 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Text,
-} from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { SimpleSigner } from "applesauce-signer";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -21,7 +11,6 @@ import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/account-info-badge";
 import useSubject from "../../../hooks/use-subject";
 import PasswordSigner from "../../../classes/signers/password-signer";
-import SimpleSigner from "../../../classes/signers/simple-signer";
 import SimpleSignerBackup from "./simple-signer-backup";
 import PasswordSignerBackup from "./password-signer-backup";
 

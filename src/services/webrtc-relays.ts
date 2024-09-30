@@ -1,5 +1,6 @@
 import { NostrEvent, SimplePool } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { SimpleSigner } from "applesauce-signer";
 
 import { logger } from "../helpers/debug";
 import NostrWebRtcBroker from "../classes/webrtc/nostr-webrtc-broker";
@@ -7,7 +8,6 @@ import WebRtcRelayClient from "../classes/webrtc/webrtc-relay-client";
 import WebRtcRelayServer from "../classes/webrtc/webrtc-relay-server";
 import NostrWebRTCPeer from "../classes/webrtc/nostr-webrtc-peer";
 import verifyEventMethod from "./verify-event";
-import SimpleSigner from "../classes/signers/simple-signer";
 import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
 import { DEFAULT_ICE_SERVERS } from "../const";

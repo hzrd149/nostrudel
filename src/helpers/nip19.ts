@@ -1,8 +1,6 @@
 import { getPublicKey, nip19 } from "nostr-tools";
 
-import { Tag, isATag, isETag, isPTag } from "../types/nostr-event";
 import { safeRelayUrls } from "./relay";
-import { parseCoordinate } from "./nostr/event";
 
 export function isHex(str?: string) {
   if (str?.match(/^[0-9a-f]+$/i)) return true;

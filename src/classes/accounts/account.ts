@@ -1,16 +1,16 @@
 import { AppSettings } from "../../services/settings/migrations";
-import { Nip07Signer } from "../../types/nostr-extensions";
+import { Nip07Interface } from "applesauce-signer";
 
 export class Account {
   readonly type: string = "unknown";
   pubkey: string;
   localSettings?: AppSettings;
 
-  protected _signer?: Nip07Signer | undefined;
-  public get signer(): Nip07Signer | undefined {
+  protected _signer?: Nip07Interface | undefined;
+  public get signer(): Nip07Interface | undefined {
     return this._signer;
   }
-  public set signer(value: Nip07Signer | undefined) {
+  public set signer(value: Nip07Interface | undefined) {
     this._signer = value;
   }
 

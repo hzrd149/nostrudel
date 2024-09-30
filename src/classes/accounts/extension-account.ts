@@ -1,13 +1,13 @@
-import { Nip07Signer } from "../../types/nostr-extensions";
+import { Nip07Interface } from "applesauce-signer";
 import { Account } from "./account";
 
 export default class ExtensionAccount extends Account {
   readonly type = "extension";
 
-  public get signer(): Nip07Signer | undefined {
+  public get signer(): Nip07Interface | undefined {
     return window.nostr;
   }
-  set signer(signer: Nip07Signer) {
+  set signer(signer: Nip07Interface) {
     throw new Error("Cant update signer");
   }
 

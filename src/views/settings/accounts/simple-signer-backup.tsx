@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
 import {
   Button,
-  ButtonGroup,
   Flex,
   FormControl,
-  FormHelperText,
   FormLabel,
   Heading,
   IconButton,
@@ -15,8 +13,8 @@ import {
 import { nip19 } from "nostr-tools";
 import { encrypt } from "nostr-tools/nip49";
 import { useForm } from "react-hook-form";
+import { SimpleSigner } from "applesauce-signer";
 
-import SimpleSigner from "../../../classes/signers/simple-signer";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import EyeOff from "../../../components/icons/eye-off";
 import Eye from "../../../components/icons/eye";

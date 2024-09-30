@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Queries } from "applesauce-core";
+import { ChannelMetadataQuery } from "applesauce-channel";
 
 import { RequestOptions } from "../services/replaceable-events";
 import channelMetadataService from "../services/channel-metadata";
@@ -17,7 +17,7 @@ export default function useChannelMetadata(
     return channelMetadataService.requestMetadata(relays, channelId, opts);
   }, [channelId, Array.from(relays).join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
-  const metadata = useStoreQuery(Queries.ChannelMetadataQuery, channel && [channel]);
+  const metadata = useStoreQuery(ChannelMetadataQuery, channel && [channel]);
 
   return metadata;
 }

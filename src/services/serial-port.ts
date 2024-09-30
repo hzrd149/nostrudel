@@ -1,7 +1,7 @@
-import SerialPortSigner from "../classes/signers/serial-port-signer";
+import { SerialPortSigner } from "applesauce-signer";
 import { alwaysVerify } from "./verify-event";
 
-/** @deprecated */
+/** @deprecated use SerialPortSigner class instead */
 const serialPortService = new SerialPortSigner();
 serialPortService.verifyEvent = alwaysVerify;
 
@@ -10,10 +10,5 @@ setInterval(() => {
     serialPortService.ping();
   }
 }, 1000 * 10);
-
-if (import.meta.env.DEV) {
-  //@ts-ignore
-  window.serialPortService = serialPortService;
-}
 
 export default serialPortService;
