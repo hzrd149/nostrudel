@@ -29,6 +29,40 @@ import useRouterMarker from "../../hooks/use-router-marker";
 import { BackIconButton } from "../../components/router/back-button";
 import decryptionCacheService from "../../services/decryption-cache";
 
+// Function to handle incoming messages
+const handleIncomingMessage = async (message: NostrEvent) => {
+  if (message.kind === kinds.EncryptedDirectMessage) {
+    const userConfirmed = await promptUserForDecryption(message);
+    if (userConfirmed) {
+      const decryptedMessage = await decryptMessage(message);
+      displayMessage(decryptedMessage);
+    } else {
+      displayMessage("Decryption denied by user.");
+    }
+  } else {
+    displayMessage(message.content);
+  }
+};
+
+// Function to prompt user for decryption
+const promptUserForDecryption = (message: NostrEvent): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const userResponse = window.confirm(`Do you want to decrypt this message: ${message.content}?`);
+    resolve(userResponse);
+  });
+};
+
+// Function to decrypt the message
+const decryptMessage = async (message: NostrEvent): Promise<string> => {
+  const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
+  return decryptionCacheService.requestDecrypt(container);
+};
+
+// Function to display the message
+const displayMessage = (content: string) => {
+  console.log(content); // Replace with actual display logic
+};
+
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
   const messages = useSubject(timeline.timeline);
@@ -79,7 +113,14 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       const from = event.pubkey;
       const to = event.tags.find((t) => t[0] === "p")?.[1];
 
-      return (from === account.pubkey && to === pubkey) || (from === pubkey && to === account.pubkey);
+      // Check if the event is a DM between the current account and the target pubkey
+      const isDirectMessage = (from === account.pubkey && to === pubkey) || (from === pubkey && to === account.pubkey);
+
+      if (isDirectMessage) {
+        handleIncomingMessage(event); // Call the function to handle the message
+      }
+
+      return isDirectMessage; // Return true if it's a direct message
     },
     [account, pubkey],
   );
