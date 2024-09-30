@@ -19,7 +19,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
-import { encodeDecodeResult } from "../../helpers/nip19";
+import { encodeDecodeResult } from "applesauce-core/helpers";
+
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";

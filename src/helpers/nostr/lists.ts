@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds, nip19 } from "nostr-tools";
+import { getPointerFromTag } from "applesauce-core/helpers";
 
 import { PTag, isATag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
-import { getPointerFromTag } from "../nip19";
 
 export const MUTE_LIST_KIND = kinds.Mutelist;
 export const PIN_LIST_KIND = kinds.Pinlist;

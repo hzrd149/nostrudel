@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
-import { NostrEvent, isRTag } from "../../types/nostr-event";
 import { DecodeResult } from "nostr-tools/nip19";
-import { getPointerFromTag } from "../nip19";
+import { getPointerFromTag } from "applesauce-core/helpers";
+
+import { NostrEvent, isRTag } from "../../types/nostr-event";
 
 export const GOAL_KIND = 9041;
 

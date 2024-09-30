@@ -152,7 +152,7 @@ export function TimelineNote({
       </ExpandProvider>
       {replyForm.isOpen && (
         <ReplyForm
-          item={{ event, replies: [], refs: getThreadReferences(event) }}
+          item={{ event, replies: new Set(), refs: getThreadReferences(event) }}
           onCancel={replyForm.onClose}
           onSubmitted={replyForm.onClose}
         />

@@ -2,8 +2,8 @@ import { Button, Flex } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import styled from "@emotion/styled";
+import { ThreadItem } from "applesauce-core/queries";
 
-import { ThreadItem } from "../../../helpers/thread";
 import PostZapsTab from "./tabs/zaps";
 import ThreadPost from "./thread-post";
 import useEventZaps from "../../../hooks/use-event-zaps";
@@ -18,6 +18,7 @@ import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
 import CorrectionsTab from "./tabs/corrections";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import UnknownTab from "./tabs/unknown";
+import { repliesByDate } from "../../../helpers/thread";
 
 const HiddenScrollbar = styled(Flex)`
   -ms-overflow-style: none; /* IE and Edge */
@@ -50,7 +51,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
 
   const unknown = events.filter(
     (e) =>
-      !post.replies.some((p) => p.event.id === e.id) &&
+      !Array.from(post.replies).some((p) => p.event.id === e.id) &&
       e.kind !== kinds.ShortTextNote &&
       e.kind !== kinds.Zap &&
       !reactions.includes(e) &&
@@ -64,7 +65,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       case "replies":
         return (
           <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
-            {post.replies.map((child) => (
+            {repliesByDate(post).map((child) => (
               <ThreadPost key={child.event.id} post={child} focusId={undefined} level={0} />
             ))}
           </Flex>
@@ -94,7 +95,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
           variant={selected === "replies" ? "solid" : "outline"}
           onClick={() => setSelected("replies")}
         >
-          Replies{post.replies.length > 0 ? ` (${post.replies.length})` : ""}
+          Replies{post.replies.size > 0 ? ` (${post.replies.size})` : ""}
         </Button>
         <Button
           size="sm"

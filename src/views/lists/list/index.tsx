@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { kinds, nip19 } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { encodeDecodeResult } from "applesauce-core/helpers";
 
 import UserLink from "../../../components/user/user-link";
 import { ChevronLeftIcon } from "../../../components/icons";
@@ -26,7 +27,6 @@ import ListFeedButton from "../components/list-feed-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
-import { encodeDecodeResult } from "../../../helpers/nip19";
 import useSingleEvent from "../../../hooks/use-single-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";

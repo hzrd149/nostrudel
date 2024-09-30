@@ -1,13 +1,4 @@
-import { memo, useMemo, useState } from "react";
-
-import { NostrEvent } from "../../../types/nostr-event";
-import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
-import { ThreadItem, buildThread, countReplies } from "../../../helpers/thread";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import useAppSettings from "../../../hooks/use-app-settings";
+import { memo, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -19,6 +10,16 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
+import { ThreadItem, ThreadQuery } from "applesauce-core/queries";
+
+import { NostrEvent } from "../../../types/nostr-event";
+import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
+import { countReplies, repliesByDate } from "../../../helpers/thread";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import useAppSettings from "../../../hooks/use-app-settings";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -35,15 +36,17 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import NoteZapButton from "../../../components/note/note-zap-button";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { useStoreQuery } from "../../../hooks/use-store-query";
+import { sortByDate } from "../../../helpers/nostr/event";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();
-  const expanded = useDisclosure({ defaultIsOpen: level < 2 || post.replies.length <= 1 });
+  const expanded = useDisclosure({ defaultIsOpen: level < 2 || post.replies.size <= 1 });
   const replyForm = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
-  const replies = post.replies.filter((r) => !muteFilter(r.event));
+  const replies = Array.from(post.replies).filter((r) => !muteFilter(r.event));
   const numberOfReplies = countReplies(replies);
   const isMuted = muteFilter(post.event);
 
@@ -140,9 +143,9 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
           replyKind={TORRENT_COMMENT_KIND}
         />
       )}
-      {post.replies.length > 0 && expanded.isOpen && (
+      {post.replies.size > 0 && expanded.isOpen && (
         <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
-          {post.replies.map((child) => (
+          {repliesByDate(post).map((child) => (
             <ThreadPost key={child.event.id} post={child} level={level + 1} />
           ))}
         </Flex>
@@ -153,16 +156,16 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
 
 export default function TorrentComments({ torrent }: { torrent: NostrEvent }) {
   const readRelays = useReadRelays();
-  const { timeline, events } = useThreadTimelineLoader(torrent, readRelays, [TORRENT_COMMENT_KIND]);
+  const { timeline } = useThreadTimelineLoader(torrent, readRelays, [TORRENT_COMMENT_KIND]);
 
-  const thread = useMemo(() => buildThread(events), [events]);
-  const rootItem = thread.get(torrent.id);
+  const thread = useStoreQuery(ThreadQuery, [torrent.id]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      {rootItem?.replies.map((item) => <ThreadPost key={item.event.id} post={item} level={0} />)}
+      {thread?.root &&
+        repliesByDate(thread.root).map((item) => <ThreadPost key={item.event.id} post={item} level={0} />)}
     </IntersectionObserverProvider>
   );
 }

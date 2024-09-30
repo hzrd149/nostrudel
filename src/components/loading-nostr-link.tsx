@@ -5,7 +5,6 @@ import {
   ButtonGroup,
   Heading,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -19,10 +18,10 @@ import {
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { useSet } from "react-use";
+import { encodeDecodeResult } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon, SearchIcon } from "./icons";
 import UserLink from "./user/user-link";
-import { encodeDecodeResult } from "../helpers/nip19";
 
 import relayPoolService from "../services/relay-pool";
 import { isValidRelayURL } from "../helpers/relay";

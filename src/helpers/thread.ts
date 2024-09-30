@@ -1,22 +1,12 @@
-import { NostrEvent } from "../types/nostr-event";
-import { getNip10References, ThreadReferences } from "./nostr/threading";
+import { ThreadItem } from "applesauce-core/queries";
+import { sortByDate } from "./nostr/event";
 
-export function countReplies(replies: ThreadItem[]): number {
-  return replies.reduce((c, item) => c + countReplies(item.replies), 0) + replies.length;
+export function countReplies(replies: Set<ThreadItem> | ThreadItem[]): number {
+  return (
+    Array.from(replies).reduce((c, item) => c + countReplies(item.replies), 0) +
+    (Array.isArray(replies) ? replies.length : replies.size)
+  );
 }
-
-export type ThreadItem = {
-  /** underlying nostr event */
-  event: NostrEvent;
-  /** the thread root, according to this event */
-  root?: ThreadItem;
-  /** the parent event this is replying to */
-  replyingTo?: ThreadItem;
-  /** refs from nostr event */
-  refs: ThreadReferences;
-  /** direct child replies */
-  replies: ThreadItem[];
-};
 
 /** Returns an array of all pubkeys participating in the thread */
 export function getThreadMembers(item: ThreadItem, omit?: string) {
@@ -25,41 +15,13 @@ export function getThreadMembers(item: ThreadItem, omit?: string) {
   let next = item;
   while (true) {
     if (next.event.pubkey !== omit) pubkeys.add(next.event.pubkey);
-    if (!next.replyingTo) break;
-    else next = next.replyingTo;
+    if (!next.parent) break;
+    else next = next.parent;
   }
 
   return Array.from(pubkeys);
 }
 
-export function buildThread(events: NostrEvent[]) {
-  const idToChildren: Record<string, NostrEvent[]> = {};
-
-  const replies = new Map<string, ThreadItem>();
-  for (const event of events) {
-    const refs = getNip10References(event);
-
-    if (refs.reply?.e) {
-      idToChildren[refs.reply.e.id] = idToChildren[refs.reply.e.id] || [];
-      idToChildren[refs.reply.e.id].push(event);
-    }
-
-    replies.set(event.id, {
-      event,
-      refs,
-      replies: [],
-    });
-  }
-
-  for (const [id, reply] of replies) {
-    reply.root = reply.refs.root?.e ? replies.get(reply.refs.root.e.id) : undefined;
-
-    reply.replyingTo = reply.refs.reply?.e ? replies.get(reply.refs.reply.e.id) : undefined;
-
-    reply.replies = idToChildren[id]?.map((e) => replies.get(e.id) as ThreadItem) ?? [];
-
-    reply.replies.sort((a, b) => b.event.created_at - a.event.created_at);
-  }
-
-  return replies;
+export function repliesByDate(item: ThreadItem) {
+  return Array.from(item.replies).sort((a, b) => sortByDate(a.event, b.event));
 }

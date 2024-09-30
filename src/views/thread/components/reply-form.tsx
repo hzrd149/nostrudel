@@ -3,11 +3,12 @@ import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput } from 
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 import { kinds } from "nostr-tools";
+import { ThreadItem } from "applesauce-core/queries";
 import dayjs from "dayjs";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { UserAvatarStack } from "../../../components/compact-user-stack";
-import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
+import { getThreadMembers } from "../../../helpers/thread";
 import {
   addReplyTags,
   createEmojiTags,

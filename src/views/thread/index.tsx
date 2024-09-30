@@ -1,12 +1,12 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { Thread, ThreadQuery } from "applesauce-core/queries";
 import { nip19 } from "nostr-tools";
 
 import ThreadPost from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { ThreadItem, buildThread } from "../../helpers/thread";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
@@ -18,6 +18,7 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
 import TimelineNote from "../../components/note/timeline-note";
 import relayHintService from "../../services/event-relay-hint";
+import { useStoreQuery } from "../../hooks/use-store-query";
 
 function CollapsedReplies({
   pointer,
@@ -25,10 +26,10 @@ function CollapsedReplies({
   root,
 }: {
   pointer: nip19.EventPointer;
-  thread: Map<string, ThreadItem>;
+  thread: Thread;
   root: nip19.EventPointer;
 }) {
-  const post = thread.get(pointer.id);
+  const post = thread.all.get(pointer.id);
   if (!post) return <LoadingNostrLink link={{ type: "nevent", data: pointer }} />;
 
   let reply: ReactNode = null;
@@ -56,30 +57,29 @@ function ThreadPage({
   rootPointer,
   focusId,
 }: {
-  thread: Map<string, ThreadItem>;
+  thread: Thread;
   rootPointer: nip19.EventPointer;
   focusId: string;
 }) {
   const isRoot = rootPointer.id === focusId;
 
-  const focusedPost = thread.get(focusId);
-  const rootPost = thread.get(rootPointer.id);
-  if (isRoot && rootPost) {
-    return <ThreadPost post={rootPost} initShowReplies focusId={focusId} />;
+  const focusedPost = thread.all.get(focusId);
+  if (isRoot && thread.root) {
+    return <ThreadPost post={thread.root} initShowReplies focusId={focusId} />;
   }
 
   if (!focusedPost) return null;
 
   const parentPosts = [];
-  if (focusedPost.replyingTo) {
+  if (focusedPost.parent) {
     let p = focusedPost;
-    while (p.replyingTo) {
-      parentPosts.unshift(p.replyingTo);
-      p = p.replyingTo;
+    while (p.parent) {
+      parentPosts.unshift(p.parent);
+      p = p.parent;
     }
   }
 
-  const grandparentPointer = focusedPost.replyingTo?.refs.reply?.e;
+  const grandparentPointer = focusedPost.parent?.refs.reply?.e;
 
   return (
     <>
@@ -89,8 +89,8 @@ function ThreadPage({
       {grandparentPointer && grandparentPointer.id !== rootPointer.id && (
         <CollapsedReplies pointer={grandparentPointer} thread={thread} root={rootPointer} />
       )}
-      {focusedPost.replyingTo ? (
-        <TimelineNote event={focusedPost.replyingTo.event} hideDrawerButton showReplyLine={false} />
+      {focusedPost.parent ? (
+        <TimelineNote event={focusedPost.parent.event} hideDrawerButton showReplyLine={false} />
       ) : (
         focusedPost.refs.reply?.e && <LoadingNostrLink link={{ type: "nevent", data: focusedPost.refs.reply.e }} />
       )}
@@ -104,8 +104,8 @@ export default function ThreadView() {
   const readRelays = useReadRelays(pointer.relays);
 
   const focusedEvent = useSingleEvent(pointer.id, pointer.relays);
-  const { rootPointer, events, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
-  const thread = useMemo(() => buildThread(events), [events]);
+  const { rootPointer, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
+  const thread = useStoreQuery(ThreadQuery, rootPointer && [rootPointer]);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
@@ -120,7 +120,7 @@ export default function ThreadView() {
         </>
       )}
       <IntersectionObserverProvider callback={callback}>
-        {focusedEvent && rootPointer && (
+        {thread && focusedEvent && rootPointer && (
           <ThreadPage thread={thread} rootPointer={rootPointer} focusId={focusedEvent.id} />
         )}
       </IntersectionObserverProvider>

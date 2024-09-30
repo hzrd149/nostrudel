@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { Flex } from "@chakra-ui/react";
+import { ThreadItem } from "applesauce-core/queries";
 
-import { ThreadItem } from "../../../../helpers/thread";
 import CorrectionCard from "../../../tools/corrections/correction-card";
 
 export default function CorrectionsTab({ post, corrections }: { post: ThreadItem; corrections: NostrEvent[] }) {

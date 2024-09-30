@@ -1,10 +1,10 @@
 import { Flex, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { ThreadItem } from "applesauce-core/queries";
 
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import Timestamp from "../../../../components/timestamp";
-import { ThreadItem } from "../../../../helpers/thread";
 
 export default function PostRepostsTab({ post, reposts }: { post: ThreadItem; reposts: NostrEvent[] }) {
   return (

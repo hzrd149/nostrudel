@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
+import { ThreadItem } from "applesauce-core/queries";
 
-import { ThreadItem } from "../../../../helpers/thread";
 import { ParsedZap } from "../../../../helpers/nostr/zaps";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";

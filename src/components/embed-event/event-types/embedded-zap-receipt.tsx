@@ -1,5 +1,6 @@
-import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
+import { getPointerFromTag } from "applesauce-core/helpers";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserLink from "../../user/user-link";
@@ -10,7 +11,6 @@ import UserAvatar from "../../user/user-avatar";
 import { LightningIcon } from "../../icons";
 import { readablizeSats } from "../../../helpers/bolt11";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
-import { getPointerFromTag } from "../../../helpers/nip19";
 import { EmbedEventPointer } from "../index";
 
 export default function EmbeddedZapRecept({ zap, ...props }: Omit<CardProps, "children"> & { zap: NostrEvent }) {

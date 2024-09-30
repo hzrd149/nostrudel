@@ -91,8 +91,8 @@ importers:
         specifier: ^4.9.2
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-core:
-        specifier: ^0.3.0
-        version: 0.3.0(typescript@5.6.2)
+        specifier: ^0.4.0
+        version: 0.4.0(typescript@5.6.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2280,8 +2280,8 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-core@0.3.0:
-    resolution: {integrity: sha512-7lZCj1ei3lRdGM40umlQHe4rovP3HAeC3JdQg/YrSQgXRvfWM2s95jgMIY1KcfDmHo07CNctD3Z5xzdFlqr+Mw==}
+  applesauce-core@0.4.0:
+    resolution: {integrity: sha512-UvzmM+mh9D5g697NHJv6x9bzkXk64uaiFLiIJR5Yb+FpYYOsIRJZGT73fVmgVC8EAWkItZ9jYS25IUi4a0cgrg==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -7209,7 +7209,7 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-core@0.3.0(typescript@5.6.2):
+  applesauce-core@0.4.0(typescript@5.6.2):
     dependencies:
       '@types/zen-push': 0.1.4
       debug: 4.3.7
