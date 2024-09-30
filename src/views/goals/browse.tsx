@@ -51,7 +51,7 @@ function GoalsBrowsePage() {
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
           {goals.map((event) => (
-            <ErrorBoundary key={getEventUID(event)}>
+            <ErrorBoundary key={getEventUID(event)} event={event}>
               <GoalCard goal={event} />
             </ErrorBoundary>
           ))}

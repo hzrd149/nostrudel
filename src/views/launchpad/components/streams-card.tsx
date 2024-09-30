@@ -76,7 +76,7 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
         {streams.map((stream) => (
-          <ErrorBoundary key={getEventUID(stream.event)}>
+          <ErrorBoundary key={getEventUID(stream.event)} event={stream.event}>
             <LiveStream stream={stream} />
           </ErrorBoundary>
         ))}

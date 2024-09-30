@@ -26,7 +26,7 @@ const MapTimeline = React.memo(({ timeline, focused }: { timeline: TimelineLoade
   return (
     <>
       {events.map((event) => (
-        <ErrorBoundary key={event.id}>
+        <ErrorBoundary key={event.id} event={event}>
           <RenderEvent event={event} focused={focused === event.id} />
         </ErrorBoundary>
       ))}

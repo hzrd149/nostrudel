@@ -82,8 +82,8 @@ const UserRelaysTab = () => {
       </Heading>
       <VStack divider={<StackDivider />} py="2" align="stretch">
         {Array.from(mailboxes?.inboxes ?? []).map((url) => (
-          <ErrorBoundary>
-            <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
+          <ErrorBoundary key={url}>
+            <Relay url={url} reviews={getRelayReviews(url, reviews)} />
           </ErrorBoundary>
         ))}
       </VStack>
@@ -92,8 +92,8 @@ const UserRelaysTab = () => {
       </Heading>
       <VStack divider={<StackDivider />} py="2" align="stretch">
         {Array.from(mailboxes?.outboxes ?? []).map((url) => (
-          <ErrorBoundary>
-            <Relay key={url} url={url} reviews={getRelayReviews(url, reviews)} />
+          <ErrorBoundary key={url}>
+            <Relay url={url} reviews={getRelayReviews(url, reviews)} />
           </ErrorBoundary>
         ))}
       </VStack>

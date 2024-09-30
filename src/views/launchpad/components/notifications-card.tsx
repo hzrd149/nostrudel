@@ -44,7 +44,7 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" flexDirection="column">
         {limit.map((event) => (
-          <ErrorBoundary key={getEventUID(event)}>
+          <ErrorBoundary key={getEventUID(event)} event={event}>
             <NotificationItem event={event} onClick={handleClick} visible />
           </ErrorBoundary>
         ))}

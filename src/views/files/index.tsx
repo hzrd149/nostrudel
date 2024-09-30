@@ -132,8 +132,8 @@ function FilesPage() {
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid minChildWidth="20rem" spacing="2">
           {events.map((event) => (
-            <ErrorBoundary>
-              <FileType key={event.id} event={event} />
+            <ErrorBoundary key={event.id} event={event}>
+              <FileType event={event} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>

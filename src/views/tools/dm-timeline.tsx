@@ -69,7 +69,7 @@ export function DMTimelinePage() {
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         {dms.map((dm) => (
-          <ErrorBoundary key={dm.id}>
+          <ErrorBoundary key={dm.id} event={dm}>
             <DirectMessage dm={dm} />
           </ErrorBoundary>
         ))}

@@ -64,8 +64,8 @@ export default function RelaysView() {
       </Flex>
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
         {filteredRelays.map((url) => (
-          <ErrorBoundary>
-            <RelayCard key={url} url={url} variant="outline" />
+          <ErrorBoundary key={url}>
+            <RelayCard url={url} variant="outline" />
           </ErrorBoundary>
         ))}
       </SimpleGrid>
@@ -77,8 +77,8 @@ export default function RelaysView() {
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
             {discoveredRelays.map((url) => (
-              <ErrorBoundary>
-                <RelayCard key={url} url={url} variant="outline" />
+              <ErrorBoundary key={url}>
+                <RelayCard url={url} variant="outline" />
               </ErrorBoundary>
             ))}
           </SimpleGrid>

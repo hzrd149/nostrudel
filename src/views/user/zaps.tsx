@@ -122,7 +122,7 @@ const UserZapsTab = () => {
           )}
         </Flex>
         {events.map((event) => (
-          <ErrorBoundary key={event.id}>
+          <ErrorBoundary key={event.id} event={event}>
             <Zap zapEvent={event} />
           </ErrorBoundary>
         ))}

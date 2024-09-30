@@ -46,7 +46,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
   }
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary event={event}>
       <Box minHeight={minHeight + "px"} ref={ref}>
         {visible && content}
       </Box>

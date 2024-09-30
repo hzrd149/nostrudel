@@ -34,8 +34,8 @@ function VideosPage() {
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }} spacing="2">
           {videos.map((video) => (
-            <ErrorBoundary>
-              <VideoCard key={getEventUID(video)} video={video} />
+            <ErrorBoundary key={getEventUID(video)} event={video}>
+              <VideoCard video={video} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>

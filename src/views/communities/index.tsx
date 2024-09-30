@@ -157,7 +157,7 @@ function CommunitiesHomePage() {
             <Flex gap="2" direction="column" w="md" flexShrink={0} hideBelow="xl">
               <Heading size="md">Joined Communities</Heading>
               {communities.map((community) => (
-                <ErrorBoundary key={getEventCoordinate(community)}>
+                <ErrorBoundary key={getEventCoordinate(community)} event={community}>
                   <CommunityCard community={community} />
                 </ErrorBoundary>
               ))}
@@ -187,7 +187,7 @@ function CommunitiesHomePage() {
 
           <DrawerBody display="flex" flexDirection="column" gap="2" px="4" pt="0" pb="8" overflowY="auto">
             {communities.map((community) => (
-              <ErrorBoundary key={getEventCoordinate(community)}>
+              <ErrorBoundary key={getEventCoordinate(community)} event={community}>
                 <CommunityCard community={community} flexShrink={0} />
               </ErrorBoundary>
             ))}
