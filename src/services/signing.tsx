@@ -68,6 +68,24 @@ class SigningService {
     if (!account.signer.nip44) throw new Error("Signer does not support NIP-44");
     return account.signer.nip44.decrypt(pubkey, ciphertext);
   }
+
+  async nip17Encrypt(plaintext: string, pubkey: string, account: Account) {
+    if (account.readonly) throw new Error("Can not encrypt in readonly mode");
+    await this.unlockAccount(account);
+
+    if (!account.signer) throw new Error("Account missing signer");
+    if (!account.signer.nip17) throw new Error("Signer does not support NIP-17");
+    return account.signer.nip17.encrypt(pubkey, plaintext);
+  }
+
+  async nip17Decrypt(ciphertext: string, pubkey: string, account: Account) {
+    if (account.readonly) throw new Error("Can not decrypt in readonly mode");
+    await this.unlockAccount(account);
+
+    if (!account.signer) throw new Error("Account missing signer");
+    if (!account.signer.nip17) throw new Error("Signer does not support NIP-17");
+    return account.signer.nip17.decrypt(pubkey, ciphertext);
+  }
 }
 
 const signingService = new SigningService();
