@@ -69,7 +69,7 @@ const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClic
     return (
       <NotificationIconEntry
         ref={ref}
-        icon={<ReplyIcon boxSize={8} color="green.400" />}
+        icon={<ReplyIcon boxSize={6} color="green.400" />}
         id={event.id}
         pubkey={event.pubkey}
         timestamp={event.created_at}
@@ -101,7 +101,7 @@ const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCl
     return (
       <NotificationIconEntry
         ref={ref}
-        icon={<AtIcon boxSize={8} color="purple.400" />}
+        icon={<AtIcon boxSize={6} color="purple.400" />}
         id={event.id}
         pubkey={event.pubkey}
         timestamp={event.created_at}
@@ -122,7 +122,7 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCli
     return (
       <NotificationIconEntry
         ref={ref}
-        icon={<RepostIcon boxSize={8} color="blue.400" />}
+        icon={<RepostIcon boxSize={6} color="blue.400" />}
         id={event.id}
         pubkey={event.pubkey}
         timestamp={event.created_at}
@@ -150,14 +150,16 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onC
     return (
       <NotificationIconEntry
         ref={ref}
-        icon={<Heart boxSize={8} color="red.400" />}
+        icon={<Heart boxSize={6} color="red.400" />}
         id={event.id}
         pubkey={event.pubkey}
         timestamp={event.created_at}
         summary={
           <>
             <ReactionIcon emoji={event.content} />
-            {reactedEvent?.content}
+            <Text fontStyle="italic" as="span" ml="2" mr="2" fontSize="sm">
+              {reactedEvent?.content}
+            </Text>
           </>
         }
         onClick={onClick}
@@ -207,7 +209,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?
     return (
       <NotificationIconEntry
         ref={ref}
-        icon={<LightningIcon boxSize={8} color="yellow.400" />}
+        icon={<LightningIcon boxSize={6} color="yellow.400" />}
         id={event.id}
         pubkey={zap.request.pubkey}
         timestamp={zap.request.created_at}
