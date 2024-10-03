@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
+import { QueryStoreProvider } from "applesauce-react";
 
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
@@ -11,6 +12,7 @@ import BreakpointProvider from "./breakpoint-provider";
 import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
 import WebOfTrustProvider from "./web-of-trust-provider";
+import { queryStore } from "../../services/event-store";
 
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
@@ -23,21 +25,23 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
       <BreakpointProvider>
-        <SigningProvider>
-          <PublishProvider>
-            <NotificationsProvider>
-              <DMTimelineProvider>
-                <DefaultEmojiProvider>
-                  <UserEmojiProvider>
-                    <AllUserSearchDirectoryProvider>
-                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                    </AllUserSearchDirectoryProvider>
-                  </UserEmojiProvider>
-                </DefaultEmojiProvider>
-              </DMTimelineProvider>
-            </NotificationsProvider>
-          </PublishProvider>
-        </SigningProvider>
+        <QueryStoreProvider store={queryStore}>
+          <SigningProvider>
+            <PublishProvider>
+              <NotificationsProvider>
+                <DMTimelineProvider>
+                  <DefaultEmojiProvider>
+                    <UserEmojiProvider>
+                      <AllUserSearchDirectoryProvider>
+                        <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                      </AllUserSearchDirectoryProvider>
+                    </UserEmojiProvider>
+                  </DefaultEmojiProvider>
+                </DMTimelineProvider>
+              </NotificationsProvider>
+            </PublishProvider>
+          </SigningProvider>
+        </QueryStoreProvider>
       </BreakpointProvider>
     </ChakraProvider>
   );

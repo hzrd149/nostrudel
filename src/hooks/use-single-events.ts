@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
+import { Queries } from "applesauce-core";
+import { useStoreQuery } from "applesauce-react";
 
 import singleEventService from "../services/single-event";
 import { useReadRelays } from "./use-client-relays";
-import { eventStore } from "../services/event-store";
-import { useObservable } from "./use-observable";
 
 export default function useSingleEvents(ids?: string[], additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);
@@ -15,6 +15,5 @@ export default function useSingleEvents(ids?: string[], additionalRelays?: Itera
     }
   }, [ids, readRelays.urls.join("|")]);
 
-  const observable = useMemo(() => (ids ? eventStore.timeline([{ ids }]) : undefined), [ids?.join("|")]);
-  return useObservable(observable) ?? [];
+  return useStoreQuery(Queries.TimelineQuery, ids ? [{ ids }] : undefined) ?? [];
 }

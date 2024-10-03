@@ -1,9 +1,9 @@
 import { useMemo } from "react";
+import { useObservable, useQueryStore } from "applesauce-react";
 
 import { useReadRelays } from "./use-client-relays";
 import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
-import useSubject from "./use-subject";
 
 export default function useReplaceableEvent(
   cord: string | CustomAddressPointer | undefined,
@@ -11,17 +11,22 @@ export default function useReplaceableEvent(
   opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelays(additionalRelays);
-  const sub = useMemo(() => {
+  const store = useQueryStore();
+
+  const observable = useMemo(() => {
     const parsed = typeof cord === "string" ? parseCoordinate(cord) : cord;
     if (!parsed) return;
-    return replaceableEventsService.requestEvent(
+
+    replaceableEventsService.requestEvent(
       parsed.relays ? [...readRelays, ...parsed.relays] : readRelays,
       parsed.kind,
       parsed.pubkey,
       parsed.identifier,
       opts,
     );
-  }, [cord, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
-  return useSubject(sub);
+    return store.replaceable(parsed.kind, parsed.pubkey, parsed.identifier);
+  }, [cord, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache, store]);
+
+  return useObservable(observable);
 }
