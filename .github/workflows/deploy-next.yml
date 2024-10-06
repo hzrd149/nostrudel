@@ -49,4 +49,4 @@ jobs:
       #     files-to-include: "{.*/**,**}"
 
       - name: Deploy nsite
-        run: npx -y nsite-cli upload dist --purge --privatekey ${{ secrets.NSITE_KEY }}
+        run: npx -y nsite-cli upload dist --verbose --purge --privatekey ${{ secrets.NSITE_KEY }}
