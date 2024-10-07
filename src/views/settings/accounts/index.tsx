@@ -54,7 +54,7 @@ export default function AccountSettings() {
       <Flex gap="2" alignItems="center" wrap="wrap">
         <UserAvatar pubkey={account.pubkey} />
         <Box lineHeight={1}>
-          <Heading size="lg">
+          <Heading size="md">
             <UserName pubkey={account.pubkey} />
           </Heading>
           <UserDnsIdentity pubkey={account.pubkey} />
@@ -82,7 +82,7 @@ export default function AccountSettings() {
           <Flex gap="2" alignItems="center" wrap="wrap" key={account.pubkey}>
             <UserAvatar pubkey={account.pubkey} />
             <Box lineHeight={1}>
-              <Heading size="lg">
+              <Heading size="md">
                 <UserName pubkey={account.pubkey} />
               </Heading>
               <UserDnsIdentity pubkey={account.pubkey} />
