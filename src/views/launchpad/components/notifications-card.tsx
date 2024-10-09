@@ -6,7 +6,7 @@ import { getEventUID } from "nostr-idb";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { useNotifications } from "../../../providers/global/notifications-provider";
-import { NotificationType, typeSymbol } from "../../../classes/notifications";
+import { NotificationType, NotificationTypeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { useObservable } from "../../../hooks/use-observable";
@@ -18,9 +18,9 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
   const events =
     useObservable(notifications?.timeline)?.filter(
       (event) =>
-        event[typeSymbol] === NotificationType.Mention ||
-        event[typeSymbol] === NotificationType.Reply ||
-        event[typeSymbol] === NotificationType.Zap,
+        event[NotificationTypeSymbol] === NotificationType.Mention ||
+        event[NotificationTypeSymbol] === NotificationType.Reply ||
+        event[NotificationTypeSymbol] === NotificationType.Zap,
     ) ?? [];
 
   const limit = events.length > 20 ? events.slice(0, 20) : events;

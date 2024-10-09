@@ -9,11 +9,10 @@ import RelaySet from "./relay-set";
 import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
-import { STREAM_CHAT_MESSAGE_KIND } from "../helpers/nostr/stream";
 import { MUTE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
 import { eventStore, queryStore } from "../services/event-store";
 
-export const typeSymbol = Symbol("notificationType");
+export const NotificationTypeSymbol = Symbol("notificationType");
 
 export enum NotificationType {
   Reply = "reply",
@@ -21,8 +20,10 @@ export enum NotificationType {
   Zap = "zap",
   Reaction = "reaction",
   Mention = "mention",
+  Message = "message",
+  Quote = "quote",
 }
-export type CategorizedEvent = NostrEvent & { [typeSymbol]?: NotificationType };
+export type CategorizedEvent = NostrEvent & { [NotificationTypeSymbol]?: NotificationType };
 
 export default class AccountNotifications {
   pubkey: string;
@@ -46,6 +47,8 @@ export default class AccountNotifications {
               kinds.Zap,
               TORRENT_COMMENT_KIND,
               kinds.LongFormArticle,
+              kinds.EncryptedDirectMessage,
+              1111, //NIP-22
             ],
           },
         ]),
@@ -57,27 +60,29 @@ export default class AccountNotifications {
   private categorizeEvent(event: NostrEvent): CategorizedEvent {
     const e = event as CategorizedEvent;
 
-    if (e[typeSymbol]) return e;
+    if (e[NotificationTypeSymbol]) return e;
 
     if (event.kind === kinds.Zap) {
-      e[typeSymbol] = NotificationType.Zap;
+      e[NotificationTypeSymbol] = NotificationType.Zap;
     } else if (event.kind === kinds.Reaction) {
-      e[typeSymbol] = NotificationType.Reaction;
+      e[NotificationTypeSymbol] = NotificationType.Reaction;
     } else if (isRepost(event)) {
-      e[typeSymbol] = NotificationType.Repost;
+      e[NotificationTypeSymbol] = NotificationType.Repost;
+    } else if (event.kind === kinds.EncryptedDirectMessage) {
+      e[NotificationTypeSymbol] = NotificationType.Message;
     } else if (
       event.kind === kinds.ShortTextNote ||
       event.kind === TORRENT_COMMENT_KIND ||
-      event.kind === STREAM_CHAT_MESSAGE_KIND ||
+      event.kind === kinds.LiveChatMessage ||
       event.kind === kinds.LongFormArticle
     ) {
-      // is the "p" tag directly mentioned in the content
-      const isMentioned = isPTagMentionedInContent(event, this.pubkey);
       // is the pubkey mentioned in any way in the content
-      const isQuoted = getPubkeysMentionedInContent(event.content).includes(this.pubkey);
+      const isMentioned = getPubkeysMentionedInContent(event.content, true).includes(this.pubkey);
+      const isQuote = event.tags.some((t) => t[0] === "q" && t[3] === this.pubkey);
 
-      if (isMentioned || isQuoted) e[typeSymbol] = NotificationType.Mention;
-      else if (isReply(event)) e[typeSymbol] = NotificationType.Reply;
+      if (isMentioned) e[NotificationTypeSymbol] = NotificationType.Mention;
+      else if (isQuote) e[NotificationTypeSymbol] = NotificationType.Quote;
+      else if (isReply(event)) e[NotificationTypeSymbol] = NotificationType.Reply;
     }
     return e;
   }
@@ -89,7 +94,14 @@ export default class AccountNotifications {
       singleEventService.requestEvent(eventId, RelaySet.from(clientRelaysService.readRelays.value, relays));
     };
 
-    switch (e[typeSymbol]) {
+    // load event quotes
+    const quotes = event.tags.filter((t) => t[0] === "q" && t[1]);
+    for (const tag of quotes) {
+      loadEvent(tag[1], tag[2] ? [tag[2]] : undefined);
+    }
+
+    // load reactions and replies
+    switch (e[NotificationTypeSymbol]) {
       case NotificationType.Reply:
         const refs = getThreadReferences(e);
         if (refs.reply?.e?.id) loadEvent(refs.reply.e.id, refs.reply.e.relays);
@@ -105,8 +117,6 @@ export default class AccountNotifications {
   }
 
   private filterEvent(event: CategorizedEvent) {
-    if (!Object.hasOwn(event, typeSymbol)) return false;
-
     // ignore if muted
     // TODO: this should be moved somewhere more performant
     const muteList = eventStore.getReplaceable(MUTE_LIST_KIND, this.pubkey);
@@ -118,7 +128,7 @@ export default class AccountNotifications {
 
     const e = event as CategorizedEvent;
 
-    switch (e[typeSymbol]) {
+    switch (e[NotificationTypeSymbol]) {
       case NotificationType.Reply:
         const refs = getThreadReferences(e);
         if (!refs.reply?.e?.id) return false;

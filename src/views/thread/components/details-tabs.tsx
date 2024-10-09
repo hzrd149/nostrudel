@@ -40,8 +40,10 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const reactions = events.filter((e) => e.kind === kinds.Reaction);
   const reposts = events.filter((e) => e.kind === kinds.Repost || e.kind === kinds.GenericRepost);
   const quotes = events.filter((e) => {
+    if (e.kind !== kinds.ShortTextNote) return false;
+
     return (
-      e.kind === kinds.ShortTextNote &&
+      e.tags.some((t) => t[0] === "q" && t[1] === post.event.id) ||
       getContentTagRefs(e.content, e.tags).some((t) => t[0] === "e" && t[1] === post.event.id)
     );
   });

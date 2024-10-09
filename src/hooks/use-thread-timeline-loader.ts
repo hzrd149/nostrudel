@@ -19,15 +19,22 @@ export default function useThreadTimelineLoader(
 
   const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
 
+  const kindArr = kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote];
   const timelineId = `${rootPointer?.id}-thread`;
   const timeline = useTimelineLoader(
     timelineId,
     readRelays,
     rootPointer
-      ? {
-          "#e": [rootPointer.id],
-          kinds: kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote],
-        }
+      ? [
+          {
+            "#e": [rootPointer.id],
+            kinds: kindArr,
+          },
+          {
+            "#q": [rootPointer.id],
+            kinds: kindArr,
+          },
+        ]
       : undefined,
   );
 

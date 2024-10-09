@@ -32,7 +32,6 @@ import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import relayHintService from "../../../services/event-relay-hint";
 import NotePublishedUsing from "../../../components/note/note-published-using";
-import { sortByDate } from "../../../helpers/nostr/event";
 
 export type ThreadItemProps = {
   post: ThreadItem;
