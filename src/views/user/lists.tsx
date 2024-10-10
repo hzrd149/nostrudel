@@ -5,7 +5,6 @@ import { kinds } from "nostr-tools";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import {
   BOOKMARK_LIST_KIND,
   MUTE_LIST_KIND,
@@ -29,7 +28,7 @@ export default function UserListsTab() {
   const eventFilter = useCallback((event: NostrEvent) => {
     return !isJunkList(event);
   }, []);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: lists } = useTimelineLoader(
     pubkey + "-lists",
     readRelays,
     [
@@ -44,9 +43,7 @@ export default function UserListsTab() {
     ],
     { eventFilter },
   );
-
-  const lists = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const peopleLists = lists.filter((event) => event.pubkey === pubkey && event.kind === PEOPLE_LIST_KIND);
   const noteLists = lists.filter((event) => event.pubkey === pubkey && event.kind === NOTE_LIST_KIND);

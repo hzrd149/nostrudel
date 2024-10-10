@@ -16,10 +16,10 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import UserLink from "../../../components/user/user-link";
@@ -42,20 +42,16 @@ function UserCard({ pubkey }: { pubkey: string }) {
   );
 }
 function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: Iterable<string> }) {
-  const timeline = useTimelineLoader(`${channel.id}-members`, relays, {
+  const { loader, timeline: userLists } = useTimelineLoader(`${channel.id}-members`, relays, {
     kinds: [CHANNELS_LIST_KIND],
     "#e": [channel.id],
   });
-  const userLists = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex gap="2" direction="column">
-        {userLists.map((list) => (
-          <UserCard key={list.pubkey} pubkey={list.pubkey} />
-        ))}
+        {userLists?.map((list) => <UserCard key={list.pubkey} pubkey={list.pubkey} />)}
       </Flex>
     </IntersectionObserverProvider>
   );

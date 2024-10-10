@@ -82,7 +82,7 @@ function NipTag({ nip, name }: { nip: number; name?: boolean }) {
   return (
     <Tooltip label={NIP_NAMES[nipStr]}>
       <Tag as="a" target="_blank" href={`https://github.com/nostr-protocol/nips/blob/master/${nipStr}.md`}>
-        {name ? NIP_NAMES[nipStr] ?? nipNumber : nipNumber}
+        {name ? (NIP_NAMES[nipStr] ?? nipNumber) : nipNumber}
       </Tag>
     </Tooltip>
   );

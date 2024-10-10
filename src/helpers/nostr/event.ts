@@ -265,8 +265,8 @@ export function getSortedKinds(events: NostrEvent[]) {
     .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
-export function getTagValue(event: NostrEvent, tag: string){
-  return event.tags.find(t => t[0]===tag && t.length>=2)?.[1]
+export function getTagValue(event: NostrEvent, tag: string) {
+  return event.tags.find((t) => t[0] === tag && t.length >= 2)?.[1];
 }
 
 export { getEventUID };

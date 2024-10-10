@@ -68,7 +68,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     },
     [clientMuteFilter],
   );
-  const timeline = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     `${truncateId(channel.id)}-chat-messages`,
     relays,
     {
@@ -77,10 +77,10 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     },
     { eventFilter },
   );
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider timeline={timeline}>
+    <ThreadsProvider timeline={loader}>
       <IntersectionObserverProvider callback={callback}>
         <Flex h="full" overflow="hidden" direction="column" p="2" gap="2" flexGrow={1}>
           <Flex gap="2" alignItems="center">
@@ -106,8 +106,8 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
             py="4"
             px="2"
           >
-            <ChannelChatLog timeline={timeline} channel={channel} />
-            <TimelineActionAndStatus timeline={timeline} />
+            <ChannelChatLog timeline={loader} channel={channel} />
+            <TimelineActionAndStatus timeline={loader} />
           </Flex>
 
           <ChannelMessageForm channel={channel} />

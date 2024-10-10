@@ -1,7 +1,7 @@
 import { ReactNode, memo, useMemo, useState } from "react";
+import { useInterval } from "react-use";
 import { Button, ButtonGroup, Divider, Flex, Heading } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { useInterval, useObservable } from "react-use";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
@@ -57,11 +57,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
 
 function UsersCard({ stream }: { stream: ParsedStream }) {
   const account = useCurrentAccount()!;
-  const streamChatTimeline = useStreamChatTimeline(stream);
-
-  // refresh when a new event
-  useObservable(streamChatTimeline.events.onEvent);
-  const chatEvents = streamChatTimeline.events.getSortedEvents();
+  const { loader, timeline: chatEvents } = useStreamChatTimeline(stream);
 
   const muteList = useUserMuteList(account.pubkey);
   const pubkeysInChat = useMemo(() => {

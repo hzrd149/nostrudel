@@ -1,8 +1,9 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react";
 
 import TimelineLoader from "../../classes/timeline-loader";
-import useSubject from "../../hooks/use-subject";
+import { eventStore } from "../../services/event-store";
 
 export type Thread = {
   root?: NostrEvent;
@@ -25,7 +26,7 @@ export function useThreadsContext() {
 }
 
 export default function ThreadsProvider({ timeline, children }: { timeline: TimelineLoader } & PropsWithChildren) {
-  const messages = useSubject(timeline.timeline);
+  const messages = useObservable(timeline.timeline) ?? [];
 
   const threads = useMemo(() => {
     const grouped: Record<string, Thread> = {};
@@ -36,21 +37,18 @@ export default function ThreadsProvider({ timeline, children }: { timeline: Time
           grouped[rootId] = {
             messages: [],
             rootId,
-            root: timeline.events.getEvent(rootId),
+            root: eventStore.getEvent(rootId),
           };
         }
         grouped[rootId].messages.push(message);
       }
     }
     return grouped;
-  }, [messages.length, timeline.events]);
+  }, [messages.length]);
 
-  const getRoot = useCallback(
-    (id: string) => {
-      return timeline.events.getEvent(id);
-    },
-    [timeline.events],
-  );
+  const getRoot = useCallback((id: string) => {
+    return eventStore.getEvent(id);
+  }, []);
 
   const context = useMemo(() => ({ threads, getRoot }), [threads, getRoot]);
 

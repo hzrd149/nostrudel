@@ -7,7 +7,6 @@ import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { TrustProvider } from "../../providers/local/trust-provider";
@@ -48,20 +47,19 @@ export default function UserReactionsTab() {
   const contextRelays = useAdditionalRelayContext();
   const readRelays = useReadRelays(contextRelays);
 
-  const timeline = useTimelineLoader(`${pubkey}-reactions`, readRelays, { authors: [pubkey], kinds: [7] });
-
-  const reactions = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const { loader, timeline: reactions } = useTimelineLoader(`${pubkey}-reactions`, readRelays, {
+    authors: [pubkey],
+    kinds: [7],
+  });
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <TrustProvider trust>
         <VerticalPageLayout>
-          {reactions.map((event) => (
-            <Reaction reaction={event} />
-          ))}
+          {reactions?.map((event) => <Reaction key={event.id} reaction={event} />)}
 
-          <TimelineActionAndStatus timeline={timeline} />
+          <TimelineActionAndStatus timeline={loader} />
         </VerticalPageLayout>
       </TrustProvider>
     </IntersectionObserverProvider>

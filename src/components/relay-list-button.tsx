@@ -26,7 +26,7 @@ export default function RelayListButton({ relay, ...props }: { relay: string } &
   const account = useCurrentAccount();
   const [isLoading, setLoading] = useState(false);
 
-  const sets = useUserRelaySets(account?.pubkey);
+  const sets = useUserRelaySets(account?.pubkey) ?? [];
 
   const inSets = sets.filter((set) => set.tags.some((t) => isRTag(t) && t[1] === relay));
 

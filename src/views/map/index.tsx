@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Flex } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { useObservable } from "applesauce-react";
 import ngeohash from "ngeohash";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import "leaflet.locatecontrol";
 
-import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
@@ -56,7 +56,7 @@ export default function MapView() {
   const [cells, setCells] = useState<string[]>([]);
 
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     "geo-events",
     readRelays,
     cells.length > 0 ? { "#g": cells, kinds: [kinds.ShortTextNote] } : undefined,
@@ -82,7 +82,7 @@ export default function MapView() {
     setFocused(event.id);
   }, []);
 
-  const events = useSubject(timeline.timeline);
+  const events = useObservable(loader.timeline) ?? [];
   useEventMarkers(events, map, handleMarkerClick);
 
   return (
@@ -98,8 +98,8 @@ export default function MapView() {
         </Flex>
 
         <Flex overflowY="auto" overflowX="hidden" gap="2" direction="column" h="full">
-          <MapTimeline timeline={timeline} focused={focused} />
-          {cells.length > 0 && <TimelineActionAndStatus timeline={timeline} />}
+          <MapTimeline timeline={loader} focused={focused} />
+          {cells.length > 0 && <TimelineActionAndStatus timeline={loader} />}
         </Flex>
       </Flex>
 

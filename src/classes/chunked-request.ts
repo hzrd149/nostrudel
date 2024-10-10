@@ -19,7 +19,7 @@ import { eventStore } from "../services/event-store";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
-export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
 
 export default class ChunkedRequest {
   id: string;

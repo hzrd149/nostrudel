@@ -3,7 +3,6 @@ import { Flex } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { STEMSTR_RELAY, STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
-import useSubject from "../../hooks/use-subject";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -27,12 +26,15 @@ function TracksPage() {
     },
     [clientMuteFilter],
   );
-  const timeline = useTimelineLoader(`${listId}-tracks`, relays, filter && { kinds: [STEMSTR_TRACK_KIND], ...filter }, {
-    eventFilter,
-  });
-  const tracks = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const { loader, timeline: tracks } = useTimelineLoader(
+    `${listId}-tracks`,
+    relays,
+    filter && { kinds: [STEMSTR_TRACK_KIND], ...filter },
+    {
+      eventFilter,
+    },
+  );
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -40,9 +42,7 @@ function TracksPage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {tracks.map((track) => (
-          <TrackCard track={track} />
-        ))}
+        {tracks?.map((track) => <TrackCard key={track.id} track={track} />)}
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

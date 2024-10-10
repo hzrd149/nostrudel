@@ -9,7 +9,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -49,7 +48,7 @@ export default function UserReportsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(`${pubkey}-reports`, contextRelays, [
+  const { loader, timeline: events } = useTimelineLoader(`${pubkey}-reports`, contextRelays, [
     {
       authors: [pubkey],
       kinds: [kinds.Report],
@@ -59,18 +58,14 @@ export default function UserReportsTab() {
       kinds: [kinds.Report],
     },
   ]);
-
-  const events = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        {events.map((report) => (
-          <ReportEvent key={report.id} report={report} />
-        ))}
+        {events?.map((report) => <ReportEvent key={report.id} report={report} />)}
 
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

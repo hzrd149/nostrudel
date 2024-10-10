@@ -1,10 +1,12 @@
 import _throttle from "lodash.throttle";
+import { kinds } from "nostr-tools";
+
 import { getSearchNames } from "../helpers/nostr/user-metadata";
 import db from "./db";
-import replaceableEventsService from "./replaceable-events";
 import userMetadataService from "./user-metadata";
 import { logger } from "../helpers/debug";
 import Subject from "../classes/subject";
+import { eventStore } from "./event-store";
 
 const WRITE_USER_SEARCH_BATCH_TIME = 500;
 const log = logger.extend("UsernameSearch");
@@ -32,9 +34,7 @@ const writeSearchData = _throttle(async () => {
   userSearchUpdate.next(Math.random());
 }, WRITE_USER_SEARCH_BATCH_TIME);
 
-replaceableEventsService.events.onEvent.subscribe((event) => {
-  if (event.kind === 0) {
-    writeSearchQueue.add(event.pubkey);
-    writeSearchData();
-  }
+eventStore.stream([{ kinds: [kinds.Metadata] }]).subscribe((event) => {
+  writeSearchQueue.add(event.pubkey);
+  writeSearchData();
 });

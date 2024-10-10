@@ -8,13 +8,11 @@ import { LightningIcon } from "../../../components/icons";
 import { readablizeSats } from "../../../helpers/bolt11";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { ParsedStream } from "../../../helpers/nostr/stream";
-import useSubject from "../../../hooks/use-subject";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
-  const timeline = useStreamChatTimeline(stream);
-  const events = useSubject(timeline.timeline);
-  const zaps = useMemo(() => parseZapEvents(events.filter((e) => e.kind === kinds.Zap)), [events]);
+  const { timeline } = useStreamChatTimeline(stream);
+  const zaps = useMemo(() => parseZapEvents(timeline.filter((e) => e.kind === kinds.Zap)), [timeline]);
 
   const totals: Record<string, number> = {};
   for (const zap of zaps) {

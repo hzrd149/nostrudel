@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
+import { useObservable } from "applesauce-react";
 
 import {
   COMMUNITY_APPROVAL_KIND,
@@ -7,7 +8,6 @@ import {
   getCommunityMods,
   getCommunityRelays,
 } from "../../../helpers/nostr/communities";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
@@ -22,7 +22,7 @@ export default function CommunityTrendingView() {
   const muteFilter = useUserMuteFilter();
   const mods = getCommunityMods(community);
 
-  const events = useSubject(timeline.timeline);
+  const events = useObservable(timeline.timeline) ?? [];
   const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events

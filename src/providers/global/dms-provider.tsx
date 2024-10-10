@@ -35,7 +35,7 @@ export default function DMTimelineProvider({ children }: PropsWithChildren) {
     [userMuteFilter],
   );
 
-  const timeline = useTimelineLoader(
+  const { loader } = useTimelineLoader(
     `${truncateId(account?.pubkey ?? "anon")}-dms`,
     inbox ?? [],
     account?.pubkey
@@ -47,7 +47,7 @@ export default function DMTimelineProvider({ children }: PropsWithChildren) {
     { eventFilter },
   );
 
-  const context = useMemo(() => ({ timeline }), [timeline]);
+  const context = useMemo(() => ({ timeline: loader }), [loader]);
 
   return <DMTimelineContext.Provider value={context}>{children}</DMTimelineContext.Provider>;
 }

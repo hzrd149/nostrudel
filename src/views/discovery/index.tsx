@@ -1,12 +1,13 @@
+import { useCallback } from "react";
 import { Card, Flex, Heading, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { kinds, NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import DVMCard from "./dvm-feed/components/dvm-card";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -17,14 +18,19 @@ import { RelayIcon } from "../../components/icons";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader("content-discovery-dvms", readRelays, {
-    kinds: [31990],
-    "#k": [String(DVM_CONTENT_DISCOVERY_JOB_KIND)],
-  });
-
-  const DMVs = useSubject(timeline.timeline).filter((e) => !e.tags.some((t) => t[0] === "web"));
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const eventFilter = useCallback((event: NostrEvent) => {
+    return !event.tags.some((t) => t[0] === "web");
+  }, []);
+  const { loader, timeline: DVMs } = useTimelineLoader(
+    "content-discovery-dvms",
+    readRelays,
+    {
+      kinds: [kinds.Handlerinformation],
+      "#k": [String(DVM_CONTENT_DISCOVERY_JOB_KIND)],
+    },
+    { eventFilter },
+  );
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <>
@@ -39,7 +45,7 @@ function DVMFeeds() {
       </Text>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
-          {DMVs.map((appData) => (
+          {DVMs.map((appData) => (
             <DVMCard key={appData.id} appData={appData} to={`/discovery/dvm/${getEventCoordinate(appData)}`} />
           ))}
         </SimpleGrid>

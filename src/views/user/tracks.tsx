@@ -3,7 +3,6 @@ import { Box, SimpleGrid } from "@chakra-ui/react";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import { getEventUID } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -28,21 +27,21 @@ export default function UserTracksTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(pubkey + "-tracks", unique([...readRelays, "wss://relay.stemstr.app"]), {
-    authors: [pubkey],
-    kinds: [STEMSTR_TRACK_KIND],
-  });
-  const tracks = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const { loader, timeline: tracks } = useTimelineLoader(
+    pubkey + "-tracks",
+    unique([...readRelays, "wss://relay.stemstr.app"]),
+    {
+      authors: [pubkey],
+      kinds: [STEMSTR_TRACK_KIND],
+    },
+  );
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="4">
-          {tracks.map((track) => (
-            <Track key={getEventUID(track)} track={track} />
-          ))}
+          {tracks?.map((track) => <Track key={getEventUID(track)} track={track} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

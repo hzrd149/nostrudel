@@ -6,7 +6,6 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -27,23 +26,19 @@ export default function CommunityFindByNameView() {
   const eventFilter = useCallback((event: NostrEvent) => {
     return validateCommunity(event);
   }, []);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: communities } = useTimelineLoader(
     `${community}-find-communities`,
     readRelays,
     community ? { kinds: [COMMUNITY_DEFINITION_KIND], "#d": [community] } : undefined,
   );
-
-  const communities = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Heading>Select Community</Heading>
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
-          {communities.map((event) => (
-            <CommunityCard key={getEventUID(event)} community={event} />
-          ))}
+          {communities?.map((event) => <CommunityCard key={getEventUID(event)} community={event} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

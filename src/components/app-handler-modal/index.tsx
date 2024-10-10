@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -26,7 +26,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
 import { Kind0ParsedContent, getDisplayName, parseMetadataContent } from "../../helpers/nostr/user-metadata";
 import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
@@ -96,15 +95,18 @@ export default function AppHandlerModal({
   const kind = event?.kind ?? getKindFromDecoded(decoded);
   const alt = event?.tags.find((t) => t[0] === "alt")?.[1];
   const address = encodeDecodeResult(decoded);
-  const timeline = useTimelineLoader(
+  const eventFilter = useCallback((event: NostrEvent) => {
+    return event.content.length > 0;
+  }, []);
+  const { loader, timeline: apps } = useTimelineLoader(
     `${kind}-apps`,
     readRelays,
     kind ? { kinds: [kinds.Handlerinformation], "#k": [String(kind)] } : { kinds: [kinds.Handlerinformation] },
+    { eventFilter },
   );
 
   const autofocus = useBreakpointValue({ base: false, lg: true });
   const [search, setSearch] = useState("");
-  const apps = useSubject(timeline.timeline).filter((a) => a.content.length > 0);
 
   const filteredApps = apps.filter((app) => {
     if (search.length > 1) {
@@ -117,7 +119,7 @@ export default function AppHandlerModal({
       return false;
     } else return true;
   });
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">

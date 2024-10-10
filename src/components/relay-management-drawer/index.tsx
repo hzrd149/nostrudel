@@ -110,7 +110,7 @@ export default function RelayManagementDrawer({ isOpen, onClose, ...props }: Omi
 
   const save = useDisclosure();
   const [selected, setSelected] = useState<string>();
-  const relaySets = useUserRelaySets(account?.pubkey);
+  const relaySets = useUserRelaySets(account?.pubkey) ?? [];
 
   const changeSet = (cord: string) => {
     setSelected(cord);

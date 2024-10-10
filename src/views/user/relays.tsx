@@ -3,7 +3,6 @@ import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakr
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
 import { RelayFavicon } from "../../components/relay-favicon";
@@ -60,15 +59,13 @@ const UserRelaysTab = () => {
   const mailboxes = useUserMailboxes(pubkey);
 
   const readRelays = useReadRelays(mailboxes?.outboxes);
-  const timeline = useTimelineLoader(`${truncateId(pubkey)}-relay-reviews`, readRelays, {
+  const { loader, timeline: reviews } = useTimelineLoader(`${truncateId(pubkey)}-relay-reviews`, readRelays, {
     authors: [pubkey],
     kinds: [1985],
     "#l": ["review/relay"],
   });
 
-  const reviews = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const otherReviews = reviews.filter((e) => {
     const url = e.tags.find((t) => t[0] === "r")?.[1];

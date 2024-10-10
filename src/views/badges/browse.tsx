@@ -7,7 +7,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import { getEventUID } from "../../helpers/nostr/event";
 import BadgeCard from "./components/badge-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -16,14 +15,12 @@ function BadgesBrowsePage() {
   const { filter, listId } = usePeopleListContext();
 
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: lists } = useTimelineLoader(
     `${listId}-badges`,
     readRelays,
     filter ? { ...filter, kinds: [kinds.BadgeDefinition] } : undefined,
   );
-
-  const lists = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -33,9 +30,7 @@ function BadgesBrowsePage() {
         </Flex>
 
         <SimpleGrid columns={{ base: 1, sm: 2, md: 2, lg: 3, xl: 4 }} spacing="2">
-          {lists.map((badge) => (
-            <BadgeCard key={getEventUID(badge)} badge={badge} />
-          ))}
+          {lists?.map((badge) => <BadgeCard key={getEventUID(badge)} badge={badge} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

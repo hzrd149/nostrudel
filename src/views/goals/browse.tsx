@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -8,13 +9,12 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
-import { getEventUID } from "../../helpers/nostr/event";
-import { GOAL_KIND, getGoalClosedDate } from "../../helpers/nostr/goal";
+import { getGoalClosedDate } from "../../helpers/nostr/goal";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { kinds } from "nostr-tools";
 
 function GoalsBrowsePage() {
   const { filter, listId } = usePeopleListContext();
@@ -29,15 +29,13 @@ function GoalsBrowsePage() {
     },
     [showClosed.isOpen],
   );
-  const timeline = useTimelineLoader(
+  const { loader, timeline: goals } = useTimelineLoader(
     `${listId}-browse-goals`,
     readRelays,
-    filter ? { ...filter, kinds: [GOAL_KIND] } : undefined,
+    filter ? { ...filter, kinds: [kinds.ZapGoal] } : undefined,
     { eventFilter },
   );
-
-  const goals = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -50,7 +48,7 @@ function GoalsBrowsePage() {
         </Flex>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-          {goals.map((event) => (
+          {goals?.map((event) => (
             <ErrorBoundary key={getEventUID(event)} event={event}>
               <GoalCard goal={event} />
             </ErrorBoundary>

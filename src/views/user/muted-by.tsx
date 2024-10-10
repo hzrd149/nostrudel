@@ -7,7 +7,6 @@ import UserLink from "../../components/user/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -43,12 +42,10 @@ export default function UserMutedByTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
 
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(`${pubkey}-muted-by`, readRelays, [
+  const { loader, timeline: lists } = useTimelineLoader(`${pubkey}-muted-by`, readRelays, [
     { kinds: [MUTE_LIST_KIND], "#p": [pubkey] },
     { kinds: [PEOPLE_LIST_KIND], "#d": ["mute"], "#p": [pubkey] },
   ]);
-
-  const lists = useSubject(timeline.timeline);
 
   const pubkeys = useMemo(() => {
     const dir = new SuperMap<string, NostrEvent[]>(() => []);
@@ -58,7 +55,7 @@ export default function UserMutedByTab() {
     return Array.from(dir).map((a) => ({ pubkey: a[0], lists: a[1] }));
   }, [lists]);
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>

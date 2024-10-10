@@ -2,8 +2,6 @@ import { useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
-import TimelineLoader from "../../../classes/timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
@@ -36,13 +34,11 @@ function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
   );
 }
 
-export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }) {
-  const events = useSubject(timeline.timeline);
-
+export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) {
   const images = useMemo(() => {
     var images: PhotoWithEvent[] = [];
 
-    for (const event of events) {
+    for (const event of timeline) {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
@@ -53,7 +49,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     }
 
     return images;
-  }, [events]);
+  }, [timeline]);
 
   return (
     <LightboxProvider>

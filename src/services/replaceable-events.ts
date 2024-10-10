@@ -1,9 +1,9 @@
 import { NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
+import { EventStore } from "applesauce-core";
 
 import SuperMap from "../classes/super-map";
-import EventStore from "../classes/event-store";
 import Subject from "../classes/subject";
 import BatchKindPubkeyLoader, { createCoordinate } from "../classes/batch-kind-pubkey-loader";
 import Process from "../classes/process";
@@ -29,31 +29,34 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
 }
 
 class ReplaceableEventsService {
+  store: EventStore;
   process: Process;
 
+  /** @deprecated */
   private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   cacheLoader: BatchKindPubkeyLoader | null = null;
   loaders = new SuperMap<AbstractRelay, BatchKindPubkeyLoader>((relay) => {
-    const loader = new BatchKindPubkeyLoader(relay, this.log.extend(relay.url));
-    loader.events.onEvent.subscribe((e) => this.handleEvent(e));
+    const loader = new BatchKindPubkeyLoader(this.store, relay, this.log.extend(relay.url));
     this.process.addChild(loader.process);
     return loader;
   });
 
-  events = new EventStore();
-
   log = logger.extend("ReplaceableEventLoader");
 
-  constructor() {
+  constructor(store: EventStore) {
+    this.store = store;
     this.process = new Process("ReplaceableEventsService", this);
     this.process.icon = UserSquare;
     this.process.active = true;
     processManager.registerProcess(this.process);
 
     if (localRelay) {
-      this.cacheLoader = new BatchKindPubkeyLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
-      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, true));
+      this.cacheLoader = new BatchKindPubkeyLoader(
+        this.store,
+        localRelay as AbstractRelay,
+        this.log.extend("cache-relay"),
+      );
       this.process.addChild(this.cacheLoader.process);
     }
   }
@@ -61,15 +64,14 @@ class ReplaceableEventsService {
   private seenInCache = new Set<string>();
   handleEvent(event: NostrEvent, fromCache = false) {
     if (!fromCache && !alwaysVerify(event)) return;
-    const cord = getEventCoordinate(event);
+    event = this.store.add(event);
 
-    eventStore.add(event);
+    const cord = getEventCoordinate(event);
 
     const subject = this.subjects.get(cord);
     const current = subject.value;
     if (!current || event.created_at > current.created_at) {
       subject.next(event);
-      this.events.addEvent(event);
 
       if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
     }
@@ -125,7 +127,7 @@ class ReplaceableEventsService {
   }
 }
 
-const replaceableEventsService = new ReplaceableEventsService();
+const replaceableEventsService = new ReplaceableEventsService(eventStore);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
+import { useObservable } from "applesauce-react";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
@@ -11,7 +12,6 @@ import {
   getCommunityMods,
   getCommunityRelays,
 } from "../../../helpers/nostr/communities";
-import useSubject from "../../../hooks/use-subject";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
@@ -79,7 +79,7 @@ export default function CommunityPendingView() {
   const muteFilter = useUserMuteFilter();
   const { community, timeline } = useOutletContext<RouterContext>();
 
-  const events = useSubject(timeline.timeline);
+  const events = useObservable(timeline.timeline) ?? [];
 
   const mods = getCommunityMods(community);
   const approvals = buildApprovalMap(events, mods);

@@ -16,7 +16,7 @@ export default function SelectRelaySet({
   pubkey?: string;
 }) {
   const account = useCurrentAccount();
-  const relaySets = useUserRelaySets(pubkey || account?.pubkey);
+  const relaySets = useUserRelaySets(pubkey || account?.pubkey) ?? [];
 
   return (
     <Select

@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useObservable } from "applesauce-react";
 import { nip19 } from "nostr-tools";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useDMTimeline } from "../../../providers/global/dms-provider";
-import useSubject from "../../../hooks/use-subject";
 import {
   KnownConversation,
   groupIntoConversations,
@@ -54,7 +54,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
 
   const timeline = useDMTimeline();
 
-  const messages = useSubject(timeline.timeline);
+  const messages = useObservable(timeline.timeline) ?? [];
   const conversations = useMemo(() => {
     const grouped = groupIntoConversations(messages)
       .map((c) => identifyConversation(c, account.pubkey))

@@ -1,4 +1,5 @@
 import { Box, ButtonGroup, Flex, Heading, Spinner, Tag, Text } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import {
@@ -21,9 +22,7 @@ import SimpleDislikeButton from "../../components/event-reactions/simple-dislike
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import VideoCard from "./components/video-card";
-import { getEventUID } from "../../helpers/nostr/event";
 import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
@@ -32,19 +31,11 @@ import QuoteEventButton from "../../components/note/quote-event-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(video.pubkey + "-videos", readRelays, {
+  const { loader, timeline: videos } = useTimelineLoader(video.pubkey + "-videos", readRelays, {
     authors: [video.pubkey],
     kinds: [FLARE_VIDEO_KIND],
   });
-  const videos = useSubject(timeline.timeline);
-
-  return (
-    <>
-      {videos.slice(0, 8).map((v) => (
-        <VideoCard key={getEventUID(v)} video={v} />
-      ))}
-    </>
-  );
+  return <>{videos?.slice(0, 8).map((v) => <VideoCard key={getEventUID(v)} video={v} />)}</>;
 }
 
 function VideoDetailsPage({ video }: { video: NostrEvent }) {

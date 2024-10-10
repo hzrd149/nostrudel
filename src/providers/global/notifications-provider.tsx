@@ -40,7 +40,7 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
     [userMuteFilter],
   );
 
-  const timeline = useTimelineLoader(
+  const { loader } = useTimelineLoader(
     `${truncateId(account?.pubkey ?? "anon")}-notification`,
     readRelays,
     account?.pubkey
@@ -74,7 +74,7 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
     };
   }, [account?.pubkey]);
 
-  const context = useMemo(() => ({ timeline, notifications }), [timeline, notifications]);
+  const context = useMemo(() => ({ timeline: loader, notifications }), [loader, notifications]);
 
   return <NotificationTimelineContext.Provider value={context}>{children}</NotificationTimelineContext.Provider>;
 }

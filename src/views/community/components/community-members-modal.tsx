@@ -19,7 +19,6 @@ import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserLink from "../../../components/user/user-link";
@@ -45,17 +44,17 @@ export default function CommunityMembersModal({
 }: Omit<ModalProps, "children"> & { community: NostrEvent }) {
   const communityCoordinate = getEventCoordinate(community);
   const readRelays = useReadRelays(getCommunityRelays(community));
-  const timeline = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
+  const { loader, timeline: lists } = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
     { "#a": [communityCoordinate], kinds: [COMMUNITIES_LIST_KIND] },
   ]);
-
-  const lists = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const listsByPubkey: Record<string, NostrEvent> = {};
-  for (const list of lists) {
-    if (!listsByPubkey[list.pubkey] || listsByPubkey[list.pubkey].created_at < list.created_at) {
-      listsByPubkey[list.pubkey] = list;
+  if (lists) {
+    for (const list of lists) {
+      if (!listsByPubkey[list.pubkey] || listsByPubkey[list.pubkey].created_at < list.created_at) {
+        listsByPubkey[list.pubkey] = list;
+      }
     }
   }
 
@@ -70,11 +69,9 @@ export default function CommunityMembersModal({
           <ModalCloseButton />
           <ModalBody p="4">
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="4">
-              {lists.map((list) => (
-                <UserCard key={list.id} pubkey={list.pubkey} />
-              ))}
+              {lists?.map((list) => <UserCard key={list.id} pubkey={list.pubkey} />)}
             </SimpleGrid>
-            <TimelineActionAndStatus timeline={timeline} />
+            <TimelineActionAndStatus timeline={loader} />
           </ModalBody>
 
           <ModalFooter px="4" pt="0" pb="4">

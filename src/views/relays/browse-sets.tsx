@@ -7,7 +7,6 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/local/
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { NostrEvent } from "../../types/nostr-event";
 import { getListName, getRelaysFromList } from "../../helpers/nostr/lists";
@@ -36,12 +35,15 @@ function RelaySetCard({ set }: { set: NostrEvent }) {
 function BrowseRelaySetsPage() {
   const relays = useReadRelays();
   const { filter } = usePeopleListContext();
-  const timeline = useTimelineLoader("relay-sets", relays, filter && { kinds: [kinds.Relaysets], ...filter }, {
-    eventFilter: (e) => getRelaysFromList(e).length > 0,
-  });
-
-  const relaySets = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const { loader, timeline: relaySets } = useTimelineLoader(
+    "relay-sets",
+    relays,
+    filter && { kinds: [kinds.Relaysets], ...filter },
+    {
+      eventFilter: (e) => getRelaysFromList(e).length > 0,
+    },
+  );
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -49,11 +51,9 @@ function BrowseRelaySetsPage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {relaySets.map((set) => (
-          <RelaySetCard key={getEventUID(set)} set={set} />
-        ))}
+        {relaySets?.map((set) => <RelaySetCard key={getEventUID(set)} set={set} />)}
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus timeline={loader} />
     </VerticalPageLayout>
   );
 }

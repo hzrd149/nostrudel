@@ -5,7 +5,6 @@ import { Link as RouterLink } from "react-router-dom";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import TimelineActionAndStatus from "../../timeline/timeline-action-and-status";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import Timestamp from "../../timestamp";
@@ -98,18 +97,17 @@ export default function GhostTimeline({ ...props }: Omit<FlexProps, "children">)
   const account = useCurrentAccount()!;
   const readRelays = useReadRelays();
 
-  const timeline = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, { authors: [account.pubkey] });
-  const events = useSubject(timeline.timeline);
+  const { loader, timeline: events } = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, {
+    authors: [account.pubkey],
+  });
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex direction="column" overflow="auto" {...props}>
-        {events.map((event) => (
-          <TimelineItem key={event.id} event={event} />
-        ))}
-        <TimelineActionAndStatus timeline={timeline} />
+        {events?.map((event) => <TimelineItem key={event.id} event={event} />)}
+        <TimelineActionAndStatus timeline={loader} />
       </Flex>
     </IntersectionObserverProvider>
   );

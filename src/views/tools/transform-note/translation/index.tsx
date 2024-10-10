@@ -13,12 +13,12 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
+import { Filter } from "nostr-tools";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { getEventUID } from "../../../../helpers/nostr/event";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
-import useSubject from "../../../../hooks/use-subject";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
 import {
   DVM_STATUS_KIND,
@@ -29,7 +29,6 @@ import {
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import TranslationJob from "./translation-job";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import { Filter } from "nostr-tools";
 
 export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
   const account = useCurrentAccount();
@@ -54,7 +53,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
     await publish("Request Translation", draft);
   }, [publish, note, readRelays, lang]);
 
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `${getEventUID(note)}-translations`,
     readRelays,
     [
@@ -66,7 +65,6 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
     ].filter(Boolean) as Filter[],
   );
 
-  const events = useSubject(timeline.timeline);
   const jobs = Object.values(groupEventsIntoJobs(events));
 
   return (

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Flex, Image, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -112,15 +111,12 @@ function FilesPage() {
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>(IMAGE_TYPES);
 
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `${listId}-files`,
     relays,
-    { kinds: [FILE_KIND], "#m": selectedTypes, ...filter },
-    { enabled: selectedTypes.length > 0 && !!filter },
+    selectedTypes.length > 0 && !!filter ? { kinds: [FILE_KIND], "#m": selectedTypes, ...filter } : undefined,
   );
-
-  const events = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -131,14 +127,14 @@ function FilesPage() {
 
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid minChildWidth="20rem" spacing="2">
-          {events.map((event) => (
+          {events?.map((event) => (
             <ErrorBoundary key={event.id} event={event}>
               <FileType event={event} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus timeline={loader} />
     </VerticalPageLayout>
   );
 }

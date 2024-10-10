@@ -1,9 +1,9 @@
 import { useOutletContext } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import { getEventUID } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -17,16 +17,15 @@ export default function UserEmojiPacksTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(pubkey + "-emoji-packs", readRelays, {
+  const { loader, timeline: packs } = useTimelineLoader(pubkey + "-emoji-packs", readRelays, {
     authors: [pubkey],
     kinds: [EMOJI_PACK_KIND],
   });
-  const packs = useSubject(timeline.timeline);
 
   const favoritePacks = useFavoriteEmojiPacks(pubkey);
   const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>

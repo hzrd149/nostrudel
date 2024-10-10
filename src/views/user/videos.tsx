@@ -1,10 +1,9 @@
 import { useOutletContext } from "react-router-dom";
 import { SimpleGrid } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
-import { getEventUID } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -15,21 +14,17 @@ export default function UserVideosTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(pubkey + "-videos", readRelays, {
+  const { loader, timeline: videos } = useTimelineLoader(pubkey + "-videos", readRelays, {
     authors: [pubkey],
     kinds: [FLARE_VIDEO_KIND],
   });
-  const videos = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }} spacing="4">
-          {videos.map((video) => (
-            <VideoCard key={getEventUID(video)} video={video} />
-          ))}
+          {videos?.map((video) => <VideoCard key={getEventUID(video)} video={video} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

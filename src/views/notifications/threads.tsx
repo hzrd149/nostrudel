@@ -1,5 +1,6 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -11,7 +12,6 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import { useNotifications } from "../../providers/global/notifications-provider";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
-import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import UserAvatarLink from "../../components/user/user-avatar-link";
@@ -67,7 +67,7 @@ function ThreadGroup({ rootId, events }: { rootId: string; events: NostrEvent[] 
   const ref = useEventIntersectionRef(events[events.length - 1]);
 
   return (
-    <Flex>
+    <Flex ref={ref}>
       <GitBranch01 boxSize={8} color="green.500" mr="2" />
       <Flex direction="column" gap="2">
         <AvatarGroup size="sm">
@@ -104,7 +104,7 @@ function ThreadsNotificationsPage() {
 
   const { timeline } = useNotifications();
   const callback = useTimelineCurserIntersectionCallback(timeline);
-  const events = useSubject(timeline?.timeline);
+  const events = useObservable(timeline?.timeline) ?? [];
 
   const filteredEvents = useMemo(
     () =>

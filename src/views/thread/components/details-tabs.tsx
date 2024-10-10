@@ -12,7 +12,6 @@ import PostRepostsTab from "./tabs/reposts";
 import PostQuotesTab from "./tabs/quotes";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
 import CorrectionsTab from "./tabs/corrections";
@@ -34,8 +33,9 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const zaps = useEventZaps(getEventUID(post.event));
 
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(`${post.event.id}-thread-refs`, readRelays, { "#e": [post.event.id] });
-  const events = useSubject(timeline.timeline);
+  const { loader, timeline: events } = useTimelineLoader(`${post.event.id}-thread-refs`, readRelays, {
+    "#e": [post.event.id],
+  });
 
   const reactions = events.filter((e) => e.kind === kinds.Reaction);
   const reposts = events.filter((e) => e.kind === kinds.Repost || e.kind === kinds.GenericRepost);

@@ -1,11 +1,10 @@
+import { useCallback } from "react";
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { useCallback } from "react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -18,7 +17,7 @@ export default function UserTorrentsTab() {
   const contextRelays = useAdditionalRelayContext();
 
   const eventFilter = useCallback((t: NostrEvent) => validateTorrent(t), []);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: torrents } = useTimelineLoader(
     `${pubkey}-torrents`,
     contextRelays,
     {
@@ -27,9 +26,7 @@ export default function UserTorrentsTab() {
     },
     { eventFilter },
   );
-
-  const torrents = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -46,15 +43,11 @@ export default function UserTorrentsTab() {
                 <Th />
               </Tr>
             </Thead>
-            <Tbody>
-              {torrents.map((torrent) => (
-                <TorrentTableRow key={torrent.id} torrent={torrent} />
-              ))}
-            </Tbody>
+            <Tbody>{torrents?.map((torrent) => <TorrentTableRow key={torrent.id} torrent={torrent} />)}</Tbody>
           </Table>
         </TableContainer>
 
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

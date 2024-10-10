@@ -16,7 +16,6 @@ import { useCallback, useState } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import ListCard from "./components/list-card";
 import { getEventUID } from "../../helpers/nostr/event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -43,15 +42,13 @@ function BrowseListPage() {
     [showEmpty.isOpen, showMute.isOpen, listKind],
   );
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: lists } = useTimelineLoader(
     `${listId}-lists`,
     readRelays,
     filter ? { ...filter, kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND] } : undefined,
     { eventFilter },
   );
-
-  const lists = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -71,9 +68,7 @@ function BrowseListPage() {
         </Flex>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-          {lists.map((event) => (
-            <ListCard key={getEventUID(event)} list={event} />
-          ))}
+          {lists?.map((event) => <ListCard key={getEventUID(event)} list={event} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

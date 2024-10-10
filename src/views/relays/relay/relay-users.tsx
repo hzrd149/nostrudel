@@ -7,7 +7,6 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -36,7 +35,7 @@ function UserCard({ list, pubkey }: { list: NostrEvent; pubkey: string }) {
 export default function RelayUsersTab({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Users`);
   const { filter } = usePeopleListContext();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: lists } = useTimelineLoader(
     `${relay}-users`,
     [relay],
     filter && { ...filter, kinds: [kinds.RelayList], "#r": getRelayVariations(relay) },
@@ -44,9 +43,7 @@ export default function RelayUsersTab({ relay }: { relay: string }) {
       eventFilter: (e) => getRelaysFromList(e).includes(relay),
     },
   );
-
-  const lists = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <Flex direction="column" gap="2">
@@ -55,12 +52,10 @@ export default function RelayUsersTab({ relay }: { relay: string }) {
       </Flex>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={[1, 1, 2, 3, 4]} spacing="2">
-          {lists.map((list) => (
-            <UserCard key={getEventUID(list)} pubkey={list.pubkey} list={list} />
-          ))}
+          {lists?.map((list) => <UserCard key={getEventUID(list)} pubkey={list.pubkey} list={list} />)}
         </SimpleGrid>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus timeline={loader} />
     </Flex>
   );
 }

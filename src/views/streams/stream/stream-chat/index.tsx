@@ -18,10 +18,10 @@ export default function StreamChat({
   displayMode,
   ...props
 }: CardProps & { stream: ParsedStream; actions?: React.ReactNode; displayMode?: ChatDisplayMode }) {
-  const timeline = useStreamChatTimeline(stream);
+  const { loader } = useStreamChatTimeline(stream);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const isPopup = !!displayMode;
   const isChatLog = displayMode === "log";

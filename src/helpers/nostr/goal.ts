@@ -1,10 +1,12 @@
 import dayjs from "dayjs";
+import { kinds } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/nip19";
 import { getPointerFromTag } from "applesauce-core/helpers";
 
 import { NostrEvent, isRTag } from "../../types/nostr-event";
 
-export const GOAL_KIND = 9041;
+/** @deprecated use kinds.ZapGoal */
+export const GOAL_KIND = kinds.ZapGoal;
 
 export type ParsedGoal = {
   event: NostrEvent;

@@ -31,7 +31,7 @@ export function TrustProvider({
   const context = useMemo(() => {
     const trust = parentTrust || isEventTrusted;
     return {
-      trust: allowOverride ? override ?? trust : trust,
+      trust: allowOverride ? (override ?? trust) : trust,
       setOverride: (v: boolean) => allowOverride && setOverride(v),
     };
   }, [override, parentTrust, isEventTrusted, setOverride, allowOverride]);

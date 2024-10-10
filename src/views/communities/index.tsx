@@ -38,7 +38,6 @@ import {
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
@@ -88,7 +87,7 @@ function CommunitiesHomePage() {
     if (pub) navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `all-communities-timeline`,
     readRelays,
     communityCoordinates.length > 0
@@ -111,7 +110,6 @@ function CommunitiesHomePage() {
     return Array.from(set);
   }, [communities]);
 
-  const events = useSubject(timeline.timeline);
   const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events
@@ -119,7 +117,7 @@ function CommunitiesHomePage() {
     .map((event) => ({ event, approvals: approvalMap.get(event.id) }))
     .filter((e) => !muteFilter(e.event));
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const communityDrawer = useDisclosure();
 
@@ -152,7 +150,7 @@ function CommunitiesHomePage() {
                   <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} showCommunity />
                 ))}
               </IntersectionObserverProvider>
-              <TimelineActionAndStatus timeline={timeline} />
+              <TimelineActionAndStatus timeline={loader} />
             </Flex>
             <Flex gap="2" direction="column" w="md" flexShrink={0} hideBelow="xl">
               <Heading size="md">Joined Communities</Heading>

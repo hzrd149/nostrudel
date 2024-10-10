@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
+import { useObservable } from "applesauce-react";
 import { kinds, nip19 } from "nostr-tools";
 
 import {
@@ -30,7 +31,6 @@ import { WritingIcon } from "../../components/icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import CommunityEditModal from "./components/community-edit-modal";
 import TimelineLoader from "../../classes/timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 
 function getCommunityPath(community: NostrEvent) {
@@ -51,13 +51,13 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
 
   const communityRelays = getCommunityRelays(community);
   const readRelays = useReadRelays(communityRelays);
-  const timeline = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
+  const { loader } = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
     kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
     "#a": [communityCoordinate],
   });
 
   // get pending notes
-  const events = useSubject(timeline.timeline);
+  const events = useObservable(loader.timeline) ?? [];
   const mods = getCommunityMods(community);
   const approvals = buildApprovalMap(events, mods);
   const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id) && !muteFilter(e));
@@ -142,7 +142,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
                 </Button>
               </ButtonGroup>
 
-              <Outlet context={{ community, timeline } satisfies RouterContext} />
+              <Outlet context={{ community, timeline: loader } satisfies RouterContext} />
             </Flex>
 
             {!verticalLayout && (

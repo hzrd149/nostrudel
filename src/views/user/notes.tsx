@@ -3,7 +3,7 @@ import { Flex, Spacer } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import { isReply, isRepost, truncatedId } from "../../helpers/nostr/event";
+import { isReply, isRepost } from "../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { RelayIconStack } from "../../components/relay-icon-stack";
 import { NostrEvent } from "../../types/nostr-event";
@@ -29,7 +29,7 @@ export default function UserNotesTab() {
     },
     [showReplies.isOpen, showReposts.isOpen, timelineEventFilter],
   );
-  const timeline = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     pubkey + "-notes",
     readRelays,
     {
@@ -48,5 +48,5 @@ export default function UserNotesTab() {
     </Flex>
   );
 
-  return <TimelinePage header={header} timeline={timeline} pt="2" pb="12" px="2" />;
+  return <TimelinePage header={header} loader={loader} timeline={timeline} pt="2" pb="12" px="2" />;
 }

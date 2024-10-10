@@ -16,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 
 import TimelineLoader from "../../../classes/timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { NostrEvent } from "../../../types/nostr-event";
 import { RelayFavicon } from "../../relay-favicon";
 import { NoteLink } from "../../note/note-link";
@@ -24,6 +23,7 @@ import { BroadcastEventIcon } from "../../icons";
 import Timestamp from "../../timestamp";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { getSeenRelays } from "applesauce-core/helpers";
 
 function EventRow({
   event,
@@ -31,7 +31,6 @@ function EventRow({
   ...props
 }: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
   // const sub = useMemo(() => getEventRelays(event.id), [event.id]);
-  const seenRelays = true; //useSubject(sub);
   const publish = usePublishEvent();
 
   const ref = useEventIntersectionRef(event);
@@ -64,7 +63,7 @@ function EventRow({
         {broadcasting ? <Spinner size="xs" /> : <BroadcastEventIcon />}
       </Td>
       {relays.map((relay) => (
-        <Td key={relay} title={relay} p="2" backgroundColor={/*seenRelays.includes(relay)*/ true ? yes : no}>
+        <Td key={relay} title={relay} p="2" backgroundColor={getSeenRelays(event)?.has(relay) ? yes : no}>
           <RelayFavicon relay={relay} size="2xs" />
         </Td>
       ))}
@@ -72,9 +71,8 @@ function EventRow({
   );
 }
 
-export default function TimelineHealth({ timeline }: { timeline: TimelineLoader }) {
-  const events = useSubject(timeline.timeline);
-  const relays = Array.from(Object.keys(timeline.relays));
+export default function TimelineHealth({ timeline, loader }: { loader: TimelineLoader; timeline: NostrEvent[] }) {
+  const relays = Array.from(Object.keys(loader.relays));
 
   return (
     <>
@@ -102,7 +100,7 @@ export default function TimelineHealth({ timeline }: { timeline: TimelineLoader 
             </Tr>
           </Thead>
           <Tbody>
-            {events.map((event) => (
+            {timeline.map((event) => (
               <EventRow key={event.id} event={event} relays={relays} />
             ))}
           </Tbody>

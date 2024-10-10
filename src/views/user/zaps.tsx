@@ -14,7 +14,6 @@ import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { EmbedableContent, embedUrls } from "../../helpers/embeds";
@@ -95,12 +94,15 @@ const UserZapsTab = () => {
     [filter],
   );
 
-  const timeline = useTimelineLoader(`${pubkey}-zaps`, relays, { "#p": [pubkey], kinds: [9735] }, { eventFilter });
-
-  const events = useSubject(timeline.timeline);
+  const { loader, timeline: events } = useTimelineLoader(
+    `${pubkey}-zaps`,
+    relays,
+    { "#p": [pubkey], kinds: [9735] },
+    { eventFilter },
+  );
   const zaps = useMemo(() => parseZapEvents(events), [events]);
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -127,7 +129,7 @@ const UserZapsTab = () => {
           </ErrorBoundary>
         ))}
 
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
