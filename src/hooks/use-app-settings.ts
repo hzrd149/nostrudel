@@ -1,34 +1,41 @@
-import { useCallback } from "react";
-import { useToast } from "@chakra-ui/react";
+import { useCallback, useEffect } from "react";
 
-import appSettings from "../services/settings/app-settings";
-import useSubject from "./use-subject";
-import { AppSettings } from "../services/settings/migrations";
+import { AppSettings, defaultSettings } from "../helpers/app-settings";
 import useCurrentAccount from "./use-current-account";
 import accountService from "../services/account";
-import userAppSettings from "../services/settings/user-app-settings";
+import userAppSettings from "../services/user-app-settings";
 import { usePublishEvent } from "../providers/global/publish-provider";
+import { useStoreQuery } from "applesauce-react";
+import AppSettingsQuery from "../queries/app-settings";
+import { useReadRelays } from "./use-client-relays";
 
 export default function useAppSettings() {
   const account = useCurrentAccount();
-  const settings = useSubject(appSettings);
   const publish = usePublishEvent();
+
+  const localSettings = account?.localSettings;
+  const syncedSettings = useStoreQuery(AppSettingsQuery, account && [account.pubkey]);
+
+  const readRelays = useReadRelays();
+  useEffect(() => {
+    if (account?.pubkey) userAppSettings.requestAppSettings(account.pubkey, readRelays);
+  }, [account?.pubkey, readRelays]);
 
   const updateSettings = useCallback(
     async (newSettings: Partial<AppSettings>) => {
       if (!account) return;
-      const full: AppSettings = { ...settings, ...newSettings };
+      const updated: Partial<AppSettings> = { ...syncedSettings, ...newSettings };
 
-      if (account.readonly) {
-        accountService.updateAccountLocalSettings(account.pubkey, full);
-        appSettings.next(full);
-      } else {
-        const draft = userAppSettings.buildAppSettingsEvent(full);
+      accountService.updateAccountLocalSettings(account.pubkey, updated);
+      if (!account.readonly) {
+        const draft = userAppSettings.buildAppSettingsEvent(updated);
         await publish("Update Settings", draft);
       }
     },
-    [settings, account, publish],
+    [syncedSettings, account, publish],
   );
+
+  const settings: AppSettings = { ...defaultSettings, ...localSettings, ...syncedSettings };
 
   return {
     ...settings,

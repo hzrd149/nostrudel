@@ -1,6 +1,6 @@
 import { ColorModeWithSystem } from "@chakra-ui/react";
-import { NostrEvent } from "../../types/nostr-event";
-import { safeJson } from "../../helpers/parse";
+import { NostrEvent } from "../types/nostr-event";
+import { safeJson } from "./parse";
 
 export type AppSettingsV0 = {
   version: 0;

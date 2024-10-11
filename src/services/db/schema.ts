@@ -2,7 +2,7 @@ import { DBSchema } from "idb";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { RelayInformationDocument } from "../relay-info";
-import { AppSettings } from "../settings/migrations";
+import { AppSettings } from "../../helpers/app-settings";
 
 export interface SchemaV1 {
   userMetadata: {

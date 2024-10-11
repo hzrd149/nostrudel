@@ -94,13 +94,13 @@ importers:
         version: 0.6.0(typescript@5.6.2)
       applesauce-core:
         specifier: ^0.6.0
-        version: 0.6.0(typescript@5.6.2)
+        version: link:../applesauce/packages/core
       applesauce-react:
         specifier: ^0.6.0
-        version: 0.6.0(typescript@5.6.2)
+        version: link:../applesauce/packages/react
       applesauce-signer:
         specifier: ^0.6.0
-        version: 0.6.0(typescript@5.6.2)
+        version: link:../applesauce/packages/signer
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2702,14 +2702,6 @@ packages:
   applesauce-core@0.6.0:
     resolution:
       { integrity: sha512-23W/7P0hzjVGIp51Yp4ppJgbDFNtrJrF3HO3/M36/z+Msdb3HKiSXmt3bMxEVMY6nJTT+zWneq7mAd7VvwhWaA== }
-
-  applesauce-react@0.6.0:
-    resolution:
-      { integrity: sha512-T8fd7ImkrSe0o+FjC5AoLsYeqlLWq5bE5evwavR2+NTLC9CW185qKPPIzbTDrakq4hPADV8by3AOCmD+MY1Riw== }
-
-  applesauce-signer@0.6.0:
-    resolution:
-      { integrity: sha512-BunnObvSqIBJ04MMQnpXIflfYEAwqWROCJqQrFZXHy+yXmZjHzPVMkXQLcJ7oXoNVc4CaxgJwp7w8eSmohJKFg== }
 
   argparse@1.0.10:
     resolution:
@@ -8297,29 +8289,6 @@ snapshots:
       nostr-tools: 2.7.2(typescript@5.6.2)
       zen-observable: 0.10.0
       zen-push: 0.3.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  applesauce-react@0.6.0(typescript@5.6.2):
-    dependencies:
-      applesauce-core: 0.6.0(typescript@5.6.2)
-      nostr-tools: 2.7.2(typescript@5.6.2)
-      react: 18.3.1
-      zen-observable: 0.10.0
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  applesauce-signer@0.6.0(typescript@5.6.2):
-    dependencies:
-      "@noble/hashes": 1.5.0
-      "@noble/secp256k1": 1.7.1
-      "@scure/base": 1.1.9
-      "@types/dom-serial": 1.0.6
-      applesauce-core: 0.6.0(typescript@5.6.2)
-      debug: 4.3.7
-      nostr-tools: 2.7.2(typescript@5.6.2)
     transitivePeerDependencies:
       - supports-color
       - typescript

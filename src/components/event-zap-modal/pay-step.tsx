@@ -7,7 +7,7 @@ import UserLink from "../user/user-link";
 import { ChevronDownIcon, ChevronUpIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import { PropsWithChildren, useEffect, useState } from "react";
-import appSettings from "../../services/settings/app-settings";
+import useAppSettings from "../../hooks/use-app-settings";
 
 function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) {
   return (
@@ -79,6 +79,7 @@ function ErrorCard({ pubkey, error }: { pubkey: string; error: any }) {
 
 export default function PayStep({ callbacks, onComplete }: { callbacks: PayRequest[]; onComplete: () => void }) {
   const [paid, setPaid] = useState<string[]>([]);
+  const { autoPayWithWebLN } = useAppSettings();
 
   const [payingAll, setPayingAll] = useState(false);
   const payAllWithWebLN = async () => {
@@ -99,14 +100,16 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
   };
 
   useEffect(() => {
-    if (!callbacks.filter((p) => !!p.invoice).some(({ pubkey }) => !paid.includes(pubkey))) {
+    const withInvoice = callbacks.filter((p) => !!p.invoice);
+    const hasUnpaid = withInvoice.some(({ pubkey }) => !paid.includes(pubkey));
+    if (withInvoice.length > 0 && !hasUnpaid) {
       onComplete();
     }
   }, [paid]);
 
   // if autoPayWithWebLN is enabled, try to pay all immediately
   useMount(() => {
-    if (appSettings.value.autoPayWithWebLN) {
+    if (autoPayWithWebLN) {
       payAllWithWebLN();
     }
   });

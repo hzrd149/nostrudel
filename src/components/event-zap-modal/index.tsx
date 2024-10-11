@@ -21,13 +21,14 @@ import { EmbedProps } from "../embed-event";
 import userMailboxesService from "../../services/user-mailboxes";
 import InputStep from "./input-step";
 import lnurlMetadataService from "../../services/lnurl-metadata";
-import userMetadataService from "../../services/user-metadata";
 import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
 import UserLink from "../user/user-link";
 import relayHintService from "../../services/event-relay-hint";
+import { queryStore } from "../../services/event-store";
+import { getValue } from "applesauce-core/observable";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
@@ -38,7 +39,8 @@ async function getPayRequestForPubkey(
   comment?: string,
   additionalRelays?: Iterable<string>,
 ): Promise<PayRequest> {
-  const metadata = userMetadataService.getSubject(pubkey).value;
+  const metadata = await getValue(queryStore.profile(pubkey));
+  if (!metadata) throw new Error("Cant find user metadata");
   const address = metadata?.lud16 || metadata?.lud06;
   if (!address) throw new Error("User missing lightning address");
   const lnurlMetadata = await lnurlMetadataService.requestMetadata(address);

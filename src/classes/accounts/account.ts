@@ -1,10 +1,10 @@
-import { AppSettings } from "../../services/settings/migrations";
+import { AppSettings } from "../../helpers/app-settings";
 import { Nip07Interface } from "applesauce-signer";
 
 export class Account {
   readonly type: string = "unknown";
   pubkey: string;
-  localSettings?: AppSettings;
+  localSettings?: Partial<AppSettings>;
 
   protected _signer?: Nip07Interface | undefined;
   public get signer(): Nip07Interface | undefined {

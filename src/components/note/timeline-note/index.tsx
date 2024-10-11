@@ -22,7 +22,6 @@ import UserLink from "../../user/user-link";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import RepostButton from "./components/repost-button";
 import QuoteEventButton from "../quote-event-button";
@@ -48,6 +47,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import relayHintService from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
 import NotePublishedUsing from "../note-published-using";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -69,7 +69,7 @@ export function TimelineNote({
   ...props
 }: TimelineNoteProps) {
   const account = useCurrentAccount();
-  const { showReactions, showSignatureVerification } = useSubject(appSettings);
+  const { showReactions, showSignatureVerification } = useAppSettings();
   const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 

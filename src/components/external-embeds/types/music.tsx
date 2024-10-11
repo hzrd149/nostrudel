@@ -1,9 +1,9 @@
 import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
 import { EmbedEventPointer } from "../../embed-event";
-import appSettings from "../../../services/settings/app-settings";
 import { STEMSTR_RELAY } from "../../../helpers/nostr/stemstr";
 import ExpandableEmbed from "../expandable-embed";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 
@@ -137,8 +137,8 @@ export function renderStemstrUrl(match: URL) {
   return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: [STEMSTR_RELAY] } }} />;
 }
 
-export function renderSoundCloudUrl(match: URL) {
-  if (match.hostname !== "soundcloud.com" || match.pathname.split("/").length !== 3) return null;
+function SoundCloudEmbed({ match }: { match: URL }) {
+  const { primaryColor } = useAppSettings();
 
   return (
     <iframe
@@ -150,9 +150,14 @@ export function renderSoundCloudUrl(match: URL) {
       src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(
         match.protocol + match.host + match.pathname,
       )}&color=${encodeURIComponent(
-        "#" + appSettings.value.primaryColor || "ff5500",
+        "#" + primaryColor || "ff5500",
       )}&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true`}
       style={setZIndex}
     ></iframe>
   );
+}
+export function renderSoundCloudUrl(match: URL) {
+  if (match.hostname !== "soundcloud.com" || match.pathname.split("/").length !== 3) return null;
+
+  return <SoundCloudEmbed match={match} />;
 }

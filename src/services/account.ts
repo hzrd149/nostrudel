@@ -9,7 +9,7 @@ import SerialPortAccount from "../classes/accounts/serial-port-account";
 import { PersistentSubject } from "../classes/subject";
 import { logger } from "../helpers/debug";
 import db from "./db";
-import { AppSettings } from "./settings/migrations";
+import { AppSettings } from "../helpers/app-settings";
 
 type CommonAccount = {
   pubkey: string;
@@ -119,7 +119,7 @@ class AccountService {
     return db.put("accounts", account.toJSON());
   }
 
-  updateAccountLocalSettings(pubkey: string, settings: AppSettings) {
+  updateAccountLocalSettings(pubkey: string, settings: Partial<AppSettings>) {
     const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
     if (account) account.localSettings = settings;
   }

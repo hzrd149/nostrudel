@@ -1,5 +1,5 @@
 import { replaceDomain } from "../../../helpers/url";
-import appSettings from "../../../services/settings/app-settings";
+import useAppSettings from "../../../hooks/use-app-settings";
 import { renderGenericUrl } from "./common";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/reddit.js
@@ -13,13 +13,17 @@ const REDDIT_DOMAINS = [
   "old.reddit.com",
 ];
 
+function RedditLink({ url }: { url: URL }) {
+  const { redditRedirect } = useAppSettings();
+  const fixed = redditRedirect ? replaceDomain(url, redditRedirect) : url;
+
+  return renderGenericUrl(fixed);
+}
+
 const bypassPaths = /\/(gallery\/poll\/rpan\/settings\/topics)/;
 export function renderRedditUrl(match: URL) {
   if (!REDDIT_DOMAINS.includes(match.hostname)) return null;
   if (match.pathname.match(bypassPaths)) return null;
 
-  const { redditRedirect } = appSettings.value;
-  const fixed = redditRedirect ? replaceDomain(match, redditRedirect) : match;
-
-  return renderGenericUrl(fixed);
+  return <RedditLink url={match} />;
 }

@@ -6,7 +6,6 @@ import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { NoteLink } from "../../note/note-link";
@@ -17,9 +16,10 @@ import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
 import relayHintService from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const { showSignatureVerification } = useSubject(appSettings);
+  const { showSignatureVerification } = useAppSettings();
   const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const to = `/n/${relayHintService.getSharableEventAddress(event)}`;
