@@ -11,7 +11,7 @@ export default function VersionButton({ ...props }: Omit<ButtonProps, "children"
 
   return (
     <Button
-      variant="outline"
+      variant="link"
       size="sm"
       rightIcon={copied ? <CheckIcon /> : <CopyToClipboardIcon />}
       onClick={() => {
@@ -23,7 +23,7 @@ export default function VersionButton({ ...props }: Omit<ButtonProps, "children"
       }}
       {...props}
     >
-      Version: {version}
+      {version}
     </Button>
   );
 }

@@ -16,8 +16,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 FROM base AS build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-ENV VITE_COMMIT_HASH=""
-ENV VITE_APP_VERSION="Custom"
+ARG COMMIT_HASH=""
+ARG APP_VERSION=""
+ENV VITE_COMMIT_HASH="$COMMIT_HASH"
+ENV VITE_APP_VERSION="$APP_VERSION"
 
 COPY tsconfig.json .
 COPY index.html .

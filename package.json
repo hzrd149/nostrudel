@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "vite serve",
-    "dev": "VITE_APP_VERSION=production vite serve",
+    "dev": "VITE_APP_VERSION=dev vite serve",
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
     "analyze": "npx vite-bundle-visualizer -o ./stats.html",

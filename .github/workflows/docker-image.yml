@@ -50,8 +50,8 @@ jobs:
 
       - name: Set build env
         run: |
-          echo "VITE_COMMIT_HASH=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-          echo "VITE_APP_VERSION=$(jq -r .version ./package.json)" >> $GITHUB_ENV
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(jq -r .version ./package.json)" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -61,3 +61,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            COMMIT_HASH=$COMMIT_HASH
+            APP_VERSION=$APP_VERSION

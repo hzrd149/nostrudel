@@ -45,7 +45,7 @@ jobs:
 
       - name: Set build env
         run: |
-          echo "VITE_COMMIT_HASH=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+          echo "VITE_COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "VITE_APP_VERSION=$(jq -r .version ./package.json)" >> $GITHUB_ENV
 
       - name: Build

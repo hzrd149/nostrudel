@@ -224,10 +224,10 @@ export const ProfileEditView = () => {
       picture: data.picture,
       banner: data.banner,
     };
-    if (data.displayName) newMetadata.displayName = newMetadata.display_name = data.displayName;
-    if (data.about) newMetadata.about = data.about;
-    if (data.website) newMetadata.website = data.website;
-    if (data.nip05) newMetadata.nip05 = data.nip05;
+    if (data.displayName !== undefined) newMetadata.displayName = newMetadata.display_name = data.displayName;
+    if (data.about !== undefined) newMetadata.about = data.about;
+    if (data.website !== undefined) newMetadata.website = data.website;
+    if (data.nip05 !== undefined) newMetadata.nip05 = data.nip05;
 
     if (data.lightningAddress) {
       if (isLNURL(data.lightningAddress)) {
