@@ -43,6 +43,7 @@
     "@uiw/react-codemirror": "^4.23.0",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "applesauce-channel": "^0.6.0",
+    "applesauce-content": "link:../applesauce/packages/content",
     "applesauce-core": "^0.6.0",
     "applesauce-react": "^0.6.0",
     "applesauce-signer": "^0.6.0",

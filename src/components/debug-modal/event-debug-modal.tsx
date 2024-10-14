@@ -17,11 +17,13 @@ import {
   AccordionPanelProps,
   Button,
   Text,
+  Select,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { ModalProps } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
 import { nip19 } from "nostr-tools";
+import { ParsedTextContentSymbol } from "applesauce-content/text";
 
 import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
@@ -74,6 +76,8 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
     await publish("Broadcast", event);
     setLoading(false);
   }, []);
+
+  const nast = Reflect.get(event, ParsedTextContentSymbol);
 
   return (
     <Modal size="6xl" {...props}>
@@ -155,6 +159,11 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
                 Broadcast
               </Button>
             </Section>
+            {nast && (
+              <Section label="Parsed Content" p="0">
+                <JsonCode data={nast} />
+              </Section>
+            )}
           </Accordion>
         </ModalBody>
       </ModalContent>

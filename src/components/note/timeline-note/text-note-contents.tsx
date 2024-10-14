@@ -1,13 +1,9 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
+import { useRenderedContent } from "applesauce-react/hooks";
 
-import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../../helpers/embeds";
 import {
-  embedLightningInvoice,
-  embedNostrLinks,
-  embedNostrMentions,
-  embedNostrHashtags,
   renderWavlakeUrl,
   renderYoutubeURL,
   renderImageUrl,
@@ -16,17 +12,12 @@ import {
   renderSpotifyUrl,
   renderTidalUrl,
   renderVideoUrl,
-  embedEmoji,
   renderOpenGraphUrl,
-  embedImageGallery,
-  renderGenericUrl,
   renderSongDotLinkUrl,
-  embedCashuTokens,
   renderStemstrUrl,
   renderSoundCloudUrl,
   renderSimpleXLink,
   renderRedditUrl,
-  embedNipDefinitions,
   renderAudioUrl,
   renderModelUrl,
   renderCodePenURL,
@@ -35,53 +26,31 @@ import {
 } from "../../external-embeds";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
-import { embedNostrWikiLinks } from "../../external-embeds/types/wiki";
+import buildLinkComponent from "../../content/links";
+import { components } from "../../content";
 
-function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
-  let content: EmbedableContent = [event.content.trim()];
+// function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
+//   let content: EmbedableContent = [event.content.trim()];
 
-  // image gallery
-  content = embedImageGallery(content, event as NostrEvent);
+//   // image gallery
+//   content = embedImageGallery(content, event as NostrEvent);
 
-  // common
-  content = embedUrls(content, [
-    renderSimpleXLink,
-    renderYoutubeURL,
-    renderTwitterUrl,
-    renderRedditUrl,
-    renderWavlakeUrl,
-    renderAppleMusicUrl,
-    renderSpotifyUrl,
-    renderTidalUrl,
-    renderSongDotLinkUrl,
-    renderStemstrUrl,
-    renderSoundCloudUrl,
-    renderImageUrl,
-    renderVideoUrl,
-    renderStreamUrl,
-    renderAudioUrl,
-    renderModelUrl,
-    renderCodePenURL,
-    renderArchiveOrgURL,
-    simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
-  ]);
+//   // bitcoin
+//   content = embedLightningInvoice(content);
 
-  // bitcoin
-  content = embedLightningInvoice(content);
+//   // cashu
+//   content = embedCashuTokens(content);
 
-  // cashu
-  content = embedCashuTokens(content);
+//   // nostr
+//   content = embedNostrLinks(content);
+//   content = embedNostrMentions(content, event);
+//   content = embedNostrHashtags(content, event);
+//   content = embedNipDefinitions(content);
+//   content = embedEmoji(content, event);
+//   content = embedNostrWikiLinks(content);
 
-  // nostr
-  content = embedNostrLinks(content);
-  content = embedNostrMentions(content, event);
-  content = embedNostrHashtags(content, event);
-  content = embedNipDefinitions(content);
-  content = embedEmoji(content, event);
-  content = embedNostrWikiLinks(content);
-
-  return content;
-}
+//   return content;
+// }
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;
@@ -91,11 +60,45 @@ export type TextNoteContentsProps = {
 
 export const TextNoteContents = React.memo(
   ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
-    let content = buildContents(event, noOpenGraphLinks);
+    // let content = buildContents(event, noOpenGraphLinks);
 
-    if (maxLength !== undefined) {
-      content = truncateEmbedableContent(content, maxLength);
-    }
+    // if (maxLength !== undefined) {
+    //   content = truncateEmbedableContent(content, maxLength);
+    // }
+    const LinkComponent = useMemo(
+      () =>
+        buildLinkComponent([
+          renderSimpleXLink,
+          renderYoutubeURL,
+          renderTwitterUrl,
+          renderRedditUrl,
+          renderWavlakeUrl,
+          renderAppleMusicUrl,
+          renderSpotifyUrl,
+          renderTidalUrl,
+          renderSongDotLinkUrl,
+          renderStemstrUrl,
+          renderSoundCloudUrl,
+          renderImageUrl,
+          renderVideoUrl,
+          renderStreamUrl,
+          renderAudioUrl,
+          renderModelUrl,
+          renderCodePenURL,
+          renderArchiveOrgURL,
+          renderOpenGraphUrl,
+        ]),
+      [],
+    );
+    const componentsMap = useMemo(
+      () => ({
+        ...components,
+        link: LinkComponent,
+      }),
+      [LinkComponent],
+    );
+
+    const content = useRenderedContent(event, componentsMap);
 
     return (
       <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>

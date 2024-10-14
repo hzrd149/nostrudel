@@ -1,4 +1,5 @@
 import { Link } from "@chakra-ui/react";
+import { Link as NastLink } from "applesauce-content/nast";
 
 import OpenGraphCard from "../../open-graph/open-graph-card";
 import OpenGraphLink from "../../open-graph/open-graph-link";
@@ -16,6 +17,6 @@ export function renderGenericUrl(match: URL) {
   );
 }
 
-export function renderOpenGraphUrl(match: URL, isEndOfLine: boolean) {
-  return isEndOfLine ? <OpenGraphCard url={match} /> : <OpenGraphLink url={match} />;
+export function renderOpenGraphUrl(match: URL, node: NastLink) {
+  return node.data?.eol ? <OpenGraphCard url={match} /> : <OpenGraphLink url={match} />;
 }

@@ -92,6 +92,9 @@ importers:
       applesauce-channel:
         specifier: ^0.6.0
         version: 0.6.0(typescript@5.6.2)
+      applesauce-content:
+        specifier: link:../applesauce/packages/content
+        version: link:../applesauce/packages/content
       applesauce-core:
         specifier: ^0.6.0
         version: link:../applesauce/packages/core
@@ -100,7 +103,7 @@ importers:
         version: link:../applesauce/packages/react
       applesauce-signer:
         specifier: ^0.6.0
-        version: link:../applesauce/packages/signer
+        version: 0.6.0(typescript@5.6.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -2703,6 +2706,10 @@ packages:
     resolution:
       { integrity: sha512-23W/7P0hzjVGIp51Yp4ppJgbDFNtrJrF3HO3/M36/z+Msdb3HKiSXmt3bMxEVMY6nJTT+zWneq7mAd7VvwhWaA== }
 
+  applesauce-signer@0.6.0:
+    resolution:
+      { integrity: sha512-BunnObvSqIBJ04MMQnpXIflfYEAwqWROCJqQrFZXHy+yXmZjHzPVMkXQLcJ7oXoNVc4CaxgJwp7w8eSmohJKFg== }
+
   argparse@1.0.10:
     resolution:
       { integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg== }
@@ -3670,9 +3677,9 @@ packages:
       { integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ== }
     engines: { node: ">= 0.4" }
 
-  hast-util-to-jsx-runtime@2.3.0:
+  hast-util-to-jsx-runtime@2.3.1:
     resolution:
-      { integrity: sha512-H/y0+IWPdsLLS738P8tDnrQ8Z+dj12zQQ6WC11TIM21C8WFVoIxcqWXf2H3hiTVZjF1AWqoimGwrTWecWrnmRQ== }
+      { integrity: sha512-Rbemi1rzrkysSin0FDHZfsxYPoqLGHFfxFm28aOBHPibT7aqjy7kUgY636se9xbuCWUsFpWAYlmtGHQakiqtEA== }
 
   hast-util-whitespace@3.0.0:
     resolution:
@@ -8293,6 +8300,19 @@ snapshots:
       - supports-color
       - typescript
 
+  applesauce-signer@0.6.0(typescript@5.6.2):
+    dependencies:
+      "@noble/hashes": 1.5.0
+      "@noble/secp256k1": 1.7.1
+      "@scure/base": 1.1.9
+      "@types/dom-serial": 1.0.6
+      applesauce-core: 0.6.0(typescript@5.6.2)
+      debug: 4.3.7
+      nostr-tools: 2.7.2(typescript@5.6.2)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   argparse@1.0.10:
     dependencies:
       sprintf-js: 1.0.3
@@ -9177,7 +9197,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hast-util-to-jsx-runtime@2.3.0:
+  hast-util-to-jsx-runtime@2.3.1:
     dependencies:
       "@types/estree": 1.0.6
       "@types/hast": 3.0.4
@@ -10263,7 +10283,7 @@ snapshots:
       "@types/hast": 3.0.4
       "@types/react": 18.3.10
       devlop: 1.1.0
-      hast-util-to-jsx-runtime: 2.3.0
+      hast-util-to-jsx-runtime: 2.3.1
       html-url-attributes: 3.0.1
       mdast-util-to-hast: 13.2.0
       react: 18.3.1

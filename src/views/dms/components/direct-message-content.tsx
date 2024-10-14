@@ -1,9 +1,9 @@
+import { useMemo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
-import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
+import { useRenderedContent } from "applesauce-react";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import {
-  embedCashuTokens,
-  embedNostrLinks,
   renderAppleMusicUrl,
   renderGenericUrl,
   renderImageUrl,
@@ -23,6 +23,8 @@ import {
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
+import buildLinkComponent from "../../../components/content/links";
+import { components } from "../../../components/content";
 
 export default function DirectMessageContent({
   event,
@@ -30,30 +32,37 @@ export default function DirectMessageContent({
   children,
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
-  let content: EmbedableContent = [text];
+  const LinkComponent = useMemo(
+    () =>
+      buildLinkComponent([
+        renderSimpleXLink,
+        renderYoutubeURL,
+        renderTwitterUrl,
+        renderRedditUrl,
+        renderWavlakeUrl,
+        renderAppleMusicUrl,
+        renderSpotifyUrl,
+        renderTidalUrl,
+        renderSongDotLinkUrl,
+        renderStemstrUrl,
+        renderSoundCloudUrl,
+        renderImageUrl,
+        renderVideoUrl,
+        renderStreamUrl,
+        renderAudioUrl,
+        renderGenericUrl,
+      ]),
+    [],
+  );
+  const componentsMap = useMemo(
+    () => ({
+      ...components,
+      link: LinkComponent,
+    }),
+    [LinkComponent],
+  );
 
-  content = embedNostrLinks(content);
-  content = embedUrls(content, [
-    renderSimpleXLink,
-    renderYoutubeURL,
-    renderTwitterUrl,
-    renderRedditUrl,
-    renderWavlakeUrl,
-    renderAppleMusicUrl,
-    renderSpotifyUrl,
-    renderTidalUrl,
-    renderSongDotLinkUrl,
-    renderStemstrUrl,
-    renderSoundCloudUrl,
-    renderImageUrl,
-    renderVideoUrl,
-    renderStreamUrl,
-    renderAudioUrl,
-    renderGenericUrl,
-  ]);
-
-  // cashu
-  content = embedCashuTokens(content);
+  const content = useRenderedContent(event, componentsMap);
 
   return (
     <TrustProvider event={event}>
