@@ -26,6 +26,9 @@ import { renderAudioUrl } from "../../../components/external-embeds/types/audio"
 import buildLinkComponent from "../../../components/content/links";
 import { components } from "../../../components/content";
 import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import { FedimintTokensTransformer } from "../../../helpers/fedimint";
+
+const transformers = [FedimintTokensTransformer];
 
 export default function DirectMessageContent({
   event,
@@ -64,7 +67,7 @@ export default function DirectMessageContent({
   );
 
   const { plaintext } = useKind4Decrypt(event);
-  const content = useRenderedContent(event, componentsMap, plaintext);
+  const content = useRenderedContent(event, componentsMap, { overrideContent: plaintext, transformers });
 
   return (
     <TrustProvider event={event}>

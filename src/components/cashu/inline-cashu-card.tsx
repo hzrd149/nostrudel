@@ -1,5 +1,5 @@
 import { useAsync } from "react-use";
-import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
 import { Token, getEncodedToken } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
@@ -9,7 +9,6 @@ import { ECashIcon, WalletIcon } from "../icons";
 import { getMint } from "../../services/cashu-mints";
 import CurrencyDollar from "../icons/currency-dollar";
 import CurrencyEthereum from "../icons/currency-ethereum";
-import CurrencyRupeeCircle from "../icons/currency-rupee-circle";
 import CurrencyEuro from "../icons/currency-euro";
 import CurrencyYen from "../icons/currency-yen";
 import CurrencyPound from "../icons/currency-pound";
@@ -38,14 +37,14 @@ export default function InlineCachuCard({
   const account = useCurrentAccount();
 
   encoded = encoded || getEncodedToken(token);
-  const { value: spendable } = useAsync(async () => {
+  const { value: spendable, loading } = useAsync(async () => {
     if (!token) return;
     for (const entry of token.token) {
       const mint = await getMint(entry.mint);
       const spent = await mint.check({ Ys: entry.proofs.map((p) => p.secret) });
-      if (spent.states.some((v) => v.state === "SPENT")) return false;
+      if (spent.states.some((v) => v.state === "UNSPENT")) return true;
     }
-    return true;
+    return false;
   }, [token]);
 
   const amount = token?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
@@ -98,17 +97,18 @@ export default function InlineCachuCard({
             icon={<WalletIcon boxSize={5} />}
             title="Open Wallet"
             aria-label="Open Wallet"
-            href={`cashu://` + token}
+            href={`cashu://` + encoded}
           />
           {account && <RedeemButton token={encoded} />}
         </ButtonGroup>
         <Heading size="md" textDecoration={spendable === false ? "line-through" : undefined}>
-          {denomination} {spendable === false ? " (Spent)" : ""}
+          {denomination} {spendable === false ? " (Spent)" : loading ? <Spinner size="xs" /> : undefined}
         </Heading>
         {token && <Text fontSize="xs">Mint: {new URL(token.token[0].mint).hostname}</Text>}
         {token.unit && <Text fontSize="xs">Unit: {token.unit}</Text>}
       </Box>
       {token.memo && <Box>{token.memo}</Box>}
+      {loading && <Spinner />}
     </Card>
   );
 }

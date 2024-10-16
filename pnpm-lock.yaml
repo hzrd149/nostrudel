@@ -279,6 +279,9 @@ importers:
       tiny-lru:
         specifier: ^11.2.11
         version: 11.2.11
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       webln:
         specifier: ^0.3.2
         version: 0.3.2
