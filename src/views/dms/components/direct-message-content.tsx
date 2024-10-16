@@ -25,6 +25,7 @@ import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
 import buildLinkComponent from "../../../components/content/links";
 import { components } from "../../../components/content";
+import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
 
 export default function DirectMessageContent({
   event,
@@ -62,7 +63,8 @@ export default function DirectMessageContent({
     [LinkComponent],
   );
 
-  const content = useRenderedContent(event, componentsMap);
+  const { plaintext } = useKind4Decrypt(event);
+  const content = useRenderedContent(event, componentsMap, plaintext);
 
   return (
     <TrustProvider event={event}>

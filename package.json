@@ -16,7 +16,7 @@
     "build-icons": "node ./scripts/build-icons.mjs"
   },
   "dependencies": {
-    "@cashu/cashu-ts": "^0.9.0",
+    "@cashu/cashu-ts": "^1.1.0",
     "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/breakpoint-utils": "^2.0.8",
     "@chakra-ui/icons": "^2.1.1",
@@ -31,6 +31,7 @@
     "@codemirror/view": "^6.28.6",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@fedimint/core-web": "^0.0.7",
     "@getalby/bitcoin-connect": "^3.6.2",
     "@getalby/bitcoin-connect-react": "^3.6.2",
     "@noble/ciphers": "^1.0.0",

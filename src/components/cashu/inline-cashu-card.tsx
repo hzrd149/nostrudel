@@ -1,13 +1,19 @@
 import { useAsync } from "react-use";
-import { useEffect, useState } from "react";
-import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link } from "@chakra-ui/react";
-import { getDecodedToken, Token, CashuMint } from "@cashu/cashu-ts";
+import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Text } from "@chakra-ui/react";
+import { Token, getEncodedToken } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
 import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
 import { getMint } from "../../services/cashu-mints";
+import CurrencyDollar from "../icons/currency-dollar";
+import CurrencyEthereum from "../icons/currency-ethereum";
+import CurrencyRupeeCircle from "../icons/currency-rupee-circle";
+import CurrencyEuro from "../icons/currency-euro";
+import CurrencyYen from "../icons/currency-yen";
+import CurrencyPound from "../icons/currency-pound";
+import CurrencyBitcoin from "../icons/currency-bitcoin";
 
 function RedeemButton({ token }: { token: string }) {
   const account = useCurrentAccount()!;
@@ -24,52 +30,85 @@ function RedeemButton({ token }: { token: string }) {
   );
 }
 
-export default function InlineCachuCard({ token, ...props }: Omit<CardProps, "children"> & { token: string }) {
+export default function InlineCachuCard({
+  token,
+  encoded,
+  ...props
+}: Omit<CardProps, "children"> & { token: Token; encoded?: string }) {
   const account = useCurrentAccount();
 
-  const [cashu, setCashu] = useState<Token>();
+  encoded = encoded || getEncodedToken(token);
   const { value: spendable } = useAsync(async () => {
-    if (!cashu) return;
-    for (const token of cashu.token) {
-      const mint = await getMint(token.mint);
-      const spent = await mint.check({ proofs: token.proofs.map((p) => ({ secret: p.secret })) });
-      if (spent.spendable.some((v) => v === false)) return false;
+    if (!token) return;
+    for (const entry of token.token) {
+      const mint = await getMint(entry.mint);
+      const spent = await mint.check({ Ys: entry.proofs.map((p) => p.secret) });
+      if (spent.states.some((v) => v.state === "SPENT")) return false;
     }
     return true;
-  }, [cashu]);
-
-  useEffect(() => {
-    if (!token.startsWith("cashuA") || token.length < 10) return;
-    try {
-      const cashu = getDecodedToken(token);
-      setCashu(cashu);
-    } catch (e) {}
   }, [token]);
 
-  if (!cashu) return null;
+  const amount = token?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
 
-  const amount = cashu?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
+  let UnitIcon = ECashIcon;
+  let unitColor = "green.500";
+  let denomination = `${amount} tokens`;
+
+  switch (token.unit) {
+    case "usd":
+      UnitIcon = CurrencyDollar;
+      denomination = `$${(amount / 100).toFixed(2)}`;
+      break;
+
+    case "eur":
+      UnitIcon = CurrencyEuro;
+      unitColor = "blue.500";
+      denomination = `€${(amount / 100).toFixed(2)}`;
+      break;
+
+    case "gpb":
+      UnitIcon = CurrencyPound;
+      denomination = `£${(amount / 100).toFixed(2)}`;
+      break;
+
+    case "yen":
+      UnitIcon = CurrencyYen;
+      denomination = `¥${(amount / 100).toFixed(2)}`;
+      break;
+
+    case "eth":
+      UnitIcon = CurrencyEthereum;
+      break;
+
+    case "sat":
+      unitColor = "orange.300";
+      UnitIcon = CurrencyBitcoin;
+      denomination = `${amount} sats`;
+      break;
+  }
+
   return (
-    <Card p="4" flexDirection="row" borderColor="green.500" alignItems="center" gap="4" flexWrap="wrap" {...props}>
-      <ECashIcon boxSize={10} color="green.500" />
+    <Card p="2" flexDirection="column" borderColor="green.500" gap="2" {...props}>
       <Box>
+        <UnitIcon boxSize={10} color={unitColor} float="left" mr="2" mb="1" />
+        <ButtonGroup float="right">
+          <CopyIconButton value={encoded} title="Copy Token" aria-label="Copy Token" variant="ghost" />
+          <IconButton
+            as={Link}
+            icon={<WalletIcon boxSize={5} />}
+            title="Open Wallet"
+            aria-label="Open Wallet"
+            href={`cashu://` + token}
+          />
+          {account && <RedeemButton token={encoded} />}
+        </ButtonGroup>
         <Heading size="md" textDecoration={spendable === false ? "line-through" : undefined}>
-          {amount} Cashu sats{spendable === false ? " (Spent)" : ""}
+          {denomination} {spendable === false ? " (Spent)" : ""}
         </Heading>
-        {cashu && <small>Mint: {new URL(cashu.token[0].mint).hostname}</small>}
+        {token && <Text fontSize="xs">Mint: {new URL(token.token[0].mint).hostname}</Text>}
+        {token.unit && <Text fontSize="xs">Unit: {token.unit}</Text>}
       </Box>
-      {cashu.memo && <Box>Memo: {cashu.memo}</Box>}
-      <ButtonGroup ml="auto">
-        <CopyIconButton value={token} title="Copy Token" aria-label="Copy Token" />
-        <IconButton
-          as={Link}
-          icon={<WalletIcon />}
-          title="Open Wallet"
-          aria-label="Open Wallet"
-          href={`cashu://` + token}
-        />
-        {account && <RedeemButton token={token} />}
-      </ButtonGroup>
+      {token.memo && <Box>{token.memo}</Box>}
     </Card>
   );
 }
