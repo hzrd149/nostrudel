@@ -10,7 +10,7 @@ export default function CountyPicker({ ...props }: Omit<SelectProps, "children">
   const codes = useMemo(() => Object.keys(getAlpha3Codes()).map((code) => ({ name: getName(code, "en"), code })), []);
 
   return (
-    <Select {...props}>
+    <Select w="auto" {...props}>
       <option value="">Any</option>
       {codes.map(({ code, name }) => (
         <option value={code}>{name}</option>

@@ -4,6 +4,7 @@ import { ComponentMap } from "applesauce-react";
 
 import Mention from "./mention";
 import Cashu from "./cashu";
+import { InlineEmoji } from "./ininle-emoji";
 const InlineFedimintCard = lazy(() => import("../fedimint/inline-fedimint-card"));
 
 export const components: ComponentMap = {
@@ -11,4 +12,5 @@ export const components: ComponentMap = {
   mention: Mention,
   cashu: Cashu,
   fedimint: ({ node }) => <InlineFedimintCard token={node.token} />,
+  emoji: ({ node }) => <InlineEmoji url={node.url} code={node.code} />,
 };

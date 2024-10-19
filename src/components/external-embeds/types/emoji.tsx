@@ -1,27 +1,16 @@
-import { Image } from "@chakra-ui/react";
 import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
 import { DraftNostrEvent, NostrEvent, isEmojiTag } from "../../../types/nostr-event";
 import { getMatchEmoji } from "../../../helpers/regexp";
+import { InlineEmoji } from "../../content/ininle-emoji";
+import { getEmojiTag } from "applesauce-core/helpers";
 
 export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNostrEvent) {
   return embedJSX(content, {
     regexp: getMatchEmoji(),
     render: (match) => {
-      const emojiTag = note.tags.filter(isEmojiTag).find((t) => t[1].toLowerCase() === match[1].toLowerCase());
-      if (emojiTag) {
-        return (
-          <Image
-            src={emojiTag[2]}
-            h="1.5em"
-            maxW="3em"
-            display="inline-block"
-            verticalAlign="middle"
-            title={match[1]}
-            alt={":" + match[1] + ":"}
-            overflow="hidden"
-          />
-        );
-      }
+      const tag = getEmojiTag(note, match[1]);
+
+      if (tag) return <InlineEmoji url={tag[2]!} code={match[1]} />;
       return null;
     },
     name: "emoji",
