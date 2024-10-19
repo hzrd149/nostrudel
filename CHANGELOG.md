@@ -1,5 +1,28 @@
 # nostrudel
 
+## 0.42.0
+
+### Minor Changes
+
+- 6e6baa7: Add edit button to event debug modal
+- e9efa33: Show fedimint tokens in content
+- 6e6baa7: Add templates to event publisher
+- 0e20544: Add unknown notifications toggle
+- 4659ad7: Add option to hide noStrudel logo in nav bar
+- 60b61e9: Update timelines to use applesauce
+- e0e2ed9: Unclutter notifications view
+- 962ba25: Use applesauce-core for NIP-28 channels
+- bbd19d7: Add "Proactively authenticate to relays" option to privacy settings, defaults to off
+- 4d0d770: Move core logic out into applesauce packages
+- f2f8186: Add support for cashu v4 tokens
+- 0e20544: Add "q" tags for quoted notes
+
+### Patch Changes
+
+- 962ba25: Refresh relay info on relay page
+- fc8c758: Fix bug with removing "about" in profile editor
+- bbd19d7: Fix automatically disconnecting from authenticated relays
+
 ## 0.41.0
 
 ### Minor Changes
