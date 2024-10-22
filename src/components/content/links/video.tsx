@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { isStreamURL, isVideoURL } from "../../../helpers/url";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
-import ExpandableEmbed from "../expandable-embed";
+import ExpandableEmbed from "../components/expandable-embed";
 const LiveVideoPlayer = lazy(() => import("../../live-video-player"));
 
 const StyledVideo = styled.video`

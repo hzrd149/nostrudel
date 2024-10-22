@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react";
 
@@ -20,86 +20,32 @@ import {
   renderVideoUrl,
   renderWavlakeUrl,
   renderYoutubeURL,
-} from "../../../components/external-embeds";
+} from "../../../components/content/links";
 import { LightboxProvider } from "../../../components/lightbox-provider";
-import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
-import buildLinkComponent from "../../../components/content/links";
+import { renderAudioUrl } from "../../../components/content/links/audio";
 import { components } from "../../../components/content";
 
+const linkRenderers = [
+  renderSimpleXLink,
+  renderYoutubeURL,
+  renderTwitterUrl,
+  renderRedditUrl,
+  renderWavlakeUrl,
+  renderAppleMusicUrl,
+  renderSpotifyUrl,
+  renderTidalUrl,
+  renderSongDotLinkUrl,
+  renderStemstrUrl,
+  renderSoundCloudUrl,
+  renderImageUrl,
+  renderVideoUrl,
+  renderStreamUrl,
+  renderAudioUrl,
+  renderGenericUrl,
+];
+
 const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & { message: NostrEvent }) => {
-  // const content = useMemo(() => {
-  //   let c: EmbedableContent = [message.content];
-
-  //   // image gallery
-  //   c = embedImageGallery(c, message);
-
-  //   // common
-  //   c = embedUrls(c, [
-  //     renderSimpleXLink,
-  //     renderYoutubeURL,
-  //     renderTwitterUrl,
-  //     renderRedditUrl,
-  //     renderWavlakeUrl,
-  //     renderAppleMusicUrl,
-  //     renderSpotifyUrl,
-  //     renderTidalUrl,
-  //     renderSongDotLinkUrl,
-  //     renderStemstrUrl,
-  //     renderSoundCloudUrl,
-  //     renderImageUrl,
-  //     renderVideoUrl,
-  //     renderStreamUrl,
-  //     renderAudioUrl,
-  //     renderGenericUrl,
-  //   ]);
-
-  //   // bitcoin
-  //   c = embedLightningInvoice(c);
-
-  //   // cashu
-  //   c = embedCashuTokens(c);
-
-  //   // nostr
-  //   c = embedNostrLinks(c);
-  //   c = embedNostrMentions(c, message);
-  //   c = embedNostrHashtags(c, message);
-  //   c = embedNipDefinitions(c);
-  //   c = embedEmoji(c, message);
-
-  //   return c;
-  // }, [message.content]);
-
-  const LinkComponent = useMemo(
-    () =>
-      buildLinkComponent([
-        renderSimpleXLink,
-        renderYoutubeURL,
-        renderTwitterUrl,
-        renderRedditUrl,
-        renderWavlakeUrl,
-        renderAppleMusicUrl,
-        renderSpotifyUrl,
-        renderTidalUrl,
-        renderSongDotLinkUrl,
-        renderStemstrUrl,
-        renderSoundCloudUrl,
-        renderImageUrl,
-        renderVideoUrl,
-        renderStreamUrl,
-        renderAudioUrl,
-        renderGenericUrl,
-      ]),
-    [],
-  );
-  const componentsMap = useMemo(
-    () => ({
-      ...components,
-      link: LinkComponent,
-    }),
-    [LinkComponent],
-  );
-
-  const content = useRenderedContent(message, componentsMap);
+  const content = useRenderedContent(message, components, { linkRenderers });
 
   return (
     <TrustProvider event={message}>

@@ -1,7 +1,7 @@
 import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
 import { DraftNostrEvent, NostrEvent, isEmojiTag } from "../../../types/nostr-event";
 import { getMatchEmoji } from "../../../helpers/regexp";
-import { InlineEmoji } from "../../content/ininle-emoji";
+import { InlineEmoji } from "../ininle-emoji";
 import { getEmojiTag } from "applesauce-core/helpers";
 
 export function embedEmoji(content: EmbedableContent, note: NostrEvent | DraftNostrEvent) {

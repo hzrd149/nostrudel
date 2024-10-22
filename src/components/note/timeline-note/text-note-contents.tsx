@@ -2,6 +2,7 @@ import React, { Suspense, useMemo } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useRenderedContent } from "applesauce-react/hooks";
+import { defaultTransformers } from "applesauce-content/text";
 
 import {
   renderWavlakeUrl,
@@ -23,14 +24,13 @@ import {
   renderCodePenURL,
   renderArchiveOrgURL,
   renderStreamUrl,
-} from "../../external-embeds";
+} from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
-import buildLinkComponent from "../../content/links";
 import { components } from "../../content";
-import { FedimintTokensTransformer } from "../../../helpers/fedimint";
+import { fedimintTokens } from "../../../helpers/fedimint";
 
-const transformers = [FedimintTokensTransformer];
+const transformers = [...defaultTransformers, fedimintTokens];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;
@@ -38,47 +38,31 @@ export type TextNoteContentsProps = {
   maxLength?: number;
 };
 
+const linkRenderers = [
+  renderSimpleXLink,
+  renderYoutubeURL,
+  renderTwitterUrl,
+  renderRedditUrl,
+  renderWavlakeUrl,
+  renderAppleMusicUrl,
+  renderSpotifyUrl,
+  renderTidalUrl,
+  renderSongDotLinkUrl,
+  renderStemstrUrl,
+  renderSoundCloudUrl,
+  renderImageUrl,
+  renderVideoUrl,
+  renderStreamUrl,
+  renderAudioUrl,
+  renderModelUrl,
+  renderCodePenURL,
+  renderArchiveOrgURL,
+  renderOpenGraphUrl,
+];
+
 export const TextNoteContents = React.memo(
   ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
-    // let content = buildContents(event, noOpenGraphLinks);
-
-    // if (maxLength !== undefined) {
-    //   content = truncateEmbedableContent(content, maxLength);
-    // }
-    const LinkComponent = useMemo(
-      () =>
-        buildLinkComponent([
-          renderSimpleXLink,
-          renderYoutubeURL,
-          renderTwitterUrl,
-          renderRedditUrl,
-          renderWavlakeUrl,
-          renderAppleMusicUrl,
-          renderSpotifyUrl,
-          renderTidalUrl,
-          renderSongDotLinkUrl,
-          renderStemstrUrl,
-          renderSoundCloudUrl,
-          renderImageUrl,
-          renderVideoUrl,
-          renderStreamUrl,
-          renderAudioUrl,
-          renderModelUrl,
-          renderCodePenURL,
-          renderArchiveOrgURL,
-          renderOpenGraphUrl,
-        ]),
-      [],
-    );
-    const componentsMap = useMemo(
-      () => ({
-        ...components,
-        link: LinkComponent,
-      }),
-      [LinkComponent],
-    );
-
-    const content = useRenderedContent(event, componentsMap, { transformers });
+    const content = useRenderedContent(event, components, { linkRenderers, transformers, maxLength });
 
     return (
       <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>

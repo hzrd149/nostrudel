@@ -34,6 +34,7 @@ import relayHintService from "../../services/event-relay-hint";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { EditIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
+import { Root } from "applesauce-content/nast";
 
 function Section({
   label,
@@ -77,7 +78,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
     setLoading(false);
   }, []);
 
-  const nast = Reflect.get(event, ParsedTextContentSymbol);
+  const nast = Reflect.get(event, ParsedTextContentSymbol) as Root;
 
   return (
     <Modal size="6xl" {...props}>
@@ -161,7 +162,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             </Section>
             {nast && (
               <Section label="Parsed Content" p="0">
-                <JsonCode data={nast} />
+                <JsonCode data={nast.children} />
               </Section>
             )}
           </Accordion>

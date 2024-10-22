@@ -1,35 +1,20 @@
-import React, { useMemo } from "react";
+import React from "react";
 
-import { EmbedableContent, embedUrls } from "../../../../helpers/embeds";
 import {
-  embedEmoji,
-  embedNipDefinitions,
-  embedNostrHashtags,
-  embedNostrLinks,
-  embedNostrMentions,
   renderGenericUrl,
   renderImageUrl,
   renderSoundCloudUrl,
   renderStemstrUrl,
   renderWavlakeUrl,
-} from "../../../../components/external-embeds";
+} from "../../../../components/content/links";
 import { NostrEvent } from "../../../../types/nostr-event";
+import { useRenderedContent } from "applesauce-react";
+import { components } from "../../../../components/content";
+
+const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl];
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
-  const content = useMemo(() => {
-    let c: EmbedableContent = [event.content];
-
-    c = embedUrls(c, [renderImageUrl, renderWavlakeUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl]);
-
-    // nostr
-    c = embedNostrLinks(c);
-    c = embedNostrMentions(c, event);
-    c = embedNostrHashtags(c, event);
-    c = embedNipDefinitions(c);
-    c = embedEmoji(c, event);
-
-    return c;
-  }, [event.content]);
+  const content = useRenderedContent(event, components, { linkRenderers });
 
   return <>{content}</>;
 });

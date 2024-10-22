@@ -1,12 +1,13 @@
-import { CashuMint } from "@cashu/cashu-ts";
+import { CashuMint, CashuWallet } from "@cashu/cashu-ts";
 
-const mints = new Map<string, CashuMint>();
+const wallets = new Map<string, CashuWallet>();
 
-export async function getMint(url: string) {
+export async function getMintWallet(url: string) {
   const formatted = new URL(url).toString();
-  if (!mints.has(formatted)) {
+  if (!wallets.has(formatted)) {
     const mint = new CashuMint(formatted);
-    mints.set(formatted, mint);
+    const wallet = new CashuWallet(mint);
+    wallets.set(formatted, wallet);
   }
-  return mints.get(formatted)!;
+  return wallets.get(formatted)!;
 }

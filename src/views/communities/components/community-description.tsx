@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Box, BoxProps, Button } from "@chakra-ui/react";
+import { useRenderedContent } from "applesauce-react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityDescription } from "../../../helpers/nostr/communities";
-import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../../helpers/embeds";
-import { renderGenericUrl } from "../../../components/external-embeds";
+import { components } from "../../../components/content";
+import { renderGenericUrl } from "../../../components/content/links";
+
+const linkRenderers = [renderGenericUrl];
 
 export default function CommunityDescription({
   community,
@@ -13,13 +16,11 @@ export default function CommunityDescription({
   ...props
 }: Omit<BoxProps, "children"> & { community: NostrEvent; maxLength?: number; showExpand?: boolean }) {
   const description = getCommunityDescription(community);
-  let content: EmbedableContent = description ? [description] : [];
   const [showAll, setShowAll] = useState(false);
-
-  content = embedUrls(content, [renderGenericUrl]);
-  if (maxLength !== undefined && !showAll) {
-    content = truncateEmbedableContent(content, maxLength);
-  }
+  const content = useRenderedContent(description, components, {
+    maxLength: showAll ? undefined : maxLength,
+    linkRenderers,
+  });
 
   return (
     <>

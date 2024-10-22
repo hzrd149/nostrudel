@@ -1,5 +1,6 @@
 import { lazy } from "react";
-import { Text } from "@chakra-ui/react";
+import { Link, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { ComponentMap } from "applesauce-react";
 
 import Mention from "./mention";
@@ -13,4 +14,9 @@ export const components: ComponentMap = {
   cashu: Cashu,
   fedimint: ({ node }) => <InlineFedimintCard token={node.token} />,
   emoji: ({ node }) => <InlineEmoji url={node.url} code={node.code} />,
+  hashtag: ({ node }) => (
+    <Link as={RouterLink} to={`/t/${node.hashtag}`} color="blue.500">
+      #{node.name}
+    </Link>
+  ),
 };

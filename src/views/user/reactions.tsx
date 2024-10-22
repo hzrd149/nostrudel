@@ -13,7 +13,6 @@ import { TrustProvider } from "../../providers/local/trust-provider";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import { EmbedEventPointer } from "../../components/embed-event";
-import { embedEmoji } from "../../components/external-embeds";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NoteMenu from "../../components/note/note-menu";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
@@ -32,7 +31,7 @@ const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
         <UserAvatar pubkey={reaction.pubkey} size="xs" />
         <Text>
           <UserLink pubkey={reaction.pubkey} /> {reaction.content === "+" ? "liked " : "reacted with "}
-          {embedEmoji([reaction.content], reaction)}
+          {reaction.content}
         </Text>
         <Spacer />
         <NoteMenu event={reaction} aria-label="Note menu" variant="ghost" size="xs" />

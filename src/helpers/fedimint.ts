@@ -12,7 +12,7 @@ declare module "applesauce-content/nast" {
   }
 }
 
-export function FedimintTokensTransformer(): Transformer<Root> {
+export function fedimintTokens(): Transformer<Root> {
   return (tree) => {
     findAndReplace(tree, [
       [

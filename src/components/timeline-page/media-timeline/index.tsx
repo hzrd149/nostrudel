@@ -5,12 +5,13 @@ import { Photo } from "react-photo-album";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImageProps, GalleryImage } from "../../external-embeds";
+import { EmbeddedImageProps } from "../../content/links";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { GalleryImage } from "../../content/gallery";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLImageElement>(event);

@@ -18,18 +18,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
+import { useRenderedContent } from "applesauce-react";
+import { ChatIcon } from "@chakra-ui/icons";
 
 import { getLudEndpoint } from "../../../helpers/lnurl";
-import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserProfile from "../../../hooks/use-user-profile";
-import { embedNostrLinks, renderGenericUrl } from "../../../components/external-embeds";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  AtIcon,
   ExternalLinkIcon,
   KeyIcon,
   LightningIcon,
@@ -39,7 +38,6 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
-import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -52,16 +50,8 @@ import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
-
-function buildDescriptionContent(description: string) {
-  let content: EmbedableContent = [description.trim()];
-
-  content = embedNostrLinks(content);
-  content = embedUrls(content, [renderGenericUrl]);
-
-  return content;
-}
+import { components } from "../../../components/content";
+import { renderGenericUrl } from "../../../components/content/links/common";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
@@ -99,6 +89,8 @@ function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
     );
 }
 
+const linkRenderers = [renderGenericUrl];
+
 export default function UserAboutTab() {
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -110,7 +102,7 @@ export default function UserAboutTab() {
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);
 
-  const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
+  const aboutContent = useRenderedContent(metadata?.about, components, { linkRenderers });
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
     ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`

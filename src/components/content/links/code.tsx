@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import ExpandableEmbed from "../expandable-embed";
+import ExpandableEmbed from "../components/expandable-embed";
 
 export function renderCodePenURL(match: URL) {
   if (match.hostname !== "codepen.io") return null;

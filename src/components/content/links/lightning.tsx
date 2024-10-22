@@ -1,6 +1,6 @@
 import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
 import { InlineInvoiceCard } from "../../lightning/inline-invoice-card";
-import ExpandableEmbed from "../expandable-embed";
+import ExpandableEmbed from "../components/expandable-embed";
 
 export function renderLightningInvoice(invoice: string) {
   return (

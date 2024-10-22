@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, ButtonGroupProps, Link } from "@chakra-ui/react";
-import { ChevronUpIcon, ChevronDownIcon } from "../icons";
+import { ChevronUpIcon, ChevronDownIcon } from "../../icons";
 import { useCallback, useState } from "react";
 
 export default function EmbedActions({

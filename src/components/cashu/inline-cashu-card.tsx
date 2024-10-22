@@ -1,18 +1,18 @@
 import { useAsync } from "react-use";
 import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
-import { Token, getEncodedToken } from "@cashu/cashu-ts";
+import { Token, getEncodedToken, CashuMint, CashuWallet } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
 import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
-import { getMint } from "../../services/cashu-mints";
 import CurrencyDollar from "../icons/currency-dollar";
 import CurrencyEthereum from "../icons/currency-ethereum";
 import CurrencyEuro from "../icons/currency-euro";
 import CurrencyYen from "../icons/currency-yen";
 import CurrencyPound from "../icons/currency-pound";
 import CurrencyBitcoin from "../icons/currency-bitcoin";
+import { getMintWallet } from "../../services/cashu-mints";
 
 function RedeemButton({ token }: { token: string }) {
   const account = useCurrentAccount()!;
@@ -40,9 +40,9 @@ export default function InlineCachuCard({
   const { value: spendable, loading } = useAsync(async () => {
     if (!token) return;
     for (const entry of token.token) {
-      const mint = await getMint(entry.mint);
-      const spent = await mint.check({ Ys: entry.proofs.map((p) => p.secret) });
-      if (spent.states.some((v) => v.state === "UNSPENT")) return true;
+      const wallet = await getMintWallet(entry.mint);
+      const spent = await wallet.checkProofsSpent(entry.proofs);
+      if (spent.length !== entry.proofs.length) return true;
     }
     return false;
   }, [token]);
@@ -90,7 +90,7 @@ export default function InlineCachuCard({
     <Card p="2" flexDirection="column" borderColor="green.500" gap="2" {...props}>
       <Box>
         <UnitIcon boxSize={10} color={unitColor} float="left" mr="2" mb="1" />
-        <ButtonGroup float="right">
+        <ButtonGroup float="right" size="sm">
           <CopyIconButton value={encoded} title="Copy Token" aria-label="Copy Token" variant="ghost" />
           <IconButton
             as={Link}
