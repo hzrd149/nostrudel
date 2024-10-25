@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM node:20-alpine AS base
 
-ENV PNPM_HOME="/pnpm"
+ENV PNPM_HOME="usr/local/bin/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
@@ -11,10 +11,10 @@ COPY ./package*.json .
 COPY ./pnpm-lock.yaml .
 
 FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 ARG COMMIT_HASH=""
 ARG APP_VERSION=""
