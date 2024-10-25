@@ -168,7 +168,7 @@ export default function AppRelays() {
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
         <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
-        <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
+        <RelaySetCard label="BTCforPlebs relays" read={BTCforPlebsRelays} write={BTCforPlebsRelays} />
       </SimpleGrid>
     </Flex>
   );
