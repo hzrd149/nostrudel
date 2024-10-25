@@ -23,12 +23,8 @@ import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 
-const JapaneseRelays = safeRelayUrls([
-  "wss://r.kojira.io",
-  "wss://nrelay-jp.c-stellar.net",
-  "wss://nostr.fediverse.jp",
-  "wss://nostr.holybea.com",
-  "wss://relay-jp.nostr.wirednet.jp",
+const BTCforPlebsRelays = safeRelayUrls([
+  "wss://relay.btcforplebs.com",
 ]);
 
 function RelaySetCard({ label, read, write }: { label: string; read: Iterable<string>; write: Iterable<string> }) {
