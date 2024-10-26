@@ -103,7 +103,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
               required: "Username is required",
               pattern: {
                 value: /^[a-zA-Z0-9_-]{2,64}$/,
-                message: "Only contain letters, numbers, underscores, and hyphens, and must be 2-64 characters",
+                message: "Only letters, numbers, underscores, and hyphens, and must be 2-64 characters",
               },
             })}
           />
