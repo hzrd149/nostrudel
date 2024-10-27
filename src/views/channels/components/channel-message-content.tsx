@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TrustProvider } from "../../../providers/local/trust-provider";

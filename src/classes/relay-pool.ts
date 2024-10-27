@@ -1,4 +1,5 @@
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { IConnectionPool } from "applesauce-net/connection";
 import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
@@ -20,7 +21,7 @@ export type Notice = {
 
 export type RelayAuthMode = "always" | "ask" | "never";
 
-export default class RelayPool {
+export default class RelayPool implements IConnectionPool {
   log = logger.extend("RelayPool");
 
   relays = new Map<string, AbstractRelay>();
@@ -43,7 +44,23 @@ export default class RelayPool {
       const safeURL = safeRelayUrl(relayOrUrl);
       if (safeURL) {
         return this.relays.get(safeURL) || this.requestRelay(safeURL);
-      } else return;
+      } else return null;
+    } else if (relayOrUrl instanceof URL) {
+      return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
+    }
+
+    return relayOrUrl;
+  }
+
+  // TODO: for now this is just a copy of
+  getConnection(relayOrUrl: string | URL | AbstractRelay) {
+    if (typeof relayOrUrl === "string") {
+      const safeURL = safeRelayUrl(relayOrUrl);
+      if (safeURL) {
+        return this.relays.get(safeURL) || this.requestRelay(safeURL);
+      } else {
+        throw new Error(`Bad relay url ${relayOrUrl}`);
+      }
     } else if (relayOrUrl instanceof URL) {
       return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
     }

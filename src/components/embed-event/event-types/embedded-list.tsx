@@ -8,12 +8,10 @@ import UserLink from "../../user/user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
 import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedList({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
-  const link = isSpecialListKind(list.kind)
-    ? createCoordinate(list.kind, list.pubkey)
-    : relayHintService.getSharableEventAddress(list);
+  const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
   const description = getListDescription(list);
 
   return (

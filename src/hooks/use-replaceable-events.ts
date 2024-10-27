@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservable, useQueryStore } from "applesauce-react";
+import { useObservable, useQueryStore } from "applesauce-react/hooks";
 
 import { useReadRelays } from "./use-client-relays";
 import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";

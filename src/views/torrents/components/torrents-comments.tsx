@@ -11,6 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ThreadItem, ThreadQuery } from "applesauce-core/queries";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
@@ -36,8 +37,6 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import NoteZapButton from "../../../components/note/note-zap-button";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { useStoreQuery } from "../../../hooks/use-store-query";
-import { sortByDate } from "../../../helpers/nostr/event";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();

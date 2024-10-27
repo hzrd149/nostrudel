@@ -14,7 +14,7 @@ import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
 import useAppSettings from "../../../hooks/use-app-settings";
 
@@ -22,7 +22,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
   const { showSignatureVerification } = useAppSettings();
   const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
-  const to = `/n/${relayHintService.getSharableEventAddress(event)}`;
+  const to = `/n/${getSharableEventAddress(event)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

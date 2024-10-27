@@ -30,7 +30,7 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import NotePublishedUsing from "../../../components/note/note-published-using";
 
 export type ThreadItemProps = {
@@ -70,12 +70,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
-      <Link
-        as={RouterLink}
-        whiteSpace="nowrap"
-        color="current"
-        to={`/n/${relayHintService.getSharableEventAddress(post.event)}`}
-      >
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       <POWIcon event={post.event} boxSize={5} />

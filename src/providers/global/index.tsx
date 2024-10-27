@@ -7,7 +7,6 @@ import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-app-settings";
 import NotificationsProvider from "./notifications-provider";
 import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
-import { AllUserSearchDirectoryProvider } from "./user-directory-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
@@ -39,9 +38,7 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
               <DMTimelineProvider>
                 <DefaultEmojiProvider>
                   <UserEmojiProvider>
-                    <AllUserSearchDirectoryProvider>
-                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                    </AllUserSearchDirectoryProvider>
+                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
                   </UserEmojiProvider>
                 </DefaultEmojiProvider>
               </DMTimelineProvider>

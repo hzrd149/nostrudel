@@ -11,6 +11,7 @@ import UserAvatar from "../user/user-avatar";
 import AccountTypeBadge from "../account-info-badge";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { Account } from "../../classes/accounts/account";
+import { useObservable } from "applesauce-react/hooks";
 
 function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;
@@ -49,7 +50,7 @@ export default function AccountSwitcher() {
   const account = useCurrentAccount()!;
   const { isOpen, onToggle, onClose } = useDisclosure();
   const metadata = useUserProfile(account.pubkey);
-  const accounts = useSubject(accountService.accounts);
+  const accounts = useObservable(accountService.accounts);
 
   const otherAccounts = accounts.filter((acc) => acc.pubkey !== account?.pubkey);
 

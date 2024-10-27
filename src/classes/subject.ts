@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 
 import ControlledObservable from "./controlled-observable";
 
-/** An observable that is always open and stores the last value */
+/** @deprecated use BehaviorSubject instead */
 export default class Subject<T> {
   private observable: ControlledObservable<T>;
   id = nanoid(8);

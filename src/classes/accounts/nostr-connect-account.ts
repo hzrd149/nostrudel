@@ -1,6 +1,7 @@
+import { NostrConnectSigner } from "applesauce-signer/signers";
+
 import { DEFAULT_NOSTR_CONNECT_RELAYS } from "../../const";
 import nostrConnectService from "../../services/nostr-connect";
-import NostrConnectSigner from "../signers/nostr-connect-signer";
 import { Account } from "./account";
 
 export default class NostrConnectAccount extends Account {
@@ -20,10 +21,11 @@ export default class NostrConnectAccount extends Account {
   }
 
   toJSON() {
+    const json = this.signer.toJSON();
     return {
       ...super.toJSON(),
       signerRelays: this.signer.relays,
-      clientSecretKey: this.signer.secretKey,
+      clientSecretKey: json.client,
     };
   }
   fromJSON(data: any): this {

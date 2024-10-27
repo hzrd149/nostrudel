@@ -5,7 +5,7 @@ import { Root, truncateContent } from "applesauce-content/nast";
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { LightboxProvider } from "./lightbox-provider";
 import { nostrMentions, emojis, hashtags } from "applesauce-content/text";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { components } from "./content";
 import { renderGenericUrl } from "./content/links/common";
 

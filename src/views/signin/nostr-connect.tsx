@@ -12,6 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { NostrConnectSigner } from "applesauce-signer";
 
 import accountService from "../../services/account";
 import nostrConnectService from "../../services/nostr-connect";
@@ -19,8 +20,8 @@ import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button
 import { RelayUrlInput } from "../../components/relay-url-input";
 import QrCodeSvg from "../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../components/copy-icon-button";
-import NostrConnectSigner from "../../classes/signers/nostr-connect-signer";
 import NostrConnectAccount from "../../classes/accounts/nostr-connect-account";
+import relayPoolService from "../../services/relay-pool";
 
 function ClientConnectForm() {
   const navigate = useNavigate();
@@ -39,13 +40,13 @@ function ClientConnectForm() {
     params.set("url", host);
     params.set("image", new URL("/apple-touch-icon.png", host).toString());
 
-    return `nostrconnect://${signer.publicKey}?` + params.toString();
+    return `nostrconnect://${signer.clientPubkey}?` + params.toString();
   }, [relay, signer]);
 
   const create = useCallback(() => {
-    const c = new NostrConnectSigner(undefined, [relay]);
+    const c = new NostrConnectSigner({ relays: [relay], pool: relayPoolService });
     setSigner(c);
-    c.listen().then(() => {
+    c.waitForSigner().then(() => {
       nostrConnectService.saveSigner(c);
       const account = new NostrConnectAccount(c.pubkey!, c);
       accountService.addAccount(account);

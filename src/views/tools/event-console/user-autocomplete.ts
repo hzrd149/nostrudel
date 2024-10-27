@@ -1,10 +1,9 @@
 import _throttle from "lodash.throttle";
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
+import { SearchDirectory, userSearchDirectory } from "../../../services/username-search";
 
-import { UserDirectory } from "../../../providers/global/user-directory-provider";
-
-let users: UserDirectory = [];
+let users: SearchDirectory = [];
 export function codeMirrorUserAutocomplete(context: CompletionContext): CompletionResult | null {
   let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
   if (nodeBefore.name !== "String") return null;
@@ -28,6 +27,6 @@ export function codeMirrorUserAutocomplete(context: CompletionContext): Completi
   };
 }
 
-export function updateCodeMirrorUserAutocomplete(newUsers: UserDirectory) {
-  users = newUsers;
-}
+userSearchDirectory.subscribe((directory) => {
+  users = directory;
+});

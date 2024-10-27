@@ -1,3 +1,3 @@
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 export { useObservable };

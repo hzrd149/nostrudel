@@ -18,7 +18,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { ChatIcon } from "@chakra-ui/icons";
 
 import { getLudEndpoint } from "../../../helpers/lnurl";

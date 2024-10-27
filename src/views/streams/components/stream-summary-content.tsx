@@ -1,5 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import { renderGenericUrl, renderImageUrl } from "../../../components/content/links";

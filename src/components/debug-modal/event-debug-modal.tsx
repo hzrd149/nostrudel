@@ -30,7 +30,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
 import { CopyIconButton } from "../copy-icon-button";
 import DebugEventTags from "./event-tags";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { EditIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
@@ -91,7 +91,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
             <Section label="IDs">
               <RawValue heading="Event Id" value={event.id} />
               <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
-              <RawValue heading="NIP-19 Pointer" value={relayHintService.getSharableEventAddress(event)} />
+              <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
             </Section>
 
             <Section

@@ -1,10 +1,10 @@
-import { useToast } from "@chakra-ui/react";
 import React, { useCallback, useContext, useMemo } from "react";
-import useSubject from "../../hooks/use-subject";
-import accountService from "../../services/account";
+import { useToast } from "@chakra-ui/react";
+
 import signingService from "../../services/signing";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import { EventTemplate, UnsignedEvent, VerifiedEvent } from "nostr-tools";
+import useCurrentAccount from "../../hooks/use-current-account";
 
 export type SigningContextType = {
   finalizeDraft(draft: EventTemplate): Promise<UnsignedEvent>;
@@ -34,7 +34,7 @@ export function useSigningContext() {
 
 export function SigningProvider({ children }: { children: React.ReactNode }) {
   const toast = useToast();
-  const current = useSubject(accountService.current);
+  const current = useCurrentAccount();
 
   const finalizeDraft = useCallback(
     async (draft: EventTemplate) => {

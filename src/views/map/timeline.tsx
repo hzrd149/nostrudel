@@ -1,12 +1,12 @@
 import React from "react";
 import { kinds } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 
 import { ErrorBoundary } from "../../components/error-boundary";
 import StreamNote from "../../components/timeline-page/generic-note-timeline/stream-note";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelineNote from "../../components/note/timeline-note";
-import { useObservable } from "applesauce-react";
 
 const RenderEvent = React.memo(({ event, focused }: { event: NostrEvent; focused?: boolean }) => {
   switch (event.kind) {

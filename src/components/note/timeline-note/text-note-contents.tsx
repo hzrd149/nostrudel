@@ -62,6 +62,7 @@ const linkRenderers = [
 
 export const TextNoteContents = React.memo(
   ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
+    // @ts-expect-error
     const content = useRenderedContent(event, components, { linkRenderers, transformers, maxLength });
 
     return (

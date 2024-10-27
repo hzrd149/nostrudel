@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, BoxProps, Button } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getCommunityDescription } from "../../../helpers/nostr/communities";

@@ -3,14 +3,15 @@ import { Debugger } from "debug";
 import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
-import Observable from "zen-observable";
+import { Observable, map } from "rxjs";
+import { isFilterEqual } from "applesauce-core/helpers";
+import { MultiSubscription } from "applesauce-net/subscription";
 
-import MultiSubscription from "./multi-subscription";
 import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
-import { mergeFilter, isFilterEqual } from "../helpers/nostr/filter";
+import { mergeFilter } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
@@ -54,10 +55,8 @@ export default class TimelineLoader {
 
     this.log = logger.extend("TimelineLoader:" + name);
 
-    this.subscription = new MultiSubscription(name);
+    this.subscription = new MultiSubscription(relayPoolService);
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
-    this.subscription.onCacheEvent.subscribe((event) => this.handleEvent(event, true));
-    this.process.addChild(this.subscription.process);
 
     processManager.registerProcess(this.process);
   }
@@ -67,7 +66,7 @@ export default class TimelineLoader {
 
     if (this.eventFilter) {
       // add filter
-      this.timeline = this.timeline.map((events) => events.filter((e) => this.eventFilter!(e)));
+      this.timeline = this.timeline.pipe(map((events) => events.filter((e) => this.eventFilter!(e))));
     }
   }
 
@@ -253,7 +252,6 @@ export default class TimelineLoader {
 
   forgetEvents() {
     this.timeline = undefined;
-    this.subscription.forgetEvents();
   }
   reset() {
     this.cursor = dayjs().unix();
@@ -273,7 +271,7 @@ export default class TimelineLoader {
     this.loaders.clear();
     this.cacheLoader = null;
 
-    this.subscription.destroy();
+    this.subscription.close();
 
     this.process.remove();
     processManager.unregisterProcess(this.process);

@@ -1,5 +1,6 @@
 import Observable from "zen-observable";
 
+/** @deprecated use Rxjs Subject instead */
 export default class ControlledObservable<T> implements Observable<T> {
   private observable: Observable<T>;
   private subscriptions = new Set<ZenObservable.SubscriptionObserver<T>>();

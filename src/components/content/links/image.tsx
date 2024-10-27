@@ -33,8 +33,7 @@ import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../../helpers/image";
 import ExpandableEmbed from "../components/expandable-embed";
 import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
-import replaceableEventsService from "../../../services/replaceable-events";
-import clientRelaysService from "../../../services/client-relays";
+import { eventStore } from "../../../services/event-store";
 
 export type TrustImageProps = ImageProps;
 
@@ -66,16 +65,10 @@ export function getPubkeyMediaServers(pubkey?: string) {
   if (!pubkey) return;
 
   return new Promise<URL[] | undefined>((res) => {
-    const sub = replaceableEventsService.requestEvent(
-      clientRelaysService.readRelays.value,
-      USER_BLOSSOM_SERVER_LIST_KIND,
-      pubkey,
-    );
+    const event = eventStore.getReplaceable(USER_BLOSSOM_SERVER_LIST_KIND, pubkey);
+    const servers = event && getServersFromServerListEvent(event);
 
-    if (sub.value) res(getServersFromServerListEvent(sub.value));
-    else {
-      sub.once((event) => res(getServersFromServerListEvent(event)));
-    }
+    if (servers) res(servers);
   });
 }
 

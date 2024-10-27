@@ -1,5 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { nostrMentions } from "applesauce-content/text";
 
 import useUserProfile from "../../hooks/use-user-profile";

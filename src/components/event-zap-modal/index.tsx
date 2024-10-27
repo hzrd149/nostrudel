@@ -10,6 +10,8 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
+import { getValue } from "applesauce-core/observable";
+import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
@@ -18,7 +20,6 @@ import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import { EmbedProps } from "../embed-event";
-import userMailboxesService from "../../services/user-mailboxes";
 import InputStep from "./input-step";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import signingService from "../../services/signing";
@@ -26,12 +27,12 @@ import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
 import UserLink from "../user/user-link";
-import relayHintService from "../../services/event-relay-hint";
-import { queryStore } from "../../services/event-store";
-import { getValue } from "applesauce-core/observable";
+import { getEventRelayHints } from "../../services/event-relay-hint";
+import { eventStore, queryStore } from "../../services/event-store";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
+// TODO: this is way to complicated, it needs to be broken into multiple parts / hooks
 async function getPayRequestForPubkey(
   pubkey: string,
   event: NostrEvent | undefined,
@@ -62,11 +63,15 @@ async function getPayRequestForPubkey(
     return { invoice, pubkey };
   }
 
-  const userInbox = relayScoreboardService
-    .getRankedRelays(userMailboxesService.getMailboxes(pubkey).value?.inbox)
+  const account = accountService.current.value;
+
+  const mailboxes = eventStore.getReplaceable(kinds.RelayList, pubkey);
+  const userInbox = mailboxes ? getInboxes(mailboxes).slice(0, 4) : [];
+  const eventRelays = event ? getEventRelayHints(event, 4) : [];
+  const accountMailboxes = account ? eventStore.getReplaceable(kinds.RelayList, account?.pubkey) : undefined;
+  const outbox = relayScoreboardService
+    .getRankedRelays(accountMailboxes ? getOutboxes(accountMailboxes) : [])
     .slice(0, 4);
-  const eventRelays = event ? relayHintService.getEventRelayHints(event, 4) : [];
-  const outbox = relayScoreboardService.getRankedRelays(clientRelaysService.outbox).slice(0, 4);
   const additional = relayScoreboardService.getRankedRelays(additionalRelays);
 
   // create zap request
@@ -89,7 +94,6 @@ async function getPayRequestForPubkey(
   }
 
   // TODO: move this out to a separate step so the user can choose when to sign
-  const account = accountService.current.value;
   if (!account) throw new Error("No Account");
   const signed = await signingService.requestSignature(zapRequest, account);
 

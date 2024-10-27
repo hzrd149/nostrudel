@@ -1,24 +1,24 @@
 import { nanoid } from "nanoid";
-import { Filter } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { IConnectionPool } from "applesauce-net/connection";
+import { isFilterEqual } from "applesauce-core/helpers";
 
-import { NostrEvent } from "../types/nostr-event";
-import relayPoolService from "../services/relay-pool";
-import { isFilterEqual } from "../helpers/nostr/filter";
 import ControlledObservable from "./controlled-observable";
-import { offlineMode } from "../services/offline-mode";
 import PersistentSubscription from "./persistent-subscription";
-import Process from "./process";
 import Dataflow01 from "../components/icons/dataflow-01";
 import processManager from "../services/process-manager";
 import { localRelay } from "../services/local-relay";
 import { eventStore } from "../services/event-store";
+import Process from "./process";
 
+/** @deprecated use MultiSubscription from applesauce-net */
 export default class MultiSubscription {
   static OPEN = "open";
   static CLOSED = "closed";
 
   id: string;
+  pool: IConnectionPool;
   name: string;
   process: Process;
   filters: Filter[] = [];
@@ -34,8 +34,9 @@ export default class MultiSubscription {
   onEvent = new ControlledObservable<NostrEvent>();
   seenEvents = new Set<string>();
 
-  constructor(name: string) {
+  constructor(pool: IConnectionPool, name: string) {
     this.id = nanoid(8);
+    this.pool = pool;
     this.name = name;
     this.process = new Process("MultiSubscription", this);
     this.process.name = this.name;
@@ -59,7 +60,10 @@ export default class MultiSubscription {
   }
 
   setRelays(relays: Iterable<string | URL | AbstractRelay>) {
-    const newRelays = relayPoolService.getRelays(relays);
+    const newRelays = Array.from(relays).map((relay) => {
+      if (typeof relay === "string" || relay instanceof URL) return this.pool.getConnection(relay);
+      return relay;
+    });
 
     // remove relays
     for (const relay of this.relays) {
@@ -137,9 +141,9 @@ export default class MultiSubscription {
 
   publish(event: NostrEvent) {
     return Promise.allSettled(
-      Array.from(this.relays).map(async (r) => {
-        if (!r.connected) await relayPoolService.requestConnect(r);
-        return await r.publish(event);
+      Array.from(this.relays).map(async (relay) => {
+        if (!relay.connected) await relay.connect();
+        return await relay.publish(event);
       }),
     );
   }
@@ -154,7 +158,6 @@ export default class MultiSubscription {
     return this;
   }
   waitForAllConnection(): Promise<void> {
-    if (offlineMode.value) return Promise.resolve();
     return Promise.allSettled(
       Array.from(this.relays)
         .filter((r) => !r.connected)

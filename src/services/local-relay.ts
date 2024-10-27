@@ -1,13 +1,13 @@
+import dayjs from "dayjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { fakeVerifyEvent } from "applesauce-core/helpers";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
-import { fakeVerifyEvent } from "./verify-event";
 import localSettings from "./local-settings";
-import dayjs from "dayjs";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);

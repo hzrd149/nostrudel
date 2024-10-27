@@ -4,7 +4,7 @@ import { Filter } from "nostr-tools";
 
 import timelineCacheService from "../services/timeline-cache";
 import TimelineLoader, { EventFilter } from "../classes/timeline-loader";
-import { useStoreQuery } from "applesauce-react";
+import { useStoreQuery } from "applesauce-react/hooks";
 import { Queries } from "applesauce-core";
 
 type Options = {

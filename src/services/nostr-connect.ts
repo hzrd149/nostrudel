@@ -1,52 +1,13 @@
 import { nip19 } from "nostr-tools";
+import { NostrConnectSigner, SimpleSigner } from "applesauce-signer";
+import { hexToBytes } from "@noble/hashes/utils";
+
 import { getPubkeyFromDecodeResult, isHexKey, normalizeToHexPubkey } from "../helpers/nip19";
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
-import NostrConnectSigner from "../classes/signers/nostr-connect-signer";
+import relayPoolService from "./relay-pool";
 
-export function isErrorResponse(response: any): response is NostrConnectErrorResponse {
-  return !!response.error;
-}
-
-export enum NostrConnectMethod {
-  Connect = "connect",
-  CreateAccount = "create_account",
-  Disconnect = "disconnect",
-  GetPublicKey = "get_pubic_key",
-  SignEvent = "sign_event",
-  Nip04Encrypt = "nip04_encrypt",
-  Nip04Decrypt = "nip04_decrypt",
-}
-type RequestParams = {
-  [NostrConnectMethod.Connect]: [string] | [string, string] | [string, string, string];
-  [NostrConnectMethod.CreateAccount]: [string, string] | [string, string, string] | [string, string, string, string];
-  [NostrConnectMethod.Disconnect]: [];
-  [NostrConnectMethod.GetPublicKey]: [];
-  [NostrConnectMethod.SignEvent]: [string];
-  [NostrConnectMethod.Nip04Encrypt]: [string, string];
-  [NostrConnectMethod.Nip04Decrypt]: [string, string];
-};
-type ResponseResults = {
-  [NostrConnectMethod.Connect]: "ack";
-  [NostrConnectMethod.CreateAccount]: string;
-  [NostrConnectMethod.Disconnect]: "ack";
-  [NostrConnectMethod.GetPublicKey]: string;
-  [NostrConnectMethod.SignEvent]: string;
-  [NostrConnectMethod.Nip04Encrypt]: string;
-  [NostrConnectMethod.Nip04Decrypt]: string;
-};
-export type NostrConnectRequest<N extends NostrConnectMethod> = { id: string; method: N; params: RequestParams[N] };
-export type NostrConnectResponse<N extends NostrConnectMethod> = {
-  id: string;
-  result: ResponseResults[N];
-  error?: string;
-};
-export type NostrConnectErrorResponse = {
-  id: string;
-  result: string;
-  error: string;
-};
-
+/** @deprecated use account manager instead */
 class NostrConnectService {
   log = logger.extend("NostrConnect");
   clients: NostrConnectSigner[] = [];
@@ -61,8 +22,9 @@ class NostrConnectService {
   createSigner(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
     if (this.getSigner(pubkey)) throw new Error("A client for that pubkey already exists");
 
-    const client = new NostrConnectSigner(pubkey, relays, secretKey, provider);
-    client.log = this.log.extend(pubkey);
+    const signer = secretKey ? new SimpleSigner(hexToBytes(secretKey)) : undefined;
+
+    const client = new NostrConnectSigner({ pool: relayPoolService, pubkey, relays, signer, remote: provider });
 
     this.log(`Created client for ${pubkey} using ${relays.join(", ")}`);
 

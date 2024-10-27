@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";

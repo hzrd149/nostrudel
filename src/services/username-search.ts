@@ -1,40 +1,41 @@
 import _throttle from "lodash.throttle";
 import { kinds } from "nostr-tools";
+import { from } from "rxjs";
+import { filter, bufferTime, concatMap, mergeWith, reduce, shareReplay, map } from "rxjs/operators";
+import { getProfileContent, isFromCache } from "applesauce-core/helpers";
 
 import { getSearchNames } from "../helpers/nostr/user-metadata";
 import db from "./db";
-import userMetadataService from "./user-metadata";
-import { logger } from "../helpers/debug";
-import Subject from "../classes/subject";
 import { eventStore } from "./event-store";
 
-const WRITE_USER_SEARCH_BATCH_TIME = 500;
-const log = logger.extend("UsernameSearch");
+export type UserDirectory = Record<string, string[]>;
+export type SearchDirectory = { pubkey: string; names: string[] }[];
 
-export const userSearchUpdate = new Subject();
+const cached = from(db.getAll("userSearch") as Promise<{ pubkey: string; names: string[] }[]>);
+const updates = eventStore.stream([{ kinds: [kinds.Metadata] }]).pipe(
+  filter((event) => !isFromCache(event)),
+  bufferTime(500),
+  concatMap(async (events) => {
+    if (events.length === 0) return {};
 
-const writeSearchQueue = new Set<string>();
-const writeSearchData = _throttle(async () => {
-  if (writeSearchQueue.size === 0) return;
-
-  log(`Writing ${writeSearchQueue.size} to search table`);
-  const keys = Array.from(writeSearchQueue);
-  writeSearchQueue.clear();
-
-  const transaction = db.transaction("userSearch", "readwrite");
-  for (const pubkey of keys) {
-    const metadata = userMetadataService.getSubject(pubkey).value;
-    if (metadata) {
-      const names = getSearchNames(metadata);
-      transaction.objectStore("userSearch").put({ pubkey, names });
+    const updates: UserDirectory = {};
+    const transaction = db.transaction("userSearch", "readwrite");
+    for (let metadata of events) {
+      const profile = getProfileContent(metadata);
+      const names = getSearchNames(profile);
+      updates[metadata.pubkey] = names;
+      transaction.objectStore("userSearch").put({ pubkey: metadata.pubkey, names });
     }
-  }
-  transaction.commit();
-  await transaction.done;
-  userSearchUpdate.next(Math.random());
-}, WRITE_USER_SEARCH_BATCH_TIME);
+    transaction.commit();
+    await transaction.done;
+    return updates;
+  }),
+);
 
-eventStore.stream([{ kinds: [kinds.Metadata] }]).subscribe((event) => {
-  writeSearchQueue.add(event.pubkey);
-  writeSearchData();
-});
+export const userSearchDirectory = cached.pipe(
+  map((rows) => rows.reduce<UserDirectory>((dir, row) => ({ ...dir, [row.pubkey]: row.names }), {})),
+  mergeWith(updates),
+  reduce((dir, updates) => ({ ...dir, ...updates })),
+  map<UserDirectory, SearchDirectory>((dir) => Object.entries(dir).map(([pubkey, names]) => ({ pubkey, names }))),
+  shareReplay(1),
+);

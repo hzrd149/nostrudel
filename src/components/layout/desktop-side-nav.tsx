@@ -11,9 +11,9 @@ import { WritingIcon } from "../icons";
 import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";
-import { useTaskManagerContext } from "../../views/task-manager/provider";
 import TaskManagerButtons from "./task-manager-buttons";
 import localSettings from "../../services/local-settings";
+import { useObservable } from "applesauce-react/hooks";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -26,7 +26,7 @@ const hideScrollbar = css`
 export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
-  const offline = useSubject(offlineMode);
+  const offline = useObservable(offlineMode);
   const showBrandLogo = useSubject(localSettings.showBrandLogo);
 
   return (

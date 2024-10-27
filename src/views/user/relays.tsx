@@ -69,7 +69,7 @@ const UserRelaysTab = () => {
 
   const otherReviews = reviews.filter((e) => {
     const url = e.tags.find((t) => t[0] === "r")?.[1];
-    return url && !mailboxes?.inboxes.has(url) && !mailboxes?.outboxes.has(url);
+    return url && !mailboxes?.inboxes.includes(url) && !mailboxes?.outboxes.includes(url);
   });
 
   return (

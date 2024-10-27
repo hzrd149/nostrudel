@@ -16,13 +16,13 @@ import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
 import Recording02 from "../icons/recording-02";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const translationsModal = useDisclosure();
   const publish = usePublishEvent();
 
-  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
+  const address = useMemo(() => getSharableEventAddress(event), [event]);
 
   const broadcast = useCallback(async () => {
     await publish("Broadcast", event);

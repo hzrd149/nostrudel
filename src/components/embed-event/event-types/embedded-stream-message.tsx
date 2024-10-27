@@ -8,7 +8,7 @@ import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-m
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedStreamMessage({
   message,
@@ -25,7 +25,7 @@ export default function EmbeddedStreamMessage({
           <Flex gap="2" alignItems="center">
             <Link
               as={RouterLink}
-              to={`/streams/${relayHintService.getSharableEventAddress(streamEvent) ?? ""}`}
+              to={`/streams/${getSharableEventAddress(streamEvent) ?? ""}`}
               fontWeight="bold"
               fontSize="lg"
             >

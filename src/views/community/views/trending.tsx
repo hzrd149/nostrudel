@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 import {
   COMMUNITY_APPROVAL_KIND,

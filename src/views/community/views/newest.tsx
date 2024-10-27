@@ -8,7 +8,7 @@ import TimelineActionAndStatus from "../../../components/timeline/timeline-actio
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import ApprovedEvent from "../components/community-approved-post";
 import { RouterContext } from "../community-home";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 export default function CommunityNewestView() {
   const { community, timeline } = useOutletContext<RouterContext>();

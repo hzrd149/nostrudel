@@ -1,3 +1,5 @@
+import { BehaviorSubject } from "rxjs";
+
 import { Account } from "../classes/accounts/account";
 import AmberAccount from "../classes/accounts/amber-account";
 import ExtensionAccount from "../classes/accounts/extension-account";
@@ -6,7 +8,6 @@ import NsecAccount from "../classes/accounts/nsec-account";
 import PasswordAccount from "../classes/accounts/password-account";
 import PubkeyAccount from "../classes/accounts/pubkey-account";
 import SerialPortAccount from "../classes/accounts/serial-port-account";
-import { PersistentSubject } from "../classes/subject";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import { AppSettings } from "../helpers/app-settings";
@@ -25,10 +26,10 @@ export type LocalAccount = CommonAccount & {
 
 class AccountService {
   log = logger.extend("AccountService");
-  loading = new PersistentSubject(true);
-  accounts = new PersistentSubject<Account[]>([]);
-  current = new PersistentSubject<Account | null>(null);
-  isGhost = new PersistentSubject(false);
+  loading = new BehaviorSubject(true);
+  accounts = new BehaviorSubject<Account[]>([]);
+  current = new BehaviorSubject<Account | null>(null);
+  isGhost = new BehaviorSubject(false);
 
   constructor() {
     db.getAll("accounts").then((accountData) => {

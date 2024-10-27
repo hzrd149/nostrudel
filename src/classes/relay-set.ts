@@ -17,7 +17,9 @@ export default class RelaySet extends Set<string> {
     return new RelaySet(this);
   }
   merge(src: Iterable<string>): this {
-    for (const url of src) this.add(url);
+    for (const url of src) {
+      if (url) this.add(url);
+    }
     return this;
   }
 

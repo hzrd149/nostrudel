@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";

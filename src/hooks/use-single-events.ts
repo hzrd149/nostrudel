@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Queries } from "applesauce-core";
-import { useStoreQuery } from "applesauce-react";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import singleEventService from "../services/single-event";
 import { useReadRelays } from "./use-client-relays";

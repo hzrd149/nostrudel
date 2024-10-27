@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 import { Link } from "applesauce-content/nast";
-import { ComponentMap } from "applesauce-react";
+import { ComponentMap } from "applesauce-react/hooks";
 
 export type LinkRenderer = (url: URL, node: Link) => JSX.Element | false | null;
 

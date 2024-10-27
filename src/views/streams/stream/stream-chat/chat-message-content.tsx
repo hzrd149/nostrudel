@@ -8,7 +8,7 @@ import {
   renderWavlakeUrl,
 } from "../../../../components/content/links";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { components } from "../../../../components/content";
 
 const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl];

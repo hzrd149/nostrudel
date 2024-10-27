@@ -1,38 +1,25 @@
 import { Input, InputProps } from "@chakra-ui/react";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef } from "react";
+import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
-import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
-import userMetadataService from "../services/user-metadata";
-import { getDisplayName, Kind0ParsedContent } from "../helpers/nostr/user-metadata";
-import useAppSettings from "../hooks/use-app-settings";
+import { userSearchDirectory } from "../services/username-search";
 
 type UserAutocompleteProps = InputProps & {
   hex?: boolean;
 };
 
 const UserAutocomplete = forwardRef<HTMLInputElement, UserAutocompleteProps>(({ value, hex, ...props }, ref) => {
-  const getDirectory = useUserSearchDirectoryContext();
-  const { removeEmojisInUsernames } = useAppSettings();
-
-  const [users, setUsers] = useState<{ pubkey: string; names: string[]; metadata?: Kind0ParsedContent }[]>([]);
-
-  useEffect(() => {
-    const dir = getDirectory();
-
-    setUsers(
-      dir.map(({ pubkey, names }) => ({ pubkey, names, metadata: userMetadataService.getSubject(pubkey).value })),
-    );
-  }, [getDirectory]);
+  const directory = useObservable(userSearchDirectory);
 
   return (
     <>
       <Input placeholder="Users" list="users" value={value} {...props} ref={ref} />
-      {users && (
+      {directory && (
         <datalist id="users">
-          {users.map(({ metadata, pubkey, names }) => (
+          {directory.map(({ pubkey, names }) => (
             <option key={pubkey} value={hex ? pubkey : nip19.npubEncode(pubkey)}>
-              {names[0] || getDisplayName(metadata, pubkey, removeEmojisInUsernames)}
+              {names[0]}
             </option>
           ))}
         </datalist>

@@ -1,27 +1,18 @@
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { useColorMode } from "@chakra-ui/react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { jsonSchema } from "codemirror-json-schema";
 import { keymap } from "@codemirror/view";
-import { useInterval } from "react-use";
 import _throttle from "lodash.throttle";
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { jsonLanguage } from "@codemirror/lang-json";
-import { syntaxTree } from "@codemirror/language";
 
 import { NostrFilterSchema } from "./schema";
-import { UserDirectory, useUserSearchDirectoryContext } from "../../../providers/global/user-directory-provider";
-import { codeMirrorUserAutocomplete, updateCodeMirrorUserAutocomplete } from "./user-autocomplete";
+import { codeMirrorUserAutocomplete } from "./user-autocomplete";
 
 const FilterEditor = memo(
   ({ value, onChange, onRun }: { value: string; onChange: (v: string) => void; onRun: () => void }) => {
-    const getDirectory = useUserSearchDirectoryContext();
     const { colorMode } = useColorMode();
-
-    useInterval(() => {
-      updateCodeMirrorUserAutocomplete(getDirectory());
-    }, 1000);
 
     const extensions = useMemo(
       () => [
