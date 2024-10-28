@@ -6,7 +6,6 @@ export * from "./image";
 export * from "./lightning";
 export * from "./model";
 export * from "./music";
-export * from "./nostr";
 export * from "./reddit";
 export * from "./simplex";
 export * from "./twitter";

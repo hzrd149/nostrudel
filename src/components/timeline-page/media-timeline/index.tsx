@@ -11,7 +11,7 @@ import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { GalleryImage } from "../../content/gallery";
+import { GalleryImage } from "../../content/components/gallery";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLImageElement>(event);

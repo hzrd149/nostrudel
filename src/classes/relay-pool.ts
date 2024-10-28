@@ -44,7 +44,7 @@ export default class RelayPool implements IConnectionPool {
       const safeURL = safeRelayUrl(relayOrUrl);
       if (safeURL) {
         return this.relays.get(safeURL) || this.requestRelay(safeURL);
-      } else return null;
+      } else return;
     } else if (relayOrUrl instanceof URL) {
       return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
     }

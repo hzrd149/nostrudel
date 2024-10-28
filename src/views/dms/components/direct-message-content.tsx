@@ -54,7 +54,6 @@ export default function DirectMessageContent({
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
   const { plaintext } = useKind4Decrypt(event);
-  // @ts-expect-error
   const content = useRenderedContent(plaintext, components, { transformers, linkRenderers });
 
   return (
