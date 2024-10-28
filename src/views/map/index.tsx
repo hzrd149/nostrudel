@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Flex } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
-import { useObservable } from "applesauce-react";
 import ngeohash from "ngeohash";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";

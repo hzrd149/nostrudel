@@ -26,7 +26,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
 import FormatButton from "./components/format-toolbar";
 import dictionaryService from "../../services/dictionary";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const toast = useToast();
@@ -64,7 +64,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
       dictionaryService.handleEvent(pub.event);
       clearFormCache();
-      navigate(`/wiki/page/${relayHintService.getSharableEventAddress(pub.event)}`, { replace: true });
+      navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`, { replace: true });
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
     }

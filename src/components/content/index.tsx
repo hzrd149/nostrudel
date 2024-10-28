@@ -1,11 +1,13 @@
 import { lazy } from "react";
 import { Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ComponentMap } from "applesauce-react";
+import { ComponentMap } from "applesauce-react/hooks";
 
-import Mention from "./mention";
-import Cashu from "./cashu";
-import { InlineEmoji } from "./ininle-emoji";
+import Mention from "./components/mention";
+import Cashu from "./components/cashu";
+import { InlineEmoji } from "./components/ininle-emoji";
+import NipDefinition from "./components/nip";
+import { ImageGallery } from "./components/gallery";
 const InlineFedimintCard = lazy(() => import("../fedimint/inline-fedimint-card"));
 
 export const components: ComponentMap = {
@@ -19,4 +21,6 @@ export const components: ComponentMap = {
       #{node.name}
     </Link>
   ),
+  nip: NipDefinition,
+  gallery: ({ node }) => <ImageGallery images={node.links} />,
 };

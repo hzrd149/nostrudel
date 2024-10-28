@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Button, ButtonGroup, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation } from "react-router-dom";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 import { kinds, nip19 } from "nostr-tools";
 
 import {

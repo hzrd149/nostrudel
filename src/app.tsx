@@ -69,7 +69,6 @@ const BadgesBrowseView = lazy(() => import("./views/badges/browse"));
 const BadgeDetailsView = lazy(() => import("./views/badges/badge-details"));
 
 const CommunitiesHomeView = lazy(() => import("./views/communities"));
-const CommunitiesExploreView = lazy(() => import("./views/communities/explore"));
 const CommunityFindByNameView = lazy(() => import("./views/community/find-by-name"));
 const CommunityView = lazy(() => import("./views/community/index"));
 const CommunityPendingView = lazy(() => import("./views/community/views/pending"));
@@ -420,10 +419,7 @@ const router = createHashRouter([
       },
       {
         path: "communities",
-        children: [
-          { path: "", element: <CommunitiesHomeView /> },
-          { path: "explore", element: <CommunitiesExploreView /> },
-        ],
+        children: [{ path: "", element: <CommunitiesHomeView /> }],
       },
       {
         path: "articles",

@@ -9,12 +9,13 @@ import ReactTextareaAutocomplete, {
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
 import { matchSorter } from "match-sorter";
+import { useObservable } from "applesauce-react/hooks";
 
 import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
-import { useUserSearchDirectoryContext } from "../providers/global/user-directory-provider";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
 import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
+import { userSearchDirectory } from "../services/username-search";
 
 export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
@@ -62,7 +63,7 @@ const Loading: ReactTextareaAutocompleteProps<
 function useAutocompleteTriggers() {
   const webOfTrust = useWebOfTrust();
   const emojis = useContextEmojis();
-  const getDirectory = useUserSearchDirectoryContext();
+  const directory = useObservable(userSearchDirectory) ?? [];
 
   const triggers: TriggerType<Token> = {
     ":": {
@@ -74,8 +75,7 @@ function useAutocompleteTriggers() {
     },
     "@": {
       dataProvider: async (token: string) => {
-        const dir = await getDirectory();
-        return matchSorter(dir, token.trim(), {
+        return matchSorter(directory, token.trim(), {
           keys: ["names"],
           sorter: (items) =>
             webOfTrust

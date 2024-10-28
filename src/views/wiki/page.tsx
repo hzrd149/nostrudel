@@ -38,7 +38,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -111,11 +111,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
               </Button>
             )}
             {page.pubkey !== account?.pubkey && (
-              <Button
-                as={RouterLink}
-                colorScheme="primary"
-                to={`/wiki/create?fork=${relayHintService.getSharableEventAddress(page)}`}
-              >
+              <Button as={RouterLink} colorScheme="primary" to={`/wiki/create?fork=${getSharableEventAddress(page)}`}>
                 Fork
               </Button>
             )}

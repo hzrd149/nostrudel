@@ -1,5 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { defaultTransformers } from "applesauce-content/text";
 
 import { NostrEvent } from "../../../types/nostr-event";

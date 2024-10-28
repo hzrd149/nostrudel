@@ -4,24 +4,25 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useNavigate } from "react-router-dom";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Mesh, MeshBasicMaterial, SRGBColorSpace, SphereGeometry, Sprite, SpriteMaterial, TextureLoader } from "three";
+import { kinds } from "nostr-tools";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineQuery } from "applesauce-core/queries";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { useUsersMetadata } from "../../hooks/use-user-network";
-import { MUTE_LIST_KIND, getPubkeysFromList, isPubkeyInList } from "../../helpers/nostr/lists";
+import { getPubkeysFromList, isPubkeyInList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import replaceableEventsService from "../../services/replaceable-events";
-import useSubjects from "../../hooks/use-subjects";
 import useUserProfile from "../../hooks/use-user-profile";
 import { ChevronLeftIcon } from "../../components/icons";
+import useReplaceableEvents from "../../hooks/use-replaceable-events";
+import useUserProfiles from "../../hooks/use-user-profiles";
 
 export function useUsersMuteLists(pubkeys: string[], additionalRelays?: Iterable<string>) {
-  const readRelays = useReadRelays(additionalRelays);
-  const muteListSubjects = useMemo(() => {
-    return pubkeys.map((pubkey) => replaceableEventsService.requestEvent(readRelays, MUTE_LIST_KIND, pubkey));
-  }, [pubkeys]);
-  return useSubjects(muteListSubjects);
+  useReplaceableEvents(
+    pubkeys.map((pubkey) => ({ kind: kinds.Mutelist, pubkey })),
+    additionalRelays,
+  );
+  return useStoreQuery(TimelineQuery, [{ kinds: [kinds.Mutelist], authors: pubkeys }]);
 }
 
 type NodeType = { id: string; image?: string; name?: string };
@@ -36,7 +37,7 @@ function NetworkGraphPage() {
     () => (contacts ? getPubkeysFromList(contacts).map((p) => p.pubkey) : []),
     [contacts],
   );
-  const usersMetadata = useUsersMetadata(contactsPubkeys);
+  const userProfiles = useUserProfiles(contactsPubkeys);
   const usersMuteLists = useUsersMuteLists(contactsPubkeys);
 
   const graphData = useMemo(() => {
@@ -51,7 +52,7 @@ function NetworkGraphPage() {
           id: pubkey,
         };
 
-        const metadata = usersMetadata[pubkey];
+        const metadata = userProfiles?.[pubkey];
         if (metadata) {
           node.image = metadata.picture || metadata.image;
           node.name = metadata.name;
@@ -62,18 +63,20 @@ function NetworkGraphPage() {
       return nodes[pubkey];
     };
 
-    for (const muteList of usersMuteLists) {
-      const author = muteList.pubkey;
-      for (const user of getPubkeysFromList(muteList)) {
-        if (isPubkeyInList(contacts, user.pubkey)) {
-          const keyA = [author, user.pubkey].join("|");
-          links[keyA] = { source: getOrCreateNode(author), target: getOrCreateNode(user.pubkey) };
+    if (usersMuteLists) {
+      for (const muteList of usersMuteLists) {
+        const author = muteList.pubkey;
+        for (const user of getPubkeysFromList(muteList)) {
+          if (isPubkeyInList(contacts, user.pubkey)) {
+            const keyA = [author, user.pubkey].join("|");
+            links[keyA] = { source: getOrCreateNode(author), target: getOrCreateNode(user.pubkey) };
+          }
         }
       }
     }
 
     return { nodes: Object.values(nodes), links: Object.values(links) };
-  }, [contacts, usersMuteLists, usersMetadata, selfMetadata]);
+  }, [contacts, usersMuteLists, userProfiles, selfMetadata]);
 
   return (
     <Flex direction="column" gap="2" h="full" pt="2">

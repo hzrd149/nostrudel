@@ -7,6 +7,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import { PubkeyGraph } from "../../classes/pubkey-graph";
 import replaceableEventsService from "../../services/replaceable-events";
 import { COMMON_CONTACT_RELAY } from "../../const";
+import { eventStore } from "../../services/event-store";
 
 export function loadSocialGraph(
   graph: PubkeyGraph,
@@ -18,11 +19,7 @@ export function loadSocialGraph(
 ) {
   let newEvents = 0;
 
-  const contacts = replaceableEventsService.requestEvent(
-    relay ? [relay, COMMON_CONTACT_RELAY] : [COMMON_CONTACT_RELAY],
-    kind,
-    pubkey,
-  );
+  const contacts = eventStore.getReplaceable(kind, pubkey);
 
   walked.add(pubkey);
 
@@ -40,10 +37,18 @@ export function loadSocialGraph(
     }
   };
 
-  if (contacts.value) {
-    handleEvent(contacts.value);
+  if (contacts) {
+    handleEvent(contacts);
   } else {
-    contacts.once((event) => handleEvent(event));
+    replaceableEventsService.requestEvent(relay ? [relay, COMMON_CONTACT_RELAY] : [COMMON_CONTACT_RELAY], kind, pubkey);
+
+    // wait for event to load
+    const sub = eventStore.replaceable(kind, pubkey).subscribe((e) => {
+      if (e) {
+        handleEvent(e);
+        sub.unsubscribe();
+      }
+    });
   }
 }
 

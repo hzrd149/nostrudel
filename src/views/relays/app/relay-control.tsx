@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { CloseIcon } from "@chakra-ui/icons";
+import { useObservable } from "applesauce-react/hooks";
 
 import { Flex, IconButton, Link } from "@chakra-ui/react";
-import useSubject from "../../../hooks/use-subject";
 import relayPoolService from "../../../services/relay-pool";
 import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
@@ -12,7 +12,7 @@ import UploadCloud01 from "../../../components/icons/upload-cloud-01";
 
 export default function RelayControl({ url }: { url: string }) {
   const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
-  const writeRelays = useSubject(clientRelaysService.writeRelays);
+  const writeRelays = useObservable(clientRelaysService.writeRelays);
 
   const color = relay.connected ? "green" : "red";
 

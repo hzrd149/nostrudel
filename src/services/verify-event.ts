@@ -1,15 +1,12 @@
-import { NostrEvent, VerifiedEvent, verifiedSymbol, verifyEvent as internalVerifyEvent } from "nostr-tools";
+import { NostrEvent, verifyEvent as internalVerifyEvent } from "nostr-tools";
 import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
+import { fakeVerifyEvent } from "applesauce-core/helpers/event";
 import { logger } from "../helpers/debug";
 import localSettings from "./local-settings";
 
 const log = logger.extend("VerifyEvent");
 let verifyEventMethod: typeof internalVerifyEvent;
 let alwaysVerifyMethod: typeof internalVerifyEvent;
-
-export function fakeVerifyEvent(event: NostrEvent): event is VerifiedEvent {
-  return (event[verifiedSymbol] = true);
-}
 
 function loadWithTimeout() {
   return new Promise<typeof internalVerifyEvent>((res, rej) => {

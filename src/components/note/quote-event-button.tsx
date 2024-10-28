@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 
 import { QuoteEventIcon } from "../icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 export default function QuoteEventButton({
   event,
@@ -17,7 +17,7 @@ export default function QuoteEventButton({
   const { openModal } = useContext(PostModalContext);
 
   const handleClick = () => {
-    const nevent = relayHintService.getSharableEventAddress(event);
+    const nevent = getSharableEventAddress(event);
     openModal({ cacheFormKey: null, initContent: "\nnostr:" + nevent });
   };
 

@@ -20,11 +20,11 @@ import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojisFromPack(pack);
-  const naddr = relayHintService.getSharableEventAddress(pack);
+  const naddr = getSharableEventAddress(pack);
 
   return (
     <Card {...props}>

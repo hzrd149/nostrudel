@@ -1,7 +1,7 @@
-import { ComponentMap } from "applesauce-react";
+import { ComponentMap } from "applesauce-react/hooks";
 
-import UserLink from "../user/user-link";
-import { EmbedEventPointer } from "../embed-event";
+import UserLink from "../../user/user-link";
+import { EmbedEventPointer } from "../../embed-event";
 
 const Mention: ComponentMap["mention"] = ({ node }) => {
   switch (node.decoded.type) {

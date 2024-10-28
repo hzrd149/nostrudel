@@ -7,7 +7,7 @@ import UserLink from "../../user/user-link";
 import UserAvatar from "../../user/user-avatar";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/flare";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedFlareVideo({ video, ...props }: Omit<CardProps, "children"> & { video: NostrEvent }) {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function EmbeddedFlareVideo({ video, ...props }: Omit<CardProps, 
   const summary = getVideoSummary(video);
 
   const isVertical = useBreakpointValue({ base: true, md: false });
-  const naddr = useMemo(() => relayHintService.getSharableEventAddress(video), [video]);
+  const naddr = useMemo(() => getSharableEventAddress(video), [video]);
 
   return (
     <Card {...props} position="relative">

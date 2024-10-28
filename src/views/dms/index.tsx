@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router-dom";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user/user-avatar";

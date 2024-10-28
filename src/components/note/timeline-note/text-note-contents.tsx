@@ -2,7 +2,7 @@ import React, { Suspense, useMemo } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useRenderedContent } from "applesauce-react/hooks";
-import { defaultTransformers } from "applesauce-content/text";
+import { defaultTransformers, galleries } from "applesauce-content/text";
 
 import {
   renderWavlakeUrl,
@@ -29,8 +29,9 @@ import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
 import { components } from "../../content";
 import { fedimintTokens } from "../../../helpers/fedimint";
+import { nipDefinitions } from "../../content/transform/nip-notation";
 
-const transformers = [...defaultTransformers, fedimintTokens];
+const transformers = [...defaultTransformers, galleries, nipDefinitions, fedimintTokens];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;

@@ -1,8 +1,9 @@
 import { NostrEvent, kinds, nip18, nip25 } from "nostr-tools";
 import _throttle from "lodash.throttle";
-import { throttle, stateful, StatefulObservable } from "applesauce-core/observable";
+import { BehaviorSubject } from "rxjs";
+import { map, throttleTime } from "rxjs/operators";
 
-import { getThreadReferences, isPTagMentionedInContent, isReply, isRepost } from "../helpers/nostr/event";
+import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import { getParsedZap } from "../helpers/nostr/zaps";
 import singleEventService from "../services/single-event";
 import RelaySet from "./relay-set";
@@ -28,33 +29,34 @@ export type CategorizedEvent = NostrEvent & { [NotificationTypeSymbol]?: Notific
 export default class AccountNotifications {
   pubkey: string;
 
-  // timeline = new PersistentSubject<CategorizedEvent[]>([]);
-  timeline: StatefulObservable<CategorizedEvent[]>;
+  timeline = new BehaviorSubject<CategorizedEvent[]>([]);
 
   constructor(pubkey: string) {
     this.pubkey = pubkey;
 
-    this.timeline = stateful(
-      throttle(
-        queryStore.timeline([
-          {
-            "#p": [pubkey],
-            kinds: [
-              kinds.ShortTextNote,
-              kinds.Repost,
-              kinds.GenericRepost,
-              kinds.Reaction,
-              kinds.Zap,
-              TORRENT_COMMENT_KIND,
-              kinds.LongFormArticle,
-              kinds.EncryptedDirectMessage,
-              1111, //NIP-22
-            ],
-          },
-        ]),
-        50,
-      ).map((events) => events.map(this.handleEvent.bind(this)).filter(this.filterEvent.bind(this))),
-    );
+    // subscribe to query store
+    queryStore
+      .timeline([
+        {
+          "#p": [pubkey],
+          kinds: [
+            kinds.ShortTextNote,
+            kinds.Repost,
+            kinds.GenericRepost,
+            kinds.Reaction,
+            kinds.Zap,
+            TORRENT_COMMENT_KIND,
+            kinds.LongFormArticle,
+            kinds.EncryptedDirectMessage,
+            1111, //NIP-22
+          ],
+        },
+      ])
+      .pipe(
+        throttleTime(100),
+        map((events) => events.map(this.handleEvent.bind(this)).filter(this.filterEvent.bind(this))),
+      )
+      .subscribe((events) => this.timeline.next(events));
   }
 
   private categorizeEvent(event: NostrEvent): CategorizedEvent {

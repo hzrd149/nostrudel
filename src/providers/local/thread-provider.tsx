@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 import TimelineLoader from "../../classes/timeline-loader";
 import { eventStore } from "../../services/event-store";

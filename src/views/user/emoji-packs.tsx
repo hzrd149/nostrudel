@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

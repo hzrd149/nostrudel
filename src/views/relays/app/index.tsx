@@ -1,9 +1,9 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import { kinds } from "nostr-tools";
-
 import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 import { WarningIcon } from "@chakra-ui/icons";
-import useSubject from "../../../hooks/use-subject";
+import { useObservable } from "applesauce-react/hooks";
+
 import { offlineMode } from "../../../services/offline-mode";
 import WifiOff from "../../../components/icons/wifi-off";
 import Wifi from "../../../components/icons/wifi";
@@ -63,7 +63,7 @@ export default function AppRelays() {
   const account = useCurrentAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
-  const offline = useSubject(offlineMode);
+  const offline = useObservable(offlineMode);
   const nip65 = useReplaceableEvent(account?.pubkey ? { kind: kinds.RelayList, pubkey: account?.pubkey } : undefined);
   const nip05 = useUserDNSIdentity(account?.pubkey);
   const contactRelays = useUserContactRelays(account?.pubkey);

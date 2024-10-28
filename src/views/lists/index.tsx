@@ -18,7 +18,7 @@ import {
 } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 function ListsHomePage() {
   const account = useCurrentAccount()!;
@@ -102,7 +102,7 @@ function ListsHomePage() {
         <NewListModal
           isOpen
           onClose={newList.onClose}
-          onCreated={(list) => navigate(`/lists/${relayHintService.getSharableEventAddress(list)}`)}
+          onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}
         />
       )}
     </VerticalPageLayout>

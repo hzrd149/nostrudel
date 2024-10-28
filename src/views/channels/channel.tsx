@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -25,7 +26,6 @@ import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { truncateId } from "../../helpers/string";
-import { useStoreQuery } from "../../hooks/use-store-query";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
   const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];

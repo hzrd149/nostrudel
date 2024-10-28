@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { SimpleSigner } from "applesauce-signer";
+import { useObservable } from "applesauce-react/hooks";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -9,7 +10,6 @@ import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/account-info-badge";
-import useSubject from "../../../hooks/use-subject";
 import PasswordSigner from "../../../classes/signers/password-signer";
 import SimpleSignerBackup from "./simple-signer-backup";
 import PasswordSignerBackup from "./password-signer-backup";
@@ -30,7 +30,7 @@ function AccountBackup() {
 
 export default function AccountSettings() {
   const account = useCurrentAccount()!;
-  const accounts = useSubject(accountService.accounts);
+  const accounts = useObservable(accountService.accounts);
   const navigate = useNavigate();
 
   return (

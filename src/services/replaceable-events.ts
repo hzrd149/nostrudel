@@ -2,13 +2,12 @@ import { NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 import { EventStore } from "applesauce-core";
+import { isFromCache } from "applesauce-core/helpers";
 
 import SuperMap from "../classes/super-map";
-import Subject from "../classes/subject";
 import BatchKindPubkeyLoader, { createCoordinate } from "../classes/batch-kind-pubkey-loader";
 import Process from "../classes/process";
 import { logger } from "../helpers/debug";
-import { getEventCoordinate } from "../helpers/nostr/event";
 import { localRelay } from "./local-relay";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
@@ -31,9 +30,6 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
 class ReplaceableEventsService {
   store: EventStore;
   process: Process;
-
-  /** @deprecated */
-  private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   cacheLoader: BatchKindPubkeyLoader | null = null;
   loaders = new SuperMap<AbstractRelay, BatchKindPubkeyLoader>((relay) => {
@@ -61,26 +57,17 @@ class ReplaceableEventsService {
     }
   }
 
-  private seenInCache = new Set<string>();
   handleEvent(event: NostrEvent, fromCache = false) {
+    // TODO: move this to the cache relay class
     if (!fromCache && !alwaysVerify(event)) return;
+
     event = this.store.add(event);
-
-    const cord = getEventCoordinate(event);
-
-    const subject = this.subjects.get(cord);
-    const current = subject.value;
-    if (!current || event.created_at > current.created_at) {
-      subject.next(event);
-
-      if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
-    }
-
-    if (fromCache) this.seenInCache.add(event.id);
+    if (!isFromCache(event)) localRelay?.publish(event);
   }
 
+  /** @deprecated use eventStore.getReplaceable instead */
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.subjects.get(createCoordinate(kind, pubkey, d));
+    return eventStore.getReplaceable(kind, pubkey, d);
   }
 
   private requestEventFromRelays(
@@ -91,11 +78,8 @@ class ReplaceableEventsService {
   ) {
     const cord = createCoordinate(kind, pubkey, d);
     const relays = relayPoolService.getRelays(urls);
-    const sub = this.subjects.get(cord);
 
     for (const relay of relays) this.loaders.get(relay).requestEvent(kind, pubkey, d);
-
-    return sub;
   }
 
   requestEvent(
@@ -105,21 +89,21 @@ class ReplaceableEventsService {
     d?: string,
     opts: RequestOptions = {},
   ) {
-    const key = createCoordinate(kind, pubkey, d);
     const relays = relayPoolService.getRelays(urls);
-    const sub = this.subjects.get(key);
 
-    if (!sub.value && this.cacheLoader) {
+    const existing = eventStore.getReplaceable(kind, pubkey, d);
+
+    if (!existing && this.cacheLoader) {
       this.cacheLoader.requestEvent(kind, pubkey, d).then((loaded) => {
-        if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
+        if (!loaded && !eventStore.hasReplaceable(kind, pubkey, d)) {
+          this.requestEventFromRelays(relays, kind, pubkey, d);
+        }
       });
     }
 
-    if (opts?.alwaysRequest || !this.cacheLoader || (!sub.value && opts.ignoreCache)) {
+    if (opts?.alwaysRequest || !this.cacheLoader || (!existing && opts.ignoreCache)) {
       this.requestEventFromRelays(relays, kind, pubkey, d);
     }
-
-    return sub;
   }
 
   destroy() {

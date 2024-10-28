@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
-import { useRenderedContent } from "applesauce-react";
+import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 
 import { ErrorBoundary } from "../../components/error-boundary";

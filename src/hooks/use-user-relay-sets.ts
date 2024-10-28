@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { kinds } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react";
+import { useStoreQuery } from "applesauce-react/hooks";
 import { Queries } from "applesauce-core";
 
 import { useReadRelays } from "./use-client-relays";

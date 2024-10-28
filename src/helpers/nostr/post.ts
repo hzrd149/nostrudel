@@ -1,4 +1,7 @@
-import { EventTemplate, nip18, nip19 } from "nostr-tools";
+import { EventTemplate, kinds, nip18, nip19 } from "nostr-tools";
+import { EventPointer } from "nostr-tools/nip19";
+import { getInboxes, isPTag } from "applesauce-core/helpers";
+
 import { NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchEmoji, getMatchHashtag, getMatchNostrLink } from "../regexp";
 import { getThreadReferences } from "./event";
@@ -7,9 +10,8 @@ import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
 
-import relayHintService from "../../services/event-relay-hint";
-import userMailboxesService from "../../services/user-mailboxes";
-import { EventPointer } from "nostr-tools/nip19";
+import { getEventPointerRelayHint } from "../../services/event-relay-hint";
+import { eventStore } from "../../services/event-store";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
@@ -24,7 +26,7 @@ function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   return [...tags, tag];
 }
 function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string, overwrite = false) {
-  const hint = relayHint || relayHintService.getEventPointerRelayHint(eventId) || "";
+  const hint = relayHint || getEventPointerRelayHint(eventId) || "";
 
   const tag = type ? ["e", eventId, hint, type] : ["e", eventId, hint];
 
@@ -41,7 +43,7 @@ function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string
 }
 
 function AddQuotePointerTag(tags: Tag[], pointer: EventPointer) {
-  const hint = pointer.relays?.[0] || relayHintService.getEventPointerRelayHint(pointer.id) || "";
+  const hint = pointer.relays?.[0] || getEventPointerRelayHint(pointer.id) || "";
 
   const tag: string[] = ["q", pointer.id, hint];
   if (pointer.author) tag.push(pointer.author);
@@ -64,7 +66,7 @@ export function addReplyTags(draft: EventTemplate, replyTo: NostrEvent) {
   const rootId = refs.root?.e?.id ?? replyTo.id;
   const rootRelayHint = refs.root?.e?.relays?.[0];
   const replyId = replyTo.id;
-  const replyRelayHint = relayHintService.getEventPointerRelayHint(replyId);
+  const replyRelayHint = getEventPointerRelayHint(replyId);
 
   updated.tags = AddEtag(updated.tags, rootId, rootRelayHint, "root", true);
   updated.tags = AddEtag(updated.tags, replyId, replyRelayHint, "reply", true);
@@ -193,11 +195,30 @@ export function setZapSplit(draft: EventTemplate, split: EventSplit) {
   return updatedDraft;
 }
 
+export function addPubkeyRelayHints(draft: EventTemplate) {
+  return {
+    ...draft,
+    tags: draft.tags.map((t) => {
+      if (isPTag(t) && !t[2]) {
+        const mailboxes = eventStore.getReplaceable(kinds.RelayList, t[1]);
+        const inbox = mailboxes && getInboxes(mailboxes);
+        if (inbox && inbox.length > 0) {
+          const newTag = [...t];
+          // TODO: Pick the best mailbox for the user
+          newTag[2] = inbox[0];
+          return newTag;
+        } else return t;
+      }
+      return t;
+    }),
+  };
+}
+
 export function finalizeNote(draft: EventTemplate) {
   let updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
   updated = createHashtagTags(updated);
-  updated = userMailboxesService.addPubkeyRelayHints(updated);
+  updated = addPubkeyRelayHints(updated);
   updated = ensureTagContentMentions(updated);
   return updated;
 }

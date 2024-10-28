@@ -17,10 +17,10 @@ import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedBadge({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
-  const naddr = useMemo(() => relayHintService.getSharableEventAddress(badge), [badge]);
+  const naddr = useMemo(() => getSharableEventAddress(badge), [badge]);
   const image = getBadgeImage(badge);
 
   return (

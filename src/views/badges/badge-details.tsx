@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { kinds } from "nostr-tools";
-import { useObservable } from "applesauce-react";
+import { useObservable } from "applesauce-react/hooks";
 import {
   Button,
   Flex,
