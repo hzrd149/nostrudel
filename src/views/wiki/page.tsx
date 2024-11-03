@@ -14,6 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -21,7 +22,6 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import MarkdownContent from "./components/markdown";
 import UserLink from "../../components/user/user-link";
-import useSubject from "../../hooks/use-subject";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
 import WikiPageHeader from "./components/wiki-page-header";
@@ -142,7 +142,7 @@ function WikiPageFooter({ page }: { page: NostrEvent }) {
 
   const readRelays = useReadRelays();
   const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
-  const pages = useSubject(subject);
+  const pages = useObservable(subject);
 
   let forks = pages ? Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey) : [];
   if (webOfTrust) forks = webOfTrust.sortByDistanceAndConnections(forks, (p) => p.pubkey);

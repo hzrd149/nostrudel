@@ -12,12 +12,13 @@ import {
   Heading,
   FormLabel,
 } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
+
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
-import useSubject from "../../../hooks/use-subject";
 import localSettings from "../../../services/local-settings";
 
 async function validateInvidiousUrl(url?: string) {
@@ -45,8 +46,8 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const defaultAuthenticationMode = useSubject(localSettings.defaultAuthenticationMode);
-  const proactivelyAuthenticate = useSubject(localSettings.proactivelyAuthenticate);
+  const defaultAuthenticationMode = useObservable(localSettings.defaultAuthenticationMode);
+  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>

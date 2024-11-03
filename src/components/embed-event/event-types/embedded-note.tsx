@@ -1,11 +1,11 @@
 import { MouseEventHandler, useCallback } from "react";
 import { Card, CardProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import useSubject from "../../../hooks/use-subject";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { NoteLink } from "../../note/note-link";
@@ -20,7 +20,7 @@ import useAppSettings from "../../../hooks/use-app-settings";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useAppSettings();
-  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const to = `/n/${getSharableEventAddress(event)}`;
 

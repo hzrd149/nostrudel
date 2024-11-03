@@ -1,10 +1,10 @@
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { IConnectionPool } from "applesauce-net/connection";
 import dayjs from "dayjs";
+import { Subject, BehaviorSubject } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
-import Subject, { PersistentSubject } from "./subject";
 import SuperMap from "./super-map";
 import verifyEventMethod from "../services/verify-event";
 import { offlineMode } from "../services/offline-mode";
@@ -28,16 +28,22 @@ export default class RelayPool implements IConnectionPool {
   onRelayCreated = new Subject<AbstractRelay>();
   onRelayChallenge = new Subject<[AbstractRelay, string]>();
 
-  notices = new SuperMap<AbstractRelay, PersistentSubject<Notice[]>>(() => new PersistentSubject<Notice[]>([]));
+  notices = new SuperMap<AbstractRelay, BehaviorSubject<Notice[]>>(() => new BehaviorSubject<Notice[]>([]));
 
   connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
-  connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
+  connecting = new SuperMap<AbstractRelay, BehaviorSubject<boolean>>(() => new BehaviorSubject(false));
 
-  challenges = new SuperMap<AbstractRelay, Subject<string>>(() => new Subject<string>());
-  authForPublish = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
-  authForSubscribe = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
+  challenges = new SuperMap<AbstractRelay, BehaviorSubject<string | undefined>>(
+    () => new BehaviorSubject<string | undefined>(undefined),
+  );
+  authForPublish = new SuperMap<AbstractRelay, BehaviorSubject<boolean | undefined>>(
+    () => new BehaviorSubject<boolean | undefined>(undefined),
+  );
+  authForSubscribe = new SuperMap<AbstractRelay, BehaviorSubject<boolean | undefined>>(
+    () => new BehaviorSubject<boolean | undefined>(undefined),
+  );
 
-  authenticated = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
+  authenticated = new SuperMap<AbstractRelay, BehaviorSubject<boolean>>(() => new BehaviorSubject(false));
 
   getRelay(relayOrUrl: string | URL | AbstractRelay) {
     if (typeof relayOrUrl === "string") {

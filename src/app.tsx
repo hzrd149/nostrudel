@@ -73,7 +73,6 @@ const CommunityFindByNameView = lazy(() => import("./views/community/find-by-nam
 const CommunityView = lazy(() => import("./views/community/index"));
 const CommunityPendingView = lazy(() => import("./views/community/views/pending"));
 const CommunityNewestView = lazy(() => import("./views/community/views/newest"));
-const CommunityTrendingView = lazy(() => import("./views/community/views/trending"));
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
@@ -437,7 +436,6 @@ const router = createHashRouter([
             element: <CommunityView />,
             children: [
               { path: "", element: <CommunityNewestView /> },
-              { path: "trending", element: <CommunityTrendingView /> },
               { path: "newest", element: <CommunityNewestView /> },
               { path: "pending", element: <CommunityPendingView /> },
             ],

@@ -3,7 +3,7 @@ import { usePrevious, useUnmount } from "react-use";
 import { Filter } from "nostr-tools";
 
 import timelineCacheService from "../services/timeline-cache";
-import TimelineLoader, { EventFilter } from "../classes/timeline-loader";
+import { EventFilter } from "../classes/timeline-loader";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { Queries } from "applesauce-core";
 
@@ -57,7 +57,13 @@ export default function useTimelineLoader(
   });
 
   let timeline = useStoreQuery(Queries.TimelineQuery, filters && [filters]) ?? [];
-  if (opts?.eventFilter) timeline = timeline.filter(opts.eventFilter);
+  if (opts?.eventFilter)
+    timeline = timeline.filter((e) => {
+      try {
+        return opts.eventFilter && opts.eventFilter(e);
+      } catch (error) {}
+      return false;
+    });
 
   return { loader, timeline };
 }

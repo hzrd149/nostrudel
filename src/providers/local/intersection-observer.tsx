@@ -10,8 +10,7 @@ import {
   useState,
 } from "react";
 import { useMount, useUnmount } from "react-use";
-
-import Subject from "../../classes/subject";
+import { BehaviorSubject, Subject } from "rxjs";
 
 const IntersectionObserverContext = createContext<{
   observer?: IntersectionObserver;
@@ -77,7 +76,7 @@ export default function IntersectionObserverProvider({
   threshold?: IntersectionObserverInit["threshold"];
   callback: IntersectionObserverCallback;
 }) {
-  const [subject] = useState(() => new Subject<IntersectionObserverEntry[]>([]));
+  const [subject] = useState(() => new BehaviorSubject<IntersectionObserverEntry[]>([]));
 
   const handleIntersection = useCallback<IntersectionObserverCallback>(
     (entries, observer) => {

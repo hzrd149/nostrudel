@@ -2,9 +2,9 @@ import { NostrEvent, kinds, nip18, nip25 } from "nostr-tools";
 import _throttle from "lodash.throttle";
 import { BehaviorSubject } from "rxjs";
 import { map, throttleTime } from "rxjs/operators";
+import { getZapPayment } from "applesauce-core/helpers";
 
 import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
-import { getParsedZap } from "../helpers/nostr/zaps";
 import singleEventService from "../services/single-event";
 import RelaySet from "./relay-set";
 import clientRelaysService from "../services/client-relays";
@@ -155,9 +155,8 @@ export default class AccountNotifications {
         break;
       }
       case NotificationType.Zap:
-        const parsed = getParsedZap(e, true, true);
-        if (parsed instanceof Error) return false;
-        if (!parsed.payment.amount) return false;
+        const p = getZapPayment(e);
+        if (!p || p.amount === 0) return false;
         break;
     }
 

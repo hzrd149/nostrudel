@@ -1,7 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 
 import { COMMUNITY_APPROVAL_KIND, buildApprovalMap, getCommunityMods } from "../../../helpers/nostr/communities";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";

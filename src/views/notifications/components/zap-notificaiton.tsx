@@ -1,10 +1,15 @@
-import { ReactNode, forwardRef, useMemo } from "react";
+import { ReactNode, forwardRef } from "react";
 import { AvatarGroup, ButtonGroup, Flex, Text } from "@chakra-ui/react";
+import {
+  getZapAddressPointer,
+  getZapEventPointer,
+  getZapPayment,
+  getZapRequest,
+  getZapSender,
+} from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent, isATag, isETag } from "../../../types/nostr-event";
-import { getParsedZap } from "../../../helpers/nostr/zaps";
 import { readablizeSats } from "../../../helpers/bolt11";
-import { parseCoordinate } from "../../../helpers/nostr/event";
 import { EmbedEventPointer } from "../../../components/embed-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { LightningIcon } from "../../../components/icons";
@@ -12,58 +17,54 @@ import NotificationIconEntry from "./notification-icon-entry";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 
-const ZapNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
-  ({ event, onClick }, ref) => {
-    const zap = useMemo(() => getParsedZap(event), [event]);
+const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: () => void }>(
+  ({ zap, onClick }, ref) => {
+    const payment = getZapPayment(zap);
+    const request = getZapRequest(zap);
+    if (!payment?.amount) return null;
 
-    if (!zap || !zap.payment.amount) return null;
-
-    const eventId = zap?.request.tags.find(isETag)?.[1];
-    const coordinate = zap?.request.tags.find(isATag)?.[1];
-    const parsedCoordinate = coordinate ? parseCoordinate(coordinate) : null;
+    const sender = getZapSender(zap);
+    const nevent = getZapEventPointer(zap);
+    const naddr = getZapAddressPointer(zap);
 
     let eventJSX: ReactNode | null = null;
-    if (parsedCoordinate && parsedCoordinate.identifier) {
+    if (naddr) {
       eventJSX = (
         <EmbedEventPointer
           pointer={{
             type: "naddr",
-            data: {
-              pubkey: parsedCoordinate.pubkey,
-              identifier: parsedCoordinate.identifier,
-              kind: parsedCoordinate.kind,
-            },
+            data: naddr,
           }}
         />
       );
-    } else if (eventId) {
-      eventJSX = <EmbedEventPointer pointer={{ type: "note", data: eventId }} />;
+    } else if (nevent) {
+      eventJSX = <EmbedEventPointer pointer={{ type: "nevent", data: nevent }} />;
     }
 
     return (
       <NotificationIconEntry
         ref={ref}
         icon={<LightningIcon boxSize={6} color="yellow.400" />}
-        id={event.id}
-        pubkey={zap.request.pubkey}
-        timestamp={zap.request.created_at}
+        id={zap.id}
+        pubkey={sender}
+        timestamp={request.created_at}
         summary={
           <>
-            {readablizeSats(zap.payment.amount / 1000)} {zap.request.content}
+            {readablizeSats(payment.amount / 1000)} {request.content}
           </>
         }
         onClick={onClick}
       >
         <Flex gap="2" alignItems="center" pl="2">
           <AvatarGroup size="sm">
-            <UserAvatarLink pubkey={zap.request.pubkey} />
+            <UserAvatarLink pubkey={sender} />
           </AvatarGroup>
-          <Text>zapped {readablizeSats(zap.payment.amount / 1000)} sats</Text>
+          <Text>zapped {readablizeSats(payment.amount / 1000)} sats</Text>
           <ButtonGroup size="sm" variant="ghost" ml="auto">
-            <ZapReceiptMenu zap={zap.event} aria-label="More Options" />
+            <ZapReceiptMenu zap={zap} aria-label="More Options" />
           </ButtonGroup>
         </Flex>
-        <TextNoteContents event={zap.request} />
+        <TextNoteContents event={request} />
         {eventJSX}
       </NotificationIconEntry>
     );

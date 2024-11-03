@@ -28,10 +28,9 @@ import {
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
 import { components } from "../../content";
-import { fedimintTokens } from "../../../helpers/fedimint";
 import { nipDefinitions } from "../../content/transform/nip-notation";
 
-const transformers = [...defaultTransformers, galleries, nipDefinitions, fedimintTokens];
+const transformers = [...defaultTransformers, galleries, nipDefinitions];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;

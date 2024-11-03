@@ -122,7 +122,6 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         // pass it to other services
         eventStore.add(signed);
         if (isReplaceable(signed.kind)) replaceableEventsService.handleEvent(signed);
-        if (signed.kind === kinds.Reaction) eventReactionsService.handleEvent(signed);
         if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);
         return pub;
       } catch (e) {

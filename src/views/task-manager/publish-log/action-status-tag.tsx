@@ -1,14 +1,14 @@
 import { Spinner, Tag, TagLabel, TagProps } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import PublishAction from "../../../classes/nostr-publish-action";
-import useSubject from "../../../hooks/use-subject";
 import { CheckIcon, ErrorIcon } from "../../../components/icons";
 
 export default function PublishActionStatusTag({
   action,
   ...props
 }: { action: PublishAction } & Omit<TagProps, "children">) {
-  const results = useSubject(action.results);
+  const results = useObservable(action.results);
 
   const successful = results.filter(({ success }) => success);
   const failedWithMessage = results.filter(({ success, message }) => !success && !!message);

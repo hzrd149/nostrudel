@@ -1,9 +1,9 @@
 import { Button, Flex, Heading, Link } from "@chakra-ui/react";
 import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import useSubject from "../../hooks/use-subject";
 import { useMemo } from "react";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -23,7 +23,7 @@ export default function WikiTopicView() {
   const readRelays = useReadRelays();
   const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays, true), [topic, readRelays]);
 
-  const pages = useSubject(subject);
+  const pages = useObservable(subject);
 
   let sorted = pages ? Array.from(pages.values()) : [];
   if (webOfTrust) sorted = webOfTrust.sortByDistanceAndConnections(sorted, (p) => p.pubkey);

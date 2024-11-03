@@ -1,37 +1,47 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
-import { getEventUID } from "../../../helpers/nostr/event";
+import { getEventUID, getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
-import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { readablizeSats } from "../../../helpers/bolt11";
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+
+function GoalZap({ zap }: { zap: NostrEvent }) {
+  const request = getZapRequest(zap);
+  const payment = getZapPayment(zap);
+  const sender = getZapSender(zap);
+  if (!payment?.amount) return null;
+
+  return (
+    <Flex gap="2">
+      <UserAvatarLink pubkey={sender} size="md" />
+      <Box>
+        <Text>
+          <UserLink fontSize="lg" fontWeight="bold" pubkey={sender} mr="2" />
+          <Timestamp timestamp={zap.created_at} />
+        </Text>
+        {request.content && <TextNoteContents event={request} />}
+      </Box>
+      <Spacer />
+      <Text>
+        <LightningIcon /> {readablizeSats(payment.amount / 1000)}
+      </Text>
+    </Flex>
+  );
+}
 
 export default function GoalZapList({ goal }: { goal: NostrEvent }) {
   const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
-  const sorted = Array.from(zaps).sort((a, b) => b.event.created_at - a.event.created_at);
 
   return (
     <>
-      {sorted.map((zap) => (
-        <Flex key={zap.eventId} gap="2">
-          <UserAvatarLink pubkey={zap.request.pubkey} size="md" />
-          <Box>
-            <Text>
-              <UserLink fontSize="lg" fontWeight="bold" pubkey={zap.request.pubkey} mr="2" />
-              <Timestamp timestamp={zap.event.created_at} />
-            </Text>
-            {zap.request.content && <Text>{zap.request.content}</Text>}
-          </Box>
-          <Spacer />
-          {zap.payment.amount && (
-            <Text>
-              <LightningIcon /> {readablizeSats(zap.payment.amount / 1000)}
-            </Text>
-          )}
-        </Flex>
+      {zaps.map((zap) => (
+        <GoalZap key={zap.id} zap={zap} />
       ))}
     </>
   );

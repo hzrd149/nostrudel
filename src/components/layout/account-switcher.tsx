@@ -3,7 +3,6 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Box, Button, ButtonGroup, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 
 import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useSubject from "../../hooks/use-subject";
 import useUserProfile from "../../hooks/use-user-profile";
 import accountService from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 
@@ -9,7 +10,6 @@ import { useNotifications } from "../../../providers/global/notifications-provid
 import { NotificationType, NotificationTypeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { useObservable } from "../../../hooks/use-observable";
 
 export default function NotificationsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();

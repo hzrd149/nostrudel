@@ -7,7 +7,6 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
@@ -31,7 +30,7 @@ import GitBranch01 from "../../components/icons/git-branch-01";
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
-  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const address = useShareableEventAddress(event);
   const onClick = useCallback<MouseEventHandler>(

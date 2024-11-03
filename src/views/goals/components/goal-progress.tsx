@@ -1,4 +1,5 @@
 import { Flex, Progress, Text } from "@chakra-ui/react";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
 import { LightningIcon } from "../../../components/icons";

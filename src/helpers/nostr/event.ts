@@ -2,6 +2,7 @@ import { EventTemplate, kinds, validateEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
+import { getNip10References } from "applesauce-core/helpers";
 
 import { ATag, ETag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
@@ -11,7 +12,6 @@ import { safeDecode } from "../nip19";
 import { safeRelayUrl, safeRelayUrls } from "../relay";
 import RelaySet from "../../classes/relay-set";
 import { truncateId } from "../string";
-import { getNip10References } from "./threading";
 
 export { truncateId as truncatedId };
 
@@ -37,14 +37,18 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
 
 const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | EventTemplate) {
-  // @ts-expect-error
-  if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
+  try {
+    // @ts-expect-error
+    if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
 
-  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
-  const isReply = !!getNip10References(event).reply;
-  // @ts-expect-error
-  event[isReplySymbol] = isReply;
-  return isReply;
+    if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
+    const isReply = !!getNip10References(event).reply;
+    // @ts-expect-error
+    event[isReplySymbol] = isReply;
+    return isReply;
+  } catch (error) {
+    return false;
+  }
 }
 export function isPTagMentionedInContent(event: NostrEvent | EventTemplate, pubkey: string) {
   return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);

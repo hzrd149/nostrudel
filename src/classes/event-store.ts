@@ -108,7 +108,9 @@ export default class EventStore {
     while (true) {
       const event = events.pop();
       if (!event) return;
-      if (filter && !filter(event)) continue;
+      try {
+        if (filter && !filter(event)) continue;
+      } catch (error) {}
       if (i === nth) return event;
       i++;
     }

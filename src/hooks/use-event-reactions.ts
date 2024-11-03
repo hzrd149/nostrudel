@@ -1,11 +1,11 @@
+import { useEffect } from "react";
 import { NostrEvent } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { ReactionsQuery } from "applesauce-core/queries";
 
 import eventReactionsService from "../services/event-reactions";
 import { useReadRelays } from "./use-client-relays";
-import { queryStore } from "../services/event-store";
-import { useObservable } from "./use-observable";
-import { useEffect } from "react";
 
 export default function useEventReactions(
   event: NostrEvent,
@@ -18,6 +18,5 @@ export default function useEventReactions(
     eventReactionsService.requestReactions(getEventUID(event), relays, alwaysRequest);
   }, [event, relays, alwaysRequest]);
 
-  const observable = queryStore.reactions(event);
-  return useObservable(observable);
+  return useStoreQuery(ReactionsQuery, [event]);
 }

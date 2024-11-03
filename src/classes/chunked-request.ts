@@ -4,8 +4,8 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import { nanoid } from "nanoid";
+import { Subject } from "rxjs";
 
-import Subject from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import deleteEventService from "../services/delete-events";

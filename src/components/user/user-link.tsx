@@ -6,8 +6,6 @@ import { getDisplayName } from "../../helpers/nostr/user-metadata";
 import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
-import useSubject from "../../hooks/use-subject";
-import localSettings from "../../services/local-settings";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;

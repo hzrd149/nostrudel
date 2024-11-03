@@ -200,7 +200,7 @@ function StreamPage({ stream }: { stream: ParsedStream }) {
   const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
 
   // const chatTimeline = useStreamChatTimeline(stream);
-  // const chatLog = useSubject(chatTimeline.timeline);
+  // const chatLog = useObservable(chatTimeline.timeline);
   // const pubkeysInChat = useMemo(() => {
   //   const set = new Set<string>();
   //   for (const event of chatLog) {

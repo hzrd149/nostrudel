@@ -3,11 +3,10 @@ import { Debugger } from "debug";
 import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
-import { Observable, map } from "rxjs";
+import { BehaviorSubject, Observable, map } from "rxjs";
 import { isFilterEqual } from "applesauce-core/helpers";
 import { MultiSubscription } from "applesauce-net/subscription";
 
-import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
 import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
@@ -30,8 +29,8 @@ export default class TimelineLoader {
   filters: Filter[] = [];
   relays: AbstractRelay[] = [];
 
-  loading = new PersistentSubject(false);
-  complete = new PersistentSubject(false);
+  loading = new BehaviorSubject(false);
+  complete = new BehaviorSubject(false);
 
   loadNextBlockBuffer = 2;
   eventFilter?: EventFilter;
@@ -66,7 +65,16 @@ export default class TimelineLoader {
 
     if (this.eventFilter) {
       // add filter
-      this.timeline = this.timeline.pipe(map((events) => events.filter((e) => this.eventFilter!(e))));
+      this.timeline = this.timeline.pipe(
+        map((events) =>
+          events.filter((e) => {
+            try {
+              return this.eventFilter!(e);
+            } catch (error) {}
+            return false;
+          }),
+        ),
+      );
     }
   }
 

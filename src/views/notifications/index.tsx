@@ -3,10 +3,11 @@ import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
+import { BehaviorSubject } from "rxjs";
+import { useObservable } from "applesauce-react/hooks";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -24,8 +25,6 @@ import useNumberCache from "../../hooks/timeline/use-number-cache";
 import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
 import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
 import useVimNavigation from "./use-vim-navigation";
-import { PersistentSubject } from "../../classes/subject";
-import { useObservable } from "../../hooks/use-observable";
 
 function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
   const readAll = useCallback(() => {
@@ -151,14 +150,14 @@ const NotificationsTimeline = memo(
   },
 );
 
-const cachedFocus = new PersistentSubject("");
+const cachedFocus = new BehaviorSubject("");
 
 function NotificationsPage() {
   const { timeline } = useNotifications();
 
   // const { value: focused, setValue: setFocused } = useRouteStateValue("focused", "");
   // const [focused, setFocused] = useState("");
-  const focused = useSubject(cachedFocus);
+  const focused = useObservable(cachedFocus);
   const setFocused = useCallback((id: string) => cachedFocus.next(id), [cachedFocus]);
   const focusContext = useMemo(() => ({ id: focused, focus: setFocused }), [focused, setFocused]);
 

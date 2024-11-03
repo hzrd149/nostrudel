@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 
 import decryptionCacheService from "../services/decryption-cache";
 import useCurrentAccount from "./use-current-account";
-import useSubject from "./use-subject";
 import { getDMRecipient, getDMSender } from "../helpers/nostr/dms";
 
 export function useKind4Decrypt(event: NostrEvent, pubkey?: string) {
@@ -16,8 +16,8 @@ export function useKind4Decrypt(event: NostrEvent, pubkey?: string) {
     [event, pubkey],
   );
 
-  const plaintext = useSubject(container.plaintext);
-  const error = useSubject(container.error);
+  const plaintext = useObservable(container.plaintext);
+  const error = useObservable(container.error);
 
   const requestDecrypt = useCallback(() => {
     const p = decryptionCacheService.requestDecrypt(container);

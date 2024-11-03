@@ -1,6 +1,6 @@
-import { Box, Flex, FlexProps, Text } from "@chakra-ui/react";
+import { Box, Flex, FlexProps } from "@chakra-ui/react";
+import { getEventUID, getZapPayment, getZapSender } from "applesauce-core/helpers";
 
-import { getEventUID } from "../../../helpers/nostr/event";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -16,15 +16,13 @@ export default function GoalTopZappers({
 }: Omit<FlexProps, "children"> & { goal: NostrEvent; max?: number }) {
   const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
 
-  const totals: Record<string, number> = {};
-  for (const zap of zaps) {
-    const p = zap.request.pubkey;
-    if (zap.payment.amount) {
-      totals[p] = (totals[p] || 0) + zap.payment.amount;
-    }
-  }
+  const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
+    const sender = getZapSender(z);
+    dir[sender] = dir[sender] + (getZapPayment(z)?.amount ?? 0);
+    return dir;
+  }, {});
 
-  const sortedTotals = Array.from(Object.entries(totals)).sort((a, b) => b[1] - a[1]);
+  const sortedTotals = totals ? Array.from(Object.entries(totals)).sort((a, b) => b[1] - a[1]) : [];
   if (max !== undefined) {
     sortedTotals.length = max;
   }

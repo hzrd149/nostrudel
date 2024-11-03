@@ -32,6 +32,7 @@ import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { kinds, UnsignedEvent } from "nostr-tools";
 import { useThrottle } from "react-use";
+import { useObservable } from "applesauce-react/hooks";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import PublishAction from "../../classes/nostr-publish-action";
@@ -59,7 +60,6 @@ import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
-import useSubject from "../../hooks/use-subject";
 import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 
@@ -92,7 +92,7 @@ export default function PostModal({
   const finalizeDraft = useFinalizeDraft();
   const account = useCurrentAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const addClientTag = useSubject(localSettings.addClientTag);
+  const addClientTag = useObservable(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<PublishAction>();

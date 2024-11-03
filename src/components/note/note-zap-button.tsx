@@ -11,6 +11,7 @@ import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { getZapSender } from "applesauce-core/helpers";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;
@@ -21,10 +22,10 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(getEventUID(event));
+  const zaps = useEventZaps(getEventUID(event)) ?? [];
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const hasZapped = !!account && zaps.some((zap) => zap.request.pubkey === account.pubkey);
+  const hasZapped = !!account && zaps.some((zap) => getZapSender(zap) === account.pubkey);
 
   const readRelays = useReadRelays();
   const onZapped = () => {

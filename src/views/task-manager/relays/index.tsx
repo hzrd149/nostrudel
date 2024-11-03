@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Badge,
   Box,
@@ -20,12 +21,13 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { useObservable } from "applesauce-react/hooks";
+import { combineLatest, map } from "rxjs";
 
 import relayPoolService from "../../../services/relay-pool";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { localRelay } from "../../../services/local-relay";
-import useSubjects from "../../../hooks/use-subjects";
 import { IconRelayAuthButton, useRelayAuthMethod } from "../../../components/relays/relay-auth-button";
 import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
@@ -33,7 +35,6 @@ import processManager from "../../../services/process-manager";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import Timestamp from "../../../components/timestamp";
 import localSettings from "../../../services/local-settings";
-import useSubject from "../../../hooks/use-subject";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (
@@ -52,7 +53,7 @@ function RelayCard({ relay }: { relay: AbstractRelay }) {
 function RelayAuthCard({ relay }: { relay: AbstractRelay }) {
   const { authenticated } = useRelayAuthMethod(relay);
 
-  const defaultMode = useSubject(localSettings.defaultAuthenticationMode);
+  const defaultMode = useObservable(localSettings.defaultAuthenticationMode);
 
   const processes = processManager.getRootProcessesForRelay(relay);
   const [authMode, setAuthMode] = useLocalStorage<RelayAuthMode | "">(
@@ -106,9 +107,14 @@ export default function TaskManagerRelays() {
     .filter((r) => r !== localRelay)
     .sort((a, b) => +b.connected - +a.connected || a.url.localeCompare(b.url));
 
-  const notices = useSubjects(Array.from(relayPoolService.notices.values()))
-    .flat()
-    .sort((a, b) => b.date - a.date);
+  const observable = useMemo(
+    () =>
+      combineLatest(Array.from(relayPoolService.notices.values())).pipe(
+        map((relays) => relays.flat().sort((a, b) => b.date - a.date)),
+      ),
+    [],
+  );
+  const notices = useObservable(observable) ?? [];
 
   const challenges = Array.from(relayPoolService.challenges.entries()).filter(([r, c]) => r.connected && !!c.value);
 

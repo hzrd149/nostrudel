@@ -12,6 +12,7 @@ import {
   useInterval,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { useObservable } from "applesauce-react/hooks";
 
 import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
@@ -20,7 +21,6 @@ import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-but
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import localSettings from "../../../services/local-settings";
-import useSubject from "../../../hooks/use-subject";
 
 export default function WebRtcConnectView() {
   const update = useForceUpdate();
@@ -46,7 +46,7 @@ export default function WebRtcConnectView() {
     reset();
   });
 
-  const recent = useSubject(localSettings.webRtcRecentConnections)
+  const recent = useObservable(localSettings.webRtcRecentConnections)
     .map((uri) => ({ ...NostrWebRtcBroker.parseNostrWebRtcURI(uri), uri }))
     .filter(({ pubkey }) => !webRtcRelaysService.broker.peers.has(pubkey));
 

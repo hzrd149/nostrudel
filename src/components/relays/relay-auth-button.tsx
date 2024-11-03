@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
 import { IconButton, IconButtonProps, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
 import { type AbstractRelay } from "nostr-tools/abstract-relay";
+import { useObservable } from "applesauce-react/hooks";
 
 import relayPoolService from "../../services/relay-pool";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import PasscodeLock from "../icons/passcode-lock";
-import useSubject from "../../hooks/use-subject";
 import CheckCircleBroken from "../icons/check-circle-broken";
 
 export function useRelayChallenge(relay: AbstractRelay) {
-  return useSubject(relayPoolService.challenges.get(relay));
+  return useObservable(relayPoolService.challenges.get(relay));
 }
 
 export function useRelayAuthMethod(relay: AbstractRelay) {
@@ -17,7 +17,7 @@ export function useRelayAuthMethod(relay: AbstractRelay) {
   const { requestSignature } = useSigningContext();
   const challenge = useRelayChallenge(relay);
 
-  const authenticated = useSubject(relayPoolService.authenticated.get(relay));
+  const authenticated = useObservable(relayPoolService.authenticated.get(relay));
 
   const [loading, setLoading] = useState(false);
   const auth = useCallback(async () => {

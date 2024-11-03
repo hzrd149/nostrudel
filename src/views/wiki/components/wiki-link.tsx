@@ -18,12 +18,12 @@ import { NostrEvent } from "nostr-tools";
 import { ExtraProps } from "react-markdown";
 import { getEventUID } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { getPageDefer, getPageSummary } from "../../../helpers/nostr/wiki";
 import UserName from "../../../components/user/user-name";
 import dictionaryService from "../../../services/dictionary";
-import useSubject from "../../../hooks/use-subject";
 import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 
 export default function WikiLink({
@@ -47,7 +47,7 @@ export default function WikiLink({
     () => (topic ? dictionaryService.requestTopic(topic, readRelays) : undefined),
     [topic, readRelays],
   );
-  const events = useSubject(subject);
+  const events = useObservable(subject);
 
   const sorted = useMemo(() => {
     if (!events) return [];

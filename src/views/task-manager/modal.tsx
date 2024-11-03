@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   Heading,
   Modal,
@@ -7,20 +8,8 @@ import {
   ModalOverlay,
   ModalProps,
   Spinner,
-  Tab,
-  TabIndicator,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
 } from "@chakra-ui/react";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
-
-import { PersistentSubject } from "../../classes/subject";
-import useSubject from "../../hooks/use-subject";
-import DatabaseView from "../relays/cache/database";
-import TaskManagerRelays from "./relays";
-import { Suspense } from "react";
 
 type Router = ReturnType<typeof createMemoryRouter>;
 

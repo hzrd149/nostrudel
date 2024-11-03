@@ -2,18 +2,17 @@ import { useContext } from "react";
 import { Avatar, Box, Button, Flex, FlexProps, Heading, IconButton, LinkOverlay } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { css } from "@emotion/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
 import NavItems from "./nav-items";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { WritingIcon } from "../icons";
-import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";
 import TaskManagerButtons from "./task-manager-buttons";
 import localSettings from "../../services/local-settings";
-import { useObservable } from "applesauce-react/hooks";
 
 const hideScrollbar = css`
   -ms-overflow-style: none;
@@ -27,7 +26,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
   const account = useCurrentAccount();
   const { openModal } = useContext(PostModalContext);
   const offline = useObservable(offlineMode);
-  const showBrandLogo = useSubject(localSettings.showBrandLogo);
+  const showBrandLogo = useObservable(localSettings.showBrandLogo);
 
   return (
     <Flex

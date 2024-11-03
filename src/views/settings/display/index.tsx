@@ -12,8 +12,8 @@ import {
   Heading,
   Button,
 } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
-import useSubject from "../../../hooks/use-subject";
 import localSettings from "../../../services/local-settings";
 import useSettingsForm from "../use-settings-form";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -21,9 +21,9 @@ import VerticalPageLayout from "../../../components/vertical-page-layout";
 export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
-  const enableNoteDrawer = useSubject(localSettings.enableNoteThreadDrawer);
-  const showBrandLogo = useSubject(localSettings.showBrandLogo);
+  const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
+  const enableNoteDrawer = useObservable(localSettings.enableNoteThreadDrawer);
+  const showBrandLogo = useObservable(localSettings.showBrandLogo);
 
   return (
     <VerticalPageLayout flex={1}>

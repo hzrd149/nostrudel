@@ -16,12 +16,12 @@ import {
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
-import useSubject from "../../../hooks/use-subject";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import RepostButton from "./components/repost-button";
 import QuoteEventButton from "../quote-event-button";
@@ -70,7 +70,7 @@ export function TimelineNote({
 }: TimelineNoteProps) {
   const account = useCurrentAccount();
   const { showReactions, showSignatureVerification } = useAppSettings();
-  const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
+  const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 
   const ref = useEventIntersectionRef(event);

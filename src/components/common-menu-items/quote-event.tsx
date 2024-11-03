@@ -1,5 +1,6 @@
 import { useCallback, useContext, useMemo } from "react";
 import { MenuItem, useToast } from "@chakra-ui/react";
+import { getZapSender } from "applesauce-core/helpers";
 import { kinds, nip19 } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
@@ -7,7 +8,6 @@ import { QuoteEventIcon } from "../icons";
 import useUserProfile from "../../hooks/use-user-profile";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../services/event-relay-hint";
-import { getParsedZap } from "../../helpers/nostr/zaps";
 
 export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
@@ -20,8 +20,8 @@ export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
 
     // if its a zap, mention the original author
     if (event.kind === kinds.Zap) {
-      const parsed = getParsedZap(event);
-      if (parsed) content += "nostr:" + nip19.npubEncode(parsed.event.pubkey) + "\n";
+      const sender = getZapSender(event);
+      content += "nostr:" + nip19.npubEncode(sender) + "\n";
     }
 
     content += "\nnostr:" + address;

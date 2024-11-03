@@ -1,11 +1,12 @@
 import { useMemo } from "react";
+import { useObservable } from "applesauce-react/hooks";
+
 import dnsIdentityService from "../services/dns-identity";
-import useSubject from "./use-subject";
 
 export default function useDnsIdentity(address: string | undefined) {
   const subject = useMemo(() => {
     if (address) return dnsIdentityService.getIdentity(address);
   }, [address]);
 
-  return useSubject(subject);
+  return useObservable(subject);
 }

@@ -1,5 +1,5 @@
-import Subject from "../classes/subject";
 import _throttle from "lodash.throttle";
+import { BehaviorSubject } from "rxjs";
 
 import createDefer, { Deferred } from "../classes/deferred";
 import signingService from "./signing";
@@ -15,8 +15,8 @@ class DecryptionContainer {
   pubkey: string;
   cipherText: string;
 
-  plaintext = new Subject<string>();
-  error = new Subject<Error>();
+  plaintext = new BehaviorSubject<string | undefined>(undefined);
+  error = new BehaviorSubject<Error | undefined>(undefined);
 
   constructor(id: string, type: EncryptionType = "nip04", pubkey: string, cipherText: string) {
     this.id = id;

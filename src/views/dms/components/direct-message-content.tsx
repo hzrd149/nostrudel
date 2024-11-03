@@ -27,7 +27,6 @@ import { components } from "../../../components/content";
 import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
 import { fedimintTokens } from "../../../helpers/fedimint";
 
-const transformers = [...defaultTransformers, fedimintTokens];
 const linkRenderers = [
   renderSimpleXLink,
   renderYoutubeURL,
@@ -54,7 +53,7 @@ export default function DirectMessageContent({
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
   const { plaintext } = useKind4Decrypt(event);
-  const content = useRenderedContent(plaintext, components, { transformers, linkRenderers });
+  const content = useRenderedContent(plaintext, components, { linkRenderers });
 
   return (
     <TrustProvider event={event}>

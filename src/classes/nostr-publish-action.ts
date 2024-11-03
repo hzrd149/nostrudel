@@ -4,8 +4,8 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayPoolService from "../services/relay-pool";
 import createDefer from "./deferred";
-import { PersistentSubject } from "./subject";
 import ControlledObservable from "./controlled-observable";
+import { BehaviorSubject } from "rxjs";
 
 export type PublishResult = { relay: AbstractRelay; success: boolean; message: string };
 
@@ -15,7 +15,7 @@ export default class PublishAction {
   relays: string[];
   event: NostrEvent;
 
-  results = new PersistentSubject<PublishResult[]>([]);
+  results = new BehaviorSubject<PublishResult[]>([]);
   completePromise = createDefer();
 
   /** @deprecated */

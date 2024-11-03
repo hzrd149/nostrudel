@@ -22,6 +22,7 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import { matchSorter } from "match-sorter";
+import { useObservable } from "applesauce-react/hooks";
 
 import { EditIcon } from "../../../components/icons";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
@@ -30,7 +31,6 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import useSettingsForm from "../use-settings-form";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import localSettings from "../../../services/local-settings";
-import useSubject from "../../../hooks/use-subject";
 
 export default function PostSettings() {
   const account = useCurrentAccount();
@@ -67,7 +67,7 @@ export default function PostSettings() {
     );
   };
 
-  const addClientTag = useSubject(localSettings.addClientTag);
+  const addClientTag = useObservable(localSettings.addClientTag);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>

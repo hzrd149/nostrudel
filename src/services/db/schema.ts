@@ -153,3 +153,5 @@ export interface SchemaV9 extends SchemaV8 {
     indexes: { ttl: number };
   };
 }
+
+export interface SchemaV10 extends Omit<SchemaV9, "channelMetadata"> {}

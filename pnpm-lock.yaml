@@ -95,13 +95,13 @@ importers:
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-channel:
         specifier: ^0.8.0
-        version: 0.8.0(typescript@5.6.2)
+        version: link:../applesauce/packages/channel
       applesauce-content:
         specifier: ^0.8.0
-        version: 0.8.0(typescript@5.6.2)
+        version: link:../applesauce/packages/content
       applesauce-core:
         specifier: ^0.8.0
-        version: 0.8.0(typescript@5.6.2)
+        version: link:../applesauce/packages/core
       applesauce-lists:
         specifier: ^0.8.0
         version: 0.8.0(typescript@5.6.2)
@@ -110,7 +110,7 @@ importers:
         version: 0.8.0(typescript@5.6.2)
       applesauce-react:
         specifier: ^0.8.0
-        version: 0.8.0(typescript@5.6.2)
+        version: link:../applesauce/packages/react
       applesauce-signer:
         specifier: ^0.8.0
         version: 0.8.0(typescript@5.6.2)
@@ -2310,12 +2310,6 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-channel@0.8.0:
-    resolution: {integrity: sha512-WkE7A4WHGUdjCTwzfnfMms0KG2I62GN020wKNVIkvtdZAW1ummkSVVdcSPzZHSQZIabMRcJ5xv3tGf6EZ7tjxw==}
-
-  applesauce-content@0.8.0:
-    resolution: {integrity: sha512-AtEeClCbZUy5lLppjiSGQRmZN86Xsv311yYom1gCr5hQmz+vsqKdqiWukMrlyODq3g7zkNoWaN3ZRt7RNQ35sw==}
-
   applesauce-core@0.8.0:
     resolution: {integrity: sha512-ezH0ufSZMSS4EZlEcKSciLeq9bY2vv07pLBWLUrwZX3uCij3hcR8UtN7W78+XdWGNs0PIpSUPiWu3sEvVWFtFA==}
 
@@ -2324,9 +2318,6 @@ packages:
 
   applesauce-net@0.8.0:
     resolution: {integrity: sha512-yT9q6Z2slFlUP52/IqR4jWfOOfrSulCUnH3svSqwtmNGEupBEkdvMD64fbKqTGKWhyT3KkydbfTiOFDzMWv4/w==}
-
-  applesauce-react@0.8.0:
-    resolution: {integrity: sha512-ViLRORwJ5WeLshYlmPYq6t6IYST4ieuLeRu08ssR1DS3ihBFS+hjmDEht7WyR5qSGbkqqtMyqSBdYxp4mEUF0Q==}
 
   applesauce-signer@0.8.0:
     resolution: {integrity: sha512-TunYBkFDXA4Kc6kOhuI0zCJ/+CCGzb98jZ+RXojvVmKxOb1/JJwf103R1mY6223EqhMJtvbwrRQE66n2CdPxCw==}
@@ -3386,9 +3377,6 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  linkifyjs@4.1.3:
-    resolution: {integrity: sha512-auMesunaJ8yfkHvK4gfg1K0SaKX/6Wn9g2Aac/NwX+l5VdmFZzo/hdPGxEOETj+ryRa4/fiOPjeeKURSAJx1sg==}
-
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
@@ -4144,9 +4132,6 @@ packages:
 
   remark-wiki-link@2.0.1:
     resolution: {integrity: sha512-F8Eut1E7GWfFm4ZDTI6/4ejeZEHZgnVk6E933Yqd/ssYsc4AyI32aGakxwsGcEzbbE7dkWi1EfLlGAdGgOZOsA==}
-
-  remark@15.0.1:
-    resolution: {integrity: sha512-Eht5w30ruCXgFmxVUSlNWQ9iiimq07URKeFS3hNc8cUWy1llX4KDWfyEDZRycMc+znsN9Ux5/tJ/BFdgdOwA3A==}
 
   remove-accents@0.5.0:
     resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
@@ -7265,33 +7250,6 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-channel@0.8.0(typescript@5.6.2):
-    dependencies:
-      applesauce-core: 0.8.0(typescript@5.6.2)
-      nostr-tools: 2.7.2(typescript@5.6.2)
-      rxjs: 7.8.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  applesauce-content@0.8.0(typescript@5.6.2):
-    dependencies:
-      '@cashu/cashu-ts': 1.1.0
-      '@types/hast': 3.0.4
-      '@types/mdast': 4.0.4
-      '@types/unist': 3.0.3
-      applesauce-core: 0.8.0(typescript@5.6.2)
-      linkifyjs: 4.1.3
-      mdast-util-find-and-replace: 3.0.1
-      nostr-tools: 2.7.2(typescript@5.6.2)
-      remark: 15.0.1
-      remark-parse: 11.0.0
-      unified: 11.0.5
-      unist-util-visit-parents: 6.0.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   applesauce-core@0.8.0(typescript@5.6.2):
     dependencies:
       debug: 4.3.7
@@ -7324,17 +7282,6 @@ snapshots:
       nostr-tools: 2.7.2(typescript@5.6.2)
       rxjs: 7.8.1
       zen-push: 0.3.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  applesauce-react@0.8.0(typescript@5.6.2):
-    dependencies:
-      applesauce-content: 0.8.0(typescript@5.6.2)
-      applesauce-core: 0.8.0(typescript@5.6.2)
-      nostr-tools: 2.7.2(typescript@5.6.2)
-      react: 18.3.1
-      rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -8521,8 +8468,6 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  linkifyjs@4.1.3: {}
-
   locate-path@5.0.0:
     dependencies:
       p-locate: 4.1.0
@@ -9548,15 +9493,6 @@ snapshots:
       '@babel/runtime': 7.25.6
       mdast-util-wiki-link: 0.1.2
       micromark-extension-wiki-link: 0.0.4
-
-  remark@15.0.1:
-    dependencies:
-      '@types/mdast': 4.0.4
-      remark-parse: 11.0.0
-      remark-stringify: 11.0.0
-      unified: 11.0.5
-    transitivePeerDependencies:
-      - supports-color
 
   remove-accents@0.5.0: {}
 

@@ -1,8 +1,7 @@
-import { useMemo } from "react";
 import { Flex, FlexProps, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { getZapPayment, getZapSender } from "applesauce-core/helpers";
 
-import { parseZapEvents } from "../../../helpers/nostr/zaps";
 import UserLink from "../../../components/user/user-link";
 import { LightningIcon } from "../../../components/icons";
 import { readablizeSats } from "../../../helpers/bolt11";
@@ -12,15 +11,13 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
   const { timeline } = useStreamChatTimeline(stream);
-  const zaps = useMemo(() => parseZapEvents(timeline.filter((e) => e.kind === kinds.Zap)), [timeline]);
+  const zaps = timeline.filter((e) => e.kind === kinds.Zap);
 
-  const totals: Record<string, number> = {};
-  for (const zap of zaps) {
-    const p = zap.request.pubkey;
-    if (zap.payment.amount) {
-      totals[p] = (totals[p] || 0) + zap.payment.amount;
-    }
-  }
+  const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
+    const sender = getZapSender(z);
+    dir[sender] = dir[sender] + (getZapPayment(z)?.amount ?? 0);
+    return dir;
+  }, {});
 
   const sortedTotals = Array.from(Object.entries(totals)).sort((a, b) => b[1] - a[1]);
 

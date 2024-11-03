@@ -3,6 +3,7 @@ import emojiRegex from "emoji-regex";
 import { truncatedId } from "./event";
 import { ProfileContent } from "applesauce-core/helpers";
 
+/** @deprecated use ProfileContent instead */
 export type Kind0ParsedContent = {
   pubkey?: string;
   name?: string;

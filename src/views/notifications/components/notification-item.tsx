@@ -64,7 +64,7 @@ const NotificationItem = ({
         content = <RepostNotification event={event} onClick={onClick && handleClick} />;
         break;
       case NotificationType.Zap:
-        content = <ZapNotification event={event} onClick={onClick && handleClick} />;
+        content = <ZapNotification zap={event} onClick={onClick && handleClick} />;
         break;
       case NotificationType.Message:
         content = <MessageNotification event={event} onClick={onClick && handleClick} />;

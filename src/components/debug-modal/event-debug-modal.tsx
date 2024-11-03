@@ -35,6 +35,7 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import { EditIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
 import { Root } from "applesauce-content/nast";
+import { ErrorBoundary } from "../error-boundary";
 
 function Section({
   label,
@@ -145,7 +146,9 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
               <JsonCode data={getThreadReferences(event)} />
             </Section>
             <Section label="Tags">
-              <DebugEventTags event={event} />
+              <ErrorBoundary>
+                <DebugEventTags event={event} />
+              </ErrorBoundary>
               <Heading size="sm">Tags referenced in content</Heading>
               <JsonCode data={getContentTagRefs(event.content, event.tags)} />
             </Section>
