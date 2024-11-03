@@ -75,8 +75,14 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
             autoComplete="off"
             isDisabled={isSubmitting}
             {...register("displayName", {
-              minLength: 2,
-              maxLength: 64,
+              minLength: {
+                value: 2,
+                message: "Must be at least 2 characters long",
+              },
+              maxLength: {
+                value: 64,
+                message: "Cannot exceed 64 characters",
+              }
             })}
           />
           <FormErrorMessage>{errors.displayName?.message}</FormErrorMessage>
@@ -87,10 +93,19 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
             autoComplete="off"
             isDisabled={isSubmitting}
             {...register("username", {
-              minLength: 2,
-              maxLength: 64,
-              required: true,
-              pattern: /^[a-zA-Z0-9_-]{4,64}$/,
+              minLength: {
+                value: 2,
+                message: "Must be at least 2 characters long",
+              },
+              maxLength: {
+                value: 64,
+                message: "Cannot exceed 64 characters",
+              },
+              required: "Username is required",
+              pattern: {
+                value: /^[a-zA-Z0-9_-]{2,64}$/,
+                message: "Only letters, numbers, underscores, and hyphens, and must be 2-64 characters",
+              },
             })}
           />
           <FormErrorMessage>{errors.username?.message}</FormErrorMessage>
