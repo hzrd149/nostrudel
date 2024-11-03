@@ -6,8 +6,8 @@ import { EmbedEventPointer } from "../../../components/embed-event";
 import { RepostIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 import UserAvatar from "../../../components/user/user-avatar";
-import UserName from "../../../components/user/user-name";
 import { truncateId } from "../../../helpers/string";
+import UserLink from "../../../components/user/user-link";
 
 const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
   ({ event, onClick }, ref) => {
@@ -25,7 +25,7 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCli
         onClick={onClick}
       >
         <Text>
-          <UserAvatar size="xs" pubkey={event.pubkey} /> <UserName pubkey={event.pubkey} /> reposted:
+          <UserAvatar size="xs" pubkey={event.pubkey} /> <UserLink pubkey={event.pubkey} /> reposted:
         </Text>
         <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />
       </NotificationIconEntry>
