@@ -126,8 +126,6 @@ export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult
       if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
-    case "nrelay":
-      return <RelayCard url={pointer.data} />;
   }
   return null;
 }

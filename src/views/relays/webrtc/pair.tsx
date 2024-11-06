@@ -13,7 +13,6 @@ import {
   Input,
   Text,
   useDisclosure,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { getPublicKey, kinds, nip19 } from "nostr-tools";
@@ -33,6 +32,7 @@ import { QrCodeIcon } from "../../../components/icons";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useUserProfile from "../../../hooks/use-user-profile";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 function NameForm() {
   const publish = usePublishEvent();

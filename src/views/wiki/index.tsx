@@ -1,14 +1,4 @@
-import {
-  AvatarGroup,
-  Link,
-  Button,
-  Flex,
-  Heading,
-  LinkBox,
-  SimpleGrid,
-  useForceUpdate,
-  useInterval,
-} from "@chakra-ui/react";
+import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid, useInterval } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
@@ -25,6 +15,7 @@ import { useEffect } from "react";
 import dictionaryService from "../../services/dictionary";
 import UserAvatar from "../../components/user/user-avatar";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
+import useForceUpdate from "../../hooks/use-force-update";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;

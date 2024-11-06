@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NostrEvent } from "nostr-tools";
-import { Button, ButtonGroup, Flex, Heading, SimpleGrid, Text, useForceUpdate, useInterval } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, SimpleGrid, Text, useInterval } from "@chakra-ui/react";
 
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
@@ -11,6 +11,7 @@ import { localRelay } from "../../../../services/local-relay";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import useUserContactList from "../../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
+import useForceUpdate from "../../../../hooks/use-force-update";
 
 export default function Connection({
   call,

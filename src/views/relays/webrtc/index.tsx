@@ -1,22 +1,12 @@
 import { useEffect } from "react";
-import {
-  Alert,
-  AlertIcon,
-  Button,
-  ButtonGroup,
-  Flex,
-  Heading,
-  Link,
-  Text,
-  useForceUpdate,
-  useInterval,
-} from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, ButtonGroup, Flex, Heading, Link, Text, useInterval } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
 import { QrCodeIcon } from "../../../components/icons";
 import Connection from "./components/connection";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 export default function WebRtcRelaysView() {
   const update = useForceUpdate();

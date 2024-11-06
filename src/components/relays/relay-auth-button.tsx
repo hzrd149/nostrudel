@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { IconButton, IconButtonProps, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
+import { IconButton, IconButtonProps, useInterval, useToast } from "@chakra-ui/react";
 import { type AbstractRelay } from "nostr-tools/abstract-relay";
 import { useObservable } from "applesauce-react/hooks";
 
@@ -7,6 +7,7 @@ import relayPoolService from "../../services/relay-pool";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import PasscodeLock from "../icons/passcode-lock";
 import CheckCircleBroken from "../icons/check-circle-broken";
+import useForceUpdate from "../../hooks/use-force-update";
 
 export function useRelayChallenge(relay: AbstractRelay) {
   return useObservable(relayPoolService.challenges.get(relay));

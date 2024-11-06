@@ -10,7 +10,6 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
@@ -26,6 +25,7 @@ import { IconRelayAuthButton } from "../../../components/relays/relay-auth-butto
 import { RelayStatus } from "../../../components/relays/relay-status";
 import Timestamp from "../../../components/timestamp";
 import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 export default function InspectRelayView() {
   const { url } = useParams();

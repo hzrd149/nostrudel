@@ -1,9 +1,10 @@
 import { ChangeEventHandler } from "react";
-import { Switch, useForceUpdate, useInterval, useToast } from "@chakra-ui/react";
+import { Switch, useInterval, useToast } from "@chakra-ui/react";
 import { type AbstractRelay } from "nostr-tools/abstract-relay";
 import { useObservable } from "applesauce-react/hooks";
 
 import relayPoolService from "../../services/relay-pool";
+import useForceUpdate from "../../hooks/use-force-update";
 
 export default function RelayConnectSwitch({ relay }: { relay: string | URL | AbstractRelay }) {
   const toast = useToast();

@@ -15,7 +15,6 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
@@ -35,6 +34,7 @@ import processManager from "../../../services/process-manager";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import Timestamp from "../../../components/timestamp";
 import localSettings from "../../../services/local-settings";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (

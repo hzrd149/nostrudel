@@ -1,6 +1,6 @@
 import { useAsync } from "react-use";
 import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
-import { Token, getEncodedToken, CashuMint, CashuWallet } from "@cashu/cashu-ts";
+import { Token, getEncodedToken, CheckStateEnum } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -39,15 +39,12 @@ export default function InlineCachuCard({
   encoded = encoded || getEncodedToken(token);
   const { value: spendable, loading } = useAsync(async () => {
     if (!token) return;
-    for (const entry of token.token) {
-      const wallet = await getMintWallet(entry.mint);
-      const spent = await wallet.checkProofsSpent(entry.proofs);
-      if (spent.length !== entry.proofs.length) return true;
-    }
-    return false;
+    const wallet = await getMintWallet(token.mint);
+    const status = await wallet.checkProofsStates(token.proofs);
+    return status.some((s) => s.state !== CheckStateEnum.UNSPENT);
   }, [token]);
 
-  const amount = token?.token[0].proofs.reduce((acc, v) => acc + v.amount, 0);
+  const amount = token?.proofs.reduce((acc, v) => acc + v.amount, 0);
 
   let UnitIcon = ECashIcon;
   let unitColor = "green.500";
@@ -104,7 +101,7 @@ export default function InlineCachuCard({
         <Heading size="md" textDecoration={spendable === false ? "line-through" : undefined}>
           {denomination} {spendable === false ? " (Spent)" : loading ? <Spinner size="xs" /> : undefined}
         </Heading>
-        {token && <Text fontSize="xs">Mint: {new URL(token.token[0].mint).hostname}</Text>}
+        {token && <Text fontSize="xs">Mint: {new URL(token.mint).hostname}</Text>}
         {token.unit && <Text fontSize="xs">Unit: {token.unit}</Text>}
       </Box>
       {token.memo && <Box>{token.memo}</Box>}

@@ -1,16 +1,5 @@
 import { useEffect } from "react";
-import {
-  Alert,
-  AlertIcon,
-  Button,
-  CloseButton,
-  Flex,
-  Heading,
-  Input,
-  Text,
-  useForceUpdate,
-  useInterval,
-} from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, CloseButton, Flex, Heading, Input, Text, useInterval } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useObservable } from "applesauce-react/hooks";
 
@@ -21,6 +10,7 @@ import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-but
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import localSettings from "../../../services/local-settings";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 export default function WebRtcConnectView() {
   const update = useForceUpdate();

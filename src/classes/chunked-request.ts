@@ -83,7 +83,6 @@ export default class ChunkedRequest {
     this.process.active = true;
     await new Promise<number>((res) => {
       const sub = this.relay.subscribe(filters, {
-        // @ts-expect-error
         id: this.id + "-" + this.lastChunkIdx++,
         onevent: (event) => {
           this.handleEvent(event);

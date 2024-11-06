@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, Card, Flex, Heading, Text, useForceUpdate } from "@chakra-ui/react";
+import { useEffect, useMemo } from "react";
+import { ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { localRelay } from "../../../../services/local-relay";
@@ -9,6 +9,7 @@ import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
 import MemoryRelay from "../../../../classes/memory-relay";
 import { getSortedKinds } from "../../../../helpers/nostr/event";
+import useForceUpdate from "../../../../hooks/use-force-update";
 
 async function importEvents(events: NostrEvent[]) {
   for (const event of events) {
