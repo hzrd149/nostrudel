@@ -18,6 +18,7 @@ export const recommendedReadRelays = new RelaySet(
     "wss://nos.lol/",
     "wss://purplerelay.com/",
     "wss://nostr.land/",
+    "wss://relay.btcforplebs.com/",
   ]),
 );
 export const recommendedWriteRelays = new RelaySet(
