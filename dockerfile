@@ -22,6 +22,7 @@ ENV VITE_COMMIT_HASH="$COMMIT_HASH"
 ENV VITE_APP_VERSION="$APP_VERSION"
 
 COPY tsconfig.json .
+COPY vite.config.ts .
 COPY index.html .
 COPY public ./public
 COPY src ./src
