@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build exe
 
 on:
   push:
@@ -48,34 +48,11 @@ jobs:
         with:
           go-version: "1.23"
 
-      - name: Set Version
-        run: |
-          if [ "${{ github.event_name }}" == "push" && startsWith(github.ref, 'refs/tags/') ]; then
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          else
-            echo "VERSION=dev-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          fi
-
       - name: Create bin directory
         run: mkdir -p exe/bin
 
-      - name: Build for Windows
-        run: |
-          cd exe && GOOS=windows GOARCH=amd64 go build -ldflags="-X 'main.Version=${VERSION}'" -o bin/myapp-windows-amd64.exe
-
-      - name: Build for macOS
-        run: |
-          cd exe && GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'main.Version=${VERSION}'" -o bin/myapp-darwin-amd64
-
-      - name: Build for Linux
-        run: |
-          cd exe && GOOS=linux GOARCH=amd64 go build -ldflags="-X 'main.Version=${VERSION}'" -o bin/myapp-linux-amd64
-
-      # Add executable permissions to macOS and Linux binaries
-      - name: Make binaries executable
-        run: |
-          chmod +x exe/bin/myapp-darwin-amd64
-          chmod +x exe/bin/myapp-linux-amd64
+      - name: Build exe
+        run: cd exe && make
 
       # Upload as workflow artifacts
       - name: Upload artifacts
@@ -83,19 +60,3 @@ jobs:
         with:
           name: binaries
           path: exe/bin/*
-
-    # Create Release
-    # - name: Create Release
-    #   if: startsWith(github.ref, 'refs/tags/')
-    #   id: create_release
-    #   uses: softprops/action-gh-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     files: |
-    #       bin/myapp-windows-amd64.exe
-    #       bin/myapp-darwin-amd64
-    #       bin/myapp-linux-amd64
-    #     draft: false
-    #     prerelease: false
-    #     generate_release_notes: true
