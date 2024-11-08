@@ -82,7 +82,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
               maxLength: {
                 value: 64,
                 message: "Cannot exceed 64 characters",
-              }
+              },
             })}
           />
           <FormErrorMessage>{errors.displayName?.message}</FormErrorMessage>
