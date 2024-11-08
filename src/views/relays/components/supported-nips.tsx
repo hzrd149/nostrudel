@@ -23,6 +23,7 @@ export const NIP_NAMES: Record<string, string> = {
   "19": "bech32-encoded entities",
   "20": "Command Results",
   "21": "nostr: URI scheme",
+  "22": "Generic Comments",
   "23": "Long-form Content",
   "24": "Extra metadata fields and tags",
   "25": "Reactions",
