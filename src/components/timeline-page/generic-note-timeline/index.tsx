@@ -35,7 +35,7 @@ function GenericNoteTimeline({ timeline }: { timeline: NostrEvent[] }) {
       {newNotes.length > 0 && (
         <Box h="0" overflow="visible" w="full" zIndex={100} display="flex" position="relative">
           <Button
-            onClick={() => setLatest(newNotes[newNotes.length - 1].created_at + 10)}
+            onClick={() => setLatest(newNotes[0].created_at + 10)}
             colorScheme="primary"
             size="lg"
             mx="auto"
