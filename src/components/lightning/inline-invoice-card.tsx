@@ -14,8 +14,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { parseBolt11 } from "applesauce-core/helpers";
 
-import { parsePaymentRequest, readablizeSats } from "../../helpers/bolt11";
+import { readablizeSats } from "../../helpers/bolt11";
 import { CopyIconButton } from "../copy-icon-button";
 import QrCode02 from "../icons/qr-code-02";
 import QrCodeSvg from "../qr-code/qr-code-svg";
@@ -23,8 +24,11 @@ import QrCodeSvg from "../qr-code/qr-code-svg";
 export type InvoiceButtonProps = {
   paymentRequest: string;
 };
-export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "children"> & InvoiceButtonProps) => {
-  const { value: invoice, error } = useAsync(async () => parsePaymentRequest(paymentRequest));
+export default function InlineInvoiceCard({
+  paymentRequest,
+  ...props
+}: Omit<BoxProps, "children"> & InvoiceButtonProps) {
+  const { value: invoice, error } = useAsync(async () => parseBolt11(paymentRequest));
   const more = useDisclosure();
 
   const [loading, setLoading] = useState(false);
@@ -97,4 +101,4 @@ export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "
       )}
     </Flex>
   );
-};
+}

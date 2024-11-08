@@ -21,7 +21,6 @@ import {
   getJobStatusType,
   getResponseFromDVM,
 } from "../../../../helpers/nostr/dvm";
-import { InlineInvoiceCard } from "../../../../components/lightning/inline-invoice-card";
 import { DraftNostrEvent } from "../../../../types/nostr-event";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import { DVMAvatarLink } from "./dvm-avatar";
@@ -29,6 +28,7 @@ import DVMLink from "./dvm-name";
 import { AddressPointer } from "nostr-tools/nip19";
 import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import InlineInvoiceCard from "../../../../components/lightning/inline-invoice-card";
 
 function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const publish = usePublishEvent();

@@ -8,6 +8,7 @@ import Cashu from "./components/cashu";
 import { InlineEmoji } from "./components/ininle-emoji";
 import NipDefinition from "./components/nip";
 import { ImageGallery } from "./components/gallery";
+import LightningInvoice from "./components/lightning";
 const InlineFedimintCard = lazy(() => import("../fedimint/inline-fedimint-card"));
 
 export const components: ComponentMap = {
@@ -23,4 +24,5 @@ export const components: ComponentMap = {
   ),
   nip: NipDefinition,
   gallery: ({ node }) => <ImageGallery images={node.links} />,
+  lightning: ({ node }) => <LightningInvoice invoice={node.invoice} />,
 };
