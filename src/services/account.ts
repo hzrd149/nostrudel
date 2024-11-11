@@ -165,13 +165,4 @@ if (import.meta.env.DEV) {
   window.accountService = accountService;
 }
 
-// temporary fix for converting old sublt crypto accounts to ncryptsec
-setInterval(() => {
-  for (const account of accountService.accounts.value) {
-    if (account instanceof PasswordAccount && account.signer.ncryptsec && account.signer.buffer) {
-      accountService.saveAccount(account);
-    }
-  }
-}, 10_000);
-
 export default accountService;

@@ -11,12 +11,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { PasswordSigner } from "applesauce-signer";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
 import EyeOff from "../../../components/icons/eye-off";
 import Eye from "../../../components/icons/eye";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import PasswordSigner from "../../../classes/signers/password-signer";
 
 const fake = Array(48).fill("x");
 

@@ -26,7 +26,8 @@ export class Account {
     return { type: this.type, pubkey: this.pubkey, localSettings: this.localSettings };
   }
   fromJSON(data: any): this {
-    this.pubkey = data.pubkey;
+    if (data.pubkey) this.pubkey = data.pubkey;
+
     if (data.localSettings) {
       this.localSettings = data.localSettings;
     }

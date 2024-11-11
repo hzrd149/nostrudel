@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { SimpleSigner } from "applesauce-signer";
+import { PasswordSigner, SimpleSigner } from "applesauce-signer";
 import { useObservable } from "applesauce-react/hooks";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -10,7 +10,6 @@ import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/account-info-badge";
-import PasswordSigner from "../../../classes/signers/password-signer";
 import SimpleSignerBackup from "./simple-signer-backup";
 import PasswordSignerBackup from "./password-signer-backup";
 

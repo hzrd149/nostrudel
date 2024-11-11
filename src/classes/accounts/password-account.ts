@@ -1,4 +1,4 @@
-import PasswordSigner from "../signers/password-signer";
+import { PasswordSigner } from "applesauce-signer";
 import { Account } from "./account";
 
 export default class PasswordAccount extends Account {
@@ -24,19 +24,12 @@ export default class PasswordAccount extends Account {
   }
 
   toJSON() {
-    if (this.signer.ncryptsec) {
-      return { ...super.toJSON(), ncryptsec: this.signer.ncryptsec };
-    } else
-      return { ...super.toJSON(), secKey: this.signer.buffer, iv: this.signer.iv, ncryptsec: this.signer.ncryptsec };
+    return { ...super.toJSON(), ncryptsec: this.signer.ncryptsec };
   }
   fromJSON(data: any): this {
+    if (typeof data.ncryptsec !== "string") throw new Error("Missing ncryptsec");
     this.signer = new PasswordSigner();
-    if (data.ncryptsec) {
-      this.signer.ncryptsec = data.ncryptsec as string;
-    } else if (data.secKey && data.iv) {
-      this.signer.buffer = data.secKey as ArrayBuffer;
-      this.signer.iv = data.iv as Uint8Array;
-    }
+    this.signer.ncryptsec = data.ncryptsec as string;
 
     return super.fromJSON(data);
   }
