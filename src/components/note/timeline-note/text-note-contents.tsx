@@ -68,7 +68,7 @@ export const TextNoteContents = React.memo(
       <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>
         <LightboxProvider>
           <Suspense fallback={<Spinner />}>
-            <Box whiteSpace="pre-wrap" {...props}>
+            <Box whiteSpace="pre-wrap" dir="auto" {...props}>
               {content}
             </Box>
           </Suspense>
