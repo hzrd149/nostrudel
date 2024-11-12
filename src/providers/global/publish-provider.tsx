@@ -18,6 +18,7 @@ import { eventStore } from "../../services/event-store";
 import { addPubkeyRelayHints } from "../../helpers/nostr/post";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
+import { addSeenRelay } from "applesauce-core/helpers";
 
 type PublishContextType = {
   log: PublishAction[];
@@ -115,6 +116,10 @@ export default function PublishProvider({ children }: PropsWithChildren) {
 
         const pub = new PublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));
+
+        pub.onResult.subscribe((result) => {
+          if (result.success) addSeenRelay(signed, result.relay.url);
+        });
 
         // send it to the local relay
         if (localRelay) localRelay.publish(signed);

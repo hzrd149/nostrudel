@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Spinner,
@@ -14,6 +14,7 @@ import {
   Tr,
   useColorMode,
 } from "@chakra-ui/react";
+import { getSeenRelays } from "applesauce-core/helpers";
 
 import TimelineLoader from "../../../classes/timeline-loader";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -23,14 +24,12 @@ import { BroadcastEventIcon } from "../../icons";
 import Timestamp from "../../timestamp";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getSeenRelays } from "applesauce-core/helpers";
 
 function EventRow({
   event,
   relays,
   ...props
 }: { event: NostrEvent; relays: string[] } & Omit<TableRowProps, "children">) {
-  // const sub = useMemo(() => getEventRelays(event.id), [event.id]);
   const publish = usePublishEvent();
 
   const ref = useEventIntersectionRef(event);
@@ -42,7 +41,7 @@ function EventRow({
   const [broadcasting, setBroadcasting] = useState(false);
   const broadcast = async () => {
     setBroadcasting(true);
-    await publish("Broadcast", event);
+    await publish("Broadcast", event, relays);
     setBroadcasting(false);
   };
 
@@ -72,7 +71,7 @@ function EventRow({
 }
 
 export default function TimelineHealth({ timeline, loader }: { loader: TimelineLoader; timeline: NostrEvent[] }) {
-  const relays = Array.from(Object.keys(loader.relays));
+  const relays = loader.relays.map((r) => r.url);
 
   return (
     <>
