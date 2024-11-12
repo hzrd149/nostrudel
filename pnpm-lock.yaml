@@ -118,8 +118,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: next
+        version: 0.0.0-next-20241107141841
       blossom-drive-sdk:
         specifier: ^0.4.1
         version: 0.4.1(typescript@5.6.3)
@@ -341,10 +341,10 @@ importers:
         specifier: ^0.6.8
         version: 0.6.8
       '@types/react':
-        specifier: ^18.3.12
+        specifier: ^18.2.22
         version: 18.3.12
       '@types/react-dom':
-        specifier: ^18.3.1
+        specifier: ^18.2.7
         version: 18.3.1
       '@types/react-window':
         specifier: ^1.8.8
@@ -1963,6 +1963,10 @@ packages:
 
   bezier-js@6.1.4:
     resolution: {integrity: sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==}
+
+  blossom-client-sdk@0.0.0-next-20241107141841:
+    resolution: {integrity: sha512-br7JUZrMDsURQowBObGdj6VEWbLslacUpKjONLgpRvN2w11fSt39Xdgd0pYjuPRtqTHOLClGXxyItYTQJQMlkw==}
+    engines: {node: '>=18'}
 
   blossom-client-sdk@0.7.0:
     resolution: {integrity: sha512-xG0HiuhFcK6UpmYjJ4vRPm3APMrRf+MQDfZWlNRTxs2gEETfqbhYm5pCl2hPfLjpEcFSDXgr3sLCh6C77ABKgg==}
@@ -6329,6 +6333,11 @@ snapshots:
       is-windows: 1.0.2
 
   bezier-js@6.1.4: {}
+
+  blossom-client-sdk@0.0.0-next-20241107141841:
+    dependencies:
+      '@cashu/cashu-ts': 2.0.0-rc1
+      '@noble/hashes': 1.5.0
 
   blossom-client-sdk@0.7.0:
     dependencies:

@@ -1,6 +1,6 @@
 import { forwardRef, MouseEventHandler, MutableRefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import { Link } from "@chakra-ui/react";
-import { handleImageFallbacks } from "blossom-client-sdk";
+import { handleImageFallbacks } from "blossom-client-sdk/image";
 import { NostrEvent } from "nostr-tools";
 
 import { EmbeddedImageProps, getPubkeyMediaServers, TrustImage, useImageThumbnail } from "../links";

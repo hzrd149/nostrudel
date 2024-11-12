@@ -7,7 +7,7 @@ import { useSigningContext } from "../providers/global/signing-provider";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import useAppSettings from "./use-app-settings";
 import useUsersMediaServers from "./use-user-media-servers";
-import { uploadFileToServers } from "../helpers/media-upload/blossom";
+import { simpleMultiServerUpload } from "../helpers/media-upload/blossom";
 import useCurrentAccount from "./use-current-account";
 import { stripSensitiveMetadataOnFile } from "../helpers/image";
 
@@ -71,7 +71,7 @@ export default function useTextAreaUploadFile(
           const imageUrl = response.url;
           insertURL(imageUrl);
         } else if (mediaUploadService === "blossom" && mediaServers.length) {
-          const blob = await uploadFileToServers(
+          const blob = await simpleMultiServerUpload(
             mediaServers.map((s) => s.toString()),
             safeFile,
             requestSignature,
