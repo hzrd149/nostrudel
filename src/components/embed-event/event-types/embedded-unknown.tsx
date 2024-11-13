@@ -16,6 +16,7 @@ import { AppHandlerContext } from "../../../providers/route/app-handler-provider
 import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import { components } from "../../content";
 
+const UnknownEventContentSymbol = Symbol.for("unknown-event-content");
 const linkRenderers = [renderImageUrl, renderVideoUrl, renderAudioUrl, renderGenericUrl];
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
@@ -23,7 +24,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
   const { openAddress } = useContext(AppHandlerContext);
 
   const alt = event.tags.find((t) => t[0] === "alt")?.[1];
-  const content = useRenderedContent(event, components, { linkRenderers });
+  const content = useRenderedContent(event, components, { linkRenderers, cacheKey: UnknownEventContentSymbol });
 
   return (
     <>
