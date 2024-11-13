@@ -17,13 +17,13 @@ import {
   AccordionPanelProps,
   Button,
   Text,
-  Select,
 } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import { ModalProps } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
-import { nip19 } from "nostr-tools";
-import { ParsedTextContentSymbol } from "applesauce-content/text";
+import { TextNoteContentSymbol } from "applesauce-content/text";
+import { Root } from "applesauce-content/nast";
 
 import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
@@ -34,7 +34,6 @@ import { getSharableEventAddress } from "../../services/event-relay-hint";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { EditIcon } from "../icons";
 import { RelayFavicon } from "../relay-favicon";
-import { Root } from "applesauce-content/nast";
 import { ErrorBoundary } from "../error-boundary";
 
 function Section({
@@ -79,7 +78,7 @@ export default function EventDebugModal({ event, ...props }: { event: NostrEvent
     setLoading(false);
   }, []);
 
-  const nast = Reflect.get(event, ParsedTextContentSymbol) as Root;
+  const nast = Reflect.get(event, TextNoteContentSymbol) as Root;
 
   return (
     <Modal size="6xl" {...props}>
