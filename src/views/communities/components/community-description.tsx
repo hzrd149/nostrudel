@@ -9,6 +9,8 @@ import { renderGenericUrl } from "../../../components/content/links";
 
 const linkRenderers = [renderGenericUrl];
 
+const CommunityDescriptionSymbol = Symbol.for("community-description-content");
+
 export default function CommunityDescription({
   community,
   maxLength,
@@ -20,6 +22,7 @@ export default function CommunityDescription({
   const content = useRenderedContent(description, components, {
     maxLength: showAll ? undefined : maxLength,
     linkRenderers,
+    cacheKey: CommunityDescriptionSymbol,
   });
 
   return (

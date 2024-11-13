@@ -9,9 +9,15 @@ import { components } from "../content";
 const transformers = [nostrMentions];
 const linkRenderers = [renderGenericUrl];
 
-export default function UserAbout({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
+const ProfileAboutContentSymbol = Symbol.for("profile-about-content");
+
+export default function UserAboutContent({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
   const profile = useUserProfile(pubkey);
-  const content = useRenderedContent(profile?.about, components, { transformers, linkRenderers });
+  const content = useRenderedContent(profile?.about, components, {
+    transformers,
+    linkRenderers,
+    cacheKey: ProfileAboutContentSymbol,
+  });
 
   return (
     <Box whiteSpace="pre-line" {...props}>

@@ -1,6 +1,5 @@
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
-import { defaultTransformers } from "applesauce-content/text";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import {
@@ -25,8 +24,8 @@ import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/content/links/audio";
 import { components } from "../../../components/content";
 import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
-import { fedimintTokens } from "../../../helpers/fedimint";
 
+const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [
   renderSimpleXLink,
   renderYoutubeURL,
@@ -53,7 +52,7 @@ export default function DirectMessageContent({
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
   const { plaintext } = useKind4Decrypt(event);
-  const content = useRenderedContent(plaintext, components, { linkRenderers });
+  const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
   return (
     <TrustProvider event={event}>

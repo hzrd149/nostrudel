@@ -18,7 +18,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
-import { useRenderedContent } from "applesauce-react/hooks";
 import { ChatIcon } from "@chakra-ui/icons";
 
 import { getLudEndpoint } from "../../../helpers/lnurl";
@@ -50,8 +49,8 @@ import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import { components } from "../../../components/content";
 import { renderGenericUrl } from "../../../components/content/links/common";
+import UserAboutContent from "../../../components/user/user-about";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
@@ -89,8 +88,6 @@ function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
     );
 }
 
-const linkRenderers = [renderGenericUrl];
-
 export default function UserAboutTab() {
   const expanded = useDisclosure();
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -102,7 +99,6 @@ export default function UserAboutTab() {
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);
 
-  const aboutContent = useRenderedContent(metadata?.about, components, { linkRenderers });
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
     ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
@@ -173,11 +169,7 @@ export default function UserAboutTab() {
           position="absolute"
         />
       </Box>
-      {aboutContent && (
-        <Box whiteSpace="pre-wrap" px="2">
-          {aboutContent}
-        </Box>
-      )}
+      <UserAboutContent pubkey={pubkey} />
 
       <Flex gap="2" px="2" direction="column">
         <Flex gap="2">

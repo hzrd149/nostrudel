@@ -44,8 +44,10 @@ const linkRenderers = [
   renderGenericUrl,
 ];
 
+const ChannelMessageContentSymbol = Symbol.for("channel-message-content");
+
 const ChannelMessageContent = memo(({ message, children, ...props }: BoxProps & { message: NostrEvent }) => {
-  const content = useRenderedContent(message, components, { linkRenderers });
+  const content = useRenderedContent(message, components, { linkRenderers, cacheKey: ChannelMessageContentSymbol });
 
   return (
     <TrustProvider event={message}>

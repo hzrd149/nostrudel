@@ -2,7 +2,7 @@ import React, { Suspense, useMemo } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useRenderedContent } from "applesauce-react/hooks";
-import { defaultTransformers, galleries } from "applesauce-content/text";
+import { textNoteTransformers, TextNoteContentSymbol, galleries } from "applesauce-content/text";
 
 import {
   renderWavlakeUrl,
@@ -30,7 +30,7 @@ import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
 import { components } from "../../content";
 import { nipDefinitions } from "../../content/transform/nip-notation";
 
-const transformers = [...defaultTransformers, galleries, nipDefinitions];
+const transformers = [...textNoteTransformers, galleries, nipDefinitions];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;
@@ -62,7 +62,12 @@ const linkRenderers = [
 
 export const TextNoteContents = React.memo(
   ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
-    const content = useRenderedContent(event, components, { linkRenderers, transformers, maxLength });
+    const content = useRenderedContent(event, components, {
+      linkRenderers,
+      transformers,
+      maxLength,
+      cacheKey: TextNoteContentSymbol,
+    });
 
     return (
       <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>

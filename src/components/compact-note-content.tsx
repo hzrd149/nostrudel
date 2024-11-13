@@ -4,12 +4,14 @@ import { Root, truncateContent } from "applesauce-content/nast";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { LightboxProvider } from "./lightbox-provider";
-import { nostrMentions, emojis, hashtags } from "applesauce-content/text";
+import { nostrMentions, emojis, hashtags, links } from "applesauce-content/text";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { components } from "./content";
 import { renderGenericUrl } from "./content/links/common";
 
 const linkRenderers = [renderGenericUrl];
+
+const CompactNoteContentSymbol = Symbol.for("compact-note-content");
 
 export type NoteContentsProps = {
   event: NostrEvent | DraftNostrEvent;
@@ -22,6 +24,7 @@ export const CompactNoteContent = React.memo(
     const truncated = useRef(false);
     const transformers = useMemo(
       () => [
+        links,
         nostrMentions,
         emojis,
         hashtags,
@@ -32,7 +35,12 @@ export const CompactNoteContent = React.memo(
       ],
       [maxLength],
     );
-    const content = useRenderedContent(event, components, { transformers, linkRenderers, maxLength });
+    const content = useRenderedContent(event, components, {
+      transformers,
+      linkRenderers,
+      maxLength,
+      cacheKey: CompactNoteContentSymbol,
+    });
 
     return (
       <LightboxProvider>

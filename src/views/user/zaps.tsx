@@ -26,6 +26,7 @@ import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { components } from "../../components/content";
 import { renderGenericUrl } from "../../components/content/links/common";
 
+const ZapContentSymbol = Symbol.for("zap-content");
 const linkRenderers = [renderGenericUrl];
 
 const Zap = ({ zap }: { zap: NostrEvent }) => {
@@ -56,7 +57,7 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
     eventJSX = <EmbedEventPointer pointer={{ type: "note", data: eventId }} />;
   }
 
-  const content = useRenderedContent(request, components, { linkRenderers });
+  const content = useRenderedContent(request, components, { linkRenderers, cacheKey: ZapContentSymbol });
 
   return (
     <Box ref={ref}>

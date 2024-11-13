@@ -9,7 +9,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
 import { readablizeSats } from "../../../helpers/bolt11";
 import replaceableEventsService from "../../../services/replaceable-events";
-import UserAbout from "../../../components/user/user-about";
+import UserAboutContent from "../../../components/user/user-about";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
@@ -40,7 +40,7 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
           <UserDnsIdentity pubkey={profile.pubkey} isTruncated />
         </Flex>
       </Flex>
-      <UserAbout pubkey={profile.pubkey} noOfLines={3} isTruncated />
+      <UserAboutContent pubkey={profile.pubkey} noOfLines={3} isTruncated />
       {stats && (
         <>{stats.followers_pubkey_count && <Text>Followers: {readablizeSats(stats.followers_pubkey_count)}</Text>}</>
       )}
