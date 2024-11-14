@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, Card, CardProps, Flex, FormControl, FormLabel, Image, Input, Text, useToast } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
 import { useDebounce } from "react-use";
 
 import dnsIdentityService, { DnsIdentity } from "../../../services/dns-identity";
 import { CheckIcon } from "../../../components/icons";
-import nostrConnectService from "../../../services/nostr-connect";
 import accountService from "../../../services/account";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { safeRelayUrls } from "../../../helpers/relay";
@@ -13,6 +13,7 @@ import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 import PubkeyAccount from "../../../classes/accounts/pubkey-account";
+import relayPoolService from "../../../services/relay-pool";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
@@ -46,10 +47,9 @@ export default function LoginNostrAddressView() {
         const relays = safeRelayUrls(
           nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays || [],
         );
-        const signer = nostrConnectService.fromHostedBunker(nip05.pubkey, relays);
+        const signer = new NostrConnectSigner({ pubkey: nip05.pubkey, relays, pool: relayPoolService });
         await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-        nostrConnectService.saveSigner(signer);
         const account = new NostrConnectAccount(signer.pubkey!, signer);
         accountService.addAccount(account);
         accountService.switchAccount(signer.pubkey!);
