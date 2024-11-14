@@ -118,8 +118,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: next
-        version: 0.0.0-next-20241107141841
+        specifier: ^2.0.0
+        version: 2.0.0
       blossom-drive-sdk:
         specifier: ^0.4.1
         version: 0.4.1(typescript@5.6.3)
@@ -229,11 +229,11 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(react@18.3.1)
       react-force-graph-2d:
-        specifier: ^1.25.7
-        version: 1.25.7(react@18.3.1)
+        specifier: ^1.25.8
+        version: 1.25.8(react@18.3.1)
       react-force-graph-3d:
-        specifier: ^1.24.5
-        version: 1.24.5(react@18.3.1)
+        specifier: ^1.24.6
+        version: 1.24.6(react@18.3.1)
       react-hook-form:
         specifier: ^7.53.2
         version: 7.53.2(react@18.3.1)
@@ -291,6 +291,9 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
+      vite-plugin-funding:
+        specifier: ^0.1.0
+        version: 0.1.0
       webln:
         specifier: ^0.3.2
         version: 0.3.2
@@ -1964,12 +1967,12 @@ packages:
   bezier-js@6.1.4:
     resolution: {integrity: sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==}
 
-  blossom-client-sdk@0.0.0-next-20241107141841:
-    resolution: {integrity: sha512-br7JUZrMDsURQowBObGdj6VEWbLslacUpKjONLgpRvN2w11fSt39Xdgd0pYjuPRtqTHOLClGXxyItYTQJQMlkw==}
-    engines: {node: '>=18'}
-
   blossom-client-sdk@0.7.0:
     resolution: {integrity: sha512-xG0HiuhFcK6UpmYjJ4vRPm3APMrRf+MQDfZWlNRTxs2gEETfqbhYm5pCl2hPfLjpEcFSDXgr3sLCh6C77ABKgg==}
+
+  blossom-client-sdk@2.0.0:
+    resolution: {integrity: sha512-lFMu/CyqmaFxmnSZoZryiLoJ33y+bxvzhD3upgJ4D4PjulgML1EBKvuA2E5supAuGYaKHjerFyBAAdRQTCpJMA==}
+    engines: {node: '>=18'}
 
   blossom-drive-sdk@0.4.1:
     resolution: {integrity: sha512-X4OIA4+X4zpZy11zP6ekE61LHFIOCvS+H+McqsyDVtGrwFeFSuqfZVyKpg1QuQTlxSVIlJVX0jt9+gHEfdGqWA==}
@@ -2358,8 +2361,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.57:
-    resolution: {integrity: sha512-xS65H/tqgOwUBa5UmOuNSLuslDo7zho0y/lgQw35pnrqiZh7UOWHCeL/Bt6noJATbA6tpQJGCifsFsIRZj1Fqg==}
+  electron-to-chromium@1.5.58:
+    resolution: {integrity: sha512-al2l4r+24ZFL7WzyPTlyD0fC33LLzvxqLCwurtBibVPghRGO9hSTl+tis8t1kD7biPiH/en4U0I7o/nQbYeoVA==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -3492,14 +3495,14 @@ packages:
       '@types/react':
         optional: true
 
-  react-force-graph-2d@1.25.7:
-    resolution: {integrity: sha512-WVNLK/z8RDq8kDhfEH/cZBGl64R3M761M3Xa3nXjXFW4mO3xUbQ7GG7dKV0brd4LSfjamGs2f1+UmXF4Tp8sGQ==}
+  react-force-graph-2d@1.25.8:
+    resolution: {integrity: sha512-Z1mxbEDRsmFHCDU7ZcFryFzzOin1kYpKOyqQ1SWiyLCUmR6l/dFt/GhOknxQt976E6kK4V84cD1J6F2OlsViYQ==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '*'
 
-  react-force-graph-3d@1.24.5:
-    resolution: {integrity: sha512-w9uTytRJ7Phqb9HcILtM6j8rkmCZtsVi+YNnZ8GtiLYA6ebXxYOTSBhHCbchaU9O/be9zIWS9jqJcAcPFumxog==}
+  react-force-graph-3d@1.24.6:
+    resolution: {integrity: sha512-FGvTpstJLNgT1bn4ZavaxbK55uOJ/fnVLgd+SaEqWTp5v90lRLIcvm6dJyO+Z4hfNJQDpy8M9XVKxy9FCeOe+Q==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '*'
@@ -4057,8 +4060,8 @@ packages:
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
-  undici@6.20.1:
-    resolution: {integrity: sha512-AjQF1QsmqfJys+LXfGTNum+qw4S88CojRInG/6t31W/1fk6G59s92bnAvGz5Cmur+kQv2SURXEvvudLmbrE8QA==}
+  undici@6.21.0:
+    resolution: {integrity: sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==}
     engines: {node: '>=18.17'}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
@@ -4154,6 +4157,9 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  vite-plugin-funding@0.1.0:
+    resolution: {integrity: sha512-Cw5izRmLgu1fCTDbWO2zhvPb5w23JnqQKDnHycbc5WXfTFNxxGk5ulzM/qXxwDWU0hNO+kF4suKHdADUDYPUzw==}
 
   vite-plugin-pwa@0.19.8:
     resolution: {integrity: sha512-e1oK0dfhzhDhY3VBuML6c0h8Xfx6EkOVYqolj7g+u8eRfdauZe5RLteCIA/c5gH0CBQ0CNFAuv/AFTx4Z7IXTw==}
@@ -6334,17 +6340,17 @@ snapshots:
 
   bezier-js@6.1.4: {}
 
-  blossom-client-sdk@0.0.0-next-20241107141841:
-    dependencies:
-      '@cashu/cashu-ts': 2.0.0-rc1
-      '@noble/hashes': 1.5.0
-
   blossom-client-sdk@0.7.0:
     dependencies:
       '@noble/hashes': 1.5.0
       cross-fetch: 4.0.0
     transitivePeerDependencies:
       - encoding
+
+  blossom-client-sdk@2.0.0:
+    dependencies:
+      '@cashu/cashu-ts': 2.0.0-rc1
+      '@noble/hashes': 1.5.0
 
   blossom-drive-sdk@0.4.1(typescript@5.6.3):
     dependencies:
@@ -6379,7 +6385,7 @@ snapshots:
   browserslist@4.24.2:
     dependencies:
       caniuse-lite: 1.0.30001680
-      electron-to-chromium: 1.5.57
+      electron-to-chromium: 1.5.58
       node-releases: 2.0.18
       update-browserslist-db: 1.1.1(browserslist@4.24.2)
 
@@ -6455,7 +6461,7 @@ snapshots:
       parse5: 7.2.1
       parse5-htmlparser2-tree-adapter: 7.1.0
       parse5-parser-stream: 7.1.2
-      undici: 6.20.1
+      undici: 6.21.0
       whatwg-mimetype: 4.0.0
 
   chroma-js@2.6.0: {}
@@ -6773,7 +6779,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.57: {}
+  electron-to-chromium@1.5.58: {}
 
   emoji-regex@10.4.0: {}
 
@@ -8179,14 +8185,14 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.12
 
-  react-force-graph-2d@1.25.7(react@18.3.1):
+  react-force-graph-2d@1.25.8(react@18.3.1):
     dependencies:
       force-graph: 1.46.0
       prop-types: 15.8.1
       react: 18.3.1
       react-kapsule: 2.5.0(react@18.3.1)
 
-  react-force-graph-3d@1.24.5(react@18.3.1):
+  react-force-graph-3d@1.24.6(react@18.3.1):
     dependencies:
       3d-force-graph: 1.73.6
       prop-types: 15.8.1
@@ -8840,7 +8846,7 @@ snapshots:
 
   undici-types@6.19.8: {}
 
-  undici@6.20.1: {}
+  undici@6.21.0: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
@@ -8934,6 +8940,8 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
+
+  vite-plugin-funding@0.1.0: {}
 
   vite-plugin-pwa@0.19.8(vite@5.4.11(@types/node@20.17.6)(terser@5.36.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0):
     dependencies:
