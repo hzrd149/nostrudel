@@ -341,10 +341,10 @@ importers:
         specifier: ^0.6.8
         version: 0.6.8
       '@types/react':
-        specifier: ^18.3.12
+        specifier: ^18.2.22
         version: 18.3.12
       '@types/react-dom':
-        specifier: ^18.3.1
+        specifier: ^18.2.7
         version: 18.3.1
       '@types/react-window':
         specifier: ^1.8.8
