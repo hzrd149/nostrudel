@@ -9,26 +9,29 @@ import {
   CardBody,
   CardHeader,
   Code,
+  Flex,
   Heading,
   Spinner,
   Text,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { NostrEvent } from "nostr-tools";
+import { getTagValue } from "applesauce-core/helpers";
+import { AddressPointer } from "nostr-tools/nip19";
 
-import {
-  ChainedDVMJob,
-  DVM_CONTENT_DISCOVERY_JOB_KIND,
-  getJobStatusType,
-  getResponseFromDVM,
-} from "../../../../helpers/nostr/dvm";
+import { ChainedDVMJob, DVM_CONTENT_DISCOVERY_JOB_KIND, getResponseFromDVM } from "../../../../helpers/nostr/dvm";
 import { DraftNostrEvent } from "../../../../types/nostr-event";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
-import { AddressPointer } from "nostr-tools/nip19";
 import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import InlineInvoiceCard from "../../../../components/lightning/inline-invoice-card";
+import UserAvatar from "../../../../components/user/user-avatar";
+import UserLink from "../../../../components/user/user-link";
+import UserDnsIdentity from "../../../../components/user/user-dns-identity";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
+import NoteZapButton from "../../../../components/note/note-zap-button";
 
 function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const publish = usePublishEvent();
@@ -68,21 +71,31 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
   );
 }
 
-export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[]; pointer: AddressPointer }) {
-  const lastJob = chain[chain.length - 1];
-  const response = lastJob.responses.find((r) => r.pubkey === pointer.pubkey);
-  if (response?.result) return <NextPageButton pointer={pointer} chain={chain} />;
-
+export function DVMStatusCard({ status, pointer }: { status?: NostrEvent; pointer?: AddressPointer }) {
   const cardProps = { w: "full", maxW: "2xl", mx: "auto", overflow: "hidden" };
   const cardHeader = (
     <CardHeader p="4" alignItems="center" display="flex" gap="2">
-      <DVMAvatarLink pointer={pointer} w="12" />
-      <DVMLink pointer={pointer} fontWeight="bold" fontSize="lg" />
+      {pointer ? (
+        <>
+          <DVMAvatarLink pointer={pointer} w="12" />
+          <DVMLink pointer={pointer} fontWeight="bold" fontSize="lg" />
+        </>
+      ) : (
+        status && (
+          <>
+            <UserAvatar pubkey={status.pubkey} size="md" />
+            <Flex direction="column">
+              <UserLink pubkey={status.pubkey} fontWeight="bold" fontSize="lg" />
+              <UserDnsIdentity pubkey={status.pubkey} />
+            </Flex>
+          </>
+        )
+      )}
+      {status && <DebugEventButton ml="auto" event={status} size="sm" variant="ghost" />}
     </CardHeader>
   );
 
-  const statusEvent = response?.status;
-  if (!statusEvent)
+  if (!status)
     return (
       <Card {...cardProps}>
         {cardHeader}
@@ -93,16 +106,16 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
       </Card>
     );
 
-  const statusType = getJobStatusType(lastJob, pointer.pubkey);
+  const statusType = getTagValue(status, "status");
   switch (statusType) {
     case "payment-required":
-      const [_, msats, invoice] = statusEvent.tags.find((t) => t[0] === "amount") ?? [];
+      const [_, msats, invoice] = status.tags.find((t) => t[0] === "amount") ?? [];
 
       return (
         <Card {...cardProps}>
           {cardHeader}
           <CardBody px="4" pb="4" pt="0" gap="2" display="flex" flexDirection="column">
-            <Heading size="sm">{statusEvent.content}</Heading>
+            <Heading size="sm">{status.content}</Heading>
             {invoice && <InlineInvoiceCard paymentRequest={invoice} />}
           </CardBody>
         </Card>
@@ -113,7 +126,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
           <AlertIcon boxSize={8} />
           <Box>
             <AlertTitle>Processing</AlertTitle>
-            <AlertDescription>{statusEvent.content}</AlertDescription>
+            <AlertDescription>{status.content}</AlertDescription>
           </Box>
         </Alert>
       );
@@ -123,7 +136,7 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
           <AlertIcon boxSize={8} />
           <Box>
             <AlertTitle>Error!</AlertTitle>
-            <AlertDescription>{statusEvent.content}</AlertDescription>
+            <AlertDescription>{status.content}</AlertDescription>
           </Box>
         </Alert>
       );
@@ -133,8 +146,16 @@ export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[];
           <Text>
             Unknown status <Code>{statusType}</Code>
           </Text>
-          <Text>{statusEvent.content}</Text>
+          <Text>{status.content}</Text>
         </>
       );
   }
+}
+
+export default function FeedStatus({ chain, pointer }: { chain: ChainedDVMJob[]; pointer: AddressPointer }) {
+  const lastJob = chain[chain.length - 1];
+  const response = lastJob.responses.find((r) => r.pubkey === pointer.pubkey);
+  if (response?.result) return <NextPageButton pointer={pointer} chain={chain} />;
+
+  return <DVMStatusCard status={response?.status} pointer={pointer} />;
 }

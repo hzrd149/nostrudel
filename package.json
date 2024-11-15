@@ -28,7 +28,7 @@
     "@codemirror/autocomplete": "^6.18.3",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.10.3",
-    "@codemirror/view": "^6.34.2",
+    "@codemirror/view": "^6.34.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fedimint/core-web": "^0.0.7",
@@ -114,7 +114,7 @@
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
-    "yet-another-react-lightbox": "^3.21.6",
+    "yet-another-react-lightbox": "^3.21.7",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

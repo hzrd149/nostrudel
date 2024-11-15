@@ -40,7 +40,7 @@ function CollapsedReplies({
   return (
     <>
       {reply}
-      <Card gap="2" overflow="hidden" px="2" display="flex" flexDirection="row" p="2">
+      <Card gap="2" overflow="hidden" px="2" display="flex" flexDirection="row" p="2" flexShrink={0}>
         <UserAvatarLink pubkey={post.event.pubkey} size="xs" />
         <UserName pubkey={post.event.pubkey} fontWeight="bold" />
         {root.id !== pointer.id && <ReplyIcon />}

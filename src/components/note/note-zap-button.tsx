@@ -1,4 +1,5 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
+import { getZapSender } from "applesauce-core/helpers";
 
 import { readablizeSats } from "../../helpers/bolt11";
 import { totalZaps } from "../../helpers/nostr/zaps";
@@ -11,7 +12,6 @@ import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { getZapSender } from "applesauce-core/helpers";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;

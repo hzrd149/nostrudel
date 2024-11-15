@@ -56,7 +56,7 @@ export default function InlineInvoiceCard({
 
   if (!invoice) return <>Loading Invoice...</>;
 
-  const isExpired = dayjs(invoice.expiry).isBefore(dayjs());
+  const isExpired = dayjs.unix(invoice.expiry).isBefore(dayjs());
 
   return (
     <Flex
@@ -87,7 +87,7 @@ export default function InlineInvoiceCard({
           </Box>
           <Box>
             <Text color={isExpired ? "red.400" : undefined}>
-              {isExpired ? "Expired" : "Expires"}: {dayjs(invoice.expiry).fromNow()}
+              {isExpired ? "Expired" : "Expires"}: {dayjs.unix(invoice.expiry).fromNow()}
             </Text>
           </Box>
           <ButtonGroup variant="outline">

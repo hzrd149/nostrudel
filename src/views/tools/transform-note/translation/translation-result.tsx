@@ -5,6 +5,7 @@ import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 
 export default function TranslationResult({ result }: { result: NostrEvent }) {
   const content = useDisclosure();
@@ -18,6 +19,7 @@ export default function TranslationResult({ result }: { result: NostrEvent }) {
         <Button size="sm" onClick={content.onToggle}>
           {content.isOpen ? "Hide" : "Show"} Content
         </Button>
+        <DebugEventButton ml="auto" event={result} size="sm" variant="ghost" />
       </Flex>
       {content.isOpen && (
         <TrustProvider trust>
