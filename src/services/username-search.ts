@@ -1,17 +1,25 @@
 import _throttle from "lodash.throttle";
 import { kinds } from "nostr-tools";
 import { from } from "rxjs";
-import { filter, bufferTime, concatMap, mergeWith, reduce, shareReplay, map } from "rxjs/operators";
+import { filter, bufferTime, concatMap, mergeWith, shareReplay, map, scan } from "rxjs/operators";
 import { getProfileContent, isFromCache } from "applesauce-core/helpers";
 
 import { getSearchNames } from "../helpers/nostr/user-metadata";
 import db from "./db";
 import { eventStore } from "./event-store";
+import { logger } from "../helpers/debug";
 
 export type UserDirectory = Record<string, string[]>;
 export type SearchDirectory = { pubkey: string; names: string[] }[];
 
-const cached = from(db.getAll("userSearch") as Promise<{ pubkey: string; names: string[] }[]>);
+const log = logger.extend("UsernameSearch");
+
+log(`Started loading profiles`);
+const cache = db.getAll("userSearch").then((rows: { pubkey: string; names: string[] }[]) => {
+  log(`Loaded ${rows.length} profiles`);
+  return rows.reduce<UserDirectory>((dir, row) => ({ ...dir, [row.pubkey]: row.names }), {});
+});
+
 const updates = eventStore.stream([{ kinds: [kinds.Metadata] }]).pipe(
   filter((event) => !isFromCache(event)),
   bufferTime(500),
@@ -28,14 +36,14 @@ const updates = eventStore.stream([{ kinds: [kinds.Metadata] }]).pipe(
     }
     transaction.commit();
     await transaction.done;
+    log(`Updated ${events.length} profiles`);
     return updates;
   }),
 );
 
-export const userSearchDirectory = cached.pipe(
-  map((rows) => rows.reduce<UserDirectory>((dir, row) => ({ ...dir, [row.pubkey]: row.names }), {})),
+export const userSearchDirectory = from(cache).pipe(
   mergeWith(updates),
-  reduce((dir, updates) => ({ ...dir, ...updates })),
+  scan((dir, updates) => ({ ...dir, ...updates })),
   map<UserDirectory, SearchDirectory>((dir) => Object.entries(dir).map(([pubkey, names]) => ({ pubkey, names }))),
   shareReplay(1),
 );

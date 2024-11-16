@@ -1,6 +1,7 @@
 import accountService from "./account";
 import channelMetadataService from "./channel-metadata";
 import { eventStore, queryStore } from "./event-store";
+import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
@@ -27,6 +28,12 @@ const noStrudel = {
 
   /** Signing queue */
   signingService,
+
+  /**
+   * Cache relay interface
+   * @type MemoryRelay|WasmRelay|CacheRelay|Relay|undefined
+   */
+  cacheRelay: localRelay,
 
   // other internal services
   replaceableEventsService,
