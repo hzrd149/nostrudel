@@ -11,6 +11,7 @@ import {
   Button,
   Heading,
   FormLabel,
+  Text,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
@@ -48,6 +49,7 @@ export default function PrivacySettings() {
 
   const defaultAuthenticationMode = useObservable(localSettings.defaultAuthenticationMode);
   const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
+  const debugApi = useObservable(localSettings.debugApi);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>
@@ -203,6 +205,33 @@ export default function PrivacySettings() {
               </Link>{" "}
               data for links
             </span>
+          </FormHelperText>
+        </FormControl>
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="debugApi" mb="0">
+              Enable debug api
+            </FormLabel>
+            <Switch
+              id="debugApi"
+              isChecked={debugApi}
+              onChange={(e) => localSettings.debugApi.next(e.currentTarget.checked)}
+            />
+          </Flex>
+          <FormHelperText>
+            <Text>
+              Adds a window.noStrudel to the page with access to internal methods{" "}
+              <Link
+                href="https://github.com/hzrd149/nostrudel/blob/master/src/services/page-api.ts"
+                target="_blank"
+                color="blue.500"
+              >
+                see source
+              </Link>
+            </Text>
+            <Text color="orange.500" mt="1">
+              WARNING: this can expose your secret keys and signer.
+            </Text>
           </FormHelperText>
         </FormControl>
         <Button

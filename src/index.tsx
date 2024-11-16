@@ -8,6 +8,7 @@ console.log("Funding", funding);
 
 import "./services/user-event-sync";
 import "./services/username-search";
+import "./services/page-api";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

@@ -54,6 +54,7 @@ const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-sh
 // privacy
 const defaultAuthenticationMode = new LocalStorageEntry("default-relay-auth-mode", "ask"); // ask, always, never
 const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
+const debugApi = new BooleanLocalStorageEntry("debug-api", false);
 
 // display settings
 const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
@@ -72,6 +73,7 @@ const localSettings = {
   showBrandLogo,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
+  debugApi,
 };
 
 if (import.meta.env.DEV) {
