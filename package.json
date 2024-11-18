@@ -31,7 +31,6 @@
     "@codemirror/view": "^6.34.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@fedimint/core-web": "^0.0.7",
     "@getalby/bitcoin-connect": "^3.6.2",
     "@getalby/bitcoin-connect-react": "^3.6.2",
     "@noble/ciphers": "^1.0.0",

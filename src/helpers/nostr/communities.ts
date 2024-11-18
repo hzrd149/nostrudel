@@ -1,7 +1,6 @@
 import { kinds, validateEvent } from "nostr-tools";
 import { NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
 import { getMatchLink, getMatchNostrLink } from "../regexp";
-import { ReactionGroup } from "./reactions";
 import { parseCoordinate } from "./event";
 
 /** @deprecated */

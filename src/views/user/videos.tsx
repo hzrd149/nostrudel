@@ -7,7 +7,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import VideoCard from "../videos/components/video-card";
 
 export default function UserVideosTab() {

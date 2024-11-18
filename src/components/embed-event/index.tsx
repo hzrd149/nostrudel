@@ -18,7 +18,7 @@ import {
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { safeDecode } from "../../helpers/nip19";

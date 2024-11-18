@@ -57,9 +57,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.12)(react@18.3.1))(@types/react@18.3.12)(react@18.3.1)
-      '@fedimint/core-web':
-        specifier: ^0.0.7
-        version: 0.0.7
       '@getalby/bitcoin-connect':
         specifier: ^3.6.2
         version: 3.6.2(@types/react@18.3.12)(react@18.3.1)(typescript@5.6.3)
@@ -1333,12 +1330,6 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
-
-  '@fedimint/core-web@0.0.7':
-    resolution: {integrity: sha512-Sr4NUwOUDfQkopjkrAl+MeNR8taUzUaOdX4ZbCsOodT3gj4aNtJRLOTCotpCoHrmiqQZcfGkxYKY3ANgpgJsaw==}
-
-  '@fedimint/fedimint-client-wasm-bundler@0.0.2':
-    resolution: {integrity: sha512-+6chBN4sItrPTS792na6ZZJL3OlZf+edzhy0W40B8PULesjRURV0DbCmR4mCdg+QHds3CkuKkISn/UQpN/cDdQ==}
 
   '@getalby/bitcoin-connect-react@3.6.2':
     resolution: {integrity: sha512-5XeqBoiT7BuZHwGWSsCAMOrEqDrgJyyyOFnBi/hZZ+AsMBXRVqhgwst07Zbf4t7bNyXvphEYRTgisMvDQ42ErQ==}
@@ -5625,12 +5616,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.21.5':
     optional: true
-
-  '@fedimint/core-web@0.0.7':
-    dependencies:
-      '@fedimint/fedimint-client-wasm-bundler': 0.0.2
-
-  '@fedimint/fedimint-client-wasm-bundler@0.0.2': {}
 
   '@getalby/bitcoin-connect-react@3.6.2(@types/react@18.3.12)(react@18.3.1)(typescript@5.6.3)':
     dependencies:

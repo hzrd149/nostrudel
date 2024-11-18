@@ -26,7 +26,7 @@ import { useDeleteEventContext } from "../../providers/route/delete-event-provid
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";
 import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
-import { EMOJI_PACK_KIND, getEmojisFromPack, getPackName } from "../../helpers/nostr/emoji-packs";
+import { EMOJI_PACK_KIND, getEmojis, getPackName } from "../../helpers/nostr/emoji-packs";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user/user-avatar-link";
@@ -100,7 +100,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   const [scale, setScale] = useState(10);
 
   const isAuthor = account?.pubkey === pack.pubkey;
-  const emojis = getEmojisFromPack(pack);
+  const emojis = getEmojis(pack);
 
   const [editing, setEditing] = useState(false);
   const [draftEmojis, setDraft] = useState(emojis);

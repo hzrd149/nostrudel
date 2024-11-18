@@ -10,7 +10,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import EmojiPackCard from "./components/emoji-pack-card";
-import { EMOJI_PACK_KIND, getEmojisFromPack } from "../../helpers/nostr/emoji-packs";
+import { EMOJI_PACK_KIND, getEmojis } from "../../helpers/nostr/emoji-packs";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function EmojiPacksBrowsePage() {
@@ -19,7 +19,7 @@ function EmojiPacksBrowsePage() {
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
-      if (!showEmpty.isOpen && getEmojisFromPack(event).length === 0) return false;
+      if (!showEmpty.isOpen && getEmojis(event).length === 0) return false;
       return true;
     },
     [showEmpty.isOpen],

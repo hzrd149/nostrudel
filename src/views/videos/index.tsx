@@ -8,7 +8,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import VideoCard from "./components/video-card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelays } from "../../hooks/use-client-relays";

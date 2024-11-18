@@ -3,7 +3,7 @@ import { Divider, Flex, IconButton, Image, Text } from "@chakra-ui/react";
 import { DislikeIcon, LikeIcon } from "./icons";
 import useCurrentAccount from "../hooks/use-current-account";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
-import { getEmojisFromPack, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
+import { getEmojis, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
 import useAppSettings from "../hooks/use-app-settings";
 
@@ -22,7 +22,7 @@ function EmojiPack({ cord, onSelect }: { cord: string; onSelect: ReactionPickerP
         <Divider />
       </Flex>
       <Flex wrap="wrap" gap="2">
-        {getEmojisFromPack(pack).map((emoji) => (
+        {getEmojis(pack).map((emoji) => (
           <IconButton
             key={emoji.name}
             icon={<Image src={emoji.url} height="1.2rem" />}

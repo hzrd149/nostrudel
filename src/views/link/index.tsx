@@ -8,7 +8,7 @@ import { NOTE_LIST_KIND, PEOPLE_LIST_KIND } from "../../helpers/nostr/lists";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";

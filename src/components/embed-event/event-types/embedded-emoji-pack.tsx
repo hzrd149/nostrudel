@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
+import { getEmojis, getPackName } from "../../../helpers/nostr/emoji-packs";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
@@ -23,7 +23,7 @@ import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
-  const emojis = getEmojisFromPack(pack);
+  const emojis = getEmojis(pack);
   const naddr = getSharableEventAddress(pack);
 
   return (

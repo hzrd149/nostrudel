@@ -8,7 +8,7 @@ import {
   getVideoSummary,
   getVideoTitle,
   getVideoUrl,
-} from "../../helpers/nostr/flare";
+} from "../../helpers/nostr/video";
 import { NostrEvent } from "../../types/nostr-event";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
