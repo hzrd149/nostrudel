@@ -1,14 +1,13 @@
 import React, { useCallback, useContext, useMemo } from "react";
+import { EventTemplate, UnsignedEvent, VerifiedEvent } from "nostr-tools";
 import { useToast } from "@chakra-ui/react";
 
 import signingService from "../../services/signing";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import { EventTemplate, UnsignedEvent, VerifiedEvent } from "nostr-tools";
 import useCurrentAccount from "../../hooks/use-current-account";
 
 export type SigningContextType = {
   finalizeDraft(draft: EventTemplate): Promise<UnsignedEvent>;
-  requestSignature(draft: EventTemplate | DraftNostrEvent): Promise<VerifiedEvent>;
+  requestSignature(draft: UnsignedEvent | EventTemplate): Promise<VerifiedEvent>;
   requestDecrypt(data: string, pubkey: string): Promise<string>;
   requestEncrypt(data: string, pubkey: string): Promise<string>;
 };
@@ -44,7 +43,7 @@ export function SigningProvider({ children }: { children: React.ReactNode }) {
     [toast, current],
   );
   const requestSignature = useCallback(
-    async (draft: DraftNostrEvent) => {
+    async (draft: UnsignedEvent) => {
       if (!current) throw new Error("No account");
       return await signingService.requestSignature(draft, current);
     },

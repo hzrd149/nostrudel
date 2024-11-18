@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { Flex, Heading, Spacer } from "@chakra-ui/react";
-import { getEventUID } from "nostr-idb";
+import { getEventUID } from "applesauce-core/helpers";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -14,6 +14,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import ArticleCard from "./components/article-card";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { getArticleTitle } from "../../helpers/nostr/long-form";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function ArticlesHomePage() {
   const relays = useReadRelays();
@@ -53,7 +54,9 @@ function ArticlesHomePage() {
 
       <IntersectionObserverProvider callback={callback}>
         {articles.map((article) => (
-          <ArticleCard key={getEventUID(article)} article={article} />
+          <ErrorBoundary key={getEventUID(article)}>
+            <ArticleCard article={article} />
+          </ErrorBoundary>
         ))}
         <TimelineActionAndStatus timeline={loader} />
       </IntersectionObserverProvider>
