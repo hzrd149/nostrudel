@@ -9,8 +9,6 @@ import UsbFlashDrive from "../../components/icons/usb-flash-drive";
 import HelpCircle from "../../components/icons/help-circle";
 
 import accountService from "../../services/account";
-import serialPortService from "../../services/serial-port";
-import amberSignerService from "../../services/amber-signer";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
@@ -47,7 +45,8 @@ export default function LoginStartView() {
       try {
         setLoading(true);
 
-        const pubkey = await serialPortService.getPublicKey();
+        const signer = new SerialPortSigner();
+        const pubkey = await signer.getPublicKey();
         accountService.addAccount(new SerialPortAccount(pubkey));
         accountService.switchAccount(pubkey);
       } catch (e) {
@@ -61,7 +60,8 @@ export default function LoginStartView() {
 
   const signinWithAmber = async () => {
     try {
-      const pubkey = await amberSignerService.getPublicKey();
+      const signer = new AmberClipboardSigner();
+      const pubkey = await signer.getPublicKey();
       accountService.addAccount(new AmberAccount(pubkey));
       accountService.switchAccount(pubkey);
     } catch (e) {

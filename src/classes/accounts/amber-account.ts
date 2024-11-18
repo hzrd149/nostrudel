@@ -1,4 +1,4 @@
-import { AmberClipboardSigner } from "applesauce-signer";
+import { AmberClipboardSigner } from "applesauce-signer/signers/amber-clipboard-signer";
 import { Account } from "./account";
 
 export default class AmberAccount extends Account {
@@ -15,5 +15,6 @@ export default class AmberAccount extends Account {
   constructor(pubkey: string) {
     super(pubkey);
     this.signer = new AmberClipboardSigner();
+    this.signer.pubkey = pubkey;
   }
 }
