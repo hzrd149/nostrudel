@@ -104,6 +104,7 @@ import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
 import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
+import WalletView from "./views/wallet";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -334,6 +335,19 @@ const router = createHashRouter([
         children: [
           { path: "threads", element: <ThreadsNotificationsView /> },
           { path: "", element: <NotificationsView /> },
+        ],
+      },
+      {
+        path: "wallet",
+        children: [
+          {
+            path: "",
+            element: (
+              <RequireCurrentAccount>
+                <WalletView />
+              </RequireCurrentAccount>
+            ),
+          },
         ],
       },
       {

@@ -1,173 +1,102 @@
-import { PropsWithChildren, ReactNode, useCallback, useMemo, useState } from "react";
+import { ComponentType, useState } from "react";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalBody,
   ModalCloseButton,
-  Heading,
-  AccordionItem,
-  Accordion,
-  AccordionPanel,
-  AccordionIcon,
-  AccordionButton,
-  Box,
   ModalHeader,
-  Code,
-  AccordionPanelProps,
   Button,
   Text,
+  ComponentWithAs,
+  IconProps,
+  IconButton,
+  Flex,
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
 import { ModalProps } from "@chakra-ui/react";
-import { getSeenRelays } from "applesauce-core/helpers";
-import { TextNoteContentSymbol } from "applesauce-content/text";
-import { Root } from "applesauce-content/nast";
 
-import { getContentPointers, getContentTagRefs, getThreadReferences } from "../../helpers/nostr/event";
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
-import { CopyIconButton } from "../copy-icon-button";
-import DebugEventTags from "./event-tags";
 import { getSharableEventAddress } from "../../services/event-relay-hint";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import { EditIcon } from "../icons";
-import { RelayFavicon } from "../relay-favicon";
-import { ErrorBoundary } from "../error-boundary";
+import { CodeIcon, RelayIcon, ThreadIcon } from "../icons";
+import RawJsonPage from "./pages/raw";
+import PenTool01 from "../icons/pen-tool-01";
+import DebugContentPage from "./pages/content";
+import DebugThreadingPage from "./pages/threading";
+import Tag01 from "../icons/tag-01";
+import DebugTagsPage from "./pages/tags";
+import DebugEventRelaysPage from "./pages/relays";
+import Database01 from "../icons/database-01";
+import DebugEventCachePage from "./pages/cache";
 
-function Section({
-  label,
-  children,
-  actions,
-  ...props
-}: PropsWithChildren<{ label: string; actions?: ReactNode }> & Omit<AccordionPanelProps, "children">) {
-  return (
-    <AccordionItem>
-      <h2>
-        <AccordionButton>
-          <Box as="span" flex="1" textAlign="left">
-            {label}
-          </Box>
-          {actions && <div onClick={(e) => e.stopPropagation()}>{actions}</div>}
-          <AccordionIcon ml="2" />
-        </AccordionButton>
-      </h2>
-      <AccordionPanel display="flex" flexDirection="column" gap="2" alignItems="flex-start" {...props}>
-        {children}
-      </AccordionPanel>
-    </AccordionItem>
-  );
-}
+type DebugTool = {
+  id: string;
+  name: string;
+  icon: ComponentWithAs<"svg", IconProps>;
+  component: ComponentType<{ event: NostrEvent }>;
+};
 
-function JsonCode({ data }: { data: any }) {
+const tools: DebugTool[] = [
+  { id: "content", name: "Content", icon: PenTool01, component: DebugContentPage },
+  { id: "json", name: "JSON", icon: CodeIcon, component: RawJsonPage },
+  { id: "threading", name: "Threading", icon: ThreadIcon, component: DebugThreadingPage },
+  { id: "tags", name: "Tags", icon: Tag01, component: DebugTagsPage },
+  { id: "relays", name: "Relays", icon: RelayIcon, component: DebugEventRelaysPage },
+  { id: "cache", name: "Cache", icon: Database01, component: DebugEventCachePage },
+];
+
+function DefaultPage({ event, setSelected }: { setSelected: (id: string) => void; event: NostrEvent }) {
   return (
-    <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
-      {JSON.stringify(data, null, 2)}
-    </Code>
+    <>
+      <RawValue heading="Event Id" value={event.id} />
+      <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
+      <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
+      <Flex gap="2" flexWrap="wrap">
+        {tools.map(({ icon: Icon, name, id }) => (
+          <Button
+            variant="outline"
+            key={id}
+            leftIcon={<Icon boxSize={10} mb="4" />}
+            onClick={() => setSelected(id)}
+            h="36"
+            w="36"
+            flexDirection="column"
+          >
+            {name}
+          </Button>
+        ))}
+      </Flex>
+    </>
   );
 }
 
 export default function EventDebugModal({ event, ...props }: { event: NostrEvent } & Omit<ModalProps, "children">) {
-  const contentRefs = useMemo(() => getContentPointers(event.content), [event]);
-  const publish = usePublishEvent();
-  const [loading, setLoading] = useState(false);
-  const broadcast = useCallback(async () => {
-    setLoading(true);
-    await publish("Broadcast", event);
-    setLoading(false);
-  }, []);
+  const [selected, setSelected] = useState("");
 
-  const nast = Reflect.get(event, TextNoteContentSymbol) as Root;
+  const tool = tools.find((t) => t.id === selected);
+  const Page = tool?.component;
+  const IconComponent = tool?.icon;
 
   return (
     <Modal size="6xl" {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader p="4">{event.id}</ModalHeader>
+        <ModalHeader px="4" pt="4" pb="2" display="flex" alignItems="center" gap="2">
+          {tool && IconComponent && (
+            <IconButton icon={<IconComponent boxSize={6} />} aria-label="Select Tool" onClick={() => setSelected("")} />
+          )}
+          <Text as="span">{tool?.name || event.id}</Text>
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody p="0">
-          <Accordion allowToggle defaultIndex={event.content ? 1 : 2}>
-            <Section label="IDs">
-              <RawValue heading="Event Id" value={event.id} />
-              <RawValue heading="NIP-19 Encoded Id" value={nip19.noteEncode(event.id)} />
-              <RawValue heading="NIP-19 Pointer" value={getSharableEventAddress(event)} />
-            </Section>
+        <ModalBody px="4" pt="0" pb="4" display="flex" flexDirection="column" gap="2">
+          {Page ? <Page event={event} /> : <DefaultPage setSelected={setSelected} event={event} />}
 
-            <Section
-              label="Content"
-              p="0"
-              actions={<CopyIconButton aria-label="copy json" value={event.content} size="sm" />}
-            >
-              <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
-                {event.content}
-              </Code>
-
-              {contentRefs.length > 0 && (
-                <>
-                  <Heading size="md" px="2">
-                    embeds
-                  </Heading>
-                  {contentRefs.map((pointer, i) => (
-                    <>
-                      <Code whiteSpace="pre" overflowX="auto" width="100%" p="4">
-                        {pointer.type + "\n"}
-                        {JSON.stringify(pointer.data, null, 2)}
-                      </Code>
-                    </>
-                  ))}
-                </>
-              )}
-            </Section>
-            <Section
-              label="JSON"
-              p="0"
-              actions={
-                <>
-                  <Button
-                    leftIcon={<EditIcon />}
-                    as={RouterLink}
-                    to="/tools/publisher"
-                    size="sm"
-                    state={{ draft: event }}
-                    colorScheme="primary"
-                    mr="2"
-                  >
-                    Edit
-                  </Button>
-                  <CopyIconButton aria-label="copy json" value={JSON.stringify(event, null, 2)} size="sm" />
-                </>
-              }
-            >
-              <JsonCode data={event} />
-            </Section>
-            <Section label="Threading" p="0">
-              <JsonCode data={getThreadReferences(event)} />
-            </Section>
-            <Section label="Tags">
-              <ErrorBoundary>
-                <DebugEventTags event={event} />
-              </ErrorBoundary>
-              <Heading size="sm">Tags referenced in content</Heading>
-              <JsonCode data={getContentTagRefs(event.content, event.tags)} />
-            </Section>
-            <Section label="Relays">
-              <Text>Seen on:</Text>
-              {Array.from(getSeenRelays(event) ?? []).map((url) => (
-                <Text gap="1" key={url}>
-                  <RelayFavicon relay={url} size="xs" /> {url}
-                </Text>
-              ))}
-              <Button onClick={broadcast} mr="auto" colorScheme="primary" isLoading={loading}>
-                Broadcast
-              </Button>
-            </Section>
-            {nast && (
-              <Section label="Parsed Content" p="0">
-                <JsonCode data={nast.children} />
-              </Section>
-            )}
-          </Accordion>
+          {tool && (
+            <Button aria-label="Back" onClick={() => setSelected("")}>
+              Back
+            </Button>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>
