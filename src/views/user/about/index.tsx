@@ -17,7 +17,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
+import { nip19, NostrEvent } from "nostr-tools";
 import { ChatIcon } from "@chakra-ui/icons";
 
 import { getLudEndpoint } from "../../../helpers/lnurl";
@@ -51,6 +51,9 @@ import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import { renderGenericUrl } from "../../../components/content/links/common";
 import UserAboutContent from "../../../components/user/user-about";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineQuery } from "applesauce-core/queries";
+import UserRecentEvents from "./user-recent-events";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
@@ -218,6 +221,10 @@ export default function UserAboutTab() {
       </Flex>
 
       <UserProfileBadges pubkey={pubkey} px="2" />
+      <Box px="2">
+        <Heading size="md">Recent activity:</Heading>
+        <UserRecentEvents pubkey={pubkey} />
+      </Box>
       <UserStatsAccordion pubkey={pubkey} />
 
       <Flex gap="2" wrap="wrap">

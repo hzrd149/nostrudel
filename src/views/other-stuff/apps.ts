@@ -1,4 +1,5 @@
 import {
+  ArticleIcon,
   BadgeIcon,
   BookmarkIcon,
   ChannelsIcon,
@@ -13,11 +14,11 @@ import {
   SearchIcon,
   TorrentIcon,
   TrackIcon,
+  VideoIcon,
   WikiIcon,
 } from "../../components/icons";
 import { App } from "./component/app-card";
 import ShieldOff from "../../components/icons/shield-off";
-import Film02 from "../../components/icons/film-02";
 import MessageQuestionSquare from "../../components/icons/message-question-square";
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
@@ -52,8 +53,8 @@ export const internalApps: App[] = [
   { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
   { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
-  { title: "Videos", description: "Browse flare videos", icon: Film02, id: "videos", to: "/videos" },
-  { title: "Articles", description: "Browse articles", icon: Edit04, id: "articles", to: "/articles" },
+  { title: "Videos", description: "Browse videos", icon: VideoIcon, id: "videos", to: "/videos" },
+  { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
 ];
 
 export const internalTools: App[] = [
