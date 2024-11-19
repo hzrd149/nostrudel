@@ -8,7 +8,7 @@ import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../user/user-avatar";
 import useUserProfile from "../../hooks/use-user-profile";
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import { userSearchDirectory } from "../../services/username-search";
 
 function UserOption({ pubkey }: { pubkey: string }) {

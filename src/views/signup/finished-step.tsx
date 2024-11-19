@@ -1,12 +1,12 @@
-import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { ProfileContent } from "applesauce-core/helpers";
 import { useAsync } from "react-use";
 
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import { containerProps } from "./common";
 import { UserFollowButton } from "../../components/user/user-follow-button";
-import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 
 type TrendingApi = {
@@ -24,7 +24,7 @@ type TrendingApi = {
 
 function About({ profile }: { profile: { content: string } }) {
   const { value: metadata, error } = useAsync(
-    async () => JSON.parse(profile.content) as Kind0ParsedContent,
+    async () => JSON.parse(profile.content) as ProfileContent,
     [profile.content],
   );
   return metadata ? <Text>{metadata.about}</Text> : null;

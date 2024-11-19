@@ -2,10 +2,11 @@ import { forwardRef, memo, useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 import styled from "@emotion/styled";
+import { ProfileContent } from "applesauce-core/helpers";
 
 import { getIdenticon } from "../../helpers/identicon";
 import { safeUrl } from "../../helpers/parse";
-import { Kind0ParsedContent, getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
@@ -79,7 +80,7 @@ const SquareAvatarWithBorder = styled(SquareAvatar)`
 `;
 
 export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
-  metadata?: Kind0ParsedContent;
+  metadata?: ProfileContent;
   pubkey?: string;
   noProxy?: boolean;
   square?: boolean;

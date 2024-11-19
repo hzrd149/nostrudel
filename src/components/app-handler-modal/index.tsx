@@ -19,14 +19,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
-import { encodeDecodeResult } from "applesauce-core/helpers";
+import { encodeDecodeResult, getProfileContent, ProfileContent } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { Kind0ParsedContent, getDisplayName, parseMetadataContent } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
 import ArrowRight from "../icons/arrow-right";
@@ -62,7 +62,7 @@ function getKindFromDecoded(decoded: nip19.DecodeResult) {
 }
 
 function AppHandler({ app, decoded }: { app: NostrEvent; decoded: nip19.DecodeResult }) {
-  const metadata = useMemo(() => parseMetadataContent(app), [app]);
+  const metadata = useMemo(() => getProfileContent(app), [app]);
   const link = useMemo(() => {
     const tag = app.tags.find((t) => t[0] === "web" && t[2] === decoded.type) || app.tags.find((t) => t[0] === "web");
     return tag ? tag[1].replace("<bech32>", encodeDecodeResult(decoded)) : undefined;
@@ -111,7 +111,7 @@ export default function AppHandlerModal({
   const filteredApps = apps.filter((app) => {
     if (search.length > 1) {
       try {
-        const parsed = JSON.parse(app.content) as Kind0ParsedContent;
+        const parsed = JSON.parse(app.content) as ProfileContent;
         if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
           return true;
         }

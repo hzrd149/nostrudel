@@ -4,12 +4,12 @@ export const FLARE_VIDEO_KIND = 34235;
 
 export function getVideoTitle(video: NostrEvent) {
   const title = video.tags.find((t) => t[0] === "title")?.[1];
-  if (!title) throw new Error("missing title");
+  if (!title) throw new Error("Missing title");
   return title;
 }
 export function getVideoUrl(video: NostrEvent) {
   const url = video.tags.find((t) => t[0] === "url")?.[1];
-  if (!url) throw new Error("missing url");
+  if (!url) throw new Error("Missing url");
   return url;
 }
 export function getVideoSummary(video: NostrEvent) {

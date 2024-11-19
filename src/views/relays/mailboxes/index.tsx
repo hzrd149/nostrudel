@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
@@ -12,19 +13,18 @@ import { RelayMode } from "../../../classes/relay";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { COMMON_CONTACT_RELAY } from "../../../const";
 import BackButton from "../../../components/router/back-button";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import AddRelayForm from "../app/add-relay-form";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { kinds } from "nostr-tools";
+import { COMMON_CONTACT_RELAYS } from "../../../const";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
   const remove = useAsyncErrorHandler(async () => {
     const draft = removeRelayModeFromMailbox(list, relay, mode);
-    await publish("Remove relay", draft, [COMMON_CONTACT_RELAY]);
+    await publish("Remove relay", draft, COMMON_CONTACT_RELAYS);
   }, [relay, mode, list, publish]);
 
   return (
@@ -55,7 +55,7 @@ function MailboxesPage() {
   const addRelay = useCallback(
     async (relay: string, mode: RelayMode) => {
       const draft = addRelayModeToMailbox(event ?? undefined, relay, mode);
-      await publish("Add Relay", draft, [COMMON_CONTACT_RELAY]);
+      await publish("Add Relay", draft, COMMON_CONTACT_RELAYS);
     },
     [event],
   );

@@ -28,7 +28,7 @@ import {
 
 import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import useUserProfile from "../../hooks/use-user-profile";
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";

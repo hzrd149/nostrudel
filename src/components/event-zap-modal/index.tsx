@@ -11,10 +11,9 @@ import {
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 import { getValue } from "applesauce-core/observable";
-import { getInboxes, getOutboxes } from "applesauce-core/helpers";
+import { getInboxes, getOutboxes, safeRelayUrls } from "applesauce-core/helpers";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
-import clientRelaysService from "../../services/client-relays";
 import { getZapSplits } from "../../helpers/nostr/zaps";
 import { unique } from "../../helpers/array";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -81,7 +80,7 @@ async function getPayRequestForPubkey(
     content: comment ?? "",
     tags: [
       ["p", pubkey],
-      ["relays", ...unique([...userInbox, ...eventRelays, ...outbox, ...additional])],
+      ["relays", ...unique(safeRelayUrls([...userInbox, ...eventRelays, ...outbox, ...additional]))],
       ["amount", String(amount)],
     ],
   };

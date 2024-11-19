@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Text, TextProps } from "@chakra-ui/react";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 

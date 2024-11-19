@@ -1,5 +1,5 @@
+import { safeRelayUrls } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
-import { safeRelayUrl, safeRelayUrls } from "./helpers/relay";
 
 export const DEFAULT_SEARCH_RELAYS = safeRelayUrls([
   "wss://relay.nostr.band",
@@ -8,11 +8,10 @@ export const DEFAULT_SEARCH_RELAYS = safeRelayUrls([
   "wss://filter.nostr.wine",
 ]);
 export const WIKI_RELAYS = safeRelayUrls(["wss://relay.wikifreedia.xyz/"]);
-export const COMMON_CONTACT_RELAY = safeRelayUrl("wss://purplepag.es") as string;
-export const COMMON_CONTACT_RELAYS = [COMMON_CONTACT_RELAY];
+export const COMMON_CONTACT_RELAYS = safeRelayUrls(["wss://purplepag.es/"]);
 
 export const DEFAULT_SIGNAL_RELAYS = safeRelayUrls(["wss://nostrue.com/", "wss://relay.damus.io"]);
-export const DEFAULT_NOSTR_CONNECT_RELAYS = safeRelayUrls(["wss://relay.nsec.app"]);
+export const DEFAULT_NOSTR_CONNECT_RELAYS = safeRelayUrls(["wss://relay.nsec.app/"]);
 
 export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   {

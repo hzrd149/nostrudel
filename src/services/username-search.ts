@@ -4,7 +4,7 @@ import { from } from "rxjs";
 import { filter, bufferTime, concatMap, mergeWith, shareReplay, map, scan } from "rxjs/operators";
 import { getProfileContent, isFromCache } from "applesauce-core/helpers";
 
-import { getSearchNames } from "../helpers/nostr/user-metadata";
+import { getSearchNames } from "../helpers/nostr/profile";
 import db from "./db";
 import { eventStore } from "./event-store";
 import { logger } from "../helpers/debug";

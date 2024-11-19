@@ -2,7 +2,7 @@ import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";

@@ -10,12 +10,11 @@ import {
   Link,
   Textarea,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
+import { ProfileContent, unixNow } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
-import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -23,7 +22,7 @@ import dnsIdentityService from "../../services/dns-identity";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { COMMON_CONTACT_RELAY } from "../../const";
+import { COMMON_CONTACT_RELAYS } from "../../const";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 
 const isEmail =
@@ -234,7 +233,7 @@ export const ProfileEditView = () => {
   );
 
   const handleSubmit = async (data: FormData) => {
-    const newMetadata: Kind0ParsedContent = {
+    const newMetadata: ProfileContent = {
       name: data.username,
       picture: data.picture,
       banner: data.banner,
@@ -253,13 +252,13 @@ export const ProfileEditView = () => {
     }
 
     const draft: DraftNostrEvent = {
-      created_at: dayjs().unix(),
+      created_at: unixNow(),
       kind: 0,
       content: JSON.stringify({ ...metadata, ...newMetadata }),
       tags: [],
     };
 
-    await publish("Update Profile", draft, [COMMON_CONTACT_RELAY]);
+    await publish("Update Profile", draft, COMMON_CONTACT_RELAYS);
   };
 
   return <MetadataForm defaultValues={defaultValues} onSubmit={handleSubmit} />;

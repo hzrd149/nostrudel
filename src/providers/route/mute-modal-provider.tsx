@@ -20,7 +20,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useEffect, u
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {

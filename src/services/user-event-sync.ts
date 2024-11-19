@@ -3,7 +3,7 @@ import _throttle from "lodash.throttle";
 import { combineLatest, distinct, filter } from "rxjs";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 
-import { COMMON_CONTACT_RELAY } from "../const";
+import { COMMON_CONTACT_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
@@ -24,7 +24,7 @@ function downloadEvents(account: Account) {
   };
 
   log("Loading outboxes");
-  requestReplaceable([...relays, COMMON_CONTACT_RELAY], kinds.RelayList);
+  requestReplaceable([...relays, ...COMMON_CONTACT_RELAYS], kinds.RelayList);
 
   const mailboxesSub = queryStore.mailboxes(account.pubkey).subscribe((mailboxes) => {
     log("Loading user information");
@@ -35,7 +35,7 @@ function downloadEvents(account: Account) {
 
     log("Loading contacts list");
     replaceableEventsService.requestEvent(
-      [...clientRelaysService.readRelays.value, COMMON_CONTACT_RELAY],
+      [...clientRelaysService.readRelays.value, ...COMMON_CONTACT_RELAYS],
       kinds.Contacts,
       account.pubkey,
       undefined,
