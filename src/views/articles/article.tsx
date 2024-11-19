@@ -21,6 +21,7 @@ import NoteReactions from "../../components/note/timeline-note/components/note-r
 import NoteZapButton from "../../components/note/note-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import BookmarkEventButton from "../../components/note/bookmark-event";
+import QuoteEventButton from "../../components/note/quote-event-button";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
@@ -49,6 +50,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         <ZapBubbles event={article} mb="2" />
         <Flex gap="2">
           <NoteZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
+          <QuoteEventButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
         <Box fontSize="lg">
@@ -56,6 +58,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         </Box>
         <Flex gap="2">
           <NoteZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
+          <QuoteEventButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
       </Box>
