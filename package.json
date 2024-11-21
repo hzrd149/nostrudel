@@ -138,7 +138,7 @@
     "eventemitter3": "^5.0.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
-    "vite-plugin-pwa": "^0.19.8",
+    "vite-plugin-pwa": "^0.21.0",
     "workbox-build": "^7.3.0",
     "workbox-window": "^7.3.0"
   },
