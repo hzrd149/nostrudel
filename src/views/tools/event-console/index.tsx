@@ -63,7 +63,7 @@ export default function EventConsoleView() {
   const [sub, setSub] = useState<Subscription | IDBSubscription | null>(null);
 
   const [query, setQuery] = useState(() => {
-    if (params.has("filter") || location.state.filter) {
+    if (params.has("filter") || location.state?.filter) {
       const str = params.get("filter");
       if (str) {
         const f = safeJson(str, null);
