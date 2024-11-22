@@ -20,7 +20,7 @@ import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
-import MarkdownContent from "./components/markdown";
+import MarkdownContent from "../../components/markdown/markdown";
 import UserLink from "../../components/user/user-link";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";

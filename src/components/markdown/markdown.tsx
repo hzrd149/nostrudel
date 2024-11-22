@@ -22,12 +22,16 @@ import {
   Tr,
   UnorderedList,
 } from "@chakra-ui/react";
-import Markdown, { Components, ExtraProps } from "react-markdown";
+import Markdown, { Components, defaultUrlTransform, ExtraProps } from "react-markdown";
 import styled from "@emotion/styled";
-import { NostrEvent } from "nostr-tools";
+import { nip19, NostrEvent } from "nostr-tools";
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "remark-wiki-link";
+import { remarkNostrMentions, NostrMention } from "applesauce-content/markdown";
+
 import WikiLink from "./wiki-link";
+import UserLink from "../user/user-link";
+import { EmbedEventPointer } from "../embed-event";
 
 const StyledMarkdown = styled(Markdown)`
   pre > code {
@@ -91,6 +95,27 @@ function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
     );
   }
 
+  // render nostr: mentions
+  if (href?.startsWith("nostr:")) {
+    try {
+      const parsed = nip19.decode(href.replace(/^nostr:/, ""));
+
+      switch (parsed.type) {
+        case "npub":
+          return <UserLink pubkey={parsed.data} showAt color="blue.500" />;
+        case "nprofile":
+          return <UserLink pubkey={parsed.data.pubkey} showAt relays={parsed.data.relays} color="blue.500" />;
+
+        case "naddr":
+        case "nevent":
+        case "note":
+          return <EmbedEventPointer pointer={parsed} />;
+      }
+    } catch (error) {
+      if (error instanceof Error) return <Text color="red.500">{error.message}</Text>;
+    }
+  }
+
   return (
     <Link color="blue.500" isExternal href={href} {...props}>
       {children}
@@ -145,10 +170,20 @@ const components: Partial<Components> = {
   code: CustomCode,
 };
 
+function urlTransform(url: string) {
+  if (url.startsWith("nostr:")) return url;
+  return defaultUrlTransform(url);
+}
+
 export const CharkaMarkdown = forwardRef<HTMLDivElement, { children: string }>(({ children }, ref) => {
   return (
     <div ref={ref}>
-      <StyledMarkdown remarkPlugins={[remarkGfm, wikiLinkPlugin]} components={components}>
+      <StyledMarkdown
+        remarkPlugins={[remarkGfm, wikiLinkPlugin, remarkNostrMentions]}
+        components={components}
+        skipHtml
+        urlTransform={urlTransform}
+      >
         {children}
       </StyledMarkdown>
     </div>

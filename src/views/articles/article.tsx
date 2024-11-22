@@ -14,7 +14,7 @@ import {
 import UserLink from "../../components/user/user-link";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
-import MarkdownContent from "../wiki/components/markdown";
+import MarkdownContent from "../../components/markdown/markdown";
 import ArticleMenu from "./components/article-menu";
 import ArticleTags from "./components/article-tags";
 import NoteReactions from "../../components/note/timeline-note/components/note-reactions";

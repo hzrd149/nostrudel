@@ -10,7 +10,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { WIKI_RELAYS } from "../../const";
 import { ExternalLinkIcon } from "../../components/icons";
-import WikiLink from "./components/wiki-link";
+import WikiLink from "../../components/markdown/wiki-link";
 import { useEffect } from "react";
 import dictionaryService from "../../services/dictionary";
 import UserAvatar from "../../components/user/user-avatar";

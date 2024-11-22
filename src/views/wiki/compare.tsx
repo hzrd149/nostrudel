@@ -20,7 +20,7 @@ import Timestamp from "../../components/timestamp";
 import WikiPageHeader from "./components/wiki-page-header";
 import DiffViewer from "../../components/diff/diff-viewer";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import MarkdownContent from "./components/markdown";
+import MarkdownContent from "../../components/markdown/markdown";
 import { WIKI_RELAYS } from "../../const";
 import UserName from "../../components/user/user-name";
 import WikiPageMenu from "./components/wiki-page-menu";

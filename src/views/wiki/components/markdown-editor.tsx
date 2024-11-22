@@ -12,7 +12,7 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useCurrentAccount from "../../../hooks/use-current-account";
 
-import { CharkaMarkdown } from "./markdown";
+import { CharkaMarkdown } from "../../../components/markdown/markdown";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { simpleMultiServerUpload } from "../../../helpers/media-upload/blossom";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";

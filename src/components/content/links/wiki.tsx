@@ -1,5 +1,5 @@
 import { EmbedableContent, embedJSX } from "../../../helpers/embeds";
-import WikiLink from "../../../views/wiki/components/wiki-link";
+import WikiLink from "../../markdown/wiki-link";
 
 export function embedNostrWikiLinks(content: EmbedableContent) {
   return embedJSX(content, {

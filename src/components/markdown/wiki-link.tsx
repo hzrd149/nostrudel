@@ -20,11 +20,11 @@ import { getEventUID } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import { getPageDefer, getPageSummary } from "../../../helpers/nostr/wiki";
-import UserName from "../../../components/user/user-name";
-import dictionaryService from "../../../services/dictionary";
-import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import { getPageDefer, getPageSummary } from "../../helpers/nostr/wiki";
+import UserName from "../user/user-name";
+import dictionaryService from "../../services/dictionary";
+import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 
 export default function WikiLink({
   children,
