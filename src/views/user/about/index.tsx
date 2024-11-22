@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { ChatIcon } from "@chakra-ui/icons";
+import { parseLNURLOrAddress } from "applesauce-core/helpers";
 
-import { parseLNURLOrAddress } from "../../../../../applesauce/packages/core/src/helpers/lnurl";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";

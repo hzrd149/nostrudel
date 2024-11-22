@@ -11,7 +11,7 @@ import {
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 import { getValue } from "applesauce-core/observable";
-import { getInboxes, getOutboxes, safeRelayUrls } from "applesauce-core/helpers";
+import { getInboxes, getInvoice, getOutboxes, safeRelayUrls } from "applesauce-core/helpers";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import { getZapSplits } from "../../helpers/nostr/zaps";
@@ -24,7 +24,6 @@ import lnurlMetadataService from "../../services/lnurl-metadata";
 import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
-import { getInvoice } from "../../../../applesauce/packages/core/src/helpers/lnurl";
 import UserLink from "../user/user-link";
 import { getEventRelayHints } from "../../services/event-relay-hint";
 import { eventStore, queryStore } from "../../services/event-store";
