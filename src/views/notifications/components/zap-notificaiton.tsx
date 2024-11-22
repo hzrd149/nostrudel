@@ -9,7 +9,7 @@ import {
 } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import { EmbedEventPointer } from "../../../components/embed-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { LightningIcon } from "../../../components/icons";
@@ -50,7 +50,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: 
         timestamp={request.created_at}
         summary={
           <>
-            {readablizeSats(payment.amount / 1000)} {request.content}
+            {humanReadableSats(payment.amount / 1000)} {request.content}
           </>
         }
         onClick={onClick}
@@ -59,7 +59,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: 
           <AvatarGroup size="sm">
             <UserAvatarLink pubkey={sender} />
           </AvatarGroup>
-          <Text>zapped {readablizeSats(payment.amount / 1000)} sats</Text>
+          <Text>zapped {humanReadableSats(payment.amount / 1000)} sats</Text>
           <ButtonGroup size="sm" variant="ghost" ml="auto">
             <ZapReceiptMenu zap={zap} aria-label="More Options" />
           </ButtonGroup>

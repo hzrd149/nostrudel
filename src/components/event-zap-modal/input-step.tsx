@@ -2,7 +2,7 @@ import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 import { NostrEvent } from "../../types/nostr-event";
-import { readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import { LightningIcon } from "../icons";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getZapSplits } from "../../helpers/nostr/zaps";
@@ -117,7 +117,7 @@ export default function InputStep({
             size="md"
             autoFocus
           >
-            {actionName} {readablizeSats(watch("amount"))} sats
+            {actionName} {humanReadableSats(watch("amount"))} sats
           </Button>
         </Flex>
       </Flex>

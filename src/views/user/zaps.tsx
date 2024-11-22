@@ -9,7 +9,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
-import { readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import { isProfileZap, isNoteZap, totalZaps } from "../../helpers/nostr/zaps";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
@@ -68,7 +68,7 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
         {payment?.amount && (
           <Flex gap="2">
             <LightningIcon color="yellow.400" />
-            <Text>{readablizeSats(payment.amount / 1000)} sats</Text>
+            <Text>{humanReadableSats(payment.amount / 1000)} sats</Text>
           </Flex>
         )}
         <Timestamp ml="auto" timestamp={request.created_at} />
@@ -120,7 +120,7 @@ const UserZapsTab = () => {
             <Flex gap="2">
               <LightningIcon color="yellow.400" />
               <Text>
-                {readablizeSats(totalZaps(zaps) / 1000)} sats in the last{" "}
+                {humanReadableSats(totalZaps(zaps) / 1000)} sats in the last{" "}
                 {dayjs.unix(zaps[zaps.length - 1].created_at).fromNow(true)}
               </Text>
             </Flex>

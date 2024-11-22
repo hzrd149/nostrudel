@@ -8,7 +8,7 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import Timestamp from "../../../../components/timestamp";
 import { LightningIcon } from "../../../../components/icons";
-import { readablizeSats } from "../../../../helpers/bolt11";
+import { humanReadableSats } from "../../../../helpers/lightning";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
@@ -24,7 +24,7 @@ const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
       <Flex gap="2">
         <Flex direction="column" alignItems="center" minW="10">
           <LightningIcon color="yellow.500" boxSize={5} />
-          <Text>{readablizeSats(payment.amount / 1000)}</Text>
+          <Text>{humanReadableSats(payment.amount / 1000)}</Text>
         </Flex>
 
         <UserAvatarLink pubkey={sender} size="sm" ml="2" />

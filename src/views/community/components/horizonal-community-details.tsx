@@ -28,7 +28,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import CommunityJoinButton from "../../communities/components/community-join-button";
 import CommunityMenu from "./community-menu";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import CommunityMembersModal from "./community-members-modal";
 import { RelayFavicon } from "../../../components/relay-favicon";
 
@@ -83,7 +83,7 @@ export default function HorizontalCommunityDetails({
                 <Heading size="sm" mb="1">
                   Members
                 </Heading>
-                <Text>{countMembers ? readablizeSats(countMembers) : "unknown"}</Text>
+                <Text>{countMembers ? humanReadableSats(countMembers) : "unknown"}</Text>
               </Box>
               {rules && (
                 <Box>

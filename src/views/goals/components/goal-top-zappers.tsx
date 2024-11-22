@@ -6,7 +6,7 @@ import useEventZaps from "../../../hooks/use-event-zaps";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import { LightningIcon } from "../../../components/icons";
 
 export default function GoalTopZappers({
@@ -35,7 +35,7 @@ export default function GoalTopZappers({
           <Box whiteSpace="pre" isTruncated>
             <UserLink fontSize="lg" fontWeight="bold" pubkey={pubkey} mr="2" />
             <br />
-            <LightningIcon /> {readablizeSats(amount / 1000)}
+            <LightningIcon /> {humanReadableSats(amount / 1000)}
           </Box>
         </Flex>
       ))}

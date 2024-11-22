@@ -6,7 +6,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "../../../../types/nostr-event";
 import { LightningIcon } from "../../../../components/icons";
-import { readablizeSats } from "../../../../helpers/bolt11";
+import { humanReadableSats } from "../../../../helpers/lightning";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ChatMessageContent from "./chat-message-content";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
@@ -31,7 +31,7 @@ function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) 
           <LightningIcon color="yellow.400" />
           <UserAvatar pubkey={sender} size="xs" />
           <UserLink pubkey={sender} fontWeight="bold" color="yellow.400" />
-          <Text>zapped {readablizeSats(payment.amount / 1000)} sats</Text>
+          <Text>zapped {humanReadableSats(payment.amount / 1000)} sats</Text>
         </Flex>
         <Box>
           <ChatMessageContent event={request} />

@@ -16,7 +16,7 @@ import CommunityJoinButton from "../../communities/components/community-join-but
 import CommunityMenu from "./community-menu";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
 import CommunityMembersModal from "./community-members-modal";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import { RelayFavicon } from "../../../components/relay-favicon";
 
 export default function VerticalCommunityDetails({
@@ -65,7 +65,7 @@ export default function VerticalCommunityDetails({
           <Heading size="sm" mb="1">
             Members
           </Heading>
-          <Text>{countMembers ? readablizeSats(countMembers) : "unknown"}</Text>
+          <Text>{countMembers ? humanReadableSats(countMembers) : "unknown"}</Text>
         </Box>
         {rules && (
           <Box>

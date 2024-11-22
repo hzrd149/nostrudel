@@ -24,7 +24,7 @@ import lnurlMetadataService from "../../services/lnurl-metadata";
 import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
-import { getInvoiceFromCallbackUrl } from "../../helpers/lnurl";
+import { getInvoice } from "../../../../applesauce/packages/core/src/helpers/lnurl";
 import UserLink from "../user/user-link";
 import { getEventRelayHints } from "../../services/event-relay-hint";
 import { eventStore, queryStore } from "../../services/event-store";
@@ -57,7 +57,7 @@ async function getPayRequestForPubkey(
     callback.searchParams.append("amount", String(amount));
     if (comment) callback.searchParams.append("comment", comment);
 
-    const invoice = await getInvoiceFromCallbackUrl(callback);
+    const invoice = await getInvoice(callback);
 
     return { invoice, pubkey };
   }
@@ -101,7 +101,7 @@ async function getPayRequestForPubkey(
   callback.searchParams.append("amount", String(amount));
   callback.searchParams.append("nostr", JSON.stringify(signed));
 
-  const invoice = await getInvoiceFromCallbackUrl(callback);
+  const invoice = await getInvoice(callback);
 
   return { invoice, pubkey };
 }

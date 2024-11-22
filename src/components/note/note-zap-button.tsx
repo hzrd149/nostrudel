@@ -1,7 +1,7 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { getZapSender } from "applesauce-core/helpers";
 
-import { readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
@@ -48,7 +48,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           onClick={onOpen}
           isDisabled={!canZap}
         >
-          {readablizeSats(total / 1000)}
+          {humanReadableSats(total / 1000)}
         </Button>
       ) : (
         <IconButton

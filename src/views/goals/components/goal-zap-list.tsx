@@ -6,7 +6,7 @@ import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
@@ -29,7 +29,7 @@ function GoalZap({ zap }: { zap: NostrEvent }) {
       </Box>
       <Spacer />
       <Text>
-        <LightningIcon /> {readablizeSats(payment.amount / 1000)}
+        <LightningIcon /> {humanReadableSats(payment.amount / 1000)}
       </Text>
     </Flex>
   );

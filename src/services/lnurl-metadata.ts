@@ -1,5 +1,5 @@
+import { parseLNURLOrAddress } from "applesauce-core/helpers/lnurl";
 import { fetchWithProxy } from "../helpers/request";
-import { getLudEndpoint } from "../helpers/lnurl";
 
 type LNURLPMetadata = {
   callback: string;
@@ -21,7 +21,7 @@ class LNURLMetadataService {
   private pending = new Map<string, Promise<LNURLPMetadata | undefined>>();
 
   private async fetchMetadata(addressOrLNURL: string) {
-    const url = getLudEndpoint(addressOrLNURL);
+    const url = parseLNURLOrAddress(addressOrLNURL);
     if (!url) return;
     try {
       const metadata = await fetchWithProxy(url).then((res) => res.json() as Promise<LNURLError | LNURLPMetadata>);

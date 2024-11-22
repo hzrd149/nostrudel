@@ -19,9 +19,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useInterval } from "react-use";
+import { parseBolt11 } from "applesauce-core/helpers";
 
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
-import { parsePaymentRequest } from "../../../helpers/bolt11";
 import { V4VStreamIcon, V4VStopIcon } from "../../../components/icons";
 
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
@@ -49,7 +49,7 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
         const { pr: payRequest } = await fetch(callbackUrl).then((res) => res.json());
 
         if (payRequest as string) {
-          const parsed = parsePaymentRequest(payRequest);
+          const parsed = parseBolt11(payRequest);
           if (parsed.amount !== amountMsats) throw new Error("incorrect amount");
         } else throw new Error("Failed to get invoice");
 

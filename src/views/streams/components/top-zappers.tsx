@@ -4,7 +4,7 @@ import { getZapPayment, getZapSender } from "applesauce-core/helpers";
 
 import UserLink from "../../../components/user/user-link";
 import { LightningIcon } from "../../../components/icons";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -30,7 +30,7 @@ export default function TopZappers({ stream, ...props }: FlexProps & { stream: P
             <UserLink pubkey={pubkey} fontWeight="bold" />
             <br />
             <LightningIcon />
-            {readablizeSats(total / 1000)}
+            {humanReadableSats(total / 1000)}
           </Text>
         </Flex>
       ))}

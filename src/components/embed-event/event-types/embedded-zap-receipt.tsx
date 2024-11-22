@@ -18,7 +18,7 @@ import Timestamp from "../../timestamp";
 import TextNoteContents from "../../note/timeline-note/text-note-contents";
 import UserAvatar from "../../user/user-avatar";
 import { LightningIcon } from "../../icons";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
 import { EmbedEventPointer } from "../index";
 
@@ -48,7 +48,7 @@ export default function EmbeddedZapRecept({ zap, ...props }: Omit<CardProps, "ch
         {payment.amount && (
           <>
             <LightningIcon color="yellow.500" boxSize={5} />
-            <Text>{readablizeSats(payment.amount / 1000)}</Text>
+            <Text>{humanReadableSats(payment.amount / 1000)}</Text>
           </>
         )}
 
