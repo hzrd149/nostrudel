@@ -50,7 +50,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
     );
   });
   const corrections = events.filter((e) => {
-    return e.kind === CORRECTION_EVENT_KIND;
+    return e.kind === CORRECTION_EVENT_KIND && e.pubkey === post.event.pubkey;
   });
 
   const unknown = events.filter(
