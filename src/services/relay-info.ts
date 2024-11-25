@@ -2,6 +2,7 @@ import db from "./db";
 import { fetchWithProxy } from "../helpers/request";
 import { isHexKey } from "../helpers/nip19";
 import { validateRelayURL } from "../helpers/relay";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 export type RelayInformationDocument = {
   name: string;
@@ -53,7 +54,9 @@ async function getInfo(relay: string, alwaysFetch = false) {
 }
 
 const pending: Record<string, ReturnType<typeof getInfo> | undefined> = {};
-function dedupedGetIdentity(relay: string, alwaysFetch = false) {
+function dedupedGetIdentity(relay: string | AbstractRelay, alwaysFetch = false) {
+  relay = typeof relay === "string" ? relay : relay.url;
+
   const request = pending[relay];
   if (request) return request;
   return (pending[relay] = getInfo(relay, alwaysFetch).then((v) => {

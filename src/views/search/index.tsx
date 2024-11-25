@@ -1,6 +1,7 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
 import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { useForm } from "react-hook-form";
 
 import { safeDecode } from "../../helpers/nip19";
@@ -12,24 +13,42 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import SearchResults from "./components/search-results";
 import useSearchRelays from "../../hooks/use-search-relays";
+import { useRelayInfo } from "../../hooks/use-relay-info";
+import { localRelay } from "../../services/local-relay";
+import WasmRelay from "../../services/wasm-relay";
+import relayPoolService from "../../services/relay-pool";
 
 export function SearchPage() {
   const navigate = useNavigate();
   const searchRelays = useSearchRelays();
+  const { info: localRelayInfo } = useRelayInfo(localRelay instanceof AbstractRelay ? localRelay : undefined, true);
+  const localSearchSupported =
+    localRelay instanceof WasmRelay ||
+    (localRelay instanceof AbstractRelay && !!localRelayInfo?.supported_nips?.includes(50));
 
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
   const [params, setParams] = useSearchParams();
   const searchQuery = params.get("q") || "";
-  const searchRelay = params.get("relay") || searchRelays[0];
+
+  const relayURL = params.get("relay");
+  let searchRelay = useMemo(() => {
+    if (relayURL === "local") return localRelay;
+    else if (relayURL) return relayPoolService.requestRelay(relayURL);
+    else if (localSearchSupported) return localRelay;
+    else return relayPoolService.requestRelay(searchRelays[0]);
+  }, [relayURL, localSearchSupported, localRelay, searchRelays[0]]);
 
   const { register, handleSubmit, setValue } = useForm({
-    defaultValues: { query: searchQuery, relay: searchRelay },
+    defaultValues: { query: searchQuery, relay: searchRelay === localRelay ? "local" : searchRelay?.url },
     mode: "all",
   });
 
   // reset the relay when the search relay changes
-  useEffect(() => setValue("relay", searchRelay), [searchRelay]);
+  useEffect(
+    () => setValue("relay", searchRelay === localRelay ? "local" : searchRelay?.url),
+    [searchRelay, localRelay],
+  );
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
@@ -57,7 +76,7 @@ export function SearchPage() {
     if (!handleSearchText(values.query)) {
       const newParams = new URLSearchParams(params);
       newParams.set("q", values.query);
-      newParams.set("relay", values.relay);
+      if (values.relay) newParams.set("relay", values.relay);
       setParams(newParams);
     }
   });
@@ -87,6 +106,7 @@ export function SearchPage() {
           autoComplete="off"
         />
         <Select w="auto" {...register("relay")}>
+          {localSearchSupported && <option value="local">Local Relay</option>}
           {searchRelays.map((url) => (
             <option key={url} value={url}>
               {url}
@@ -106,7 +126,7 @@ export function SearchPage() {
       </Flex>
 
       <Flex direction="column" gap="2">
-        {shouldSearch ? <SearchResults relay={searchRelay} query={searchQuery} /> : null}
+        {shouldSearch ? <SearchResults relay={searchRelay as AbstractRelay} query={searchQuery} /> : null}
       </Flex>
     </VerticalPageLayout>
   );
