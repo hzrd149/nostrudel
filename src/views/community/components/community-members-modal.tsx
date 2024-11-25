@@ -11,13 +11,13 @@ import {
   ModalProps,
   SimpleGrid,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { getCommunityRelays } from "../../../helpers/nostr/communities";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { COMMUNITIES_LIST_KIND } from "../../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
@@ -45,7 +45,7 @@ export default function CommunityMembersModal({
   const communityCoordinate = getEventCoordinate(community);
   const readRelays = useReadRelays(getCommunityRelays(community));
   const { loader, timeline: lists } = useTimelineLoader(`${communityCoordinate}-members`, readRelays, [
-    { "#a": [communityCoordinate], kinds: [COMMUNITIES_LIST_KIND] },
+    { "#a": [communityCoordinate], kinds: [kinds.CommunitiesList] },
   ]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 

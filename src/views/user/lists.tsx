@@ -1,104 +1,73 @@
-import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import {
-  BOOKMARK_LIST_KIND,
-  MUTE_LIST_KIND,
-  NOTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-  isJunkList,
-} from "../../helpers/nostr/lists";
-import { getEventUID } from "../../helpers/nostr/event";
+import { isJunkList } from "../../helpers/nostr/lists";
 import ListCard from "../lists/components/list-card";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { NostrEvent } from "../../types/nostr-event";
-import UserName from "../../components/user/user-name";
+import useUserSets from "../../hooks/use-user-lists";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const readRelays = useAdditionalRelayContext();
+  const sets = useUserSets(pubkey).filter((e) => !isJunkList(e));
 
-  const eventFilter = useCallback((event: NostrEvent) => {
-    return !isJunkList(event);
-  }, []);
-  const { loader, timeline: lists } = useTimelineLoader(
-    pubkey + "-lists",
-    readRelays,
-    [
-      {
-        authors: [pubkey],
-        kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
-      },
-      {
-        "#p": [pubkey],
-        kinds: [PEOPLE_LIST_KIND],
-      },
-    ],
-    { eventFilter },
-  );
-  const callback = useTimelineCurserIntersectionCallback(loader);
-
-  const peopleLists = lists.filter((event) => event.pubkey === pubkey && event.kind === PEOPLE_LIST_KIND);
-  const noteLists = lists.filter((event) => event.pubkey === pubkey && event.kind === NOTE_LIST_KIND);
-  const otherLists = lists.filter((event) => event.pubkey !== pubkey && event.kind === PEOPLE_LIST_KIND);
+  const followSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Followsets);
+  const genericSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Genericlists);
+  const bookmarkSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Bookmarksets);
 
   return (
     <VerticalPageLayout>
-      <IntersectionObserverProvider callback={callback}>
-        <Heading size="md" mt="2">
-          Special lists
-        </Heading>
-        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-          <ListCard cord={`${kinds.Contacts}:${pubkey}`} hideCreator />
-          <ListCard cord={`${MUTE_LIST_KIND}:${pubkey}`} hideCreator />
-          <ListCard cord={`${PIN_LIST_KIND}:${pubkey}`} hideCreator />
-          <ListCard cord={`${BOOKMARK_LIST_KIND}:${pubkey}`} hideCreator />
-        </SimpleGrid>
+      <Heading size="md" mt="2">
+        Special lists
+      </Heading>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+        <ListCard cord={`${kinds.Contacts}:${pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.Mutelist}:${pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.Pinlist}:${pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.BookmarkList}:${pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.CommunitiesList}:${pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.PublicChatsList}:${pubkey}`} hideCreator />
+      </SimpleGrid>
 
-        {peopleLists.length > 0 && (
-          <>
-            <Heading size="md" mt="2">
-              People lists
-            </Heading>
-            <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-              {peopleLists.map((event) => (
-                <ListCard key={getEventUID(event)} list={event} hideCreator />
-              ))}
-            </SimpleGrid>
-          </>
-        )}
+      {followSets.length > 0 && (
+        <>
+          <Heading size="md" mt="2">
+            People lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {followSets.map((set) => (
+              <ListCard key={getEventUID(set)} list={set} hideCreator />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
 
-        {noteLists.length > 0 && (
-          <>
-            <Heading size="md" mt="2">
-              Bookmark lists
-            </Heading>
-            <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-              {noteLists.map((event) => (
-                <ListCard key={getEventUID(event)} list={event} hideCreator />
-              ))}
-            </SimpleGrid>
-          </>
-        )}
-      </IntersectionObserverProvider>
+      {genericSets.length > 0 && (
+        <>
+          <Heading size="md" mt="2">
+            Generic lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {genericSets.map((set) => (
+              <ListCard key={getEventUID(set)} list={set} hideCreator />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
 
-      <IntersectionObserverProvider callback={callback}>
-        <Heading size="md" mt="2">
-          Lists <UserName pubkey={pubkey} /> is in
-        </Heading>
-        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-          {otherLists.map((event) => (
-            <ListCard key={getEventUID(event)} list={event} />
-          ))}
-        </SimpleGrid>
-      </IntersectionObserverProvider>
+      {bookmarkSets.length > 0 && (
+        <>
+          <Heading size="md" mt="2">
+            Bookmark sets
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+            {bookmarkSets.map((set) => (
+              <ListCard key={getEventUID(set)} list={set} hideCreator />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
     </VerticalPageLayout>
   );
 }

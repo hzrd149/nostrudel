@@ -4,7 +4,6 @@ import {
   CardBody,
   CardHeader,
   CardProps,
-  Flex,
   Heading,
   IconButton,
   Link,
@@ -12,10 +11,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
-import useUserLists from "../../../hooks/use-user-lists";
+import useUserSets from "../../../hooks/use-user-lists";
 import { NostrEvent } from "../../../types/nostr-event";
-import { PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
+import { getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
 import UserAvatar from "../../../components/user/user-avatar";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -49,7 +49,7 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
 export default function FeedsCard({ ...props }: Omit<CardProps, "children">) {
   const account = useCurrentAccount();
   const contacts = useUserContactList(account?.pubkey);
-  const myLists = useUserLists(account?.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
+  const myLists = useUserSets(account?.pubkey).filter((list) => list.kind === kinds.Followsets);
   const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
 
   const { recent: recentFeeds, useThing: useFeed } = useRecentIds("feeds", 4);

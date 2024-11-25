@@ -14,14 +14,6 @@ import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { EmbedEvent } from "../../components/embed-event";
-import {
-  BOOKMARK_LIST_KIND,
-  BOOKMARK_LIST_SET_KIND,
-  COMMUNITIES_LIST_KIND,
-  MUTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-} from "../../helpers/nostr/lists";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const UnknownEvent = memo(({ event }: { event: NostrEvent }) => {
@@ -46,15 +38,15 @@ const commonTimelineKinds = [
   kinds.Contacts,
   kinds.Metadata,
   kinds.EncryptedDirectMessage,
-  MUTE_LIST_KIND,
+  kinds.Mutelist,
   kinds.LiveChatMessage,
   kinds.EventDeletion,
   kinds.CommunityPostApproval,
-  BOOKMARK_LIST_KIND,
-  BOOKMARK_LIST_SET_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-  COMMUNITIES_LIST_KIND,
+  kinds.BookmarkList,
+  kinds.Bookmarksets,
+  kinds.Followsets,
+  kinds.Pinlist,
+  kinds.CommunitiesList,
   kinds.ZapGoal,
 ];
 

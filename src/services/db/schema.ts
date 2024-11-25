@@ -1,7 +1,4 @@
-import { DBSchema } from "idb";
-
 import { NostrEvent } from "../../types/nostr-event";
-import { RelayInformationDocument } from "../relay-info";
 import { AppSettings } from "../../helpers/app-settings";
 
 export interface SchemaV1 {
@@ -30,7 +27,7 @@ export interface SchemaV1 {
     value: { name: string; domain: string; pubkey: string; relays: string[]; updated: number };
     indexes: { name: string; domain: string; pubkey: string; updated: number };
   };
-  relayInfo: { key: string; value: RelayInformationDocument };
+  relayInfo: { key: string; value: any };
   relayScoreboardStats: {
     key: string;
     value: {

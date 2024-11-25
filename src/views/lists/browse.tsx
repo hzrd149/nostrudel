@@ -1,17 +1,11 @@
 import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import {
-  MUTE_LIST_KIND,
-  NOTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-  getEventPointersFromList,
-  getListName,
-  getPubkeysFromList,
-} from "../../helpers/nostr/lists";
+import { getEventPointersFromList, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { useCallback, useState } from "react";
 import { NostrEvent } from "../../types/nostr-event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -24,7 +18,7 @@ function BrowseListPage() {
   const { filter, listId } = usePeopleListContext();
   const showEmpty = useDisclosure();
   const showMute = useDisclosure();
-  const [listKind, setListKind] = useState(PEOPLE_LIST_KIND);
+  const [listKind, setListKind] = useState(kinds.Followsets);
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -33,8 +27,8 @@ function BrowseListPage() {
         return false;
 
       if (
-        (!showMute.isOpen && event.kind === PEOPLE_LIST_KIND && getListName(event) === "mute") ||
-        event.kind === MUTE_LIST_KIND
+        (!showMute.isOpen && event.kind === kinds.Followsets && getListName(event) === "mute") ||
+        event.kind === kinds.Mutelist
       )
         return false;
       return true;
@@ -45,7 +39,7 @@ function BrowseListPage() {
   const { loader, timeline: lists } = useTimelineLoader(
     `${listId}-lists`,
     readRelays,
-    filter ? { ...filter, kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND] } : undefined,
+    filter ? { ...filter, kinds: [kinds.Followsets, kinds.Genericlists, kinds.Bookmarksets] } : undefined,
     { eventFilter },
   );
   const callback = useTimelineCurserIntersectionCallback(loader);
@@ -56,8 +50,9 @@ function BrowseListPage() {
         <Flex gap="2" alignItems="center" wrap="wrap">
           <PeopleListSelection />
           <Select w="sm" value={listKind} onChange={(e) => setListKind(parseInt(e.target.value))}>
-            <option value={PEOPLE_LIST_KIND}>People List</option>
-            <option value={NOTE_LIST_KIND}>Note List</option>
+            <option value={kinds.Followsets}>People list</option>
+            <option value={kinds.Genericlists}>Note list</option>
+            <option value={kinds.Bookmarksets}>Bookmark sets</option>
           </Select>
           <Switch isChecked={showEmpty.isOpen} onChange={showEmpty.onToggle} whiteSpace="pre">
             Show Empty

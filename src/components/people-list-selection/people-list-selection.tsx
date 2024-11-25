@@ -15,11 +15,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
-import useUserLists from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-lists";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import { NostrEvent } from "../../types/nostr-event";
@@ -58,7 +59,7 @@ export default function PeopleListSelection({
 } & Omit<ButtonProps, "children">) {
   const modal = useDisclosure();
   const account = useCurrentAccount();
-  const lists = useUserLists(account?.pubkey);
+  const lists = useUserSets(account?.pubkey);
   const { lists: favoriteLists } = useFavoriteLists();
   const { selected, setSelected, listEvent } = usePeopleListContext();
 
@@ -128,7 +129,7 @@ export default function PeopleListSelection({
             </Heading>
             <SimpleGrid columns={2} spacing="2">
               {lists
-                .filter((l) => l.kind === PEOPLE_LIST_KIND)
+                .filter((l) => l.kind === kinds.Followsets)
                 .map((list) => (
                   <ListCard key={getEventUID(list)} list={list} onClick={() => selectList(list)} />
                 ))}

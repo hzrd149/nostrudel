@@ -2,7 +2,17 @@ import { Badge, Button, ButtonProps, ComponentWithAs, Flex, IconProps, useDisclo
 import { Filter, kinds, nip19, NostrEvent } from "nostr-tools";
 import { Link as RouteLink, To } from "react-router-dom";
 
-import { ArticleIcon, DirectMessagesIcon, ListsIcon, NotesIcon, RepostIcon } from "../../../components/icons";
+import {
+  ArticleIcon,
+  BookmarkIcon,
+  ChannelsIcon,
+  CommunityIcon,
+  DirectMessagesIcon,
+  ListsIcon,
+  NotesIcon,
+  RelayIcon,
+  RepostIcon,
+} from "../../../components/icons";
 import AnnotationQuestion from "../../../components/icons/annotation-question";
 import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import { npubEncode } from "nostr-tools/nip19";
@@ -10,6 +20,7 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import AlertTriangle from "../../../components/icons/alert-triangle";
+import MessageSquare02 from "../../../components/icons/message-square-02";
 
 type KnownKind = {
   kind: number;
@@ -70,14 +81,28 @@ const KnownKinds: KnownKind[] = [
     link: (_e, p) => `/u/${nip19.npubEncode(p)}/dms`,
   },
 
-  { kind: kinds.Followsets, name: "Lists", icon: ListsIcon, link: (_e, p) => `/u/${npubEncode(p)}/lists` },
+  {
+    kind: kinds.PublicChatsList,
+    icon: ChannelsIcon,
+    name: "Public Chats",
+    link: (_e, p) => `/u/${npubEncode(p)}/lists`,
+  },
+
+  { kind: kinds.Followsets, name: "People Lists", icon: ListsIcon, link: (_e, p) => `/u/${npubEncode(p)}/lists` },
+  { kind: kinds.Genericlists, icon: ListsIcon, name: "Generic Lists", link: (_e, p) => `/u/${npubEncode(p)}/lists` },
+  { kind: kinds.Relaysets, icon: RelayIcon, name: "Relay Sets" },
+  { kind: kinds.Bookmarksets, icon: BookmarkIcon, name: "Bookmarks", link: (_e, p) => `/u/${npubEncode(p)}/lists` },
 
   { kind: kinds.Report, name: "Report", icon: AlertTriangle, link: (_e, p) => `/u/${npubEncode(p)}/reports` },
 
   { kind: kinds.Handlerinformation, name: "Application" },
   { kind: kinds.Handlerrecommendation, name: "App recommendation" },
 
+  { kind: kinds.CommunityDefinition, icon: CommunityIcon, name: "Communities" },
+
   { kind: kinds.BadgeAward, name: "Badge Award" },
+
+  { kind: kinds.LiveChatMessage, icon: MessageSquare02, name: "Stream Chat" },
 
   // common kinds
   { kind: kinds.Metadata, hidden: true },

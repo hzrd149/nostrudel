@@ -11,12 +11,12 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
+import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
-import { getEmojis, getPackName } from "../../../helpers/nostr/emoji-packs";
 import EmojiPackMenu from "./emoji-pack-menu";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";

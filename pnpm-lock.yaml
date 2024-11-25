@@ -273,6 +273,9 @@ importers:
       remark-wiki-link:
         specifier: ^2.0.1
         version: 2.0.1
+      rx-nostr:
+        specifier: ^3.4.1
+        version: 3.4.1
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -3314,6 +3317,9 @@ packages:
       typescript:
         optional: true
 
+  nostr-typedef@0.9.0:
+    resolution: {integrity: sha512-nLTzhlYcRnLQGUJ5YfvGAUDyGFHjGH6Qozltl/wV3UXelmiUwjrwI8IIxQNkbgVMv+zmbFi/m1xKHxIvVfG09w==}
+
   nostr-wasm@0.1.0:
     resolution: {integrity: sha512-78BTryCLcLYv96ONU8Ws3Q1JzjlAt+43pWQhIl86xZmWeegYCNLPml7yQ+gG3vR6V5h4XGj+TxO+SS5dsThQIA==}
 
@@ -3836,6 +3842,9 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+
+  rx-nostr@3.4.1:
+    resolution: {integrity: sha512-u/FkKUERrrJWVrDxMvhYCntRldyHS14CmHE9bRJefl8StU48x27MxsMDHIjZ1zDKtaOtBvvrpv+vCEaleIB/Mw==}
 
   rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
@@ -8153,6 +8162,8 @@ snapshots:
       nostr-wasm: 0.1.0
       typescript: 5.6.3
 
+  nostr-typedef@0.9.0: {}
+
   nostr-wasm@0.1.0: {}
 
   nth-check@2.1.1:
@@ -8751,6 +8762,11 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
+
+  rx-nostr@3.4.1:
+    dependencies:
+      nostr-typedef: 0.9.0
+      rxjs: 7.8.1
 
   rxjs@7.8.1:
     dependencies:

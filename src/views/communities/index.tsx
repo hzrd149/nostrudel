@@ -28,13 +28,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import {
-  COMMUNITY_APPROVAL_KIND,
-  COMMUNITY_DEFINITION_KIND,
-  buildApprovalMap,
-  getCommunityMods,
-  getCommunityName,
-} from "../../helpers/nostr/communities";
+import { buildApprovalMap, getCommunityMods, getCommunityName } from "../../helpers/nostr/communities";
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -62,7 +56,7 @@ function CommunitiesHomePage() {
 
   const createCommunity = async (values: FormValues) => {
     const draft: DraftNostrEvent = {
-      kind: COMMUNITY_DEFINITION_KIND,
+      kind: kinds.CommunityDefinition,
       created_at: dayjs().unix(),
       content: "",
       tags: [["d", values.name]],
@@ -92,7 +86,7 @@ function CommunitiesHomePage() {
     readRelays,
     communityCoordinates.length > 0
       ? {
-          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
+          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.CommunityPostApproval],
           "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
         }
       : undefined,
@@ -113,7 +107,7 @@ function CommunitiesHomePage() {
   const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events
-    .filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
+    .filter((e) => e.kind !== kinds.CommunityPostApproval && (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
     .map((event) => ({ event, approvals: approvalMap.get(event.id) }))
     .filter((e) => !muteFilter(e.event));
 

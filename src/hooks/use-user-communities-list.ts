@@ -1,5 +1,7 @@
-import { COMMUNITY_DEFINITION_KIND, SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../helpers/nostr/communities";
-import { COMMUNITIES_LIST_KIND, NOTE_LIST_KIND, getAddressPointersFromList } from "../helpers/nostr/lists";
+import { kinds } from "nostr-tools";
+
+import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../helpers/nostr/communities";
+import { getAddressPointersFromList } from "../helpers/nostr/lists";
 import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
@@ -14,7 +16,7 @@ export default function useUserCommunitiesList(pubkey?: string, relays?: Iterabl
   const oldList = useReplaceableEvent(
     key
       ? {
-          kind: NOTE_LIST_KIND,
+          kind: kinds.Genericlists,
           identifier: SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER,
           pubkey: key,
         }
@@ -22,7 +24,7 @@ export default function useUserCommunitiesList(pubkey?: string, relays?: Iterabl
     [],
     opts,
   );
-  const list = useReplaceableEvent(key ? { kind: COMMUNITIES_LIST_KIND, pubkey: key } : undefined, relays, opts);
+  const list = useReplaceableEvent(key ? { kind: kinds.CommunitiesList, pubkey: key } : undefined, relays, opts);
 
   let useList = list || oldList;
 
@@ -32,7 +34,7 @@ export default function useUserCommunitiesList(pubkey?: string, relays?: Iterabl
   }
 
   const pointers = useList
-    ? getAddressPointersFromList(useList).filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND)
+    ? getAddressPointersFromList(useList).filter((cord) => cord.kind === kinds.CommunityDefinition)
     : [];
 
   return { list: useList, pointers };

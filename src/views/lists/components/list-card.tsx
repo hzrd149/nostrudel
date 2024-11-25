@@ -30,7 +30,6 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import ListFavoriteButton from "./list-favorite-button";
 import ListMenu from "./list-menu";
-import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { CommunityIcon, NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -46,7 +45,7 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
   const people = getPubkeysFromList(list);
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
-  const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
+  const communities = coordinates.filter((cord) => cord.kind === kinds.CommunityDefinition);
   const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);
   const references = getReferencesFromList(list);
 

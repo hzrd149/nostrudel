@@ -1,13 +1,13 @@
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { EMOJI_PACK_KIND, getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
+import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import EmojiPackCard from "./components/emoji-pack-card";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
@@ -25,7 +25,7 @@ function UserEmojiPackMangerPage() {
     account.pubkey
       ? {
           authors: [account.pubkey],
-          kinds: [EMOJI_PACK_KIND],
+          kinds: [kinds.Emojisets],
         }
       : undefined,
   );

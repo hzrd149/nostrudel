@@ -1,34 +1,27 @@
-import { Button, Flex, Heading, Image, Link, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
+import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import { ExternalLinkIcon, PlusCircleIcon } from "../../components/icons";
 import ListCard from "./components/list-card";
-import { getEventUID } from "../../helpers/nostr/event";
-import useUserLists from "../../hooks/use-user-lists";
-import NewListModal from "./components/new-list-modal";
-import {
-  BOOKMARK_LIST_KIND,
-  COMMUNITIES_LIST_KIND,
-  MUTE_LIST_KIND,
-  NOTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-} from "../../helpers/nostr/lists";
+import useUserSets from "../../hooks/use-user-lists";
+import NewSetModal from "./components/new-set-modal";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getSharableEventAddress } from "../../services/event-relay-hint";
+import Plus from "../../components/icons/plus";
 
 function ListsHomePage() {
   const account = useCurrentAccount()!;
-  const lists = useUserLists(account.pubkey);
+  const sets = useUserSets(account.pubkey, undefined, true);
   const { lists: favoriteLists } = useFavoriteLists();
   const newList = useDisclosure();
   const navigate = useNavigate();
 
-  const peopleLists = lists.filter((event) => event.kind === PEOPLE_LIST_KIND);
-  const noteLists = lists.filter((event) => event.kind === NOTE_LIST_KIND);
+  const followSets = sets.filter((event) => event.kind === kinds.Followsets);
+  const genericSets = sets.filter((event) => event.kind === kinds.Genericlists);
+  const bookmarkSets = sets.filter((event) => event.kind === kinds.Bookmarksets);
 
   return (
     <VerticalPageLayout>
@@ -37,16 +30,7 @@ function ListsHomePage() {
           Browse Lists
         </Button>
         <Spacer />
-        <Button
-          as={Link}
-          href="https://listr.lol/"
-          isExternal
-          rightIcon={<ExternalLinkIcon />}
-          leftIcon={<Image src="https://listr.lol/favicon.ico" w="1.2em" />}
-        >
-          Listr
-        </Button>
-        <Button leftIcon={<PlusCircleIcon />} onClick={newList.onOpen} colorScheme="primary">
+        <Button leftIcon={<Plus boxSize={5} />} onClick={newList.onOpen} colorScheme="primary">
           New List
         </Button>
       </Flex>
@@ -56,30 +40,42 @@ function ListsHomePage() {
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
         <ListCard cord={`${kinds.Contacts}:${account.pubkey}`} hideCreator />
-        <ListCard cord={`${MUTE_LIST_KIND}:${account.pubkey}`} hideCreator />
-        <ListCard cord={`${PIN_LIST_KIND}:${account.pubkey}`} hideCreator />
-        <ListCard cord={`${COMMUNITIES_LIST_KIND}:${account.pubkey}`} hideCreator />
-        <ListCard cord={`${BOOKMARK_LIST_KIND}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.Mutelist}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.Pinlist}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.CommunitiesList}:${account.pubkey}`} hideCreator />
+        <ListCard cord={`${kinds.BookmarkList}:${account.pubkey}`} hideCreator />
       </SimpleGrid>
-      {peopleLists.length > 0 && (
+      {followSets.length > 0 && (
         <>
           <Heading size="lg" mt="2">
             People lists
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-            {peopleLists.map((event) => (
+            {followSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
         </>
       )}
-      {noteLists.length > 0 && (
+      {genericSets.length > 0 && (
+        <>
+          <Heading size="lg" mt="2">
+            Generic lists
+          </Heading>
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+            {genericSets.map((event) => (
+              <ListCard key={getEventUID(event)} list={event} hideCreator />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
+      {bookmarkSets.length > 0 && (
         <>
           <Heading size="lg" mt="2">
             Bookmark lists
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-            {noteLists.map((event) => (
+            {genericSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
@@ -99,7 +95,7 @@ function ListsHomePage() {
       )}
 
       {newList.isOpen && (
-        <NewListModal
+        <NewSetModal
           isOpen
           onClose={newList.onClose}
           onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}

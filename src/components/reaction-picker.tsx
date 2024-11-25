@@ -1,9 +1,10 @@
 import { Divider, Flex, IconButton, Image, Text } from "@chakra-ui/react";
+import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
 import { DislikeIcon, LikeIcon } from "./icons";
 import useCurrentAccount from "../hooks/use-current-account";
 import useReplaceableEvent from "../hooks/use-replaceable-event";
-import { getEmojis, getPackCordsFromFavorites, getPackName } from "../helpers/nostr/emoji-packs";
+import { getPackCordsFromFavorites } from "../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../hooks/use-favorite-emoji-packs";
 import useAppSettings from "../hooks/use-app-settings";
 

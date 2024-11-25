@@ -1,12 +1,13 @@
 import { memo, useMemo } from "react";
 import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { MUTE_LIST_KIND, PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -43,8 +44,8 @@ export default function UserMutedByTab() {
 
   const readRelays = useReadRelays();
   const { loader, timeline: lists } = useTimelineLoader(`${pubkey}-muted-by`, readRelays, [
-    { kinds: [MUTE_LIST_KIND], "#p": [pubkey] },
-    { kinds: [PEOPLE_LIST_KIND], "#d": ["mute"], "#p": [pubkey] },
+    { kinds: [kinds.Mutelist], "#p": [pubkey] },
+    { kinds: [kinds.Followsets], "#d": ["mute"], "#p": [pubkey] },
   ]);
 
   const pubkeys = useMemo(() => {

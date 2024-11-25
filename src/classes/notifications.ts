@@ -1,5 +1,4 @@
 import { NostrEvent, kinds, nip18, nip25 } from "nostr-tools";
-import _throttle from "lodash.throttle";
 import { BehaviorSubject } from "rxjs";
 import { map, throttleTime } from "rxjs/operators";
 import { getZapPayment } from "applesauce-core/helpers";
@@ -10,7 +9,7 @@ import RelaySet from "./relay-set";
 import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
-import { MUTE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
+import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { eventStore, queryStore } from "../services/event-store";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
@@ -121,7 +120,7 @@ export default class AccountNotifications {
   private filterEvent(event: CategorizedEvent) {
     // ignore if muted
     // TODO: this should be moved somewhere more performant
-    const muteList = eventStore.getReplaceable(MUTE_LIST_KIND, this.pubkey);
+    const muteList = eventStore.getReplaceable(kinds.Mutelist, this.pubkey);
     const mutedPubkeys = muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : [];
     if (mutedPubkeys.includes(event.pubkey)) return false;
 

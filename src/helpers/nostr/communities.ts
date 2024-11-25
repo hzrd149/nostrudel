@@ -5,8 +5,6 @@ import { parseCoordinate } from "./event";
 
 /** @deprecated */
 export const SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER = "communities";
-export const COMMUNITY_DEFINITION_KIND = kinds.CommunityDefinition;
-export const COMMUNITY_APPROVAL_KIND = kinds.CommunityPostApproval;
 
 export function getCommunityName(community: NostrEvent) {
   const name = community.tags.find(isDTag)?.[1];
@@ -71,7 +69,7 @@ export function validateCommunity(community: NostrEvent) {
 export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
   const approvals = new Map<string, NostrEvent[]>();
   for (const event of events) {
-    if (event.kind === COMMUNITY_APPROVAL_KIND && mods.includes(event.pubkey)) {
+    if (event.kind === kinds.CommunityPostApproval && mods.includes(event.pubkey)) {
       for (const tag of event.tags) {
         if (isETag(tag)) {
           const arr = approvals.get(tag[1]);
@@ -85,6 +83,6 @@ export function buildApprovalMap(events: Iterable<NostrEvent>, mods: string[]) {
 }
 
 export function getEventCommunityPointer(event: NostrEvent) {
-  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(COMMUNITY_DEFINITION_KIND + ":"));
+  const communityTag = event.tags.filter(isATag).find((t) => t[1].startsWith(kinds.CommunityDefinition + ":"));
   return communityTag ? parseCoordinate(communityTag[1], true) : null;
 }

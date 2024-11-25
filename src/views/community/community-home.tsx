@@ -5,10 +5,9 @@ import { useObservable } from "applesauce-react/hooks";
 import { kinds, nip19 } from "nostr-tools";
 
 import {
-  getCommunityRelays as getCommunityRelays,
+  getCommunityRelays,
   getCommunityImage,
   getCommunityName,
-  COMMUNITY_APPROVAL_KIND,
   getCommunityMods,
   buildApprovalMap,
 } from "../../helpers/nostr/communities";
@@ -52,7 +51,7 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const communityRelays = getCommunityRelays(community);
   const readRelays = useReadRelays(communityRelays);
   const { loader } = useTimelineLoader(`${getEventUID(community)}-timeline`, readRelays, {
-    kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
+    kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.CommunityPostApproval],
     "#a": [communityCoordinate],
   });
 
@@ -60,7 +59,9 @@ export default function CommunityHomePage({ community }: { community: NostrEvent
   const events = useObservable(loader.timeline) ?? [];
   const mods = getCommunityMods(community);
   const approvals = buildApprovalMap(events, mods);
-  const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id) && !muteFilter(e));
+  const pending = events.filter(
+    (e) => e.kind !== kinds.CommunityPostApproval && !approvals.has(e.id) && !muteFilter(e),
+  );
 
   let active = "newest";
   if (location.pathname.endsWith("/newest")) active = "newest";

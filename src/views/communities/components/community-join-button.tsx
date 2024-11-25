@@ -1,12 +1,13 @@
 import { useCallback } from "react";
 import dayjs from "dayjs";
 import { Button, ButtonProps } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { DraftNostrEvent, NostrEvent, isDTag } from "../../../types/nostr-event";
 import useUserCommunitiesList from "../../../hooks/use-user-communities-list";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getCommunityName } from "../../../helpers/nostr/communities";
-import { COMMUNITIES_LIST_KIND, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
+import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
@@ -24,7 +25,7 @@ export default function CommunityJoinButton({
 
   const handleClick = useCallback(async () => {
     const favList = {
-      kind: COMMUNITIES_LIST_KIND,
+      kind: kinds.CommunitiesList,
       content: list?.content ?? "",
       created_at: dayjs().unix(),
       tags: list?.tags.filter((t) => !isDTag(t)) ?? [],

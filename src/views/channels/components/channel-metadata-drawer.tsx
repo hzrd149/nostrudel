@@ -16,6 +16,7 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
@@ -28,7 +29,6 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
-import { CHANNELS_LIST_KIND } from "../../../helpers/nostr/lists";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
@@ -43,7 +43,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
 }
 function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: Iterable<string> }) {
   const { loader, timeline: userLists } = useTimelineLoader(`${channel.id}-members`, relays, {
-    kinds: [CHANNELS_LIST_KIND],
+    kinds: [kinds.PublicChatsList],
     "#e": [channel.id],
   });
   const callback = useTimelineCurserIntersectionCallback(loader);

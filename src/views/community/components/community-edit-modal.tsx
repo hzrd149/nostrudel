@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { ModalProps } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import {
-  COMMUNITY_DEFINITION_KIND,
   getCommunityDescription,
   getCommunityImage,
   getCommunityLinks,
@@ -41,7 +41,7 @@ export default function CommunityEditModal({
 
   const updateCommunity = async (values: FormValues) => {
     const draft: DraftNostrEvent = {
-      kind: COMMUNITY_DEFINITION_KIND,
+      kind: kinds.CommunityDefinition,
       created_at: dayjs().unix(),
       content: "",
       tags: [["d", getCommunityName(community)]],
