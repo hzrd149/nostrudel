@@ -18,7 +18,7 @@ export default function GoalTopZappers({
 
   const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
     const sender = getZapSender(z);
-    dir[sender] = dir[sender] + (getZapPayment(z)?.amount ?? 0);
+    dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
     return dir;
   }, {});
 

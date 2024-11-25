@@ -5,7 +5,7 @@ import { ParsedStream } from "../../../../helpers/nostr/stream";
 import { LightboxProvider } from "../../../../components/lightbox-provider";
 import IntersectionObserverProvider from "../../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
-import TopZappers from "../../components/top-zappers";
+import StreamTopZappers from "../../components/stream-top-zappers";
 import ChatMessageForm from "./stream-chat-form";
 import useStreamChatTimeline from "./use-stream-chat-timeline";
 import StreamChatLog from "./chat-log";
@@ -37,7 +37,7 @@ export default function StreamChat({
             </CardHeader>
           )}
           <CardBody display="flex" flexDirection="column" overflow="hidden" p={0}>
-            <TopZappers stream={stream} py="2" px="4" pt={!isPopup ? 0 : undefined} />
+            <StreamTopZappers stream={stream} py="2" px="4" pt={!isPopup ? 0 : undefined} />
             <StreamChatLog ref={scrollBox} stream={stream} flex={1} px="4" py="2" mb="2" />
             {!isChatLog && <ChatMessageForm stream={stream} />}
           </CardBody>

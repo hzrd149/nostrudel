@@ -9,13 +9,13 @@ import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timelin
 import { ParsedStream } from "../../../helpers/nostr/stream";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 
-export default function TopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
+export default function StreamTopZappers({ stream, ...props }: FlexProps & { stream: ParsedStream }) {
   const { timeline } = useStreamChatTimeline(stream);
   const zaps = timeline.filter((e) => e.kind === kinds.Zap);
 
   const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
     const sender = getZapSender(z);
-    dir[sender] = dir[sender] + (getZapPayment(z)?.amount ?? 0);
+    dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
     return dir;
   }, {});
 

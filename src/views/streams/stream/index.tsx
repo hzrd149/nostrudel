@@ -35,7 +35,7 @@ import { UserEmojiProvider } from "../../../providers/global/emoji-provider";
 import StreamStatusBadge from "../components/status-badge";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 import StreamChatLog from "./stream-chat/chat-log";
-import TopZappers from "../components/top-zappers";
+import StreamTopZappers from "../components/stream-top-zappers";
 import StreamHashtags from "../components/stream-hashtags";
 import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
@@ -185,7 +185,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
             Stream Chat
           </DrawerHeader>
           <DrawerBody p={0} overflow="hidden" display="flex" gap="2" flexDirection="column">
-            <TopZappers stream={stream} px="2" />
+            <StreamTopZappers stream={stream} px="2" />
             <StreamChatLog stream={stream} flex={1} px="2" />
             <ChatMessageForm stream={stream} />
           </DrawerBody>
