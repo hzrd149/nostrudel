@@ -115,8 +115,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: next
+        version: 0.0.0-next-20241125171808
       blossom-drive-sdk:
         specifier: ^0.4.1
         version: 0.4.1(typescript@5.6.3)
@@ -1982,12 +1982,12 @@ packages:
   bezier-js@6.1.4:
     resolution: {integrity: sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==}
 
+  blossom-client-sdk@0.0.0-next-20241125171808:
+    resolution: {integrity: sha512-F4V4D1ZB3ggRdoBbktubdLgzDv5591CLqbs6dugpCO/NtDXPvqmIJeg+J+/xMCp+q5PcapfjQr+b3uSTjrkimg==}
+    engines: {node: '>=18'}
+
   blossom-client-sdk@0.7.0:
     resolution: {integrity: sha512-xG0HiuhFcK6UpmYjJ4vRPm3APMrRf+MQDfZWlNRTxs2gEETfqbhYm5pCl2hPfLjpEcFSDXgr3sLCh6C77ABKgg==}
-
-  blossom-client-sdk@2.0.0:
-    resolution: {integrity: sha512-lFMu/CyqmaFxmnSZoZryiLoJ33y+bxvzhD3upgJ4D4PjulgML1EBKvuA2E5supAuGYaKHjerFyBAAdRQTCpJMA==}
-    engines: {node: '>=18'}
 
   blossom-drive-sdk@0.4.1:
     resolution: {integrity: sha512-X4OIA4+X4zpZy11zP6ekE61LHFIOCvS+H+McqsyDVtGrwFeFSuqfZVyKpg1QuQTlxSVIlJVX0jt9+gHEfdGqWA==}
@@ -6484,17 +6484,17 @@ snapshots:
 
   bezier-js@6.1.4: {}
 
+  blossom-client-sdk@0.0.0-next-20241125171808:
+    dependencies:
+      '@cashu/cashu-ts': 2.0.0-rc1
+      '@noble/hashes': 1.5.0
+
   blossom-client-sdk@0.7.0:
     dependencies:
       '@noble/hashes': 1.5.0
       cross-fetch: 4.0.0
     transitivePeerDependencies:
       - encoding
-
-  blossom-client-sdk@2.0.0:
-    dependencies:
-      '@cashu/cashu-ts': 2.0.0-rc1
-      '@noble/hashes': 1.5.0
 
   blossom-drive-sdk@0.4.1(typescript@5.6.3):
     dependencies:
