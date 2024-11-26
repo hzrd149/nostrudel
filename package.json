@@ -33,7 +33,7 @@
     "@emotion/styled": "^11.13.5",
     "@getalby/bitcoin-connect": "^3.6.2",
     "@getalby/bitcoin-connect-react": "^3.6.2",
-    "@noble/ciphers": "^1.1.0",
+    "@noble/ciphers": "^1.1.1",
     "@noble/curves": "^1.7.0",
     "@noble/hashes": "^1.6.1",
     "@noble/secp256k1": "^1.7.1",

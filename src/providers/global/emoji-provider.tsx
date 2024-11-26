@@ -27,13 +27,14 @@ export function DefaultEmojiProvider({ children }: PropsWithChildren) {
 
 export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useCurrentAccount();
-  const favoritePacks = useFavoriteEmojiPacks(pubkey || account?.pubkey, [], {
+  const favoriteList = useFavoriteEmojiPacks(pubkey || account?.pubkey, [], {
     ignoreCache: true,
     alwaysRequest: true,
   });
-  const events = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
 
-  const emojis = events
+  const favoritePacks = useReplaceableEvents(favoriteList && getPackCordsFromFavorites(favoriteList));
+
+  const emojis = favoritePacks
     .map((event) =>
       event.tags.filter(isEmojiTag).map((t) => ({ name: t[1], url: t[2], keywords: [t[1]], char: `:${t[1]}:` })),
     )
