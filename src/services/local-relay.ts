@@ -11,7 +11,7 @@ import localSettings from "./local-settings";
 import { CAP_IS_NATIVE } from "../env";
 
 import CapacitorSQLiteRelay from "./cap-sqlite-relay/relay";
-import database from "./cap-sqlite-relay/database";
+// import database from "./cap-sqlite-relay/database";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -49,7 +49,7 @@ function createInternalRelay() {
 }
 async function createCapacitorRelay() {
   log("Loading Capacitor Database");
-  // const { default: database } = await import("./cap-sqlite-relay/database");
+  const { default: database } = await import("./cap-sqlite-relay/database");
   return new CapacitorSQLiteRelay(database);
 }
 
