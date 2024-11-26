@@ -1,5 +1,6 @@
-import { useMemo } from "react";
-import { useObservable, useQueryStore } from "applesauce-react/hooks";
+import { useEffect, useMemo } from "react";
+import { useObservable, useQueryStore, useStoreQuery } from "applesauce-react/hooks";
+import { ReplaceableSetQuery } from "applesauce-core/queries";
 
 import { useReadRelays } from "./use-client-relays";
 import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";
@@ -13,27 +14,32 @@ export default function useReplaceableEvents(
   const readRelays = useReadRelays(additionalRelays);
   const store = useQueryStore();
 
-  const observable = useMemo(() => {
+  const pointers = useMemo(() => {
     if (!coordinates) return undefined;
-    const pointers: CustomAddressPointer[] = [];
-
+    const arr: CustomAddressPointer[] = [];
     for (const cord of coordinates) {
       const parsed = typeof cord === "string" ? parseCoordinate(cord) : cord;
       if (!parsed) return;
 
-      pointers.push(parsed);
+      arr.push(parsed);
+    }
+    return arr;
+  }, [coordinates]);
+
+  // load events
+  useEffect(() => {
+    if (!pointers) return;
+    for (const pointer of pointers) {
       replaceableEventsService.requestEvent(
-        parsed.relays ? [...readRelays, ...parsed.relays] : readRelays,
-        parsed.kind,
-        parsed.pubkey,
-        parsed.identifier,
+        pointer.relays ? [...readRelays, ...pointer.relays] : readRelays,
+        pointer.kind,
+        pointer.pubkey,
+        pointer.identifier,
         opts,
       );
     }
+  }, [pointers, readRelays.urls.join("|")]);
 
-    return store.replaceableSet(pointers);
-  }, [coordinates, readRelays.urls.join("|"), store]);
-
-  const map = useObservable(observable);
+  const map = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
   return Array.from(map?.values() ?? []);
 }

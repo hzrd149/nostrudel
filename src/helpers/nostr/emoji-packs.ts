@@ -1,4 +1,3 @@
-import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent, isATag } from "../../types/nostr-event";
 
 export function getPackCordsFromFavorites(event: NostrEvent) {

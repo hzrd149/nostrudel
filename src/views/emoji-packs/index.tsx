@@ -7,12 +7,12 @@ import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import EmojiPackCard from "./components/emoji-pack-card";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import EmojiPackCreateModal from "./components/create-modal";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { getAddressPointersFromList } from "../../helpers/nostr/lists";
 
 function UserEmojiPackMangerPage() {
   const account = useCurrentAccount()!;
@@ -30,7 +30,7 @@ function UserEmojiPackMangerPage() {
       : undefined,
   );
 
-  const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
+  const favorites = useReplaceableEvents(favoritePacks && getAddressPointersFromList(favoritePacks));
   const filtered = packs.filter((pack) => {
     const cord = getEventCoordinate(pack);
     return !favorites.some((e) => getEventCoordinate(e) === cord);
