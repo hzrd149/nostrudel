@@ -1,5 +1,5 @@
 import { generateSecretKey, getPublicKey, nip19 } from "nostr-tools";
-import SimpleSigner from "../signers/simple-signer";
+import { SimpleSigner } from "applesauce-signer";
 import { Account } from "./account";
 
 export default class NsecAccount extends Account {

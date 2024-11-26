@@ -1,12 +1,12 @@
+import dayjs from "dayjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
-import dayjs from "dayjs";
+import { fakeVerifyEvent } from "applesauce-core/helpers";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
-import { fakeVerifyEvent } from "./verify-event";
 import localSettings from "./local-settings";
 import { CAP_IS_NATIVE } from "../env";
 

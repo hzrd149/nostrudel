@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Box, BoxProps } from "@chakra-ui/react";
 
-import useUserMetadata from "../../../../hooks/use-user-metadata";
+import useUserProfile from "../../../../hooks/use-user-profile";
 
 import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
@@ -15,7 +15,7 @@ type DVMAvatarProps = {
 
 export const DVMAvatar = forwardRef<HTMLDivElement, DVMAvatarProps>(({ pointer, noProxy, ...props }, ref) => {
   const dvmMetadata = useDVMMetadata(pointer);
-  const userMetadata = useUserMetadata(pointer.pubkey);
+  const userMetadata = useUserProfile(pointer.pubkey);
   const image = dvmMetadata?.image || userMetadata?.picture || "";
 
   return (

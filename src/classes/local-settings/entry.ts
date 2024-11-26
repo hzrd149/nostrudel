@@ -1,6 +1,6 @@
-import { PersistentSubject } from "../subject";
+import { BehaviorSubject } from "rxjs";
 
-export class NullableLocalStorageEntry<T = string> extends PersistentSubject<T | null> {
+export class NullableLocalStorageEntry<T = string> extends BehaviorSubject<T | null> {
   key: string;
   decode?: (raw: string | null) => T | null;
   encode?: (value: T) => string | null;
@@ -44,7 +44,7 @@ export class NullableLocalStorageEntry<T = string> extends PersistentSubject<T |
   }
 }
 
-export class LocalStorageEntry<T = string> extends PersistentSubject<T> {
+export class LocalStorageEntry<T = string> extends BehaviorSubject<T> {
   key: string;
   fallback: T;
   decode?: (raw: string) => T;

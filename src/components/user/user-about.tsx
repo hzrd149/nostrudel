@@ -1,24 +1,27 @@
-import { useMemo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
+import { useRenderedContent } from "applesauce-react/hooks";
+import { nostrMentions } from "applesauce-content/text";
 
-import { EmbedableContent, embedUrls } from "../../helpers/embeds";
-import useUserMetadata from "../../hooks/use-user-metadata";
-import { embedNostrLinks, renderGenericUrl } from "../external-embeds";
+import useUserProfile from "../../hooks/use-user-profile";
+import { renderGenericUrl } from "../content/links";
+import { components } from "../content";
 
-export default function UserAbout({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
-  const metadata = useUserMetadata(pubkey);
+const transformers = [nostrMentions];
+const linkRenderers = [renderGenericUrl];
 
-  const aboutContent = useMemo(() => {
-    if (!metadata?.about) return null;
-    let content: EmbedableContent = [metadata.about.trim()];
-    content = embedNostrLinks(content);
-    content = embedUrls(content, [renderGenericUrl]);
-    return content;
-  }, [metadata?.about]);
+const ProfileAboutContentSymbol = Symbol.for("profile-about-content");
+
+export default function UserAboutContent({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
+  const profile = useUserProfile(pubkey);
+  const content = useRenderedContent(profile?.about, components, {
+    transformers,
+    linkRenderers,
+    cacheKey: ProfileAboutContentSymbol,
+  });
 
   return (
     <Box whiteSpace="pre-line" {...props}>
-      {aboutContent}
+      {content}
     </Box>
   );
 }

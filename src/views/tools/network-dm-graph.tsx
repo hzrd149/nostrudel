@@ -19,15 +19,17 @@ import {
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { useUsersMetadata } from "../../hooks/use-user-network";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import EventStore from "../../classes/event-store";
 import { isPTag } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { subscribeMany } from "../../helpers/relay";
+import useUserProfiles from "../../hooks/use-user-profiles";
+import { eventStore } from "../../services/event-store";
+import { getProfileContent } from "applesauce-core/helpers";
 
 type NodeType = { id: string; image?: string; name?: string };
 
@@ -69,8 +71,8 @@ function NetworkDMGraphPage() {
     fetchData();
   }, [relays, store, contactsPubkeys, since, until]);
 
-  const selfMetadata = useUserMetadata(account.pubkey);
-  const usersMetadata = useUsersMetadata(contactsPubkeys);
+  const selfMetadata = useUserProfile(account.pubkey);
+  const userProfiles = useUserProfiles(contactsPubkeys);
 
   const newEventTrigger = useObservable(store.onEvent);
   const graphData = useMemo(() => {
@@ -85,10 +87,11 @@ function NetworkDMGraphPage() {
           id: pubkey,
         };
 
-        const metadata = usersMetadata[pubkey];
-        if (metadata) {
-          node.image = metadata.picture;
-          node.name = metadata.name;
+        const metadata = eventStore.getReplaceable(kinds.Metadata, pubkey);
+        const profile = metadata && getProfileContent(metadata);
+        if (profile) {
+          node.image = profile.picture;
+          node.name = profile.name;
         }
 
         nodes[pubkey] = node;
@@ -108,7 +111,7 @@ function NetworkDMGraphPage() {
     }
 
     return { nodes: Object.values(nodes), links: Object.values(links) };
-  }, [contactsPubkeys, account.pubkey, usersMetadata, selfMetadata, newEventTrigger]);
+  }, [contactsPubkeys, account.pubkey, userProfiles, selfMetadata, newEventTrigger]);
 
   return (
     <Flex direction="column" gap="2" h="full" pt="2">

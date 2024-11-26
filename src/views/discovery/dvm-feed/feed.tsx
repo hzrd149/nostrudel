@@ -25,7 +25,6 @@ import {
 } from "../../../helpers/nostr/dvm";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import useSubject from "../../../hooks/use-subject";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -47,9 +46,9 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const account = useCurrentAccount()!;
   const debugModal = useDisclosure();
 
-  const dvmRelays = useUserMailboxes(pointer.pubkey)?.relays;
+  const dvmRelays = useUserMailboxes(pointer.pubkey)?.outboxes;
   const readRelays = useReadRelays(dvmRelays);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `${getHumanReadableCoordinate(pointer.kind, pointer.pubkey, pointer.identifier)}-jobs`,
     readRelays,
     [
@@ -61,8 +60,6 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
       },
     ],
   );
-
-  const events = useSubject(timeline.timeline);
   const jobs = groupEventsIntoJobs(events);
   const pages = chainJobs(Array.from(Object.values(jobs)));
   const jobChains = flattenJobChain(pages);

@@ -1,4 +1,4 @@
-import { Box, Code, Flex, Heading } from "@chakra-ui/react";
+import { Box, Code, Heading } from "@chakra-ui/react";
 import { CopyIconButton } from "../copy-icon-button";
 
 export default function RawValue({ value, heading }: { heading: string; value?: string | null }) {
@@ -7,12 +7,10 @@ export default function RawValue({ value, heading }: { heading: string; value?: 
       <Heading size="sm" mb="2">
         {heading}
       </Heading>
-      <Flex gap="2">
-        <Code fontSize="md" wordBreak="break-all">
-          {value}
-        </Code>
-        <CopyIconButton value={String(value)} size="xs" aria-label="copy" />
-      </Flex>
+      <Code py="1" pl="2" fontSize="md" wordBreak="break-all" userSelect="all" fontFamily="monospace" rounded="md">
+        <CopyIconButton value={String(value)} size="sm" aria-label="copy" variant="ghost" float="right" ml="2" />
+        {value}
+      </Code>
     </Box>
   );
 }

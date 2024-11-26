@@ -14,8 +14,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { parseBolt11 } from "applesauce-core/helpers";
 
-import { parsePaymentRequest, readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import { CopyIconButton } from "../copy-icon-button";
 import QrCode02 from "../icons/qr-code-02";
 import QrCodeSvg from "../qr-code/qr-code-svg";
@@ -23,8 +24,11 @@ import QrCodeSvg from "../qr-code/qr-code-svg";
 export type InvoiceButtonProps = {
   paymentRequest: string;
 };
-export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "children"> & InvoiceButtonProps) => {
-  const { value: invoice, error } = useAsync(async () => parsePaymentRequest(paymentRequest));
+export default function InlineInvoiceCard({
+  paymentRequest,
+  ...props
+}: Omit<BoxProps, "children"> & InvoiceButtonProps) {
+  const { value: invoice, error } = useAsync(async () => parseBolt11(paymentRequest));
   const more = useDisclosure();
 
   const [loading, setLoading] = useState(false);
@@ -52,7 +56,7 @@ export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "
 
   if (!invoice) return <>Loading Invoice...</>;
 
-  const isExpired = dayjs(invoice.expiry).isBefore(dayjs());
+  const isExpired = dayjs.unix(invoice.expiry).isBefore(dayjs());
 
   return (
     <Flex
@@ -83,18 +87,18 @@ export const InlineInvoiceCard = ({ paymentRequest, ...props }: Omit<BoxProps, "
           </Box>
           <Box>
             <Text color={isExpired ? "red.400" : undefined}>
-              {isExpired ? "Expired" : "Expires"}: {dayjs(invoice.expiry).fromNow()}
+              {isExpired ? "Expired" : "Expires"}: {dayjs.unix(invoice.expiry).fromNow()}
             </Text>
           </Box>
           <ButtonGroup variant="outline">
             <CopyIconButton value={invoice.paymentRequest} aria-label="Copy Invoice" />
             <IconButton icon={<QrCode02 boxSize={6} />} onClick={more.onToggle} aria-label="Show QrCode" />
             <Button as="a" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
-              ⚡ Pay {invoice.amount ? readablizeSats(invoice.amount / 1000) + " sats" : ""}
+              ⚡ Pay {invoice.amount ? humanReadableSats(invoice.amount / 1000) + " sats" : ""}
             </Button>
           </ButtonGroup>
         </Flex>
       )}
     </Flex>
   );
-};
+}

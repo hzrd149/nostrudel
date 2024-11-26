@@ -1,14 +1,26 @@
-import { BlobDescriptor, BlossomClient, Signer } from "blossom-client-sdk";
+import { BlobDescriptor, createUploadAuth, ServerType, Signer } from "blossom-client-sdk";
+import { multiServerUpload, MultiServerUploadOptions } from "blossom-client-sdk/actions/upload";
 
-export async function uploadFileToServers(servers: string[], file: File, signer: Signer) {
-  const results: BlobDescriptor[] = [];
+export async function simpleMultiServerUpload<T extends ServerType = ServerType>(
+  servers: T[],
+  file: File,
+  signer: Signer,
+  opts?: MultiServerUploadOptions<T, File>,
+): Promise<BlobDescriptor> {
+  const results = await multiServerUpload(servers, file, {
+    ...opts,
+    onAuth: (_server, blob) => createUploadAuth(signer, blob),
+  });
 
-  const auth = await BlossomClient.getUploadAuth(file, signer);
+  let blob: BlobDescriptor | null = null;
+
   for (const server of servers) {
-    try {
-      results.push(await BlossomClient.uploadBlob(server, file, auth));
-    } catch (e) {}
+    if (results.has(server)) {
+      blob = results.get(server)!;
+      break;
+    }
   }
+  if (!blob) throw new Error("Failed to upload");
 
-  return results[0];
+  return blob;
 }

@@ -1,12 +1,26 @@
-import appSettings from "../services/settings/app-settings";
+import AppSettingsQuery from "../queries/app-settings";
+import accountService from "../services/account";
+import { queryStore } from "../services/event-store";
+import { AppSettings } from "./app-settings";
 import { convertToUrl } from "./url";
+
+// hack to get app settings
+let settings: AppSettings | undefined;
+let sub: ZenObservable.Subscription;
+accountService.current.subscribe((account) => {
+  if (sub) sub.unsubscribe();
+  if (!account) return;
+  sub = queryStore
+    .runQuery(AppSettingsQuery)(account.pubkey)
+    .subscribe((v) => (settings = v));
+});
 
 const clearNetFailedHosts = new Set();
 const proxyFailedHosts = new Set();
 
 export function createRequestProxyUrl(url: URL | string, corsProxy?: string) {
   if (!corsProxy && window.REQUEST_PROXY) corsProxy = new URL(window.REQUEST_PROXY, location.origin).toString();
-  if (!corsProxy && appSettings.value.corsProxy) corsProxy = appSettings.value.corsProxy;
+  if (!corsProxy && settings?.corsProxy) corsProxy = settings.corsProxy;
   if (!corsProxy) return url;
 
   if (corsProxy.includes("<url>")) {
@@ -19,7 +33,7 @@ export function createRequestProxyUrl(url: URL | string, corsProxy?: string) {
 }
 
 export function fetchWithProxy(url: URL | string, opts?: RequestInit) {
-  if (!appSettings.value.corsProxy && !window.REQUEST_PROXY) return fetch(url, opts);
+  if (!settings?.corsProxy && !window.REQUEST_PROXY) return fetch(url, opts);
 
   const u = typeof url === "string" ? convertToUrl(url) : url;
 

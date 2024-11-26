@@ -2,11 +2,11 @@ import { forwardRef } from "react";
 import { IconProps } from "@chakra-ui/react";
 
 import useDnsIdentity from "../../hooks/use-dns-identity";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import { VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
 
 const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconProps>(({ pubkey, ...props }, ref) => {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const identity = useDnsIdentity(metadata?.nip05);
 
   if (!metadata?.nip05) return null;

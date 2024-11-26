@@ -18,6 +18,8 @@ import {
   TagLabel,
   Text,
 } from "@chakra-ui/react";
+import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
+import { kinds } from "nostr-tools";
 
 import UserLink from "../../components/user/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
@@ -26,7 +28,6 @@ import { useDeleteEventContext } from "../../providers/route/delete-event-provid
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";
 import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
-import { EMOJI_PACK_KIND, getEmojisFromPack, getPackName } from "../../helpers/nostr/emoji-packs";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import UserAvatarLink from "../../components/user/user-avatar-link";
@@ -100,7 +101,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   const [scale, setScale] = useState(10);
 
   const isAuthor = account?.pubkey === pack.pubkey;
-  const emojis = getEmojisFromPack(pack);
+  const emojis = getEmojis(pack);
 
   const [editing, setEditing] = useState(false);
   const [draftEmojis, setDraft] = useState(emojis);
@@ -121,7 +122,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   };
   const saveEdit = async () => {
     const draft: DraftNostrEvent = {
-      kind: EMOJI_PACK_KIND,
+      kind: kinds.Emojisets,
       content: pack.content || "",
       created_at: dayjs().unix(),
       tags: [...pack.tags.filter((t) => t[0] !== "emoji"), ...draftEmojis.map(({ name, url }) => ["emoji", name, url])],

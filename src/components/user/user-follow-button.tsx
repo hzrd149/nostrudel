@@ -11,12 +11,12 @@ import {
   MenuDivider,
   useDisclosure,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "../icons";
-import useUserLists from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-lists";
 import {
-  PEOPLE_LIST_KIND,
   createEmptyContactList,
   listAddPerson,
   listRemovePerson,
@@ -28,7 +28,7 @@ import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useSigningContext } from "../../providers/global/signing-provider";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
-import NewListModal from "../../views/lists/components/new-list-modal";
+import NewSetModal from "../../views/lists/components/new-set-modal";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
 import { usePublishEvent } from "../../providers/global/publish-provider";
@@ -40,7 +40,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const [isLoading, setLoading] = useState(false);
   const newListModal = useDisclosure();
 
-  const lists = useUserLists(account.pubkey).filter((list) => list.kind === PEOPLE_LIST_KIND);
+  const lists = useUserSets(account.pubkey).filter((list) => list.kind === kinds.Followsets);
 
   const inLists = lists.filter((list) => getPubkeysFromList(list).some((p) => p.pubkey === pubkey));
 
@@ -93,7 +93,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         New list
       </MenuItem>
 
-      {newListModal.isOpen && <NewListModal onClose={newListModal.onClose} isOpen onCreated={newListModal.onClose} />}
+      {newListModal.isOpen && <NewSetModal onClose={newListModal.onClose} isOpen onCreated={newListModal.onClose} />}
     </>
   );
 }

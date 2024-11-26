@@ -1,23 +1,28 @@
-import RelaySet from "../classes/relay-set";
-import { COMMON_CONTACT_RELAY } from "../const";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { MailboxesQuery } from "applesauce-core/queries";
+import { kinds } from "nostr-tools";
+
+import { COMMON_CONTACT_RELAYS } from "../const";
 import { RequestOptions } from "../services/replaceable-events";
-import userMailboxesService from "../services/user-mailboxes";
-import { useReadRelays } from "./use-client-relays";
-import useSubject from "./use-subject";
+import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useUserMailboxes(
   pubkey?: string,
   additionalRelays: Iterable<string> = [],
   opts?: RequestOptions,
 ) {
-  const readRelays = useReadRelays([...additionalRelays, COMMON_CONTACT_RELAY]);
-  const sub = pubkey ? userMailboxesService.requestMailboxes(pubkey, readRelays, opts) : undefined;
-  const value = useSubject(sub);
-  return value;
+  useReplaceableEvent(
+    pubkey && { kind: kinds.RelayList, pubkey },
+    additionalRelays ? [...additionalRelays, ...COMMON_CONTACT_RELAYS] : COMMON_CONTACT_RELAYS,
+    opts,
+  );
+
+  return useStoreQuery(MailboxesQuery, pubkey ? [pubkey] : undefined);
 }
+
 export function useUserInbox(pubkey?: string, additionalRelays: Iterable<string> = [], opts?: RequestOptions) {
-  return useUserMailboxes(pubkey, additionalRelays, opts)?.inbox ?? new RelaySet();
+  return useUserMailboxes(pubkey, additionalRelays, opts)?.inboxes;
 }
 export function useUserOutbox(pubkey?: string, additionalRelays: Iterable<string> = [], opts?: RequestOptions) {
-  return useUserMailboxes(pubkey, additionalRelays, opts)?.outbox ?? new RelaySet();
+  return useUserMailboxes(pubkey, additionalRelays, opts)?.outboxes;
 }

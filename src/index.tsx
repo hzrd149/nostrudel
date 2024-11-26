@@ -4,8 +4,12 @@ import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
 import "./native";
 
+import funding from "virtual:funding";
+console.log("Funding", funding);
+
 import "./services/user-event-sync";
 import "./services/username-search";
+import "./services/page-api";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

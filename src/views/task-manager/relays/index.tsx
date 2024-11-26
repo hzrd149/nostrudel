@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Badge,
   Box,
@@ -14,24 +15,26 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { useObservable } from "applesauce-react/hooks";
+import { combineLatest, map } from "rxjs";
 
 import relayPoolService from "../../../services/relay-pool";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { localRelay } from "../../../services/local-relay";
-import useSubjects from "../../../hooks/use-subjects";
 import { IconRelayAuthButton, useRelayAuthMethod } from "../../../components/relays/relay-auth-button";
 import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import processManager from "../../../services/process-manager";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import Timestamp from "../../../components/timestamp";
+import localSettings from "../../../services/local-settings";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (
@@ -50,11 +53,15 @@ function RelayCard({ relay }: { relay: AbstractRelay }) {
 function RelayAuthCard({ relay }: { relay: AbstractRelay }) {
   const { authenticated } = useRelayAuthMethod(relay);
 
+  const defaultMode = useObservable(localSettings.defaultAuthenticationMode);
+
   const processes = processManager.getRootProcessesForRelay(relay);
-  const [authMode, setAuthMode] = useLocalStorage<RelayAuthMode>(
+  const [authMode, setAuthMode] = useLocalStorage<RelayAuthMode | "">(
     relayPoolService.getRelayAuthStorageKey(relay),
-    "ask",
-    { raw: true },
+    "",
+    {
+      raw: true,
+    },
   );
 
   return (
@@ -74,9 +81,10 @@ function RelayAuthCard({ relay }: { relay: AbstractRelay }) {
         w="auto"
         rounded="md"
         flexShrink={0}
-        value={authMode || "ask"}
+        value={authMode}
         onChange={(e) => setAuthMode(e.target.value as RelayAuthMode)}
       >
+        <option value="">Default ({defaultMode})</option>
         <option value="always">Always</option>
         <option value="ask">Ask</option>
         <option value="never">Never</option>
@@ -99,9 +107,14 @@ export default function TaskManagerRelays() {
     .filter((r) => r !== localRelay)
     .sort((a, b) => +b.connected - +a.connected || a.url.localeCompare(b.url));
 
-  const notices = useSubjects(Array.from(relayPoolService.notices.values()))
-    .flat()
-    .sort((a, b) => b.date - a.date);
+  const observable = useMemo(
+    () =>
+      combineLatest(Array.from(relayPoolService.notices.values())).pipe(
+        map((relays) => relays.flat().sort((a, b) => b.date - a.date)),
+      ),
+    [],
+  );
+  const notices = useObservable(observable) ?? [];
 
   const challenges = Array.from(relayPoolService.challenges.entries()).filter(([r, c]) => r.connected && !!c.value);
 

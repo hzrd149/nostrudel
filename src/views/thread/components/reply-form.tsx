@@ -3,11 +3,12 @@ import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput } from 
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 import { kinds } from "nostr-tools";
+import { ThreadItem } from "applesauce-core/queries";
 import dayjs from "dayjs";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { UserAvatarStack } from "../../../components/compact-user-stack";
-import { ThreadItem, getThreadMembers } from "../../../helpers/thread";
+import { getThreadMembers } from "../../../helpers/thread";
 import {
   addReplyTags,
   createEmojiTags,
@@ -29,7 +30,7 @@ import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-uploa
 export type ReplyFormProps = {
   item: ThreadItem;
   replyKind?: number;
-  onCancel: () => void;
+  onCancel?: () => void;
   onSubmitted?: (event: NostrEvent) => void;
 };
 
@@ -103,7 +104,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         />
         <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
         <ButtonGroup size="sm" ml="auto">
-          <Button onClick={onCancel}>Cancel</Button>
+          {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button type="submit" colorScheme="primary" size="sm">
             Submit
           </Button>

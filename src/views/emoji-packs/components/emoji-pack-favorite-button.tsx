@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { USER_EMOJI_LIST_KIND } from "../../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
 import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
@@ -22,7 +22,7 @@ export default function EmojiPackFavoriteButton({
 
   const handleClick = async () => {
     const prev: DraftNostrEvent = favoritePacks || {
-      kind: USER_EMOJI_LIST_KIND,
+      kind: kinds.UserEmojiList,
       created_at: dayjs().unix(),
       content: "",
       tags: [],

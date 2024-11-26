@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-pwa/client" />
+/// <reference types="vite-plugin-funding/client" />
 
 declare module "virtual:pwa-register/react" {
   // @ts-expect-error ignore when react is not installed

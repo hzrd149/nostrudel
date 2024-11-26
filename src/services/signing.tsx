@@ -19,17 +19,16 @@ class SigningService {
     };
   }
 
-  async requestSignature(draft: EventTemplate, account: Account) {
-    const checkSig = (signed: NostrEvent) => {
-      if (signed.pubkey !== account.pubkey) throw new Error("Signed with the wrong pubkey");
-    };
-
+  async requestSignature(draft: UnsignedEvent | EventTemplate, account: Account) {
     if (account.readonly) throw new Error("Cant with read only account");
     await this.unlockAccount(account);
 
+    if (!Reflect.has(draft, "pubkey")) draft = await this.finalizeDraft(draft, account);
+
     if (!account.signer) throw new Error("Account missing signer");
     const signed = await account.signer.signEvent(draft);
-    checkSig(signed);
+    if (signed.pubkey !== account.pubkey) throw new Error("Signed with the wrong pubkey");
+
     return signed;
   }
 

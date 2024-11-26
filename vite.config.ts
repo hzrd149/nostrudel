@@ -1,6 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import fundingPlugin from "vite-plugin-funding";
+
+console.log("Build with:");
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith("VITE_")) console.log(`${key}: ${value}`);
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -87,5 +93,6 @@ export default defineConfig({
         ],
       },
     }),
+    fundingPlugin({ types: ["lightning"] }),
   ],
 });

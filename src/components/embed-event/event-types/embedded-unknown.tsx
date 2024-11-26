@@ -1,42 +1,30 @@
 import { useContext, useMemo } from "react";
 import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, Text } from "@chakra-ui/react";
+import { useRenderedContent } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import UserDnsIdentity from "../../user/user-dns-identity";
-import {
-  embedEmoji,
-  embedNostrHashtags,
-  embedNostrLinks,
-  renderGenericUrl,
-  renderImageUrl,
-  renderVideoUrl,
-} from "../../external-embeds";
-import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
+import { renderGenericUrl, renderImageUrl, renderVideoUrl } from "../../content/links";
 import Timestamp from "../../timestamp";
 import { ExternalLinkIcon } from "../../icons";
-import { renderAudioUrl } from "../../external-embeds/types/audio";
+import { renderAudioUrl } from "../../content/links/audio";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { components } from "../../content";
+
+const UnknownEventContentSymbol = Symbol.for("unknown-event-content");
+const linkRenderers = [renderImageUrl, renderVideoUrl, renderAudioUrl, renderGenericUrl];
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const address = useMemo(() => relayHintService.getSharableEventAddress(event), [event]);
+  const address = useMemo(() => getSharableEventAddress(event), [event]);
   const { openAddress } = useContext(AppHandlerContext);
 
   const alt = event.tags.find((t) => t[0] === "alt")?.[1];
-  const content = useMemo(() => {
-    let jsx: EmbedableContent = [event.content];
-    jsx = embedNostrLinks(jsx);
-    jsx = embedNostrHashtags(jsx, event);
-    jsx = embedEmoji(jsx, event);
-
-    jsx = embedUrls(jsx, [renderImageUrl, renderVideoUrl, renderAudioUrl, renderGenericUrl]);
-
-    return jsx;
-  }, [event.content]);
+  const content = useRenderedContent(event, components, { linkRenderers, cacheKey: UnknownEventContentSymbol });
 
   return (
     <>

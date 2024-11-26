@@ -9,12 +9,11 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { NostrEvent } from "../../types/nostr-event";
 import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
-import useSubject from "../../hooks/use-subject";
 import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useCurrentAccount from "../../hooks/use-current-account";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
 import accountService from "../../services/account";
 import CategorySelect from "./components/category-select";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
@@ -25,7 +24,7 @@ function Warning() {
   const navigate = useNavigate();
   const toast = useToast();
   const account = useCurrentAccount()!;
-  const metadata = useUserMetadata(account.pubkey);
+  const metadata = useUserProfile(account.pubkey);
   const [loading, setLoading] = useState(false);
   const createAnonAccount = async () => {
     setLoading(true);
@@ -82,12 +81,10 @@ function TorrentsPage() {
     if (tags.length > 0) return { ...filter, kinds: [TORRENT_KIND], "#t": tags };
     else return { ...filter, kinds: [TORRENT_KIND] };
   }, [tags.join(","), filter]);
-  const timeline = useTimelineLoader(`${listId || "global"}-torrents`, relays, query, {
+  const { loader, timeline: torrents } = useTimelineLoader(`${listId || "global"}-torrents`, relays, query, {
     eventFilter,
   });
-
-  const torrents = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const account = useCurrentAccount();
 
@@ -115,11 +112,7 @@ function TorrentsPage() {
                 <Th />
               </Tr>
             </Thead>
-            <Tbody>
-              {torrents.map((torrent) => (
-                <TorrentTableRow key={torrent.id} torrent={torrent} />
-              ))}
-            </Tbody>
+            <Tbody>{torrents?.map((torrent) => <TorrentTableRow key={torrent.id} torrent={torrent} />)}</Tbody>
           </Table>
         </TableContainer>
       </IntersectionObserverProvider>

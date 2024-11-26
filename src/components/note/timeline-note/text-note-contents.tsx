@@ -1,13 +1,10 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
+import { useRenderedContent } from "applesauce-react/hooks";
+import { textNoteTransformers, TextNoteContentSymbol, galleries } from "applesauce-content/text";
 
-import { EmbedableContent, embedUrls, truncateEmbedableContent } from "../../../helpers/embeds";
 import {
-  embedLightningInvoice,
-  embedNostrLinks,
-  embedNostrMentions,
-  embedNostrHashtags,
   renderWavlakeUrl,
   renderYoutubeURL,
   renderImageUrl,
@@ -16,72 +13,24 @@ import {
   renderSpotifyUrl,
   renderTidalUrl,
   renderVideoUrl,
-  embedEmoji,
   renderOpenGraphUrl,
-  embedImageGallery,
-  renderGenericUrl,
   renderSongDotLinkUrl,
-  embedCashuTokens,
   renderStemstrUrl,
   renderSoundCloudUrl,
   renderSimpleXLink,
   renderRedditUrl,
-  embedNipDefinitions,
   renderAudioUrl,
   renderModelUrl,
   renderCodePenURL,
   renderArchiveOrgURL,
   renderStreamUrl,
-} from "../../external-embeds";
+} from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
-import { embedNostrWikiLinks } from "../../external-embeds/types/wiki";
+import { components } from "../../content";
+import { nipDefinitions } from "../../content/transform/nip-notation";
 
-function buildContents(event: NostrEvent | EventTemplate, simpleLinks = false) {
-  let content: EmbedableContent = [event.content.trim()];
-
-  // image gallery
-  content = embedImageGallery(content, event as NostrEvent);
-
-  // common
-  content = embedUrls(content, [
-    renderSimpleXLink,
-    renderYoutubeURL,
-    renderTwitterUrl,
-    renderRedditUrl,
-    renderWavlakeUrl,
-    renderAppleMusicUrl,
-    renderSpotifyUrl,
-    renderTidalUrl,
-    renderSongDotLinkUrl,
-    renderStemstrUrl,
-    renderSoundCloudUrl,
-    renderImageUrl,
-    renderVideoUrl,
-    renderStreamUrl,
-    renderAudioUrl,
-    renderModelUrl,
-    renderCodePenURL,
-    renderArchiveOrgURL,
-    simpleLinks ? renderGenericUrl : renderOpenGraphUrl,
-  ]);
-
-  // bitcoin
-  content = embedLightningInvoice(content);
-
-  // cashu
-  content = embedCashuTokens(content);
-
-  // nostr
-  content = embedNostrLinks(content);
-  content = embedNostrMentions(content, event);
-  content = embedNostrHashtags(content, event);
-  content = embedNipDefinitions(content);
-  content = embedEmoji(content, event);
-  content = embedNostrWikiLinks(content);
-
-  return content;
-}
+const transformers = [...textNoteTransformers, galleries, nipDefinitions];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate;
@@ -89,19 +38,42 @@ export type TextNoteContentsProps = {
   maxLength?: number;
 };
 
+const linkRenderers = [
+  renderSimpleXLink,
+  renderYoutubeURL,
+  renderTwitterUrl,
+  renderRedditUrl,
+  renderWavlakeUrl,
+  renderAppleMusicUrl,
+  renderSpotifyUrl,
+  renderTidalUrl,
+  renderSongDotLinkUrl,
+  renderStemstrUrl,
+  renderSoundCloudUrl,
+  renderImageUrl,
+  renderVideoUrl,
+  renderStreamUrl,
+  renderAudioUrl,
+  renderModelUrl,
+  renderCodePenURL,
+  renderArchiveOrgURL,
+  renderOpenGraphUrl,
+];
+
 export const TextNoteContents = React.memo(
   ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
-    let content = buildContents(event, noOpenGraphLinks);
-
-    if (maxLength !== undefined) {
-      content = truncateEmbedableContent(content, maxLength);
-    }
+    const content = useRenderedContent(event, components, {
+      linkRenderers,
+      transformers,
+      maxLength,
+      cacheKey: TextNoteContentSymbol,
+    });
 
     return (
       <MediaOwnerProvider owner={(event as NostrEvent).pubkey as string | undefined}>
         <LightboxProvider>
           <Suspense fallback={<Spinner />}>
-            <Box whiteSpace="pre-wrap" {...props}>
+            <Box whiteSpace="pre-wrap" dir="auto" {...props}>
               {content}
             </Box>
           </Suspense>

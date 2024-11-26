@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { useEffect, useMemo } from "react";
+import { ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { localRelay } from "../../../../services/local-relay";
@@ -9,6 +9,7 @@ import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
 import MemoryRelay from "../../../../classes/memory-relay";
 import { getSortedKinds } from "../../../../helpers/nostr/event";
+import useForceUpdate from "../../../../hooks/use-force-update";
 
 async function importEvents(events: NostrEvent[]) {
   for (const event of events) {
@@ -17,39 +18,32 @@ async function importEvents(events: NostrEvent[]) {
 }
 async function exportEvents() {
   if (localRelay instanceof MemoryRelay) {
-    return localRelay.events.getSortedEvents();
+    return Array.from(localRelay.store.database.iterateTime(0, Infinity));
   }
   return [];
 }
 
 export default function MemoryDatabasePage() {
-  const [update, setUpdate] = useState(0);
+  const update = useForceUpdate();
 
   useEffect(() => {
     if (localRelay instanceof MemoryRelay) {
-      const sub = localRelay.events.onEvent.subscribe((e) => setUpdate((v) => v + 1));
+      const sub = localRelay.store.database.inserted.subscribe(update);
       return () => sub.unsubscribe();
     }
   }, []);
 
   const count = useMemo(() => {
-    if (localRelay instanceof MemoryRelay) return localRelay.events.events.size;
+    if (localRelay instanceof MemoryRelay) return localRelay.store.database.events.size;
     return 0;
   }, [update]);
 
   const kinds = useMemo(() => {
     if (localRelay instanceof MemoryRelay) {
-      return getSortedKinds(Array.from(localRelay.events.events.values()));
+      return getSortedKinds(Array.from(localRelay.store.database.iterateTime(0, Infinity)));
     }
     return {};
   }, [update]);
-
-  const handleClearData = async () => {
-    if (localRelay instanceof MemoryRelay) {
-      localRelay.events.clear();
-      setUpdate(-1);
-    }
-  };
 
   return (
     <>
@@ -57,11 +51,6 @@ export default function MemoryDatabasePage() {
       <ButtonGroup flexWrap="wrap">
         <ImportEventsButton onLoad={importEvents} />
         <ExportEventsButton getEvents={exportEvents} />
-      </ButtonGroup>
-      <ButtonGroup flexWrap="wrap">
-        <Button onClick={handleClearData} colorScheme="primary" variant="outline">
-          Clear cache
-        </Button>
       </ButtonGroup>
       <Flex gap="2" wrap="wrap" alignItems="flex-start" w="full">
         {kinds && (

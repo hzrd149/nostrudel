@@ -6,7 +6,7 @@ import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
 import deleteEventService from "../services/delete-events";
 
-export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
 
 /** a class used to store and sort events */
 export default class EventStore {
@@ -96,7 +96,7 @@ export default class EventStore {
     while (true) {
       const event = events.shift();
       if (!event) return;
-      if (filter && !filter(event, this)) continue;
+      if (filter && !filter(event)) continue;
       if (i === nth) return event;
       i++;
     }
@@ -108,7 +108,9 @@ export default class EventStore {
     while (true) {
       const event = events.pop();
       if (!event) return;
-      if (filter && !filter(event, this)) continue;
+      try {
+        if (filter && !filter(event)) continue;
+      } catch (error) {}
       if (i === nth) return event;
       i++;
     }

@@ -1,12 +1,11 @@
 import { MouseEventHandler, useCallback } from "react";
 import { Card, CardProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { NoteLink } from "../../note/note-link";
@@ -15,14 +14,15 @@ import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const { showSignatureVerification } = useSubject(appSettings);
-  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const { showSignatureVerification } = useAppSettings();
+  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
-  const to = `/n/${relayHintService.getSharableEventAddress(event)}`;
+  const to = `/n/${getSharableEventAddress(event)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

@@ -110,7 +110,9 @@ function MediaServersPage() {
     <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px="2">
       <Flex gap="2" alignItems="center">
         <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Media Servers</Heading>
+        <Heading size="lg" mt="2">
+          Media Servers
+        </Heading>
         {event && <DebugEventButton event={event} size="sm" ml="auto" />}
       </Flex>
       <Text fontStyle="italic" mt="-2">

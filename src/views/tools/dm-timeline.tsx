@@ -10,7 +10,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import useSubject from "../../hooks/use-subject";
 import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
@@ -41,7 +40,7 @@ export function DMTimelinePage() {
     [clientMuteFilter],
   );
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: dms } = useTimelineLoader(
     `${listId ?? "global"}-dm-feed`,
     readRelays,
     filter
@@ -55,9 +54,7 @@ export function DMTimelinePage() {
       : { kinds: [kinds.EncryptedDirectMessage] },
     { eventFilter },
   );
-
-  const dms = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -68,8 +65,8 @@ export function DMTimelinePage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {dms.map((dm) => (
-          <ErrorBoundary key={dm.id}>
+        {dms?.map((dm) => (
+          <ErrorBoundary key={dm.id} event={dm}>
             <DirectMessage dm={dm} />
           </ErrorBoundary>
         ))}

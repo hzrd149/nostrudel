@@ -30,7 +30,6 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import ListFavoriteButton from "./list-favorite-button";
 import ListMenu from "./list-menu";
-import { COMMUNITY_DEFINITION_KIND } from "../../../helpers/nostr/communities";
 import { CommunityIcon, NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -40,13 +39,13 @@ import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
 import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
-  const communities = coordinates.filter((cord) => cord.kind === COMMUNITY_DEFINITION_KIND);
+  const communities = coordinates.filter((cord) => cord.kind === kinds.CommunityDefinition);
   const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);
   const references = getReferencesFromList(list);
 
@@ -83,10 +82,7 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
 
 export function createListLink(list: NostrEvent) {
   const isSpecialList = isSpecialListKind(list.kind);
-  return (
-    "/lists/" +
-    (isSpecialList ? createCoordinate(list.kind, list.pubkey) : relayHintService.getSharableEventAddress(list))
-  );
+  return "/lists/" + (isSpecialList ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list));
 }
 
 function ListCardRender({

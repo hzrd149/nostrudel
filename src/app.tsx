@@ -69,12 +69,10 @@ const BadgesBrowseView = lazy(() => import("./views/badges/browse"));
 const BadgeDetailsView = lazy(() => import("./views/badges/badge-details"));
 
 const CommunitiesHomeView = lazy(() => import("./views/communities"));
-const CommunitiesExploreView = lazy(() => import("./views/communities/explore"));
 const CommunityFindByNameView = lazy(() => import("./views/community/find-by-name"));
 const CommunityView = lazy(() => import("./views/community/index"));
 const CommunityPendingView = lazy(() => import("./views/community/views/pending"));
 const CommunityNewestView = lazy(() => import("./views/community/views/newest"));
-const CommunityTrendingView = lazy(() => import("./views/community/views/trending"));
 
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
@@ -106,6 +104,7 @@ import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
 import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
+import WalletView from "./views/wallet";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -238,6 +237,14 @@ const router = createHashRouter([
     ),
   },
   {
+    path: "/tools/publisher",
+    element: (
+      <RouteProviders>
+        <EventPublisherView />
+      </RouteProviders>
+    ),
+  },
+  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -331,6 +338,19 @@ const router = createHashRouter([
         ],
       },
       {
+        path: "wallet",
+        children: [
+          {
+            path: "",
+            element: (
+              <RequireCurrentAccount>
+                <WalletView />
+              </RequireCurrentAccount>
+            ),
+          },
+        ],
+      },
+      {
         path: "videos",
         children: [
           {
@@ -392,7 +412,6 @@ const router = createHashRouter([
           { path: "satellite-cdn", element: <SatelliteCDNView /> },
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
-          { path: "publisher", element: <EventPublisherView /> },
           { path: "corrections", element: <CorrectionsFeedView /> },
         ],
       },
@@ -413,10 +432,7 @@ const router = createHashRouter([
       },
       {
         path: "communities",
-        children: [
-          { path: "", element: <CommunitiesHomeView /> },
-          { path: "explore", element: <CommunitiesExploreView /> },
-        ],
+        children: [{ path: "", element: <CommunitiesHomeView /> }],
       },
       {
         path: "articles",
@@ -434,7 +450,6 @@ const router = createHashRouter([
             element: <CommunityView />,
             children: [
               { path: "", element: <CommunityNewestView /> },
-              { path: "trending", element: <CommunityTrendingView /> },
               { path: "newest", element: <CommunityNewestView /> },
               { path: "pending", element: <CommunityPendingView /> },
             ],

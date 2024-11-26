@@ -1,15 +1,4 @@
-import {
-  AvatarGroup,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  LinkBox,
-  SimpleGrid,
-  useForceUpdate,
-  useInterval,
-} from "@chakra-ui/react";
-import { Link } from "@chakra-ui/react";
+import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid, useInterval } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
@@ -18,17 +7,15 @@ import WikiSearchForm from "./components/wiki-search-form";
 import { WIKI_PAGE_KIND, validatePage } from "../../helpers/nostr/wiki";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
-import WikiPageResult from "./components/wiki-page-result";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { ErrorBoundary } from "../../components/error-boundary";
 import { WIKI_RELAYS } from "../../const";
 import { ExternalLinkIcon } from "../../components/icons";
-import WikiLink from "./components/wiki-link";
+import WikiLink from "../../components/markdown/wiki-link";
 import { useEffect } from "react";
 import dictionaryService from "../../services/dictionary";
 import UserAvatar from "../../components/user/user-avatar";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
+import useForceUpdate from "../../hooks/use-force-update";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;
@@ -37,13 +24,15 @@ function eventFilter(event: NostrEvent) {
 
 export default function WikiHomeView() {
   const relays = useReadRelays(WIKI_RELAYS);
-  const timeline = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], { eventFilter });
-
-  const pages = useSubject(timeline.timeline).filter((p) => p.content.length > 0);
+  const { loader, timeline: pages } = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], {
+    eventFilter,
+  });
 
   useEffect(() => {
-    for (const page of pages) {
-      dictionaryService.handleEvent(page);
+    if (pages) {
+      for (const page of pages) {
+        dictionaryService.handleEvent(page);
+      }
     }
   }, [pages]);
 
@@ -89,7 +78,7 @@ export default function WikiHomeView() {
             </LinkBox>
           ))}
       </SimpleGrid>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus timeline={loader} />
     </VerticalPageLayout>
   );
 }

@@ -6,7 +6,6 @@ import { NostrEvent, kinds } from "nostr-tools";
 import { ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
-import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -18,7 +17,6 @@ import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import TimelineLoader from "../../classes/timeline-loader";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
@@ -30,8 +28,7 @@ import { BackIconButton } from "../../components/router/back-button";
 import decryptionCacheService from "../../services/decryption-cache";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
-const ChatLog = memo(({ timeline }: { timeline: TimelineLoader }) => {
-  const messages = useSubject(timeline.timeline);
+const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
   const filteredMessages = useMemo(
     () => messages.filter((e) => !e.tags.some((t) => t[0] === "e" && t[3] === "root")),
     [messages.length],
@@ -86,9 +83,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   const otherMailboxes = useUserMailboxes(pubkey);
   const mailboxes = useUserMailboxes(account.pubkey);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: messages } = useTimelineLoader(
     `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    RelaySet.from(mailboxes?.inbox, mailboxes?.outbox, otherMailboxes?.inbox, otherMailboxes?.outbox),
+    RelaySet.from(mailboxes?.inboxes, mailboxes?.outboxes, otherMailboxes?.inboxes, otherMailboxes?.outboxes),
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
@@ -101,7 +98,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   const [loading, setLoading] = useState(false);
   const decryptAll = async () => {
-    const promises = timeline.timeline.value
+    const promises = messages
       .map((message) => {
         const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
         return decryptionCacheService.requestDecrypt(container);
@@ -112,10 +109,10 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     Promise.all(promises).finally(() => setLoading(false));
   };
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider timeline={timeline}>
+    <ThreadsProvider timeline={loader}>
       <IntersectionObserverProvider callback={callback}>
         <Card size="sm" flexShrink={0} p="2" flexDirection="row">
           <Flex gap="2" alignItems="center">
@@ -139,8 +136,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           </ButtonGroup>
         </Card>
         <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          <ChatLog timeline={timeline} />
-          <TimelineActionAndStatus timeline={timeline} />
+          <ChatLog messages={messages} />
+          <TimelineActionAndStatus timeline={loader} />
         </Flex>
         <SendMessageForm flexShrink={0} pubkey={pubkey} />
         {location.state?.thread && (

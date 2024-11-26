@@ -50,13 +50,16 @@ export default function LoginNsecView() {
     } else if (value.startsWith("ncryptsec")) {
       const password = window.prompt("Decryption password");
       if (password === null) throw new Error("Password required");
+
       const key = decrypt(value, password);
-      account = PasswordAccount.fromNcryptsec(getPublicKey(key), value);
+      const passwordAccount = PasswordAccount.fromNcryptsec(getPublicKey(key), value);
+      passwordAccount.signer.unlock(password);
+      account = passwordAccount;
     } else if (value.startsWith("nsec")) {
       const decode = safeDecode(value);
       if (decode?.type !== "nsec") throw new Error();
-      const key = decode.data;
 
+      const key = decode.data;
       const password = window.prompt("Local encryption password. This password is used to keep your secret key safe");
       if (password) {
         const a = new PasswordAccount(getPublicKey(key));

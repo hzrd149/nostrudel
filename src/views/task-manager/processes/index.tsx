@@ -1,7 +1,8 @@
-import { Flex, useForceUpdate, useInterval } from "@chakra-ui/react";
+import { Flex, useInterval } from "@chakra-ui/react";
 
 import ProcessBranch from "./process/process-tree";
 import processManager from "../../../services/process-manager";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 export default function TaskManagerProcesses() {
   const update = useForceUpdate();

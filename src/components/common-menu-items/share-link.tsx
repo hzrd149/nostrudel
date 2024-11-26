@@ -3,14 +3,14 @@ import { MenuItem, useToast } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { ShareIcon } from "../icons";
-import useUserMetadata from "../../hooks/use-user-metadata";
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 
 export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
   const address = useShareableEventAddress(event);
-  const metadata = useUserMetadata(event.pubkey);
+  const metadata = useUserProfile(event.pubkey);
 
   const handleClick = useCallback(async () => {
     const data: ShareData = {

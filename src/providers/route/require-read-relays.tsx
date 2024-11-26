@@ -1,15 +1,15 @@
 import { PropsWithChildren } from "react";
 import { Alert, AlertIcon, Button, Link, Spacer, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 import { useLocation } from "react-router-dom";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
 import { offlineMode } from "../../services/offline-mode";
 
 export default function RequireReadRelays({ children }: PropsWithChildren) {
   const readRelays = useReadRelays();
-  const offline = useSubject(offlineMode);
+  const offline = useObservable(offlineMode);
   const location = useLocation();
 
   if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
@@ -22,7 +22,7 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
             <Link as={RouterLink} to="/relays/app">
               app relays
             </Link>
-            ! Reading and publishing notes wont work very well!
+            ! Reading and publishing notes won't work very well!
           </Text>
           <Spacer />
           <Button as={RouterLink} to="/relays/app" size="sm" colorScheme="primary">

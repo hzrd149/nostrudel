@@ -1,9 +1,10 @@
-import { Badge, useForceUpdate } from "@chakra-ui/react";
+import { Badge } from "@chakra-ui/react";
 import { useInterval } from "react-use";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { useObservable } from "applesauce-react/hooks";
 
 import relayPoolService from "../../services/relay-pool";
-import useSubject from "../../hooks/use-subject";
+import useForceUpdate from "../../hooks/use-force-update";
 
 const getStatusText = (relay: AbstractRelay, connecting = false) => {
   if (connecting) return "Connecting...";
@@ -31,7 +32,7 @@ export const RelayStatus = ({ url, relay }: { url?: string; relay?: AbstractRela
     else throw Error("Missing url or relay");
   }
 
-  const connecting = useSubject(relayPoolService.connecting.get(relay!));
+  const connecting = useObservable(relayPoolService.connecting.get(relay!));
 
   return <Badge colorScheme={getStatusColor(relay!, connecting)}>{getStatusText(relay!, connecting)}</Badge>;
 };

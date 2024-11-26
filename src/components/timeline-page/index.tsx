@@ -29,11 +29,15 @@ export function useTimelinePageEventFilter() {
 export type TimelineViewType = "timeline" | "images" | "health";
 
 export default function TimelinePage({
+  loader,
   timeline,
   header,
   ...props
-}: { timeline: TimelineLoader; header?: React.ReactNode } & Omit<FlexProps, "children" | "direction" | "gap">) {
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+}: { loader: TimelineLoader; timeline: NostrEvent[]; header?: React.ReactNode } & Omit<
+  FlexProps,
+  "children" | "direction" | "gap"
+>) {
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const viewParam = useRouteSearchValue("view", "timeline");
   const mode = (viewParam.value as TimelineViewType) ?? "timeline";
@@ -47,7 +51,7 @@ export default function TimelinePage({
         return <MediaTimeline timeline={timeline} />;
 
       case "health":
-        return <TimelineHealth timeline={timeline} />;
+        return <TimelineHealth loader={loader} timeline={timeline} />;
       default:
         return null;
     }
@@ -57,7 +61,7 @@ export default function TimelinePage({
       <Flex direction="column" gap="2" {...props}>
         {header}
         {renderTimeline()}
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </Flex>
     </IntersectionObserverProvider>
   );

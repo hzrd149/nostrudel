@@ -20,7 +20,7 @@ import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/comm
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import useCountCommunityMembers from "../../../hooks/use-count-community-members";
-import { readablizeSats } from "../../../helpers/bolt11";
+import { humanReadableSats } from "../../../helpers/lightning";
 import User01 from "../../../components/icons/user-01";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { AddressPointer } from "nostr-tools/nip19";
@@ -67,7 +67,7 @@ function CommunityCard({ community, ...props }: Omit<CardProps, "children"> & { 
         {countMembers !== undefined && countMembers > 0 && (
           <Tag variant="solid" ml="auto" alignSelf="flex-end" textShadow="none">
             <TagLeftIcon as={User01} boxSize={4} />
-            <TagLabel>{readablizeSats(countMembers)}</TagLabel>
+            <TagLabel>{humanReadableSats(countMembers)}</TagLabel>
           </Tag>
         )}
 

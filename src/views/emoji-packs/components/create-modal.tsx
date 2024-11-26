@@ -11,16 +11,15 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
-import { EMOJI_PACK_KIND } from "../../../helpers/nostr/emoji-packs";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalProps, "children">) {
   const publish = usePublishEvent();
@@ -33,14 +32,14 @@ export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalPr
 
   const submit = handleSubmit(async (values) => {
     const draft: DraftNostrEvent = {
-      kind: EMOJI_PACK_KIND,
+      kind: kinds.Emojisets,
       created_at: dayjs().unix(),
       content: "",
       tags: [["d", values.title]],
     };
 
     const pub = await publish("Create emoji pack", draft);
-    if (pub) navigate(`/emojis/${relayHintService.getSharableEventAddress(pub.event)}`);
+    if (pub) navigate(`/emojis/${getSharableEventAddress(pub.event)}`);
   });
 
   return (

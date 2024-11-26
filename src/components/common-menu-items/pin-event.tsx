@@ -2,12 +2,11 @@ import { useCallback, useState } from "react";
 import { MenuItem } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserPinList from "../../hooks/use-user-pin-list";
 import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import { PIN_LIST_KIND, isEventInList, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
+import { isEventInList, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
 import { PinIcon } from "../icons";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 
@@ -30,7 +29,7 @@ export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
   const togglePin = useCallback(async () => {
     setLoading(true);
     let draft: DraftNostrEvent = {
-      kind: PIN_LIST_KIND,
+      kind: kinds.Pinlist,
       created_at: dayjs().unix(),
       content: list?.content ?? "",
       tags: list?.tags ? Array.from(list.tags) : [],

@@ -12,15 +12,16 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
 
 import accountService from "../../services/account";
-import nostrConnectService from "../../services/nostr-connect";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import QrCodeSvg from "../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../components/copy-icon-button";
-import NostrConnectSigner from "../../classes/signers/nostr-connect-signer";
 import NostrConnectAccount from "../../classes/accounts/nostr-connect-account";
+import relayPoolService from "../../services/relay-pool";
+import { NOSTR_CONNECT_PERMISSIONS } from "../../const";
 
 function ClientConnectForm() {
   const navigate = useNavigate();
@@ -39,14 +40,13 @@ function ClientConnectForm() {
     params.set("url", host);
     params.set("image", new URL("/apple-touch-icon.png", host).toString());
 
-    return `nostrconnect://${signer.publicKey}?` + params.toString();
+    return `nostrconnect://${signer.clientPubkey}?` + params.toString();
   }, [relay, signer]);
 
   const create = useCallback(() => {
-    const c = new NostrConnectSigner(undefined, [relay]);
+    const c = new NostrConnectSigner({ relays: [relay], pool: relayPoolService });
     setSigner(c);
-    c.listen().then(() => {
-      nostrConnectService.saveSigner(c);
+    c.waitForSigner().then(() => {
       const account = new NostrConnectAccount(c.pubkey!, c);
       accountService.addAccount(account);
       accountService.switchAccount(c.pubkey!);
@@ -109,22 +109,12 @@ export default function LoginNostrConnectView() {
 
     try {
       setLoading("Connecting...");
-      let client: NostrConnectSigner;
-      if (connection.startsWith("bunker://")) {
-        if (connection.includes("@")) client = nostrConnectService.fromBunkerAddress(connection);
-        else client = nostrConnectService.fromBunkerURI(connection);
+      let client = await NostrConnectSigner.fromBunkerURI(connection, relayPoolService, NOSTR_CONNECT_PERMISSIONS);
+      const pubkey = await client.getPublicKey();
 
-        await client.connect(new URL(connection).searchParams.get("secret") ?? undefined);
-      } else if (connection.startsWith("npub")) {
-        client = nostrConnectService.fromBunkerToken(connection);
-        const [npub, hexToken] = connection.split("#");
-        await client.connect(hexToken);
-      } else throw new Error("Unknown format");
-
-      nostrConnectService.saveSigner(client);
-      const account = new NostrConnectAccount(client.pubkey!, client);
+      const account = new NostrConnectAccount(pubkey, client);
       accountService.addAccount(account);
-      accountService.switchAccount(client.pubkey!);
+      accountService.switchAccount(pubkey);
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
     }

@@ -2,6 +2,7 @@ node_modules
 dist
 public/lib
 stats.html
+pnpm-lock.yaml
 
 # Android copied from ./android/.gitignore
 # Gradle files

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Box, Button, ButtonProps, Icon, Link, Text, others, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
@@ -26,7 +27,7 @@ import KeyboardShortcut from "../keyboard-shortcut";
 import useRecentIds from "../../hooks/use-recent-ids";
 import { internalApps, internalTools } from "../../views/other-stuff/apps";
 import { App, AppIcon } from "../../views/other-stuff/component/app-card";
-import { useMemo } from "react";
+import Wallet02 from "../icons/wallet-02";
 
 export default function NavItems() {
   const location = useLocation();
@@ -49,6 +50,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/notifications")) active = "notifications";
   else if (location.pathname.startsWith("/launchpad")) active = "launchpad";
   else if (location.pathname.startsWith("/discovery")) active = "discovery";
+  else if (location.pathname.startsWith("/wallet")) active = "wallet";
   else if (location.pathname.startsWith("/dm")) active = "dm";
   else if (location.pathname.startsWith("/streams")) active = "streams";
   else if (location.pathname.startsWith("/relays")) active = "relays";
@@ -149,6 +151,15 @@ export default function NavItems() {
             Messages
             {showShortcuts && <KeyboardShortcut letter="m" requireMeta ml="auto" />}
           </Button>
+          {/* <Button
+            as={RouterLink}
+            to="/wallet"
+            leftIcon={<Wallet02 boxSize={6} />}
+            colorScheme={active === "wallet" ? "primary" : undefined}
+            {...buttonProps}
+          >
+            Wallet
+          </Button> */}
         </>
       )}
       <Button

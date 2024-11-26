@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flex, Select } from "@chakra-ui/react";
+import { Flex, Select, useDisclosure } from "@chakra-ui/react";
 import { Filter, matchFilters, NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import { useThrottle } from "react-use";
@@ -11,7 +11,7 @@ import RelayList from "./components/relay-list";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import RelayMap from "./components/relay-map";
 import RelayStatusDetails from "./components/relay-details";
-import { getTagValue, sortByDate } from "../../../helpers/nostr/event";
+import { getTagValue } from "../../../helpers/nostr/event";
 import { SelectedContext } from "./selected-context";
 import CountyPicker from "../../../components/county-picker";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
@@ -19,7 +19,7 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 export default function RelayDiscoveryView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
 
-  const [discoveryRelay, setDiscoveryRelay] = useState("wss://history.nostr.watch/");
+  const [discoveryRelay, setDiscoveryRelay] = useState("wss://relay.nostr.watch");
   const [monitor, setMonitor] = useState("9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923");
   const [network, setNetwork] = useState("");
   const [county, setCounty] = useState("");
@@ -48,11 +48,12 @@ export default function RelayDiscoveryView() {
     if (!subscription) return;
 
     const filter: Filter = {
-      authors: [monitor],
       kinds: [30166],
       // set from https://github.com/nostr-protocol/nips/pull/230#pullrequestreview-2290873405
       since: Math.round(Date.now() / 1000) - 60 * 60 * 2,
     };
+
+    if (monitor) filter.authors = [monitor];
 
     if (network) filter["#n"] = [network];
     if (county) {
@@ -91,8 +92,14 @@ export default function RelayDiscoveryView() {
             <option value="clearnet">clearnet</option>
             <option value="tor">Tor</option>
             <option value="i2p">I2P</option>
+            <option value="hyper">Hyper</option>
           </Select>
           <CountyPicker value={county} onChange={(e) => setCounty(e.target.value)} w="auto" />
+
+          <Select value={monitor} onChange={(e) => setMonitor(e.target.value)} w="auto">
+            <option value="">Self Published</option>
+            <option value="9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923">nostr.watch</option>
+          </Select>
         </Flex>
 
         <Flex gap="2" overflow="hidden" h="full">

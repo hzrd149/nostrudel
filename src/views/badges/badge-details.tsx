@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { kinds } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 import {
   Button,
   Flex,
@@ -24,7 +25,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import UserAvatarLink from "../../components/user/user-avatar-link";
@@ -37,13 +37,13 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 
 function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
-  const awards = useSubject(timeline.timeline);
+  const awards = useObservable(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
     <Flex direction="column" gap="4">
       <IntersectionObserverProvider callback={callback}>
-        {awards.map((award) => (
+        {awards?.map((award) => (
           <ErrorBoundary key={award.id}>
             <BadgeAwardCard award={award} showImage={false} />
           </ErrorBoundary>
@@ -54,13 +54,15 @@ function BadgeActivityTab({ timeline }: { timeline: TimelineLoader }) {
 }
 
 function BadgeUsersTab({ timeline }: { timeline: TimelineLoader }) {
-  const awards = useSubject(timeline.timeline);
+  const awards = useObservable(timeline.timeline);
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   const pubkeys = new Set<string>();
-  for (const award of awards) {
-    for (const { pubkey } of getBadgeAwardPubkeys(award)) {
-      pubkeys.add(pubkey);
+  if (awards) {
+    for (const award of awards) {
+      for (const { pubkey } of getBadgeAwardPubkeys(award)) {
+        pubkeys.add(pubkey);
+      }
     }
   }
 
@@ -86,7 +88,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
   const readRelays = useReadRelays();
   const coordinate = getEventCoordinate(badge);
-  const awardsTimeline = useTimelineLoader(`${coordinate}-awards`, readRelays, {
+  const { loader } = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
     kinds: [kinds.BadgeAward],
   });
@@ -141,10 +143,10 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
         </TabList>
         <TabPanels>
           <TabPanel px="0">
-            <BadgeActivityTab timeline={awardsTimeline} />
+            <BadgeActivityTab timeline={loader} />
           </TabPanel>
           <TabPanel>
-            <BadgeUsersTab timeline={awardsTimeline} />
+            <BadgeUsersTab timeline={loader} />
           </TabPanel>
         </TabPanels>
       </Tabs>

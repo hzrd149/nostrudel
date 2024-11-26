@@ -3,10 +3,11 @@ import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
+import { BehaviorSubject } from "rxjs";
+import { useObservable } from "applesauce-react/hooks";
 
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -15,7 +16,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import NotificationItem from "./components/notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
-import { CategorizedEvent, NotificationType, typeSymbol } from "../../classes/notifications";
+import { CategorizedEvent, NotificationType, NotificationTypeSymbol } from "../../classes/notifications";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import FocusedContext from "./focused-context";
 import readStatusService from "../../services/read-status";
@@ -24,8 +25,6 @@ import useNumberCache from "../../hooks/timeline/use-number-cache";
 import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
 import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
 import useVimNavigation from "./use-vim-navigation";
-import { PersistentSubject } from "../../classes/subject";
-import useRouteStateValue from "../../hooks/use-route-state-value";
 
 function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
   const readAll = useCallback(() => {
@@ -51,18 +50,20 @@ const NotificationsTimeline = memo(
     showZaps,
     showReposts,
     showReactions,
+    showUnknown,
   }: {
     showReplies: boolean;
     showMentions: boolean;
     showZaps: boolean;
     showReposts: boolean;
     showReactions: boolean;
+    showUnknown: boolean;
   }) => {
     const { notifications } = useNotifications();
     const { people } = usePeopleListContext();
     const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-    const events = useSubject(notifications?.timeline) ?? [];
+    const events = useObservable(notifications?.timeline) ?? [];
 
     const cacheKey = useTimelineLocationCacheKey();
     const numberCache = useNumberCache(cacheKey);
@@ -77,17 +78,35 @@ const NotificationsTimeline = memo(
     for (const event of events) {
       if (event.created_at < dates.cursor && filtered.length > minItems) continue;
 
-      const type = event[typeSymbol];
-      if (type === NotificationType.Zap) {
-        if (!showZaps) continue;
-        if (peoplePubkeys && !peoplePubkeys.includes(event.pubkey)) continue;
-      }
+      const type = event[NotificationTypeSymbol];
 
-      if (!showReplies && type === NotificationType.Reply) continue;
-      if (!showMentions && type === NotificationType.Mention) continue;
-      if (!showReactions && type === NotificationType.Reaction) continue;
-      if (!showReposts && type === NotificationType.Repost) continue;
-      if (!showZaps && type === NotificationType.Zap) continue;
+      switch (type) {
+        case NotificationType.Zap:
+          if (!showZaps) continue;
+          if (peoplePubkeys && !peoplePubkeys.includes(event.pubkey)) continue;
+          break;
+
+        case NotificationType.Reply:
+          if (!showReplies) continue;
+          break;
+
+        case NotificationType.Quote:
+        case NotificationType.Mention:
+          if (!showMentions) continue;
+          break;
+
+        case NotificationType.Reaction:
+          if (!showReactions) continue;
+          break;
+
+        case NotificationType.Repost:
+          if (!showReposts) continue;
+          break;
+
+        default:
+          if (!showUnknown) continue;
+          break;
+      }
 
       filtered.push(event);
     }
@@ -131,14 +150,14 @@ const NotificationsTimeline = memo(
   },
 );
 
-const cachedFocus = new PersistentSubject("");
+const cachedFocus = new BehaviorSubject("");
 
 function NotificationsPage() {
   const { timeline } = useNotifications();
 
   // const { value: focused, setValue: setFocused } = useRouteStateValue("focused", "");
   // const [focused, setFocused] = useState("");
-  const focused = useSubject(cachedFocus);
+  const focused = useObservable(cachedFocus);
   const setFocused = useCallback((id: string) => cachedFocus.next(id), [cachedFocus]);
   const focusContext = useMemo(() => ({ id: focused, focus: setFocused }), [focused, setFocused]);
 
@@ -146,7 +165,8 @@ function NotificationsPage() {
   const showMentions = useLocalStorageDisclosure("notifications-show-mentions", true);
   const showZaps = useLocalStorageDisclosure("notifications-show-zaps", true);
   const showReposts = useLocalStorageDisclosure("notifications-show-reposts", true);
-  const showReactions = useLocalStorageDisclosure("notifications-show-reactions", true);
+  const showReactions = useLocalStorageDisclosure("notifications-show-reactions", false);
+  const showUnknown = useLocalStorageDisclosure("notifications-show-unknown", false);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
@@ -160,6 +180,7 @@ function NotificationsPage() {
             showZaps={showZaps}
             showReactions={showReactions}
             showReposts={showReposts}
+            showUnknown={showUnknown}
           />
           <ButtonGroup>
             <PeopleListSelection flexShrink={0} />
@@ -179,6 +200,7 @@ function NotificationsPage() {
               showZaps={showZaps.isOpen}
               showReposts={showReposts.isOpen}
               showReactions={showReactions.isOpen}
+              showUnknown={showUnknown.isOpen}
             />
           </Flex>
         </FocusedContext.Provider>

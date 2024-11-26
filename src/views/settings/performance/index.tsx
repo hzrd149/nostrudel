@@ -11,15 +11,15 @@ import {
   Button,
   Heading,
 } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
-import useSubject from "../../../hooks/use-subject";
 import localSettings from "../../../services/local-settings";
 
 function VerifyEventSettings() {
-  const verifyEventMethod = useSubject(localSettings.verifyEventMethod);
+  const verifyEventMethod = useObservable(localSettings.verifyEventMethod);
 
   return (
     <>
@@ -46,7 +46,7 @@ function VerifyEventSettings() {
 
 export default function PerformanceSettings() {
   const { register, submit, formState } = useSettingsForm();
-  const enableKeyboardShortcuts = useSubject(localSettings.enableKeyboardShortcuts);
+  const enableKeyboardShortcuts = useObservable(localSettings.enableKeyboardShortcuts);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>

@@ -21,7 +21,7 @@ import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import stringify from "json-stringify-deterministic";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
@@ -52,6 +52,7 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 
 export default function EventConsoleView() {
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const historyDrawer = useDisclosure();
   const [history, setHistory] = useLocalStorage<string[]>("console-history", []);
   const helpModal = useDisclosure();
@@ -62,11 +63,13 @@ export default function EventConsoleView() {
   const [sub, setSub] = useState<Subscription | IDBSubscription | null>(null);
 
   const [query, setQuery] = useState(() => {
-    if (params.has("filter")) {
+    if (params.has("filter") || location.state?.filter) {
       const str = params.get("filter");
       if (str) {
         const f = safeJson(str, null);
         if (f) return JSON.stringify(f, null, 2);
+      } else if (typeof location.state.filter === "object") {
+        return JSON.stringify(location.state.filter, null, 2);
       }
     }
     if (history?.[0]) return history?.[0];

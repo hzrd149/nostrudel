@@ -14,14 +14,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
-import MarkdownContent from "./components/markdown";
+import MarkdownContent from "../../components/markdown/markdown";
 import UserLink from "../../components/user/user-link";
-import useSubject from "../../hooks/use-subject";
 import WikiPageResult from "./components/wiki-page-result";
 import Timestamp from "../../components/timestamp";
 import WikiPageHeader from "./components/wiki-page-header";
@@ -38,7 +38,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -111,11 +111,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
               </Button>
             )}
             {page.pubkey !== account?.pubkey && (
-              <Button
-                as={RouterLink}
-                colorScheme="primary"
-                to={`/wiki/create?fork=${relayHintService.getSharableEventAddress(page)}`}
-              >
+              <Button as={RouterLink} colorScheme="primary" to={`/wiki/create?fork=${getSharableEventAddress(page)}`}>
                 Fork
               </Button>
             )}
@@ -146,7 +142,7 @@ function WikiPageFooter({ page }: { page: NostrEvent }) {
 
   const readRelays = useReadRelays();
   const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
-  const pages = useSubject(subject);
+  const pages = useObservable(subject);
 
   let forks = pages ? Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey) : [];
   if (webOfTrust) forks = webOfTrust.sortByDistanceAndConnections(forks, (p) => p.pubkey);

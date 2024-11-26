@@ -1,30 +1,46 @@
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds, nip19 } from "nostr-tools";
+import { getPointerFromTag } from "applesauce-core/helpers";
 
 import { PTag, isATag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
-import { getPointerFromTag } from "../nip19";
 
-export const MUTE_LIST_KIND = kinds.Mutelist;
-export const PIN_LIST_KIND = kinds.Pinlist;
-export const BOOKMARK_LIST_KIND = kinds.BookmarkList;
-export const COMMUNITIES_LIST_KIND = kinds.CommunitiesList;
-export const CHANNELS_LIST_KIND = kinds.PublicChatsList;
-
-export const PEOPLE_LIST_KIND = kinds.Followsets;
-export const NOTE_LIST_KIND = 30001;
-export const BOOKMARK_LIST_SET_KIND = kinds.Bookmarksets;
+export const LIST_KINDS = [
+  kinds.Mutelist,
+  kinds.Pinlist,
+  kinds.RelayList,
+  kinds.BookmarkList,
+  kinds.CommunitiesList,
+  kinds.PublicChatsList,
+  kinds.BlockedRelaysList,
+  kinds.SearchRelaysList,
+  kinds.InterestsList,
+  kinds.UserEmojiList,
+  kinds.DirectMessageRelaysList,
+];
+export const SET_KINDS = [
+  kinds.Followsets,
+  kinds.Bookmarksets,
+  kinds.Genericlists,
+  kinds.Relaysets,
+  kinds.Interestsets,
+  kinds.Emojisets,
+  kinds.Curationsets,
+];
 
 export function getListName(event: NostrEvent) {
   if (event.kind === kinds.Contacts) return "Following";
-  if (event.kind === MUTE_LIST_KIND) return "Mute";
-  if (event.kind === PIN_LIST_KIND) return "Pins";
-  if (event.kind === BOOKMARK_LIST_KIND) return "Bookmarks";
-  if (event.kind === COMMUNITIES_LIST_KIND) return "Communities";
+  if (event.kind === kinds.Mutelist) return "Mute";
+  if (event.kind === kinds.Pinlist) return "Pins";
+  if (event.kind === kinds.BookmarkList) return "Bookmarks";
+  if (event.kind === kinds.CommunitiesList) return "Communities";
+  if (event.kind === kinds.InterestsList) return "Interests";
+  if (event.kind === kinds.PublicChatsList) return "Public Chats";
+
   return (
-    event.tags.find((t) => t[0] === "name")?.[1] ||
     event.tags.find((t) => t[0] === "title")?.[1] ||
+    event.tags.find((t) => t[0] === "name")?.[1] ||
     event.tags.find(isDTag)?.[1]
   );
 }
@@ -41,18 +57,13 @@ export function setListDescription(draft: EventTemplate, description: string) {
 export function isJunkList(event: NostrEvent) {
   const name = event.tags.find(isDTag)?.[1];
   if (!name) return false;
-  if (event.kind !== PEOPLE_LIST_KIND) return false;
+  if (event.kind !== kinds.Followsets) return false;
   return /^(chats\/([0-9a-f]{64}|null)|notifications)\/lastOpened$/.test(name);
 }
+
+/** Check if is kind is list */
 export function isSpecialListKind(kind: number) {
-  return (
-    kind === kinds.Contacts ||
-    kind === MUTE_LIST_KIND ||
-    kind === PIN_LIST_KIND ||
-    kind === BOOKMARK_LIST_KIND ||
-    kind === COMMUNITIES_LIST_KIND ||
-    kind === CHANNELS_LIST_KIND
-  );
+  return kind === kinds.Contacts || LIST_KINDS.includes(kind);
 }
 
 export function cloneList(list: NostrEvent, keepCreatedAt = false): EventTemplate {

@@ -12,6 +12,7 @@ import PeopleListSelection from "../../../components/people-list-selection/peopl
 import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
+import { getSeenRelays } from "applesauce-core/helpers";
 
 export default function RelayNotes({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Notes`);
@@ -25,6 +26,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
   const muteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
     (event: NostrEvent) => {
+      if (!getSeenRelays(event)?.has(relay)) return false;
       if (muteFilter(event)) return false;
       if (!showReplies.isOpen && isReply(event)) return false;
       if (!showReposts.isOpen && isRepost(event)) return false;
@@ -32,10 +34,15 @@ export default function RelayNotes({ relay }: { relay: string }) {
     },
     [timelineEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
-  const timeline = useTimelineLoader(`${relay}-notes`, [relay], filter ? { ...filter, kinds: k } : undefined, {
-    eventFilter,
-    useCache: false,
-  });
+  const { loader, timeline } = useTimelineLoader(
+    `${relay}-notes`,
+    [relay],
+    filter ? { ...filter, kinds: k } : undefined,
+    {
+      eventFilter,
+      useCache: false,
+    },
+  );
 
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]}>
@@ -46,5 +53,5 @@ export default function RelayNotes({ relay }: { relay: string }) {
     </Flex>
   );
 
-  return <TimelinePage timeline={timeline} header={header} />;
+  return <TimelinePage loader={loader} timeline={timeline} header={header} />;
 }

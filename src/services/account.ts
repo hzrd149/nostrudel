@@ -1,3 +1,5 @@
+import { BehaviorSubject } from "rxjs";
+
 import { Account } from "../classes/accounts/account";
 import AmberAccount from "../classes/accounts/amber-account";
 import ExtensionAccount from "../classes/accounts/extension-account";
@@ -6,10 +8,9 @@ import NsecAccount from "../classes/accounts/nsec-account";
 import PasswordAccount from "../classes/accounts/password-account";
 import PubkeyAccount from "../classes/accounts/pubkey-account";
 import SerialPortAccount from "../classes/accounts/serial-port-account";
-import { PersistentSubject } from "../classes/subject";
 import { logger } from "../helpers/debug";
 import db from "./db";
-import { AppSettings } from "./settings/migrations";
+import { AppSettings } from "../helpers/app-settings";
 
 type CommonAccount = {
   pubkey: string;
@@ -25,10 +26,10 @@ export type LocalAccount = CommonAccount & {
 
 class AccountService {
   log = logger.extend("AccountService");
-  loading = new PersistentSubject(true);
-  accounts = new PersistentSubject<Account[]>([]);
-  current = new PersistentSubject<Account | null>(null);
-  isGhost = new PersistentSubject(false);
+  loading = new BehaviorSubject(true);
+  accounts = new BehaviorSubject<Account[]>([]);
+  current = new BehaviorSubject<Account | null>(null);
+  isGhost = new BehaviorSubject(false);
 
   constructor() {
     db.getAll("accounts").then((accountData) => {
@@ -119,7 +120,7 @@ class AccountService {
     return db.put("accounts", account.toJSON());
   }
 
-  updateAccountLocalSettings(pubkey: string, settings: AppSettings) {
+  updateAccountLocalSettings(pubkey: string, settings: Partial<AppSettings>) {
     const account = this.accounts.value.find((acc) => acc.pubkey === pubkey);
     if (account) account.localSettings = settings;
   }
@@ -163,14 +164,5 @@ if (import.meta.env.DEV) {
   // @ts-ignore
   window.accountService = accountService;
 }
-
-// temporary fix for converting old sublt crypto accounts to ncryptsec
-setInterval(() => {
-  for (const account of accountService.accounts.value) {
-    if (account instanceof PasswordAccount && account.signer.ncryptsec && account.signer.buffer) {
-      accountService.saveAccount(account);
-    }
-  }
-}, 10_000);
 
 export default accountService;

@@ -1,12 +1,12 @@
 import { nanoid } from "nanoid";
 import { Filter, Relay } from "nostr-tools";
 import { AbstractRelay, Subscription, SubscriptionParams } from "nostr-tools/abstract-relay";
+import { isFilterEqual } from "applesauce-core/helpers";
 
 import relayPoolService from "../services/relay-pool";
-import Process from "./process";
 import FilterFunnel01 from "../components/icons/filter-funnel-01";
 import processManager from "../services/process-manager";
-import { isFilterEqual } from "../helpers/nostr/filter";
+import Process from "./process";
 
 export default class PersistentSubscription {
   id: string;
@@ -44,9 +44,6 @@ export default class PersistentSubscription {
   async update() {
     if (!this.filters || this.filters.length === 0) throw new Error("Missing filters");
     if (this.connecting) throw new Error("Cant update while connecting");
-
-    // check if its possible to subscribe to this relay
-    if (!relayPoolService.canSubscribe(this.relay)) throw new Error("Cant subscribe to relay");
 
     this.process.active = true;
 

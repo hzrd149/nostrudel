@@ -10,20 +10,10 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import useSubject from "../../hooks/use-subject";
 import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { EmbedEvent } from "../../components/embed-event";
-import { STREAM_CHAT_MESSAGE_KIND, STREAM_KIND } from "../../helpers/nostr/stream";
-import {
-  BOOKMARK_LIST_KIND,
-  BOOKMARK_LIST_SET_KIND,
-  COMMUNITIES_LIST_KIND,
-  MUTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-} from "../../helpers/nostr/lists";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 const UnknownEvent = memo(({ event }: { event: NostrEvent }) => {
@@ -44,19 +34,20 @@ const commonTimelineKinds = [
   kinds.Reaction,
   kinds.BadgeAward,
   kinds.BadgeDefinition,
-  STREAM_KIND,
+  kinds.LiveEvent,
   kinds.Contacts,
   kinds.Metadata,
   kinds.EncryptedDirectMessage,
-  MUTE_LIST_KIND,
-  STREAM_CHAT_MESSAGE_KIND,
+  kinds.Mutelist,
+  kinds.LiveChatMessage,
   kinds.EventDeletion,
   kinds.CommunityPostApproval,
-  BOOKMARK_LIST_KIND,
-  BOOKMARK_LIST_SET_KIND,
-  PEOPLE_LIST_KIND,
-  PIN_LIST_KIND,
-  COMMUNITIES_LIST_KIND,
+  kinds.BookmarkList,
+  kinds.Bookmarksets,
+  kinds.Followsets,
+  kinds.Pinlist,
+  kinds.CommunitiesList,
+  kinds.ZapGoal,
 ];
 
 export function UnknownTimelinePage() {
@@ -73,10 +64,10 @@ export function UnknownTimelinePage() {
     [clientMuteFilter],
   );
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(`${listId ?? "global"}-unknown-feed`, readRelays, filter, { eventFilter });
-
-  const events = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-unknown-feed`, readRelays, filter, {
+    eventFilter,
+  });
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -87,8 +78,8 @@ export function UnknownTimelinePage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {events.map((dm) => (
-          <UnknownEvent key={dm.id} event={dm} />
+        {timeline.map((event) => (
+          <UnknownEvent key={event.id} event={event} />
         ))}
       </IntersectionObserverProvider>
     </VerticalPageLayout>

@@ -2,7 +2,7 @@ import { Box, Card, CardBody, CardHeader, CardProps, Heading, LinkBox, Text } fr
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/flare";
+import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";

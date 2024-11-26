@@ -18,18 +18,16 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
+import { ChatIcon } from "@chakra-ui/icons";
+import { parseLNURLOrAddress } from "applesauce-core/helpers";
 
-import { getLudEndpoint } from "../../../helpers/lnurl";
-import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
-import useUserMetadata from "../../../hooks/use-user-metadata";
-import { embedNostrLinks, renderGenericUrl } from "../../../components/external-embeds";
+import useUserProfile from "../../../hooks/use-user-profile";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  AtIcon,
   ExternalLinkIcon,
   KeyIcon,
   LightningIcon,
@@ -39,7 +37,6 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import { QrIconButton } from "../components/share-qr-button";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserAvatar from "../../../components/user/user-avatar";
-import { ChatIcon } from "@chakra-ui/icons";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -52,19 +49,11 @@ import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
-
-function buildDescriptionContent(description: string) {
-  let content: EmbedableContent = [description.trim()];
-
-  content = embedNostrLinks(content);
-  content = embedUrls(content, [renderGenericUrl]);
-
-  return content;
-}
+import UserAboutContent from "../../../components/user/user-about";
+import UserRecentEvents from "./user-recent-events";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const dnsIdentity = useUserDNSIdentity(pubkey);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
@@ -105,12 +94,11 @@ export default function UserAboutTab() {
   const contextRelays = useAdditionalRelayContext();
   const colorModal = useDisclosure();
 
-  const metadata = useUserMetadata(pubkey, contextRelays);
+  const metadata = useUserProfile(pubkey, contextRelays);
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);
 
-  const aboutContent = metadata?.about && buildDescriptionContent(metadata?.about);
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
     ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
@@ -181,11 +169,7 @@ export default function UserAboutTab() {
           position="absolute"
         />
       </Box>
-      {aboutContent && (
-        <Box whiteSpace="pre-wrap" px="2">
-          {aboutContent}
-        </Box>
-      )}
+      <UserAboutContent pubkey={pubkey} />
 
       <Flex gap="2" px="2" direction="column">
         <Flex gap="2">
@@ -199,7 +183,7 @@ export default function UserAboutTab() {
         {metadata?.lud16 && (
           <Flex gap="2">
             <LightningIcon boxSize="1.2em" />
-            <Link href={getLudEndpoint(metadata.lud16)} isExternal>
+            <Link href={parseLNURLOrAddress(metadata.lud16)?.toString()} isExternal>
               {metadata.lud16}
             </Link>
           </Flex>
@@ -234,6 +218,10 @@ export default function UserAboutTab() {
       </Flex>
 
       <UserProfileBadges pubkey={pubkey} px="2" />
+      <Box px="2">
+        <Heading size="md">Recent activity:</Heading>
+        <UserRecentEvents pubkey={pubkey} />
+      </Box>
       <UserStatsAccordion pubkey={pubkey} />
 
       <Flex gap="2" wrap="wrap">

@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import db from "./db";
 import _throttle from "lodash.throttle";
+import { BehaviorSubject } from "rxjs";
 
 import { fetchWithProxy } from "../helpers/request";
 import SuperMap from "../classes/super-map";
-import Subject from "../classes/subject";
 
 export function parseAddress(address: string): { name?: string; domain?: string } {
   const parts = address.trim().toLowerCase().split("@");
@@ -43,7 +43,9 @@ function getIdentityFromJson(name: string, domain: string, json: IdentityJson): 
 
 class DnsIdentityService {
   // undefined === loading
-  identities = new SuperMap<string, Subject<DnsIdentity | undefined>>(() => new Subject());
+  identities = new SuperMap<string, BehaviorSubject<DnsIdentity | undefined>>(
+    () => new BehaviorSubject<DnsIdentity | undefined>(undefined),
+  );
 
   async fetchIdentity(address: string): Promise<DnsIdentity> {
     const { name, domain } = parseAddress(address);

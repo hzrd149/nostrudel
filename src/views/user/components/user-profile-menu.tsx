@@ -15,12 +15,10 @@ import {
   ShareIcon,
 } from "../../../components/icons";
 import accountService from "../../../services/account";
-import useUserMetadata from "../../../hooks/use-user-metadata";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import userMailboxesService from "../../../services/user-mailboxes";
 import { useContext } from "react";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import PubkeyAccount from "../../../classes/accounts/pubkey-account";
@@ -33,17 +31,13 @@ export const UserProfileMenu = ({
 }: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
   const toast = useToast();
   const account = useCurrentAccount();
-  const metadata = useUserMetadata(pubkey);
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
   const { openAddress } = useContext(AppHandlerContext);
 
   const loginAsUser = () => {
-    const relays = userMailboxesService.getMailboxes(pubkey).value?.outbox.urls;
-    if (!accountService.hasAccount(pubkey)) {
-      accountService.addAccount(new PubkeyAccount(pubkey));
-    }
+    if (!accountService.hasAccount(pubkey)) accountService.addAccount(new PubkeyAccount(pubkey));
     accountService.switchAccount(pubkey);
   };
 

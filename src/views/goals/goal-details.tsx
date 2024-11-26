@@ -10,7 +10,7 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import GoalContents from "./components/goal-contents";
 import GoalZapList from "./components/goal-zap-list";
-import { readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import GoalZapButton from "./components/goal-zap-button";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
@@ -30,7 +30,7 @@ export default function GoalDetailsView() {
         </Button>
 
         <Heading size="md" isTruncated>
-          {getGoalName(goal)} ({readablizeSats(getGoalAmount(goal) / 1000)})
+          {getGoalName(goal)} ({humanReadableSats(getGoalAmount(goal) / 1000)})
         </Heading>
 
         <Spacer />

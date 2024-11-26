@@ -1,13 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
-import { Filter } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import StreamCard from "./components/stream-card";
-import { STREAM_KIND } from "../../helpers/nostr/stream";
 import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -39,19 +37,17 @@ function StreamsPage() {
   const query = useMemo<Filter | Filter[] | undefined>(() => {
     if (!filter) return undefined;
     return [
-      { authors: filter.authors, kinds: [STREAM_KIND] },
-      { "#p": filter.authors, kinds: [STREAM_KIND] },
+      { authors: filter.authors, kinds: [kinds.LiveEvent] },
+      { "#p": filter.authors, kinds: [kinds.LiveEvent] },
     ];
   }, [filter]);
 
-  const timeline = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
+  const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
-  useRelaysChanged(relays, () => timeline.reset());
+  useRelaysChanged(relays, () => loader.reset());
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
-
-  const events = useSubject(timeline.timeline);
-  const streams = useParsedStreams(events);
+  const streams = useParsedStreams(timeline);
 
   const liveStreams = streams.filter((stream) => stream.status === "live");
   const endedStreams = streams.filter((stream) => stream.status === "ended");
@@ -85,7 +81,7 @@ function StreamsPage() {
             </SimpleGrid>
           </>
         )}
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

@@ -1,13 +1,13 @@
-import { Button, Divider, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { EMOJI_PACK_KIND, getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
-import useSubject from "../../hooks/use-subject";
+import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import EmojiPackCard from "./components/emoji-pack-card";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
@@ -19,19 +19,19 @@ function UserEmojiPackMangerPage() {
 
   const favoritePacks = useFavoriteEmojiPacks(account.pubkey);
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: packs } = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
     readRelays,
     account.pubkey
       ? {
           authors: [account.pubkey],
-          kinds: [EMOJI_PACK_KIND],
+          kinds: [kinds.Emojisets],
         }
       : undefined,
   );
 
   const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
-  const packs = useSubject(timeline.timeline).filter((pack) => {
+  const filtered = packs.filter((pack) => {
     const cord = getEventCoordinate(pack);
     return !favorites.some((e) => getEventCoordinate(e) === cord);
   });
@@ -50,7 +50,7 @@ function UserEmojiPackMangerPage() {
           </SimpleGrid>
         </>
       )}
-      {packs.length > 0 && (
+      {filtered.length > 0 && (
         <>
           <Heading size="lg" mt="2">
             Emoji packs

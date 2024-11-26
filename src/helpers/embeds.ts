@@ -1,7 +1,9 @@
 import { cloneElement } from "react";
 import { getMatchLink } from "./regexp";
 
+/** @deprecated */
 export type EmbedableContent = (string | JSX.Element)[];
+/** @deprecated */
 export type EmbedType = {
   regexp: RegExp;
   render: (match: RegExpMatchArray, isEndOfLine: boolean) => JSX.Element | string | null;
@@ -17,6 +19,7 @@ export function defaultGetLocation(match: RegExpMatchArray) {
   };
 }
 
+/** @deprecated */
 export function embedJSX(content: EmbedableContent, embed: EmbedType): EmbedableContent {
   return content
     .map((subContent, i) => {
@@ -69,8 +72,10 @@ export function embedJSX(content: EmbedableContent, embed: EmbedType): Embedable
     .flat();
 }
 
+/** @deprecated */
 export type LinkEmbedHandler = (link: URL, isEndOfLine: boolean) => JSX.Element | string | null;
 
+/** @deprecated */
 export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[]) {
   return embedJSX(content, {
     name: "embedUrls",
@@ -94,6 +99,7 @@ export function embedUrls(content: EmbedableContent, handlers: LinkEmbedHandler[
   });
 }
 
+/** @deprecated */
 export function truncateEmbedableContent(content: EmbedableContent, maxLength = 256) {
   let length = 0;
   for (let i = 0; i < content.length; i++) {

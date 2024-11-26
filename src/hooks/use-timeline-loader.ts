@@ -1,17 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { usePrevious, useUnmount } from "react-use";
-import { Filter, NostrEvent } from "nostr-tools";
+import { Filter } from "nostr-tools";
 
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { Queries } from "applesauce-core";
 
 type Options = {
-  /** @deprecated */
-  enabled?: boolean;
   eventFilter?: EventFilter;
   useCache?: boolean;
-  cursor?: number;
-  customSort?: (a: NostrEvent, b: NostrEvent) => number;
 };
 
 export default function useTimelineLoader(
@@ -20,56 +18,52 @@ export default function useTimelineLoader(
   filters: Filter | Filter[] | undefined,
   opts?: Options,
 ) {
-  const timeline = useMemo(() => timelineCacheService.createTimeline(key), [key]);
+  const loader = useMemo(() => timelineCacheService.createTimeline(key), [key]);
 
   // set use cache
-  if (opts?.useCache !== undefined) timeline.useCache = opts?.useCache;
+  if (opts?.useCache !== undefined) loader.useCache = opts?.useCache;
 
   // update relays
   useEffect(() => {
-    timeline.setRelays(relays);
-    timeline.triggerChunkLoad();
+    loader.setRelays(relays);
+    loader.triggerChunkLoad();
   }, [Array.from(relays).join("|")]);
 
   // update filters
   useEffect(() => {
     if (filters) {
-      timeline.setFilters(Array.isArray(filters) ? filters : [filters]);
-      timeline.open();
-      timeline.triggerChunkLoad();
-    } else timeline.close();
-  }, [timeline, JSON.stringify(filters)]);
+      loader.setFilters(Array.isArray(filters) ? filters : [filters]);
+      loader.open();
+      loader.triggerChunkLoad();
+    } else loader.close();
+  }, [loader, JSON.stringify(filters)]);
 
   // update event filter
   useEffect(() => {
-    timeline.setEventFilter(opts?.eventFilter);
-  }, [timeline, opts?.eventFilter]);
-
-  // update cursor
-  // NOTE: I don't think this is used anywhere and should be removed
-  useEffect(() => {
-    if (opts?.cursor !== undefined) {
-      timeline.setCursor(opts.cursor);
-    }
-  }, [timeline, opts?.cursor]);
-
-  // update custom sort
-  useEffect(() => {
-    timeline.events.customSort = opts?.customSort;
-  }, [timeline, opts?.customSort]);
+    loader.setEventFilter(opts?.eventFilter);
+  }, [loader, opts?.eventFilter]);
 
   // close the old timeline when the key changes
-  const oldTimeline = usePrevious(timeline);
+  const oldTimeline = usePrevious(loader);
   useEffect(() => {
-    if (oldTimeline && oldTimeline !== timeline) {
+    if (oldTimeline && oldTimeline !== loader) {
       oldTimeline.close();
     }
-  }, [timeline, oldTimeline]);
+  }, [loader, oldTimeline]);
 
   // stop the loader when unmount
   useUnmount(() => {
-    timeline.close();
+    loader.close();
   });
 
-  return timeline;
+  let timeline = useStoreQuery(Queries.TimelineQuery, filters && [filters]) ?? [];
+  if (opts?.eventFilter)
+    timeline = timeline.filter((e) => {
+      try {
+        return opts.eventFilter && opts.eventFilter(e);
+      } catch (error) {}
+      return false;
+    });
+
+  return { loader, timeline };
 }

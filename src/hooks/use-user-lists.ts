@@ -1,29 +1,29 @@
-import { useCallback } from "react";
+import { useEffect } from "react";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineQuery } from "applesauce-core/queries";
 
-import { NOTE_LIST_KIND, PEOPLE_LIST_KIND, isJunkList } from "../helpers/nostr/lists";
+import { SET_KINDS, isJunkList } from "../helpers/nostr/lists";
 import { useReadRelays } from "./use-client-relays";
-import useSubject from "./use-subject";
-import useTimelineLoader from "./use-timeline-loader";
-import { NostrEvent } from "../types/nostr-event";
-import { truncateId } from "../helpers/string";
+import userSetsService from "../services/user-sets";
 
-export default function useUserLists(pubkey?: string, additionalRelays?: Iterable<string>) {
+export default function useUserSets(pubkey?: string, additionalRelays?: Iterable<string>, alwaysRequest?: boolean) {
   const readRelays = useReadRelays(additionalRelays);
-  const eventFilter = useCallback((event: NostrEvent) => {
-    return !isJunkList(event);
-  }, []);
-  const timeline = useTimelineLoader(
-    `${truncateId(pubkey ?? "anon")}-lists`,
-    readRelays,
-    pubkey
-      ? {
-          authors: pubkey ? [pubkey] : [],
-          kinds: [PEOPLE_LIST_KIND, NOTE_LIST_KIND],
-        }
-      : undefined,
-    { eventFilter },
-  );
 
-  const lists = useSubject(timeline.timeline);
-  return pubkey ? lists : [];
+  useEffect(() => {
+    if (pubkey) userSetsService.requestSets(pubkey, readRelays, alwaysRequest);
+  }, [pubkey, readRelays.urls.join("|"), alwaysRequest]);
+
+  return (
+    useStoreQuery(
+      TimelineQuery,
+      pubkey
+        ? [
+            {
+              authors: [pubkey],
+              kinds: SET_KINDS,
+            },
+          ]
+        : undefined,
+    )?.filter((e) => !isJunkList(e)) ?? []
+  );
 }

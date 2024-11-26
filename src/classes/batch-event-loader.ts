@@ -1,9 +1,9 @@
 import { NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
+import { EventStore } from "applesauce-core";
 import debug, { Debugger } from "debug";
 
-import EventStore from "./event-store";
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
 import BracketsX from "../components/icons/brackets-x";
@@ -12,9 +12,9 @@ import createDefer, { Deferred } from "./deferred";
 
 /** This class is used to batch requests for single events from a relay */
 export default class BatchEventLoader {
-  events = new EventStore();
   relay: AbstractRelay;
   process: Process;
+  store: EventStore;
 
   subscription: PersistentSubscription;
 
@@ -26,8 +26,9 @@ export default class BatchEventLoader {
 
   log: Debugger;
 
-  constructor(relay: AbstractRelay, log?: Debugger) {
+  constructor(store: EventStore, relay: AbstractRelay, log?: Debugger) {
     this.relay = relay;
+    this.store = store;
     this.log = log || debug("BatchEventLoader");
     this.process = new Process("BatchEventLoader", this, [relay]);
     this.process.icon = BracketsX;
@@ -40,15 +41,15 @@ export default class BatchEventLoader {
     this.process.addChild(this.subscription.process);
   }
 
-  requestEvent(id: string): Promise<NostrEvent | null> {
-    const event = this.events.getEvent(id);
+  requestEvent(uid: string): Promise<NostrEvent | null> {
+    const event = this.store.getEvent(uid);
 
     if (!event) {
-      if (this.pending.has(id)) return this.pending.get(id)!;
-      if (this.next.has(id)) return this.next.get(id)!;
+      if (this.pending.has(uid)) return this.pending.get(uid)!;
+      if (this.next.has(uid)) return this.next.get(uid)!;
 
       const defer = createDefer<NostrEvent | null>();
-      this.next.set(id, defer);
+      this.next.set(uid, defer);
 
       // request subscription update
       this.start();
@@ -72,9 +73,10 @@ export default class BatchEventLoader {
   );
 
   private handleEvent(event: NostrEvent) {
+    event = this.store.add(event, this.relay.url);
+
     const key = event.id;
 
-    this.events.addEvent(event);
     this.pending.get(key)?.resolve(event);
     this.pending.delete(key);
   }

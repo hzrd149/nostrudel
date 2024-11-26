@@ -1,7 +1,7 @@
 identifier: noStrudel
 maintainers:
-- npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr
+  - npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr
 relays:
-- wss://nostrue.com/
-- wss://nostr.wine/
-- wss://nos.lol/
+  - wss://nostrue.com/
+  - wss://nostr.wine/
+  - wss://nos.lol/

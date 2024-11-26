@@ -13,7 +13,6 @@ import {
   DVM_TTS_RESULT_KIND,
   groupEventsIntoJobs,
 } from "../../../../helpers/nostr/dvm";
-import useSubject from "../../../../hooks/use-subject";
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
 import useCurrentAccount from "../../../../hooks/use-current-account";
@@ -42,7 +41,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
     await publish("Request Reading", draft);
   }, [publish, note, readRelays, lang]);
 
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `${getEventUID(note)}-readings`,
     readRelays,
     [
@@ -54,7 +53,6 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
     ].filter(Boolean) as Filter[],
   );
 
-  const events = useSubject(timeline.timeline);
   const jobs = groupEventsIntoJobs(events);
 
   return (

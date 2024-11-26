@@ -23,6 +23,7 @@ export const NIP_NAMES: Record<string, string> = {
   "19": "bech32-encoded entities",
   "20": "Command Results",
   "21": "nostr: URI scheme",
+  "22": "Generic Comments",
   "23": "Long-form Content",
   "24": "Extra metadata fields and tags",
   "25": "Reactions",
@@ -82,7 +83,7 @@ function NipTag({ nip, name }: { nip: number; name?: boolean }) {
   return (
     <Tooltip label={NIP_NAMES[nipStr]}>
       <Tag as="a" target="_blank" href={`https://github.com/nostr-protocol/nips/blob/master/${nipStr}.md`}>
-        {name ? NIP_NAMES[nipStr] ?? nipNumber : nipNumber}
+        {name ? (NIP_NAMES[nipStr] ?? nipNumber) : nipNumber}
       </Tag>
     </Tooltip>
   );

@@ -5,7 +5,7 @@ import { NostrEvent } from "../../../../types/nostr-event";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import { LightningIcon } from "../../../../components/icons";
-import { readablizeSats } from "../../../../helpers/bolt11";
+import { humanReadableSats } from "../../../../helpers/lightning";
 
 export default function TextToSpeechStatus({ status }: { status: NostrEvent }) {
   const toast = useToast();
@@ -48,7 +48,7 @@ export default function TextToSpeechStatus({ status }: { status: NostrEvent }) {
             isLoading={paying || paid}
             isDisabled={!window.webln}
           >
-            Pay {readablizeSats(amountMsat / 1000)} sats
+            Pay {humanReadableSats(amountMsat / 1000)} sats
           </Button>
         )}
       </Flex>

@@ -1,20 +1,20 @@
 import { NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
+import { EventStore } from "applesauce-core";
+import { isFromCache } from "applesauce-core/helpers";
 
 import SuperMap from "../classes/super-map";
-import EventStore from "../classes/event-store";
-import Subject from "../classes/subject";
 import BatchKindPubkeyLoader, { createCoordinate } from "../classes/batch-kind-pubkey-loader";
 import Process from "../classes/process";
 import { logger } from "../helpers/debug";
-import { getEventCoordinate } from "../helpers/nostr/event";
 import { localRelay } from "./local-relay";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
 import { truncateId } from "../helpers/string";
 import processManager from "./process-manager";
 import UserSquare from "../components/icons/user-square";
+import { eventStore } from "./event-store";
 
 export type RequestOptions = {
   /** Always request the event from the relays */
@@ -28,54 +28,46 @@ export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: str
 }
 
 class ReplaceableEventsService {
+  store: EventStore;
   process: Process;
-
-  private subjects = new SuperMap<string, Subject<NostrEvent>>(() => new Subject<NostrEvent>());
 
   cacheLoader: BatchKindPubkeyLoader | null = null;
   loaders = new SuperMap<AbstractRelay, BatchKindPubkeyLoader>((relay) => {
-    const loader = new BatchKindPubkeyLoader(relay, this.log.extend(relay.url));
-    loader.events.onEvent.subscribe((e) => this.handleEvent(e));
+    const loader = new BatchKindPubkeyLoader(this.store, relay, this.log.extend(relay.url));
     this.process.addChild(loader.process);
     return loader;
   });
 
-  events = new EventStore();
-
   log = logger.extend("ReplaceableEventLoader");
 
-  constructor() {
+  constructor(store: EventStore) {
+    this.store = store;
     this.process = new Process("ReplaceableEventsService", this);
     this.process.icon = UserSquare;
     this.process.active = true;
     processManager.registerProcess(this.process);
 
     if (localRelay) {
-      this.cacheLoader = new BatchKindPubkeyLoader(localRelay as AbstractRelay, this.log.extend("cache-relay"));
-      this.cacheLoader.events.onEvent.subscribe((e) => this.handleEvent(e, true));
+      this.cacheLoader = new BatchKindPubkeyLoader(
+        this.store,
+        localRelay as AbstractRelay,
+        this.log.extend("cache-relay"),
+      );
       this.process.addChild(this.cacheLoader.process);
     }
   }
 
-  private seenInCache = new Set<string>();
   handleEvent(event: NostrEvent, fromCache = false) {
+    // TODO: move this to the cache relay class
     if (!fromCache && !alwaysVerify(event)) return;
-    const cord = getEventCoordinate(event);
 
-    const subject = this.subjects.get(cord);
-    const current = subject.value;
-    if (!current || event.created_at > current.created_at) {
-      subject.next(event);
-      this.events.addEvent(event);
-
-      if (!fromCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
-    }
-
-    if (fromCache) this.seenInCache.add(event.id);
+    event = this.store.add(event);
+    if (!isFromCache(event)) localRelay?.publish(event);
   }
 
+  /** @deprecated use eventStore.getReplaceable instead */
   getEvent(kind: number, pubkey: string, d?: string) {
-    return this.subjects.get(createCoordinate(kind, pubkey, d));
+    return eventStore.getReplaceable(kind, pubkey, d);
   }
 
   private requestEventFromRelays(
@@ -86,11 +78,8 @@ class ReplaceableEventsService {
   ) {
     const cord = createCoordinate(kind, pubkey, d);
     const relays = relayPoolService.getRelays(urls);
-    const sub = this.subjects.get(cord);
 
     for (const relay of relays) this.loaders.get(relay).requestEvent(kind, pubkey, d);
-
-    return sub;
   }
 
   requestEvent(
@@ -100,21 +89,21 @@ class ReplaceableEventsService {
     d?: string,
     opts: RequestOptions = {},
   ) {
-    const key = createCoordinate(kind, pubkey, d);
     const relays = relayPoolService.getRelays(urls);
-    const sub = this.subjects.get(key);
 
-    if (!sub.value && this.cacheLoader) {
+    const existing = eventStore.getReplaceable(kind, pubkey, d);
+
+    if (!existing && this.cacheLoader) {
       this.cacheLoader.requestEvent(kind, pubkey, d).then((loaded) => {
-        if (!loaded && !sub.value) this.requestEventFromRelays(relays, kind, pubkey, d);
+        if (!loaded && !eventStore.hasReplaceable(kind, pubkey, d)) {
+          this.requestEventFromRelays(relays, kind, pubkey, d);
+        }
       });
     }
 
-    if (opts?.alwaysRequest || !this.cacheLoader || (!sub.value && opts.ignoreCache)) {
+    if (opts?.alwaysRequest || !this.cacheLoader || (!existing && opts.ignoreCache)) {
       this.requestEventFromRelays(relays, kind, pubkey, d);
     }
-
-    return sub;
   }
 
   destroy() {
@@ -122,7 +111,7 @@ class ReplaceableEventsService {
   }
 }
 
-const replaceableEventsService = new ReplaceableEventsService();
+const replaceableEventsService = new ReplaceableEventsService(eventStore);
 
 if (import.meta.env.DEV) {
   //@ts-ignore

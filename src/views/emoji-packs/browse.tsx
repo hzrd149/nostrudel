@@ -1,5 +1,8 @@
 import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
+import { getEmojis } from "applesauce-core/helpers/emoji";
+import { kinds } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -8,10 +11,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useSubject from "../../hooks/use-subject";
 import EmojiPackCard from "./components/emoji-pack-card";
-import { getEventUID } from "../../helpers/nostr/event";
-import { EMOJI_PACK_KIND, getEmojisFromPack } from "../../helpers/nostr/emoji-packs";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function EmojiPacksBrowsePage() {
@@ -20,21 +20,19 @@ function EmojiPacksBrowsePage() {
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
-      if (!showEmpty.isOpen && getEmojisFromPack(event).length === 0) return false;
+      if (!showEmpty.isOpen && getEmojis(event).length === 0) return false;
       return true;
     },
     [showEmpty.isOpen],
   );
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: packs } = useTimelineLoader(
     `${listId}-browse-emoji-packs`,
     readRelays,
-    filter ? { ...filter, kinds: [EMOJI_PACK_KIND] } : undefined,
+    filter ? { ...filter, kinds: [kinds.Emojisets] } : undefined,
     { eventFilter },
   );
-
-  const packs = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -47,9 +45,7 @@ function EmojiPacksBrowsePage() {
         </Flex>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-          {packs.map((event) => (
-            <EmojiPackCard key={getEventUID(event)} pack={event} />
-          ))}
+          {packs?.map((event) => <EmojiPackCard key={getEventUID(event)} pack={event} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

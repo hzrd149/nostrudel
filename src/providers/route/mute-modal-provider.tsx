@@ -20,8 +20,8 @@ import { PropsWithChildren, createContext, useCallback, useContext, useEffect, u
 import dayjs from "dayjs";
 import { useInterval } from "react-use";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import {
   createEmptyMuteList,
@@ -52,7 +52,7 @@ export function useMuteModalContext() {
 }
 
 function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> & { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const publish = usePublishEvent();
 
   const account = useCurrentAccount();

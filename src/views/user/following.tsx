@@ -23,8 +23,8 @@ export default function UserFollowingTab() {
   return (
     <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2" p="2">
       {sorted.map(({ pubkey, relay }) => (
-        <ErrorBoundary>
-          <UserCard key={pubkey} pubkey={pubkey} relay={relay} />
+        <ErrorBoundary key={pubkey}>
+          <UserCard pubkey={pubkey} relay={relay} />
         </ErrorBoundary>
       ))}
     </SimpleGrid>

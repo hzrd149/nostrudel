@@ -1,12 +1,11 @@
 import { useColorMode } from "@chakra-ui/react";
-import useSubject from "./use-subject";
-import appSettings from "../services/settings/app-settings";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import useAppSettings from "./use-app-settings";
 
 export default function useSetColorMode() {
   const { setColorMode } = useColorMode();
-  const { colorMode } = useSubject(appSettings);
+  const { colorMode } = useAppSettings();
   const [params] = useSearchParams();
 
   useEffect(() => {

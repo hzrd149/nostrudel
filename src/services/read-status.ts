@@ -1,14 +1,16 @@
 import dayjs from "dayjs";
 import _throttle from "lodash.throttle";
+import { BehaviorSubject } from "rxjs";
 
-import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import db from "./db";
 import { logger } from "../helpers/debug";
 
 class ReadStatusService {
   log = logger.extend("ReadStatusService");
-  status = new SuperMap<string, Subject<boolean>>(() => new Subject());
+  status = new SuperMap<string, BehaviorSubject<boolean | undefined>>(
+    () => new BehaviorSubject<boolean | undefined>(undefined),
+  );
   ttl = new Map<string, number>();
 
   private setTTL(key: string, ttl: number) {

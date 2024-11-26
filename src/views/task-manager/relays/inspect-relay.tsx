@@ -10,15 +10,14 @@ import {
   TabPanels,
   Tabs,
   Text,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
 import relayPoolService from "../../../services/relay-pool";
-import useSubject from "../../../hooks/use-subject";
 
 import ProcessBranch from "../processes/process/process-tree";
 import processManager from "../../../services/process-manager";
@@ -26,6 +25,7 @@ import { IconRelayAuthButton } from "../../../components/relays/relay-auth-butto
 import { RelayStatus } from "../../../components/relays/relay-status";
 import Timestamp from "../../../components/timestamp";
 import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 export default function InspectRelayView() {
   const { url } = useParams();
@@ -37,7 +37,7 @@ export default function InspectRelayView() {
   const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
 
   const rootProcesses = processManager.getRootProcessesForRelay(relay);
-  const notices = useSubject(relayPoolService.notices.get(relay));
+  const notices = useObservable(relayPoolService.notices.get(relay));
 
   return (
     <VerticalPageLayout>

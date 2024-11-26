@@ -15,6 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 
 import { localRelay } from "../../../../services/local-relay";
 import WasmRelay from "../../../../services/wasm-relay";
@@ -22,7 +23,6 @@ import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-ch
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
-import useSubject from "../../../../hooks/use-subject";
 import localSettings from "../../../../services/local-settings";
 
 export default function WasmDatabasePage() {
@@ -32,7 +32,7 @@ export default function WasmDatabasePage() {
   if (!worker) return null;
 
   const [summary, setSummary] = useState<Record<string, number>>();
-  const persistForDays = useSubject(localSettings.wasmPersistForDays);
+  const persistForDays = useObservable(localSettings.wasmPersistForDays);
 
   const total = summary ? Object.values(summary).reduce((t, v) => t + v, 0) : undefined;
 

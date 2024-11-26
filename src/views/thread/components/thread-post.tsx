@@ -1,10 +1,11 @@
 import { memo, useState } from "react";
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { ThreadItem } from "applesauce-core/queries";
 
 import ReplyForm from "./reply-form";
 import { ReplyIcon } from "../../../components/icons";
-import { countReplies, ThreadItem } from "../../../helpers/thread";
+import { countReplies, repliesByDate } from "../../../helpers/thread";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -29,7 +30,7 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import NotePublishedUsing from "../../../components/note/note-published-using";
 
 export type ThreadItemProps = {
@@ -41,13 +42,13 @@ export type ThreadItemProps = {
 
 function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) {
   const { showReactions } = useAppSettings();
-  const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.length <= 1) });
+  const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.size <= 1) });
   const replyForm = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
 
   const isFocused = level === -1;
-  const replies = post.replies.filter((r) => !muteFilter(r.event));
+  const replies = Array.from(post.replies).filter((r) => !muteFilter(r.event));
   const numberOfReplies = countReplies(replies);
   const isMuted = muteFilter(post.event);
 
@@ -69,12 +70,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
       <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
       <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
-      <Link
-        as={RouterLink}
-        whiteSpace="nowrap"
-        color="current"
-        to={`/n/${relayHintService.getSharableEventAddress(post.event)}`}
-      >
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
         <Timestamp timestamp={post.event.created_at} />
       </Link>
       <POWIcon event={post.event} boxSize={5} />
@@ -162,9 +158,9 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
         <DetailsTabs post={post} />
       ) : (
         expanded.isOpen &&
-        post.replies.length > 0 && (
+        post.replies.size > 0 && (
           <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
-            {post.replies.map((child) => (
+            {repliesByDate(post).map((child) => (
               <ThreadPost key={child.event.id} post={child} focusId={focusId} level={level + 1} />
             ))}
           </Flex>

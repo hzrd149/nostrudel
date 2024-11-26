@@ -28,17 +28,10 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import CommunityCard from "./components/community-card";
 import CommunityCreateModal, { FormValues } from "./components/community-create-modal";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import {
-  COMMUNITY_APPROVAL_KIND,
-  COMMUNITY_DEFINITION_KIND,
-  buildApprovalMap,
-  getCommunityMods,
-  getCommunityName,
-} from "../../helpers/nostr/communities";
+import { buildApprovalMap, getCommunityMods, getCommunityName } from "../../helpers/nostr/communities";
 import { getImageSize } from "../../helpers/image";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
@@ -63,7 +56,7 @@ function CommunitiesHomePage() {
 
   const createCommunity = async (values: FormValues) => {
     const draft: DraftNostrEvent = {
-      kind: COMMUNITY_DEFINITION_KIND,
+      kind: kinds.CommunityDefinition,
       created_at: dayjs().unix(),
       content: "",
       tags: [["d", values.name]],
@@ -88,12 +81,12 @@ function CommunitiesHomePage() {
     if (pub) navigate(`/c/${getCommunityName(pub.event)}/${pub.event.pubkey}`);
   };
 
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     `all-communities-timeline`,
     readRelays,
     communityCoordinates.length > 0
       ? {
-          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, COMMUNITY_APPROVAL_KIND],
+          kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.CommunityPostApproval],
           "#a": communityCoordinates.map((p) => createCoordinate(p.kind, p.pubkey, p.identifier)),
         }
       : undefined,
@@ -111,15 +104,14 @@ function CommunitiesHomePage() {
     return Array.from(set);
   }, [communities]);
 
-  const events = useSubject(timeline.timeline);
   const approvalMap = buildApprovalMap(events, mods);
 
   const approved = events
-    .filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
+    .filter((e) => e.kind !== kinds.CommunityPostApproval && (showUnapproved.isOpen ? true : approvalMap.has(e.id)))
     .map((event) => ({ event, approvals: approvalMap.get(event.id) }))
     .filter((e) => !muteFilter(e.event));
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const communityDrawer = useDisclosure();
 
@@ -152,12 +144,12 @@ function CommunitiesHomePage() {
                   <ApprovedEvent key={event.id} event={event} approvals={approvals ?? []} showCommunity />
                 ))}
               </IntersectionObserverProvider>
-              <TimelineActionAndStatus timeline={timeline} />
+              <TimelineActionAndStatus timeline={loader} />
             </Flex>
             <Flex gap="2" direction="column" w="md" flexShrink={0} hideBelow="xl">
               <Heading size="md">Joined Communities</Heading>
               {communities.map((community) => (
-                <ErrorBoundary key={getEventCoordinate(community)}>
+                <ErrorBoundary key={getEventCoordinate(community)} event={community}>
                   <CommunityCard community={community} />
                 </ErrorBoundary>
               ))}
@@ -187,7 +179,7 @@ function CommunitiesHomePage() {
 
           <DrawerBody display="flex" flexDirection="column" gap="2" px="4" pt="0" pb="8" overflowY="auto">
             {communities.map((community) => (
-              <ErrorBoundary key={getEventCoordinate(community)}>
+              <ErrorBoundary key={getEventCoordinate(community)} event={community}>
                 <CommunityCard community={community} flexShrink={0} />
               </ErrorBoundary>
             ))}

@@ -3,15 +3,16 @@ import { useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAsync, useThrottle } from "react-use";
 import { matchSorter } from "match-sorter";
+import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
-import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
 import UserAvatar from "../user/user-avatar";
-import useUserMetadata from "../../hooks/use-user-metadata";
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import { userSearchDirectory } from "../../services/username-search";
 
 function UserOption({ pubkey }: { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
 
   return (
     <Flex as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}`} p="2" gap="2" alignItems="center">
@@ -23,7 +24,7 @@ function UserOption({ pubkey }: { pubkey: string }) {
 
 export default function SearchModal({ isOpen, onClose }: Omit<ModalProps, "children">) {
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const getDirectory = useUserSearchDirectoryContext();
+  const directory = useObservable(userSearchDirectory);
 
   const [inputValue, setInputValue] = useState("");
   const search = useThrottle(inputValue);
@@ -31,8 +32,7 @@ export default function SearchModal({ isOpen, onClose }: Omit<ModalProps, "child
   const { value: localUsers = [] } = useAsync(async () => {
     if (search.trim().length < 2) return [];
 
-    const dir = await getDirectory();
-    return matchSorter(dir, search.trim(), { keys: ["names"] }).slice(0, 5);
+    return matchSorter(directory ?? [], search.trim(), { keys: ["names"] }).slice(0, 5);
   }, [search]);
 
   return (

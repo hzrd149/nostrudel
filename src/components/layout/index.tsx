@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Container, Flex, Spacer } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import { ErrorBoundary } from "../error-boundary";
 import { ReloadPrompt } from "../reload-prompt";
 import DesktopSideNav from "./desktop-side-nav";
 import MobileBottomNav from "./mobile-bottom-nav";
-import useSubject from "../../hooks/use-subject";
 import accountService from "../../services/account";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import GhostSideBar from "./ghost/sidebar";
@@ -13,7 +13,7 @@ import { CAP_IS_WEB } from "../../env";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const isGhost = useSubject(accountService.isGhost);
+  const isGhost = useObservable(accountService.isGhost);
 
   return (
     <>

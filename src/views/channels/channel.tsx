@@ -2,6 +2,8 @@ import { memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -17,7 +19,6 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ThreadsProvider from "../../providers/local/thread-provider";
 import TimelineLoader from "../../classes/timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ChannelMessageBlock from "./components/channel-message-block";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -27,10 +28,19 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import { truncateId } from "../../helpers/string";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
-  const messages = useSubject(timeline.timeline);
+  const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];
+  const mutes = useStoreQuery(ChannelMutedQuery, [channel]);
+  const hidden = useStoreQuery(ChannelHiddenQuery, [channel]);
+
   const filteredMessages = useMemo(
-    () => messages.filter((e) => !e.tags.some((t) => t[0] === "e" && t[1] !== channel.id && t[3] === "root")),
-    [messages.length, channel.id],
+    () =>
+      messages.filter((e) => {
+        if (mutes?.has(e.pubkey)) return false;
+        if (hidden?.has(e.id)) return false;
+
+        return !e.tags.some((t) => t[0] === "e" && t[1] !== channel.id && t[3] === "root");
+      }),
+    [messages.length, channel.id, hidden?.size, mutes?.size],
   );
   const grouped = useMemo(() => groupMessages(filteredMessages), [filteredMessages]);
 
@@ -46,8 +56,9 @@ const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; 
 function ChannelPage({ channel }: { channel: NostrEvent }) {
   const navigate = useNavigate();
   const relays = useReadRelays();
-  const { metadata } = useChannelMetadata(channel.id, relays);
   const drawer = useDisclosure();
+
+  const metadata = useChannelMetadata(channel.id, relays);
 
   const clientMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -57,7 +68,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     },
     [clientMuteFilter],
   );
-  const timeline = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     `${truncateId(channel.id)}-chat-messages`,
     relays,
     {
@@ -66,10 +77,10 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     },
     { eventFilter },
   );
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider timeline={timeline}>
+    <ThreadsProvider timeline={loader}>
       <IntersectionObserverProvider callback={callback}>
         <Flex h="full" overflow="hidden" direction="column" p="2" gap="2" flexGrow={1}>
           <Flex gap="2" alignItems="center">
@@ -95,8 +106,8 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
             py="4"
             px="2"
           >
-            <ChannelChatLog timeline={timeline} channel={channel} />
-            <TimelineActionAndStatus timeline={timeline} />
+            <ChannelChatLog timeline={loader} channel={channel} />
+            <TimelineActionAndStatus timeline={loader} />
           </Flex>
 
           <ChannelMessageForm channel={channel} />

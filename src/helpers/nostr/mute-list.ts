@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
-import { MUTE_LIST_KIND, getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
+import { getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
+import { kinds } from "nostr-tools";
 
 export function getPubkeysFromMuteList(muteList: NostrEvent | DraftNostrEvent) {
   const expirations = getPubkeysExpiration(muteList);
@@ -37,7 +38,7 @@ export function createEmptyMuteList(): DraftNostrEvent {
     created_at: dayjs().unix(),
     content: "",
     tags: [],
-    kind: MUTE_LIST_KIND,
+    kind: kinds.Mutelist,
   };
 }
 
@@ -70,7 +71,7 @@ export function pruneExpiredPubkeys(muteList: NostrEvent | DraftNostrEvent) {
   const expirations = getPubkeysExpiration(muteList);
   const now = dayjs().unix();
   const draft: DraftNostrEvent = {
-    kind: MUTE_LIST_KIND,
+    kind: kinds.Mutelist,
     content: muteList.content,
     created_at: now,
     tags: muteList.tags.filter((tag) => {

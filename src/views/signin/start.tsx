@@ -1,21 +1,17 @@
 import { useState } from "react";
 import { Button, ButtonGroup, Divider, Flex, IconButton, Link, Spinner, Text, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { AmberClipboardSigner, SerialPortSigner } from "applesauce-signer";
 
 import Key01 from "../../components/icons/key-01";
 import Diamond01 from "../../components/icons/diamond-01";
 import UsbFlashDrive from "../../components/icons/usb-flash-drive";
 import HelpCircle from "../../components/icons/help-circle";
 
-import { COMMON_CONTACT_RELAY } from "../../const";
 import accountService from "../../services/account";
-import serialPortService from "../../services/serial-port";
-import amberSignerService from "../../services/amber-signer";
-import AmberSigner from "../../classes/signers/amber-signer";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
-import SerialPortSigner from "../../classes/signers/serial-port-signer";
 import ExtensionAccount from "../../classes/accounts/extension-account";
 import SerialPortAccount from "../../classes/accounts/serial-port-account";
 import AmberAccount from "../../classes/accounts/amber-account";
@@ -49,7 +45,8 @@ export default function LoginStartView() {
       try {
         setLoading(true);
 
-        const pubkey = await serialPortService.getPublicKey();
+        const signer = new SerialPortSigner();
+        const pubkey = await signer.getPublicKey();
         accountService.addAccount(new SerialPortAccount(pubkey));
         accountService.switchAccount(pubkey);
       } catch (e) {
@@ -63,7 +60,8 @@ export default function LoginStartView() {
 
   const signinWithAmber = async () => {
     try {
-      const pubkey = await amberSignerService.getPublicKey();
+      const signer = new AmberClipboardSigner();
+      const pubkey = await signer.getPublicKey();
       accountService.addAccount(new AmberAccount(pubkey));
       accountService.switchAccount(pubkey);
     } catch (e) {
@@ -98,7 +96,7 @@ export default function LoginStartView() {
           />
         </ButtonGroup>
       )}
-      {AmberSigner.SUPPORTED && (
+      {AmberClipboardSigner.SUPPORTED && (
         <ButtonGroup colorScheme="orange" w="full">
           <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
             Use Amber

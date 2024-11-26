@@ -9,10 +9,10 @@ import ChatMessageForm from "../stream/stream-chat/stream-chat-form";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 
 function ChatCard({ stream }: { stream: ParsedStream }) {
-  const timeline = useStreamChatTimeline(stream);
+  const { loader } = useStreamChatTimeline(stream);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <Flex flex={1} direction="column" overflow="hidden" p={0}>

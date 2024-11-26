@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -13,20 +14,21 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
-import useUserLists from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-lists";
 import useCurrentAccount from "../../hooks/use-current-account";
-import { PEOPLE_LIST_KIND, getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import { NostrEvent } from "../../types/nostr-event";
-import { useCallback, useState } from "react";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useUserSearchDirectoryContext } from "../../providers/global/user-directory-provider";
 import { matchSorter } from "match-sorter";
 import UserAvatar from "../user/user-avatar";
 import UserName from "../user/user-name";
+import { userSearchDirectory } from "../../services/username-search";
 
 function ListCard({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children`">) {
   return (
@@ -57,19 +59,19 @@ export default function PeopleListSelection({
 } & Omit<ButtonProps, "children">) {
   const modal = useDisclosure();
   const account = useCurrentAccount();
-  const lists = useUserLists(account?.pubkey);
+  const lists = useUserSets(account?.pubkey);
   const { lists: favoriteLists } = useFavoriteLists();
   const { selected, setSelected, listEvent } = usePeopleListContext();
 
-  const getSearchDirectory = useUserSearchDirectoryContext();
+  const searchDirectory = useObservable(userSearchDirectory);
   const contacts = useUserContactList(account?.pubkey);
   const getSearchResults = useCallback(
     (search: string) => {
       const pubkeys = contacts ? getPubkeysFromList(contacts).map((p) => p.pubkey) : [];
-      const filteredByContacts = getSearchDirectory().filter((p) => pubkeys.includes(p.pubkey));
+      const filteredByContacts = searchDirectory?.filter((p) => pubkeys.includes(p.pubkey)) ?? [];
       return matchSorter(filteredByContacts, search.trim(), { keys: ["names"] }).slice(0, 10);
     },
-    [contacts, getSearchDirectory],
+    [contacts, searchDirectory],
   );
   const [search, setSearch] = useState("");
 
@@ -127,7 +129,7 @@ export default function PeopleListSelection({
             </Heading>
             <SimpleGrid columns={2} spacing="2">
               {lists
-                .filter((l) => l.kind === PEOPLE_LIST_KIND)
+                .filter((l) => l.kind === kinds.Followsets)
                 .map((list) => (
                   <ListCard key={getEventUID(list)} list={list} onClick={() => selectList(list)} />
                 ))}

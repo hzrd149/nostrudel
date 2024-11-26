@@ -15,6 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
@@ -25,14 +26,13 @@ import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../
 import { formatBytes } from "../../../helpers/number";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import relayHintService from "../../../services/event-relay-hint";
-import useSubject from "../../../hooks/use-subject";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
-  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
-  const link = `/torrents/${relayHintService.getSharableEventAddress(torrent)}`;
+  const link = `/torrents/${getSharableEventAddress(torrent)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {

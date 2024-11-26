@@ -1,76 +1,43 @@
+import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { Nip11Registry } from "rx-nostr";
+
 import db from "./db";
-import { fetchWithProxy } from "../helpers/request";
-import { isHexKey } from "../helpers/nip19";
-import { validateRelayURL } from "../helpers/relay";
+import { logger } from "../helpers/debug";
 
-export type RelayInformationDocument = {
-  name: string;
-  description: string;
-  icon?: string;
-  pubkey?: string;
-  contact: string;
-  supported_nips?: number[];
-  software: string;
-  version: string;
-  payments_url?: string;
-};
+const log = logger.extend("Nip11Registry");
 
-function sanitizeInfo(info: RelayInformationDocument) {
-  if (info.pubkey && !isHexKey(info.pubkey)) {
-    delete info.pubkey;
+const tx = db.transaction("relayInfo", "readonly");
+let loaded = 0;
+let cursor = await tx.objectStore("relayInfo").openCursor();
+while (cursor) {
+  try {
+    Nip11Registry.set(cursor.key, cursor.value);
+    loaded++;
+  } catch (error) {}
+  cursor = await cursor.continue();
+}
+
+log(`Loaded ${loaded} relay info`);
+
+async function getInfo(relay: string | AbstractRelay, alwaysFetch = false) {
+  relay = typeof relay === "string" ? relay : relay.url;
+
+  let info = Nip11Registry.get(relay);
+
+  if (!info || alwaysFetch) {
+    info = await Nip11Registry.fetch(relay);
+    db.put("relayInfo", info, relay);
   }
   return info;
 }
 
-async function fetchInfo(relay: string) {
-  const url = validateRelayURL(relay);
-  url.protocol = url.protocol === "ws:" ? "http" : "https";
-
-  const infoDoc = await fetchWithProxy(url, { headers: { Accept: "application/nostr+json" } }).then(
-    (res) => res.json() as Promise<RelayInformationDocument>,
-  );
-
-  sanitizeInfo(infoDoc);
-
-  memoryCache.set(relay, infoDoc);
-  await db.put("relayInfo", infoDoc, relay);
-
-  return infoDoc;
-}
-
-const memoryCache = new Map<string, RelayInformationDocument>();
-async function getInfo(relay: string) {
-  const url = validateRelayURL(relay).toString();
-  if (memoryCache.has(url)) return memoryCache.get(url)!;
-
-  const cached = await db.get("relayInfo", url);
-  if (cached) {
-    memoryCache.set(url, cached);
-    return cached as RelayInformationDocument;
-  }
-
-  return fetchInfo(relay);
-}
-
-const pending: Record<string, ReturnType<typeof getInfo> | undefined> = {};
-function dedupedGetIdentity(relay: string) {
-  const request = pending[relay];
-  if (request) return request;
-  return (pending[relay] = getInfo(relay).then((v) => {
-    delete pending[relay];
-    return v;
-  }));
-}
-
-export const relayInfoService = {
-  cache: memoryCache,
-  fetchInfo,
-  getInfo: dedupedGetIdentity,
-};
+export const relayInfoService = { getInfo };
 
 if (import.meta.env.DEV) {
   // @ts-ignore
   window.relayInfoService = relayInfoService;
+  // @ts-ignore
+  window.Nip11Registry = Nip11Registry;
 }
 
 export default relayInfoService;

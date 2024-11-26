@@ -23,7 +23,7 @@ export default function EventVoteButtons({
 }) {
   const account = useCurrentAccount();
   const publish = usePublishEvent();
-  const reactions = useEventReactions(event.id);
+  const reactions = useEventReactions(event);
   const additionalRelays = useAdditionalRelayContext();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);

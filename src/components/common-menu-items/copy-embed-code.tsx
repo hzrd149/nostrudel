@@ -2,10 +2,10 @@ import { MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { CopyToClipboardIcon } from "../icons";
-import relayHintService from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/event-relay-hint";
 
 export default function CopyEmbedCodeMenuItem({ event }: { event: NostrEvent }) {
-  const address = relayHintService.getSharableEventAddress(event);
+  const address = getSharableEventAddress(event);
 
   return (
     address && (

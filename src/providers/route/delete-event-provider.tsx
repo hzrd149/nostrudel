@@ -30,6 +30,9 @@ import { Tag } from "../../types/nostr-event";
 import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { usePublishEvent } from "../global/publish-provider";
+import { useUserOutbox } from "../../hooks/use-user-mailboxes";
+import useCurrentAccount from "../../hooks/use-current-account";
+import { eventStore } from "../../services/event-store";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -46,13 +49,15 @@ export function useDeleteEventContext() {
 }
 
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
+  const account = useCurrentAccount();
   const publish = usePublishEvent();
   const [isLoading, setLoading] = useState(false);
   const [event, setEvent] = useState<Event>();
   const [defer, setDefer] = useState<Deferred<void>>();
   const [reason, setReason] = useState("");
 
-  const writeRelays = useWriteRelays();
+  const outbox = useUserOutbox(account?.pubkey);
+  const writeRelays = useWriteRelays(outbox);
 
   const deleteEvent = useCallback((event: Event) => {
     setEvent(event);
@@ -77,7 +82,8 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
         content: reason,
         created_at: dayjs().unix(),
       };
-      await publish("Delete", draft, undefined, false);
+      const pub = await publish("Delete", draft, undefined, false);
+      eventStore.add(pub.event);
       defer?.resolve();
     } catch (e) {
       defer?.reject();

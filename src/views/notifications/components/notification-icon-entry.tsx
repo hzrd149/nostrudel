@@ -84,11 +84,14 @@ const NotificationIconEntry = memo(
             bg={!read ? focusColor : undefined}
             ref={headerRef}
             overflow="hidden"
+            _hover={{ backgroundColor: "var(--chakra-colors-card-hover-overlay)" }}
           >
             <Box>{icon}</Box>
-            <UserAvatar pubkey={pubkey} size="sm" />
+            <UserAvatar pubkey={pubkey} hideFrom="md" size="sm" />
             <UserName pubkey={pubkey} hideBelow="md" />
-            <Text isTruncated>{summary}</Text>
+            <Text isTruncated color={read ? "GrayText" : undefined}>
+              {summary}
+            </Text>
             <Spacer />
             {read && <CheckIcon boxSize={5} color="green.500" />}
             <Timestamp timestamp={timestamp} whiteSpace="pre" />

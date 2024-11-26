@@ -3,14 +3,14 @@ import { Debugger } from "debug";
 import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
+import { BehaviorSubject, Observable, map } from "rxjs";
+import { isFilterEqual } from "applesauce-core/helpers";
+import { MultiSubscription } from "applesauce-net/subscription";
 
-import MultiSubscription from "./multi-subscription";
-import { PersistentSubject } from "./subject";
 import { logger } from "../helpers/debug";
-import EventStore from "./event-store";
 import { isReplaceable } from "../helpers/nostr/event";
 import replaceableEventsService from "../services/replaceable-events";
-import { mergeFilter, isFilterEqual } from "../helpers/nostr/filter";
+import { mergeFilter } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
@@ -18,26 +18,27 @@ import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import AlignHorizontalCentre02 from "../components/icons/align-horizontal-centre-02";
 import processManager from "../services/process-manager";
+import { eventStore, queryStore } from "../services/event-store";
 
 const BLOCK_SIZE = 100;
 
-export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
 
 export default class TimelineLoader {
   cursor = dayjs().unix();
   filters: Filter[] = [];
   relays: AbstractRelay[] = [];
 
-  events: EventStore;
-  timeline = new PersistentSubject<NostrEvent[]>([]);
-  loading = new PersistentSubject(false);
-  complete = new PersistentSubject(false);
+  loading = new BehaviorSubject(false);
+  complete = new BehaviorSubject(false);
 
   loadNextBlockBuffer = 2;
   eventFilter?: EventFilter;
   useCache = true;
 
   name: string;
+  /** @deprecated */
+  timeline?: Observable<NostrEvent[]>;
   process: Process;
   private log: Debugger;
   private subscription: MultiSubscription;
@@ -52,28 +53,29 @@ export default class TimelineLoader {
     this.process.icon = AlignHorizontalCentre02;
 
     this.log = logger.extend("TimelineLoader:" + name);
-    this.events = new EventStore(name);
-    this.events.connect(replaceableEventsService.events, false);
 
-    this.subscription = new MultiSubscription(name);
+    this.subscription = new MultiSubscription(relayPoolService);
     this.subscription.onEvent.subscribe(this.handleEvent.bind(this));
-    this.subscription.onCacheEvent.subscribe((event) => this.handleEvent(event, true));
-    this.process.addChild(this.subscription.process);
-
-    // update the timeline when there are new events
-    this.events.onEvent.subscribe(this.throttleUpdateTimeline.bind(this));
-    this.events.onDelete.subscribe(this.throttleUpdateTimeline.bind(this));
-    this.events.onClear.subscribe(this.throttleUpdateTimeline.bind(this));
 
     processManager.registerProcess(this.process);
   }
 
-  private throttleUpdateTimeline = _throttle(this.updateTimeline, 10);
   private updateTimeline() {
+    this.timeline = queryStore.timeline(this.filters);
+
     if (this.eventFilter) {
-      const filter = this.eventFilter;
-      this.timeline.next(this.events.getSortedEvents().filter((e) => filter(e, this.events)));
-    } else this.timeline.next(this.events.getSortedEvents());
+      // add filter
+      this.timeline = this.timeline.pipe(
+        map((events) =>
+          events.filter((e) => {
+            try {
+              return this.eventFilter!(e);
+            } catch (error) {}
+            return false;
+          }),
+        ),
+      );
+    }
   }
 
   private seenInCache = new Set<string>();
@@ -81,7 +83,9 @@ export default class TimelineLoader {
     // if this is a replaceable event, mirror it over to the replaceable event service
     if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
 
-    this.events.addEvent(event);
+    event = eventStore.add(event);
+
+    // publish to local relay
     if (!fromCache && this.useCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
 
     if (fromCache) this.seenInCache.add(event.id);
@@ -95,13 +99,12 @@ export default class TimelineLoader {
   private connectToChunkLoader(loader: ChunkedRequest) {
     this.process.addChild(loader.process);
 
-    this.events.connect(loader.events);
     const subs = this.chunkLoaderSubs.get(loader);
     subs.push(loader.onChunkFinish.subscribe(this.handleChunkFinished.bind(this)));
   }
   private disconnectFromChunkLoader(loader: ChunkedRequest) {
     loader.destroy();
-    this.events.disconnect(loader.events);
+
     const subs = this.chunkLoaderSubs.get(loader);
     for (const sub of subs) sub.unsubscribe();
     this.chunkLoaderSubs.delete(loader);
@@ -141,6 +144,9 @@ export default class TimelineLoader {
 
     // update the live subscription query map and add limit
     this.subscription.setFilters(mergeFilter(filters, { limit: BLOCK_SIZE / 2 }));
+
+    // update timeline
+    this.updateTimeline();
   }
 
   setRelays(relays: Iterable<string | URL | AbstractRelay>) {
@@ -253,9 +259,7 @@ export default class TimelineLoader {
   }
 
   forgetEvents() {
-    this.events.clear();
-    this.timeline.next([]);
-    this.subscription.forgetEvents();
+    this.timeline = undefined;
   }
   reset() {
     this.cursor = dayjs().unix();
@@ -275,9 +279,8 @@ export default class TimelineLoader {
     this.loaders.clear();
     this.cacheLoader = null;
 
-    this.subscription.destroy();
+    this.subscription.close();
 
-    this.events.cleanup();
     this.process.remove();
     processManager.unregisterProcess(this.process);
   }

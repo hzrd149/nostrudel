@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { Flex } from "@chakra-ui/react";
+import { ThreadItem } from "applesauce-core/queries";
 
-import { ThreadItem } from "../../../../helpers/thread";
 import { TimelineNote } from "../../../../components/note/timeline-note";
 
 export default function PostQuotesTab({ post, quotes }: { post: ThreadItem; quotes: NostrEvent[] }) {

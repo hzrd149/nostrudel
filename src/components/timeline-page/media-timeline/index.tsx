@@ -2,17 +2,16 @@ import { useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
 
-import TimelineLoader from "../../../classes/timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImageProps, GalleryImage } from "../../external-embeds";
+import { EmbeddedImageProps } from "../../content/links";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { NostrEvent } from "../../../types/nostr-event";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { GalleryImage } from "../../content/components/gallery";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLImageElement>(event);
@@ -36,13 +35,11 @@ function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
   );
 }
 
-export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }) {
-  const events = useSubject(timeline.timeline);
-
+export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) {
   const images = useMemo(() => {
     var images: PhotoWithEvent[] = [];
 
-    for (const event of events) {
+    for (const event of timeline) {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
@@ -53,7 +50,7 @@ export default function MediaTimeline({ timeline }: { timeline: TimelineLoader }
     }
 
     return images;
-  }, [events]);
+  }, [timeline]);
 
   return (
     <LightboxProvider>

@@ -1,9 +1,8 @@
 import { Box, BoxProps } from "@chakra-ui/react";
-import { EmbedableContent, embedUrls } from "../../../helpers/embeds";
+import { useRenderedContent } from "applesauce-react/hooks";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import {
-  embedCashuTokens,
-  embedNostrLinks,
   renderAppleMusicUrl,
   renderGenericUrl,
   renderImageUrl,
@@ -19,10 +18,32 @@ import {
   renderVideoUrl,
   renderWavlakeUrl,
   renderYoutubeURL,
-} from "../../../components/external-embeds";
+} from "../../../components/content/links";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { LightboxProvider } from "../../../components/lightbox-provider";
-import { renderAudioUrl } from "../../../components/external-embeds/types/audio";
+import { renderAudioUrl } from "../../../components/content/links/audio";
+import { components } from "../../../components/content";
+import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+
+const DirectMessageContentSymbol = Symbol.for("direct-message-content");
+const linkRenderers = [
+  renderSimpleXLink,
+  renderYoutubeURL,
+  renderTwitterUrl,
+  renderRedditUrl,
+  renderWavlakeUrl,
+  renderAppleMusicUrl,
+  renderSpotifyUrl,
+  renderTidalUrl,
+  renderSongDotLinkUrl,
+  renderStemstrUrl,
+  renderSoundCloudUrl,
+  renderImageUrl,
+  renderVideoUrl,
+  renderStreamUrl,
+  renderAudioUrl,
+  renderGenericUrl,
+];
 
 export default function DirectMessageContent({
   event,
@@ -30,30 +51,8 @@ export default function DirectMessageContent({
   children,
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
-  let content: EmbedableContent = [text];
-
-  content = embedNostrLinks(content);
-  content = embedUrls(content, [
-    renderSimpleXLink,
-    renderYoutubeURL,
-    renderTwitterUrl,
-    renderRedditUrl,
-    renderWavlakeUrl,
-    renderAppleMusicUrl,
-    renderSpotifyUrl,
-    renderTidalUrl,
-    renderSongDotLinkUrl,
-    renderStemstrUrl,
-    renderSoundCloudUrl,
-    renderImageUrl,
-    renderVideoUrl,
-    renderStreamUrl,
-    renderAudioUrl,
-    renderGenericUrl,
-  ]);
-
-  // cashu
-  content = embedCashuTokens(content);
+  const { plaintext } = useKind4Decrypt(event);
+  const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
   return (
     <TrustProvider event={event}>

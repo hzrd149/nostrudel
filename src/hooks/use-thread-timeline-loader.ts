@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { kinds as eventKinds } from "nostr-tools";
 
-import useSubject from "./use-subject";
 import useSingleEvent from "./use-single-event";
 import singleEventService from "../services/single-event";
 import useTimelineLoader from "./use-timeline-loader";
@@ -19,19 +18,24 @@ export default function useThreadTimelineLoader(
 
   const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
 
+  const kindArr = kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote];
   const timelineId = `${rootPointer?.id}-thread`;
-  const timeline = useTimelineLoader(
+  const { loader, timeline: events } = useTimelineLoader(
     timelineId,
     readRelays,
     rootPointer
-      ? {
-          "#e": [rootPointer.id],
-          kinds: kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote],
-        }
+      ? [
+          {
+            "#e": [rootPointer.id],
+            kinds: kindArr,
+          },
+          {
+            "#q": [rootPointer.id],
+            kinds: kindArr,
+          },
+        ]
       : undefined,
   );
-
-  const events = useSubject(timeline.timeline);
 
   // mirror all events to single event cache
   useEffect(() => {
@@ -46,5 +50,5 @@ export default function useThreadTimelineLoader(
     return arr;
   }, [events, rootEvent, focusedEvent]);
 
-  return { events: allEvents, rootEvent, rootPointer, timeline };
+  return { events: allEvents, rootEvent, rootPointer, timeline: loader };
 }

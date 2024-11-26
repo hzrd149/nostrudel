@@ -1,20 +1,18 @@
 import { NostrEvent, kinds, nip18, nip25 } from "nostr-tools";
-import _throttle from "lodash.throttle";
+import { BehaviorSubject } from "rxjs";
+import { map, throttleTime } from "rxjs/operators";
+import { getZapPayment } from "applesauce-core/helpers";
 
-import EventStore from "./event-store";
-import { PersistentSubject } from "./subject";
-import { getThreadReferences, isPTagMentionedInContent, isReply, isRepost } from "../helpers/nostr/event";
-import { getParsedZap } from "../helpers/nostr/zaps";
+import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import singleEventService from "../services/single-event";
 import RelaySet from "./relay-set";
 import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
-import { STREAM_CHAT_MESSAGE_KIND } from "../helpers/nostr/stream";
-import replaceableEventsService from "../services/replaceable-events";
-import { MUTE_LIST_KIND, getPubkeysFromList } from "../helpers/nostr/lists";
+import { getPubkeysFromList } from "../helpers/nostr/lists";
+import { eventStore, queryStore } from "../services/event-store";
 
-export const typeSymbol = Symbol("notificationType");
+export const NotificationTypeSymbol = Symbol("notificationType");
 
 export enum NotificationType {
   Reply = "reply",
@@ -22,46 +20,70 @@ export enum NotificationType {
   Zap = "zap",
   Reaction = "reaction",
   Mention = "mention",
+  Message = "message",
+  Quote = "quote",
 }
-export type CategorizedEvent = NostrEvent & { [typeSymbol]?: NotificationType };
+export type CategorizedEvent = NostrEvent & { [NotificationTypeSymbol]?: NotificationType };
 
 export default class AccountNotifications {
-  store: EventStore;
   pubkey: string;
-  private subs: ZenObservable.Subscription[] = [];
 
-  timeline = new PersistentSubject<CategorizedEvent[]>([]);
+  timeline = new BehaviorSubject<CategorizedEvent[]>([]);
 
-  constructor(pubkey: string, store: EventStore) {
-    this.store = store;
+  constructor(pubkey: string) {
     this.pubkey = pubkey;
 
-    this.subs.push(store.onEvent.subscribe(this.handleEvent.bind(this)));
-
-    for (const [_, event] of store.events) this.handleEvent(event);
+    // subscribe to query store
+    queryStore
+      .timeline([
+        {
+          "#p": [pubkey],
+          kinds: [
+            kinds.ShortTextNote,
+            kinds.Repost,
+            kinds.GenericRepost,
+            kinds.Reaction,
+            kinds.Zap,
+            TORRENT_COMMENT_KIND,
+            kinds.LongFormArticle,
+            kinds.EncryptedDirectMessage,
+            1111, //NIP-22
+          ],
+        },
+      ])
+      .pipe(
+        throttleTime(100),
+        map((events) => events.map(this.handleEvent.bind(this)).filter(this.filterEvent.bind(this))),
+      )
+      .subscribe((events) => this.timeline.next(events));
   }
 
   private categorizeEvent(event: NostrEvent): CategorizedEvent {
     const e = event as CategorizedEvent;
+
+    if (e[NotificationTypeSymbol]) return e;
+
     if (event.kind === kinds.Zap) {
-      e[typeSymbol] = NotificationType.Zap;
+      e[NotificationTypeSymbol] = NotificationType.Zap;
     } else if (event.kind === kinds.Reaction) {
-      e[typeSymbol] = NotificationType.Reaction;
+      e[NotificationTypeSymbol] = NotificationType.Reaction;
     } else if (isRepost(event)) {
-      e[typeSymbol] = NotificationType.Repost;
+      e[NotificationTypeSymbol] = NotificationType.Repost;
+    } else if (event.kind === kinds.EncryptedDirectMessage) {
+      e[NotificationTypeSymbol] = NotificationType.Message;
     } else if (
       event.kind === kinds.ShortTextNote ||
       event.kind === TORRENT_COMMENT_KIND ||
-      event.kind === STREAM_CHAT_MESSAGE_KIND ||
+      event.kind === kinds.LiveChatMessage ||
       event.kind === kinds.LongFormArticle
     ) {
-      // is the "p" tag directly mentioned in the content
-      const isMentioned = isPTagMentionedInContent(event, this.pubkey);
       // is the pubkey mentioned in any way in the content
-      const isQuoted = getPubkeysMentionedInContent(event.content).includes(this.pubkey);
+      const isMentioned = getPubkeysMentionedInContent(event.content, true).includes(this.pubkey);
+      const isQuote = event.tags.some((t) => t[0] === "q" && t[3] === this.pubkey);
 
-      if (isMentioned || isQuoted) e[typeSymbol] = NotificationType.Mention;
-      else if (isReply(event)) e[typeSymbol] = NotificationType.Reply;
+      if (isMentioned) e[NotificationTypeSymbol] = NotificationType.Mention;
+      else if (isQuote) e[NotificationTypeSymbol] = NotificationType.Quote;
+      else if (isReply(event)) e[NotificationTypeSymbol] = NotificationType.Reply;
     }
     return e;
   }
@@ -69,84 +91,74 @@ export default class AccountNotifications {
   handleEvent(event: NostrEvent) {
     const e = this.categorizeEvent(event);
 
-    const getAndSubscribe = (eventId: string, relays?: string[]) => {
-      const subject = singleEventService.requestEvent(
-        eventId,
-        RelaySet.from(clientRelaysService.readRelays.value, relays),
-      );
-
-      subject.once(this.throttleUpdateTimeline);
-      return subject.value;
+    const loadEvent = (eventId: string, relays?: string[]) => {
+      singleEventService.requestEvent(eventId, RelaySet.from(clientRelaysService.readRelays.value, relays));
     };
 
-    switch (e[typeSymbol]) {
+    // load event quotes
+    const quotes = event.tags.filter((t) => t[0] === "q" && t[1]);
+    for (const tag of quotes) {
+      loadEvent(tag[1], tag[2] ? [tag[2]] : undefined);
+    }
+
+    // load reactions and replies
+    switch (e[NotificationTypeSymbol]) {
       case NotificationType.Reply:
         const refs = getThreadReferences(e);
-        if (refs.reply?.e?.id) getAndSubscribe(refs.reply.e.id, refs.reply.e.relays);
+        if (refs.reply?.e?.id) loadEvent(refs.reply.e.id, refs.reply.e.relays);
         break;
       case NotificationType.Reaction: {
         const pointer = nip25.getReactedEventPointer(e);
-        if (pointer?.id) getAndSubscribe(pointer.id, pointer.relays);
+        if (pointer?.id) loadEvent(pointer.id, pointer.relays);
         break;
       }
     }
+
+    return e;
   }
 
-  throttleUpdateTimeline = _throttle(this.updateTimeline.bind(this), 200);
-  updateTimeline() {
-    const muteList = replaceableEventsService.getEvent(MUTE_LIST_KIND, this.pubkey).value;
+  private filterEvent(event: CategorizedEvent) {
+    // ignore if muted
+    // TODO: this should be moved somewhere more performant
+    const muteList = eventStore.getReplaceable(kinds.Mutelist, this.pubkey);
     const mutedPubkeys = muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : [];
+    if (mutedPubkeys.includes(event.pubkey)) return false;
 
-    const sorted = this.store.getSortedEvents();
+    // ignore if own
+    if (event.pubkey === this.pubkey) return false;
 
-    const timeline: CategorizedEvent[] = [];
-    for (const event of sorted) {
-      if (!Object.hasOwn(event, typeSymbol)) continue;
-      if (mutedPubkeys.includes(event.pubkey)) continue;
-      if (event.pubkey === this.pubkey) continue;
-      const e = event as CategorizedEvent;
+    const e = event as CategorizedEvent;
 
-      switch (e[typeSymbol]) {
-        case NotificationType.Reply:
-          const refs = getThreadReferences(e);
-          if (!refs.reply?.e?.id) break;
-          if (refs.reply?.e?.author && refs.reply?.e?.author !== this.pubkey) break;
-          const parent = singleEventService.getSubject(refs.reply.e.id).value;
-          if (!parent || parent.pubkey !== this.pubkey) break;
-          timeline.push(e);
-          break;
-        case NotificationType.Mention:
-          timeline.push(e);
-          break;
-        case NotificationType.Repost: {
-          const pointer = nip18.getRepostedEventPointer(e);
-          if (pointer?.author !== this.pubkey) break;
-          timeline.push(e);
-          break;
-        }
-        case NotificationType.Reaction: {
-          const pointer = nip25.getReactedEventPointer(e);
-          if (!pointer) break;
-          if (pointer.author !== this.pubkey) break;
-          if (pointer.kind === kinds.EncryptedDirectMessage) break;
-          const parent = singleEventService.getSubject(pointer.id).value;
-          if (parent && parent.kind === kinds.EncryptedDirectMessage) break;
-          timeline.push(e);
-          break;
-        }
-        case NotificationType.Zap:
-          const parsed = getParsedZap(e, true, true);
-          if (parsed instanceof Error) break;
-          if (!parsed.payment.amount) break;
-          timeline.push(e);
-          break;
+    switch (e[NotificationTypeSymbol]) {
+      case NotificationType.Reply:
+        const refs = getThreadReferences(e);
+        if (!refs.reply?.e?.id) return false;
+        if (refs.reply?.e?.author && refs.reply?.e?.author !== this.pubkey) return false;
+        const parent = eventStore.getEvent(refs.reply.e.id);
+        if (!parent || parent.pubkey !== this.pubkey) return false;
+        break;
+      case NotificationType.Mention:
+        break;
+      case NotificationType.Repost: {
+        const pointer = nip18.getRepostedEventPointer(e);
+        if (pointer?.author !== this.pubkey) return false;
+        break;
       }
+      case NotificationType.Reaction: {
+        const pointer = nip25.getReactedEventPointer(e);
+        if (!pointer) return false;
+        if (pointer.author !== this.pubkey) return false;
+        if (pointer.kind === kinds.EncryptedDirectMessage) return false;
+        const parent = eventStore.getEvent(pointer.id);
+        if (parent && parent.kind === kinds.EncryptedDirectMessage) return false;
+        break;
+      }
+      case NotificationType.Zap:
+        const p = getZapPayment(e);
+        if (!p || p.amount === 0) return false;
+        break;
     }
-    this.timeline.next(timeline);
-  }
 
-  destroy() {
-    for (const sub of this.subs) sub.unsubscribe();
-    this.subs = [];
+    return true;
   }
 }

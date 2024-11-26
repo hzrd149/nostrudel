@@ -25,7 +25,7 @@ export default function AddReactionButton({
   ...props
 }: { event: NostrEvent; portal?: boolean } & Omit<ButtonProps, "children">) {
   const publish = usePublishEvent();
-  const reactions = useEventReactions(getEventUID(event)) ?? [];
+  const reactions = useEventReactions(event) ?? [];
   const [popover, setPopover] = useBoolean();
 
   const [loading, setLoading] = useState(false);

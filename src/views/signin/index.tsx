@@ -2,12 +2,11 @@ import { Avatar, Flex, Heading } from "@chakra-ui/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { ReloadPrompt } from "../../components/reload-prompt";
-import useSubject from "../../hooks/use-subject";
-import accountService from "../../services/account";
+import useCurrentAccount from "../../hooks/use-current-account";
 import { CAP_IS_WEB } from "../../env";
 
 export default function LoginView() {
-  const current = useSubject(accountService.current);
+  const current = useCurrentAccount();
   const location = useLocation();
 
   if (current) return <Navigate to={location.state?.from ?? "/"} replace />;

@@ -1,21 +1,26 @@
 import _throttle from "lodash.throttle";
+import { Filter } from "nostr-tools";
+import { BehaviorSubject } from "rxjs";
 
-import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import relayInfoService from "./relay-info";
 import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
 import relayPoolService from "./relay-pool";
-import { Filter } from "nostr-tools";
 import { alwaysVerify } from "./verify-event";
+import { eventStore } from "./event-store";
 
 const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";
-const MONITOR_RELAY = "wss://history.nostr.watch";
+const MONITOR_RELAY = "wss://relay.nostr.watch";
 
 class RelayStatsService {
-  private selfReported = new SuperMap<string, Subject<NostrEvent | null>>(() => new Subject());
-  private monitorStats = new SuperMap<string, Subject<NostrEvent>>(() => new Subject());
+  private selfReported = new SuperMap<string, BehaviorSubject<NostrEvent | null | undefined>>(
+    () => new BehaviorSubject<NostrEvent | null | undefined>(undefined),
+  );
+  private monitorStats = new SuperMap<string, BehaviorSubject<NostrEvent | undefined>>(
+    () => new BehaviorSubject<NostrEvent | undefined>(undefined),
+  );
 
   constructor() {
     // load all stats from cache and subscribe to future ones
@@ -32,6 +37,8 @@ class RelayStatsService {
 
     const relay = getRelayURL(event);
     if (!relay) return;
+
+    eventStore.add(event);
 
     const sub = this.monitorStats.get(relay);
     if (event.kind === SELF_REPORTED_KIND) {

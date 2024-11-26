@@ -1,17 +1,12 @@
 import { useCallback, useState } from "react";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
 import { useSigningContext } from "../providers/global/signing-provider";
 import userUserBookmarksList from "./use-user-bookmarks-list";
 import { getEventCoordinate, isReplaceable, pointerMatchEvent } from "../helpers/nostr/event";
-import {
-  BOOKMARK_LIST_KIND,
-  listAddCoordinate,
-  listAddEvent,
-  listRemoveCoordinate,
-  listRemoveEvent,
-} from "../helpers/nostr/lists";
+import { listAddCoordinate, listAddEvent, listRemoveCoordinate, listRemoveEvent } from "../helpers/nostr/lists";
 import { usePublishEvent } from "../providers/global/publish-provider";
 
 export default function useEventBookmarkActions(event: NostrEvent) {
@@ -28,7 +23,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
   const removeBookmark = useCallback(async () => {
     setLoading(true);
     let draft: DraftNostrEvent = {
-      kind: BOOKMARK_LIST_KIND,
+      kind: kinds.BookmarkList,
       content: bookmarkList?.content ?? "",
       tags: bookmarkList?.tags ?? [],
       created_at: dayjs().unix(),
@@ -46,7 +41,7 @@ export default function useEventBookmarkActions(event: NostrEvent) {
   const addBookmark = useCallback(async () => {
     setLoading(true);
     let draft: DraftNostrEvent = {
-      kind: BOOKMARK_LIST_KIND,
+      kind: kinds.BookmarkList,
       content: bookmarkList?.content ?? "",
       tags: bookmarkList?.tags ?? [],
       created_at: dayjs().unix(),

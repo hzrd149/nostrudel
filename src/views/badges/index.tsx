@@ -9,7 +9,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import BadgeAwardCard from "./components/badge-award-card";
@@ -28,7 +27,7 @@ function BadgesPage() {
     [muteFilter],
   );
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: awards } = useTimelineLoader(
     `${listId}-lists`,
     readRelays,
     {
@@ -37,9 +36,7 @@ function BadgesPage() {
     },
     { eventFilter },
   );
-
-  const awards = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -63,7 +60,7 @@ function BadgesPage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {awards.map((award) => (
+        {awards?.map((award) => (
           <ErrorBoundary key={award.id}>
             <BadgeAwardCard award={award} />
           </ErrorBoundary>

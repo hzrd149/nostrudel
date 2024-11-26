@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import { useReadRelays } from "./use-client-relays";
 import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
-import useSubject from "./use-subject";
+import { ReplaceableQuery } from "applesauce-core/queries";
 
 export default function useReplaceableEvent(
   cord: string | CustomAddressPointer | undefined,
@@ -11,17 +12,19 @@ export default function useReplaceableEvent(
   opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelays(additionalRelays);
-  const sub = useMemo(() => {
-    const parsed = typeof cord === "string" ? parseCoordinate(cord) : cord;
+  const parsed = useMemo(() => (typeof cord === "string" ? parseCoordinate(cord) : cord), [cord]);
+
+  useEffect(() => {
     if (!parsed) return;
-    return replaceableEventsService.requestEvent(
+
+    replaceableEventsService.requestEvent(
       parsed.relays ? [...readRelays, ...parsed.relays] : readRelays,
       parsed.kind,
       parsed.pubkey,
       parsed.identifier,
       opts,
     );
-  }, [cord, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
+  }, [parsed, readRelays.urls.join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
-  return useSubject(sub);
+  return useStoreQuery(ReplaceableQuery, parsed ? [parsed.kind, parsed.pubkey, parsed.identifier] : undefined);
 }

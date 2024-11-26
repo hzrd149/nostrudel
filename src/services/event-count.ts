@@ -1,12 +1,14 @@
 import { Filter } from "nostr-tools";
 import stringify from "json-stringify-deterministic";
+import { BehaviorSubject } from "rxjs";
 
-import Subject from "../classes/subject";
 import SuperMap from "../classes/super-map";
 import { localRelay } from "./local-relay";
 
 class EventCountService {
-  subjects = new SuperMap<string, Subject<number>>(() => new Subject<number>());
+  subjects = new SuperMap<string, BehaviorSubject<number | undefined>>(
+    () => new BehaviorSubject<number | undefined>(undefined),
+  );
 
   stringifyFilter(filter: Filter | Filter[]) {
     return stringify(filter);

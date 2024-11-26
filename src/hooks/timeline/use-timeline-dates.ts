@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import TimelineLoader from "../../classes/timeline-loader";
+
 import useMinNumber from "./use-min-number";
 import { NumberCache } from "./use-number-cache";
 import useTimelineViewDatesBuffer from "./use-timeline-view-dates-buffer";
 
 export function useTimelineDates(
-  timeline: { id: string; created_at: number }[] | TimelineLoader,
+  timeline: { id: string; created_at: number }[],
   cache: NumberCache,
   buffer = 5,
   initialRender = 10,
@@ -13,7 +13,7 @@ export function useTimelineDates(
   const dates = useTimelineViewDatesBuffer(
     cache.key,
     { min: cache.get("min"), max: cache.get("max") },
-    Array.isArray(timeline) ? timeline : timeline.timeline.value,
+    timeline,
     buffer,
     initialRender,
   );

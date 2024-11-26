@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardProps, Flex, Heading, Link } from "@chakra-
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import useUserMetadata from "../../../hooks/use-user-metadata";
+import useUserProfile from "../../../hooks/use-user-profile";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { NostrEvent } from "../../../types/nostr-event";
@@ -18,7 +18,7 @@ export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent }
 export default function UserCard({ pubkey, relay, list, ...props }: UserCardProps) {
   const account = useCurrentAccount();
   const publish = usePublishEvent();
-  const metadata = useUserMetadata(pubkey, relay ? [relay] : []);
+  const metadata = useUserProfile(pubkey, relay ? [relay] : []);
 
   const handleRemoveFromList = useAsyncErrorHandler(async () => {
     const draft = listRemovePerson(list, pubkey);

@@ -5,7 +5,6 @@ import { Event, kinds } from "nostr-tools";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -28,22 +27,20 @@ export default function UserFollowersTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useReadRelays();
 
-  const timeline = useTimelineLoader(`${pubkey}-followers`, readRelays, {
+  const { loader, timeline: events } = useTimelineLoader(`${pubkey}-followers`, readRelays, {
     "#p": [pubkey],
     kinds: [kinds.Contacts],
   });
 
-  const lists = useSubject(timeline.timeline);
-  const followerEvents = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   const followers = useMemo(() => {
     const dedupe = new Map<string, Event>();
-    for (const event of followerEvents) {
+    for (const event of events) {
       dedupe.set(event.pubkey, event);
     }
     return Array.from(dedupe.values());
-  }, [followerEvents]);
+  }, [events]);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -52,7 +49,7 @@ export default function UserFollowersTab() {
           <FollowerItem key={event.pubkey} event={event} />
         ))}
       </SimpleGrid>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus timeline={loader} />
     </IntersectionObserverProvider>
   );
 }

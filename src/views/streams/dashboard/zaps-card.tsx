@@ -1,18 +1,16 @@
 import { memo } from "react";
 import { Flex } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { useObservable } from "react-use";
 
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import ZapMessageMemo from "../stream/stream-chat/zap-message";
 import { ParsedStream } from "../../../helpers/nostr/stream";
 
 function ZapsCard({ stream }: { stream: ParsedStream }) {
-  const streamChatTimeline = useStreamChatTimeline(stream);
+  const { timeline } = useStreamChatTimeline(stream);
 
   // refresh when a new event
-  useObservable(streamChatTimeline.events.onEvent);
-  const zapMessages = streamChatTimeline.events.getSortedEvents().filter((event) => {
+  const zapMessages = timeline.filter((event) => {
     if (stream.starts && event.created_at < stream.starts) return false;
     if (stream.ends && event.created_at > stream.ends) return false;
     if (event.kind !== kinds.Zap) return false;
@@ -21,9 +19,7 @@ function ZapsCard({ stream }: { stream: ParsedStream }) {
 
   return (
     <Flex flex={1} p="2" gap="2" overflowY="auto" overflowX="hidden" flexDirection="column">
-      {zapMessages.map((event) => (
-        <ZapMessageMemo key={event.id} zap={event} stream={stream} />
-      ))}
+      {zapMessages?.map((event) => <ZapMessageMemo key={event.id} zap={event} stream={stream} />)}
     </Flex>
   );
 }

@@ -1,11 +1,11 @@
 import { Alert, AlertIcon, Button, Spinner } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import TimelineLoader from "../../classes/timeline-loader";
-import useSubject from "../../hooks/use-subject";
 
 export default function TimelineActionAndStatus({ timeline }: { timeline: TimelineLoader }) {
-  const loading = useSubject(timeline.loading);
-  const complete = useSubject(timeline.complete);
+  const loading = useObservable(timeline.loading);
+  const complete = useObservable(timeline.complete);
 
   if (complete) {
     return (

@@ -1,17 +1,16 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
 import { TORRENT_COMMENT_KIND } from "../../helpers/nostr/torrents";
 import { groupByRoot } from "../../helpers/notification";
-import { NostrEvent } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import UserAvatarLink from "../../components/user/user-avatar-link";
@@ -31,7 +30,7 @@ import GitBranch01 from "../../components/icons/git-branch-01";
 const THREAD_KINDS = [kinds.ShortTextNote, TORRENT_COMMENT_KIND];
 
 function ReplyEntry({ event }: { event: NostrEvent }) {
-  const enableDrawer = useSubject(localSettings.enableNoteThreadDrawer);
+  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
   const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
   const address = useShareableEventAddress(event);
   const onClick = useCallback<MouseEventHandler>(
@@ -67,7 +66,7 @@ function ThreadGroup({ rootId, events }: { rootId: string; events: NostrEvent[] 
   const ref = useEventIntersectionRef(events[events.length - 1]);
 
   return (
-    <Flex>
+    <Flex ref={ref}>
       <GitBranch01 boxSize={8} color="green.500" mr="2" />
       <Flex direction="column" gap="2">
         <AvatarGroup size="sm">
@@ -104,7 +103,7 @@ function ThreadsNotificationsPage() {
 
   const { timeline } = useNotifications();
   const callback = useTimelineCurserIntersectionCallback(timeline);
-  const events = useSubject(timeline?.timeline);
+  const events = useObservable(timeline?.timeline) ?? [];
 
   const filteredEvents = useMemo(
     () =>

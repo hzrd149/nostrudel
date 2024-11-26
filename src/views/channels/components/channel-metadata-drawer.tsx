@@ -16,10 +16,11 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
+
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import UserLink from "../../../components/user/user-link";
@@ -28,7 +29,6 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
-import { CHANNELS_LIST_KIND } from "../../../helpers/nostr/lists";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
@@ -42,20 +42,16 @@ function UserCard({ pubkey }: { pubkey: string }) {
   );
 }
 function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: Iterable<string> }) {
-  const timeline = useTimelineLoader(`${channel.id}-members`, relays, {
-    kinds: [CHANNELS_LIST_KIND],
+  const { loader, timeline: userLists } = useTimelineLoader(`${channel.id}-members`, relays, {
+    kinds: [kinds.PublicChatsList],
     "#e": [channel.id],
   });
-  const userLists = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex gap="2" direction="column">
-        {userLists.map((list) => (
-          <UserCard key={list.pubkey} pubkey={list.pubkey} />
-        ))}
+        {userLists?.map((list) => <UserCard key={list.pubkey} pubkey={list.pubkey} />)}
       </Flex>
     </IntersectionObserverProvider>
   );
@@ -67,7 +63,7 @@ export default function ChannelMetadataDrawer({
   channel,
   ...props
 }: Omit<DrawerProps, "children"> & { channel: NostrEvent }) {
-  const { metadata } = useChannelMetadata(channel.id);
+  const metadata = useChannelMetadata(channel.id);
   const relays = useReadRelays(useAdditionalRelayContext());
 
   return (
@@ -93,7 +89,7 @@ export default function ChannelMetadataDrawer({
           <Heading size="sm" mt="2">
             About
           </Heading>
-          <Text whiteSpace="pre">{metadata.about}</Text>
+          <Text whiteSpace="pre">{metadata?.about}</Text>
           <Heading size="sm" mt="2">
             Members
           </Heading>

@@ -2,8 +2,8 @@ import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
+import { EventStore } from "applesauce-core";
 
-import EventStore from "./event-store";
 import { getEventUID } from "../helpers/nostr/event";
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
@@ -17,7 +17,7 @@ export function createCoordinate(kind: number, pubkey: string, d?: string) {
 
 /** This class is used to batch requests by kind and pubkey to a single relay */
 export default class BatchKindPubkeyLoader {
-  events = new EventStore();
+  store: EventStore;
   relay: AbstractRelay;
   process: Process;
 
@@ -31,7 +31,8 @@ export default class BatchKindPubkeyLoader {
 
   log: Debugger;
 
-  constructor(relay: AbstractRelay, log?: Debugger) {
+  constructor(store: EventStore, relay: AbstractRelay, log?: Debugger) {
+    this.store = store;
     this.relay = relay;
     this.log = log || debug("BatchKindPubkeyLoader");
     this.process = new Process("BatchKindPubkeyLoader", this, [relay]);
@@ -47,7 +48,7 @@ export default class BatchKindPubkeyLoader {
 
   requestEvent(kind: number, pubkey: string, d?: string): Promise<NostrEvent | null> {
     const key = createCoordinate(kind, pubkey, d);
-    const event = this.events.getEvent(key);
+    const event = this.store.getEvent(key);
 
     if (!event) {
       if (this.pending.has(key)) return this.pending.get(key)!;
@@ -78,14 +79,16 @@ export default class BatchKindPubkeyLoader {
   );
 
   private handleEvent(event: NostrEvent) {
+    event = this.store.add(event, this.relay.url);
+
     const key = getEventUID(event);
 
     const defer = this.pending.get(key);
     if (defer) this.pending.delete(key);
 
-    const current = this.events.getEvent(key);
+    const current = this.store.getEvent(key);
     if (!current || event.created_at > current.created_at) {
-      this.events.addEvent(event);
+      this.store.add(event);
 
       if (defer) defer.resolve(event);
     } else if (defer) defer.resolve(null);

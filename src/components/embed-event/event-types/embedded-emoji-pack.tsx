@@ -12,19 +12,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
-import { getEmojisFromPack, getPackName } from "../../../helpers/nostr/emoji-packs";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
-  const emojis = getEmojisFromPack(pack);
-  const naddr = relayHintService.getSharableEventAddress(pack);
+  const emojis = getEmojis(pack);
+  const naddr = getSharableEventAddress(pack);
 
   return (
     <Card {...props}>

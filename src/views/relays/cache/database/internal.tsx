@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 import { NostrEvent } from "nostr-tools";
+import { useObservable } from "applesauce-react/hooks";
 
 import { localDatabase } from "../../../../services/local-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
@@ -25,7 +26,6 @@ import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
 import { clearCacheData, deleteDatabase } from "../../../../services/db";
-import useSubject from "../../../../hooks/use-subject";
 import localSettings from "../../../../services/local-settings";
 
 async function importEvents(events: NostrEvent[]) {
@@ -43,7 +43,7 @@ export default function InternalDatabasePage() {
   const { value: count } = useAsync(async () => await countEvents(localDatabase), []);
   const { value: kinds } = useAsync(async () => await countEventsByKind(localDatabase), []);
 
-  const maxEvents = useSubject(localSettings.idbMaxEvents);
+  const maxEvents = useObservable(localSettings.idbMaxEvents);
 
   const [clearing, setClearing] = useState(false);
   const handleClearData = async () => {

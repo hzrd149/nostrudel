@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import RelayReviewNote from "./components/relay-review-note";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -17,7 +16,7 @@ function RelayReviewsPage() {
   const readRelays = useReadRelays();
 
   const { filter } = usePeopleListContext();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: reviews } = useTimelineLoader(
     "relay-reviews",
     readRelays,
     filter
@@ -28,10 +27,7 @@ function RelayReviewsPage() {
         }
       : undefined,
   );
-
-  const reviews = useSubject(timeline.timeline);
-
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
@@ -43,9 +39,7 @@ function RelayReviewsPage() {
           <PeopleListSelection />
           <Heading size="md">Relay Reviews</Heading>
         </Flex>
-        {reviews.map((event) => (
-          <RelayReviewNote key={event.id} event={event} />
-        ))}
+        {reviews?.map((event) => <RelayReviewNote key={event.id} event={event} />)}
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

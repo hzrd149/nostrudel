@@ -9,7 +9,7 @@ import { useAddReaction } from "./common-hooks";
 
 export default function EventReactionButtons({ event, max }: { event: NostrEvent; max?: number }) {
   const account = useCurrentAccount();
-  const reactions = useEventReactions(event.id) ?? [];
+  const reactions = useEventReactions(event) ?? [];
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);
 
   const addReaction = useAddReaction(event, grouped);

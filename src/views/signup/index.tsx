@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Flex } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ProfileContent } from "applesauce-core/helpers";
 
-import { Kind0ParsedContent } from "../../helpers/nostr/user-metadata";
 import NameStep from "./name-step";
 import ProfileImageStep from "./profile-image-step";
 import RelayStep from "./relay-step";
@@ -14,7 +14,7 @@ export default function SignupView() {
   const step = useParams().step || "name";
   const navigate = useNavigate();
 
-  const [metadata, setMetadata] = useState<Kind0ParsedContent>({});
+  const [metadata, setMetadata] = useState<ProfileContent>({});
   const [profileImage, setProfileImage] = useState<File>();
   const [relays, setRelays] = useState<string[]>([]);
   const [secretKey, setSecretKey] = useState("");

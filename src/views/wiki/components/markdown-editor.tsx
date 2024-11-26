@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { VisuallyHidden } from "@chakra-ui/react";
 import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
+import { multiServerUpload } from "blossom-client-sdk/actions/upload";
 import ReactDOMServer from "react-dom/server";
 import { Global, css } from "@emotion/react";
 
@@ -11,9 +12,9 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import useAppSettings from "../../../hooks/use-app-settings";
 import useCurrentAccount from "../../../hooks/use-current-account";
 
-import { CharkaMarkdown } from "./markdown";
+import { CharkaMarkdown } from "../../../components/markdown/markdown";
 import { useSigningContext } from "../../../providers/global/signing-provider";
-import { uploadFileToServers } from "../../../helpers/media-upload/blossom";
+import { simpleMultiServerUpload } from "../../../helpers/media-upload/blossom";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";
 
 const fixCodeMirrorFont = css`
@@ -36,11 +37,8 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
       if (!servers) return onError("No media servers set");
       try {
         const safeFile = await stripSensitiveMetadataOnFile(file);
-        const blob = await uploadFileToServers(
-          servers.map((s) => s.toString()),
-          safeFile,
-          requestSignature,
-        );
+        const blob = await simpleMultiServerUpload(servers, safeFile, requestSignature);
+
         if (blob) onSuccess(blob.url);
       } catch (error) {
         if (error instanceof Error) onError(error.message);

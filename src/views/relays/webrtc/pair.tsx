@@ -13,33 +13,33 @@ import {
   Input,
   Text,
   useDisclosure,
-  useForceUpdate,
   useInterval,
 } from "@chakra-ui/react";
 import { getPublicKey, kinds, nip19 } from "nostr-tools";
+import { useForm } from "react-hook-form";
+import dayjs from "dayjs";
+import { useAsync } from "react-use";
+import { useObservable } from "applesauce-react/hooks";
 
 import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
-import useSubject from "../../../hooks/use-subject";
 import localSettings from "../../../services/local-settings";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { QrCodeIcon } from "../../../components/icons";
-import { useForm } from "react-hook-form";
-import dayjs from "dayjs";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import useUserMetadata from "../../../hooks/use-user-metadata";
-import { useAsync } from "react-use";
+import useUserProfile from "../../../hooks/use-user-profile";
+import useForceUpdate from "../../../hooks/use-force-update";
 
 function NameForm() {
   const publish = usePublishEvent();
   const { register, handleSubmit, formState, reset } = useForm({ defaultValues: { name: "" }, mode: "all" });
 
   const { value: pubkey } = useAsync(async () => webRtcRelaysService.broker.signer.getPublicKey());
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   useEffect(() => {
     if (metadata?.name) reset({ name: metadata.name }, { keepDirty: false, keepTouched: false });
   }, [metadata?.name]);
@@ -85,7 +85,7 @@ export default function WebRtcPairView() {
   const account = useCurrentAccount();
   const showQrCode = useDisclosure();
 
-  const identity = useSubject(localSettings.webRtcLocalIdentity);
+  const identity = useObservable(localSettings.webRtcLocalIdentity);
   const pubkey = useMemo(() => getPublicKey(identity), [identity]);
   const npub = useMemo(() => nip19.npubEncode(pubkey), [pubkey]);
 

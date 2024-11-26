@@ -4,8 +4,6 @@ import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import Timestamp from "../../timestamp";
@@ -17,13 +15,14 @@ import { getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { MouseEventHandler, useCallback } from "react";
 import { nip19 } from "nostr-tools";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export default function EmbeddedTorrentComment({
   comment,
   ...props
 }: Omit<CardProps, "children"> & { comment: NostrEvent }) {
   const navigate = useNavigateInDrawer();
-  const { showSignatureVerification } = useSubject(appSettings);
+  const { showSignatureVerification } = useAppSettings();
   const refs = getThreadReferences(comment);
   const torrent = useSingleEvent(refs.root?.e?.id, refs.root?.e?.relays);
   const linkToTorrent = refs.root?.e && `/torrents/${nip19.neventEncode(refs.root.e)}`;

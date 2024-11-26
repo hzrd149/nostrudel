@@ -2,6 +2,7 @@ import { NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
+import { Subject } from "rxjs";
 
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
@@ -9,7 +10,7 @@ import processManager from "../services/process-manager";
 import createDefer, { Deferred } from "./deferred";
 import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
-import Subject from "./subject";
+import { eventStore } from "../services/event-store";
 
 /** Batches requests for events that reference another event (via #e tag) from a single relay */
 export default class BatchRelationLoader {
@@ -79,6 +80,8 @@ export default class BatchRelationLoader {
   );
 
   handleEvent(event: NostrEvent) {
+    event = eventStore.add(event, this.relay.url);
+
     // add event to cache
     const updateIds = new Set<string>();
     for (const tag of event.tags) {

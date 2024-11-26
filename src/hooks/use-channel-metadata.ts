@@ -1,9 +1,9 @@
 import { useMemo } from "react";
+import { ChannelMetadataQuery } from "applesauce-channel";
+import { useStoreQuery } from "applesauce-react/hooks";
 
 import { RequestOptions } from "../services/replaceable-events";
-import useSubject from "./use-subject";
 import channelMetadataService from "../services/channel-metadata";
-import { ChannelMetadata, safeParseChannelMetadata } from "../helpers/nostr/channel";
 import useSingleEvent from "./use-single-event";
 
 export default function useChannelMetadata(
@@ -12,16 +12,12 @@ export default function useChannelMetadata(
   opts: RequestOptions = {},
 ) {
   const channel = useSingleEvent(channelId);
-  const sub = useMemo(() => {
+  useMemo(() => {
     if (!channelId) return;
     return channelMetadataService.requestMetadata(relays, channelId, opts);
   }, [channelId, Array.from(relays).join("|"), opts?.alwaysRequest, opts?.ignoreCache]);
 
-  const event = useSubject(sub);
-  const baseMetadata = useMemo(() => channel && safeParseChannelMetadata(channel), [channel]);
-  const newMetadata = useMemo(() => event && safeParseChannelMetadata(event), [event]);
+  const metadata = useStoreQuery(ChannelMetadataQuery, channel && [channel]);
 
-  const metadata = useMemo(() => ({ ...baseMetadata, ...newMetadata }) as ChannelMetadata, [baseMetadata, newMetadata]);
-
-  return { metadata, event };
+  return metadata;
 }

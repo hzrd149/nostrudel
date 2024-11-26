@@ -1,4 +1,3 @@
-import { useLocalStorage } from "react-use";
 import {
   Flex,
   FormControl,
@@ -12,12 +11,16 @@ import {
   Button,
   Heading,
   FormLabel,
+  Text,
 } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
+
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
 import { RelayAuthMode } from "../../../classes/relay-pool";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
+import localSettings from "../../../services/local-settings";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -44,9 +47,9 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const [defaultAuthMode, setDefaultAuthMode] = useLocalStorage<RelayAuthMode>("default-relay-auth-mode", "ask", {
-    raw: true,
-  });
+  const defaultAuthenticationMode = useObservable(localSettings.defaultAuthenticationMode);
+  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
+  const debugApi = useObservable(localSettings.debugApi);
 
   return (
     <VerticalPageLayout as="form" onSubmit={submit} flex={1}>
@@ -58,14 +61,30 @@ export default function PrivacySettings() {
             w="xs"
             rounded="md"
             flexShrink={0}
-            value={defaultAuthMode || "ask"}
-            onChange={(e) => setDefaultAuthMode(e.target.value as RelayAuthMode)}
+            value={defaultAuthenticationMode}
+            onChange={(e) => localSettings.defaultAuthenticationMode.next(e.target.value as RelayAuthMode)}
           >
             <option value="always">Always authenticate</option>
             <option value="ask">Ask every time</option>
             <option value="never">Never authenticate</option>
           </Select>
           <FormHelperText>How should the app handle relays requesting identification</FormHelperText>
+        </FormControl>
+
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="proactivelyAuthenticate" mb="0">
+              Proactively authenticate to relays
+            </FormLabel>
+            <Switch
+              id="proactivelyAuthenticate"
+              isChecked={proactivelyAuthenticate}
+              onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
+            />
+          </Flex>
+          <FormHelperText>
+            <span>Authenticate to relays as soon as they send the authentication challenge</span>
+          </FormHelperText>
         </FormControl>
 
         <FormControl isInvalid={!!formState.errors.twitterRedirect}>
@@ -186,6 +205,33 @@ export default function PrivacySettings() {
               </Link>{" "}
               data for links
             </span>
+          </FormHelperText>
+        </FormControl>
+        <FormControl>
+          <Flex alignItems="center">
+            <FormLabel htmlFor="debugApi" mb="0">
+              Enable debug api
+            </FormLabel>
+            <Switch
+              id="debugApi"
+              isChecked={debugApi}
+              onChange={(e) => localSettings.debugApi.next(e.currentTarget.checked)}
+            />
+          </Flex>
+          <FormHelperText>
+            <Text>
+              Adds a window.noStrudel to the page with access to internal methods{" "}
+              <Link
+                href="https://github.com/hzrd149/nostrudel/blob/master/src/services/page-api.ts"
+                target="_blank"
+                color="blue.500"
+              >
+                see source
+              </Link>
+            </Text>
+            <Text color="orange.500" mt="1">
+              WARNING: this can expose your secret keys and signer.
+            </Text>
           </FormHelperText>
         </FormControl>
         <Button

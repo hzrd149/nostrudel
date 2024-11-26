@@ -1,32 +1,29 @@
 import { Button, Center, Divider, Flex, Heading, Link, SimpleGrid, Spacer } from "@chakra-ui/react";
 import { Navigate, Link as RouterLink } from "react-router-dom";
+import { getEventUID } from "applesauce-core/helpers";
+import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ExternalLinkIcon } from "../../components/icons";
-import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import GoalCard from "./components/goal-card";
-import { GOAL_KIND } from "../../helpers/nostr/goal";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function UserGoalsManagerPage() {
   const account = useCurrentAccount()!;
 
   const readRelays = useReadRelays();
-  const timeline = useTimelineLoader(
+  const { loader, timeline: goals } = useTimelineLoader(
     `${account.pubkey}-goals`,
     readRelays,
     account.pubkey
       ? {
           authors: [account.pubkey],
-          kinds: [GOAL_KIND],
+          kinds: [kinds.ZapGoal],
         }
       : undefined,
   );
-
-  const goals = useSubject(timeline.timeline);
 
   if (goals.length === 0) {
     return (
@@ -45,7 +42,7 @@ function UserGoalsManagerPage() {
 
   return (
     <>
-      {goals.length > 0 && (
+      {goals && goals.length > 0 && (
         <>
           <Heading size="md" mt="2">
             Created goals

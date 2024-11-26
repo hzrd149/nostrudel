@@ -1,48 +1,90 @@
 import { kinds } from "nostr-tools";
 import _throttle from "lodash.throttle";
+import { combineLatest, distinct, filter } from "rxjs";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
+import { isFromCache } from "applesauce-core/helpers";
 
-import { COMMON_CONTACT_RELAY } from "../const";
+import { COMMON_CONTACT_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
 import replaceableEventsService from "./replaceable-events";
-import userAppSettings from "./settings/user-app-settings";
-import userMailboxesService from "./user-mailboxes";
-import userMetadataService from "./user-metadata";
-import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
+import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "./user-app-settings";
+import { eventStore, queryStore } from "./event-store";
+import { Account } from "../classes/accounts/account";
+import { MultiSubscription } from "applesauce-net/subscription";
+import relayPoolService from "./relay-pool";
+import { localRelay } from "./local-relay";
 
-const log = logger.extend("user-event-sync");
-
-function downloadEvents() {
-  const account = accountService.current.value!;
+const log = logger.extend("UserEventSync");
+function downloadEvents(account: Account) {
   const relays = clientRelaysService.readRelays.value;
 
-  log("Loading user information");
-  userMetadataService.requestMetadata(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
-  userMailboxesService.requestMailboxes(account.pubkey, [...relays, COMMON_CONTACT_RELAY], { alwaysRequest: true });
-  userAppSettings.requestAppSettings(account.pubkey, relays, { alwaysRequest: true });
-  replaceableEventsService.requestEvent(relays, USER_BLOSSOM_SERVER_LIST_KIND, account.pubkey, undefined, {
-    alwaysRequest: true,
+  const cleanup: (() => void)[] = [];
+
+  const requestReplaceable = (relays: Iterable<string>, kind: number, d?: string) => {
+    replaceableEventsService.requestEvent(relays, kind, account.pubkey, d, {
+      alwaysRequest: true,
+    });
+  };
+
+  log("Loading outboxes");
+  requestReplaceable([...relays, ...COMMON_CONTACT_RELAYS], kinds.RelayList);
+
+  const mailboxesSub = queryStore.mailboxes(account.pubkey).subscribe((mailboxes) => {
+    log("Loading user information");
+    requestReplaceable(mailboxes?.outboxes || relays, kinds.Metadata);
+    requestReplaceable(mailboxes?.outboxes || relays, USER_BLOSSOM_SERVER_LIST_KIND);
+    requestReplaceable(mailboxes?.outboxes || relays, kinds.SearchRelaysList);
+    requestReplaceable(mailboxes?.outboxes || relays, APP_SETTINGS_KIND, APP_SETTING_IDENTIFIER);
+
+    log("Loading contacts list");
+    replaceableEventsService.requestEvent(
+      [...clientRelaysService.readRelays.value, ...COMMON_CONTACT_RELAYS],
+      kinds.Contacts,
+      account.pubkey,
+      undefined,
+      {
+        alwaysRequest: true,
+      },
+    );
+
+    if (mailboxes?.outboxes && mailboxes.outboxes.length > 0) {
+      log(`Loading delete events`);
+      const sub = new MultiSubscription(relayPoolService);
+      sub.setRelays(
+        localRelay
+          ? [...mailboxes.outboxes.map((r) => relayPoolService.requestRelay(r)), localRelay as AbstractRelay]
+          : mailboxes.outboxes,
+      );
+      sub.setFilters([{ kinds: [kinds.EventDeletion], authors: [account.pubkey] }]);
+
+      sub.open();
+      sub.onEvent.subscribe((e) => {
+        eventStore.add(e);
+        if (!isFromCache(e) && localRelay) localRelay.publish(e);
+      });
+
+      cleanup.push(() => sub.close());
+    }
   });
 
-  log("Loading contacts list");
-  replaceableEventsService.requestEvent(
-    [...clientRelaysService.readRelays.value, COMMON_CONTACT_RELAY],
-    kinds.Contacts,
-    account.pubkey,
-    undefined,
-    {
-      alwaysRequest: true,
-    },
-  );
+  return () => {
+    for (const fn of cleanup) fn();
+    mailboxesSub.unsubscribe();
+  };
 }
 
-accountService.current.subscribe((account) => {
-  if (!account) return;
-  downloadEvents();
-});
-
-offlineMode.subscribe((offline) => {
-  if (!offline && accountService.current.value) downloadEvents();
-});
+combineLatest([
+  // listen for account changes
+  accountService.current.pipe(
+    filter((a) => !!a),
+    distinct((a) => a.pubkey),
+  ),
+  // listen for offline mode changes
+  offlineMode.pipe(distinct()),
+])
+  .pipe(filter(([_, offline]) => !offline))
+  .subscribe(([account]) => downloadEvents(account));

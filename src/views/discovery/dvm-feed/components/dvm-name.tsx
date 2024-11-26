@@ -2,8 +2,8 @@ import { Link, LinkProps, Text, TextProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import useUserMetadata from "../../../../hooks/use-user-metadata";
-import { getDisplayName } from "../../../../helpers/nostr/user-metadata";
+import useUserProfile from "../../../../hooks/use-user-profile";
+import { getDisplayName } from "../../../../helpers/nostr/profile";
 import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
 
@@ -15,7 +15,7 @@ export function DVMName({
   pointer: AddressPointer;
 }) {
   const dvmMetadata = useDVMMetadata(pointer);
-  const metadata = useUserMetadata(pointer.pubkey);
+  const metadata = useUserProfile(pointer.pubkey);
 
   return (
     <Text as={as} {...props}>

@@ -56,7 +56,7 @@ export default function SendMessageForm({
     }
 
     setLoadingMessage("Signing...");
-    const pub = await publish("Send DM", draft, userMailboxes?.inbox);
+    const pub = await publish("Send DM", draft, userMailboxes?.inboxes);
 
     if (pub) {
       clearCache();

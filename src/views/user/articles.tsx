@@ -3,32 +3,32 @@ import { kinds } from "nostr-tools";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSubject from "../../hooks/use-subject";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import ArticleCard from "../articles/components/article-card";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 export default function UserArticlesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const timeline = useTimelineLoader(pubkey + "-articles", readRelays, {
+  const { loader, timeline: articles } = useTimelineLoader(pubkey + "-articles", readRelays, {
     authors: [pubkey],
     kinds: [kinds.LongFormArticle],
   });
-
-  const articles = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
-        {articles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+        {articles?.map((article) => (
+          <ErrorBoundary key={article.id} event={article}>
+            <ArticleCard article={article} />
+          </ErrorBoundary>
         ))}
-        <TimelineActionAndStatus timeline={timeline} />
+        <TimelineActionAndStatus timeline={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

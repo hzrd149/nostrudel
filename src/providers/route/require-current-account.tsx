@@ -1,13 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
-import useSubject from "../../hooks/use-subject";
-import accountService from "../../services/account";
 import { Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
+import { Link, useLocation } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
+
+import accountService from "../../services/account";
 import { deleteDatabase } from "../../services/db";
 
 export default function RequireCurrentAccount({ children }: { children: JSX.Element }) {
   let location = useLocation();
-  const loading = useSubject(accountService.loading);
-  const account = useSubject(accountService.current);
+  const loading = useObservable(accountService.loading);
+  const account = useObservable(accountService.current);
 
   if (loading) {
     return (

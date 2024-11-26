@@ -4,8 +4,8 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import { nanoid } from "nanoid";
+import { Subject } from "rxjs";
 
-import Subject from "./subject";
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
 import deleteEventService from "../services/delete-events";
@@ -15,10 +15,11 @@ import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import processManager from "../services/process-manager";
 import LayersThree01 from "../components/icons/layers-three-01";
+import { eventStore } from "../services/event-store";
 
 const DEFAULT_CHUNK_SIZE = 100;
 
-export type EventFilter = (event: NostrEvent, store: EventStore) => boolean;
+export type EventFilter = (event: NostrEvent) => boolean;
 
 export default class ChunkedRequest {
   id: string;
@@ -82,7 +83,6 @@ export default class ChunkedRequest {
     this.process.active = true;
     await new Promise<number>((res) => {
       const sub = this.relay.subscribe(filters, {
-        // @ts-expect-error
         id: this.id + "-" + this.lastChunkIdx++,
         onevent: (event) => {
           this.handleEvent(event);
@@ -111,6 +111,9 @@ export default class ChunkedRequest {
 
   private handleEvent(event: NostrEvent) {
     if (!matchFilters(this.filters, event)) return;
+
+    event = eventStore.add(event, this.relay.url);
+
     return this.events.addEvent(event);
   }
 

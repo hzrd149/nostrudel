@@ -1,12 +1,12 @@
 import { memo } from "react";
 import { Text, TextProps } from "@chakra-ui/react";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 
 function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: string }) {
-  const metadata = useUserMetadata(pubkey);
+  const metadata = useUserProfile(pubkey);
   const { hideUsernames, removeEmojisInUsernames } = useAppSettings();
 
   return (

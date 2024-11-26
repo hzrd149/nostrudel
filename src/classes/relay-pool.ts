@@ -1,15 +1,17 @@
 import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { IConnectionPool } from "applesauce-net/connection";
 import dayjs from "dayjs";
+import { Subject, BehaviorSubject } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
-import Subject, { PersistentSubject } from "./subject";
 import SuperMap from "./super-map";
 import verifyEventMethod from "../services/verify-event";
 import { offlineMode } from "../services/offline-mode";
 import processManager from "../services/process-manager";
 import signingService from "../services/signing";
 import accountService from "../services/account";
+import localSettings from "../services/local-settings";
 
 export type Notice = {
   message: string;
@@ -19,23 +21,29 @@ export type Notice = {
 
 export type RelayAuthMode = "always" | "ask" | "never";
 
-export default class RelayPool {
+export default class RelayPool implements IConnectionPool {
+  log = logger.extend("RelayPool");
+
   relays = new Map<string, AbstractRelay>();
   onRelayCreated = new Subject<AbstractRelay>();
   onRelayChallenge = new Subject<[AbstractRelay, string]>();
 
-  notices = new SuperMap<AbstractRelay, PersistentSubject<Notice[]>>(() => new PersistentSubject<Notice[]>([]));
+  notices = new SuperMap<AbstractRelay, BehaviorSubject<Notice[]>>(() => new BehaviorSubject<Notice[]>([]));
 
   connectionErrors = new SuperMap<AbstractRelay, Error[]>(() => []);
-  connecting = new SuperMap<AbstractRelay, PersistentSubject<boolean>>(() => new PersistentSubject(false));
+  connecting = new SuperMap<AbstractRelay, BehaviorSubject<boolean>>(() => new BehaviorSubject(false));
 
-  challenges = new SuperMap<AbstractRelay, Subject<string>>(() => new Subject<string>());
-  authForPublish = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
-  authForSubscribe = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
+  challenges = new SuperMap<AbstractRelay, BehaviorSubject<string | undefined>>(
+    () => new BehaviorSubject<string | undefined>(undefined),
+  );
+  authForPublish = new SuperMap<AbstractRelay, BehaviorSubject<boolean | undefined>>(
+    () => new BehaviorSubject<boolean | undefined>(undefined),
+  );
+  authForSubscribe = new SuperMap<AbstractRelay, BehaviorSubject<boolean | undefined>>(
+    () => new BehaviorSubject<boolean | undefined>(undefined),
+  );
 
-  authenticated = new SuperMap<AbstractRelay, Subject<boolean>>(() => new Subject());
-
-  log = logger.extend("RelayPool");
+  authenticated = new SuperMap<AbstractRelay, BehaviorSubject<boolean>>(() => new BehaviorSubject(false));
 
   getRelay(relayOrUrl: string | URL | AbstractRelay) {
     if (typeof relayOrUrl === "string") {
@@ -43,6 +51,22 @@ export default class RelayPool {
       if (safeURL) {
         return this.relays.get(safeURL) || this.requestRelay(safeURL);
       } else return;
+    } else if (relayOrUrl instanceof URL) {
+      return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
+    }
+
+    return relayOrUrl;
+  }
+
+  // TODO: for now this is just a copy of
+  getConnection(relayOrUrl: string | URL | AbstractRelay) {
+    if (typeof relayOrUrl === "string") {
+      const safeURL = safeRelayUrl(relayOrUrl);
+      if (safeURL) {
+        return this.relays.get(safeURL) || this.requestRelay(safeURL);
+      } else {
+        throw new Error(`Bad relay url ${relayOrUrl}`);
+      }
     } else if (relayOrUrl instanceof URL) {
       return this.relays.get(relayOrUrl.toString()) || this.requestRelay(relayOrUrl.toString());
     }
@@ -69,10 +93,7 @@ export default class RelayPool {
     const key = url.toString();
     if (!this.relays.has(key)) {
       const r = new AbstractRelay(key, { verifyEvent: verifyEventMethod });
-      r._onauth = (challenge) => {
-        this.onRelayChallenge.next([r, challenge]);
-        this.challenges.get(r).next(challenge);
-      };
+      r._onauth = (challenge) => this.handleRelayChallenge(r, challenge);
       r.onnotice = (notice) => this.handleRelayNotice(r, notice);
 
       this.relays.set(key, r);
@@ -130,7 +151,7 @@ export default class RelayPool {
     let relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
-    const defaultMode = (localStorage.getItem(`default-auth-mode`) as RelayAuthMode) ?? undefined;
+    const defaultMode = localSettings.defaultAuthenticationMode.value;
     const mode = (localStorage.getItem(this.getRelayAuthStorageKey(relay)) as RelayAuthMode) ?? undefined;
 
     return mode || defaultMode;
@@ -189,6 +210,30 @@ export default class RelayPool {
     return this.authForSubscribe.get(relay).value !== false;
   }
 
+  private automaticallyAuthenticate(relay: AbstractRelay) {
+    const authMode = this.getRelayAuthMode(relay);
+    // only automatically authenticate if auth mode is set to "always"
+    if (authMode === "always") {
+      const account = accountService.current.value;
+      if (!account) return;
+
+      this.authenticate(relay, (draft) => {
+        return signingService.requestSignature(draft, account);
+      }).then(() => {
+        this.log(`Automatically authenticated to ${relay.url}`);
+      });
+    }
+  }
+
+  private handleRelayChallenge(relay: AbstractRelay, challenge: string) {
+    this.onRelayChallenge.next([relay, challenge]);
+    this.challenges.get(relay).next(challenge);
+
+    if (localSettings.proactivelyAuthenticate.value) {
+      this.automaticallyAuthenticate(relay);
+    }
+  }
+
   handleRelayNotice(relay: AbstractRelay, message: string) {
     const subject = this.notices.get(relay);
     subject.next([...subject.value, { message, date: dayjs().unix(), relay }]);
@@ -197,24 +242,17 @@ export default class RelayPool {
       const authForSubscribe = this.authForSubscribe.get(relay);
       if (!authForSubscribe.value) authForSubscribe.next(true);
 
-      const account = accountService.current.value;
-      if (account) {
-        const authMode = this.getRelayAuthMode(relay);
-
-        if (authMode === "always") {
-          this.authenticate(relay, (draft) => {
-            return signingService.requestSignature(draft, account);
-          }).then(() => {
-            this.log(`Automatically authenticated to ${relay.url}`);
-          });
-        }
-      }
+      // try to authenticate
+      this.automaticallyAuthenticate(relay);
     }
   }
 
   disconnectFromUnused() {
     for (const [url, relay] of this.relays) {
       if (!relay.connected) continue;
+
+      // don't disconnect from authenticated relays
+      if (this.authenticated.get(relay).value) continue;
 
       let disconnect = true;
       for (const process of processManager.processes) {

@@ -44,8 +44,8 @@ You can find a full example of all these services in the [docker-compose.yaml](.
 ```bash
 git clone git@github.com:hzrd149/nostrudel.git
 cd nostrudel
-yarn install
-yarn dev
+pnpm install
+pnpm run dev
 ```
 
 ## Contributing

@@ -27,8 +27,8 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useMatches, useNavigate } from "react-router-dom";
-import useUserMetadata from "../../hooks/use-user-metadata";
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
+import useUserProfile from "../../hooks/use-user-profile";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -63,7 +63,7 @@ const tabs = [
 function useUserBestOutbox(pubkey: string, count: number = 4) {
   const mailbox = useUserMailboxes(pubkey);
   const relays = useReadRelays();
-  const sorted = relayScoreboardService.getRankedRelays(mailbox?.outbox.size ? mailbox?.outbox : relays);
+  const sorted = relayScoreboardService.getRankedRelays(mailbox?.outboxes.length ? mailbox?.outboxes : relays);
   return !count ? sorted : sorted.slice(0, count);
 }
 
@@ -75,7 +75,7 @@ const UserView = () => {
   const relayModal = useDisclosure();
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
-  const metadata = useUserMetadata(pubkey, userTopRelays, { alwaysRequest: true });
+  const metadata = useUserProfile(pubkey, userTopRelays, { alwaysRequest: true });
   useAppTitle(getDisplayName(metadata, pubkey));
 
   const matches = useMatches();

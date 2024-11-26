@@ -16,13 +16,12 @@ import {
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
-import useSubject from "../../../hooks/use-subject";
-import appSettings from "../../../services/settings/app-settings";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import RepostButton from "./components/repost-button";
 import QuoteEventButton from "../quote-event-button";
@@ -45,9 +44,10 @@ import POWIcon from "../../pow/pow-icon";
 import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import localSettings from "../../../services/local-settings";
 import NotePublishedUsing from "../note-published-using";
+import useAppSettings from "../../../hooks/use-app-settings";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -69,8 +69,8 @@ export function TimelineNote({
   ...props
 }: TimelineNoteProps) {
   const account = useCurrentAccount();
-  const { showReactions, showSignatureVerification } = useSubject(appSettings);
-  const hideZapBubbles = useSubject(localSettings.hideZapBubbles);
+  const { showReactions, showSignatureVerification } = useAppSettings();
+  const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 
   const ref = useEventIntersectionRef(event);
@@ -92,7 +92,7 @@ export function TimelineNote({
           {clickable && (
             <HoverLinkOverlay
               as={RouterLink}
-              to={`/n/${relayHintService.getSharableEventAddress(event)}`}
+              to={`/n/${getSharableEventAddress(event)}`}
               onClick={() => singleEventService.handleEvent(event)}
             />
           )}
@@ -100,12 +100,7 @@ export function TimelineNote({
             <Flex flex="1" gap="2" alignItems="center">
               <UserAvatarLink pubkey={event.pubkey} size="sm" />
               <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-              <Link
-                as={RouterLink}
-                whiteSpace="nowrap"
-                color="current"
-                to={`/n/${relayHintService.getSharableEventAddress(event)}`}
-              >
+              <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
                 <Timestamp timestamp={event.created_at} />
               </Link>
               <POWIcon event={event} boxSize={5} />
@@ -114,7 +109,7 @@ export function TimelineNote({
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               {!hideDrawerButton && (
                 <OpenInDrawerButton
-                  to={`/n/${relayHintService.getSharableEventAddress(event)}`}
+                  to={`/n/${getSharableEventAddress(event)}`}
                   size="sm"
                   variant="ghost"
                   onClick={() => singleEventService.handleEvent(event)}
@@ -152,7 +147,7 @@ export function TimelineNote({
       </ExpandProvider>
       {replyForm.isOpen && (
         <ReplyForm
-          item={{ event, replies: [], refs: getThreadReferences(event) }}
+          item={{ event, replies: new Set(), refs: getThreadReferences(event) }}
           onCancel={replyForm.onClose}
           onSubmitted={replyForm.onClose}
         />

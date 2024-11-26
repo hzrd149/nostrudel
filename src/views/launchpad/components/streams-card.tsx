@@ -8,7 +8,6 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import PeopleListProvider, { usePeopleListContext } from "../../../providers/local/people-list-provider";
-import useSubject from "../../../hooks/use-subject";
 import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
@@ -52,9 +51,9 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
     ];
   }, [filter]);
 
-  const timeline = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
+  const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
 
-  const streams = useSubject(timeline.timeline)
+  const streams = timeline
     .map((event) => {
       try {
         return parseStreamEvent(event);
@@ -75,8 +74,8 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
         <KeyboardShortcut letter="l" requireMeta ml="auto" onPress={() => navigate("/streams")} />
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
-        {streams.map((stream) => (
-          <ErrorBoundary key={getEventUID(stream.event)}>
+        {streams?.map((stream) => (
+          <ErrorBoundary key={getEventUID(stream.event)} event={stream.event}>
             <LiveStream stream={stream} />
           </ErrorBoundary>
         ))}

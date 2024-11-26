@@ -1,4 +1,4 @@
-import { PersistentSubject } from "../classes/subject";
+import { BehaviorSubject } from "rxjs";
 
-export const offlineMode = new PersistentSubject(localStorage.getItem("offline-mode") === "true");
+export const offlineMode = new BehaviorSubject(localStorage.getItem("offline-mode") === "true");
 offlineMode.subscribe((v) => localStorage.setItem("offline-mode", v ? "true" : "false"));

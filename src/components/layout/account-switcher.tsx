@@ -2,19 +2,19 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Box, Button, ButtonGroup, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useSubject from "../../hooks/use-subject";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import useUserProfile from "../../hooks/use-user-profile";
 import accountService from "../../services/account";
 import { AddIcon, ChevronDownIcon, ChevronUpIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
 import AccountTypeBadge from "../account-info-badge";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { Account } from "../../classes/accounts/account";
+import { useObservable } from "applesauce-react/hooks";
 
 function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;
-  const metadata = useUserMetadata(pubkey, []);
+  const metadata = useUserProfile(pubkey, []);
 
   const handleClick = () => {
     accountService.switchAccount(pubkey);
@@ -48,8 +48,8 @@ export default function AccountSwitcher() {
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const { isOpen, onToggle, onClose } = useDisclosure();
-  const metadata = useUserMetadata(account.pubkey);
-  const accounts = useSubject(accountService.accounts);
+  const metadata = useUserProfile(account.pubkey);
+  const accounts = useObservable(accountService.accounts);
 
   const otherAccounts = accounts.filter((acc) => acc.pubkey !== account?.pubkey);
 

@@ -7,7 +7,6 @@ import "./styles.css";
 import "react-mosaic-component/react-mosaic-component.css";
 
 import useParsedStreams from "../../../hooks/use-parsed-streams";
-import useSubject from "../../../hooks/use-subject";
 import { ParsedStream, STREAM_KIND, getATag } from "../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
@@ -72,7 +71,7 @@ function StreamModerationPage() {
   const account = useCurrentAccount()!;
   const readRelays = useReadRelays();
 
-  const timeline = useTimelineLoader(account.pubkey + "-streams", readRelays, [
+  const { loader, timeline } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
     {
       authors: [account.pubkey],
       kinds: [STREAM_KIND],
@@ -80,8 +79,7 @@ function StreamModerationPage() {
     { "#p": [account.pubkey], kinds: [STREAM_KIND] },
   ]);
 
-  const streamEvents = useSubject(timeline.timeline);
-  const streams = useParsedStreams(streamEvents);
+  const streams = useParsedStreams(timeline);
 
   const [selected, setSelected] = useState<ParsedStream>();
 

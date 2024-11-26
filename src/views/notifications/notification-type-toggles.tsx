@@ -1,6 +1,7 @@
 import { ButtonGroup, ButtonGroupProps, IconButton, IconButtonProps } from "@chakra-ui/react";
 import { AtIcon, LightningIcon, ReplyIcon, RepostIcon } from "../../components/icons";
 import Heart from "../../components/icons/heart";
+import HelpCircle from "../../components/icons/help-circle";
 
 type Disclosure = { isOpen: boolean; onToggle: () => void };
 
@@ -22,6 +23,7 @@ type NotificationTypeTogglesPropTypes = Omit<ButtonGroupProps, "children"> & {
   showZaps: Disclosure;
   showReposts: Disclosure;
   showReactions: Disclosure;
+  showUnknown: Disclosure;
 };
 
 export default function NotificationTypeToggles({
@@ -30,6 +32,7 @@ export default function NotificationTypeToggles({
   showZaps,
   showReposts,
   showReactions,
+  showUnknown,
   ...props
 }: NotificationTypeTogglesPropTypes) {
   return (
@@ -68,6 +71,13 @@ export default function NotificationTypeToggles({
         title="Toggle reactions"
         toggle={showReactions}
         color="red.400"
+      />
+      <ToggleIconButton
+        icon={<HelpCircle boxSize={5} />}
+        aria-label="Toggle unknown"
+        title="Toggle unknown"
+        toggle={showUnknown}
+        color="gray.500"
       />
     </ButtonGroup>
   );

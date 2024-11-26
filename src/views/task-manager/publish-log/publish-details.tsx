@@ -11,9 +11,9 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import PublishAction, { PublishResult } from "../../../classes/nostr-publish-action";
-import useSubject from "../../../hooks/use-subject";
 import { RelayPaidTag } from "../../relays/components/relay-card";
 import { EmbedEvent } from "../../../components/embed-event";
 
@@ -39,7 +39,7 @@ function PublishResultRow({ result }: { result: PublishResult }) {
 }
 
 export function PublishDetails({ pub }: PostResultsProps & Omit<FlexProps, "children">) {
-  const results = useSubject(pub.results);
+  const results = useObservable(pub.results);
 
   const relayResults: Record<string, PublishResult | undefined> = {};
   for (const url of pub.relays) {

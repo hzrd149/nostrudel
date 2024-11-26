@@ -6,28 +6,18 @@ import { kinds } from "nostr-tools";
 import EmbeddedNote from "./event-types/embedded-note";
 import useSingleEvent from "../../hooks/use-single-event";
 import { NostrEvent } from "../../types/nostr-event";
-import { GOAL_KIND } from "../../helpers/nostr/goal";
-import { EMOJI_PACK_KIND } from "../../helpers/nostr/emoji-packs";
-import {
-  BOOKMARK_LIST_KIND,
-  CHANNELS_LIST_KIND,
-  COMMUNITIES_LIST_KIND,
-  NOTE_LIST_KIND,
-  PEOPLE_LIST_KIND,
-} from "../../helpers/nostr/lists";
-import { COMMUNITY_DEFINITION_KIND } from "../../helpers/nostr/communities";
+import { LIST_KINDS, SET_KINDS } from "../../helpers/nostr/lists";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/flare";
+import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { safeDecode } from "../../helpers/nip19";
 import type { EmbeddedGoalOptions } from "./event-types/embedded-goal";
 
 import LoadingNostrLink from "../loading-nostr-link";
-import RelayCard from "../../views/relays/components/relay-card";
 import EmbeddedRepost from "./event-types/embedded-repost";
-import EmbeddedList from "./event-types/embedded-list";
+import EmbeddedSetOrList from "./event-types/embedded-list";
 import EmbeddedReaction from "./event-types/embedded-reaction";
 import EmbeddedDM from "./event-types/embedded-dm";
 import EmbeddedUnknown from "./event-types/embedded-unknown";
@@ -66,23 +56,17 @@ export function EmbedEvent({
         return <EmbeddedDM dm={event} {...cardProps} />;
       case kinds.LiveEvent:
         return <EmbeddedStream event={event} {...cardProps} />;
-      case GOAL_KIND:
+      case kinds.ZapGoal:
         return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
-      case EMOJI_PACK_KIND:
+      case kinds.Emojisets:
         return <EmbeddedEmojiPack pack={event} {...cardProps} />;
-      case PEOPLE_LIST_KIND:
-      case NOTE_LIST_KIND:
-      case BOOKMARK_LIST_KIND:
-      case COMMUNITIES_LIST_KIND:
-      case CHANNELS_LIST_KIND:
-        return <EmbeddedList list={event} {...cardProps} />;
       case kinds.LongFormArticle:
         return <EmbeddedArticle article={event} {...cardProps} />;
       case kinds.BadgeDefinition:
         return <EmbeddedBadge badge={event} {...cardProps} />;
       case kinds.LiveChatMessage:
         return <EmbeddedStreamMessage message={event} {...cardProps} />;
-      case COMMUNITY_DEFINITION_KIND:
+      case kinds.CommunityDefinition:
         return <EmbeddedCommunity community={event} {...cardProps} />;
       case STEMSTR_TRACK_KIND:
         return <EmbeddedStemstrTrack track={event} {...cardProps} />;
@@ -102,6 +86,9 @@ export function EmbedEvent({
       case kinds.Zap:
         return <EmbeddedZapRecept zap={event} {...cardProps} />;
     }
+
+    if (SET_KINDS.includes(event.kind) || LIST_KINDS.includes(event.kind))
+      return <EmbeddedSetOrList list={event} {...cardProps} />;
 
     return <EmbeddedUnknown event={event} {...cardProps} />;
   };
@@ -126,8 +113,6 @@ export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult
       if (!event) return <LoadingNostrLink link={pointer} />;
       return <EmbedEvent event={event} {...props} />;
     }
-    case "nrelay":
-      return <RelayCard url={pointer.data} />;
   }
   return null;
 }

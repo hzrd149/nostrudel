@@ -9,7 +9,7 @@ export function useSharableProfileId(pubkey: string, relayCount = 2) {
   const mailboxes = useUserMailboxes(pubkey);
 
   return useMemo(() => {
-    const ranked = relayScoreboardService.getRankedRelays(mailboxes?.outbox.urls);
+    const ranked = relayScoreboardService.getRankedRelays(mailboxes?.outboxes);
     const onlyTwo = ranked.slice(0, relayCount);
     return onlyTwo.length > 0 ? nip19.nprofileEncode({ pubkey, relays: onlyTwo }) : nip19.npubEncode(pubkey);
   }, [mailboxes]);

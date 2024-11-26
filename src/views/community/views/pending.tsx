@@ -1,17 +1,13 @@
 import { useCallback, useState } from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/event";
-import {
-  COMMUNITY_APPROVAL_KIND,
-  buildApprovalMap,
-  getCommunityMods,
-  getCommunityRelays,
-} from "../../../helpers/nostr/communities";
-import useSubject from "../../../hooks/use-subject";
+import { buildApprovalMap, getCommunityMods, getCommunityRelays } from "../../../helpers/nostr/communities";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
@@ -40,7 +36,7 @@ function ModPendingPost({ event, community, approvals }: PendingProps) {
     setLoading(true);
     const relay = communityRelays[0];
     const draft: DraftNostrEvent = {
-      kind: COMMUNITY_APPROVAL_KIND,
+      kind: kinds.CommunityPostApproval,
       content: JSON.stringify(event),
       created_at: dayjs().unix(),
       tags: [
@@ -79,11 +75,13 @@ export default function CommunityPendingView() {
   const muteFilter = useUserMuteFilter();
   const { community, timeline } = useOutletContext<RouterContext>();
 
-  const events = useSubject(timeline.timeline);
+  const events = useObservable(timeline.timeline) ?? [];
 
   const mods = getCommunityMods(community);
   const approvals = buildApprovalMap(events, mods);
-  const pending = events.filter((e) => e.kind !== COMMUNITY_APPROVAL_KIND && !approvals.has(e.id) && !muteFilter(e));
+  const pending = events.filter(
+    (e) => e.kind !== kinds.CommunityPostApproval && !approvals.has(e.id) && !muteFilter(e),
+  );
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 

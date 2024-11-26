@@ -7,13 +7,13 @@ import GoalProgress from "../../goals/components/goal-progress";
 import GoalTopZappers from "../../goals/components/goal-top-zappers";
 import GoalZapButton from "../../goals/components/goal-zap-button";
 import useStreamGoal from "../../../hooks/use-stream-goal";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 export default function StreamGoal({ stream, ...props }: Omit<CardProps, "children"> & { stream: ParsedStream }) {
   const goal = useStreamGoal(stream);
 
   if (!goal) return null;
-  const address = relayHintService.getSharableEventAddress(goal);
+  const address = getSharableEventAddress(goal);
 
   return (
     <Card direction="column" gap="1" {...props}>

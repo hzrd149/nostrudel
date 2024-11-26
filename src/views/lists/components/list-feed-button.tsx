@@ -4,10 +4,9 @@ import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { PEOPLE_LIST_KIND } from "../../../helpers/nostr/lists";
 
 export default function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {
-  const shouldShowFeedButton = list.kind === PEOPLE_LIST_KIND || list.kind === kinds.Contacts;
+  const shouldShowFeedButton = list.kind === kinds.Followsets || list.kind === kinds.Contacts;
 
   if (!shouldShowFeedButton) return null;
 

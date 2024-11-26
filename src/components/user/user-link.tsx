@@ -2,21 +2,20 @@ import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import { getDisplayName } from "../../helpers/nostr/user-metadata";
-import useUserMetadata from "../../hooks/use-user-metadata";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
-import useSubject from "../../hooks/use-subject";
-import localSettings from "../../services/local-settings";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;
   showAt?: boolean;
   tab?: string;
+  relays?: string[];
 };
 
-export default function UserLink({ pubkey, showAt, tab, ...props }: UserLinkProps) {
-  const metadata = useUserMetadata(pubkey);
+export default function UserLink({ pubkey, showAt, tab, relays, ...props }: UserLinkProps) {
+  const metadata = useUserProfile(pubkey, relays);
   const account = useCurrentAccount();
   const { hideUsernames, removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);

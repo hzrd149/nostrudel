@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { COMMUNITY_DEFINITION_KIND, validateCommunity } from "../../helpers/nostr/communities";
+import { validateCommunity } from "../../helpers/nostr/communities";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
-import useSubject from "../../hooks/use-subject";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -19,7 +19,7 @@ export default function CommunityFindByNameView() {
 
   // if community name is a naddr, redirect
   const decoded = safeDecode(community);
-  if (decoded?.type === "naddr" && decoded.data.kind === COMMUNITY_DEFINITION_KIND) {
+  if (decoded?.type === "naddr" && decoded.data.kind === kinds.CommunityDefinition) {
     return <Navigate to={`/c/${decoded.data.identifier}/${decoded.data.pubkey}`} replace />;
   }
 
@@ -27,23 +27,19 @@ export default function CommunityFindByNameView() {
   const eventFilter = useCallback((event: NostrEvent) => {
     return validateCommunity(event);
   }, []);
-  const timeline = useTimelineLoader(
+  const { loader, timeline: communities } = useTimelineLoader(
     `${community}-find-communities`,
     readRelays,
-    community ? { kinds: [COMMUNITY_DEFINITION_KIND], "#d": [community] } : undefined,
+    community ? { kinds: [kinds.CommunityDefinition], "#d": [community] } : undefined,
   );
-
-  const communities = useSubject(timeline.timeline);
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <Heading>Select Community</Heading>
         <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
-          {communities.map((event) => (
-            <CommunityCard key={getEventUID(event)} community={event} />
-          ))}
+          {communities?.map((event) => <CommunityCard key={getEventUID(event)} community={event} />)}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

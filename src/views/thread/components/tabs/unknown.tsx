@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { Flex } from "@chakra-ui/react";
+import { ThreadItem } from "applesauce-core/queries";
 
-import { ThreadItem } from "../../../../helpers/thread";
 import { EmbedEvent } from "../../../../components/embed-event";
 
 export default function UnknownTab({ post, events }: { post: ThreadItem; events: NostrEvent[] }) {

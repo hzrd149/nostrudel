@@ -127,7 +127,7 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
       </Flex>
       {replyForm.isOpen && (
         <ReplyForm
-          item={{ event: torrent, refs: getThreadReferences(torrent), replies: [] }}
+          item={{ event: torrent, refs: getThreadReferences(torrent), replies: new Set() }}
           onCancel={replyForm.onClose}
           onSubmitted={replyForm.onClose}
           replyKind={TORRENT_COMMENT_KIND}

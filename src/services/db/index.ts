@@ -1,15 +1,15 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
 import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
-import { SchemaV1, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV8, SchemaV9 } from "./schema";
+import { SchemaV1, SchemaV10, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV9 } from "./schema";
 import { logger } from "../../helpers/debug";
 import { localDatabase } from "../local-relay";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 9;
-const db = await openDB<SchemaV9>(dbName, version, {
+const version = 10;
+const db = await openDB<SchemaV10>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -178,6 +178,11 @@ const db = await openDB<SchemaV9>(dbName, version, {
       const readStore = v9.createObjectStore("read", { keyPath: "key" });
       readStore.createIndex("ttl", "ttl");
     }
+
+    if (oldVersion < 10) {
+      const v9 = db as unknown as IDBPDatabase<SchemaV9>;
+      v9.deleteObjectStore("channelMetadata");
+    }
   },
 });
 
@@ -186,9 +191,6 @@ log("Open");
 export async function clearCacheData() {
   log("Clearing nostr-idb");
   await clearDB(localDatabase);
-
-  log("Clearing channelMetadata");
-  await db.clear("channelMetadata");
 
   log("Clearing userSearch");
   await db.clear("userSearch");

@@ -1,4 +1,4 @@
-import SerialPortSigner from "../signers/serial-port-signer";
+import { SerialPortSigner } from "applesauce-signer/signers/serial-port-signer";
 import { Account } from "./account";
 
 export default class SerialPortAccount extends Account {
@@ -14,5 +14,6 @@ export default class SerialPortAccount extends Account {
   constructor(pubkey: string) {
     super(pubkey);
     this.signer = new SerialPortSigner();
+    this.signer.pubkey = pubkey;
   }
 }

@@ -5,7 +5,6 @@ import { Link as RouterLink } from "react-router-dom";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useSubject from "../../../hooks/use-subject";
 import TimelineActionAndStatus from "../../timeline/timeline-action-and-status";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import Timestamp from "../../timestamp";
@@ -14,7 +13,7 @@ import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import UserName from "../../user/user-name";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import relayHintService from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/event-relay-hint";
 
 const kindColors: Record<number, FlexProps["bg"]> = {
   [kinds.ShortTextNote]: "blue.500",
@@ -73,12 +72,7 @@ function TimelineItem({ event }: { event: NostrEvent }) {
         );
       default:
         return (
-          <HoverLinkOverlay
-            as={RouterLink}
-            to={`/l/${relayHintService.getSharableEventAddress(event)}`}
-            noOfLines={1}
-            isTruncated
-          >
+          <HoverLinkOverlay as={RouterLink} to={`/l/${getSharableEventAddress(event)}`} noOfLines={1} isTruncated>
             {event.content}
           </HoverLinkOverlay>
         );
@@ -98,18 +92,17 @@ export default function GhostTimeline({ ...props }: Omit<FlexProps, "children">)
   const account = useCurrentAccount()!;
   const readRelays = useReadRelays();
 
-  const timeline = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, { authors: [account.pubkey] });
-  const events = useSubject(timeline.timeline);
+  const { loader, timeline: events } = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, {
+    authors: [account.pubkey],
+  });
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex direction="column" overflow="auto" {...props}>
-        {events.map((event) => (
-          <TimelineItem key={event.id} event={event} />
-        ))}
-        <TimelineActionAndStatus timeline={timeline} />
+        {events?.map((event) => <TimelineItem key={event.id} event={event} />)}
+        <TimelineActionAndStatus timeline={loader} />
       </Flex>
     </IntersectionObserverProvider>
   );

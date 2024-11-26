@@ -1,16 +1,17 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
+import { getZapSender } from "applesauce-core/helpers";
 
-import { readablizeSats } from "../../helpers/bolt11";
+import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
-import clientRelaysService from "../../services/client-relays";
 import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/event";
+import { useReadRelays } from "../../hooks/use-client-relays";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;
@@ -21,14 +22,15 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(getEventUID(event));
+  const zaps = useEventZaps(getEventUID(event)) ?? [];
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const hasZapped = !!account && zaps.some((zap) => zap.request.pubkey === account.pubkey);
+  const hasZapped = !!account && zaps.some((zap) => getZapSender(zap) === account.pubkey);
 
+  const readRelays = useReadRelays();
   const onZapped = () => {
     onClose();
-    eventZapsService.requestZaps(getEventUID(event), clientRelaysService.outbox, true);
+    eventZapsService.requestZaps(getEventUID(event), readRelays, true);
   };
 
   const total = totalZaps(zaps);
@@ -46,7 +48,7 @@ export default function NoteZapButton({ event, allowComment, showEventPreview, .
           onClick={onOpen}
           isDisabled={!canZap}
         >
-          {readablizeSats(total / 1000)}
+          {humanReadableSats(total / 1000)}
         </Button>
       ) : (
         <IconButton

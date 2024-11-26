@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user/user-avatar";
-import useSubject from "../../hooks/use-subject";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
 import Timestamp from "../../components/timestamp";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -66,7 +66,7 @@ function DirectMessagesPage() {
   const account = useCurrentAccount()!;
   const timeline = useDMTimeline();
 
-  const messages = useSubject(timeline.timeline);
+  const messages = useObservable(timeline.timeline) ?? [];
   const conversations = useMemo(() => {
     const conversations = groupIntoConversations(messages).map((c) => identifyConversation(c, account.pubkey));
     const filtered = conversations.filter((conversation) =>

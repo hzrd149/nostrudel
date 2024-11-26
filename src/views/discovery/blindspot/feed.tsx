@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Divider, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { Navigate } from "react-router-dom";
 import { kinds, NostrEvent } from "nostr-tools";
 
@@ -15,7 +15,6 @@ import KindSelectionProvider, { useKindSelectionContext } from "../../../provide
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
 import TimelineViewTypeButtons from "../../../components/timeline-page/timeline-view-type";
 import Telescope from "../../../components/icons/telescope";
-import UserAvatar from "../../../components/user/user-avatar";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import BackButton from "../../../components/router/back-button";
 import UserLink from "../../../components/user/user-link";
@@ -53,7 +52,7 @@ function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
   );
 
   const { kinds } = useKindSelectionContext();
-  const timeline = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     `blnidspot-${account.pubkey}-${pubkey}-${kinds.join(",")}`,
     readRelays,
     blindspot.length > 0 ? [{ authors: blindspot, kinds }] : undefined,
@@ -87,7 +86,7 @@ function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
         <TimelineViewTypeButtons />
       </Flex>
 
-      <TimelinePage timeline={timeline} />
+      <TimelinePage loader={loader} timeline={timeline} />
     </VerticalPageLayout>
   );
 }

@@ -16,7 +16,7 @@ export default function EmbeddedChannel({
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
   const readRelays = useReadRelays(additionalRelays);
-  const { metadata } = useChannelMetadata(channel.id, readRelays);
+  const metadata = useChannelMetadata(channel.id, readRelays);
 
   if (!channel || !metadata) return null;
 
