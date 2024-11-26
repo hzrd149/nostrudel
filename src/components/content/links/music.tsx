@@ -22,7 +22,7 @@ export function renderWavlakeUrl(match: URL) {
         frameBorder="0"
         title="Wavlake Embed"
         src={embedUrl.toString()}
-        style={{ width: "100%", height: 400, maxWidth: 600, ...setZIndex }}
+        style={{ width: "100%", height: 400, maxWidth: 600, borderRadius: 25, ...setZIndex }}
       ></iframe>
     </ExpandableEmbed>
   );
