@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ButtonProps, IconButton } from "@chakra-ui/react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { QuoteEventIcon } from "../icons";
@@ -11,8 +11,9 @@ export default function QuoteEventButton({
   "aria-label": ariaLabel,
   title = "Quote Note",
   ...props
-}: Omit<ButtonProps, "children" | "onClick"> & {
+}: Omit<IconButtonProps, "children" | "onClick" | "aria-label"> & {
   event: NostrEvent;
+  "aria-label"?: string;
 }) {
   const { openModal } = useContext(PostModalContext);
 
