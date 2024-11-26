@@ -92,25 +92,25 @@ importers:
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-channel:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-lists:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-net:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       applesauce-signer:
         specifier: next
-        version: 0.0.0-next-20241125223343(typescript@5.7.2)
+        version: 0.0.0-next-20241126184016(typescript@5.7.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -196,8 +196,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       nanoid:
-        specifier: ^5.0.8
-        version: 5.0.8
+        specifier: ^5.0.9
+        version: 5.0.9
       ngeohash:
         specifier: ^0.6.3
         version: 0.6.3
@@ -205,14 +205,14 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(typescript@5.7.2)
       nostr-tools:
-        specifier: ^2.10.3
-        version: 2.10.3(typescript@5.7.2)
+        specifier: ^2.10.4
+        version: 2.10.4(typescript@5.7.2)
       nostr-wasm:
         specifier: ^0.1.0
         version: 0.1.0
       prettier:
-        specifier: ^3.3.3
-        version: 3.3.3
+        specifier: ^3.4.1
+        version: 3.4.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -365,8 +365,8 @@ importers:
         specifier: ^0.8.7
         version: 0.8.7
       '@vitejs/plugin-react':
-        specifier: ^4.3.3
-        version: 4.3.3(vite@5.4.11(@types/node@20.17.6)(terser@5.36.0))
+        specifier: ^4.3.4
+        version: 4.3.4(vite@5.4.11(@types/node@20.17.6)(terser@5.36.0))
       camelcase:
         specifier: ^8.0.0
         version: 8.0.0
@@ -1838,11 +1838,11 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  '@vitejs/plugin-react@4.3.3':
-    resolution: {integrity: sha512-NooDe9GpHGqNns1i8XDERg0Vsg5SSYRhRxxyTGogUdkdNt47jal+fbuYi+Yfq6pzRCKXyoPcWisfxE6RIM3GKA==}
+  '@vitejs/plugin-react@4.3.4':
+    resolution: {integrity: sha512-SCCPBJtYLdE8PX/7ZQAs1QAZ8Jqwih+0VBLum1EGqmCCQal+MIUqLCzj3ZUy8ufbC0cAM4LRlSTm7IQJwWT4ug==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
-      vite: ^4.2.0 || ^5.0.0
+      vite: ^4.2.0 || ^5.0.0 || ^6.0.0
 
   '@webscopeio/react-textarea-autocomplete@4.9.2':
     resolution: {integrity: sha512-9l5lbyA709d5HHvI/COflSnblBJeYGxB2/0ghP3m3YViLzXRMzJwaXqnqz6oA96y7QdR3pQWYtVmkUKA0AUVAA==}
@@ -1894,26 +1894,26 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-channel@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-BwGMUkM/SsdPr6r1X9dkrGssaeWYN3WiQbkNMK8XFfS8Ed+rUDlJrSSB9Wpb5h1pkzU0I92BLZRj8Mn/Hnm16w==}
+  applesauce-channel@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-301NAcj4y8eyxURoZ4MkmuVK6oLPxbKKYivEPxF4zl6jWW+kKmaoBON6rGKBqRE+cnv0pMVGeeeTenttgpLPlw==}
 
-  applesauce-content@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-9ghNGOt0Io8wAYDyHAH1BODKBcDnmqvov7GoHgu3j1x7swi7/xe8sf0/39o0G7c0XJ/Vk6AYCclP1o3npHjq0g==}
+  applesauce-content@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-qdHBx6Oa2G+mUfCqeGHFEGLFnTi2RJlYtmTx20mvRTiKA/qneVB1StkSDyTjqtJUvKYBYiaJI2xRwU1yI0Bkmg==}
 
-  applesauce-core@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-M9IY6gzU+zRI81I3azQpjAi79qtXSygySHr8/zmYokQPS+njRTEj4fp9unyjftFef0XfH9Pqu0pmCWXUeWx+jw==}
+  applesauce-core@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-GYKfC4MElyF0Fp8Rajgj6mFZ/laX5ZS9S/xjQb1RVQF/h+vdFxnvQPwpzxQwZQrYgTzGxaBoezCgwZ+tR+I9mQ==}
 
-  applesauce-lists@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-qw6E+OwqS7N/lCxOph9T+Y7fLtAXpsXYitWhyCH6nzijLUoMoFtsiLKzRq2kEWoyT5TgmLMIfwg0lMh7L96Rtg==}
+  applesauce-lists@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-ftCklr8PELjDiKlQD1oR0E48ZJEKPsAXGlmblV66wIElSsokL2kUPiMNtIRn7LH/O3r1n7VhnZjAUQHjGCd+0A==}
 
-  applesauce-net@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-76beuNvoxivtUx0bWYgaA+vGIsFoPBQteDniduEpbXHK5Q4EhhXH5pLr5wwjQwvuFRei7tH1zszbaKU2sbu0HQ==}
+  applesauce-net@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-+cWLrPkb1heQknN+ikRB6wcXdHp4awAg8LNOhkgxrmfYsvVO8EhNI1SrohJ3oSeaS3SH0ZnusLesgpGzKsaxTQ==}
 
-  applesauce-react@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-/1DvbNgIxh+yijBNJyYoQfa/JOpkFK26DYlXy0jbinLa9cXFPUDAnzBpWURjhjnizHkjG4RkD6IH6nGuphBtCA==}
+  applesauce-react@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-K1LynqGfEox4rAKW/R3q1fc1HDBgZgfyf0WJ1gHB6iFzFW8t8MKGXvAMFZbTTnrrc6OUHNfdmYbqRLbuxnvWxg==}
 
-  applesauce-signer@0.0.0-next-20241125223343:
-    resolution: {integrity: sha512-3a32WD2cByllZm0E9FeH6gmQ2qwcDxJoxoMpSwUkopyKP1B2VwO47QNifbme6Mj+jm83TfJfR7VWETyGrj7vMQ==}
+  applesauce-signer@0.0.0-next-20241126184016:
+    resolution: {integrity: sha512-3vMzf2inxUuHFq1PHmnhtLFRVW2b+/yi0MirCPCj6sUgeL/98E8e0TnZLSBg+wHiFFoO2l0ZnS52KhwYra9Ktg==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -2429,8 +2429,8 @@ packages:
     resolution: {integrity: sha512-3T8uNMC3OQTHkFUsFq8r/BwAXLHvU/9O9mE0fBc/MY5iq/8H7ncvO947LmYA6ldWw9Uh8Yhf25zu6n7nML5QWQ==}
     engines: {node: '>= 0.4'}
 
-  es-to-primitive@1.2.1:
-    resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
+  es-to-primitive@1.3.0:
+    resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
     engines: {node: '>= 0.4'}
 
   esbuild@0.21.5:
@@ -2660,6 +2660,9 @@ packages:
   has-tostringtag@1.0.2:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
     engines: {node: '>= 0.4'}
+
+  hash-sum@2.0.0:
+    resolution: {integrity: sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==}
 
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
@@ -3255,13 +3258,13 @@ packages:
       react: '*'
       react-dom: '*'
 
-  nanoid@3.3.7:
-    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
+  nanoid@3.3.8:
+    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.0.8:
-    resolution: {integrity: sha512-TcJPw+9RV9dibz1hHUzlLVy8N4X9TnwirAjrU08Juo6BNKggzVfP2ZJ/3ZUSq15Xl5i85i+Z89XBO90pB2PghQ==}
+  nanoid@5.0.9:
+    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -3314,8 +3317,8 @@ packages:
       typescript:
         optional: true
 
-  nostr-tools@2.10.3:
-    resolution: {integrity: sha512-XL+eX/kyXNoCdtgEFFT26YlGaMq/eUMaxlGWVyR8lqdDvSa9m8rrHRUiR8IYZWwq5B0534E8VXbiSuoUgGGIDw==}
+  nostr-tools@2.10.4:
+    resolution: {integrity: sha512-biU7sk+jxHgVASfobg2T5ttxOGGSt69wEVBC51sHHOEaKAAdzHBLV/I2l9Rf61UzClhliZwNouYhqIso4a3HYg==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -3460,8 +3463,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.3.3:
-    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+  prettier@3.4.1:
+    resolution: {integrity: sha512-G+YdqtITVZmOJje6QkXQWzl3fSfMxFwm1tjTyo9exhkmWSqC4Yhd1+lug++IlR2mvRVAxEDDWYkQdeSztajqgg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -6271,7 +6274,7 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.3.3(vite@5.4.11(@types/node@20.17.6)(terser@5.36.0))':
+  '@vitejs/plugin-react@4.3.4(vite@5.4.11(@types/node@20.17.6)(terser@5.36.0))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.0)
@@ -6328,24 +6331,24 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-channel@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-channel@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
+      nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-content@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
       mdast-util-find-and-replace: 3.0.1
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nostr-tools: 2.10.4(typescript@5.7.2)
       remark: 15.0.1
       remark-parse: 11.0.0
       unified: 11.0.5
@@ -6354,66 +6357,67 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-core@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
       '@scure/base': 1.2.1
       debug: 4.3.7
-      json-stringify-deterministic: 1.0.12
+      fast-deep-equal: 3.1.3
+      hash-sum: 2.0.0
       light-bolt11-decoder: 3.2.0
-      nanoid: 5.0.8
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nanoid: 5.0.9
+      nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-lists@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-lists@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
       debug: 4.3.7
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-net@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-net@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
-      nanoid: 5.0.8
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
+      nanoid: 5.0.9
+      nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
       zen-push: 0.3.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-react@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20241125223343(typescript@5.7.2)
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      applesauce-content: 0.0.0-next-20241126184016(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
+      nostr-tools: 2.10.4(typescript@5.7.2)
       react: 18.3.1
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-signer@0.0.0-next-20241125223343(typescript@5.7.2):
+  applesauce-signer@0.0.0-next-20241126184016(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241125223343(typescript@5.7.2)
-      applesauce-net: 0.0.0-next-20241125223343(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241126184016(typescript@5.7.2)
+      applesauce-net: 0.0.0-next-20241126184016(typescript@5.7.2)
       debug: 4.3.7
-      nanoid: 5.0.8
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nanoid: 5.0.9
+      nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -6519,8 +6523,8 @@ snapshots:
       blossom-client-sdk: 0.7.0
       eventemitter3: 5.0.1
       mime: 4.0.4
-      nanoid: 5.0.8
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nanoid: 5.0.9
+      nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
       - encoding
       - typescript
@@ -6991,7 +6995,7 @@ snapshots:
       es-errors: 1.3.0
       es-object-atoms: 1.0.0
       es-set-tostringtag: 2.0.3
-      es-to-primitive: 1.2.1
+      es-to-primitive: 1.3.0
       function.prototype.name: 1.1.6
       get-intrinsic: 1.2.4
       get-symbol-description: 1.0.2
@@ -7043,7 +7047,7 @@ snapshots:
       has-tostringtag: 1.0.2
       hasown: 2.0.2
 
-  es-to-primitive@1.2.1:
+  es-to-primitive@1.3.0:
     dependencies:
       is-callable: 1.2.7
       is-date-object: 1.0.5
@@ -7301,6 +7305,8 @@ snapshots:
   has-tostringtag@1.0.2:
     dependencies:
       has-symbols: 1.0.3
+
+  hash-sum@2.0.0: {}
 
   hasown@2.0.2:
     dependencies:
@@ -8100,9 +8106,9 @@ snapshots:
       stacktrace-js: 2.0.2
       stylis: 4.3.4
 
-  nanoid@3.3.7: {}
+  nanoid@3.3.8: {}
 
-  nanoid@5.0.8: {}
+  nanoid@5.0.9: {}
 
   nearley@2.20.1:
     dependencies:
@@ -8141,7 +8147,7 @@ snapshots:
     dependencies:
       debug: 4.3.7
       idb: 8.0.0
-      nostr-tools: 2.10.3(typescript@5.7.2)
+      nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -8157,7 +8163,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.7.2
 
-  nostr-tools@2.10.3(typescript@5.7.2):
+  nostr-tools@2.10.4(typescript@5.7.2):
     dependencies:
       '@noble/ciphers': 0.5.3
       '@noble/curves': 1.2.0
@@ -8292,7 +8298,7 @@ snapshots:
 
   postcss@8.4.49:
     dependencies:
-      nanoid: 3.3.7
+      nanoid: 3.3.8
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -8300,7 +8306,7 @@ snapshots:
 
   prettier@2.8.8: {}
 
-  prettier@3.3.3: {}
+  prettier@3.4.1: {}
 
   pretty-bytes@5.6.0: {}
 

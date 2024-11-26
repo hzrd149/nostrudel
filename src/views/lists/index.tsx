@@ -75,7 +75,7 @@ function ListsHomePage() {
             Bookmark lists
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-            {genericSets.map((event) => (
+            {bookmarkSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>

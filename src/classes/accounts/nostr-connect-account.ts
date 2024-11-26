@@ -1,8 +1,8 @@
 import { NostrConnectSigner, SimpleSigner } from "applesauce-signer/signers";
+import { hexToBytes } from "@noble/hashes/utils";
 
 import { DEFAULT_NOSTR_CONNECT_RELAYS } from "../../const";
 import { Account } from "./account";
-import { hexToBytes } from "@noble/hashes/utils";
 import relayPoolService from "../../services/relay-pool";
 
 function createSigner(pubkey: string, relays: string[], secretKey?: string, provider?: string) {

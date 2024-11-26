@@ -5,6 +5,7 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
 import { BehaviorSubject, Observable, map } from "rxjs";
 import { isFilterEqual } from "applesauce-core/helpers";
+import { shareLatestValue } from "applesauce-core/observable";
 import { MultiSubscription } from "applesauce-net/subscription";
 
 import { logger } from "../helpers/debug";
@@ -61,11 +62,11 @@ export default class TimelineLoader {
   }
 
   private updateTimeline() {
-    this.timeline = queryStore.timeline(this.filters);
+    const timeline = queryStore.timeline(this.filters);
 
     if (this.eventFilter) {
       // add filter
-      this.timeline = this.timeline.pipe(
+      this.timeline = timeline.pipe(
         map((events) =>
           events.filter((e) => {
             try {
@@ -74,7 +75,10 @@ export default class TimelineLoader {
             return false;
           }),
         ),
+        shareLatestValue(),
       );
+    } else {
+      this.timeline = timeline.pipe(shareLatestValue());
     }
   }
 
