@@ -22,6 +22,7 @@ import ShieldOff from "../../components/icons/shield-off";
 import MessageQuestionSquare from "../../components/icons/message-question-square";
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
+import Users03 from "../../components/icons/users-03";
 
 export const internalApps: App[] = [
   {
@@ -121,6 +122,13 @@ export const internalTools: App[] = [
     icon: Edit04,
     id: "corrections",
     to: "/tools/corrections ",
+  },
+  {
+    title: "noStrudel Users",
+    description: "Discover other users using noStrudel",
+    icon: Users03,
+    id: "nostrudel-users",
+    to: "/tools/nostrudel-users",
   },
 ];
 

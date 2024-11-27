@@ -3,10 +3,9 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 
-import { AppSettings, defaultSettings } from "../helpers/app-settings";
+import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, defaultSettings } from "../helpers/app-settings";
 import useCurrentAccount from "./use-current-account";
 import accountService from "../services/account";
-import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../services/user-app-settings";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import AppSettingsQuery from "../queries/app-settings";
 import useReplaceableEvent from "./use-replaceable-event";

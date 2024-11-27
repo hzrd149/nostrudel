@@ -11,12 +11,12 @@ import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
 import replaceableEventsService from "./replaceable-events";
-import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "./user-app-settings";
 import { eventStore, queryStore } from "./event-store";
 import { Account } from "../classes/accounts/account";
 import { MultiSubscription } from "applesauce-net/subscription";
 import relayPoolService from "./relay-pool";
 import { localRelay } from "./local-relay";
+import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 
 const log = logger.extend("UserEventSync");
 function downloadEvents(account: Account) {

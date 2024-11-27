@@ -119,6 +119,7 @@ const DMTimelineView = lazy(() => import("./views/tools/dm-timeline"));
 const TransformNoteView = lazy(() => import("./views/tools/transform-note"));
 const SatelliteCDNView = lazy(() => import("./views/tools/satellite-cdn"));
 const CorrectionsFeedView = lazy(() => import("./views/tools/corrections"));
+const NoStrudelUsersView = lazy(() => import("./views/tools/nostrudel-users/index"));
 
 const UserStreamsTab = lazy(() => import("./views/user/streams"));
 const StreamsView = lazy(() => import("./views/streams"));
@@ -413,6 +414,7 @@ const router = createHashRouter([
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
           { path: "corrections", element: <CorrectionsFeedView /> },
+          { path: "nostrudel-users", element: <NoStrudelUsersView /> },
         ],
       },
       {

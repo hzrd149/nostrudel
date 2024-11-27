@@ -1,6 +1,7 @@
 import { ColorModeWithSystem } from "@chakra-ui/react";
-import { NostrEvent } from "../types/nostr-event";
-import { safeJson } from "./parse";
+
+export const APP_SETTINGS_KIND = 30078;
+export const APP_SETTING_IDENTIFIER = "nostrudel-settings";
 
 export type AppSettingsV0 = {
   version: 0;
@@ -88,19 +89,3 @@ export const defaultSettings: AppSettings = {
   redditRedirect: undefined,
   youtubeRedirect: undefined,
 };
-
-export function upgradeSettings(settings: { version: number }): AppSettings | null {
-  return { ...defaultSettings, ...settings, version: 10 };
-}
-
-export function parseAppSettings(event: NostrEvent): AppSettings {
-  const json = safeJson(event.content, {});
-  const upgraded = upgradeSettings(json);
-
-  return upgraded
-    ? {
-        ...defaultSettings,
-        ...upgraded,
-      }
-    : defaultSettings;
-}

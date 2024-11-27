@@ -35,32 +35,30 @@ import Feed from "./components/feed";
 import { AddressPointer } from "nostr-tools/nip19";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import DVMParams from "./components/dvm-params";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { getHumanReadableCoordinate } from "../../../services/replaceable-events";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
-  const [since] = useState(() => dayjs().subtract(1, "hour").unix());
+  const [since] = useState(() => dayjs().subtract(1, "day").unix());
   const publish = usePublishEvent();
   const navigate = useNavigate();
   const account = useCurrentAccount()!;
   const debugModal = useDisclosure();
 
-  const dvmRelays = useUserMailboxes(pointer.pubkey)?.outboxes;
+  const dvmRelays = useUserOutbox(pointer.pubkey);
   const readRelays = useReadRelays(dvmRelays);
-  const { loader, timeline: events } = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     `${getHumanReadableCoordinate(pointer.kind, pointer.pubkey, pointer.identifier)}-jobs`,
     readRelays,
-    [
-      {
-        authors: [account.pubkey, pointer.pubkey],
-        "#p": [account.pubkey, pointer.pubkey],
-        kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND, DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],
-        since,
-      },
-    ],
+    {
+      authors: [account.pubkey, pointer.pubkey],
+      "#p": [account.pubkey, pointer.pubkey],
+      kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND, DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],
+      since,
+    },
   );
-  const jobs = groupEventsIntoJobs(events);
+  const jobs = groupEventsIntoJobs(timeline);
   const pages = chainJobs(Array.from(Object.values(jobs)));
   const jobChains = flattenJobChain(pages);
 
@@ -87,7 +85,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
 
   useEffect(() => {
     setRequesting(false);
-  }, [events.length]);
+  }, [timeline.length]);
 
   return (
     <VerticalPageLayout>

@@ -5,7 +5,7 @@ import { AddressPointer } from "nostr-tools/nip19";
 
 import { NostrEvent } from "../../../../types/nostr-event";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
-import { DVMAvatarLink } from "./dvm-avatar";
+import { DVMAvatar } from "./dvm-avatar";
 import { getEventAddressPointer } from "../../../../helpers/nostr/event";
 import { DVMName } from "./dvm-name";
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
@@ -26,7 +26,7 @@ export default function DVMCard({
     <>
       <Card as={LinkBox} display="block" p="4" ref={ref} {...props}>
         <DebugEventButton size="sm" float="right" zIndex={1} event={appData} />
-        <DVMAvatarLink pointer={pointer} w="24" float="left" mr="4" mb="2" />
+        <DVMAvatar pointer={pointer} w="24" float="left" mr="4" mb="2" />
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={to} onClick={onClick}>
             <DVMName pointer={pointer} />
