@@ -199,7 +199,7 @@ export function parseCoordinate(a: string, requireD = false, silent = true): Cus
 }
 
 export function parseHardcodedNoteContent(event: NostrEvent) {
-  const json = safeJson(event.content, null);
+  const json = safeJson<NostrEvent>(event.content);
   if (!json) return null;
 
   // ensure the note has tags
