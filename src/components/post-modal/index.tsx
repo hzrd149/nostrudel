@@ -54,7 +54,7 @@ import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
 import { EventSplit } from "../../helpers/nostr/zaps";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
-import { useTextAreaUploadFileWithForm } from "../../hooks/use-textarea-upload-file";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
 import MinePOW from "../pow/mine-pow";
 import useAppSettings from "../../hooks/use-app-settings";
 import { ErrorBoundary } from "../error-boundary";
@@ -62,6 +62,8 @@ import { useFinalizeDraft, usePublishEvent } from "../../providers/global/publis
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
 import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
+import InsertGifButton from "../gif/insert-gif-button";
+import InsertImageButton from "./insert-image-button";
 
 type FormValues = {
   subject: string;
@@ -162,7 +164,8 @@ export default function PostModal({
   const imageUploadRef = useRef<HTMLInputElement | null>(null);
 
   const textAreaRef = useRef<RefType | null>(null);
-  const { onPaste, onFileInputChange, uploading } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
+  const { onPaste } = useTextAreaUploadFile(insertText);
 
   const publishPost = async (unsigned?: UnsignedEvent) => {
     unsigned = unsigned || draft || (await updateDraft());
@@ -240,19 +243,8 @@ export default function PostModal({
           )}
           <Flex gap="2" alignItems="center" justifyContent="flex-end">
             <Flex mr="auto" gap="2">
-              <VisuallyHiddenInput
-                type="file"
-                accept="image/*,audio/*,video/*"
-                ref={imageUploadRef}
-                onChange={onFileInputChange}
-              />
-              <IconButton
-                icon={<UploadImageIcon boxSize={6} />}
-                aria-label="Upload Image"
-                title="Upload Image"
-                onClick={() => imageUploadRef.current?.click()}
-                isLoading={uploading}
-              />
+              <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+              <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
               <Button
                 variant="link"
                 rightIcon={moreOptions.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}

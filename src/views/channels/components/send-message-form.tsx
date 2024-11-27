@@ -1,16 +1,18 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 
-import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { createEmojiTags, ensureNotifyPubkeys, getPubkeysMentionedInContent } from "../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
+import InsertImageButton from "../../../components/post-modal/insert-image-button";
 
 export default function ChannelMessageForm({
   channel,
@@ -31,7 +33,8 @@ export default function ChannelMessageForm({
 
   const componentRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(componentRef, getValues, setValue);
+  const insertText = useTextAreaInsertTextWithForm(componentRef, getValues, setValue);
+  const { onPaste } = useTextAreaUploadFile(insertText);
 
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
@@ -79,7 +82,13 @@ export default function ChannelMessageForm({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
             }}
           />
-          <Button type="submit">Send</Button>
+          <Flex gap="2" direction="column">
+            <Button type="submit">Send</Button>
+            <ButtonGroup size="sm">
+              <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+              <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+            </ButtonGroup>
+          </Flex>
         </>
       )}
     </Flex>

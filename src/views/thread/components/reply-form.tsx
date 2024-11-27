@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { Box, Button, ButtonGroup, Flex, IconButton, VisuallyHiddenInput } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 import { kinds } from "nostr-tools";
@@ -20,12 +20,13 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { UploadImageIcon } from "../../../components/icons";
 import { unique } from "../../../helpers/array";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import useCacheForm from "../../../hooks/use-cache-form";
-import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
+import InsertImageButton from "../../../components/post-modal/insert-image-button";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -55,8 +56,8 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   watch("content");
 
   const textAreaRef = useRef<RefType | null>(null);
-  const imageUploadRef = useRef<HTMLInputElement | null>(null);
-  const { onPaste, onFileInputChange, uploading } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
+  const { onPaste } = useTextAreaUploadFile(insertText);
 
   const draft = useMemo(() => {
     let updated = finalizeNote({ kind: replyKind, content: getValues().content, created_at: dayjs().unix(), tags: [] });
@@ -93,15 +94,8 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         }}
       />
       <Flex gap="2" alignItems="center">
-        <VisuallyHiddenInput type="file" accept="image/*" ref={imageUploadRef} onChange={onFileInputChange} />
-        <IconButton
-          icon={<UploadImageIcon />}
-          aria-label="Upload Image"
-          title="Upload Image"
-          onClick={() => imageUploadRef.current?.click()}
-          isLoading={uploading}
-          size="sm"
-        />
+        <InsertImageButton onUploaded={insertText} size="sm" aria-label="Upload image" />
+        <InsertGifButton onSelectURL={insertText} aria-label="Add gif" size="sm" />
         <UserAvatarStack label="Notify" pubkeys={notifyPubkeys} />
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}

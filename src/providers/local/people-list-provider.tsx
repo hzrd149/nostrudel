@@ -7,7 +7,7 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { NostrEvent } from "../../types/nostr-event";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 
-export type ListId = "following" | "global" | string;
+export type ListId = "following" | "global" | "self" | string;
 export type Person = { pubkey: string; relay?: string };
 
 export type PeopleListContextType = {
@@ -34,9 +34,38 @@ function useListCoordinate(listId: ListId) {
 
   return useMemo(() => {
     if (listId === "following") return account ? `${kinds.Contacts}:${account.pubkey}` : undefined;
+    if (listId === "self") return undefined;
     if (listId === "global") return undefined;
     return listId;
   }, [listId, account]);
+}
+
+export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) => void): PeopleListContextType {
+  const account = useCurrentAccount();
+
+  const listId = useListCoordinate(selected);
+  const listEvent = useReplaceableEvent(listId, [], { alwaysRequest: true });
+
+  const people = listEvent && getPubkeysFromList(listEvent);
+
+  const filter = useMemo<Filter | undefined>(() => {
+    if (selected === "global") return {};
+    if (selected === "self") {
+      if (account) return { authors: [account.pubkey] };
+      else return {};
+    }
+    if (!people) return undefined;
+    return { authors: people.map((p) => p.pubkey) };
+  }, [people, selected, account]);
+
+  return {
+    people,
+    selected,
+    listId,
+    listEvent,
+    setSelected: onChange,
+    filter,
+  };
 }
 
 export type PeopleListProviderProps = PropsWithChildren & {
@@ -54,28 +83,7 @@ export default function PeopleListProvider({ children, initList }: PeopleListPro
     [peopleParam.setValue],
   );
 
-  const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId, [], { alwaysRequest: true });
-
-  const people = listEvent && getPubkeysFromList(listEvent);
-
-  const filter = useMemo<Filter | undefined>(() => {
-    if (selected === "global") return {};
-    if (!people) return undefined;
-    return { authors: people.map((p) => p.pubkey) };
-  }, [people, selected]);
-
-  const context = useMemo(
-    () => ({
-      people,
-      selected,
-      listId,
-      listEvent,
-      setSelected,
-      filter,
-    }),
-    [selected, setSelected, people, listEvent],
-  );
+  const context = usePeopleListSelect(selected, setSelected);
 
   return <PeopleListContext.Provider value={context}>{children}</PeopleListContext.Provider>;
 }

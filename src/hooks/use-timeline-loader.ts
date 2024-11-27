@@ -1,11 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { usePrevious, useUnmount } from "react-use";
+import { AbstractRelay } from "nostr-tools/abstract-relay";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { Queries } from "applesauce-core";
 import { Filter } from "nostr-tools";
 
 import timelineCacheService from "../services/timeline-cache";
 import { EventFilter } from "../classes/timeline-loader";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { Queries } from "applesauce-core";
 
 type Options = {
   eventFilter?: EventFilter;
@@ -14,7 +15,7 @@ type Options = {
 
 export default function useTimelineLoader(
   key: string,
-  relays: Iterable<string>,
+  relays: Iterable<string | AbstractRelay>,
   filters: Filter | Filter[] | undefined,
   opts?: Options,
 ) {
@@ -27,7 +28,11 @@ export default function useTimelineLoader(
   useEffect(() => {
     loader.setRelays(relays);
     loader.triggerChunkLoad();
-  }, [Array.from(relays).join("|")]);
+  }, [
+    Array.from(relays)
+      .map((t) => (typeof t === "string" ? t : t.url))
+      .join("|"),
+  ]);
 
   // update filters
   useEffect(() => {

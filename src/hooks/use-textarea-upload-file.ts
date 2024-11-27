@@ -10,55 +10,42 @@ import useUsersMediaServers from "./use-user-media-servers";
 import { simpleMultiServerUpload } from "../helpers/media-upload/blossom";
 import useCurrentAccount from "./use-current-account";
 import { stripSensitiveMetadataOnFile } from "../helpers/image";
+import insertTextIntoMagicTextarea from "../helpers/magic-textarea";
 
 export function useTextAreaUploadFileWithForm(
   ref: MutableRefObject<RefType | null>,
   getValues: UseFormGetValues<any>,
   setValue: UseFormSetValue<any>,
 ) {
-  const getText = useCallback(() => getValues().content, [getValues]);
-  const setText = useCallback(
-    (text: string) => setValue("content", text, { shouldDirty: true, shouldTouch: true }),
-    [setValue],
-  );
-  return useTextAreaUploadFile(ref, getText, setText);
+  const insertText = useTextAreaInsertTextWithForm(ref, getValues, setValue);
+  return useTextAreaUploadFile(insertText);
 }
 
-export default function useTextAreaUploadFile(
+export function useTextAreaInsertTextWithForm(
   ref: MutableRefObject<RefType | null>,
-  getText: () => string,
-  setText: (text: string) => void,
+  getValues: UseFormGetValues<any>,
+  setValue: UseFormSetValue<any>,
+  field = "content",
 ) {
+  const getText = useCallback(() => getValues()[field], [getValues, field]);
+  const setText = useCallback(
+    (text: string) => setValue(field, text, { shouldDirty: true, shouldTouch: true }),
+    [setValue, field],
+  );
+  return useCallback(
+    (text: string) => {
+      if (ref.current) insertTextIntoMagicTextarea(ref.current, getText, setText, text);
+    },
+    [setText, getText],
+  );
+}
+
+export default function useTextAreaUploadFile(insertText: (url: string) => void) {
   const toast = useToast();
   const account = useCurrentAccount();
   const { mediaUploadService } = useAppSettings();
   const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
   const { requestSignature } = useSigningContext();
-
-  const insertURL = useCallback(
-    (url: string) => {
-      const content = getText();
-      const position = ref.current?.getCaretPosition();
-      if (position !== undefined) {
-        let inject = url;
-
-        // add a space before
-        if (position >= 1 && content.slice(position - 1, position) !== " ") inject = " " + inject;
-        // add a space after
-        if (position < content.length && content.slice(position, position + 1) !== " ") inject = inject + " ";
-
-        setText(content.slice(0, position) + inject + content.slice(position));
-      } else {
-        let inject = url;
-
-        // add a space before if there isn't one
-        if (content.slice(content.length - 1) !== " ") inject = " " + inject;
-
-        setText(content + inject + " ");
-      }
-    },
-    [setText, getText],
-  );
 
   const [uploading, setUploading] = useState(false);
   const uploadFile = useCallback(
@@ -69,21 +56,21 @@ export default function useTextAreaUploadFile(
         if (mediaUploadService === "nostr.build") {
           const response = await nostrBuildUploadImage(safeFile, requestSignature);
           const imageUrl = response.url;
-          insertURL(imageUrl);
+          insertText(imageUrl);
         } else if (mediaUploadService === "blossom" && mediaServers.length) {
           const blob = await simpleMultiServerUpload(
             mediaServers.map((s) => s.toString()),
             safeFile,
             requestSignature,
           );
-          insertURL(blob.url);
+          insertText(blob.url);
         }
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
       setUploading(false);
     },
-    [insertURL, toast, setUploading, mediaServers, mediaUploadService],
+    [insertText, toast, setUploading, mediaServers, mediaUploadService],
   );
 
   const onFileInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(

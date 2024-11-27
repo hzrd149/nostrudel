@@ -6,12 +6,13 @@ import { kinds } from "nostr-tools";
 import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import { useTextAreaUploadFileWithForm } from "../../../hooks/use-textarea-upload-file";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCacheForm from "../../../hooks/use-cache-form";
 import decryptionCacheService from "../../../services/decryption-cache";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
 
 export default function SendMessageForm({
   pubkey,
@@ -36,7 +37,8 @@ export default function SendMessageForm({
 
   const autocompleteRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(autocompleteRef, getValues, setValue);
+  const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
+  const { onPaste } = useTextAreaUploadFile(insertText);
 
   const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
@@ -96,7 +98,10 @@ export default function SendMessageForm({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
             }}
           />
-          <Button type="submit">Send</Button>
+          <Flex gap="2" direction="column">
+            <Button type="submit">Send</Button>
+            <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+          </Flex>
         </>
       )}
     </Flex>

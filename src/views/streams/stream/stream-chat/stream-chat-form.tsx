@@ -12,7 +12,8 @@ import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay-context";
-import { useTextAreaUploadFileWithForm } from "../../../../hooks/use-textarea-upload-file";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
+import InsertGifButton from "../../../../components/gif/insert-gif-button";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
   const toast = useToast();
@@ -35,7 +36,8 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
   });
 
   const textAreaRef = useRef<RefType | null>(null);
-  const { onPaste } = useTextAreaUploadFileWithForm(textAreaRef, getValues, setValue);
+  const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
+  const { onPaste } = useTextAreaUploadFile(insertText);
 
   watch("content");
 
@@ -43,6 +45,7 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
     <>
       <Box borderRadius="md" flexShrink={0} display="flex" gap="2" px="2" pb="2">
         <Flex as="form" onSubmit={sendMessage} gap="2" flex={1}>
+          <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
           <MagicInput
             instanceRef={(inst) => (textAreaRef.current = inst)}
             placeholder="Message"

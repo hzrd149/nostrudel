@@ -8,7 +8,5 @@ export default function useSearchRelays() {
   const searchRelayList = useUserSearchRelayList(account?.pubkey);
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : DEFAULT_SEARCH_RELAYS;
 
-  // TODO: maybe add localRelay into the list if it supports NIP-50
-
   return searchRelays;
 }
