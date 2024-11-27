@@ -4,7 +4,7 @@ import { Account } from "./account";
 export default class AmberAccount extends Account {
   readonly type = "amber";
 
-  protected declare _signer?: AmberClipboardSigner | undefined;
+  declare protected _signer?: AmberClipboardSigner | undefined;
   public get signer(): AmberClipboardSigner | undefined {
     return this._signer;
   }

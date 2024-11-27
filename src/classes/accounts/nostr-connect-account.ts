@@ -16,7 +16,7 @@ function createSigner(pubkey: string, relays: string[], secretKey?: string, prov
 export default class NostrConnectAccount extends Account {
   readonly type = "nostr-connect";
 
-  protected declare _signer: NostrConnectSigner;
+  declare protected _signer: NostrConnectSigner;
   public get signer(): NostrConnectSigner {
     return this._signer;
   }

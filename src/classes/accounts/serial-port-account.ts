@@ -3,7 +3,7 @@ import { Account } from "./account";
 
 export default class SerialPortAccount extends Account {
   readonly type = "serial";
-  protected declare _signer: SerialPortSigner;
+  declare protected _signer: SerialPortSigner;
   public get signer(): SerialPortSigner {
     return this._signer;
   }

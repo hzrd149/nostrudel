@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   Button,
+  Code,
   Flex,
+  Heading,
   IconButton,
   Modal,
   ModalBody,
@@ -9,6 +11,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
@@ -38,6 +48,7 @@ import DVMParams from "./components/dvm-params";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { getHumanReadableCoordinate } from "../../../services/replaceable-events";
+import Timestamp from "../../../components/timestamp";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "day").unix());
@@ -58,6 +69,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
       since,
     },
   );
+
   const jobs = groupEventsIntoJobs(timeline);
   const pages = chainJobs(Array.from(Object.values(jobs)));
   const jobChains = flattenJobChain(pages);
@@ -103,12 +115,56 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
       {jobChains[0] && <Feed chain={jobChains[0]} pointer={pointer} />}
 
       {debugModal.isOpen && (
-        <Modal isOpen onClose={debugModal.onClose} size="4xl">
+        <Modal isOpen onClose={debugModal.onClose} size="full">
           <ModalOverlay />
           <ModalContent>
             <ModalHeader p="4">Jobs</ModalHeader>
             <ModalCloseButton />
             <ModalBody p="0">
+              <Heading size="sm" my="2" mx="4">
+                Events
+              </Heading>
+              <TableContainer>
+                <Table size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>Kind</Th>
+                      <Th>Time</Th>
+                      <Th>Tags</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {timeline.map((event) => (
+                      <>
+                        <Tr key={event.id}>
+                          <Td fontWeight="bold">{event.kind}</Td>
+                          <Td>
+                            <Timestamp timestamp={event.created_at} />
+                          </Td>
+                          <Td>
+                            <Text maxW="80vw" isTruncated whiteSpace="pre">
+                              {event.tags.map((t) => t.join(", ")).join("\n")}
+                            </Text>
+                          </Td>
+                        </Tr>
+                        {event.content && (
+                          <Tr>
+                            <Td colSpan={3} p="0">
+                              <Code maxW="100vw" key={event.id + "-content"} isTruncated whiteSpace="pre" p="2">
+                                {event.content}
+                              </Code>
+                            </Td>
+                          </Tr>
+                        )}
+                      </>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+
+              <Heading size="sm" my="2" mx="4">
+                Chains
+              </Heading>
               <DebugChains chains={jobChains} />
             </ModalBody>
           </ModalContent>

@@ -4,7 +4,7 @@ import { Account } from "./account";
 export default class PasswordAccount extends Account {
   readonly type = "local";
 
-  protected declare _signer: PasswordSigner;
+  declare protected _signer: PasswordSigner;
   public get signer(): PasswordSigner {
     return this._signer;
   }

@@ -5,7 +5,7 @@ import { Account } from "./account";
 export default class NsecAccount extends Account {
   readonly type = "nsec";
 
-  protected declare _signer?: SimpleSigner | undefined;
+  declare protected _signer?: SimpleSigner | undefined;
   public get signer(): SimpleSigner | undefined {
     return this._signer;
   }
