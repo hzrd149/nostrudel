@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Card, Flex, Heading, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { getEventUID } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -15,6 +16,8 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import Telescope from "../../components/icons/telescope";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { RelayIcon } from "../../components/icons";
+import useFavoriteFeeds from "../../hooks/use-favorite-feeds";
+import { isEventInList } from "../../helpers/nostr/lists";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();
@@ -32,8 +35,23 @@ function DVMFeeds() {
   );
   const callback = useTimelineCurserIntersectionCallback(loader);
 
+  const { feeds: favoriteFeeds, favorites } = useFavoriteFeeds();
+
   return (
     <>
+      {favoriteFeeds.length > 0 && (
+        <>
+          <Heading size="md" mt="4">
+            Favorite Feeds
+          </Heading>
+          <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
+            {favoriteFeeds.map((feed) => (
+              <DVMCard key={getEventUID(feed)} appData={feed} to={`/discovery/dvm/${getEventCoordinate(feed)}`} />
+            ))}
+          </SimpleGrid>
+        </>
+      )}
+
       <Heading size="md" mt="4">
         DVM Feeds
       </Heading>
@@ -45,8 +63,8 @@ function DVMFeeds() {
       </Text>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
-          {DVMs.map((appData) => (
-            <DVMCard key={appData.id} appData={appData} to={`/discovery/dvm/${getEventCoordinate(appData)}`} />
+          {DVMs.filter((feed) => !isEventInList(favorites, feed)).map((feed) => (
+            <DVMCard key={getEventUID(feed)} appData={feed} to={`/discovery/dvm/${getEventCoordinate(feed)}`} />
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>

@@ -45,7 +45,7 @@
     "applesauce-channel": "next",
     "applesauce-content": "next",
     "applesauce-core": "next",
-    "applesauce-lists": "next",
+    "applesauce-lists": "0.0.0-next-20241127180935",
     "applesauce-net": "next",
     "applesauce-react": "next",
     "applesauce-signer": "next",

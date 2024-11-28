@@ -1,4 +1,5 @@
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
+import { getAddressPointersFromList } from "applesauce-lists/helpers";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
@@ -12,7 +13,6 @@ import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import EmojiPackCreateModal from "./components/create-modal";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getAddressPointersFromList } from "../../helpers/nostr/lists";
 
 function UserEmojiPackMangerPage() {
   const account = useCurrentAccount()!;

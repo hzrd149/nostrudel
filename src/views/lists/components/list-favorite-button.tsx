@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import dayjs from "dayjs";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import useFavoriteLists, { FAVORITE_LISTS_IDENTIFIER } from "../../../hooks/use-favorite-lists";
 import { isSpecialListKind, listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { unixNow } from "applesauce-core/helpers";
 
 export default function ListFavoriteButton({
   list,
@@ -26,9 +25,9 @@ export default function ListFavoriteButton({
   if (list.kind === kinds.Genericlists) return null;
 
   const handleClick = async () => {
-    const prev: DraftNostrEvent = favoriteList || {
-      kind: 30078,
-      created_at: dayjs().unix(),
+    const prev: EventTemplate = favoriteList || {
+      kind: kinds.Application,
+      created_at: unixNow(),
       content: "",
       tags: [["d", FAVORITE_LISTS_IDENTIFIER]],
     };

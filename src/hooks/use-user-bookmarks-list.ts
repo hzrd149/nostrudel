@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { kinds } from "nostr-tools";
+import { getAddressPointersFromList, getEventPointersFromList } from "applesauce-lists/helpers";
 
-import { getAddressPointersFromList, getEventPointersFromList } from "../helpers/nostr/lists";
 import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";

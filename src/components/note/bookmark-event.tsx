@@ -12,10 +12,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { getEventPointersFromList } from "applesauce-lists/helpers";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import useUserSets from "../../hooks/use-user-lists";
-import { listAddEvent, listRemoveEvent, getEventPointersFromList, getListName } from "../../helpers/nostr/lists";
+import { listAddEvent, listRemoveEvent, getListName } from "../../helpers/nostr/lists";
 import { NostrEvent } from "../../types/nostr-event";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../icons";

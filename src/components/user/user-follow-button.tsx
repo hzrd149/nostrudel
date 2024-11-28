@@ -12,6 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { isProfilePointerInList } from "applesauce-lists/helpers";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "../icons";
@@ -22,7 +23,6 @@ import {
   listRemovePerson,
   getListName,
   getPubkeysFromList,
-  isPubkeyInList,
 } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useSigningContext } from "../../providers/global/signing-provider";
@@ -111,7 +111,7 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
 
-  const isFollowing = isPubkeyInList(contacts, pubkey);
+  const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
   const isDisabled = account?.readonly ?? true;
 
   const [loading, setLoading] = useState(false);

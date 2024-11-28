@@ -1,18 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { kinds, nip19 } from "nostr-tools";
+import { kinds, nip19, NostrEvent } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
 import { encodeDecodeResult } from "applesauce-core/helpers";
+import { getAddressPointersFromList, getEventPointersFromList } from "applesauce-lists/helpers";
 
 import UserLink from "../../../components/user/user-link";
 import { ChevronLeftIcon } from "../../../components/icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import {
-  getEventPointersFromList,
   getListDescription,
   getListName,
-  getAddressPointersFromList,
   getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
@@ -29,7 +28,6 @@ import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
-import { NostrEvent } from "../../../types/nostr-event";
 
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);

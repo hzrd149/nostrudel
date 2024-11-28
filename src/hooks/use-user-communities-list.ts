@@ -1,7 +1,7 @@
 import { kinds } from "nostr-tools";
+import { getAddressPointersFromList } from "applesauce-lists/helpers";
 
 import { SUBSCRIBED_COMMUNITIES_LIST_IDENTIFIER } from "../helpers/nostr/communities";
-import { getAddressPointersFromList } from "../helpers/nostr/lists";
 import { RequestOptions } from "../services/replaceable-events";
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
