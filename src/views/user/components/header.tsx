@@ -27,8 +27,6 @@ export default function Header({
 
   const showExtraButtons = useBreakpointValue({ base: false, sm: true });
 
-  const showFullNip05 = useBreakpointValue({ base: false, md: true });
-
   return (
     <Flex direction="column" gap="2" px="2" pt="2">
       <Flex gap="2" alignItems="center">
@@ -36,7 +34,7 @@ export default function Header({
         <Heading size="md" isTruncated>
           <UserName pubkey={pubkey} />
         </Heading>
-        <UserDnsIdentity pubkey={pubkey} onlyIcon={showFullNip05} />
+        <UserDnsIdentity pubkey={pubkey} onlyIcon />
         <Spacer />
         {isSelf && !account.readonly && (
           <IconButton
