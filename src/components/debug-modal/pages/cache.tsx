@@ -9,6 +9,15 @@ export default function DebugEventCachePage({ event }: { event: NostrEvent }) {
   const fields = Object.getOwnPropertySymbols(event);
   const update = () => eventStore.update(event);
 
+  const renderValue = (field: symbol) => {
+    let value = Reflect.get(event, field);
+
+    if (value instanceof Map) return JSON.stringify(Object.fromEntries(value.entries()));
+    if (value instanceof Set) return JSON.stringify(Array.from(value));
+
+    return JSON.stringify(value);
+  };
+
   return (
     <Flex direction="column">
       {fields.map((field) => (
@@ -17,7 +26,7 @@ export default function DebugEventCachePage({ event }: { event: NostrEvent }) {
             {field.description}
           </Text>
           <Code fontFamily="monospace" isTruncated>
-            {JSON.stringify(Reflect.get(event, field))}
+            {renderValue(field)}
           </Code>
           <CloseButton
             ml="auto"

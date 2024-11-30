@@ -12,7 +12,7 @@
     "dev": "VITE_APP_VERSION=dev vite serve",
     "build": "tsc --project tsconfig.json && vite build",
     "format": "prettier --ignore-path .prettierignore -w .",
-    "analyze": "npx vite-bundle-visualizer -o ./stats.html",
+    "analyze": "pnpm dlx vite-bundle-visualizer -o ./stats.html",
     "build-icons": "node ./scripts/build-icons.mjs"
   },
   "dependencies": {
@@ -152,5 +152,5 @@
     "type": "lightning",
     "url": "lightning:nostrudel@geyser.fund"
   },
-  "packageManager": "pnpm@9.6.0"
+  "packageManager": "pnpm@9.14.4"
 }

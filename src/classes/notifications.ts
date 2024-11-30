@@ -3,14 +3,14 @@ import { BehaviorSubject } from "rxjs";
 import { map, throttleTime } from "rxjs/operators";
 import { getZapPayment } from "applesauce-core/helpers";
 
-import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
+import { getContentPointers, getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import singleEventService from "../services/single-event";
-import RelaySet from "./relay-set";
 import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { eventStore, queryStore } from "../services/event-store";
+import RelaySet from "./relay-set";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -79,7 +79,11 @@ export default class AccountNotifications {
     ) {
       // is the pubkey mentioned in any way in the content
       const isMentioned = getPubkeysMentionedInContent(event.content, true).includes(this.pubkey);
-      const isQuote = event.tags.some((t) => t[0] === "q" && t[3] === this.pubkey);
+      const isQuote =
+        event.tags.some((t) => t[0] === "q" && (t[1] === event.id || t[3] === this.pubkey)) ||
+        getContentPointers(event.content).some(
+          (p) => (p.type === "nevent" && p.data.id === event.id) || (p.type === "note" && p.data === event.id),
+        );
 
       if (isMentioned) e[NotificationTypeSymbol] = NotificationType.Mention;
       else if (isQuote) e[NotificationTypeSymbol] = NotificationType.Quote;
