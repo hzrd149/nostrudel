@@ -20,7 +20,7 @@ const breakpoints = ["sm", "md", "lg", "xl", "2xl"] as const;
 
 export default function buildTheme(
   themeName: string,
-  primaryColor: string = "#8DB600",
+  primaryColor: string = "#fdad01",
   maxBreakpoint?: (typeof breakpoints)[number],
 ) {
   const theme = extendTheme(getTheme(themeName), {
