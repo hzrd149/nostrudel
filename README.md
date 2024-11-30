@@ -25,7 +25,16 @@ I would recommend you use a browser extension like [Alby](https://getalby.com/) 
 ## Running locally
 
 ```bash
-git clone git@github.com:hzrd149/nostrudel.git
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/$(whoami)/.zshrc
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+brew install pnpm
+brew install node
+
+cd ~/
+git clone https://github.com/btcforplebs/nostrudel
 cd nostrudel
 pnpm install
 pnpm run dev
