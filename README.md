@@ -22,7 +22,7 @@ While logging in with a secret key is supported. please don't. This is a web cli
 
 I would recommend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x)
 
-## Running locally
+## Running locally on macOS
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
