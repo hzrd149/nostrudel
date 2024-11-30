@@ -22,23 +22,6 @@ While logging in with a secret key is supported. please don't. This is a web cli
 
 I would recommend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x)
 
-## Running with docker
-
-```bash
-docker run --rm -p 8080:80 ghcr.io/hzrd149/nostrudel:master
-```
-
-## Docker compose and other services
-
-noStrudels docker image has a few options for connecting to other services running locally
-
-- `CACHE_RELAY`: if set the client will use the relay to cache all of its events instead of storing them in the browser cache
-- `IMAGE_PROXY`: can be set to a local [imageproxy](https://github.com/willnorris/imageproxy) instance so the app can resize profile images
-- `REQUEST_PROXY`: can be set to a local [cors-anywhere](https://github.com/Rob--W/cors-anywhere) instance so the app can proxy http request
-- `PROXY_FIRST`: if this is set to `true` all http requests will go through the request proxy first
-
-You can find a full example of all these services in the [docker-compose.yaml](./docker-compose.yaml)
-
 ## Running locally
 
 ```bash
@@ -48,6 +31,4 @@ pnpm install
 pnpm run dev
 ```
 
-## Contributing
 
-This is only a personal project, so if you open any PRs please keep them small. thanks
