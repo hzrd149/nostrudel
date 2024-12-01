@@ -1,0 +1,3 @@
+export { default as VisuallyHidden, VisuallyHiddenInput } from './visually-hidden.mjs';
+export { visuallyHiddenStyle } from './visually-hidden.style.mjs';
+import '@chakra-ui/system';

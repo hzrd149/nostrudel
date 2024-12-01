@@ -1,0 +1,65 @@
+{
+  "name": "three-spritetext",
+  "version": "1.8.2",
+  "description": "A sprite based text component for ThreeJS",
+  "type": "module",
+  "unpkg": "dist/three-spritetext.min.js",
+  "main": "dist/three-spritetext.mjs",
+  "module": "dist/three-spritetext.mjs",
+  "types": "dist/three-spritetext.d.ts",
+  "exports": {
+    "types": "./dist/three-spritetext.d.ts",
+    "umd": "./dist/three-spritetext.min.js",
+    "default": "./dist/three-spritetext.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vasturiano/three-spritetext.git"
+  },
+  "keywords": [
+    "three",
+    "3d",
+    "text",
+    "sprite",
+    "canvas",
+    "webgl"
+  ],
+  "author": {
+    "name": "Vasco Asturiano",
+    "url": "https://github.com/vasturiano"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vasturiano/three-spritetext/issues"
+  },
+  "homepage": "https://github.com/vasturiano/three-spritetext",
+  "scripts": {
+    "build": "rimraf dist && rollup -c",
+    "dev": "rollup -w -c",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist/**/*",
+    "example/**/*"
+  ],
+  "dependencies": {},
+  "peerDependencies": {
+    "three": ">=0.86.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/three": ">=0.86.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6",
+    "rollup-plugin-dts": "^6.1.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=12"
+  }
+}

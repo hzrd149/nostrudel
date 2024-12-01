@@ -1,0 +1,37 @@
+{
+  "name": "linkifyjs",
+  "version": "4.1.3",
+  "description": "Find URLs, email addresses, #hashtags and @mentions in plain-text strings, then convert them into HTML <a> links.",
+  "main": "dist/linkify.cjs.js",
+  "module": "dist/linkify.es.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "clean": "rm -rf lib dist *.tgz *.d.ts",
+    "prepack": "run-s clean build tsc",
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hypercontext/linkifyjs.git",
+    "directory": "packages/linkifyjs"
+  },
+  "keywords": [
+    "autolink",
+    "email",
+    "hashtag",
+    "html",
+    "jquery",
+    "link",
+    "mention",
+    "react",
+    "twitter",
+    "url"
+  ],
+  "author": "Hypercontext",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hypercontext/linkifyjs/issues"
+  },
+  "homepage": "https://linkify.js.org"
+}

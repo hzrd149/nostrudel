@@ -1,0 +1,53 @@
+{
+  "name": "micromark-extension-wiki-link",
+  "version": "0.0.4",
+  "description": "Parse and render wiki-style links",
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "markdown",
+    "gfm",
+    "micromark",
+    "micromark-plugin"
+  ],
+  "author": {
+    "name": "Mark Hudnall",
+    "email": "me@markhudnall.com",
+    "url": "https://markhudnall.com"
+  },
+  "repository": "https://github.com/landakram/micromark-extension-wiki-link",
+  "license": "MIT",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.umd.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint src/",
+    "prepare": "npm run build",
+    "pretest": "npm run build",
+    "test": "npm run lint && mocha --require @babel/register test/micromark_test.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^15.1.0",
+    "eslint": "^7.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "micromark": "^2.10.1",
+    "mocha": "^8.2.0",
+    "rollup": "^2.32.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.12.1"
+  }
+}

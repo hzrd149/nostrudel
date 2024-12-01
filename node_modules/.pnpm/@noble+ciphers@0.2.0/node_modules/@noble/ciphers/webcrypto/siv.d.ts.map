@@ -1,0 +1,1 @@
+{"version":3,"file":"siv.d.ts","sourceRoot":"","sources":["../src/webcrypto/siv.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAA4B,MAAM,aAAa,CAAC;AA0DpE,wBAAsB,UAAU,CAAC,GAAG,EAAE,UAAU,EAAE,KAAK,EAAE,UAAU;;;GAmBlE;AAED,wBAAsB,eAAe,CACnC,GAAG,EAAE,UAAU,EACf,KAAK,EAAE,UAAU,EACjB,GAAG,EAAE,UAAU,GACd,OAAO,CAAC,WAAW,CAAC,CAyCtB"}

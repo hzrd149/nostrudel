@@ -1,0 +1,15 @@
+import * as react_jsx_runtime from 'react/jsx-runtime';
+import { Icon } from '@chakra-ui/icon';
+import { PropsOf } from '@chakra-ui/system';
+
+type AccordionIconProps = PropsOf<typeof Icon>;
+/**
+ * AccordionIcon that gives a visual cue of the open/close state of the accordion item.
+ * It rotates `180deg` based on the open/close state.
+ */
+declare function AccordionIcon(props: AccordionIconProps): react_jsx_runtime.JSX.Element;
+declare namespace AccordionIcon {
+    var displayName: string;
+}
+
+export { AccordionIcon, AccordionIconProps };

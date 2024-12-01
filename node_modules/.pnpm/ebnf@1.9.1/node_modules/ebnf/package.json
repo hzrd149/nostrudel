@@ -1,0 +1,61 @@
+{
+  "name": "ebnf",
+  "version": "1.9.1",
+  "description": "Creates an AST parser from a [E]BNF file",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "bin": "dist/bin.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
+    "preversion": "npm run build && npm test",
+    "coverage": "(`npm bin`/istanbul cover `npm bin`/_mocha || true)",
+    "lint": "tslint -t msbuild src/**/*.ts",
+    "lint-fix": "tslint -t msbuild src/**/*.ts --fix",
+    "build": "npm run lint-fix && rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig-test.json && chmod +x dist/bin.js",
+    "watch": "npm run build && chmod +x dist/bin.js && (tsc -p tsconfig.json --watch & tsc -p tsconfig-test.json --watch)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/menduz/node-ebnf.git"
+  },
+  "keywords": [
+    "EBNF",
+    "AST",
+    "Parser",
+    "Grammar",
+    "Lexer",
+    "Syntax"
+  ],
+  "author": {
+    "name": "Agustin Mendez @menduz",
+    "email": "menduz@protonmail.com",
+    "url": "https://menduz.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/menduz/node-ebnf/issues"
+  },
+  "homepage": "https://github.com/menduz/node-ebnf#readme",
+  "devDependencies": {
+    "@types/node": "^13.13.16",
+    "child_process": "^1.0.2",
+    "coveralls": "^3.1.0",
+    "expect": "^24.9.0",
+    "git-rev-sync": "^2.1.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^6.2.3",
+    "node-fetch": "^2.6.0",
+    "semver": "^7.3.2",
+    "ts-node": "^8.10.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {},
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120
+  },
+  "commit": "1406198f46f4267b4b0741f5be3261aa6437f5d5"
+}

@@ -1,0 +1,23 @@
+> npm version && node perf/test.js
+
+{
+  'ngraph.forcelayout': '1.0.0',
+  npm: '6.13.1',
+  ares: '1.15.0',
+  brotli: '1.0.7',
+  cldr: '35.1',
+  icu: '64.2',
+  llhttp: '1.1.4',
+  modules: '79',
+  napi: '5',
+  nghttp2: '1.40.0',
+  node: '13.2.0',
+  openssl: '1.1.1d',
+  tz: '2019c',
+  unicode: '12.1',
+  uv: '1.33.1',
+  v8: '7.9.317.23-node.20',
+  zlib: '1.2.11'
+}
+Run default x 58.06 ops/sec ±2.20% (61 runs sampled)
+Fastest is Run default

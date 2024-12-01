@@ -1,0 +1,857 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 debug pnpm:package-manifest": {
+    "initial": {
+      "dependencies": {
+        "@microsoft/api-extractor": "*",
+        "@microsoft/rush": "*",
+        "@node-rs/deno-lint": "*",
+        "@pnpm/lockfile-file": "*",
+        "@tailwindcss/language-server": "*",
+        "bash-language-server": "*",
+        "degit": "*",
+        "dockerfile-language-server-nodejs": "*",
+        "esbuild": "*",
+        "esbuild-runner": "*",
+        "eslint": "*",
+        "handlebars": "*",
+        "json5": "*",
+        "ndb": "*",
+        "node-oom-heapdump": "*",
+        "nodemon": "*",
+        "npm-run-all": "*",
+        "onchange": "*",
+        "parallel": "*",
+        "pino-pretty": "*",
+        "pm2": "*",
+        "pnpm": "*",
+        "prettier": "*",
+        "prettier-plugin-svelte": "*",
+        "pyright": "*",
+        "rimraf": "*",
+        "semver": "*",
+        "svelte-language-server": "*",
+        "svgo": "*",
+        "synp": "^1.9.7",
+        "ts-node": "*",
+        "typedoc": "*",
+        "typescript": "*",
+        "typescript-language-server": "*",
+        "uuid": "*",
+        "uvu": "*",
+        "vercel": "*",
+        "vim-language-server": "*",
+        "vscode-langservers-extracted": "*",
+        "watchlist": "*",
+        "write-good": "*",
+        "yaml-language-server": "*",
+        "zx": "*"
+      }
+    },
+    "prefix": "/usr/pnpm-global/5"
+  },
+  "2 debug pnpm:context": {
+    "currentLockfileExists": true,
+    "storeDir": "/root/.pnpm-store/v3",
+    "virtualStoreDir": "/usr/pnpm-global/5/node_modules/.pnpm"
+  },
+  "3 debug pnpm:stage": {
+    "prefix": "/usr/pnpm-global/5",
+    "stage": "resolution_started"
+  },
+  "4 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@microsoft/api-extractor/7.18.7",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@microsoft/api-extractor",
+      "rawSpec": "*"
+    }
+  },
+  "5 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@microsoft/rush/5.53.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@microsoft/rush",
+      "rawSpec": "*"
+    }
+  },
+  "6 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@node-rs/deno-lint/1.9.2",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@node-rs/deno-lint",
+      "rawSpec": "*"
+    }
+  },
+  "7 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@pnpm/lockfile-file/4.1.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@pnpm/lockfile-file",
+      "rawSpec": "*"
+    }
+  },
+  "8 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@tailwindcss/language-server/0.0.4",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@tailwindcss/language-server",
+      "rawSpec": "*"
+    }
+  },
+  "9 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/bash-language-server/2.0.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "bash-language-server",
+      "rawSpec": "*"
+    }
+  },
+  "10 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/degit/2.8.4",
+    "wanted": {
+      "dependentId": ".",
+      "name": "degit",
+      "rawSpec": "*"
+    }
+  },
+  "11 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/dockerfile-language-server-nodejs/0.6.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "dockerfile-language-server-nodejs",
+      "rawSpec": "*"
+    }
+  },
+  "12 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/esbuild/0.12.26",
+    "wanted": {
+      "dependentId": ".",
+      "name": "esbuild",
+      "rawSpec": "*"
+    }
+  },
+  "13 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/esbuild-runner/2.2.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "esbuild-runner",
+      "rawSpec": "*"
+    }
+  },
+  "14 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint/7.32.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "eslint",
+      "rawSpec": "*"
+    }
+  },
+  "15 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/handlebars/4.7.7",
+    "wanted": {
+      "dependentId": ".",
+      "name": "handlebars",
+      "rawSpec": "*"
+    }
+  },
+  "16 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/json5/2.2.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "json5",
+      "rawSpec": "*"
+    }
+  },
+  "17 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ndb/1.1.5",
+    "wanted": {
+      "dependentId": ".",
+      "name": "ndb",
+      "rawSpec": "*"
+    }
+  },
+  "18 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/node-oom-heapdump/2.2.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "node-oom-heapdump",
+      "rawSpec": "*"
+    }
+  },
+  "19 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/nodemon/2.0.12",
+    "wanted": {
+      "dependentId": ".",
+      "name": "nodemon",
+      "rawSpec": "*"
+    }
+  },
+  "20 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/npm-run-all/4.1.5",
+    "wanted": {
+      "dependentId": ".",
+      "name": "npm-run-all",
+      "rawSpec": "*"
+    }
+  },
+  "21 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/onchange/7.1.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "onchange",
+      "rawSpec": "*"
+    }
+  },
+  "22 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/parallel/1.2.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "parallel",
+      "rawSpec": "*"
+    }
+  },
+  "23 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pino-pretty/7.0.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "pino-pretty",
+      "rawSpec": "*"
+    }
+  },
+  "24 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pm2/5.1.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "pm2",
+      "rawSpec": "*"
+    }
+  },
+  "25 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pnpm/6.14.7",
+    "wanted": {
+      "dependentId": ".",
+      "name": "pnpm",
+      "rawSpec": "*"
+    }
+  },
+  "26 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/prettier/2.4.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "prettier",
+      "rawSpec": "*"
+    }
+  },
+  "27 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/prettier-plugin-svelte/2.4.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "prettier-plugin-svelte",
+      "rawSpec": "*"
+    }
+  },
+  "28 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pyright/1.1.167",
+    "wanted": {
+      "dependentId": ".",
+      "name": "pyright",
+      "rawSpec": "*"
+    }
+  },
+  "29 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/rimraf/3.0.2",
+    "wanted": {
+      "dependentId": ".",
+      "name": "rimraf",
+      "rawSpec": "*"
+    }
+  },
+  "30 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/semver/7.3.5",
+    "wanted": {
+      "dependentId": ".",
+      "name": "semver",
+      "rawSpec": "*"
+    }
+  },
+  "31 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/svelte-language-server/0.14.7",
+    "wanted": {
+      "dependentId": ".",
+      "name": "svelte-language-server",
+      "rawSpec": "*"
+    }
+  },
+  "32 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/svgo/2.5.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "svgo",
+      "rawSpec": "*"
+    }
+  },
+  "33 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/synp/1.9.7",
+    "wanted": {
+      "dependentId": ".",
+      "name": "synp",
+      "rawSpec": "^1.9.7"
+    }
+  },
+  "34 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/10.2.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "ts-node",
+      "rawSpec": "*"
+    }
+  },
+  "35 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typedoc/0.22.3",
+    "wanted": {
+      "dependentId": ".",
+      "name": "typedoc",
+      "rawSpec": "*"
+    }
+  },
+  "36 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.3",
+    "wanted": {
+      "dependentId": ".",
+      "name": "typescript",
+      "rawSpec": "*"
+    }
+  },
+  "37 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript-language-server/0.6.2",
+    "wanted": {
+      "dependentId": ".",
+      "name": "typescript-language-server",
+      "rawSpec": "*"
+    }
+  },
+  "38 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/uuid/8.3.2",
+    "wanted": {
+      "dependentId": ".",
+      "name": "uuid",
+      "rawSpec": "*"
+    }
+  },
+  "39 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/uvu/0.5.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "uvu",
+      "rawSpec": "*"
+    }
+  },
+  "40 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/vercel/23.1.2",
+    "wanted": {
+      "dependentId": ".",
+      "name": "vercel",
+      "rawSpec": "*"
+    }
+  },
+  "41 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/vim-language-server/2.2.5",
+    "wanted": {
+      "dependentId": ".",
+      "name": "vim-language-server",
+      "rawSpec": "*"
+    }
+  },
+  "42 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/vscode-langservers-extracted/2.4.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "vscode-langservers-extracted",
+      "rawSpec": "*"
+    }
+  },
+  "43 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/watchlist/0.3.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "watchlist",
+      "rawSpec": "*"
+    }
+  },
+  "44 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/write-good/1.0.8",
+    "wanted": {
+      "dependentId": ".",
+      "name": "write-good",
+      "rawSpec": "*"
+    }
+  },
+  "45 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/yaml-language-server/0.22.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "yaml-language-server",
+      "rawSpec": "*"
+    }
+  },
+  "46 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/zx/4.2.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "zx",
+      "rawSpec": "*"
+    }
+  },
+  "47 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@microsoft/api-extractor/7.18.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "48 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@microsoft/api-extractor/7.18.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "49 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@microsoft/rush/5.53.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "50 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@microsoft/rush/5.53.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "51 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@pnpm/lockfile-file/4.1.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "52 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@pnpm/lockfile-file/4.1.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "53 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@node-rs/deno-lint/1.9.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "54 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@node-rs/deno-lint/1.9.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "55 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@tailwindcss/language-server/0.0.4",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "56 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/@tailwindcss/language-server/0.0.4",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "57 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/bash-language-server/2.0.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "58 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/bash-language-server/2.0.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "59 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/degit/2.8.4",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "60 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/degit/2.8.4",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "61 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/dockerfile-language-server-nodejs/0.6.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "62 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/dockerfile-language-server-nodejs/0.6.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "63 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/esbuild-runner/2.2.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "64 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/esbuild-runner/2.2.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "65 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/esbuild/0.12.26",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "66 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/esbuild/0.12.26",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "67 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/handlebars/4.7.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "68 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/handlebars/4.7.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "69 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/json5/2.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "70 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/json5/2.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "71 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ndb/1.1.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "72 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ndb/1.1.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "73 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/eslint/7.32.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "74 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/eslint/7.32.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "75 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/node-oom-heapdump/2.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "76 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/node-oom-heapdump/2.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "77 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/npm-run-all/4.1.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "78 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/npm-run-all/4.1.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "79 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/nodemon/2.0.12",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "80 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/nodemon/2.0.12",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "81 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/parallel/1.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "82 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/parallel/1.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "83 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pino-pretty/7.0.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "84 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pino-pretty/7.0.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "85 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onchange/7.1.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "86 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/onchange/7.1.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "87 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pm2/5.1.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "88 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pm2/5.1.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "89 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/prettier/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "90 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/prettier/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "91 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/prettier-plugin-svelte/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "92 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/prettier-plugin-svelte/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "93 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pnpm/6.14.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "94 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pnpm/6.14.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "95 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/semver/7.3.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "96 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/semver/7.3.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "97 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/rimraf/3.0.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "98 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/rimraf/3.0.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "99 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/svgo/2.5.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "100 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/svgo/2.5.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "101 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/svelte-language-server/0.14.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "102 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/svelte-language-server/0.14.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "103 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/synp/1.9.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "104 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/synp/1.9.7",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "105 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ts-node/10.2.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "106 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/ts-node/10.2.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "107 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typescript/4.4.3",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "108 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typescript/4.4.3",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "109 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typedoc/0.22.3",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "110 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typedoc/0.22.3",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "111 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typescript-language-server/0.6.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "112 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/typescript-language-server/0.6.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "113 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/uuid/8.3.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "114 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/uuid/8.3.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "115 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/uvu/0.5.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "116 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/uvu/0.5.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "117 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vim-language-server/2.2.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "118 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vim-language-server/2.2.5",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "119 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vercel/23.1.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "120 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vercel/23.1.2",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "121 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vscode-langservers-extracted/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "122 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/vscode-langservers-extracted/2.4.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "123 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/watchlist/0.3.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "124 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/watchlist/0.3.1",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "125 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/write-good/1.0.8",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "126 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/write-good/1.0.8",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "127 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pyright/1.1.167",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "128 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/pyright/1.1.167",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "129 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/yaml-language-server/0.22.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "130 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/yaml-language-server/0.22.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "131 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/zx/4.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "resolved"
+  },
+  "132 debug pnpm:progress": {
+    "packageId": "registry.npmjs.org/zx/4.2.0",
+    "requester": "/usr/pnpm-global/5",
+    "status": "found_in_store"
+  },
+  "133 error pnpm": {
+    "code": "ERR_PNPM_FETCH_404",
+    "hint": "import-tree-sitter is not in the npm registry, or you have no permission to fetch it.\n\nNo authorization header was set for the request.",
+    "request": {
+      "url": "https://registry.npmjs.org/import-tree-sitter"
+    },
+    "response": {
+      "size": 0,
+      "timeout": 60000
+    },
+    "pkgName": "import-tree-sitter",
+    "pkgsStack": [],
+    "err": {
+      "name": "pnpm",
+      "message": "GET https://registry.npmjs.org/import-tree-sitter: Not Found - 404",
+      "code": "ERR_PNPM_FETCH_404",
+      "stack": "pnpm: GET https://registry.npmjs.org/import-tree-sitter: Not Found - 404\n    at RetryOperation._fn (/usr/pnpm-global/5/node_modules/.pnpm/pnpm@6.14.7/node_modules/pnpm/dist/pnpm.cjs:84542:18)\n    at processTicksAndRejections (internal/process/task_queues.js:95:5)"
+    }
+  }
+}

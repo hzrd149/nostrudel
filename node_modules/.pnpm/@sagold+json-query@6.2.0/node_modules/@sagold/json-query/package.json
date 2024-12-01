@@ -1,0 +1,56 @@
+{
+    "name": "@sagold/json-query",
+    "version": "6.2.0",
+    "description": "json-pointer utilities for querying and transforming data",
+    "module": "dist/module/index.js",
+    "types": "dist/index.d.ts",
+    "main": "dist/jsonQuery.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sagold/json-query.git"
+    },
+    "scripts": {
+        "dist": "rm -rf dist; npm run dist:es5; npm run dist:es6",
+        "dist:es5": "NODE_ENV='production' webpack",
+        "dist:es6": "tsc --outDir dist/module --target ES2019",
+        "test": "TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register 'test/**/*.test.ts'",
+        "test:get": "TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register 'test/unit/get.test.ts'",
+        "test:set": "TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register 'test/unit/set.test.ts'",
+        "test:pattern": "TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register 'test/unit/get.pattern.test.ts'",
+        "lint": "eslint lib test",
+        "prepublishOnly": "npm run test & npm run lint & npm run dist",
+        "coverage": "nyc npm run test --reporter=lcov",
+        "debug": "devtool node_modules/mocha/bin/_mocha -qc -- --recursive test/unit/*.test.js"
+    },
+    "dependencies": {
+        "@sagold/json-pointer": "^5.1.2",
+        "ebnf": "^1.9.1"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.14",
+        "@types/mocha": "^10.0.6",
+        "@types/node": "^20.11.30",
+        "@typescript-eslint/eslint-plugin": "^7.4.0",
+        "@typescript-eslint/parser": "^7.4.0",
+        "chai": "^4.4.1",
+        "eslint": "^8.57.0",
+        "mocha": "^10.4.0",
+        "nyc": "^15.1.0",
+        "terser-webpack-plugin": "^5.3.10",
+        "ts-loader": "^9.5.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.3",
+        "webpack": "^5.91.0",
+        "webpack-cli": "^5.1.4"
+    },
+    "keywords": [
+        "query",
+        "json",
+        "json-query",
+        "glob-pattern",
+        "library",
+        "make my day"
+    ],
+    "author": "Sascha Goldhofer <github@saschagoldhofer.de> (https://github.com/sagold/)",
+    "license": "MIT"
+}

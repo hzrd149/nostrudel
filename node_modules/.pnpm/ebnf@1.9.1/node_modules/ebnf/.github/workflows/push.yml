@@ -1,0 +1,32 @@
+on:
+  push
+
+name: Test and release
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: npm install
+        run: npm install
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm run test
+      - name: coverage
+        run: npm run coverage
+      - name: lint
+        run: npm run lint
+      - name: Publish
+        uses: menduz/oddish-action@master
+        with:
+          provenance: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

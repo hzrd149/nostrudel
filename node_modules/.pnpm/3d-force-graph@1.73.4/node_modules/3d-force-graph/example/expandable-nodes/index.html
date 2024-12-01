@@ -1,0 +1,65 @@
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script src="//unpkg.com/3d-force-graph"></script>
+<!--  <script src="../../dist/3d-force-graph.js"></script>-->
+
+  <style>
+    .clickable { cursor: unset !important }
+  </style>
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+    const rootId = 0;
+
+    // Random tree
+    const N = 300;
+    const gData = {
+      nodes: [...Array(N).keys()].map(i => ({ id: i, collapsed: i !== rootId, childLinks: [] })),
+      links: [...Array(N).keys()]
+        .filter(id => id)
+        .map(id => ({
+          source: Math.round(Math.random() * (id - 1)),
+          target: id
+        }))
+    };
+
+    // link parent/children
+    const nodesById = Object.fromEntries(gData.nodes.map(node => [node.id, node]));
+    gData.links.forEach(link => {
+      nodesById[link.source].childLinks.push(link);
+    });
+
+    const getPrunedTree = () => {
+      const visibleNodes = [];
+      const visibleLinks = [];
+
+      (function traverseTree(node = nodesById[rootId]) {
+        visibleNodes.push(node);
+        if (node.collapsed) return;
+        visibleLinks.push(...node.childLinks);
+        node.childLinks
+          .map(link => ((typeof link.target) === 'object') ? link.target : nodesById[link.target]) // get child node
+          .forEach(traverseTree);
+      })(); // IIFE
+
+      return { nodes: visibleNodes, links: visibleLinks };
+    };
+
+    const elem = document.getElementById('3d-graph');
+    const Graph = ForceGraph3D()(elem)
+      .graphData(getPrunedTree())
+      .linkDirectionalParticles(2)
+      .nodeColor(node => !node.childLinks.length ? 'green' : node.collapsed ? 'red' : 'yellow')
+      .onNodeHover(node => elem.style.cursor = node && node.childLinks.length ? 'pointer' : null)
+      .onNodeClick(node => {
+        if (node.childLinks.length) {
+          node.collapsed = !node.collapsed; // toggle collapse state
+          Graph.graphData(getPrunedTree());
+        }
+      });
+  </script>
+</body>

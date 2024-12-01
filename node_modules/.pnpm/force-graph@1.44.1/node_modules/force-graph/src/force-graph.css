@@ -1,0 +1,35 @@
+.force-graph-container canvas {
+  display: block;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.force-graph-container .graph-tooltip {
+  position: absolute;
+  top: 0;
+  font-family: sans-serif;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 3px;
+  color: #eee;
+  background: rgba(0,0,0,0.65);
+  visibility: hidden; /* by default */
+}
+
+.force-graph-container .clickable {
+  cursor: pointer;
+}
+
+.force-graph-container .grabbable {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.force-graph-container .grabbable:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}

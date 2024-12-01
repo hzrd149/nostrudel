@@ -1,0 +1,47 @@
+{
+    "name": "smtp-address-parser",
+    "version": "1.0.10",
+    "description": "Parse an SMTP (RFC-5321) address",
+    "main": "dist/lib/index.js",
+    "types": "dist/lib/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf node_modules lib/grammar.ts dist",
+        "coverage": "jest --collectCoverage -- dist/test/*.test.js",
+        "grammar": "nearleyc lib/grammar.ne -o lib/grammar.ts",
+        "prepare": "npm run grammar && npm run build",
+        "test": "jest dist/test/*.test.js"
+    },
+    "engines": {
+        "node": ">=0.10"
+    },
+    "keywords": [
+        "RFC-5321",
+        "address",
+        "email",
+        "envelope",
+        "rfc2821",
+        "rfc5321",
+        "rfc821"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gene-hightower/smtp-address-parser.git"
+    },
+    "author": "Gene Hightower <gene@digilicious.com> (https://digilicious.com/)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/gene-hightower/smtp-address-parser/issues"
+    },
+    "homepage": "https://github.com/gene-hightower/smtp-address-parser#readme",
+    "dependencies": {
+        "nearley": "^2.20.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^26.0.20",
+        "@types/node": "^14.14.33",
+        "eslint": "*",
+        "jest": "^26.6.3",
+        "typescript": "^4.2.3"
+    }
+}

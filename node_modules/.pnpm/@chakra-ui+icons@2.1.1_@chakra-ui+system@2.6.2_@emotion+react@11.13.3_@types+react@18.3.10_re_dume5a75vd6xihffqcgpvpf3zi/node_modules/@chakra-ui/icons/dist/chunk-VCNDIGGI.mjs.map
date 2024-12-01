@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/ChevronLeft.tsx"],"sourcesContent":["import { createIcon } from \"@chakra-ui/icon\"\n\nexport const ChevronLeftIcon = createIcon({\n  d: \"M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z\",\n  displayName: \"ChevronLeftIcon\",\n})\n"],"mappings":";;;AAAA,SAAS,kBAAkB;AAEpB,IAAM,kBAAkB,WAAW;AAAA,EACxC,GAAG;AAAA,EACH,aAAa;AACf,CAAC;","names":[]}

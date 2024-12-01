@@ -1,0 +1,48 @@
+{
+  "name": "lezer-json5",
+  "version": "2.0.2",
+  "description": "Lezer parser for JSON5",
+  "main": "dist/index.cjs",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.es.js",
+    "require": "./dist/index.cjs"
+  },
+  "scripts": {
+    "build": "lezer-generator src/json5.grammar -o src/parser && rollup -c",
+    "build-debug": "lezer-generator src/json5.grammar --names -o src/parser && rollup -c",
+    "dev": "watchlist --eager src -- run-s build-debug",
+    "prepare": "npm run build",
+    "test": "npm run build && tests/index.js",
+    "test:watch": "watchlist --eager src tests -- run-s test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimfeld/lezer-json5.git"
+  },
+  "keywords": [
+    "lezer",
+    "codemirror",
+    "json5"
+  ],
+  "author": "Daniel Imfeld <dimfeld>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimfeld/lezer-json5/issues"
+  },
+  "homepage": "https://github.com/dimfeld/lezer-json5#readme",
+  "dependencies": {
+    "@lezer/lr": "^1.0.0"
+  },
+  "devDependencies": {
+    "@lezer/generator": "^1.0.0",
+    "@rollup/plugin-node-resolve": "~15.0.1",
+    "glob": "~8.0.3",
+    "npm-run-all": "~4.1.5",
+    "rollup": "~3.7.2",
+    "uvu": "~0.5.6",
+    "watchlist": "~0.3.1"
+  }
+}

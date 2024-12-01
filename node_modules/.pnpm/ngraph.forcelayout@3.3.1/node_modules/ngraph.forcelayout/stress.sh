@@ -1,0 +1,10 @@
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js
+node perf/test.js

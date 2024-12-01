@@ -1,0 +1,47 @@
+'use client'
+
+// src/modal-transition.tsx
+import { chakra } from "@chakra-ui/system";
+import { scaleFadeConfig, slideFadeConfig } from "@chakra-ui/transition";
+import { motion } from "framer-motion";
+import { forwardRef } from "react";
+import { jsx } from "react/jsx-runtime";
+var transitions = {
+  slideInBottom: {
+    ...slideFadeConfig,
+    custom: { offsetY: 16, reverse: true }
+  },
+  slideInRight: {
+    ...slideFadeConfig,
+    custom: { offsetX: 16, reverse: true }
+  },
+  slideInTop: {
+    ...slideFadeConfig,
+    custom: { offsetY: -16, reverse: true }
+  },
+  slideInLeft: {
+    ...slideFadeConfig,
+    custom: { offsetX: -16, reverse: true }
+  },
+  scale: {
+    ...scaleFadeConfig,
+    custom: { initialScale: 0.95, reverse: true }
+  },
+  none: {}
+};
+var MotionSection = chakra(motion.section);
+var getMotionProps = (preset) => {
+  return transitions[preset || "none"];
+};
+var ModalTransition = forwardRef(
+  (props, ref) => {
+    const { preset, motionProps = getMotionProps(preset), ...rest } = props;
+    return /* @__PURE__ */ jsx(MotionSection, { ref, ...motionProps, ...rest });
+  }
+);
+ModalTransition.displayName = "ModalTransition";
+
+export {
+  ModalTransition
+};
+//# sourceMappingURL=chunk-7NUJBCEL.mjs.map

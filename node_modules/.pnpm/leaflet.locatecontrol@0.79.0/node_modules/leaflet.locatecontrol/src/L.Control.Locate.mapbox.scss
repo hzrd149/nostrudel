@@ -1,0 +1,8 @@
+@import "L.Control.Locate";
+
+/* Mapbox specific adjustments */
+
+.leaflet-control-locate a .leaflet-control-locate-location-arrow,
+.leaflet-control-locate a .leaflet-control-locate-spinner {
+  margin: 5px;
+}

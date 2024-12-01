@@ -1,0 +1,19 @@
+{
+    "printWidth": 119,
+    "tabWidth": 4,
+    "overrides": [
+        {
+            "files": "*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "*.md",
+            "options": {
+                "proseWrap": "always",
+                "parser": "markdown"
+            }
+        }
+    ]
+}

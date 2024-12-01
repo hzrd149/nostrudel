@@ -1,0 +1,23 @@
+{
+  "name": "@fedimint/fedimint-client-wasm-bundler",
+  "type": "module",
+  "description": "Wasm-pack output (target bundler) for fedimint-client-wasm",
+  "version": "0.0.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fedimint/fedimint"
+  },
+  "files": [
+    "fedimint_client_wasm_bg.wasm",
+    "fedimint_client_wasm.js",
+    "fedimint_client_wasm_bg.js",
+    "fedimint_client_wasm.d.ts"
+  ],
+  "main": "fedimint_client_wasm.js",
+  "types": "fedimint_client_wasm.d.ts",
+  "sideEffects": [
+    "./fedimint_client_wasm.js",
+    "./snippets/*"
+  ]
+}

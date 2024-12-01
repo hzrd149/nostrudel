@@ -1,0 +1,12 @@
+export { Tab, TabProps } from './tab.mjs';
+export { TabIndicator, TabIndicatorProps } from './tab-indicator.mjs';
+export { TabList, TabListProps } from './tab-list.mjs';
+export { TabPanel, TabPanelProps } from './tab-panel.mjs';
+export { TabPanels, TabPanelsProps } from './tab-panels.mjs';
+export { Tabs, TabsProps, useTabsStyles } from './tabs.mjs';
+export { TabsDescendantsProvider, TabsProvider, UseTabListProps, UseTabListReturn, UseTabOptions, UseTabPanelsProps, UseTabProps, UseTabsProps, UseTabsReturn, useTab, useTabIndicator, useTabList, useTabPanel, useTabPanels, useTabs, useTabsContext, useTabsDescendant, useTabsDescendants, useTabsDescendantsContext } from './use-tabs.mjs';
+import '@chakra-ui/system';
+import 'react';
+import '@chakra-ui/descendant';
+import '@chakra-ui/clickable';
+import '@chakra-ui/lazy-utils';

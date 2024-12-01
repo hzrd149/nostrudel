@@ -1,0 +1,51 @@
+{
+  "name": "@sagold/json-pointer",
+  "version": "5.1.2",
+  "description": "json pointer - failsafe data retrieval from js and json objects",
+  "main": "dist/jsonPointer.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sagold/json-pointer.git"
+  },
+  "pre-push": [
+    "test"
+  ],
+  "scripts": {
+    "dist": "rm -rf dist; NODE_ENV=production webpack",
+    "test": "TS_NODE_PROJECT=./test/tsconfig.json mocha -r ts-node/register 'test/**/*.test.ts'",
+    "prepublishOnly": "yarn test && yarn dist",
+    "lint": "eslint lib",
+    "coverage": "nyc yarn test"
+  },
+  "keywords": [
+    "json-pointer",
+    "json path",
+    "data retrieval",
+    "typescript",
+    "RFC 6901",
+    "make my day"
+  ],
+  "author": "Sascha Goldhofer <github@saschagoldhofer.de> (https://github.com/sagold/)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.3.14",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "chai": "^4.4.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-optimize-regex": "^1.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.4.0",
+    "nyc": "^15.1.0",
+    "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

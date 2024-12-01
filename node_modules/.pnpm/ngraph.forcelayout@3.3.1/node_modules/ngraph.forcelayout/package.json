@@ -1,0 +1,51 @@
+{
+  "name": "ngraph.forcelayout",
+  "version": "3.3.1",
+  "description": "Force directed graph drawing layout",
+  "main": "index.js",
+  "jsdelivr": "dist/ngraph.forcelayout.min.js",
+  "unpkg": "dist/ngraph.forcelayout.min.js",
+  "types": "./index.d.ts",
+  "typesVersions": {
+    "<=4.3": {
+      "index.d.ts": [
+        "index.v43.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "tap --branches=80 --lines=80 --statements=80 --functions=80 test/*.js",
+    "lint": "eslint .",
+    "perf": "npm version && node perf/test.js",
+    "build": "browserify index.js -s ngraphCreateLayout -o dist/ngraph.forcelayout.js && terser --compress -o dist/ngraph.forcelayout.min.js -- dist/ngraph.forcelayout.js",
+    "build2d": "browserify index.js -t ./inline-transform.js -s ngraphCreate2dLayout > dist/ngraph.forcelayout2d.js && terser --compress -o dist/ngraph.forcelayout2d.min.js -- dist/ngraph.forcelayout2d.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anvaka/ngraph.forcelayout.git"
+  },
+  "keywords": [
+    "ngraph",
+    "ngraphjs"
+  ],
+  "author": "Andrei Kashcha",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/anvaka/ngraph.forcelayout/issues"
+  },
+  "devDependencies": {
+    "benchmark": "~1.0.0",
+    "browserify": "^17.0.0",
+    "eslint": "^7.12.1",
+    "ngraph.generators": "^20.0.0",
+    "ngraph.graph": "^20.0.0",
+    "tap": "^16.3.0",
+    "terser": "^5.3.0",
+    "through2": "^4.0.2"
+  },
+  "dependencies": {
+    "ngraph.events": "^1.0.0",
+    "ngraph.merge": "^1.0.0",
+    "ngraph.random": "^1.0.0"
+  }
+}

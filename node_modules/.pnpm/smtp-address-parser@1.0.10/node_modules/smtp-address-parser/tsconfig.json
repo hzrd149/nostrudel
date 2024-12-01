@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "lib": ["es2018"],
+        "module": "commonjs",
+        "target": "es2018",
+
+        "strict": true,
+        "declaration": true,
+        "outDir": "dist",
+        "sourceMap": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    }
+}

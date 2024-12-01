@@ -1,0 +1,35 @@
+import StringBuilder from '../../util/StringBuilder';
+import Dimension from '../../Dimension';
+import { SymbolShapeHint } from './constants';
+import SymbolInfo from './SymbolInfo';
+export declare class EncoderContext {
+    private readonly msg;
+    private shape;
+    private minSize;
+    private maxSize;
+    private codewords;
+    pos: number;
+    private newEncoding;
+    private symbolInfo;
+    private skipAtEnd;
+    constructor(msg: string);
+    setSymbolShape(shape: SymbolShapeHint): void;
+    setSizeConstraints(minSize: Dimension, maxSize: Dimension): void;
+    getMessage(): string;
+    setSkipAtEnd(count: number): void;
+    getCurrentChar(): number;
+    getCurrent(): number;
+    getCodewords(): StringBuilder;
+    writeCodewords(codewords: string): void;
+    writeCodeword(codeword: number | string): void;
+    getCodewordCount(): number;
+    getNewEncoding(): number;
+    signalEncoderChange(encoding: number): void;
+    resetEncoderSignal(): void;
+    hasMoreCharacters(): boolean;
+    private getTotalMessageCharCount;
+    getRemainingCharacters(): number;
+    getSymbolInfo(): SymbolInfo;
+    updateSymbolInfo(len?: number): void;
+    resetSymbolInfo(): void;
+}

@@ -1,0 +1,81 @@
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script type="importmap">{ "imports": {
+    "three": "//unpkg.com/three/build/three.module.js",
+    "three/addons/": "//unpkg.com/three/examples/jsm/",
+    "three-spritetext": "//unpkg.com/three-spritetext/dist/three-spritetext.mjs"
+  }}</script>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+    import SpriteText from "three-spritetext";
+    // import SpriteText from "../../dist/three-spritetext.mjs";
+
+    const SimpleText = new SpriteText('Basic text', 10);
+    SimpleText.color = 'orange';
+    SimpleText.position.x = -45;
+    SimpleText.position.y = 15;
+
+    const ContainerText = new SpriteText('Boxed text', 8);
+    ContainerText.color = 'orange';
+    ContainerText.backgroundColor = 'rgba(0,0,190,0.6)';
+    ContainerText.borderColor = 'lightgrey';
+    ContainerText.borderWidth = 0.5;
+    ContainerText.borderRadius = 3;
+    ContainerText.padding = [6, 2];
+    ContainerText.position.x = 45;
+    ContainerText.position.y = 15;
+
+    const StrokeText = new SpriteText('Stroke text', 8);
+    StrokeText.color = 'blue';
+    StrokeText.strokeWidth = 1;
+    StrokeText.strokeColor = 'lightgray';
+    StrokeText.padding = 4;
+    StrokeText.position.x = 45;
+    StrokeText.position.y = -20;
+
+    const MultilineText = new SpriteText('This is\nsome multi-line\ntext', 5);
+    MultilineText.color = 'blue';
+    MultilineText.borderWidth = 0.4;
+    MultilineText.padding = 8;
+    MultilineText.position.x = -45;
+    MultilineText.position.y = -20;
+
+    // Setup renderer
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    // Setup scene
+    const scene = new THREE.Scene();
+    scene.add(SimpleText);
+    scene.add(ContainerText);
+    scene.add(StrokeText);
+    scene.add(MultilineText);
+    scene.add(new THREE.AmbientLight(0xbbbbbb));
+
+    // Setup camera
+    const camera = new THREE.PerspectiveCamera();
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    camera.lookAt(0, 0, 0);
+    camera.position.z = 100;
+
+    // Add camera controls
+    const tbControls = new TrackballControls(camera, renderer.domElement);
+
+    // Kick-off renderer
+    (function animate() { // IIFE
+     // Frame cycle
+     tbControls.update();
+     renderer.render(scene, camera);
+     requestAnimationFrame(animate);
+    })();
+  </script>
+</body>

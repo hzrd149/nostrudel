@@ -1,0 +1,16 @@
+{
+  "name": "textarea-caret",
+  "repository": "component/textarea-caret-position",
+  "version": "3.0.2",
+  "author": "Jonathan Ong <me@jongleberry.com> (http://jongleberry.com)",
+  "description": "latest version of component/textarea-caret-position",
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "textarea",
+    "caret",
+    "position"
+  ]
+}

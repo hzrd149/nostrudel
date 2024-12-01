@@ -1,0 +1,57 @@
+{
+  "name": "index-array-by",
+  "version": "1.4.2",
+  "description": "A utility function to index arrays by any criteria",
+  "type": "module",
+  "unpkg": "dist/index-array-by.min.js",
+  "jsdelivr": "dist/index-array-by.min.js",
+  "main": "dist/index-array-by.mjs",
+  "module": "dist/index-array-by.mjs",
+  "types": "dist/index-array-by.d.ts",
+  "exports": {
+    "types": "./dist/index-array-by.d.ts",
+    "umd": "./dist/index-array-by.min.js",
+    "default": "./dist/index-array-by.mjs"
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vasturiano/index-array-by.git"
+  },
+  "keywords": [
+    "index",
+    "array",
+    "helper"
+  ],
+  "author": {
+    "name": "Vasco Asturiano",
+    "url": "https://github.com/vasturiano"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vasturiano/index-array-by/issues"
+  },
+  "homepage": "https://github.com/vasturiano/index-array-by",
+  "scripts": {
+    "build": "rimraf dist && rollup -c",
+    "dev": "rollup -w -c",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.24.9",
+    "@babel/preset-env": "^7.24.8",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.18.1",
+    "rollup-plugin-dts": "^6.1.1",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=12"
+  }
+}
