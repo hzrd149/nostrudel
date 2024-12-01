@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { Box, Button, ButtonProps, Icon, Link, Text, others, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, ButtonProps, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import dayjs from "dayjs";
 
 import {
   DirectMessagesIcon,
@@ -17,8 +16,6 @@ import {
 } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import accountService from "../../services/account";
-import { useLocalStorage } from "react-use";
-import ZapModal from "../event-zap-modal";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Package from "../icons/package";
 import Rocket02 from "../icons/rocket-02";
@@ -27,14 +24,10 @@ import KeyboardShortcut from "../keyboard-shortcut";
 import useRecentIds from "../../hooks/use-recent-ids";
 import { internalApps, internalTools } from "../../views/other-stuff/apps";
 import { App, AppIcon } from "../../views/other-stuff/component/app-card";
-import Wallet02 from "../icons/wallet-02";
 
 export default function NavItems() {
   const location = useLocation();
   const account = useCurrentAccount();
-
-  const donateModal = useDisclosure();
-  const [lastDonate, setLastDonate] = useLocalStorage<number>("last-donate");
 
   const showShortcuts = useBreakpointValue({ base: false, md: true });
 
@@ -70,6 +63,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/torrents")) active = "tools";
   else if (location.pathname.startsWith("/map")) active = "tools";
   else if (location.pathname.startsWith("/profile")) active = "profile";
+  else if (location.pathname.startsWith("/support")) active = "support";
   else if (location.pathname.startsWith("/other-stuff")) active = "other-stuff";
   else if (
     account &&
@@ -227,29 +221,15 @@ export default function NavItems() {
       >
         Settings
       </Button>
-      {(lastDonate === undefined || dayjs.unix(lastDonate).isBefore(dayjs().subtract(1, "week"))) && (
-        <Button
-          as={Link}
-          leftIcon={<LightningIcon boxSize={6} color="yellow.400" />}
-          href="https://geyser.fund/project/nostrudel"
-          isExternal
-          onClick={(e) => {
-            e.preventDefault();
-            donateModal.onOpen();
-          }}
-          {...buttonProps}
-        >
-          Donate
-        </Button>
-      )}
-      {donateModal.isOpen && (
-        <ZapModal
-          isOpen
-          pubkey="713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8"
-          onClose={donateModal.onClose}
-          onZapped={() => setLastDonate(dayjs().unix())}
-        />
-      )}
+      <Button
+        as={RouterLink}
+        to="/support"
+        leftIcon={<LightningIcon boxSize={6} color="yellow.400" />}
+        colorScheme={active === "support" ? "primary" : undefined}
+        {...buttonProps}
+      >
+        Support
+      </Button>
       {account && (
         <Button onClick={() => accountService.logout()} leftIcon={<LogoutIcon boxSize={6} />} {...buttonProps}>
           Logout

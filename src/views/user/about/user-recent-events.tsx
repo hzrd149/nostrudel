@@ -8,6 +8,7 @@ import {
   ChannelsIcon,
   CommunityIcon,
   DirectMessagesIcon,
+  EmojiPacksIcon,
   ListsIcon,
   NotesIcon,
   RelayIcon,
@@ -94,6 +95,8 @@ const KnownKinds: KnownKind[] = [
   { kind: kinds.Bookmarksets, icon: BookmarkIcon, name: "Bookmarks", link: (_e, p) => `/u/${npubEncode(p)}/lists` },
 
   { kind: kinds.Report, name: "Report", icon: AlertTriangle, link: (_e, p) => `/u/${npubEncode(p)}/reports` },
+
+  { kind: kinds.Emojisets, name: "Emojis", icon: EmojiPacksIcon, link: (_e, p) => `/u/${npubEncode(p)}/emojis` },
 
   { kind: kinds.Handlerinformation, name: "Application" },
   { kind: kinds.Handlerrecommendation, name: "App recommendation" },

@@ -105,6 +105,7 @@ import AccountSettings from "./views/settings/accounts";
 import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
 import WalletView from "./views/wallet";
+import SupportView from "./views/support";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -500,6 +501,10 @@ const router = createHashRouter([
       {
         path: "streams",
         element: <StreamsView />,
+      },
+      {
+        path: "support",
+        children: [{ path: "", element: <SupportView /> }],
       },
       {
         path: "tracks",

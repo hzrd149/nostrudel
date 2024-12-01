@@ -1,5 +1,15 @@
 import { useMount } from "react-use";
-import { Alert, Button, ButtonGroup, Flex, IconButton, Spacer, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  Flex,
+  FlexProps,
+  IconButton,
+  Spacer,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 
 import { PayRequest } from ".";
 import UserAvatar from "../user/user-avatar";
@@ -77,7 +87,11 @@ function ErrorCard({ pubkey, error }: { pubkey: string; error: any }) {
   );
 }
 
-export default function PayStep({ callbacks, onComplete }: { callbacks: PayRequest[]; onComplete: () => void }) {
+export default function PayStep({
+  callbacks,
+  onComplete,
+  ...props
+}: Omit<FlexProps, "children"> & { callbacks: PayRequest[]; onComplete: () => void }) {
   const [paid, setPaid] = useState<string[]>([]);
   const { autoPayWithWebLN } = useAppSettings();
 
@@ -115,7 +129,7 @@ export default function PayStep({ callbacks, onComplete }: { callbacks: PayReque
   });
 
   return (
-    <Flex direction="column" gap="4">
+    <Flex direction="column" gap="4" {...props}>
       {callbacks.map(({ pubkey, invoice, error }) => {
         if (paid.includes(pubkey))
           return (

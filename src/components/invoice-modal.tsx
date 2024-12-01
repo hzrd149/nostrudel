@@ -57,9 +57,9 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
 
   return (
     <Flex gap="2" direction="column">
-      {showQr.isOpen && <QrCodeSvg content={invoice} />}
+      {showQr.isOpen && <QrCodeSvg content={invoice} maxW="4in" mx="auto" />}
       <Flex gap="2">
-        <Input value={invoice} readOnly />
+        <Input value={invoice} userSelect="all" onChange={() => {}} />
         <IconButton
           icon={<QrCodeIcon boxSize={6} />}
           aria-label="Show QrCode"

@@ -161,8 +161,6 @@ export default function PostModal({
     updateDraft(getValues());
   }, [throttleValues]);
 
-  const imageUploadRef = useRef<HTMLInputElement | null>(null);
-
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);

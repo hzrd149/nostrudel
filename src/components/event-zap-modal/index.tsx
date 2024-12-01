@@ -31,7 +31,17 @@ import { eventStore, queryStore } from "../../services/event-store";
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
 // TODO: this is way to complicated, it needs to be broken into multiple parts / hooks
-async function getPayRequestForPubkey(
+
+/**
+ *
+ * @param pubkey pubkey to be zapped
+ * @param event event to be zapped
+ * @param amount amount in msats
+ * @param comment zap comment
+ * @param additionalRelays extra relays to set the zap to
+ * @returns
+ */
+export async function getPayRequestForPubkey(
   pubkey: string,
   event: NostrEvent | undefined,
   amount: number,
@@ -65,12 +75,12 @@ async function getPayRequestForPubkey(
 
   const mailboxes = eventStore.getReplaceable(kinds.RelayList, pubkey);
   const userInbox = mailboxes ? getInboxes(mailboxes).slice(0, 4) : [];
-  const eventRelays = event ? getEventRelayHints(event, 4) : [];
+  const eventRelays = event ? getEventRelayHints(event, 2) : [];
   const accountMailboxes = account ? eventStore.getReplaceable(kinds.RelayList, account?.pubkey) : undefined;
   const outbox = relayScoreboardService
     .getRankedRelays(accountMailboxes ? getOutboxes(accountMailboxes) : [])
-    .slice(0, 4);
-  const additional = relayScoreboardService.getRankedRelays(additionalRelays);
+    .slice(0, 2);
+  const additional = additionalRelays ? relayScoreboardService.getRankedRelays(additionalRelays) : [];
 
   // create zap request
   const zapRequest: DraftNostrEvent = {

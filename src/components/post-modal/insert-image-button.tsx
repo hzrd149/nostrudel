@@ -13,17 +13,17 @@ export default function InsertImageButton({
 
   return (
     <>
-      <VisuallyHiddenInput
-        type="file"
-        accept="image/*,audio/*,video/*"
-        ref={imageUploadRef}
-        onChange={onFileInputChange}
-      />
       <IconButton
         icon={<UploadImageIcon boxSize={6} />}
         onClick={() => imageUploadRef.current?.click()}
         isLoading={uploading}
         {...props}
+      />
+      <VisuallyHiddenInput
+        type="file"
+        accept="image/*,audio/*,video/*"
+        ref={imageUploadRef}
+        onChange={onFileInputChange}
       />
     </>
   );
