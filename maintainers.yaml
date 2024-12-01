@@ -1,7 +1,5 @@
 identifier: noStrudel
 maintainers:
-  - npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr
+  - npub1w4rz7n0vunaau499xh86p84s6v5mmgys48p0nmttt7w36takc9dsf4382j
 relays:
-  - wss://nostrue.com/
-  - wss://nostr.wine/
-  - wss://nos.lol/
+  - wss://relay.btcforplebs.com

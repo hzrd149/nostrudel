@@ -2,7 +2,7 @@
   <img src="screenshots/icon.svg" alt="Project Logo" width="21%">
 </p>
 
-# noStrudel
+# noStrudel hosted by BTCforPlebs
 
 > NOTE: This client is still in development and will have bugs
 
