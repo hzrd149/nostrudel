@@ -12,7 +12,7 @@ export type NumberCache = {
 export default function useNumberCache(cacheKey: string): NumberCache {
   const get = useCallback(
     (key: string) => {
-      let map = cache.get(cacheKey);
+      const map = cache.get(cacheKey);
       if (!map) return undefined;
 
       return map.get(key);

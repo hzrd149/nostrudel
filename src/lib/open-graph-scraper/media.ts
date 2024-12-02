@@ -99,7 +99,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.ogImageURL = ogObject.ogImageURL ? ogObject.ogImageURL : [];
     ogObject.ogImageProperty = ogObject.ogImageProperty ? ogObject.ogImageProperty : [];
     // set ogImageProperty to ogImageSecureURL if it exists
-    // eslint-disable-next-line max-len
+
     ogObject.ogImageProperty =
       ogObject.ogImageSecureURL.length !== 0 ? ogObject.ogImageSecureURL : ogObject.ogImageProperty;
     // fall back to ogImageURL if ogImageProperty isn't set
@@ -150,7 +150,7 @@ export function mediaSetup(ogObject: OgObjectInteral) {
     ogObject.twitterImageAlt
   ) {
     ogObject.twitterImageSrc = ogObject.twitterImageSrc ? ogObject.twitterImageSrc : [];
-    // eslint-disable-next-line max-len
+
     ogObject.twitterImageProperty = ogObject.twitterImageProperty
       ? ogObject.twitterImageProperty
       : ogObject.twitterImageSrc; // deafult to twitterImageSrc

@@ -72,7 +72,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
       <Flex gap="2">
         <Select value={lang} onChange={(e) => setLang(e.target.value)} w="60">
           {codes.map((code) => (
-            <option value={code.iso639_1}>
+            <option key={code.iso639_1} value={code.iso639_1}>
               {code.name} ({code.nativeName})
             </option>
           ))}

@@ -158,7 +158,9 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
               <Text fontWeight="bold">Template</Text>
               <Select onChange={(e) => selectTemplate(e.target.value)} w="auto">
                 {TEMPLATES.map((template) => (
-                  <option value={template.name}>{template.name}</option>
+                  <option key={template.name} value={template.name}>
+                    {template.name}
+                  </option>
                 ))}
               </Select>
               <Spacer />

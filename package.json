@@ -11,9 +11,9 @@
     "start": "vite serve",
     "dev": "VITE_APP_VERSION=dev vite serve",
     "build": "tsc --project tsconfig.json && vite build",
-    "format": "prettier --ignore-path .prettierignore -w .",
+    "build-icons": "node ./scripts/build-icons.mjs",
     "analyze": "pnpm dlx vite-bundle-visualizer -o ./stats.html",
-    "build-icons": "node ./scripts/build-icons.mjs"
+    "format": "prettier --ignore-path .prettierignore -w ."
   },
   "dependencies": {
     "@cashu/cashu-ts": "2.0.0-rc1",

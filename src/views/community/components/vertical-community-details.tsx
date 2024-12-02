@@ -54,7 +54,7 @@ export default function VerticalCommunityDetails({
           </Heading>
           <Flex direction="column" gap="2">
             {mods.map((pubkey) => (
-              <Flex gap="2">
+              <Flex key={pubkey} gap="2">
                 <UserAvatarLink pubkey={pubkey} size="xs" />
                 <UserLink pubkey={pubkey} />
               </Flex>
@@ -99,7 +99,7 @@ export default function VerticalCommunityDetails({
             </Heading>
             <Box>
               {links.map(([url, name]) => (
-                <Link href={url} isTruncated isExternal display="block">
+                <Link key={url + name} href={url} isTruncated isExternal display="block">
                   {name || url}
                 </Link>
               ))}

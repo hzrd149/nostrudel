@@ -13,7 +13,7 @@ export default function CommunityModList({
   return (
     <AvatarGroup {...props}>
       {mods.map((pubkey) => (
-        <UserAvatarLink pubkey={pubkey} />
+        <UserAvatarLink key={pubkey} pubkey={pubkey} />
       ))}
     </AvatarGroup>
   );

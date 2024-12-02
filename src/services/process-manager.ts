@@ -40,7 +40,7 @@ class ProcessManager {
 const processManager = new ProcessManager();
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
+  // @ts-expect-error debug
   window.processManager = processManager;
 }
 

@@ -121,14 +121,14 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
     const signed = await requestSignature(draft);
     await publish("Follow", signed);
     setLoading(false);
-  }, [contacts, requestSignature]);
+  }, [contacts, requestSignature, pubkey, publish]);
   const handleUnfollow = useAsyncErrorHandler(async () => {
     setLoading(true);
     const draft = listRemovePerson(contacts || createEmptyContactList(), pubkey);
     const signed = await requestSignature(draft);
     await publish("Unfollow", signed);
     setLoading(false);
-  }, [contacts, requestSignature]);
+  }, [contacts, requestSignature, pubkey, publish]);
 
   if (showLists) {
     return (

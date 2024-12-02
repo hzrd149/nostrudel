@@ -108,7 +108,7 @@ export class PubkeyGraph extends EventEmitter<EventMap> {
     const refCount = new Map<string, number>();
     const walkLevel = (level = 0) => {
       if (next.size === 0) return;
-      let keys = new Set(next);
+      const keys = new Set(next);
       next.clear();
 
       for (const key of keys) {
@@ -141,7 +141,7 @@ export class PubkeyGraph extends EventEmitter<EventMap> {
   }
 
   getPaths(pubkey: string, maxLength = 2) {
-    let paths: string[][] = [];
+    const paths: string[][] = [];
 
     const walk = (p: string, maxLvl = 0, path: string[] = []) => {
       if (path.includes(p)) return;

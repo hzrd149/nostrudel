@@ -37,13 +37,13 @@ function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
 
 export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) {
   const images = useMemo(() => {
-    var images: PhotoWithEvent[] = [];
+    const images: PhotoWithEvent[] = [];
 
     for (const event of timeline) {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(getMatchLink());
 
-      let i = 0;
+      const i = 0;
       for (const match of urls) {
         if (isImageURL(match[0])) images.push({ event, src: match[0] });
       }

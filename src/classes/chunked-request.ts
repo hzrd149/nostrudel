@@ -73,7 +73,7 @@ export default class ChunkedRequest {
     }
 
     let filters: Filter[] = mergeFilter(this.filters, { limit: this.chunkSize });
-    let oldestEvent = this.getLastEvent();
+    const oldestEvent = this.getLastEvent();
     if (oldestEvent) {
       filters = mergeFilter(filters, { until: oldestEvent.created_at - 1 });
     }

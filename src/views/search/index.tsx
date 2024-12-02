@@ -32,7 +32,7 @@ export function SearchPage() {
   const searchQuery = params.get("q") || "";
 
   const relayURL = params.get("relay");
-  let searchRelay = useMemo(() => {
+  const searchRelay = useMemo(() => {
     if (relayURL === "local") return localRelay;
     else if (relayURL) return relayPoolService.requestRelay(relayURL);
     else if (localSearchSupported) return localRelay;

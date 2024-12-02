@@ -102,7 +102,7 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const token = theme.semanticTokens.colors["chakra-body-text"];
   const color = useColorModeValue(token._light, token._dark) as string;
 
-  const [_, update] = useState<Object>();
+  const [_, update] = useState<object>();
   const store = useMemo(() => new EventStore(), []);
 
   const [loading, setLoading] = useState(false);

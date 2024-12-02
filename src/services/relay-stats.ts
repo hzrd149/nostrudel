@@ -98,7 +98,7 @@ class RelayStatsService {
 const relayStatsService = new RelayStatsService();
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
+  //@ts-expect-error debug
   window.relayStatsService = relayStatsService;
 }
 

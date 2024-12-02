@@ -202,7 +202,7 @@ export default function NewTorrentView() {
       </Flex>
       <Flex direction="column" gap="2">
         {getValues().files.map((file, i) => (
-          <Flex gap="2">
+          <Flex gap="2" key={file.name + file.size}>
             <Input
               type="text"
               value={file.name}

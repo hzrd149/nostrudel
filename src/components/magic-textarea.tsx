@@ -135,4 +135,6 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
   },
 );
 
+MagicTextArea.displayName = "MagicTextArea";
+
 export { MagicInput, MagicTextArea as default };

@@ -5,11 +5,11 @@ import { SearchDirectory, userSearchDirectory } from "../../../services/username
 
 let users: SearchDirectory = [];
 export function codeMirrorUserAutocomplete(context: CompletionContext): CompletionResult | null {
-  let nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
+  const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
   if (nodeBefore.name !== "String") return null;
 
-  let textBefore = context.state.sliceDoc(nodeBefore.from, context.pos);
-  let tagBefore = /@\w*$/.exec(textBefore);
+  const textBefore = context.state.sliceDoc(nodeBefore.from, context.pos);
+  const tagBefore = /@\w*$/.exec(textBefore);
   if (!tagBefore && !context.explicit) return null;
 
   return {

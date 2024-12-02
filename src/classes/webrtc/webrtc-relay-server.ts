@@ -90,7 +90,7 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
   handleCloseMessage(data: any[]) {
     const [_, id] = data as [string, string, ...Filter[]];
 
-    let sub = this.subscriptions.get(id);
+    const sub = this.subscriptions.get(id);
     if (sub) {
       sub.close();
       this.subscriptions.delete(id);

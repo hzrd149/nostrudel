@@ -27,7 +27,7 @@ export default function TrackPlayer({ track }: { track: NostrEvent }) {
         position="relative"
       >
         <IconButton aria-label="Play" mr="4" icon={<Play />} onClick={showPlayer.onOpen} size="md" variant="outline" />
-        {waveform?.map((v) => <Box h={v + "%"} w="3px" bg="primary.800" />)}
+        {waveform?.map((v, i) => <Box key={v + i} h={v + "%"} w="3px" bg="primary.800" />)}
       </Flex>
     );
 

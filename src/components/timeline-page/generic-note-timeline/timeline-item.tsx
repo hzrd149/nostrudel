@@ -9,7 +9,6 @@ import StreamNote from "./stream-note";
 import RelayRecommendation from "./relay-recommendation";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
 import { isReply } from "../../../helpers/nostr/event";
-import { STREAM_KIND } from "../../../helpers/nostr/stream";
 import { NostrEvent } from "../../../types/nostr-event";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
 import EmbeddedFlareVideo from "../../embed-event/event-types/embedded-flare-video";

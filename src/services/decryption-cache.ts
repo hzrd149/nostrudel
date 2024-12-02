@@ -119,7 +119,7 @@ class DecryptionCache {
 const decryptionCacheService = new DecryptionCache();
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
+  // @ts-expect-error debug
   window.decryptionCacheService = decryptionCacheService;
 }
 

@@ -75,7 +75,7 @@ export default function WebOfTrustProvider({ pubkey, children }: PropsWithChildr
     if (!graph) return;
 
     if (import.meta.env.DEV) {
-      //@ts-expect-error
+      //@ts-expect-error debug
       window.webOfTrust = graph;
     }
 

@@ -72,7 +72,7 @@ export default function HorizontalCommunityDetails({
                 </Heading>
                 <Flex direction="column" gap="2">
                   {mods.map((pubkey) => (
-                    <Flex gap="2">
+                    <Flex key={pubkey} gap="2">
                       <UserAvatarLink pubkey={pubkey} size="xs" />
                       <UserLink pubkey={pubkey} />
                     </Flex>
@@ -117,7 +117,7 @@ export default function HorizontalCommunityDetails({
                   </Heading>
                   <Box>
                     {links.map(([url, name]) => (
-                      <Link href={url} isTruncated isExternal display="block">
+                      <Link key={url + name} href={url} isTruncated isExternal display="block">
                         {name || url}
                       </Link>
                     ))}

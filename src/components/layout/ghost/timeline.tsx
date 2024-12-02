@@ -44,7 +44,7 @@ function TimelineItem({ event }: { event: NostrEvent }) {
 
   const renderContent = () => {
     switch (event.kind) {
-      case kinds.EncryptedDirectMessage:
+      case kinds.EncryptedDirectMessage: {
         const sender = getDMSender(event);
         const recipient = getDMRecipient(event);
         return (
@@ -52,13 +52,15 @@ function TimelineItem({ event }: { event: NostrEvent }) {
             <UserName pubkey={sender} fontWeight="bold" /> messaged <UserName pubkey={recipient} fontWeight="bold" />
           </Text>
         );
-      case kinds.Contacts:
+      }
+      case kinds.Contacts: {
         return (
           <Text noOfLines={1} isTruncated>
             Updated contacts
           </Text>
         );
-      case kinds.Reaction:
+      }
+      case kinds.Reaction: {
         const pointer = nip25.getReactedEventPointer(event);
         return (
           <HoverLinkOverlay
@@ -70,12 +72,14 @@ function TimelineItem({ event }: { event: NostrEvent }) {
             {event.content}
           </HoverLinkOverlay>
         );
-      default:
+      }
+      default: {
         return (
           <HoverLinkOverlay as={RouterLink} to={`/l/${getSharableEventAddress(event)}`} noOfLines={1} isTruncated>
             {event.content}
           </HoverLinkOverlay>
         );
+      }
     }
   };
 

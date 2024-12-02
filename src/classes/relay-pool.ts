@@ -106,7 +106,7 @@ export default class RelayPool implements IConnectionPool {
   }
 
   async waitForOpen(relayOrUrl: string | URL | AbstractRelay, quite = true) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return Promise.reject("Missing relay");
 
     if (relay.connected) return true;
@@ -123,7 +123,7 @@ export default class RelayPool implements IConnectionPool {
   }
 
   async requestConnect(relayOrUrl: string | URL | AbstractRelay, quite = true) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
     if (!relay.connected && !offlineMode.value) {
@@ -144,11 +144,11 @@ export default class RelayPool implements IConnectionPool {
   }
 
   getRelayAuthStorageKey(relayOrUrl: string | URL | AbstractRelay) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     return `${relay!.url}-auth-mode`;
   }
   getRelayAuthMode(relayOrUrl: string | URL | AbstractRelay): RelayAuthMode | undefined {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
     const defaultMode = localSettings.defaultAuthenticationMode.value;
@@ -157,7 +157,7 @@ export default class RelayPool implements IConnectionPool {
     return mode || defaultMode;
   }
   setRelayAuthMode(relayOrUrl: string | URL | AbstractRelay, mode: RelayAuthMode) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
     localStorage.setItem(this.getRelayAuthStorageKey(relay), mode);
@@ -169,7 +169,7 @@ export default class RelayPool implements IConnectionPool {
     sign: Parameters<AbstractRelay["auth"]>[0],
     quite = true,
   ) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
     const pending = this.pendingAuth.get(relay);
@@ -204,7 +204,7 @@ export default class RelayPool implements IConnectionPool {
   }
 
   canSubscribe(relayOrUrl: string | URL | AbstractRelay) {
-    let relay = this.getRelay(relayOrUrl);
+    const relay = this.getRelay(relayOrUrl);
     if (!relay) return false;
 
     return this.authForSubscribe.get(relay).value !== false;

@@ -85,7 +85,7 @@ function ListPage({ list }: { list: NostrEvent }) {
             <Heading size="lg">People</Heading>
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
               {people.map(({ pubkey, relay }) => (
-                <UserCard pubkey={pubkey} relay={relay} list={list} />
+                <UserCard key={pubkey} pubkey={pubkey} relay={relay} list={list} />
               ))}
             </SimpleGrid>
           </>
@@ -96,7 +96,7 @@ function ListPage({ list }: { list: NostrEvent }) {
             <Heading size="lg">Notes</Heading>
             <Flex gap="2" direction="column">
               {notes.map(({ id, relays }) => (
-                <BookmarkedEvent id={id} relays={relays} />
+                <BookmarkedEvent key={id} id={id} relays={relays} />
               ))}
             </Flex>
           </>

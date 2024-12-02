@@ -28,7 +28,7 @@ export default function TrustedMintsQuery(pubkey: string): Query<TrustedMints | 
 
               case "relay":
                 if (tag[1]) {
-                  let safe = safeRelayUrl(tag[1]);
+                  const safe = safeRelayUrl(tag[1]);
                   if (safe) mints.push(safe);
                 }
                 break;

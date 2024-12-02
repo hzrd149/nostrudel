@@ -104,7 +104,7 @@ export default function EventConsoleView() {
       }
 
       await new Promise<void>((res) => {
-        let buffer: NostrEvent[] = [];
+        const buffer: NostrEvent[] = [];
         const flush = _throttle(() => setEvents([...buffer]), 1000 / 10, { trailing: true });
 
         setError("");

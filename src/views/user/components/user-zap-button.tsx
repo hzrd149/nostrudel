@@ -11,7 +11,7 @@ export default function UserZapButton({ pubkey, ...props }: { pubkey: string } &
   if (!metadata) return null;
 
   // use lud06 and lud16 fields interchangeably
-  let tipAddress = metadata.lud06 || metadata.lud16;
+  const tipAddress = metadata.lud06 || metadata.lud16;
 
   if (!tipAddress) return null;
 

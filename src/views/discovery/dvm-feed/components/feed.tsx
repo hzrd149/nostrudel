@@ -1,5 +1,6 @@
 import FeedStatus from "./feed-status";
 import { AddressPointer } from "nostr-tools/nip19";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { ChainedDVMJob, getEventIdsFromJobs } from "../../../../helpers/nostr/dvm";
 import useSingleEvents from "../../../../hooks/use-single-events";
@@ -12,7 +13,7 @@ function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
   return (
     <>
       {events.map((event) => (
-        <TimelineItem event={event} visible />
+        <TimelineItem key={getEventUID(event)} event={event} visible />
       ))}
     </>
   );

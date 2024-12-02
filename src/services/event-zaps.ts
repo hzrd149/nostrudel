@@ -47,7 +47,7 @@ class EventZapsService {
 const eventZapsService = new EventZapsService();
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
+  // @ts-expect-error debug
   window.eventZapsService = eventZapsService;
 }
 

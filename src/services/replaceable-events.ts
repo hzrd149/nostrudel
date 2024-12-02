@@ -114,7 +114,7 @@ class ReplaceableEventsService {
 const replaceableEventsService = new ReplaceableEventsService(eventStore);
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
+  //@ts-expect-error debug
   window.replaceableEventsService = replaceableEventsService;
 }
 

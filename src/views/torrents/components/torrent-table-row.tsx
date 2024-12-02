@@ -45,7 +45,7 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
       <Td>
         {categories
           .map((c) => (
-            <Link as={RouterLink} to={createTagLink(c)}>
+            <Link key={c.name} as={RouterLink} to={createTagLink(c)}>
               {c.name}
             </Link>
           ))

@@ -4,7 +4,7 @@ import { Button, Flex, Spinner, Text, Textarea, useToast } from "@chakra-ui/reac
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { MultiSubscription } from "applesauce-net/subscription";
 import { useStoreQuery } from "applesauce-react/hooks";
-import { unixNow } from "applesauce-core/helpers";
+import { getEventUID, unixNow } from "applesauce-core/helpers";
 
 import { useUserInbox } from "../../../../../hooks/use-user-mailboxes";
 import useCurrentAccount from "../../../../../hooks/use-current-account";
@@ -86,7 +86,7 @@ export default function EventSummarizePage({ event }: { event: NostrEvent }) {
       {responses ? (
         <>
           {Object.entries(responses).map(([pubkey, event]) => (
-            <DVMStatusCard status={event} />
+            <DVMStatusCard key={getEventUID(event)} status={event} />
           ))}
         </>
       ) : submitted ? (

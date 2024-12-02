@@ -23,7 +23,7 @@ function RelaySetCard({ set }: { set: NostrEvent }) {
       <CardHeader p="4">{name}</CardHeader>
       <CardBody px="4" pb="4" pt="0" display="flex" flexDirection="row" gap="2" flexWrap="wrap">
         {relays.map((relay) => (
-          <Text>
+          <Text key={relay}>
             <RelayFavicon relay={relay} /> {relay}
           </Text>
         ))}

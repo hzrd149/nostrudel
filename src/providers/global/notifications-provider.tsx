@@ -65,7 +65,7 @@ export default function NotificationsProvider({ children }: PropsWithChildren) {
     const n = new AccountNotifications(account.pubkey);
     setNotifications(n);
     if (import.meta.env.DEV) {
-      // @ts-expect-error
+      // @ts-expect-error debug
       window.accountNotifications = n;
     }
 

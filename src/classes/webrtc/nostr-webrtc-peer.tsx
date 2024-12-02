@@ -270,7 +270,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
     this.log(`Got ${candidates.length} candidates`);
 
-    for (let candidate of candidates) {
+    for (const candidate of candidates) {
       await pc.addIceCandidate(candidate);
     }
   }

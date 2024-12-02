@@ -2,7 +2,7 @@ import { Box, Card, CardBody, CardHeader, CardProps, Heading, LinkBox, Text } fr
 import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
-import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
+import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
@@ -10,14 +10,13 @@ import useShareableEventAddress from "../../../hooks/use-shareable-event-address
 export default function VideoCard({ video, ...props }: Omit<CardProps, "children"> & { video: NostrEvent }) {
   const title = getVideoTitle(video);
   const { thumb } = getVideoImages(video);
-  const duration = getVideoDuration(video);
   const summary = getVideoSummary(video);
 
   const ref = useEventIntersectionRef(video);
   const address = useShareableEventAddress(video);
 
   return (
-    <Card as={LinkBox} {...props}>
+    <Card as={LinkBox} ref={ref} {...props}>
       <Box
         backgroundImage={thumb}
         aspectRatio={16 / 9}

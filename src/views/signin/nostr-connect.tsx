@@ -58,7 +58,7 @@ function ClientConnectForm() {
     <>
       {signer ? (
         <>
-          <a href={connectionURL} target="_blank">
+          <a href={connectionURL} target="_blank" rel="noreferrer">
             <QrCodeSvg content={connectionURL} />
           </a>
           <Flex gap="2">
@@ -109,7 +109,7 @@ export default function LoginNostrConnectView() {
 
     try {
       setLoading("Connecting...");
-      let client = await NostrConnectSigner.fromBunkerURI(connection, relayPoolService, NOSTR_CONNECT_PERMISSIONS);
+      const client = await NostrConnectSigner.fromBunkerURI(connection, relayPoolService, NOSTR_CONNECT_PERMISSIONS);
       const pubkey = await client.getPublicKey();
 
       const account = new NostrConnectAccount(pubkey, client);

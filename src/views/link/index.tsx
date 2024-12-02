@@ -44,7 +44,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       return <Navigate to={`/n/${link}`} replace />;
     case "nevent":
     case "naddr": {
-      let k = decoded.data.kind || event?.kind;
+      const k = decoded.data.kind || event?.kind;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
       if (k === TORRENT_KIND) return <Navigate to={`/torrents/${link}`} replace />;
       if (k === kinds.LiveEvent) return <Navigate to={`/streams/${link}`} replace />;

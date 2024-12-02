@@ -77,7 +77,7 @@ const localSettings = {
 };
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
+  // @ts-expect-error debug
   window.localSettings = localSettings;
 }
 

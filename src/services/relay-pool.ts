@@ -26,7 +26,7 @@ if (localRelay instanceof AbstractRelay) {
 }
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
+  // @ts-expect-error debug
   window.relayPoolService = relayPoolService;
 }
 

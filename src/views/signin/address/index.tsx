@@ -27,7 +27,7 @@ export default function LoginNostrAddressView() {
     async () => {
       if (!address) return setNip05(undefined);
       if (!getMatchSimpleEmail().test(address)) return setNip05(undefined);
-      let [name, domain] = address.split("@");
+      const [name, domain] = address.split("@");
       if (!name || !domain) return setNip05(undefined);
       setNip05((await dnsIdentityService.fetchIdentity(address)) ?? null);
       setRootNip05((await dnsIdentityService.fetchIdentity(`_@${domain}`)) ?? null);

@@ -15,7 +15,7 @@ export default function GoalContents({ goal }: { goal: NostrEvent }) {
         <EmbedEventPointer key={encodeDecodeResult(pointer)} pointer={pointer} />
       ))}
       {links.map((link) => (
-        <OpenGraphCard url={new URL(link)} />
+        <OpenGraphCard key={link} url={new URL(link)} />
       ))}
     </>
   );

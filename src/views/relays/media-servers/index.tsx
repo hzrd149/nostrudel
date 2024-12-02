@@ -82,7 +82,7 @@ function MediaServersPage() {
 
   const [confirmServer, setConfirmServer] = useState("");
   const submit = handleSubmit(async (values) => {
-    let url = new URL(values.server.startsWith("http") ? values.server : "https://" + values.server).toString();
+    const url = new URL(values.server.startsWith("http") ? values.server : "https://" + values.server).toString();
 
     if (event?.tags.some((t) => isServerTag(t) && areServersEqual(t[1], url)))
       return toast({ status: "error", description: "Server already in list" });

@@ -6,7 +6,7 @@ import accountService from "../../services/account";
 import { deleteDatabase } from "../../services/db";
 
 export default function RequireCurrentAccount({ children }: { children: JSX.Element }) {
-  let location = useLocation();
+  const location = useLocation();
   const loading = useObservable(accountService.loading);
   const account = useObservable(accountService.current);
 

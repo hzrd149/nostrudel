@@ -92,7 +92,7 @@ class DictionaryService {
 const dictionaryService = new DictionaryService(eventStore);
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
+  // @ts-expect-error debug
   window.dictionaryService = dictionaryService;
 }
 

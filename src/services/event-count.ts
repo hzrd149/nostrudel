@@ -38,7 +38,7 @@ class EventCountService {
 const eventCountService = new EventCountService();
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
+  // @ts-expect-error debug
   window.eventCountService = eventCountService;
 }
 

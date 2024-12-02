@@ -28,7 +28,7 @@ const updates = eventStore.stream([{ kinds: [kinds.Metadata] }]).pipe(
 
     const updates: UserDirectory = {};
     const transaction = db.transaction("userSearch", "readwrite");
-    for (let metadata of events) {
+    for (const metadata of events) {
       const profile = getProfileContent(metadata);
       const names = getSearchNames(profile);
       updates[metadata.pubkey] = names;

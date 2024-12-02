@@ -49,7 +49,7 @@ export function renderYoutubePlaylistURL(match: URL) {
 
 function YoutubeVideoEmbed({ url }: { url: URL }) {
   const { youtubeRedirect } = useAppSettings();
-  var videoId = url.searchParams.get("v");
+  let videoId = url.searchParams.get("v");
   if (url.hostname === "youtu.be") videoId = url.pathname.split("/")[1];
   if (!videoId) return null;
 
@@ -74,7 +74,7 @@ export function renderYoutubeVideoURL(match: URL) {
   if (!YOUTUBE_DOMAINS.includes(match.hostname)) return null;
   if (match.pathname.startsWith("/live")) return null;
 
-  var videoId = match.searchParams.get("v");
+  let videoId = match.searchParams.get("v");
   if (match.hostname === "youtu.be") videoId = match.pathname.split("/")[1];
   if (!videoId) return null;
 

@@ -10,7 +10,7 @@ export default function DebugEventCachePage({ event }: { event: NostrEvent }) {
   const update = () => eventStore.update(event);
 
   const renderValue = (field: symbol) => {
-    let value = Reflect.get(event, field);
+    const value = Reflect.get(event, field);
 
     if (value instanceof Map) return JSON.stringify(Object.fromEntries(value.entries()));
     if (value instanceof Set) return JSON.stringify(Array.from(value));

@@ -109,8 +109,8 @@ setInterval(() => {
 }, 60_000);
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
+  //@ts-expect-error debug
   window.localDatabase = localDatabase;
-  //@ts-ignore
+  //@ts-expect-error debug
   window.localRelay = localRelay;
 }

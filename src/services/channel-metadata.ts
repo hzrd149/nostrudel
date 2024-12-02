@@ -150,7 +150,7 @@ class ChannelMetadataService {
 const channelMetadataService = new ChannelMetadataService();
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
+  //@ts-expect-error debug
   window.channelMetadataService = channelMetadataService;
 }
 

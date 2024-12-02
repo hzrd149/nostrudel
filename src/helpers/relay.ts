@@ -151,7 +151,7 @@ export function subscribeMany(relays: string[], filters: Filter[], params: Subsc
         return;
       }
 
-      let subscription = relay.subscribe(filters, {
+      const subscription = relay.subscribe(filters, {
         ...params,
         oneose: () => handleEose(i),
         onclose: (reason) => handleClose(i, reason),

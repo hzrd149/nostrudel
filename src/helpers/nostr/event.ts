@@ -115,7 +115,7 @@ export function getContentTagRefs(content: string, tags: Tag[]) {
         break;
     }
 
-    let matchingTags = tags.filter((t) => t[0] === type && t[1] === id);
+    const matchingTags = tags.filter((t) => t[0] === type && t[1] === id);
     for (const t of matchingTags) foundTags.add(t);
   }
 
