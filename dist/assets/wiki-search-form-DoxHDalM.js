@@ -1,0 +1,2 @@
+import{ae as c,bI as n,j as e,F as m,v as u,E as h}from"./index-C6wlVu-O.js";function d({...a}){const r=c(),{register:s,handleSubmit:t}=n({defaultValues:{search:""}}),i=t(o=>{r(`/wiki/search?q=${encodeURIComponent(o.search)}`)});return e.jsxs(m,{gap:"2",as:"form",maxW:"md",...a,onSubmit:i,children:[e.jsx(u,{...s("search",{required:!0}),type:"search",name:"search",autoComplete:"on",w:"sm",placeholder:"Search Wikifreedia",isRequired:!0}),e.jsx(h,{type:"submit",colorScheme:"primary",children:"Search"})]})}export{d as W};
+//# sourceMappingURL=wiki-search-form-DoxHDalM.js.map

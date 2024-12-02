@@ -1,0 +1,2 @@
+import{af as o,ca as u,j as e,cQ as r,cR as a,cS as x,cT as j,cU as m,cV as p}from"./index-C6wlVu-O.js";function l({badge:n,...s}){const t=o(),{deleteEvent:c}=u();return e.jsx(e.Fragment,{children:e.jsxs(r,{...s,children:[e.jsx(a,{event:n}),e.jsx(x,{event:n}),(t==null?void 0:t.pubkey)===n.pubkey&&e.jsx(j,{icon:e.jsx(m,{}),color:"red.500",onClick:()=>c(n),children:"Delete Badge"}),e.jsx(p,{event:n})]})})}export{l as B};
+//# sourceMappingURL=badge-menu-YC7XuKJV.js.map

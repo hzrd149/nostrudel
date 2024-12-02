@@ -1,0 +1,2 @@
+import{bY as o,bZ as l,f as c,e9 as d,i as u,j as e,I as m,V as x,S as b,c9 as p}from"./index-C6wlVu-O.js";import{V as j}from"./video-card-Mswz4BXN.js";function f(){const{pubkey:a}=o(),r=l(),{loader:i,timeline:s}=c(a+"-videos",r,{authors:[a],kinds:[d]}),n=u(i);return e.jsx(m,{callback:n,children:e.jsx(x,{children:e.jsx(b,{columns:{base:1,sm:2,md:3,lg:4,xl:5},spacing:"4",children:s==null?void 0:s.map(t=>e.jsx(j,{video:t},p(t)))})})})}export{f as default};
+//# sourceMappingURL=videos-CfK9vTyX.js.map

@@ -1,0 +1,2 @@
+import{s as a,j as e,cQ as o,cR as u,ey as c,cS as i,ea as l,dM as x,cT as j,ez as M,cV as m,eA as p}from"./index-C6wlVu-O.js";function I({torrent:s,...t}){const n=a();return e.jsxs(e.Fragment,{children:[e.jsxs(o,{...t,children:[e.jsx(u,{event:s}),e.jsx(c,{event:s}),e.jsx(i,{event:s}),e.jsx(l,{event:s}),e.jsx(x,{event:s}),e.jsx(j,{onClick:n.onOpen,icon:e.jsx(M,{}),children:"Translations"}),e.jsx(m,{event:s})]}),n.isOpen&&e.jsx(p,{isOpen:!0,onClose:n.onClose,note:s})]})}export{I as T};
+//# sourceMappingURL=torrent-menu-DLKj8E4u.js.map

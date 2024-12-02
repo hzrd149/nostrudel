@@ -1,0 +1,2 @@
+const o=Math.pow(1024,1),e=Math.pow(1024,2),r=Math.pow(1024,3),n=Math.pow(1024,4),B=Math.pow(1024,5),a=Math.pow(1024,6),s=Math.pow(1024,7),u=Math.pow(1024,8);function x(t,i){return i??=2,t>=u?(t/u).toFixed(i)+" YiB":t>=s?(t/s).toFixed(i)+" ZiB":t>=a?(t/a).toFixed(i)+" EiB":t>=B?(t/B).toFixed(i)+" PiB":t>=n?(t/n).toFixed(i)+" TiB":t>=r?(t/r).toFixed(i)+" GiB":t>=e?(t/e).toFixed(i)+" MiB":t>=o?(t/o).toFixed(i)+" KiB":t.toFixed(i)+" B"}export{x as f};
+//# sourceMappingURL=number-BsCqcFD4.js.map
