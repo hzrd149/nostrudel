@@ -15,6 +15,7 @@ import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
 import EmbeddedFlareVideo from "../../embed-event/event-types/embedded-flare-video";
 import { TimelineNote } from "../../note/timeline-note";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import ArticleCard from "../../../views/articles/components/article-card";
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useEventIntersectionRef(event);
@@ -28,7 +29,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
     case kinds.GenericRepost:
       content = <RepostEvent event={event} />;
       break;
-    case STREAM_KIND:
+    case kinds.LiveEvent:
       content = <StreamNote event={event} />;
       break;
     case kinds.RecommendRelay:
@@ -39,6 +40,9 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       break;
     case FLARE_VIDEO_KIND:
       content = <EmbeddedFlareVideo video={event} />;
+      break;
+    case kinds.LongFormArticle:
+      content = <ArticleCard article={event} />;
       break;
     default:
       content = <Text>Unknown event kind: {event.kind}</Text>;
