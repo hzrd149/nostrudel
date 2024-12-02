@@ -8,23 +8,26 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import PeopleListProvider, { usePeopleListContext } from "../../../providers/local/people-list-provider";
-import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { ErrorBoundary } from "../../../components/error-boundary";
+import { getStreamHost, getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
 
-function LiveStream({ stream }: { stream: ParsedStream }) {
-  const naddr = useShareableEventAddress(stream.event);
+function LiveStream({ stream }: { stream: NostrEvent }) {
+  const naddr = useShareableEventAddress(stream);
+
+  const host = getStreamHost(stream);
+  const title = getStreamTitle(stream);
 
   return (
     <Flex as={LinkBox} alignItems="center" gap="2">
-      <UserAvatar pubkey={stream.host} size="sm" />
+      <UserAvatar pubkey={host} size="sm" />
 
       <HoverLinkOverlay as={RouterLink} to={`/streams/${naddr}`}></HoverLinkOverlay>
-      {stream.title || <UserName pubkey={stream.host} />}
+      {title || <UserName pubkey={host} />}
     </Flex>
   );
 }
@@ -53,15 +56,7 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
 
   const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
 
-  const streams = timeline
-    .map((event) => {
-      try {
-        return parseStreamEvent(event);
-      } catch (e) {}
-    })
-    .filter((s) => !!s)
-    .filter((stream) => stream.status !== "ended")
-    .slice(0, 6);
+  const streams = timeline.filter((stream) => getStreamStatus(stream) !== "ended").slice(0, 6);
 
   return (
     <Card variant="outline" {...props}>
@@ -75,7 +70,7 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
         {streams?.map((stream) => (
-          <ErrorBoundary key={getEventUID(stream.event)} event={stream.event}>
+          <ErrorBoundary key={getEventUID(stream)} event={stream}>
             <LiveStream stream={stream} />
           </ErrorBoundary>
         ))}

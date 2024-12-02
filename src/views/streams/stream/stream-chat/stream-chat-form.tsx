@@ -1,8 +1,9 @@
 import { useMemo, useRef } from "react";
 import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { NostrEvent } from "nostr-tools";
 
-import { ParsedStream, buildChatMessage } from "../../../../helpers/nostr/stream";
+import { buildChatMessage, getStreamHost } from "../../../../helpers/nostr/stream";
 import { unique } from "../../../../helpers/array";
 import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
@@ -15,12 +16,13 @@ import { useAdditionalRelayContext } from "../../../../providers/local/additiona
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 
-export default function ChatMessageForm({ stream, hideZapButton }: { stream: ParsedStream; hideZapButton?: boolean }) {
+export default function ChatMessageForm({ stream, hideZapButton }: { stream: NostrEvent; hideZapButton?: boolean }) {
   const toast = useToast();
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
   const streamRelays = useReadRelays(useAdditionalRelayContext());
-  const hostReadRelays = useUserInbox(stream.host);
+  const host = getStreamHost(stream);
+  const hostReadRelays = useUserInbox(host);
 
   const relays = useMemo(() => unique([...streamRelays, ...(hostReadRelays ?? [])]), [hostReadRelays, streamRelays]);
 
@@ -28,11 +30,15 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Par
     defaultValues: { content: "" },
   });
   const sendMessage = handleSubmit(async (values) => {
-    let draft = buildChatMessage(stream, values.content);
-    draft = ensureNotifyContentMentions(draft);
-    draft = createEmojiTags(draft, emojis);
-    const pub = await publish("Send Chat", draft, relays);
-    if (pub) reset();
+    try {
+      let draft = buildChatMessage(stream, values.content);
+      draft = ensureNotifyContentMentions(draft);
+      draft = createEmojiTags(draft, emojis);
+      const pub = await publish("Send Chat", draft, relays);
+      if (pub) reset();
+    } catch (error) {
+      if (error instanceof Error) toast({ description: error.message, status: "error" });
+    }
   });
 
   const textAreaRef = useRef<RefType | null>(null);

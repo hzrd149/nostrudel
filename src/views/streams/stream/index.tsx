@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -18,8 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Global, css } from "@emotion/react";
+import { NostrEvent } from "nostr-tools";
 
-import { ParsedStream, parseStreamEvent } from "../../../helpers/nostr/stream";
 import LiveVideoPlayer from "../../../components/live-video-player";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -39,7 +39,6 @@ import StreamTopZappers from "../components/stream-top-zappers";
 import StreamHashtags from "../components/stream-hashtags";
 import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
-import StreamShareButton from "../components/stream-share-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
@@ -48,12 +47,19 @@ import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import QuoteEventButton from "../../../components/note/quote-event-button";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
 import StreamOpenButton from "../components/stream-open-button";
+import StreamFavoriteButton from "../components/stream-favorite-button";
+import {
+  getStreamHost,
+  getStreamImage,
+  getStreamRecording,
+  getStreamRelays,
+  getStreamStreamingURLs,
+  getStreamTitle,
+} from "../../../helpers/nostr/stream";
+import { isStreamURL, isVideoURL } from "applesauce-core/helpers";
 
-function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
-  useAppTitle(stream.title);
+function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
   const navigate = useNavigate();
 
   const [showChat, setShowChat] = useState(true);
@@ -84,30 +90,40 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
     );
   };
 
+  const title = getStreamTitle(stream);
+  const host = getStreamHost(stream);
+  const image = getStreamImage(stream);
+  const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
+  const recording = getStreamRecording(stream);
+  const videoRecording = recording && isVideoURL(recording) ? recording : undefined;
+
+  useAppTitle(title);
+
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
         <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon boxSize={6} />}>
           Back
         </Button>
-        <UserAvatarLink pubkey={stream.host} size="sm" display={{ base: "none", md: "block" }} />
+        <UserAvatarLink pubkey={host} size="sm" display={{ base: "none", md: "block" }} />
         <Heading size="md" isTruncated display={{ base: "none", md: "initial" }}>
-          {stream.title}
+          {title}
         </Heading>
         <StreamStatusBadge stream={stream} fontSize="lg" />
 
         <ButtonGroup ml="auto">
-          <StreamOpenButton stream={stream.event} />
-          <QuoteEventButton event={stream.event} title="Share stream" />
-          <DebugEventButton event={stream.event} />
+          <StreamFavoriteButton stream={stream} />
+          <StreamOpenButton stream={stream} />
+          <QuoteEventButton event={stream} title="Share stream" />
+          <DebugEventButton event={stream} />
           <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
         </ButtonGroup>
       </Flex>
       <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
         <LiveVideoPlayer
-          stream={stream.streaming || stream.recording}
-          autoPlay={!!stream.streaming}
-          poster={stream.image}
+          stream={videoStreams[0] || videoRecording}
+          autoPlay={videoStreams.length > 0}
+          poster={image}
           // NOTE: width=0 is used for chromium browser to stop the video element from pushing the chat off screen
           w={0}
           flexGrow={1}
@@ -122,13 +138,13 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
       </Flex>
       <TrustProvider trust>
         <Flex gap="2" alignItems="center">
-          <UserAvatarLink pubkey={stream.host} noProxy />
+          <UserAvatarLink pubkey={host} noProxy />
           <Box>
-            <Heading size="md">{stream.title}</Heading>
-            <UserLink pubkey={stream.host} />
+            <Heading size="md">{title}</Heading>
+            <UserLink pubkey={host} />
           </Box>
           <Spacer />
-          {!!window.webln && <StreamSatsPerMinute pubkey={stream.host} />}
+          {!!window.webln && <StreamSatsPerMinute pubkey={host} />}
         </Flex>
         <StreamSummaryContent stream={stream} />
         {stream.tags.length > 0 && (
@@ -138,17 +154,25 @@ function DesktopStreamPage({ stream }: { stream: ParsedStream }) {
         )}
 
         <Flex gap="2" wrap="wrap">
-          <StreamerCards pubkey={stream.host} maxW="lg" minW="md" />
+          <StreamerCards pubkey={host} maxW="lg" minW="md" />
         </Flex>
       </TrustProvider>
     </VerticalPageLayout>
   );
 }
 
-function MobileStreamPage({ stream }: { stream: ParsedStream }) {
-  useAppTitle(stream.title);
+function MobileStreamPage({ stream }: { stream: NostrEvent }) {
   const navigate = useNavigate();
   const showChat = useDisclosure();
+
+  const title = getStreamTitle(stream);
+  const host = getStreamHost(stream);
+  const image = getStreamImage(stream);
+  const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
+  const recording = getStreamRecording(stream);
+  const videoRecording = recording && isVideoURL(recording) ? recording : undefined;
+
+  useAppTitle(title);
 
   return (
     <VerticalPageLayout px={0}>
@@ -158,23 +182,20 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
             Back
           </Button>
           <ButtonGroup size="sm" ml="auto">
-            <StreamOpenButton stream={stream.event} />
-            <QuoteEventButton event={stream.event} title="Share stream" />
-            <DebugEventButton event={stream.event} />
+            <StreamFavoriteButton stream={stream} />
+            <StreamOpenButton stream={stream} />
+            <QuoteEventButton event={stream} title="Share stream" />
+            <DebugEventButton event={stream} />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>
         </Flex>
-        <LiveVideoPlayer
-          stream={stream.streaming || stream.recording}
-          autoPlay={!!stream.streaming}
-          poster={stream.image}
-        />
+        <LiveVideoPlayer stream={videoStreams[0] || videoRecording} autoPlay={videoStreams.length > 0} poster={image} />
         <Flex direction="column" gap="2" overflow="hidden" px="2">
           <Flex gap="2">
-            <UserAvatarLink pubkey={stream.host} noProxy />
+            <UserAvatarLink pubkey={host} noProxy />
             <Box>
-              <Heading size="md">{stream.title}</Heading>
-              <UserLink pubkey={stream.host} />
+              <Heading size="md">{title}</Heading>
+              <UserLink pubkey={host} />
             </Box>
           </Flex>
           <StreamSummaryContent stream={stream} />
@@ -187,7 +208,7 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
           <Heading size="sm">Stream goal</Heading>
           <Divider />
           <StreamGoal stream={stream} />
-          <StreamerCards pubkey={stream.host} />
+          <StreamerCards pubkey={host} />
         </Flex>
       </TrustProvider>
       <Drawer onClose={showChat.onClose} isOpen={showChat.isOpen} size="full" isFullHeight>
@@ -208,14 +229,14 @@ function MobileStreamPage({ stream }: { stream: ParsedStream }) {
   );
 }
 
-function StreamPage({ stream }: { stream: ParsedStream }) {
+function StreamPage({ stream }: { stream: NostrEvent }) {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
 
   return <Layout stream={stream} />;
 }
 
-function ChatWidget({ stream, displayMode }: { stream: ParsedStream; displayMode: ChatDisplayMode }) {
+function ChatWidget({ stream, displayMode }: { stream: NostrEvent; displayMode: ChatDisplayMode }) {
   return (
     <>
       <Global
@@ -235,23 +256,17 @@ export default function StreamView() {
   useSetColorMode();
 
   const pointer = useParamsAddressPointer("naddr", true);
-  const [streamRelays, setStreamRelays] = useState<string[]>([]);
 
-  const event = useReplaceableEvent(pointer, streamRelays);
-  const stream = useMemo(() => event && parseStreamEvent(event), [event]);
-
-  // refetch the stream from the correct relays when its loaded to ensure we have the latest
-  useEffect(() => {
-    if (stream?.relays) setStreamRelays(stream.relays);
-  }, [stream?.relays]);
+  const stream = useReplaceableEvent(pointer);
+  const relays = stream ? getStreamRelays(stream) : undefined;
 
   const displayMode = (params.get("displayMode") as ChatDisplayMode) ?? undefined;
 
   if (!stream) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
-    <AdditionalRelayProvider relays={streamRelays}>
-      <UserEmojiProvider pubkey={stream.host}>
+    <AdditionalRelayProvider relays={relays ?? []}>
+      <UserEmojiProvider pubkey={getStreamHost(stream)}>
         {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
       </UserEmojiProvider>
     </AdditionalRelayProvider>

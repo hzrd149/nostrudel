@@ -1,20 +1,30 @@
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 
-import { parseStreamEvent } from "../../../helpers/nostr/stream";
-import { NostrEvent } from "../../../types/nostr-event";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import UserLink from "../../user/user-link";
 import UserAvatar from "../../user/user-avatar";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import Timestamp from "../../timestamp";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import {
+  getStreamHashtags,
+  getStreamHost,
+  getStreamImage,
+  getStreamRelays,
+  getStreamStartTime,
+  getStreamTitle,
+} from "../../../helpers/nostr/stream";
 
-export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const stream = parseStreamEvent(event);
-  const naddr = useShareableEventAddress(stream.event, stream.relays);
+export default function EmbeddedStream({ stream, ...props }: Omit<CardProps, "children"> & { stream: NostrEvent }) {
+  const naddr = useShareableEventAddress(stream, getStreamRelays(stream));
   const isVertical = useBreakpointValue({ base: true, md: false });
   const navigate = useNavigate();
+
+  const host = getStreamHost(stream);
+  const starts = getStreamStartTime(stream);
+  const hashtags = getStreamHashtags(stream);
 
   return (
     <Card {...props} position="relative">
@@ -22,7 +32,7 @@ export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "chi
         <StreamStatusBadge stream={stream} position="absolute" top="4" left="4" />
         {isVertical ? (
           <Image
-            src={stream.image}
+            src={getStreamImage(stream)}
             borderRadius="md"
             cursor="pointer"
             onClick={() => navigate(`/streams/${naddr}`)}
@@ -32,7 +42,7 @@ export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "chi
           />
         ) : (
           <Image
-            src={stream.image}
+            src={getStreamImage(stream)}
             borderRadius="md"
             maxH="2in"
             maxW="30%"
@@ -45,24 +55,24 @@ export default function EmbeddedStream({ event, ...props }: Omit<CardProps, "chi
 
         <Heading size="md">
           <Link as={RouterLink} to={`/streams/${naddr}`}>
-            {stream.title}
+            {getStreamTitle(stream)}
           </Link>
         </Heading>
         <Flex gap="2" alignItems="center" my="2">
-          <UserAvatar pubkey={stream.host} size="xs" noProxy />
+          <UserAvatar pubkey={host} size="xs" noProxy />
           <Heading size="sm">
-            <UserLink pubkey={stream.host} />
+            <UserLink pubkey={host} />
           </Heading>
         </Flex>
 
-        {stream.starts && (
+        {starts && (
           <Text>
-            Started: <Timestamp timestamp={stream.starts} />
+            Started: <Timestamp timestamp={starts} />
           </Text>
         )}
-        {stream.tags.length > 0 && (
+        {hashtags.length > 0 && (
           <Flex gap="2" wrap="wrap">
-            {stream.tags.map((tag) => (
+            {hashtags.map((tag) => (
               <Tag key={tag}>{tag}</Tag>
             ))}
           </Flex>

@@ -1,6 +1,7 @@
 import { ReactNode, memo, useMemo, useState } from "react";
 import { useInterval } from "react-use";
 import { Button, ButtonGroup, Divider, Flex, Heading } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -11,7 +12,6 @@ import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../../providers/route/mute-modal-provider";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { isPubkeyInList } from "../../../helpers/nostr/lists";
-import { ParsedStream } from "../../../helpers/nostr/stream";
 
 function Countdown({ time }: { time: number }) {
   const [now, setNow] = useState(dayjs().unix());
@@ -55,7 +55,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
   );
 }
 
-function UsersCard({ stream }: { stream: ParsedStream }) {
+function UsersCard({ stream }: { stream: NostrEvent }) {
   const account = useCurrentAccount()!;
   const { loader, timeline: chatEvents } = useStreamChatTimeline(stream);
 

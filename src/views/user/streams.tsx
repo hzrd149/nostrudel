@@ -9,7 +9,6 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useParsedStreams from "../../hooks/use-parsed-streams";
 import StreamCard from "../streams/components/stream-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
@@ -17,7 +16,7 @@ export default function UserStreamsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const { loader, timeline: events } = useTimelineLoader(truncatedId(pubkey) + "-streams", readRelays, [
+  const { loader, timeline: streams } = useTimelineLoader(truncatedId(pubkey) + "-streams", readRelays, [
     {
       authors: [pubkey],
       kinds: [kinds.LiveEvent],
@@ -26,14 +25,13 @@ export default function UserStreamsTab() {
   ]);
 
   const callback = useTimelineCurserIntersectionCallback(loader);
-  const streams = useParsedStreams(events);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {streams.map((stream) => (
-            <StreamCard key={getEventUID(stream.event)} stream={stream} />
+            <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={loader} />

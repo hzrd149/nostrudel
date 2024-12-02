@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 import { Filter, kinds } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -10,7 +11,6 @@ import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import useParsedStreams from "../../hooks/use-parsed-streams";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { NostrEvent } from "../../types/nostr-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -18,6 +18,8 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import useFavoriteStreams from "../../hooks/use-favorite-streams";
+import { getStreamStatus } from "../../helpers/nostr/stream";
 
 function StreamsPage() {
   useAppTitle("Streams");
@@ -42,15 +44,17 @@ function StreamsPage() {
     ];
   }, [filter]);
 
-  const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
+  const { loader, timeline: streams } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, {
+    eventFilter,
+  });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   useRelaysChanged(relays, () => loader.reset());
 
-  const streams = useParsedStreams(timeline);
+  const { streams: favorites } = useFavoriteStreams();
 
-  const liveStreams = streams.filter((stream) => stream.status === "live");
-  const endedStreams = streams.filter((stream) => stream.status === "ended");
+  const liveStreams = streams.filter((stream) => getStreamStatus(stream) === "live");
+  const endedStreams = streams.filter((stream) => getStreamStatus(stream) === "ended");
 
   return (
     <VerticalPageLayout>
@@ -61,12 +65,24 @@ function StreamsPage() {
         </Switch>
       </Flex>
       <IntersectionObserverProvider callback={callback}>
+        {favorites.length > 0 && (
+          <>
+            <Heading size="lg" mt="2">
+              Favorites
+            </Heading>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+              {favorites.map((stream) => (
+                <StreamCard key={getEventUID(stream)} stream={stream} />
+              ))}
+            </SimpleGrid>
+          </>
+        )}
         <Heading size="lg" mt="2">
           Live
         </Heading>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {liveStreams.map((stream) => (
-            <StreamCard key={stream.event.id} stream={stream} />
+            <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
         </SimpleGrid>
         {showEnded.isOpen && (
@@ -76,7 +92,7 @@ function StreamsPage() {
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
               {endedStreams.map((stream) => (
-                <StreamCard key={stream.event.id} stream={stream} />
+                <StreamCard key={getEventUID(stream)} stream={stream} />
               ))}
             </SimpleGrid>
           </>

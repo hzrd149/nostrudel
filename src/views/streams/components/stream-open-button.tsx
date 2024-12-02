@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import { ExternalLinkIcon } from "../../../components/icons";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { NostrEvent } from "nostr-tools";
 
 export type StreamOpenButtonProps = Omit<IconButtonProps, "onClick" | "aria-label"> & {
   stream: NostrEvent;

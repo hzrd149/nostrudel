@@ -29,7 +29,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       content = <RepostEvent event={event} />;
       break;
     case kinds.LiveEvent:
-      content = <StreamNote event={event} />;
+      content = <StreamNote stream={event} />;
       break;
     case kinds.RecommendRelay:
       content = <RelayRecommendation event={event} />;

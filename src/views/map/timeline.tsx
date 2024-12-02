@@ -13,7 +13,7 @@ const RenderEvent = React.memo(({ event, focused }: { event: NostrEvent; focused
     case kinds.ShortTextNote:
       return <TimelineNote event={event} variant={focused ? "elevated" : undefined} />;
     case kinds.LiveEvent:
-      return <StreamNote event={event} />;
+      return <StreamNote stream={event} />;
     default:
       return null;
   }

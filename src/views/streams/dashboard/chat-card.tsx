@@ -1,14 +1,14 @@
 import { memo, useRef } from "react";
 import { Flex } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import StreamChatLog from "../stream/stream-chat/chat-log";
 import ChatMessageForm from "../stream/stream-chat/stream-chat-form";
-import { ParsedStream } from "../../../helpers/nostr/stream";
 
-function ChatCard({ stream }: { stream: ParsedStream }) {
+function ChatCard({ stream }: { stream: NostrEvent }) {
   const { loader } = useStreamChatTimeline(stream);
 
   const scrollBox = useRef<HTMLDivElement | null>(null);

@@ -10,28 +10,27 @@ import {
   Image,
   LinkBox,
   LinkOverlay,
-  Spacer,
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { useAsync } from "react-use";
 import Timestamp from "../../timestamp";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { getStreamHashtags, getStreamHost, getStreamImage, getStreamTitle } from "../../../helpers/nostr/stream";
 
-export default function StreamNote({ event, ...props }: CardProps & { event: NostrEvent }) {
-  const { value: stream, error } = useAsync(async () => parseStreamEvent(event), [event]);
-  const ref = useEventIntersectionRef(event);
+export default function StreamNote({ stream, ...props }: CardProps & { stream: NostrEvent }) {
+  const ref = useEventIntersectionRef(stream);
+  const naddr = useShareableEventAddress(stream);
 
-  const naddr = useShareableEventAddress(event);
-
-  if (!stream || error) return null;
+  const host = getStreamHost(stream);
+  const title = getStreamTitle(stream);
+  const image = getStreamImage(stream);
+  const tags = getStreamHashtags(stream);
 
   return (
     <Card {...props} ref={ref}>
@@ -39,29 +38,29 @@ export default function StreamNote({ event, ...props }: CardProps & { event: Nos
         <Flex gap="2">
           <Flex gap="2" direction="column">
             <Flex gap="2" alignItems="center">
-              <UserAvatar pubkey={stream.host} size="sm" noProxy />
+              <UserAvatar pubkey={host} size="sm" noProxy />
               <Heading size="sm">
-                <UserLink pubkey={stream.host} />
+                <UserLink pubkey={host} />
               </Heading>
             </Flex>
-            {stream.image && <Image src={stream.image} alt={stream.title} borderRadius="lg" maxH="15rem" />}
+            {image && <Image src={image} alt={title} borderRadius="lg" maxH="15rem" />}
             <Heading size="md">
               <LinkOverlay as={RouterLink} to={`/streams/${naddr}`}>
-                {stream.title}
+                {title}
               </LinkOverlay>
             </Heading>
           </Flex>
         </Flex>
-        {stream.tags.length > 0 && (
+        {tags.length > 0 && (
           <Flex gap="2" wrap="wrap">
-            {stream.tags.map((tag) => (
+            {tags.map((tag) => (
               <Badge key={tag}>{tag}</Badge>
             ))}
           </Flex>
         )}
         <Text>
           Updated:
-          <Timestamp timestamp={stream.updated} />
+          <Timestamp timestamp={stream.created_at} />
         </Text>
       </LinkBox>
       <Divider />

@@ -55,7 +55,7 @@ export function EmbedEvent({
       case kinds.EncryptedDirectMessage:
         return <EmbeddedDM dm={event} {...cardProps} />;
       case kinds.LiveEvent:
-        return <EmbeddedStream event={event} {...cardProps} />;
+        return <EmbeddedStream stream={event} {...cardProps} />;
       case kinds.ZapGoal:
         return <EmbeddedGoal goal={event} {...cardProps} {...goalProps} />;
       case kinds.Emojisets:

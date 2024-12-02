@@ -1,10 +1,12 @@
 import { Tag } from "@chakra-ui/react";
-import { ParsedStream } from "../../../helpers/nostr/stream";
+import { NostrEvent } from "nostr-tools";
 
-export default function StreamHashtags({ stream }: { stream: ParsedStream }) {
+import { getStreamHashtags } from "../../../helpers/nostr/stream";
+
+export default function StreamHashtags({ stream }: { stream: NostrEvent }) {
   return (
     <>
-      {stream.tags.map((tag) => (
+      {getStreamHashtags(stream).map((tag) => (
         <Tag key={tag}>{tag}</Tag>
       ))}
     </>

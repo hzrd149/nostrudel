@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Button, Flex, Select } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { kinds, NostrEvent } from "nostr-tools";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { Mosaic, MosaicNode, MosaicWindow } from "react-mosaic-component";
 import "./styles.css";
 import "react-mosaic-component/react-mosaic-component.css";
 
-import useParsedStreams from "../../../hooks/use-parsed-streams";
-import { ParsedStream, STREAM_KIND, getATag } from "../../../helpers/nostr/stream";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import RequireCurrentAccount from "../../../providers/route/require-current-account";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { getEventUID } from "../../../helpers/nostr/event";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
 import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
@@ -19,6 +19,7 @@ import UsersCard from "./users-card";
 import ZapsCard from "./zaps-card";
 import ChatCard from "./chat-card";
 import VideoCard from "./video-card";
+import { getStreamRelays, getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
 
 const defaultLayout: MosaicNode<string> = {
   direction: "row",
@@ -36,7 +37,7 @@ const defaultLayout: MosaicNode<string> = {
   splitPercentage: 33,
 };
 
-function StreamModerationDashboard({ stream }: { stream: ParsedStream }) {
+function StreamModerationDashboard({ stream }: { stream: NostrEvent }) {
   const [value, setValue] = useState<MosaicNode<string> | null>(defaultLayout);
 
   const ELEMENT_MAP: Record<string, JSX.Element> = {
@@ -71,17 +72,15 @@ function StreamModerationPage() {
   const account = useCurrentAccount()!;
   const readRelays = useReadRelays();
 
-  const { loader, timeline } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
+  const { loader, timeline: streams } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
     {
       authors: [account.pubkey],
-      kinds: [STREAM_KIND],
+      kinds: [kinds.LiveEvent],
     },
-    { "#p": [account.pubkey], kinds: [STREAM_KIND] },
+    { "#p": [account.pubkey], kinds: [kinds.LiveEvent] },
   ]);
 
-  const streams = useParsedStreams(timeline);
-
-  const [selected, setSelected] = useState<ParsedStream>();
+  const [selected, setSelected] = useState<NostrEvent>();
 
   return (
     <Flex direction="column" w="full" h="full">
@@ -91,19 +90,19 @@ function StreamModerationPage() {
         </Button>
         <Select
           placeholder="Select stream"
-          value={selected && getATag(selected)}
-          onChange={(e) => setSelected(streams.find((s) => getATag(s) === e.target.value))}
+          value={selected && getEventCoordinate(selected)}
+          onChange={(e) => setSelected(streams.find((s) => getEventCoordinate(s) === e.target.value))}
           w="lg"
         >
           {streams.map((stream) => (
-            <option key={getEventUID(stream.event)} value={getATag(stream)}>
-              {stream.title} ({stream.status})
+            <option key={getEventUID(stream)} value={getEventCoordinate(stream)}>
+              {getStreamTitle(stream)} ({getStreamStatus(stream)})
             </option>
           ))}
         </Select>
       </Flex>
       {selected && (
-        <AdditionalRelayProvider relays={selected.relays ?? []}>
+        <AdditionalRelayProvider relays={getStreamRelays(selected) ?? []}>
           <StreamModerationDashboard stream={selected} />
         </AdditionalRelayProvider>
       )}

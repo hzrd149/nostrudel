@@ -1,10 +1,9 @@
 import { memo } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { ParsedStream } from "../../../../helpers/nostr/stream";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
-import { NostrEvent } from "../../../../types/nostr-event";
 import { LightningIcon } from "../../../../components/icons";
 import { humanReadableSats } from "../../../../helpers/lightning";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
@@ -13,7 +12,7 @@ import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filt
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
 
-function ZapMessage({ zap, stream }: { zap: NostrEvent; stream: ParsedStream }) {
+function ZapMessage({ zap }: { zap: NostrEvent }) {
   const ref = useEventIntersectionRef(zap);
 
   const sender = getZapSender(zap);

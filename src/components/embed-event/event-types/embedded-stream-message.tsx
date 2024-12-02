@@ -1,22 +1,22 @@
 import { Card, CardProps, Divider, Flex, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
+import { isATag } from "applesauce-core/helpers";
 
-import { NostrEvent, isATag } from "../../../types/nostr-event";
 import UserLink from "../../user/user-link";
 import UserAvatar from "../../user/user-avatar";
 import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-message-content";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { parseStreamEvent } from "../../../helpers/nostr/stream";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
 import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getStreamTitle } from "../../../helpers/nostr/stream";
 
 export default function EmbeddedStreamMessage({
   message,
   ...props
 }: Omit<CardProps, "children"> & { message: NostrEvent }) {
   const streamCoordinate = message.tags.find(isATag)?.[1];
-  const streamEvent = useReplaceableEvent(streamCoordinate);
-  const stream = streamEvent && parseStreamEvent(streamEvent);
+  const stream = useReplaceableEvent(streamCoordinate);
 
   return (
     <Card overflow="hidden" maxH="lg" display="block" p="2" {...props}>
@@ -25,11 +25,11 @@ export default function EmbeddedStreamMessage({
           <Flex gap="2" alignItems="center">
             <Link
               as={RouterLink}
-              to={`/streams/${getSharableEventAddress(streamEvent) ?? ""}`}
+              to={`/streams/${getSharableEventAddress(stream) ?? ""}`}
               fontWeight="bold"
               fontSize="lg"
             >
-              {stream.title}
+              {getStreamTitle(stream)}
             </Link>
             <StreamStatusBadge stream={stream} />
           </Flex>
