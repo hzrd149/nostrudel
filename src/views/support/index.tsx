@@ -89,7 +89,7 @@ export default function SupportView() {
       <VerticalPageLayout alignItems="center">
         <IntersectionObserverProvider callback={callback}>
           <Box textAlign="center">
-            <Heading>TOP ZAPS</Heading>
+            <Heading>Top Supporters</Heading>
             <Text color="GrayText">In the last month</Text>
           </Box>
           {support?.[0] && <TopZap zap={support[0]} />}
