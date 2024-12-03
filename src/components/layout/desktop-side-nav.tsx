@@ -49,7 +49,7 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
             <Avatar src="/apple-touch-icon.png" size="md" />
             <Heading size="md">
               <LinkOverlay as={RouterLink} to="/">
-                noStrudel
+                noStrudel4Plebs
               </LinkOverlay>
             </Heading>
             {offline && (
