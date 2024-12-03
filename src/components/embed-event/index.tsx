@@ -21,6 +21,8 @@ import EmbeddedSetOrList from "./event-types/embedded-list";
 import EmbeddedReaction from "./event-types/embedded-reaction";
 import EmbeddedDM from "./event-types/embedded-dm";
 import EmbeddedUnknown from "./event-types/embedded-unknown";
+import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
+import DVMCard from "../../views/discovery/dvm-feed/components/dvm-card";
 
 const EmbeddedGoal = lazy(() => import("./event-types/embedded-goal"));
 const EmbeddedArticle = lazy(() => import("./event-types/embedded-article"));
@@ -85,6 +87,10 @@ export function EmbedEvent({
         return <EmbeddedWikiPage page={event} {...cardProps} />;
       case kinds.Zap:
         return <EmbeddedZapRecept zap={event} {...cardProps} />;
+      case kinds.Handlerinformation:
+        // if its a content DVM
+        if (event.tags.some((t) => t[0] === "k" && t[1] === String(DVM_CONTENT_DISCOVERY_JOB_KIND)))
+          return <DVMCard dvm={event} />;
     }
 
     if (SET_KINDS.includes(event.kind) || LIST_KINDS.includes(event.kind))

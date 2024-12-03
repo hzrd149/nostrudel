@@ -10,7 +10,6 @@ import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import Telescope from "../../components/icons/telescope";
@@ -46,7 +45,7 @@ function DVMFeeds() {
           </Heading>
           <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
             {favoriteFeeds.map((feed) => (
-              <DVMCard key={getEventUID(feed)} appData={feed} to={`/discovery/dvm/${getEventCoordinate(feed)}`} />
+              <DVMCard key={getEventUID(feed)} dvm={feed} />
             ))}
           </SimpleGrid>
         </>
@@ -64,7 +63,7 @@ function DVMFeeds() {
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
           {DVMs.filter((feed) => !isEventInList(favorites, feed)).map((feed) => (
-            <DVMCard key={getEventUID(feed)} appData={feed} to={`/discovery/dvm/${getEventCoordinate(feed)}`} />
+            <DVMCard key={getEventUID(feed)} dvm={feed} />
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>
