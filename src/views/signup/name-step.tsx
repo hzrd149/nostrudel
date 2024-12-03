@@ -32,7 +32,7 @@ export default function NameStep({ onSubmit }: { onSubmit: (metadata: Kind0Parse
         Sign up
       </Heading>
       <Text>What should we call you?</Text>
-      <Input placeholder="Jane" {...register("name", { required: true })} autoComplete="off" autoFocus />
+      <Input placeholder="Name or Psudo-name" {...register("name", { required: true })} autoComplete="off" autoFocus />
       <Textarea placeholder="Short description about yourself." w="full" mb="2" {...register("about")} />
       <Button w="full" colorScheme="primary" mb="4" isDisabled={!formState.isValid} type="submit">
         Next

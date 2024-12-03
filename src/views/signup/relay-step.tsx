@@ -32,14 +32,14 @@ function RelayButton({ url, selected, onClick }: { url: string; selected: boolea
 }
 
 const recommendedRelays = [
+  "wss://relay.btcforplebs.com",
   "wss://relay.damus.io",
-  "wss://welcome.nostr.wine",
+  "wss://relay.primal.net",
   "wss://nos.lol",
-  "wss://purplerelay.com",
-  "wss://nostr.bitcoiner.social",
-  "wss://nostr-pub.wellorder.net",
+  "wss://nostr.wine",
+  "wss://lightningrelay.com",
 ];
-const defaultRelaySelection = new Set(["wss://relay.damus.io", "wss://nos.lol", "wss://welcome.nostr.wine"]);
+const defaultRelaySelection = new Set(["wss://relay.damus.io", "wss://relay.btcforplebs.com", "wss://relay.primal.net"]);
 
 export default function RelayStep({ onSubmit, onBack }: { onSubmit: (relays: string[]) => void; onBack: () => void }) {
   const [relays, relayActions] = useSet<string>(defaultRelaySelection);
