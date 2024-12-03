@@ -33,9 +33,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
-     inkscape:zoom="0.47594916"
-     inkscape:cx="401.30337"
-     inkscape:cy="504.25554"
+     inkscape:zoom="0.33654688"
+     inkscape:cx="47.541668"
+     inkscape:cy="609.12762"
      inkscape:window-width="2506"
      inkscape:window-height="1376"
      inkscape:window-x="54"
@@ -56,16 +56,19 @@
      inkscape:groupmode="layer"
      inkscape:label="Page 1"
      transform="matrix(1.3333333,0,0,-1.3333333,0,4315.5867)">
-    <circle
-       style="fill:#8db600;stroke-width:1.5;stroke-linecap:round"
-       id="path1"
-       cx="375"
-       cy="-2861.6902"
-       r="375"
-       transform="scale(1,-1)" />
+    <rect
+       style="fill:#fdad01;fill-opacity:1;stroke-width:0;stroke-linecap:round"
+       id="rect1"
+       width="750"
+       height="750"
+       x="1.3125001e-05"
+       y="-3236.6902"
+       transform="scale(1,-1)"
+       ry="0"
+       rx="0" />
     <g
        id="g28"
-       transform="matrix(0.13958769,0,0,0.13958769,107.56017,2640.7112)">
+       transform="matrix(0.14066448,0,0,0.14066448,105.49554,2638.9686)">
       <g
          id="g30"
          clip-path="url(#clipPath34)">
