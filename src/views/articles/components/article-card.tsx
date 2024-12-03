@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Box, Card, Flex, Heading, LinkBox, Spacer, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
@@ -17,7 +18,7 @@ import ArticleTags from "./article-tags";
 import ArticleMenu from "./article-menu";
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 
-export default function ArticleCard({ article }: { article: NostrEvent }) {
+const ArticleCard = memo(({ article }: { article: NostrEvent }) => {
   const image = getArticleImage(article);
   const title = getArticleTitle(article);
   const published = getArticlePublishDate(article);
@@ -61,4 +62,8 @@ export default function ArticleCard({ article }: { article: NostrEvent }) {
       <ZapBubbles event={article} mt="2" mr="2" />
     </Card>
   );
-}
+});
+
+ArticleCard.displayName = "ArticleCard";
+
+export default ArticleCard;

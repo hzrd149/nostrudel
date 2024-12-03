@@ -141,7 +141,7 @@ function TableWithContainer({ children, node, ...props }: TableProps & ExtraProp
 
 function CustomCode({ children, node, ...props }: CodeProps & ExtraProps) {
   return (
-    <Code fontSize="inherit" overflowX="auto" {...props}>
+    <Code fontSize="inherit" display="inline" overflowX="auto" {...props}>
       {children}
     </Code>
   );
