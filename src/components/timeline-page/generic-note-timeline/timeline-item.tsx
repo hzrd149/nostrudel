@@ -15,6 +15,7 @@ import EmbeddedFlareVideo from "../../embed-event/event-types/embedded-flare-vid
 import { TimelineNote } from "../../note/timeline-note";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
+import EmbeddedUnknown from "../../embed-event/event-types/embedded-unknown";
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useEventIntersectionRef(event);
@@ -44,7 +45,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       content = <ArticleCard article={event} />;
       break;
     default:
-      content = <Text>Unknown event kind: {event.kind}</Text>;
+      content = <EmbeddedUnknown event={event} />;
       break;
   }
 
