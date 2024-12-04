@@ -21,10 +21,10 @@ export type PeopleToken = { pubkey: string; names: string[] };
 type Token = Emoji | PeopleToken;
 
 function isEmojiToken(token: Token): token is Emoji {
-  return Object.hasOwn(token, "char");
+  return Reflect.has(token, "char");
 }
 function isPersonToken(token: Token): token is PeopleToken {
-  return Object.hasOwn(token, "pubkey");
+  return Reflect.has(token, "pubkey");
 }
 
 const Item = ({ entity }: ItemComponentProps<Token>) => {

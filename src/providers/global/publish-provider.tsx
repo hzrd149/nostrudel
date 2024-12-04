@@ -109,10 +109,10 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         }
 
         // add pubkey to event
-        if (!Object.hasOwn(event, "pubkey")) event = await finalizeDraft(event);
+        if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
 
         // sign event
-        const signed = !Object.hasOwn(event, "sig") ? await requestSignature(event) : (event as NostrEvent);
+        const signed = !Reflect.has(event, "sig") ? await requestSignature(event) : (event as NostrEvent);
 
         const pub = new PublishAction(label, relays, signed);
         setLog((arr) => arr.concat(pub));

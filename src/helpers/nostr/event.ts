@@ -21,13 +21,13 @@ export function isReplaceable(kind: number) {
 
 export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
   if (isReplaceable(event.kind)) {
-    if (Object.hasOwn(pointer, "pubkey")) {
+    if (Reflect.has(pointer, "pubkey")) {
       const p = pointer as AddressPointer;
       const d = event.tags.find(isDTag)?.[1];
       return event.pubkey === p.pubkey && event.kind === p.kind && d === p.identifier;
     }
   } else {
-    if (Object.hasOwn(pointer, "id")) {
+    if (Reflect.has(pointer, "id")) {
       const p = pointer as EventPointer;
       return p.id === event.id;
     }
