@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useObservable, useQueryStore, useStoreQuery } from "applesauce-react/hooks";
+import { useStoreQuery } from "applesauce-react/hooks";
 import { ReplaceableSetQuery } from "applesauce-core/queries";
 
 import { useReadRelays } from "./use-client-relays";
@@ -12,7 +12,6 @@ export default function useReplaceableEvents(
   opts: RequestOptions = {},
 ) {
   const readRelays = useReadRelays(additionalRelays);
-  const store = useQueryStore();
 
   const pointers = useMemo(() => {
     if (!coordinates) return undefined;

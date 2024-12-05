@@ -1,6 +1,7 @@
-import { Button, ButtonProps, useToast } from "@chakra-ui/react";
-import { CheckIcon, CopyToClipboardIcon } from "./icons";
 import { useState } from "react";
+import { Button, ButtonProps, useToast } from "@chakra-ui/react";
+
+import { CheckIcon, CopyToClipboardIcon } from "./icons";
 
 export default function VersionButton({ ...props }: Omit<ButtonProps, "children">) {
   const toast = useToast();

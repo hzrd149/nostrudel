@@ -30,9 +30,7 @@ let sub: ZenObservable.Subscription;
 accountService.current.subscribe((account) => {
   if (sub) sub.unsubscribe();
   if (!account) return;
-  sub = queryStore
-    .runQuery(AppSettingsQuery)(account.pubkey)
-    .subscribe((v) => (settings = v));
+  sub = queryStore.createQuery(AppSettingsQuery, account.pubkey).subscribe((v) => (settings = v));
 });
 
 export function buildImageProxyURL(src: string, size: string | number) {
