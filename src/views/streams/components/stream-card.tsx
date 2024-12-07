@@ -55,10 +55,6 @@ function StreamCard({ stream, ...props }: CardProps & { stream: NostrEvent }) {
           </Badge>
         )}
       </Flex>
-      <ButtonGroup size="sm" variant="ghost" position="absolute" right="2" top="2">
-        <StreamFavoriteButton stream={stream} />
-        <DebugEventButton event={stream} />
-      </ButtonGroup>
 
       <Box
         backgroundImage={image}
@@ -84,6 +80,10 @@ function StreamCard({ stream, ...props }: CardProps & { stream: NostrEvent }) {
           {starts && <Timestamp timestamp={starts} fontSize="sm" display="block" />}
         </Flex>
       </CardBody>
+      <ButtonGroup size="sm" variant="ghost" position="absolute" right="2" top="2">
+        <StreamFavoriteButton stream={stream} />
+        <DebugEventButton event={stream} />
+      </ButtonGroup>
     </Card>
   );
 }
