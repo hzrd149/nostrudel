@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { EventFactory } from "applesauce-factory";
 import { Account } from "../classes/accounts/account";
-import { getEventRelayHints } from "./event-relay-hint";
+import { getEventRelayHint, getPubkeyRelayHint } from "./event-relay-hint";
 import { NIP_89_CLIENT_APP } from "../const";
 import accountService from "./account";
 
@@ -19,7 +19,8 @@ class EventFactoryService {
         this.subject.next(
           new EventFactory({
             signer: current.signer,
-            getRelayHint: (event) => getEventRelayHints(event, 1)[0],
+            getRelayHint: getEventRelayHint,
+            getPubkeyRelayHint: getPubkeyRelayHint,
             client: NIP_89_CLIENT_APP,
           }),
         );

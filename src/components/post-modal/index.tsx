@@ -32,7 +32,7 @@ import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { kinds, UnsignedEvent } from "nostr-tools";
 import { useThrottle } from "react-use";
-import { useObservable } from "applesauce-react/hooks";
+import { useEventFactory, useObservable } from "applesauce-react/hooks";
 
 import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
 import PublishAction from "../../classes/nostr-publish-action";
@@ -64,6 +64,7 @@ import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import InsertGifButton from "../gif/insert-gif-button";
 import InsertImageButton from "./insert-image-button";
+import { unixNow } from "applesauce-core/helpers";
 
 type FormValues = {
   subject: string;
@@ -101,6 +102,7 @@ export default function PostModal({
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 
+  const factory = useEventFactory();
   const [draft, setDraft] = useState<UnsignedEvent>();
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
@@ -131,10 +133,10 @@ export default function PostModal({
       const { content, nsfw, nsfwReason, community, split, subject } = values;
 
       let draft = finalizeNote({
-        content: correctContentMentions(content),
         kind: kinds.ShortTextNote,
+        content,
         tags: [],
-        created_at: dayjs().unix(),
+        created_at: unixNow(),
       });
 
       if (nsfw) draft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
@@ -152,7 +154,7 @@ export default function PostModal({
       setDraft(unsigned);
       return unsigned;
     },
-    [getValues, emojis, finalizeDraft, setDraft],
+    [getValues, emojis, finalizeDraft, setDraft, factory],
   );
 
   // throttle update the draft every 500ms

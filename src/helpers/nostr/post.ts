@@ -86,7 +86,7 @@ export function ensureNotifyPubkeys(draft: EventTemplate, pubkeys: string[]) {
 }
 
 export function correctContentMentions(content: string) {
-  return content.replace(/(\s|^)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "$1nostr:$2");
+  return content.replaceAll(/(\s|^)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "$1nostr:$2");
 }
 
 export function getPubkeysMentionedInContent(content: string, direct = false) {
@@ -219,7 +219,6 @@ export function addPubkeyRelayHints(draft: EventTemplate) {
 export function finalizeNote(draft: EventTemplate) {
   let updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
-  updated = createHashtagTags(updated);
   updated = addPubkeyRelayHints(updated);
   updated = ensureTagContentMentions(updated);
   return updated;

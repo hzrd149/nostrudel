@@ -63,6 +63,11 @@ export function getEventRelayHint(event: NostrEvent): string | undefined {
   return getEventRelayHints(event, 1)[0];
 }
 
+/** Returns a relay hint for a single pubkey */
+export function getPubkeyRelayHint(pubkey: string): string | undefined {
+  return getAuthorHints(pubkey)[0];
+}
+
 /** Returns a nevent or naddr for an event */
 export function getSharableEventAddress(event: NostrEvent, relays?: Iterable<string>) {
   relays = relays || getEventRelayHints(event, 2);
