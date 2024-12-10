@@ -1,4 +1,5 @@
-import { safeRelayUrls } from "applesauce-core/helpers";
+import { getCoordinateFromAddressPointer, safeRelayUrls } from "applesauce-core/helpers";
+import { EventFactoryClient } from "applesauce-factory";
 import { kinds } from "nostr-tools";
 
 export const DEFAULT_SEARCH_RELAYS = safeRelayUrls([
@@ -47,10 +48,14 @@ export const NOSTR_CONNECT_PERMISSIONS = [
 ];
 
 export const NEVER_ATTACH_CLIENT_TAG = [kinds.EncryptedDirectMessage];
-export const NIP_89_CLIENT_TAG = [
-  "client",
-  "noStrudel",
-  "31990:266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5:1686066542546",
-];
+
+export const NIP_89_CLIENT_APP: EventFactoryClient = {
+  name: "noStrudel",
+  address: {
+    kind: kinds.Handlerinformation,
+    pubkey: "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5",
+    identifier: "1686066542546",
+  },
+};
 
 export const SUPPORT_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";

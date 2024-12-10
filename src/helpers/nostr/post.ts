@@ -155,6 +155,7 @@ export function ensureTagContentMentions(draft: EventTemplate) {
   return updated;
 }
 
+/** @deprecated use includeContentHashtags from applesauce-factory instead */
 export function createHashtagTags(draft: EventTemplate) {
   const updatedDraft: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
 
@@ -214,6 +215,7 @@ export function addPubkeyRelayHints(draft: EventTemplate) {
   };
 }
 
+/** @deprecated use event factory instead */
 export function finalizeNote(draft: EventTemplate) {
   let updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);

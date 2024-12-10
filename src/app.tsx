@@ -16,6 +16,8 @@ const DVMFeedView = lazy(() => import("./views/discovery/dvm-feed/feed"));
 const BlindspotHomeView = lazy(() => import("./views/discovery/blindspot"));
 const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"));
 const RelayDiscoveryView = lazy(() => import("./views/discovery/relays/index"));
+const MediaFeedView = lazy(() => import("./views/media/index"));
+const MediaPostView = lazy(() => import("./views/media/media-post"));
 import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
@@ -106,6 +108,7 @@ import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
 import WalletView from "./views/wallet";
 import SupportView from "./views/support";
+import UserMediaPostsTab from "./views/user/media-posts";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -258,6 +261,7 @@ const router = createHashRouter([
           { path: "about", element: <UserAboutTab /> },
           { path: "notes", element: <UserNotesTab /> },
           { path: "articles", element: <UserArticlesTab /> },
+          { path: "media", element: <UserMediaPostsTab /> },
           { path: "streams", element: <UserStreamsTab /> },
           { path: "tracks", element: <UserTracksTab /> },
           { path: "videos", element: <UserVideosTab /> },
@@ -363,6 +367,13 @@ const router = createHashRouter([
             path: "",
             element: <VideosView />,
           },
+        ],
+      },
+      {
+        path: "media",
+        children: [
+          { path: "", element: <MediaFeedView /> },
+          { path: ":pointer", element: <MediaPostView /> },
         ],
       },
       {

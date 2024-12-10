@@ -23,6 +23,7 @@ import MessageQuestionSquare from "../../components/icons/message-question-squar
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
 import Users03 from "../../components/icons/users-03";
+import Camera01 from "../../components/icons/camera-01";
 
 export const internalApps: App[] = [
   {
@@ -31,6 +32,13 @@ export const internalApps: App[] = [
     icon: LiveStreamIcon,
     id: "streams",
     to: "/streams",
+  },
+  {
+    title: "Media",
+    description: "Browser media posts",
+    icon: Camera01,
+    id: "media",
+    to: "/media",
   },
   {
     title: "Communities",

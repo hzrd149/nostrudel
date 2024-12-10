@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, VideoHTMLAttributes } from "react";
 import styled from "@emotion/styled";
 
 import { isStreamURL, isVideoURL } from "../../../helpers/url";
@@ -15,7 +15,7 @@ const StyledVideo = styled.video`
   z-index: 1;
 `;
 
-function TrustVideo({ src }: { src: string }) {
+export function TrustVideo({ src, ...props }: { src: string } & VideoHTMLAttributes<HTMLVideoElement>) {
   const { blurImages } = useAppSettings();
   const { onClick, handleEvent, style } = useElementTrustBlur();
 
@@ -26,6 +26,7 @@ function TrustVideo({ src }: { src: string }) {
       style={blurImages ? style : undefined}
       onClick={blurImages ? onClick : undefined}
       onPlay={blurImages ? handleEvent : undefined}
+      {...props}
     />
   );
 }

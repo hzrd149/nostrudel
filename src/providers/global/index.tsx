@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
-import { QueryStoreProvider } from "applesauce-react";
+import { QueryStoreProvider } from "applesauce-react/providers";
 
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
@@ -12,6 +12,7 @@ import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
 import WebOfTrustProvider from "./web-of-trust-provider";
 import { queryStore } from "../../services/event-store";
+import EventFactoryProvider from "./event-factory-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
   const { theme: themeName, primaryColor, maxPageWidth } = useAppSettings();
@@ -33,17 +34,19 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
     <QueryStoreProvider store={queryStore}>
       <ThemeProviders>
         <SigningProvider>
-          <PublishProvider>
-            <NotificationsProvider>
-              <DMTimelineProvider>
-                <DefaultEmojiProvider>
-                  <UserEmojiProvider>
-                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                  </UserEmojiProvider>
-                </DefaultEmojiProvider>
-              </DMTimelineProvider>
-            </NotificationsProvider>
-          </PublishProvider>
+          <EventFactoryProvider>
+            <PublishProvider>
+              <NotificationsProvider>
+                <DMTimelineProvider>
+                  <DefaultEmojiProvider>
+                    <UserEmojiProvider>
+                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                    </UserEmojiProvider>
+                  </DefaultEmojiProvider>
+                </DMTimelineProvider>
+              </NotificationsProvider>
+            </PublishProvider>
+          </EventFactoryProvider>
         </SigningProvider>
       </ThemeProviders>
     </QueryStoreProvider>

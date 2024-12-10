@@ -1,6 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { EventTemplate, NostrEvent, UnsignedEvent, getEventHash, kinds } from "nostr-tools";
+import { EventTemplate, NostrEvent, UnsignedEvent, kinds } from "nostr-tools";
+import { includeClientTag } from "applesauce-factory/operations";
 
 import { useSigningContext } from "./signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
@@ -9,11 +10,10 @@ import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { cloneEvent, getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
 import replaceableEventsService from "../../services/replaceable-events";
-import eventReactionsService from "../../services/event-reactions";
 import { localRelay } from "../../services/local-relay";
 import deleteEventService from "../../services/delete-events";
 import localSettings from "../../services/local-settings";
-import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_TAG } from "../../const";
+import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_APP } from "../../const";
 import { eventStore } from "../../services/event-store";
 import { addPubkeyRelayHints } from "../../helpers/nostr/post";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -70,19 +70,24 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const outBoxes = useUserOutbox(account?.pubkey);
 
   const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(
-    (event: EventTemplate | NostrEvent) => {
+    async (event: EventTemplate | NostrEvent) => {
       let draft = cloneEvent(event.kind, event);
 
       // add pubkey relay hints
       draft = addPubkeyRelayHints(draft);
 
       // add client tag
-      if (localSettings.addClientTag.value && !NEVER_ATTACH_CLIENT_TAG.includes(draft.kind)) {
-        draft.tags = [...draft.tags.filter((t) => t[0] !== "client"), NIP_89_CLIENT_TAG];
+      if (
+        localSettings.addClientTag.value &&
+        !NEVER_ATTACH_CLIENT_TAG.includes(draft.kind) &&
+        !draft.tags.some((t) => t[0] === "client")
+      ) {
+        // TODO: this should be removed when all events are created using the event factory
+        draft = await includeClientTag(NIP_89_CLIENT_APP.name, NIP_89_CLIENT_APP.address)(draft, {});
       }
 
       // request signature
-      return signerFinalize(draft);
+      return await signerFinalize(draft);
     },
     [signerFinalize],
   );

@@ -8,6 +8,7 @@ import Timestamp from "../../timestamp";
 import ReactionIcon from "../../event-reactions/reaction-icon";
 import { NoteLink } from "../../note/note-link";
 import { nip25 } from "nostr-tools";
+import DebugEventButton from "../../debug-modal/debug-event-button";
 
 export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const pointer = nip25.getReactedEventPointer(event);
@@ -24,6 +25,7 @@ export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "c
           {pointer && <NoteLink noteId={pointer.id} />}
           <Spacer />
           <Timestamp timestamp={event.created_at} />
+          <DebugEventButton event={event} variant="ghost" size="xs" />
         </Flex>
       </Card>
     </TrustProvider>

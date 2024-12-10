@@ -22,6 +22,8 @@ import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import AlertTriangle from "../../../components/icons/alert-triangle";
 import MessageSquare02 from "../../../components/icons/message-square-02";
+import Camera01 from "../../../components/icons/camera-01";
+import { MEDIA_POST_KIND } from "../../../helpers/nostr/media";
 
 type KnownKind = {
   kind: number;
@@ -73,6 +75,13 @@ const KnownKinds: KnownKind[] = [
     name: "Articles",
     icon: ArticleIcon,
     link: (_, p) => `/u/${npubEncode(p)}/articles`,
+  },
+
+  {
+    kind: MEDIA_POST_KIND,
+    name: "Media",
+    icon: Camera01,
+    link: (_, p) => `/u/${npubEncode(p)}/media`,
   },
 
   {

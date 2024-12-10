@@ -1,6 +1,6 @@
 import { ReactNode, memo } from "react";
 import { kinds } from "nostr-tools";
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
@@ -16,6 +16,8 @@ import { TimelineNote } from "../../note/timeline-note";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
 import EmbeddedUnknown from "../../embed-event/event-types/embedded-unknown";
+import { MEDIA_POST_KIND } from "../../../helpers/nostr/media";
+import MediaPost from "../../media-post/media-post-card";
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useEventIntersectionRef(event);
@@ -43,6 +45,9 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       break;
     case kinds.LongFormArticle:
       content = <ArticleCard article={event} />;
+      break;
+    case MEDIA_POST_KIND:
+      content = <MediaPost post={event} />;
       break;
     default:
       content = <EmbeddedUnknown event={event} />;
