@@ -1,8 +1,9 @@
 import { useRef } from "react";
-import { Box, ComponentWithAs, Flex, FlexProps, IconButton, useToast } from "@chakra-ui/react";
+import { Flex, FlexProps, IconButton, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
 import { useEventFactory } from "applesauce-react/hooks";
+import { Emoji } from "applesauce-core/helpers/emoji";
 
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
@@ -27,7 +28,8 @@ export default function MediaPostCommentForm({
   const sendMessage = handleSubmit(async (values) => {
     try {
       if (!factory) throw new Error("Missing factory");
-      let draft = await factory.comment(post, values.content);
+
+      let draft = await factory.comment(post, values.content, { emojis: emojis.filter((e) => !!e.url) as Emoji[] });
       const pub = await publish("Comment", draft, relays);
       if (pub) reset();
     } catch (error) {

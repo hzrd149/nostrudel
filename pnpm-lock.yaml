@@ -92,34 +92,34 @@ importers:
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-channel:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-lists:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-net:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       applesauce-signer:
         specifier: next
-        version: 0.0.0-next-20241210184957(typescript@5.7.2)
+        version: 0.0.0-next-20241210193522(typescript@5.7.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: next
-        version: 0.0.0-next-20241125171808
+        specifier: ^2.1.0
+        version: 2.1.0
       blossom-drive-sdk:
         specifier: ^0.4.1
         version: 0.4.1(typescript@5.7.2)
@@ -251,7 +251,7 @@ importers:
         version: 9.0.1(@types/react@18.3.14)(react@18.3.1)
       react-mosaic-component:
         specifier: ^6.1.0
-        version: 6.1.0(@types/node@20.17.6)(@types/react@18.3.14)(dnd-core@16.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 6.1.0(@types/react@18.3.14)(dnd-core@16.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-photo-album:
         specifier: ^2.4.1
         version: 2.4.1(react@18.3.1)
@@ -378,7 +378,7 @@ importers:
         version: 0.8.7
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@5.4.11(@types/node@20.17.6)(terser@5.37.0))
+        version: 4.3.4(vite@5.4.11(terser@5.37.0))
       camelcase:
         specifier: ^8.0.0
         version: 8.0.0
@@ -390,10 +390,10 @@ importers:
         version: 5.7.2
       vite:
         specifier: ^5.4.11
-        version: 5.4.11(@types/node@20.17.6)(terser@5.37.0)
+        version: 5.4.11(terser@5.37.0)
       vite-plugin-pwa:
         specifier: ^0.21.1
-        version: 0.21.1(vite@5.4.11(@types/node@20.17.6)(terser@5.37.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+        version: 0.21.1(vite@5.4.11(terser@5.37.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       workbox-build:
         specifier: ^7.3.0
         version: 7.3.0(@types/babel__core@7.20.5)
@@ -1764,9 +1764,6 @@ packages:
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
 
-  '@types/node@20.17.6':
-    resolution: {integrity: sha512-VEI7OdvK2wP7XHnsuXbAJnEpEkF6NjSN45QJlL4VGqZSXsnicpesdTWsg9RISeSdYd3yeRj/y3k5KGjUXYnFwQ==}
-
   '@types/offscreencanvas@2019.7.3':
     resolution: {integrity: sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==}
 
@@ -1908,29 +1905,29 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-channel@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-Hf9hKvoIjil93o2I2BdJ40BePXlQCKcTQECA9rPboJwVpFKIGamZYt2aLaP+D5wusMeYVvYg/bKRefNyGE5lew==}
+  applesauce-channel@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-doSJufHgtN2YK2JmO2pkgoq21qh4Pmxu7Uy9PV8cpcPHIyghSEUqgYpSh6nxG3523Yv3w9SGhiYjNRbkJzVWcA==}
 
-  applesauce-content@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-YqolYoYp3bDMDyarK/FwnFU5Vjeh/EqYPmBsLVXdzW73XLGCPKCHGhV7WRIfjX9mUUQ6tkbaW8IJBiqhpyGHng==}
+  applesauce-content@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-QOx6V0etuwZzKCecoR24Ylrb+Q1bIHTBiQve4LGthww84KiarWfXIWTSzZ2a5/kctOkVxOWdn/qHv2JKSGEdeA==}
 
-  applesauce-core@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-B2cF2Ivj10sUfcM2T/tGoDNOb4hR56b3r9mgcIZvxGWcn9M0Zs+4m3/axqXff/25EZCHwM0nSYTZ3YLwbiwrvw==}
+  applesauce-core@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-Pc14Eq7WeGozgQjRlKRiOfBmoDtzO0sY9F69FlebZVxbnN1yc/aHi/T54hRWo92rAtY+LRp4ONggfsDgNHIrjw==}
 
-  applesauce-factory@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-shSpfVyCsi/NC66aLm0/btvaH6nbAbMBEuUjpFJrLUnAHsN238uB0ImqF2F/OULNCwq/+2CvJJ7CkAl4VF59MQ==}
+  applesauce-factory@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-s/yyoI+iLy84pOPH6FRbS0bKESKyAYZh/XYPtybkbYWjkFz0B8/sflIrH1l0Q+/SaVzoTNo67UXeKjkq3uBWNg==}
 
-  applesauce-lists@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-N0JoT/4VBNeMqsz0dlgB5+4x7/kF5HlZiyaz1u9dC2eRJZPMIiTYKS9W4/B+KwwqS/2+euDZd2ejiD9Wrx9nhw==}
+  applesauce-lists@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-bMVKK0eyFDAyQgSs0XAnD32OqJ13hGJB0a7gyBtdsJET2fry54OEU/O6bgnmv6Ygv2VzOPif9JNzDPDY0oThKg==}
 
-  applesauce-net@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-VVfb4O11NyRQvL9ArIq8HhQui5mFwd/96sep3IWsp5mRLL62oVNg82CMIFR7phuB9fLLSe5k22VKS6bBmEYDlw==}
+  applesauce-net@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-3dd+bCybnDtd6/uXXTF5f8BSQk/bnIIEPk95p+O57K5DQectoJHkbKTOd7fxLP/NDz/96trlQbkQPW8kezTAWQ==}
 
-  applesauce-react@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-a5sJlWCrHI+A/fTKD7DxNbUakqww6qlJitavriouPyiSj8b4GTsSzhsfxiLxMl7P9kTkPuq4FZzE8GMfYTWJDQ==}
+  applesauce-react@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-Qo7vJUlcResa3MdjJNigNv/pX9lHdAYkCgbVlGwGcw5xkf20moHnUsOJfaQxEd678ATXVqJeUFNjvzIdb1GLAg==}
 
-  applesauce-signer@0.0.0-next-20241210184957:
-    resolution: {integrity: sha512-irQtLGViBw/YXSsSER1uHbOg2Iv3rrZUyoQiZH5NeDzfGtoAuMJ8UCuAcvc30Zuy9dAvryPJcVfj9iDLUGAGQA==}
+  applesauce-signer@0.0.0-next-20241210193522:
+    resolution: {integrity: sha512-Hq6EzpxGwlbqhUwe2+sILO6qZtywIdpvnN5Lt2VRZvQJEpG99DbqQEwtxzlCBII0+gOXc50rWSmaPGAz8PbZhw==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -2006,12 +2003,12 @@ packages:
   bezier-js@6.1.4:
     resolution: {integrity: sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==}
 
-  blossom-client-sdk@0.0.0-next-20241125171808:
-    resolution: {integrity: sha512-F4V4D1ZB3ggRdoBbktubdLgzDv5591CLqbs6dugpCO/NtDXPvqmIJeg+J+/xMCp+q5PcapfjQr+b3uSTjrkimg==}
-    engines: {node: '>=18'}
-
   blossom-client-sdk@0.7.0:
     resolution: {integrity: sha512-xG0HiuhFcK6UpmYjJ4vRPm3APMrRf+MQDfZWlNRTxs2gEETfqbhYm5pCl2hPfLjpEcFSDXgr3sLCh6C77ABKgg==}
+
+  blossom-client-sdk@2.1.0:
+    resolution: {integrity: sha512-WAlSD1BD8aRNUJym0wyftL1VNNzowg24yNTHsZD2a0EjGRGjYth+yXiY+RJuWN5uGuXzh8AWPWPeTCK6mVpP6g==}
+    engines: {node: '>=18'}
 
   blossom-drive-sdk@0.4.1:
     resolution: {integrity: sha512-X4OIA4+X4zpZy11zP6ekE61LHFIOCvS+H+McqsyDVtGrwFeFSuqfZVyKpg1QuQTlxSVIlJVX0jt9+gHEfdGqWA==}
@@ -4210,9 +4207,6 @@ packages:
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
 
-  undici-types@6.19.8:
-    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
-
   undici@6.21.0:
     resolution: {integrity: sha512-BUgJXc752Kou3oOIuU1i+yZZypyZRqNPW0vqoMPl8VaoalSfeR0D8/t4iAS3yirs79SSMTxTag+ZC86uswv+Cw==}
     engines: {node: '>=18.17'}
@@ -6200,11 +6194,6 @@ snapshots:
 
   '@types/node@12.20.55': {}
 
-  '@types/node@20.17.6':
-    dependencies:
-      undici-types: 6.19.8
-    optional: true
-
   '@types/offscreencanvas@2019.7.3': {}
 
   '@types/parse-json@4.0.2': {}
@@ -6296,14 +6285,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.1': {}
 
-  '@vitejs/plugin-react@4.3.4(vite@5.4.11(@types/node@20.17.6)(terser@5.37.0))':
+  '@vitejs/plugin-react@4.3.4(vite@5.4.11(terser@5.37.0))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.11(@types/node@20.17.6)(terser@5.37.0)
+      vite: 5.4.11(terser@5.37.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -6353,22 +6342,22 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-channel@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-channel@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-content@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
       mdast-util-find-and-replace: 3.0.1
       nostr-tools: 2.10.4(typescript@5.7.2)
       remark: 15.0.1
@@ -6379,7 +6368,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-core@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
       '@scure/base': 1.2.1
       debug: 4.4.0
@@ -6393,22 +6382,22 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-factory@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20241210184957(typescript@5.7.2)
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-content: 0.0.0-next-20241210193522(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-lists@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-lists@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
       debug: 4.4.0
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
@@ -6416,9 +6405,9 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-net@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-net@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
@@ -6426,11 +6415,11 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-react@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20241210184957(typescript@5.7.2)
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
-      applesauce-factory: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-content: 0.0.0-next-20241210193522(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
+      applesauce-factory: 0.0.0-next-20241210193522(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
       react: 18.3.1
       rxjs: 7.8.1
@@ -6438,14 +6427,14 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signer@0.0.0-next-20241210184957(typescript@5.7.2):
+  applesauce-signer@0.0.0-next-20241210193522(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241210184957(typescript@5.7.2)
-      applesauce-net: 0.0.0-next-20241210184957(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241210193522(typescript@5.7.2)
+      applesauce-net: 0.0.0-next-20241210193522(typescript@5.7.2)
       debug: 4.4.0
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.2)
@@ -6535,17 +6524,17 @@ snapshots:
 
   bezier-js@6.1.4: {}
 
-  blossom-client-sdk@0.0.0-next-20241125171808:
-    dependencies:
-      '@cashu/cashu-ts': 2.0.0-rc1
-      '@noble/hashes': 1.6.1
-
   blossom-client-sdk@0.7.0:
     dependencies:
       '@noble/hashes': 1.6.1
       cross-fetch: 4.0.0
     transitivePeerDependencies:
       - encoding
+
+  blossom-client-sdk@2.1.0:
+    dependencies:
+      '@cashu/cashu-ts': 2.0.0-rc1
+      '@noble/hashes': 1.6.1
 
   blossom-drive-sdk@0.4.1(typescript@5.7.2):
     dependencies:
@@ -8429,26 +8418,26 @@ snapshots:
     dependencies:
       dnd-core: 16.0.1
 
-  react-dnd-multi-backend@8.0.3(dnd-core@16.0.1)(react-dnd@16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-dnd-multi-backend@8.0.3(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.14)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       dnd-core: 16.0.1
       dnd-multi-backend: 8.0.3(dnd-core@16.0.1)
       react: 18.3.1
-      react-dnd: 16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1)
-      react-dnd-preview: 8.0.3(react-dnd@16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1))(react@18.3.1)
+      react-dnd: 16.0.1(@types/react@18.3.14)(react@18.3.1)
+      react-dnd-preview: 8.0.3(react-dnd@16.0.1(@types/react@18.3.14)(react@18.3.1))(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
 
-  react-dnd-preview@8.0.3(react-dnd@16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1))(react@18.3.1):
+  react-dnd-preview@8.0.3(react-dnd@16.0.1(@types/react@18.3.14)(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
-      react-dnd: 16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1)
+      react-dnd: 16.0.1(@types/react@18.3.14)(react@18.3.1)
 
   react-dnd-touch-backend@16.0.1:
     dependencies:
       '@react-dnd/invariant': 4.0.2
       dnd-core: 16.0.1
 
-  react-dnd@16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1):
+  react-dnd@16.0.1(@types/react@18.3.14)(react@18.3.1):
     dependencies:
       '@react-dnd/invariant': 4.0.2
       '@react-dnd/shallowequal': 4.0.2
@@ -8457,7 +8446,6 @@ snapshots:
       hoist-non-react-statics: 3.3.2
       react: 18.3.1
     optionalDependencies:
-      '@types/node': 20.17.6
       '@types/react': 18.3.14
 
   react-dom@18.3.1(react@18.3.1):
@@ -8527,7 +8515,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-mosaic-component@6.1.0(@types/node@20.17.6)(@types/react@18.3.14)(dnd-core@16.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-mosaic-component@6.1.0(@types/react@18.3.14)(dnd-core@16.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       classnames: 2.5.1
       immutability-helper: 3.1.1
@@ -8535,9 +8523,9 @@ snapshots:
       prop-types: 15.8.1
       rdndmb-html5-to-touch: 8.0.3(dnd-core@16.0.1)
       react: 18.3.1
-      react-dnd: 16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1)
+      react-dnd: 16.0.1(@types/react@18.3.14)(react@18.3.1)
       react-dnd-html5-backend: 16.0.1
-      react-dnd-multi-backend: 8.0.3(dnd-core@16.0.1)(react-dnd@16.0.1(@types/node@20.17.6)(@types/react@18.3.14)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dnd-multi-backend: 8.0.3(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.14)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dnd-touch-backend: 16.0.1
       uuid: 9.0.1
     transitivePeerDependencies:
@@ -9187,9 +9175,6 @@ snapshots:
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.0
 
-  undici-types@6.19.8:
-    optional: true
-
   undici@6.21.0: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
@@ -9287,24 +9272,23 @@ snapshots:
 
   vite-plugin-funding@0.1.0: {}
 
-  vite-plugin-pwa@0.21.1(vite@5.4.11(@types/node@20.17.6)(terser@5.37.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0):
+  vite-plugin-pwa@0.21.1(vite@5.4.11(terser@5.37.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0):
     dependencies:
       debug: 4.4.0
       pretty-bytes: 6.1.1
       tinyglobby: 0.2.10
-      vite: 5.4.11(@types/node@20.17.6)(terser@5.37.0)
+      vite: 5.4.11(terser@5.37.0)
       workbox-build: 7.3.0(@types/babel__core@7.20.5)
       workbox-window: 7.3.0
     transitivePeerDependencies:
       - supports-color
 
-  vite@5.4.11(@types/node@20.17.6)(terser@5.37.0):
+  vite@5.4.11(terser@5.37.0):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.49
       rollup: 4.28.1
     optionalDependencies:
-      '@types/node': 20.17.6
       fsevents: 2.3.3
       terser: 5.37.0
 
