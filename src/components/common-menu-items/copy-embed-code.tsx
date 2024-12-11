@@ -2,7 +2,7 @@ import { MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { CopyToClipboardIcon } from "../icons";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function CopyEmbedCodeMenuItem({ event }: { event: NostrEvent }) {
   const address = getSharableEventAddress(event);

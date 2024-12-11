@@ -10,7 +10,7 @@ import { Emoji } from "../../providers/global/emoji-provider";
 import { EventSplit } from "./zaps";
 import { unique } from "../array";
 
-import { getEventPointerRelayHint } from "../../services/event-relay-hint";
+import { getEventPointerRelayHint } from "../../services/relay-hints";
 import { eventStore } from "../../services/event-store";
 
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
@@ -86,7 +86,7 @@ export function ensureNotifyPubkeys(draft: EventTemplate, pubkeys: string[]) {
 }
 
 export function correctContentMentions(content: string) {
-  return content.replaceAll(/(\s|^)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "$1nostr:$2");
+  return content.replaceAll(/(?<=^|\s)(?:@)?(npub1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{58})/gi, "nostr:$1");
 }
 
 export function getPubkeysMentionedInContent(content: string, direct = false) {
@@ -196,30 +196,10 @@ export function setZapSplit(draft: EventTemplate, split: EventSplit) {
   return updatedDraft;
 }
 
-export function addPubkeyRelayHints(draft: EventTemplate) {
-  return {
-    ...draft,
-    tags: draft.tags.map((t) => {
-      if (isPTag(t) && !t[2]) {
-        const mailboxes = eventStore.getReplaceable(kinds.RelayList, t[1]);
-        const inbox = mailboxes && getInboxes(mailboxes);
-        if (inbox && inbox.length > 0) {
-          const newTag = [...t];
-          // TODO: Pick the best mailbox for the user
-          newTag[2] = inbox[0];
-          return newTag;
-        } else return t;
-      }
-      return t;
-    }),
-  };
-}
-
 /** @deprecated use event factory instead */
 export function finalizeNote(draft: EventTemplate) {
   let updated: EventTemplate = { ...draft, tags: Array.from(draft.tags) };
   updated.content = correctContentMentions(updated.content);
-  updated = addPubkeyRelayHints(updated);
   updated = ensureTagContentMentions(updated);
   return updated;
 }

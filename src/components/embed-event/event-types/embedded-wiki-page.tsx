@@ -21,7 +21,7 @@ import HoverLinkOverlay from "../../hover-link-overlay";
 import Timestamp from "../../timestamp";
 import GitBranch01 from "../../icons/git-branch-01";
 import UserName from "../../user/user-name";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmbeddedWikiPage({ page: page, ...props }: Omit<CardProps, "children"> & { page: NostrEvent }) {
   const { address } = useMemo(() => getPageForks(page), [page]);

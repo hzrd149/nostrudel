@@ -30,7 +30,7 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
 import DetailsTabs from "./details-tabs";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import NotePublishedUsing from "../../../components/note/note-published-using";
 
 export type ThreadItemProps = {

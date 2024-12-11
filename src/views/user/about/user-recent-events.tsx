@@ -15,7 +15,7 @@ import {
   RepostIcon,
 } from "../../../components/icons";
 import AnnotationQuestion from "../../../components/icons/annotation-question";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import { npubEncode } from "nostr-tools/nip19";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { NostrEvent } from "../types/nostr-event";
-import { getSharableEventAddress } from "../services/event-relay-hint";
+import { getSharableEventAddress } from "../services/relay-hints";
 import useUserMailboxes from "./use-user-mailboxes";
 
 export default function useShareableEventAddress(event: NostrEvent, overrideRelays?: string[]) {

@@ -7,7 +7,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { QuoteEventIcon } from "../icons";
 import useUserProfile from "../../hooks/use-user-profile";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();

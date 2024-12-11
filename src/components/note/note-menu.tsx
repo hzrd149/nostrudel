@@ -16,7 +16,7 @@ import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
 import Recording02 from "../icons/recording-02";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const translationsModal = useDisclosure();

@@ -26,7 +26,7 @@ import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../
 import { formatBytes } from "../../../helpers/number";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {

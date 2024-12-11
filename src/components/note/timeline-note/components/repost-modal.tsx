@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import type { AddressPointer } from "nostr-tools/nip19";
 
 import { ChevronDownIcon, ChevronUpIcon, ExternalLinkIcon } from "../../../icons";
-import { getAddressPointerRelayHints, getEventRelayHint } from "../../../../services/event-relay-hint";
+import { getAddressPointerRelayHints, getEventRelayHint } from "../../../../services/relay-hints";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import useUserCommunitiesList from "../../../../hooks/use-user-communities-list";

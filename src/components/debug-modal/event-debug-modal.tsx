@@ -18,7 +18,7 @@ import { ModalProps } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../types/nostr-event";
 import RawValue from "./raw-value";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 import { CodeIcon, RelayIcon, ThreadIcon } from "../icons";
 import RawJsonPage from "./pages/raw";
 import PenTool01 from "../icons/pen-tool-01";

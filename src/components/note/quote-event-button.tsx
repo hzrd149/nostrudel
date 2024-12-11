@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 
 import { QuoteEventIcon } from "../icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function QuoteEventButton({
   event,

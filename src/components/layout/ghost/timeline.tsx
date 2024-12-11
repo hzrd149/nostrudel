@@ -13,7 +13,7 @@ import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import UserName from "../../user/user-name";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 const kindColors: Record<number, FlexProps["bg"]> = {
   [kinds.ShortTextNote]: "blue.500",

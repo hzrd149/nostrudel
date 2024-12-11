@@ -9,7 +9,7 @@ import UserLink from "../../user/user-link";
 import GoalProgress from "../../../views/goals/components/goal-progress";
 import GoalZapButton from "../../../views/goals/components/goal-zap-button";
 import GoalTopZappers from "../../../views/goals/components/goal-top-zappers";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export type EmbeddedGoalOptions = {
   showActions?: boolean;

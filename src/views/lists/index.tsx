@@ -9,7 +9,7 @@ import useUserSets from "../../hooks/use-user-lists";
 import NewSetModal from "./components/new-set-modal";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 import Plus from "../../components/icons/plus";
 
 function ListsHomePage() {

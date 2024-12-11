@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { truncatedId } from "../../helpers/nostr/event";
-import { getEventPointerRelayHints } from "../../services/event-relay-hint";
+import { getEventPointerRelayHints } from "../../services/relay-hints";
 
 export type NoteLinkProps = LinkProps & {
   noteId: string;

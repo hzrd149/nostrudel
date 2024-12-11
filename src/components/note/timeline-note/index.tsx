@@ -44,7 +44,7 @@ import POWIcon from "../../pow/pow-icon";
 import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 import NotePublishedUsing from "../note-published-using";
 import useAppSettings from "../../../hooks/use-app-settings";

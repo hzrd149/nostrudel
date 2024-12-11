@@ -25,7 +25,7 @@ import signingService from "../../services/signing";
 import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import UserLink from "../user/user-link";
-import { getEventRelayHints } from "../../services/event-relay-hint";
+import { getEventRelayHints } from "../../services/relay-hints";
 import { eventStore, queryStore } from "../../services/event-store";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };

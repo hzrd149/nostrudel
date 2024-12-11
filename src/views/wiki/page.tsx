@@ -38,7 +38,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);

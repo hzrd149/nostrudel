@@ -38,7 +38,7 @@ import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
 import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
   const people = getPubkeysFromList(list);

@@ -4,7 +4,7 @@ import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "../../types/nostr-event";
 import { ExternalLinkIcon } from "../icons";
 import { AppHandlerContext } from "../../providers/route/app-handler-provider";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function OpenInAppMenuItem({ event }: { event: NostrEvent }) {
   const address = useMemo(() => getSharableEventAddress(event), [event]);

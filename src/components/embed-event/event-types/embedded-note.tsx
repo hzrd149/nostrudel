@@ -14,7 +14,7 @@ import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 import useAppSettings from "../../../hooks/use-app-settings";
 

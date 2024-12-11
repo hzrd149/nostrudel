@@ -31,7 +31,11 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
           isLoading={loading === group.emoji}
           onClick={() => {
             setLoading(group.emoji);
-            addReaction(group.emoji, group.url).finally(() => setLoading(undefined));
+            if (group.url) {
+              addReaction({ name: group.emoji, url: group.url }).finally(() => setLoading(undefined));
+            } else {
+              addReaction(group.emoji).finally(() => setLoading(undefined));
+            }
           }}
           colorScheme={account && group.pubkeys.includes(account?.pubkey) ? "primary" : undefined}
         />

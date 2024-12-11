@@ -18,7 +18,7 @@ import UserName from "../../components/user/user-name";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
 import TimelineNote from "../../components/note/timeline-note";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 function CollapsedReplies({
   pointer,

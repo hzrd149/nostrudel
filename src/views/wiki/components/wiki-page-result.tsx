@@ -10,7 +10,7 @@ import FileSearch01 from "../../../components/icons/file-search-01";
 import GitBranch01 from "../../../components/icons/git-branch-01";
 import UserName from "../../../components/user/user-name";
 import UserAvatar from "../../../components/user/user-avatar";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function WikiPageResult({ page, compare }: { page: NostrEvent; compare?: NostrEvent }) {
   const topic = getPageTopic(page);

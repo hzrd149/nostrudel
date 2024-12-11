@@ -33,7 +33,7 @@ declare module "yet-another-react-lightbox" {
 import { NostrEvent } from "../types/nostr-event";
 import UserAvatarLink from "./user/user-avatar-link";
 import UserLink from "./user/user-link";
-import { getSharableEventAddress } from "../services/event-relay-hint";
+import { getSharableEventAddress } from "../services/relay-hints";
 
 type RefType = MutableRefObject<HTMLElement | null>;
 

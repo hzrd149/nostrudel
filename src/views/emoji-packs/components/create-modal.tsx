@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalProps, "children">) {
   const publish = usePublishEvent();

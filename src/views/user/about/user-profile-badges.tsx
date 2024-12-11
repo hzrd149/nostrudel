@@ -26,7 +26,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; award: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);

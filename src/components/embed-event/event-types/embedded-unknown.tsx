@@ -12,7 +12,7 @@ import { renderAudioUrl } from "../../content/links/audio";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = useMemo(() => getSharableEventAddress(event), [event]);

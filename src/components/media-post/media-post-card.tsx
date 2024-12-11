@@ -13,7 +13,7 @@ import RepostButton from "../note/timeline-note/components/repost-button";
 import QuoteEventButton from "../note/quote-event-button";
 import MediaPostSlides from "./media-slides";
 import MediaPostContents from "./media-post-content";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 import { ThreadIcon } from "../icons";
 import EventZapIconButton from "../zap/event-zap-icon-button";
 import Timestamp from "../timestamp";

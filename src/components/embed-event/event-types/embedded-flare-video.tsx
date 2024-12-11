@@ -7,7 +7,7 @@ import UserLink from "../../user/user-link";
 import UserAvatar from "../../user/user-avatar";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmbeddedFlareVideo({ video, ...props }: Omit<CardProps, "children"> & { video: NostrEvent }) {
   const navigate = useNavigate();

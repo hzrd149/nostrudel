@@ -26,7 +26,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
 import FormatButton from "./components/format-toolbar";
 import dictionaryService from "../../services/dictionary";
-import { getSharableEventAddress } from "../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../services/relay-hints";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
   const toast = useToast();

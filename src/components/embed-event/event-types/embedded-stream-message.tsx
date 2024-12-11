@@ -8,7 +8,7 @@ import UserAvatar from "../../user/user-avatar";
 import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-message-content";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import { getStreamTitle } from "../../../helpers/nostr/stream";
 
 export default function EmbeddedStreamMessage({

@@ -20,7 +20,7 @@ import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji
 import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
-import { getSharableEventAddress } from "../../../services/event-relay-hint";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojis(pack);
