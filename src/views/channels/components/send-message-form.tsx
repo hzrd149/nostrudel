@@ -1,14 +1,14 @@
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import dayjs from "dayjs";
-import { kinds } from "nostr-tools";
-
+import { EventTemplate } from "nostr-tools";
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { useEventFactory } from "applesauce-react/hooks";
+import { ChannelMessageBlueprint, ChannelMessageReplyBlueprint } from "applesauce-channel/blueprints";
+import { Emoji } from "applesauce-core/helpers";
 
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { createEmojiTags, ensureNotifyPubkeys, getPubkeysMentionedInContent } from "../../../helpers/nostr/post";
+import { NostrEvent } from "../../../types/nostr-event";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
@@ -16,11 +16,12 @@ import InsertImageButton from "../../../components/post-modal/insert-image-butto
 
 export default function ChannelMessageForm({
   channel,
-  rootId,
+  root,
   ...props
-}: { channel: NostrEvent; rootId?: string } & Omit<FlexProps, "children">) {
+}: { channel: NostrEvent; root?: NostrEvent } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
+  const factory = useEventFactory();
 
   const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
@@ -37,18 +38,16 @@ export default function ChannelMessageForm({
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const sendMessage = handleSubmit(async (values) => {
-    if (!values.content) return;
+    if (!values.content || !factory) return;
 
-    let draft: DraftNostrEvent = {
-      kind: kinds.ChannelMessage,
-      content: values.content,
-      tags: [["e", rootId || channel.id, "", "root"]],
-      created_at: dayjs().unix(),
-    };
+    const customEmojis = emojis.filter((e) => !!e.url) as Emoji[];
 
-    const contentMentions = getPubkeysMentionedInContent(draft.content);
-    draft = createEmojiTags(draft, emojis);
-    draft = ensureNotifyPubkeys(draft, contentMentions);
+    let draft: EventTemplate;
+    if (root) {
+      draft = await factory.create(ChannelMessageReplyBlueprint, root, values.content, { emojis: customEmojis });
+    } else {
+      draft = await factory.create(ChannelMessageBlueprint, channel, values.content, { emojis: customEmojis });
+    }
 
     setLoadingMessage("Signing...");
     await publish("Send DM", draft, undefined, false);

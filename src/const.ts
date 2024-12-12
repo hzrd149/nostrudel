@@ -1,4 +1,4 @@
-import { getCoordinateFromAddressPointer, safeRelayUrls } from "applesauce-core/helpers";
+import { safeRelayUrls } from "applesauce-core/helpers";
 import { EventFactoryClient } from "applesauce-factory";
 import { kinds } from "nostr-tools";
 
@@ -52,7 +52,6 @@ export const NEVER_ATTACH_CLIENT_TAG = [kinds.EncryptedDirectMessage];
 export const NIP_89_CLIENT_APP: EventFactoryClient = {
   name: "noStrudel",
   address: {
-    kind: kinds.Handlerinformation,
     pubkey: "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5",
     identifier: "1686066542546",
   },

@@ -79,7 +79,10 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         !draft.tags.some((t) => t[0] === "client")
       ) {
         // TODO: this should be removed when all events are created using the event factory
-        draft = await includeClientTag(NIP_89_CLIENT_APP.name, NIP_89_CLIENT_APP.address)(draft, {});
+        draft = await includeClientTag(
+          NIP_89_CLIENT_APP.name,
+          NIP_89_CLIENT_APP.address ? { ...NIP_89_CLIENT_APP.address, kind: kinds.Handlerinformation } : undefined,
+        )(draft, {});
       }
 
       // request signature

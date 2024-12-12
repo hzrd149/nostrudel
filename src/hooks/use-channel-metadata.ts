@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ChannelMetadataQuery } from "applesauce-channel";
+import { ChannelMetadataQuery } from "applesauce-channel/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
 
 import { RequestOptions } from "../services/replaceable-events";

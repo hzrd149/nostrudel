@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { Debugger } from "debug";
 import _throttle from "lodash.throttle";
 import { Filter, kinds } from "nostr-tools";
-import { getChannelPointer } from "applesauce-channel";
+import { getChannelPointer } from "applesauce-channel/helpers";
 
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";

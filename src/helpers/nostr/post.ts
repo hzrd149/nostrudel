@@ -11,8 +11,8 @@ import { EventSplit } from "./zaps";
 import { unique } from "../array";
 
 import { getEventPointerRelayHint } from "../../services/relay-hints";
-import { eventStore } from "../../services/event-store";
 
+/** @deprecated use event factory instead */
 function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   if (tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) {
     if (overwrite) {
@@ -25,6 +25,8 @@ function addTag(tags: Tag[], tag: Tag, overwrite = false) {
   }
   return [...tags, tag];
 }
+
+/** @deprecated use event factory instead */
 function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string, overwrite = false) {
   const hint = relayHint || getEventPointerRelayHint(eventId) || "";
 
@@ -42,6 +44,7 @@ function AddEtag(tags: Tag[], eventId: string, relayHint?: string, type?: string
   return [...tags, tag];
 }
 
+/** @deprecated use event factory instead */
 function AddQuotePointerTag(tags: Tag[], pointer: EventPointer) {
   const hint = pointer.relays?.[0] || getEventPointerRelayHint(pointer.id) || "";
 
