@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
+import { Box, ButtonGroup, Card, CardBody, CardFooter, CardHeader, IconButton } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -32,9 +32,13 @@ export default function MediaPost({ post }: { post: NostrEvent }) {
             <UserDnsIdentity pubkey={post.pubkey} />
           </Box>
 
-          <Button as={RouterLink} to={`/media/${nevent}`} leftIcon={<ThreadIcon boxSize={5} />} ml="auto">
-            Comments
-          </Button>
+          <IconButton
+            as={RouterLink}
+            to={`/media/${nevent}`}
+            icon={<ThreadIcon boxSize={5} />}
+            ml="auto"
+            aria-label="Comments"
+          />
         </CardHeader>
 
         <CardBody p="0" position="relative" display="flex" flexDirection="column" gap="2" minH="md">
