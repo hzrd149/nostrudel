@@ -1,9 +1,6 @@
-import { kinds } from "nostr-tools";
-import { getEventPointerFromETag, getTagValue, safeRelayUrl, unixNow } from "applesauce-core/helpers";
+import { getEventPointerFromETag, getTagValue, safeRelayUrl } from "applesauce-core/helpers";
 
-import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
-import { ensureNotifyContentMentions } from "./post";
-import { getEventCoordinate } from "./event";
+import { NostrEvent, isPTag } from "../../types/nostr-event";
 
 export type StreamStatus = "live" | "ended" | "planned";
 
@@ -79,17 +76,4 @@ export function getStreamParticipants(stream: NostrEvent) {
 
 export function getStreamHashtags(stream: NostrEvent) {
   return stream.tags.filter((t) => t[0] === "t").map((t) => t[1]);
-}
-
-export function buildChatMessage(stream: NostrEvent, content: string) {
-  let draft: DraftNostrEvent = {
-    tags: [["a", getEventCoordinate(stream), "", "root"]],
-    content,
-    created_at: unixNow(),
-    kind: kinds.LiveChatMessage,
-  };
-
-  draft = ensureNotifyContentMentions(draft);
-
-  return draft;
 }

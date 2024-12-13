@@ -3,7 +3,6 @@ import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, S
 import { Token, getEncodedToken, CheckStateEnum } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
-import useUserProfile from "../../hooks/use-user-profile";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
 import CurrencyDollar from "../icons/currency-dollar";
@@ -14,28 +13,11 @@ import CurrencyPound from "../icons/currency-pound";
 import CurrencyBitcoin from "../icons/currency-bitcoin";
 import { getMintWallet } from "../../services/cashu-mints";
 
-function RedeemButton({ token }: { token: string }) {
-  const account = useCurrentAccount()!;
-  const metadata = useUserProfile(account.pubkey);
-
-  const lnurl = metadata?.lud16 ?? "";
-  const url = `https://redeem.cashu.me?token=${encodeURIComponent(token)}&lightning=${encodeURIComponent(
-    lnurl,
-  )}&autopay=yes`;
-  return (
-    <Button as={Link} href={url} isExternal colorScheme="primary">
-      Redeem
-    </Button>
-  );
-}
-
 export default function InlineCachuCard({
   token,
   encoded,
   ...props
 }: Omit<CardProps, "children"> & { token: Token; encoded?: string }) {
-  const account = useCurrentAccount();
-
   encoded = encoded || getEncodedToken(token);
   const { value: spendable, loading } = useAsync(async () => {
     if (!token) return;
@@ -84,7 +66,7 @@ export default function InlineCachuCard({
   }
 
   return (
-    <Card p="2" flexDirection="column" borderColor="green.500" gap="2" {...props}>
+    <Card p="2" flexDirection="column" borderColor="green.500" gap="2" maxW="md" variant="outline" {...props}>
       <Box>
         <UnitIcon boxSize={10} color={unitColor} float="left" mr="2" mb="1" />
         <ButtonGroup float="right" size="sm">
@@ -96,7 +78,6 @@ export default function InlineCachuCard({
             aria-label="Open Wallet"
             href={`cashu://` + encoded}
           />
-          {account && <RedeemButton token={encoded} />}
         </ButtonGroup>
         <Heading size="md" textDecoration={spendable === false ? "line-through" : undefined}>
           {denomination} {spendable === false ? " (Spent)" : loading ? <Spinner size="xs" /> : undefined}
@@ -105,7 +86,6 @@ export default function InlineCachuCard({
         {token.unit && <Text fontSize="xs">Unit: {token.unit}</Text>}
       </Box>
       {token.memo && <Box>{token.memo}</Box>}
-      {loading && <Spinner />}
     </Card>
   );
 }

@@ -34,19 +34,19 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
     <QueryStoreProvider store={queryStore}>
       <ThemeProviders>
         <SigningProvider>
-          <EventFactoryProvider>
-            <PublishProvider>
-              <NotificationsProvider>
-                <DMTimelineProvider>
-                  <DefaultEmojiProvider>
-                    <UserEmojiProvider>
+          <PublishProvider>
+            <NotificationsProvider>
+              <DMTimelineProvider>
+                <DefaultEmojiProvider>
+                  <UserEmojiProvider>
+                    <EventFactoryProvider>
                       <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                    </UserEmojiProvider>
-                  </DefaultEmojiProvider>
-                </DMTimelineProvider>
-              </NotificationsProvider>
-            </PublishProvider>
-          </EventFactoryProvider>
+                    </EventFactoryProvider>
+                  </UserEmojiProvider>
+                </DefaultEmojiProvider>
+              </DMTimelineProvider>
+            </NotificationsProvider>
+          </PublishProvider>
         </SigningProvider>
       </ThemeProviders>
     </QueryStoreProvider>

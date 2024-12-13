@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertIcon, AlertProps, AlertTitle, Button, Spa
 import { useExpand } from "../providers/local/expanded";
 import { useBreakpointValue } from "../providers/global/breakpoint-provider";
 
-export default function SensitiveContentWarning({ description }: { description?: string } & AlertProps) {
+export default function ContentWarning({ description }: { description?: string } & AlertProps) {
   const expand = useExpand();
   const smallScreen = useBreakpointValue({ base: true, md: false });
 

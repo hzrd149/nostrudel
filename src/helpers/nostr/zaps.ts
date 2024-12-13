@@ -41,17 +41,3 @@ export function isProfileZap(event: NostrEvent) {
 export function totalZaps(zaps: NostrEvent[]) {
   return zaps.map(getZapPayment).reduce((t, p) => t + (p?.amount ?? 0), 0);
 }
-
-export type EventSplit = { pubkey: string; percent: number; relay?: string }[];
-export function getZapSplits(event: NostrEvent, fallbackPubkey?: string): EventSplit {
-  const tags = event.tags.filter((t) => t[0] === "zap" && t[1] && t[3]) as [string, string, string, string][];
-
-  if (tags.length > 0) {
-    const targets = tags
-      .map((t) => ({ pubkey: t[1], relay: t[2], percent: parseFloat(t[3]) }))
-      .filter((p) => Number.isFinite(p.percent));
-
-    const total = targets.reduce((v, p) => v + p.percent, 0);
-    return targets.map((p) => ({ ...p, percent: p.percent / total }));
-  } else return [{ pubkey: fallbackPubkey || event.pubkey, relay: "", percent: 1 }];
-}

@@ -16,7 +16,7 @@
     "format": "prettier --ignore-path .prettierignore -w ."
   },
   "dependencies": {
-    "@cashu/cashu-ts": "2.0.0-rc1",
+    "@cashu/cashu-ts": "^2.1.0",
     "@chakra-ui/anatomy": "^2.3.4",
     "@chakra-ui/breakpoint-utils": "^2.0.8",
     "@chakra-ui/icons": "^2.2.4",
@@ -93,7 +93,7 @@
     "react-error-boundary": "^4.1.2",
     "react-force-graph-2d": "^1.26.1",
     "react-force-graph-3d": "^1.25.1",
-    "react-hook-form": "^7.54.0",
+    "react-hook-form": "^7.54.1",
     "react-markdown": "^9.0.1",
     "react-mosaic-component": "^6.1.0",
     "react-photo-album": "^2.4.1",
@@ -109,7 +109,7 @@
     "rx-nostr": "^3.4.1",
     "rxjs": "^7.8.1",
     "three": "^0.170.0",
-    "three-spritetext": "^1.9.2",
+    "three-spritetext": "^1.9.3",
     "three-stdlib": "^2.35.2",
     "tiny-lru": "^11.2.11",
     "unified": "^11.0.5",

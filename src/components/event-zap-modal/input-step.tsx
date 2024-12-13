@@ -1,11 +1,11 @@
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
+import { getZapSplits } from "applesauce-core/helpers";
 import { useForm } from "react-hook-form";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { humanReadableSats } from "../../helpers/lightning";
 import { LightningIcon } from "../icons";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
-import { getZapSplits } from "../../helpers/nostr/zaps";
 import { EmbedEvent, EmbedProps } from "../embed-event";
 import useAppSettings from "../../hooks/use-app-settings";
 import CustomZapAmountOptions from "./zap-options";
@@ -71,7 +71,7 @@ export default function InputStep({
     },
   });
 
-  const splits = event ? getZapSplits(event, pubkey) : [];
+  const splits = event ? (getZapSplits(event) ?? []) : [];
 
   const { metadata: lnurlMetadata } = useUserLNURLMetadata(pubkey);
   const canZap = lnurlMetadata?.allowsNostr && lnurlMetadata?.nostrPubkey;

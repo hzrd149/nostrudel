@@ -12,8 +12,6 @@ import {
   Input,
   Switch,
   ModalProps,
-  VisuallyHiddenInput,
-  IconButton,
   FormLabel,
   FormControl,
   FormHelperText,
@@ -28,30 +26,20 @@ import {
   ButtonGroup,
   Text,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { kinds, UnsignedEvent } from "nostr-tools";
-import { useThrottle } from "react-use";
+import { EventTemplate, UnsignedEvent } from "nostr-tools";
+import { useAsync, useThrottle } from "react-use";
 import { useEventFactory, useObservable } from "applesauce-react/hooks";
+import { Emoji, ZapSplit } from "applesauce-core/helpers";
 
-import { ChevronDownIcon, ChevronUpIcon, UploadImageIcon } from "../icons";
+import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import PublishAction from "../../classes/nostr-publish-action";
 import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
 import { TrustProvider } from "../../providers/local/trust-provider";
-import {
-  correctContentMentions,
-  createEmojiTags,
-  ensureNotifyPubkeys,
-  finalizeNote,
-  getPubkeysMentionedInContent,
-  setZapSplit,
-} from "../../helpers/nostr/post";
-import { UserAvatarStack } from "../compact-user-stack";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
 import CommunitySelect from "./community-select";
-import ZapSplitCreator, { fillRemainingPercent } from "./zap-split-creator";
-import { EventSplit } from "../../helpers/nostr/zaps";
+import ZapSplitCreator from "./zap-split-creator";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
@@ -64,7 +52,6 @@ import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import InsertGifButton from "../gif/insert-gif-button";
 import InsertImageButton from "./insert-image-button";
-import { unixNow } from "applesauce-core/helpers";
 
 type FormValues = {
   subject: string;
@@ -72,7 +59,7 @@ type FormValues = {
   nsfw: boolean;
   nsfwReason: string;
   community: string;
-  split: EventSplit;
+  split: Omit<ZapSplit, "percent" | "relay">[];
   difficulty: number;
 };
 
@@ -111,7 +98,7 @@ export default function PostModal({
       nsfw: false,
       nsfwReason: "",
       community: initCommunity,
-      split: [] as EventSplit,
+      split: [] as Omit<ZapSplit, "percent" | "relay">[],
       difficulty: noteDifficulty || 0,
     },
     mode: "all",
@@ -128,47 +115,34 @@ export default function PostModal({
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
-  const updateDraft = useCallback(
-    async (values = getValues()) => {
-      const { content, nsfw, nsfwReason, community, split, subject } = values;
+  const getDraft = async (values = getValues()) => {
+    // build draft using factory
+    let draft = await factory.note(values.content, {
+      emojis: emojis.filter((e) => !!e.url) as Emoji[],
+      contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
+      splits: values.split,
+    });
 
-      let draft = finalizeNote({
-        kind: kinds.ShortTextNote,
-        content,
-        tags: [],
-        created_at: unixNow(),
-      });
+    // TODO: remove when NIP-72 communities are removed
+    if (values.community) draft.tags.push(["a", values.community]);
+    if (values.subject) draft.tags.push(["subject", values.subject]);
 
-      if (nsfw) draft.tags.push(nsfwReason ? ["content-warning", nsfwReason] : ["content-warning"]);
-      if (community) draft.tags.push(["a", community]);
-      if (subject) draft.tags.push(["subject", subject]);
+    const unsigned = await finalizeDraft(draft);
 
-      const contentMentions = getPubkeysMentionedInContent(draft.content);
-      draft = createEmojiTags(draft, emojis);
-      draft = ensureNotifyPubkeys(draft, contentMentions);
-      if (split.length > 0) {
-        draft = setZapSplit(draft, fillRemainingPercent(split, account.pubkey));
-      }
-
-      const unsigned = await finalizeDraft(draft);
-      setDraft(unsigned);
-      return unsigned;
-    },
-    [getValues, emojis, finalizeDraft, setDraft, factory],
-  );
+    setDraft(unsigned);
+    return unsigned;
+  };
 
   // throttle update the draft every 500ms
-  const throttleValues = useThrottle(JSON.stringify(getValues()), 500);
-  useEffect(() => {
-    updateDraft(getValues());
-  }, [throttleValues]);
+  const throttleValues = useThrottle(getValues(), 500);
+  const { value: preview } = useAsync(() => getDraft(), [throttleValues]);
 
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const publishPost = async (unsigned?: UnsignedEvent) => {
-    unsigned = unsigned || draft || (await updateDraft());
+    unsigned = unsigned || draft || (await getDraft());
 
     const pub = await publish("Post", unsigned);
     if (pub) setPublishAction(pub);
@@ -177,13 +151,12 @@ export default function PostModal({
     if (values.difficulty > 0) {
       setMiningTarget(values.difficulty);
     } else {
-      const unsigned = await updateDraft(values);
+      const unsigned = await getDraft(values);
       publishPost(unsigned);
     }
   });
 
   const canSubmit = getValues().content.length > 0;
-  const mentions = getPubkeysMentionedInContent(correctContentMentions(getValues().content));
 
   const renderBody = () => {
     if (publishAction) {
@@ -229,13 +202,13 @@ export default function PostModal({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
             }}
           />
-          {draft && draft.content.length > 0 && (
+          {preview && preview.content.length > 0 && (
             <Box>
               <Heading size="sm">Preview:</Heading>
               <Box borderWidth={1} borderRadius="md" p="2">
                 <ErrorBoundary>
                   <TrustProvider trust>
-                    <TextNoteContents event={draft} />
+                    <TextNoteContents event={preview} />
                   </TrustProvider>
                 </ErrorBoundary>
               </Box>
@@ -253,7 +226,6 @@ export default function PostModal({
                 More Options
               </Button>
             </Flex>
-            {mentions.length > 0 && <UserAvatarStack label="Mentions" pubkeys={mentions} />}
             <Button onClick={onClose} variant="ghost">
               Cancel
             </Button>
@@ -305,8 +277,8 @@ export default function PostModal({
               </Flex>
               <Flex direction="column" gap="2" flex={1}>
                 <ZapSplitCreator
-                  split={getValues().split}
-                  onChange={(s) => setValue("split", s, { shouldDirty: true })}
+                  splits={getValues().split}
+                  onChange={(splits) => setValue("split", splits, { shouldDirty: true })}
                   authorPubkey={account?.pubkey}
                 />
               </Flex>

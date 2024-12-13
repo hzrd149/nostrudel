@@ -69,25 +69,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const outBoxes = useUserOutbox(account?.pubkey);
 
   const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(
-    async (event: EventTemplate | NostrEvent) => {
-      let draft = cloneEvent(event.kind, event);
-
-      // add client tag
-      if (
-        localSettings.addClientTag.value &&
-        !NEVER_ATTACH_CLIENT_TAG.includes(draft.kind) &&
-        !draft.tags.some((t) => t[0] === "client")
-      ) {
-        // TODO: this should be removed when all events are created using the event factory
-        draft = await includeClientTag(
-          NIP_89_CLIENT_APP.name,
-          NIP_89_CLIENT_APP.address ? { ...NIP_89_CLIENT_APP.address, kind: kinds.Handlerinformation } : undefined,
-        )(draft, {});
-      }
-
-      // request signature
-      return await signerFinalize(draft);
-    },
+    (event: EventTemplate | NostrEvent) => signerFinalize(event),
     [signerFinalize],
   );
 

@@ -2,10 +2,12 @@ import { useMemo, useRef } from "react";
 import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
+import { useEventFactory } from "applesauce-react/hooks";
+import { LiveChatMessageBlueprint } from "applesauce-factory/blueprints";
+import { Emoji } from "applesauce-core/helpers";
 
-import { buildChatMessage, getStreamHost } from "../../../../helpers/nostr/stream";
+import { getStreamHost } from "../../../../helpers/nostr/stream";
 import { unique } from "../../../../helpers/array";
-import { createEmojiTags, ensureNotifyContentMentions } from "../../../../helpers/nostr/post";
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
 import StreamZapButton from "../../components/stream-zap-button";
@@ -19,22 +21,27 @@ import InsertGifButton from "../../../../components/gif/insert-gif-button";
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: NostrEvent; hideZapButton?: boolean }) {
   const toast = useToast();
   const publish = usePublishEvent();
+  const factory = useEventFactory();
   const emojis = useContextEmojis();
   const streamRelays = useReadRelays(useAdditionalRelayContext());
   const host = getStreamHost(stream);
   const hostReadRelays = useUserInbox(host);
 
-  const relays = useMemo(() => unique([...streamRelays, ...(hostReadRelays ?? [])]), [hostReadRelays, streamRelays]);
+  const writeRelays = useMemo(
+    () => unique([...streamRelays, ...(hostReadRelays ?? [])]),
+    [hostReadRelays, streamRelays],
+  );
 
   const { setValue, handleSubmit, formState, reset, getValues, watch } = useForm({
     defaultValues: { content: "" },
   });
   const sendMessage = handleSubmit(async (values) => {
     try {
-      let draft = buildChatMessage(stream, values.content);
-      draft = ensureNotifyContentMentions(draft);
-      draft = createEmojiTags(draft, emojis);
-      const pub = await publish("Send Chat", draft, relays);
+      const draft = await factory.create(LiveChatMessageBlueprint, stream, values.content, {
+        emojis: emojis.filter((e) => !!e.url) as Emoji[],
+      });
+
+      const pub = await publish("Send Chat", draft, writeRelays);
       if (pub) reset();
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
