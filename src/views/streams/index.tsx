@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
-import { getEventUID } from "applesauce-core/helpers";
+import { getEventUID, isStreamURL } from "applesauce-core/helpers";
 import { Filter, kinds } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -19,7 +19,7 @@ import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useFavoriteStreams from "../../hooks/use-favorite-streams";
-import { getStreamStatus } from "../../helpers/nostr/stream";
+import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
 
 function StreamsPage() {
   useAppTitle("Streams");
@@ -30,6 +30,11 @@ function StreamsPage() {
   const eventFilter = useCallback(
     (event: NostrEvent) => {
       if (userMuteFilter(event)) return false;
+
+      // only show streams that have video streams
+      const urls = getStreamStreamingURLs(event);
+      if (!urls.some(isStreamURL)) return false;
+
       return true;
     },
     [userMuteFilter],
