@@ -1,7 +1,8 @@
-import { EventTemplate, getEventHash, NostrEvent, UnsignedEvent } from "nostr-tools";
+import { EventTemplate, getEventHash, NostrEvent, UnsignedEvent, VerifiedEvent } from "nostr-tools";
 
 import { Account } from "../classes/accounts/account";
 import PasswordAccount from "../classes/accounts/password-account";
+import verifyEvent from "./verify-event";
 
 class SigningService {
   async unlockAccount(account: Account) {
@@ -19,7 +20,7 @@ class SigningService {
     };
   }
 
-  async requestSignature(draft: UnsignedEvent | EventTemplate, account: Account) {
+  async requestSignature(draft: UnsignedEvent | EventTemplate, account: Account): Promise<VerifiedEvent> {
     if (account.readonly) throw new Error("Cant with read only account");
     await this.unlockAccount(account);
 
@@ -28,6 +29,8 @@ class SigningService {
     if (!account.signer) throw new Error("Account missing signer");
     const signed = await account.signer.signEvent(draft);
     if (signed.pubkey !== account.pubkey) throw new Error("Signed with the wrong pubkey");
+
+    if (!verifyEvent(signed)) throw new Error("Invalid signature");
 
     return signed;
   }

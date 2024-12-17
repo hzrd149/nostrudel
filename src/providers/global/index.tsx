@@ -31,7 +31,7 @@ function ThemeProviders({ children }: { children: React.ReactNode }) {
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <QueryStoreProvider store={queryStore}>
+    <QueryStoreProvider queryStore={queryStore}>
       <ThemeProviders>
         <SigningProvider>
           <PublishProvider>
