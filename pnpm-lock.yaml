@@ -92,28 +92,28 @@ importers:
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-channel:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-lists:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-net:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       applesauce-signer:
         specifier: next
-        version: 0.0.0-next-20241213171848(typescript@5.7.2)
+        version: 0.0.0-next-20241213180142(typescript@5.7.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1486,8 +1486,8 @@ packages:
       '@types/babel__core':
         optional: true
 
-  '@rollup/plugin-node-resolve@15.3.0':
-    resolution: {integrity: sha512-9eO5McEICxMzJpDW9OnMYSv4Sta3hmt7VtBFz5zR9273suNOydOyq/FrGeGy+KsTRFm8w0SLVhzig2ILFT63Ag==}
+  '@rollup/plugin-node-resolve@15.3.1':
+    resolution: {integrity: sha512-tgg6b91pAybXHJQMAAwW9VuWBO6Thi+q7BCNARLwSqlmsHz0XYURtGvh/AuwSADXSI4h/2uHbs7s4FzlZDGSGA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.78.0||^3.0.0||^4.0.0
@@ -1515,8 +1515,8 @@ packages:
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
 
-  '@rollup/pluginutils@5.1.3':
-    resolution: {integrity: sha512-Pnsb6f32CD2W3uCaLZIzDmeFyQ2b8UWMFI7xtwUezpcGBDVDW6y9XgAWIlARiGAo6eNF5FK5aQTr0LFyNyqq5A==}
+  '@rollup/pluginutils@5.1.4':
+    resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -1911,29 +1911,29 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-channel@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-4D+FApKZ/YDd/E2Jr26IRzl47wr5um9N7+Sgd6FjeGLYjCKnSKkrO/TZ2nX6/bAWS6pwOgo6e492EEn2xkKAyA==}
+  applesauce-channel@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-tYQz+5yclNnXLhdNheyxcYu5nwqNeeIVh9c+ArsziEopapx63qcOPV8IHiDqFdBvHGCuZueCI7wxax73C+7dzg==}
 
-  applesauce-content@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-BUtsmWGMUiw1RmY/xTsDUfLSS2u/rhODT2cDwnfc4ln7hy5CF3vibvn6amgO+7xWe/uK04TJGUmESbUIlKeWjg==}
+  applesauce-content@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-mLQQnHoGQyByl8Y6R+bygipNLbAsV7/yu2rQBps92woc4MBOyKKYrH53GIpQbYrFV+I99tPDIuP5jzKMnpevCQ==}
 
-  applesauce-core@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-2VTdwkfPCUJcykbP+4np9CUoZI4aKUOTX1vjN/DRSaq6Rjd3jC5FP2MNMdRi9u8d1FlAoJyqOs2CCMjnsfkLOg==}
+  applesauce-core@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-bjqJGgFxrljM5fLaoQcQZhBh6cGJ1HjTTfq3gyQS3jloD6Y2/RmJLZ939jQFwzq0Kw4Sy0cCzX8CfqbOTRc8iA==}
 
-  applesauce-factory@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-SBr57K1ZHyLFhvpn4xXDFZsyWG0X0k1FeTIf6vTcWwZ1FZ1e50eslt+zVLYfFhw55Tk8wT0chB4sToce25VbIw==}
+  applesauce-factory@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-uHXSCofE/YwqqVqCqXfOEBZQMHNThIhZQb9BtmNCEUJGm040S4vMIm3vmsWhpFHM8hAeCeF39t1MWa+uNiU+IQ==}
 
-  applesauce-lists@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-GmziucyndF2+xhV2JBqQE1ai683wd6iV0mtatdLeM3h4DfAyElLT4CzFEONH7TzGYwDNnNaB11o7LmE78ww2fg==}
+  applesauce-lists@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-VUSZtFZC5nSS4eSFMsVccOHD9pcFb/BRlwskp9r975GUKZSHMG4M2IANHpuuZxs2ESVt/iTHM+EOsbmuPBVp4A==}
 
-  applesauce-net@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-xtu/QdSN1hv2oRobJ6NX3oewLKWcC/LlqwFjE/RwL+s0+n7U91vIfqIM6Cy2GnSuvEyL8kbdPdOTfdzbqu4/Pg==}
+  applesauce-net@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-8bo7lXfW3fV4PMIA5gXzlZWynpmSZsDU6cpV3wbsCPh29ZwIT94pm1/em+Qc5vWpuDRay842fUKy2i/MUmc9+w==}
 
-  applesauce-react@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-EVUEC4x5/mtXPs1V66FFb6Ke2Pw7gqF8gyBnzcoH9Dvt8DIysJqWbLgtiha+wscgfit9W+eO/YxXxpNbpMjArA==}
+  applesauce-react@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-diHunysv6TFYzjDMqQBtfaHSn8ddQ7Agvlvi8CUzQFgxw7Kjm2q4Ps3bBfOckFKS2yBY+rp1xWAcizq9nZwLlw==}
 
-  applesauce-signer@0.0.0-next-20241213171848:
-    resolution: {integrity: sha512-op99Gq8z7NvbNVX8lO8GjNi9JIINDbHmwygM6qO2VmavAE0a75EFpIQWEaarr9XACD3V/54GnHiBlqFNTl0skA==}
+  applesauce-signer@0.0.0-next-20241213180142:
+    resolution: {integrity: sha512-aJON5zzKXVreGAIV0dxqedXB5BnxthgRw+OO4Hl2JDDvOmurm8ERZ7T+Gn4cPHLBGefKIGO6FqiMKSmQurDIbA==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -2304,8 +2304,8 @@ packages:
     resolution: {integrity: sha512-b8AmV3kfQaqWAuacbPuNbL6vahnOJflOhexLzMMNLga62+/nh0JzvJ0aO/5a5MVgUFGS7Hu1P9P03o3fJkDCyw==}
     engines: {node: '>=12'}
 
-  data-joint@1.3.1:
-    resolution: {integrity: sha512-tMK0m4OVGqiA3zkn8JmO6YAqD8UwJqIAx4AAwFl1SKTtKAqcXePuT+n2aayiX9uITtlN3DFtKKTOxJRUc2+HvQ==}
+  data-joint@1.3.2:
+    resolution: {integrity: sha512-bhsecfh2jIjEMXemZQOwcEK0YuxOJHawvP62EjQruXF+SSTZzN2pNQPXqLJ5IWfdxPI+8wQczWf8XyNdtLbEdg==}
     engines: {node: '>=12'}
 
   data-view-buffer@1.0.1:
@@ -2378,8 +2378,8 @@ packages:
   dnd-core@16.0.1:
     resolution: {integrity: sha512-HK294sl7tbw6F6IeuK16YSBUoorvHpY8RHO+9yFfaJyCDVb6n7PRcezrOEOa2SBCqiYpemh5Jx20ZcjKdFAVng==}
 
-  dnd-multi-backend@8.1.1:
-    resolution: {integrity: sha512-+uksZeT2J+yD3pwRDixJQgZZ6XJN9uc1PR7ENobUnow6Vg6rawFi524aAOVacNJJvat2trtUo6RRs358U5lEdg==}
+  dnd-multi-backend@8.1.2:
+    resolution: {integrity: sha512-KPDVEsiM+6gNEegqZYTWJQgJxYV4vB91tUrvoKJjaS0wwWqT/jNU0P7xJAwCue/cbasJNvk2dFZH7tC+bjX1Rg==}
     peerDependencies:
       dnd-core: ^16.0.1
 
@@ -2795,9 +2795,6 @@ packages:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
 
-  invariant@2.2.4:
-    resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
-
   is-alphabetical@1.0.4:
     resolution: {integrity: sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==}
 
@@ -2833,8 +2830,8 @@ packages:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
     engines: {node: '>= 0.4'}
 
-  is-core-module@2.15.1:
-    resolution: {integrity: sha512-z0vtXSwucUJtANQWldhbtbt7BnL0vxiFjIdDLAatwhDYty2bad6s+rijD6Ri4YuYJubLzIJLUidCh09e1djEVQ==}
+  is-core-module@2.16.0:
+    resolution: {integrity: sha512-urTSINYfAYgcbLb0yDQ6egFm6h3Mo1DcF9EkyXSRjjzdHbsulg01qhwWuXdOoUBuTkbQ80KDboXa0vFJ+BDH+g==}
     engines: {node: '>= 0.4'}
 
   is-data-view@1.0.2:
@@ -3560,8 +3557,8 @@ packages:
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
 
-  rdndmb-html5-to-touch@8.1.1:
-    resolution: {integrity: sha512-edyTFE+V9q8aHA2/gKM86F4tjVSdzfEVxFo0kvvTGqIUO2biZJC1TFpr6D+YNA7/oKXHejK5IllyhVrsB6HEsw==}
+  rdndmb-html5-to-touch@8.1.2:
+    resolution: {integrity: sha512-efi3MaXYxWaLMd5xzF1bVvmX8erTMhYHSlaMjQe+tynf4IdtgRYfKLwYg+4Z5eq4k7idrjKHQOIMDE6D8LjnOA==}
 
   react-chartjs-2@5.2.0:
     resolution: {integrity: sha512-98iN5aguJyVSxp5U3CblRLH67J8gkfyGNbiK3c+l1QI/G4irHMPQw44aEPmjVag+YKTyQ260NcF82GTQ3bdscA==}
@@ -3569,10 +3566,10 @@ packages:
       chart.js: ^4.1.1
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  react-clientside-effect@1.2.6:
-    resolution: {integrity: sha512-XGGGRQAKY+q25Lz9a/4EPqom7WRjz3z9R2k4jhVKA/puQFH/5Nt27vFZYql4m4NVNdUvX8PS3O7r/Zzm7cjUlg==}
+  react-clientside-effect@1.2.7:
+    resolution: {integrity: sha512-gce9m0Pk/xYYMEojRI9bgvqQAkl6hm7ozQvqWPyQx+kULiatdHgkNM1QG4DQRx5N9BAzWSCJmt9mMV8/KsdgVg==}
     peerDependencies:
-      react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   react-diff-viewer-continued@3.4.0:
     resolution: {integrity: sha512-kMZmUyb3Pv5L9vUtCfIGYsdOHs8mUojblGy1U1Sm0D7FhAOEsH9QhnngEIRo5hXWIPNGupNRJls1TJ6Eqx84eg==}
@@ -3584,16 +3581,16 @@ packages:
   react-dnd-html5-backend@16.0.1:
     resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
 
-  react-dnd-multi-backend@8.1.1:
-    resolution: {integrity: sha512-ctRbiLCYGxtXdXV6GbNML9XrvNFoR72AtrgWE3TZlpqwE8ZcaN+PJkARFVW9+99uU9z3BC+dx9FIfIgS9ParEw==}
+  react-dnd-multi-backend@8.1.2:
+    resolution: {integrity: sha512-Ecj+gwr5B7zRiWqkDU5sUvUmufcu97WnsZFHnqHrWFJhTXAXQnhrperHLFktNP2CnQYtAgbucodr1if0MWpEaA==}
     peerDependencies:
       dnd-core: ^16.0.1
       react: ^16.14.0 || ^17.0.2 || ^18.0.0
       react-dnd: ^16.0.1
       react-dom: ^16.14.0 || ^17.0.2 || ^18.0.0
 
-  react-dnd-preview@8.1.1:
-    resolution: {integrity: sha512-NXMxP+U2V5p8Fin3on7L6yfy1jCk2wekwcQw0Wtwhjo4K1lMYtID9tOBo7IKEgVmDdVCLXPQBC1wlGFwDa97Mg==}
+  react-dnd-preview@8.1.2:
+    resolution: {integrity: sha512-j5M1NcQBItOCYXONRbCNs6MzW7u4KygeOGZlztNNguTs1/f2d7q1fRnQjFLjCpgeg5Gy/JrTFrbRThZglJP5dg==}
     peerDependencies:
       react: ^16.14.0 || ^17.0.2 || ^18.0.0
       react-dnd: ^16.0.1
@@ -3629,11 +3626,11 @@ packages:
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  react-focus-lock@2.13.2:
-    resolution: {integrity: sha512-T/7bsofxYqnod2xadvuwjGKHOoL5GH7/EIPI5UyEvaU/c2CcphvGI371opFtuY/SYdbMsNiuF4HsHQ50nA/TKQ==}
+  react-focus-lock@2.13.5:
+    resolution: {integrity: sha512-HjHuZFFk2+j6ZT3LDQpyqffue541HrxUG/OFchCEwis9nstgNg0rREVRAxHBcB1lHJ5Fsxtx1qya/5xFwxDb4g==}
     peerDependencies:
       '@types/react': ^18.2.22
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3692,22 +3689,22 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  react-remove-scroll-bar@2.3.6:
-    resolution: {integrity: sha512-DtSYaao4mBmX+HDo5YWYdBWQwYIQQshUV/dVxFxK+KM26Wjwp1gZ6rv6OC3oujI6Bfu6Xyg3TwK533AQutsn/g==}
+  react-remove-scroll-bar@2.3.8:
+    resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': ^18.2.22
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
         optional: true
 
-  react-remove-scroll@2.6.0:
-    resolution: {integrity: sha512-I2U4JVEsQenxDAKaVa3VZ/JeJZe0/2DxPWL8Tj8yLKctQJQiZM52pn/GWFpSp8dftjM3pSAHVJZscAnC/y+ySQ==}
+  react-remove-scroll@2.6.1:
+    resolution: {integrity: sha512-jWEvWQidZ/C/FnFlUIB1mDLpY3r7uEb22WZ3uVeKj520caKDiaBsNDEB9J1gHJgpiLo+eTdPl2MVi0JitFTiFg==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': ^18.2.22
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3744,12 +3741,12 @@ packages:
       react-native:
         optional: true
 
-  react-style-singleton@2.2.1:
-    resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
+  react-style-singleton@2.2.3:
+    resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': ^18.2.22
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -3877,8 +3874,8 @@ packages:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
 
-  resolve@1.22.8:
-    resolution: {integrity: sha512-oKWePCxqpd6FlLvGV1VU0x7bkPmmCNolxzjMf4NczoDnQcIWrAF+cPtZn5i6n+RfD2d9i0tzpKnG6Yk168yIyw==}
+  resolve@1.22.9:
+    resolution: {integrity: sha512-QxrmX1DzraFIi9PxdG5VkRfRwIgjwyud+z/iBwfRRrVmHc+P9Q7u2lSSpQ6bjr2gy5lrqIiU9vb6iAeGf2400A==}
     hasBin: true
 
   ret@0.1.15:
@@ -4310,12 +4307,12 @@ packages:
       '@types/react':
         optional: true
 
-  use-sidecar@1.1.2:
-    resolution: {integrity: sha512-epTbsLuzZ7lPClpz2TyryBfztm7m+28DlEv2ZCQ3MDr5ssiwyOwGH/e5F9CkfWjJ1t4clvI58yF822/GUkjjhw==}
+  use-sidecar@1.1.3:
+    resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
     peerDependencies:
       '@types/react': ^18.2.22
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -4638,7 +4635,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.25.9
       debug: 4.4.0
       lodash.debounce: 4.0.8
-      resolve: 1.22.8
+      resolve: 1.22.9
     transitivePeerDependencies:
       - supports-color
 
@@ -5311,8 +5308,8 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-fast-compare: 3.2.2
-      react-focus-lock: 2.13.2(@types/react@18.3.16)(react@18.3.1)
-      react-remove-scroll: 2.6.0(@types/react@18.3.16)(react@18.3.1)
+      react-focus-lock: 2.13.5(@types/react@18.3.16)(react@18.3.1)
+      react-remove-scroll: 2.6.1(@types/react@18.3.16)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -5964,13 +5961,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@rollup/plugin-node-resolve@15.3.0(rollup@2.79.2)':
+  '@rollup/plugin-node-resolve@15.3.1(rollup@2.79.2)':
     dependencies:
-      '@rollup/pluginutils': 5.1.3(rollup@2.79.2)
+      '@rollup/pluginutils': 5.1.4(rollup@2.79.2)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
-      resolve: 1.22.8
+      resolve: 1.22.9
     optionalDependencies:
       rollup: 2.79.2
 
@@ -5995,7 +5992,7 @@ snapshots:
       picomatch: 2.3.1
       rollup: 2.79.2
 
-  '@rollup/pluginutils@5.1.3(rollup@2.79.2)':
+  '@rollup/pluginutils@5.1.4(rollup@2.79.2)':
     dependencies:
       '@types/estree': 1.0.6
       estree-walker: 2.0.2
@@ -6391,23 +6388,23 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-channel@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-channel@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-factory: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-factory: 0.0.0-next-20241213180142(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-content@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
       mdast-util-find-and-replace: 3.0.1
       nostr-tools: 2.10.4(typescript@5.7.2)
       remark: 15.0.1
@@ -6418,7 +6415,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-core@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
       '@scure/base': 1.2.1
       debug: 4.4.0
@@ -6432,23 +6429,23 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-factory@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-content: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-lists@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-lists@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-factory: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-factory: 0.0.0-next-20241213180142(typescript@5.7.2)
       debug: 4.4.0
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
@@ -6456,9 +6453,9 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-net@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-net@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.2)
       rxjs: 7.8.1
@@ -6466,11 +6463,11 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-react@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-factory: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-content: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-factory: 0.0.0-next-20241213180142(typescript@5.7.2)
       nostr-tools: 2.10.4(typescript@5.7.2)
       react: 18.3.1
       rxjs: 7.8.1
@@ -6478,14 +6475,14 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signer@0.0.0-next-20241213171848(typescript@5.7.2):
+  applesauce-signer@0.0.0-next-20241213180142(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20241213171848(typescript@5.7.2)
-      applesauce-net: 0.0.0-next-20241213171848(typescript@5.7.2)
+      applesauce-core: 0.0.0-next-20241213180142(typescript@5.7.2)
+      applesauce-net: 0.0.0-next-20241213180142(typescript@5.7.2)
       debug: 4.4.0
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.2)
@@ -6533,7 +6530,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.26.0
       cosmiconfig: 7.1.0
-      resolve: 1.22.8
+      resolve: 1.22.9
 
   babel-plugin-polyfill-corejs2@0.4.12(@babel/core@7.26.0):
     dependencies:
@@ -6926,7 +6923,7 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  data-joint@1.3.1:
+  data-joint@1.3.2:
     dependencies:
       index-array-by: 1.4.2
 
@@ -6998,7 +6995,7 @@ snapshots:
       '@react-dnd/invariant': 4.0.2
       redux: 4.2.1
 
-  dnd-multi-backend@8.1.1(dnd-core@16.0.1):
+  dnd-multi-backend@8.1.2(dnd-core@16.0.1):
     dependencies:
       dnd-core: 16.0.1
 
@@ -7514,10 +7511,6 @@ snapshots:
 
   internmap@2.0.3: {}
 
-  invariant@2.2.4:
-    dependencies:
-      loose-envify: 1.4.0
-
   is-alphabetical@1.0.4: {}
 
   is-alphabetical@2.0.1: {}
@@ -7554,7 +7547,7 @@ snapshots:
 
   is-callable@1.2.7: {}
 
-  is-core-module@2.15.1:
+  is-core-module@2.16.0:
     dependencies:
       hasown: 2.0.2
 
@@ -8448,9 +8441,9 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  rdndmb-html5-to-touch@8.1.1(dnd-core@16.0.1):
+  rdndmb-html5-to-touch@8.1.2(dnd-core@16.0.1):
     dependencies:
-      dnd-multi-backend: 8.1.1(dnd-core@16.0.1)
+      dnd-multi-backend: 8.1.2(dnd-core@16.0.1)
       react-dnd-html5-backend: 16.0.1
       react-dnd-touch-backend: 16.0.1
     transitivePeerDependencies:
@@ -8461,7 +8454,7 @@ snapshots:
       chart.js: 4.4.7
       react: 18.3.1
 
-  react-clientside-effect@1.2.6(react@18.3.1):
+  react-clientside-effect@1.2.7(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.26.0
       react: 18.3.1
@@ -8482,16 +8475,16 @@ snapshots:
     dependencies:
       dnd-core: 16.0.1
 
-  react-dnd-multi-backend@8.1.1(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-dnd-multi-backend@8.1.2(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       dnd-core: 16.0.1
-      dnd-multi-backend: 8.1.1(dnd-core@16.0.1)
+      dnd-multi-backend: 8.1.2(dnd-core@16.0.1)
       react: 18.3.1
       react-dnd: 16.0.1(@types/react@18.3.16)(react@18.3.1)
-      react-dnd-preview: 8.1.1(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react@18.3.1)
+      react-dnd-preview: 8.1.2(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
 
-  react-dnd-preview@8.1.1(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react@18.3.1):
+  react-dnd-preview@8.1.2(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dnd: 16.0.1(@types/react@18.3.16)(react@18.3.1)
@@ -8525,15 +8518,15 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-focus-lock@2.13.2(@types/react@18.3.16)(react@18.3.1):
+  react-focus-lock@2.13.5(@types/react@18.3.16)(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.26.0
       focus-lock: 1.3.5
       prop-types: 15.8.1
       react: 18.3.1
-      react-clientside-effect: 1.2.6(react@18.3.1)
+      react-clientside-effect: 1.2.7(react@18.3.1)
       use-callback-ref: 1.3.2(@types/react@18.3.16)(react@18.3.1)
-      use-sidecar: 1.1.2(@types/react@18.3.16)(react@18.3.1)
+      use-sidecar: 1.1.3(@types/react@18.3.16)(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.16
 
@@ -8585,11 +8578,11 @@ snapshots:
       immutability-helper: 3.1.1
       lodash: 4.17.21
       prop-types: 15.8.1
-      rdndmb-html5-to-touch: 8.1.1(dnd-core@16.0.1)
+      rdndmb-html5-to-touch: 8.1.2(dnd-core@16.0.1)
       react: 18.3.1
       react-dnd: 16.0.1(@types/react@18.3.16)(react@18.3.1)
       react-dnd-html5-backend: 16.0.1
-      react-dnd-multi-backend: 8.1.1(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dnd-multi-backend: 8.1.2(dnd-core@16.0.1)(react-dnd@16.0.1(@types/react@18.3.16)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dnd-touch-backend: 16.0.1
       uuid: 9.0.1
     transitivePeerDependencies:
@@ -8613,22 +8606,22 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-remove-scroll-bar@2.3.6(@types/react@18.3.16)(react@18.3.1):
+  react-remove-scroll-bar@2.3.8(@types/react@18.3.16)(react@18.3.1):
     dependencies:
       react: 18.3.1
-      react-style-singleton: 2.2.1(@types/react@18.3.16)(react@18.3.1)
+      react-style-singleton: 2.2.3(@types/react@18.3.16)(react@18.3.1)
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.16
 
-  react-remove-scroll@2.6.0(@types/react@18.3.16)(react@18.3.1):
+  react-remove-scroll@2.6.1(@types/react@18.3.16)(react@18.3.1):
     dependencies:
       react: 18.3.1
-      react-remove-scroll-bar: 2.3.6(@types/react@18.3.16)(react@18.3.1)
-      react-style-singleton: 2.2.1(@types/react@18.3.16)(react@18.3.1)
+      react-remove-scroll-bar: 2.3.8(@types/react@18.3.16)(react@18.3.1)
+      react-style-singleton: 2.2.3(@types/react@18.3.16)(react@18.3.1)
       tslib: 2.8.1
       use-callback-ref: 1.3.2(@types/react@18.3.16)(react@18.3.1)
-      use-sidecar: 1.1.2(@types/react@18.3.16)(react@18.3.1)
+      use-sidecar: 1.1.3(@types/react@18.3.16)(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.16
 
@@ -8657,10 +8650,9 @@ snapshots:
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
 
-  react-style-singleton@2.2.1(@types/react@18.3.16)(react@18.3.1):
+  react-style-singleton@2.2.3(@types/react@18.3.16)(react@18.3.1):
     dependencies:
       get-nonce: 1.0.1
-      invariant: 2.2.4
       react: 18.3.1
       tslib: 2.8.1
     optionalDependencies:
@@ -8838,9 +8830,9 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve@1.22.8:
+  resolve@1.22.9:
     dependencies:
-      is-core-module: 2.15.1
+      is-core-module: 2.16.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
@@ -9142,7 +9134,7 @@ snapshots:
       d3-force-3d: 3.0.5
       d3-scale: 4.0.2
       d3-scale-chromatic: 3.1.0
-      data-joint: 1.3.1
+      data-joint: 1.3.2
       kapsule: 1.16.0
       ngraph.forcelayout: 3.3.1
       ngraph.graph: 20.0.1
@@ -9334,7 +9326,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.16
 
-  use-sidecar@1.1.2(@types/react@18.3.16)(react@18.3.1):
+  use-sidecar@1.1.3(@types/react@18.3.16)(react@18.3.1):
     dependencies:
       detect-node-es: 1.1.0
       react: 18.3.1
@@ -9470,7 +9462,7 @@ snapshots:
       '@babel/preset-env': 7.26.0(@babel/core@7.26.0)
       '@babel/runtime': 7.26.0
       '@rollup/plugin-babel': 5.3.1(@babel/core@7.26.0)(@types/babel__core@7.20.5)(rollup@2.79.2)
-      '@rollup/plugin-node-resolve': 15.3.0(rollup@2.79.2)
+      '@rollup/plugin-node-resolve': 15.3.1(rollup@2.79.2)
       '@rollup/plugin-replace': 2.4.2(rollup@2.79.2)
       '@rollup/plugin-terser': 0.4.4(rollup@2.79.2)
       '@surma/rollup-plugin-off-main-thread': 2.2.3
