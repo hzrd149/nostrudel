@@ -1,5 +1,44 @@
 # nostrudel
 
+## 0.42.0
+
+### Minor Changes
+
+- 4d0d770: Move core logic out into applesauce packages
+- 2f1d50a: Add support for olas media posts and NIP-22 comments
+- b7bf4a3: Add tools menu under thread post
+- 820d8ab: Add favorite DVM feeds
+- 6e6baa7: Add templates to event publisher
+- 5777ea6: Add validation messages to profile edit view
+- 0e20544: Add unknown notifications toggle
+- 4659ad7: Add option to hide noStrudel logo in nav bar
+- 979a860: Support nostr links in markdown
+- 60b61e9: Update timelines to use applesauce
+- e0e2ed9: Unclutter notifications view
+- 962ba25: Use applesauce for NIP-28 channels
+- f15328f: Add open and share button to stream view
+- bbd19d7: Add "Proactively authenticate to relays" option to privacy settings, defaults to off
+- dd37773: Add option for debug API
+- 6157bec: Remove support for legacy password account
+- 5403d37: Add insert gif button
+- 694e261: Add top zappers support page
+- 81e4c5f: Support searching local relay
+- f2f8186: Add support for cashu v4 tokens
+- 0e20544: Add "q" tags for quoted notes
+- 0438f3e: Remove legacy npub1 bunker URI format
+- 6e6baa7: Add edit button to event debug modal
+- 5ea8604: Cleanup zap parsing
+- 5ea8604: Remove old community trending view
+
+### Patch Changes
+
+- cab89b6: Fix delete events not getting published to outbox
+- dec7230: Fix page changing from RTL when viewing some profiles
+- 962ba25: Refresh relay info on relay page
+- cab89b6: Improve list background loading
+- fc8c758: Fix bug with removing "about" in profile editor
+- bbd19d7: Fix automatically disconnecting from authenticated relays
+
 ## 0.41.0
 
 ### Minor Changes
