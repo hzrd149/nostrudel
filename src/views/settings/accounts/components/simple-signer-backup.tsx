@@ -15,12 +15,12 @@ import { encrypt } from "nostr-tools/nip49";
 import { useForm } from "react-hook-form";
 import { SimpleSigner } from "applesauce-signer";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
-import EyeOff from "../../../components/icons/eye-off";
-import Eye from "../../../components/icons/eye";
-import { CopyIconButton } from "../../../components/copy-icon-button";
-import accountService from "../../../services/account";
-import PasswordAccount from "../../../classes/accounts/password-account";
+import useCurrentAccount from "../../../../hooks/use-current-account";
+import EyeOff from "../../../../components/icons/eye-off";
+import Eye from "../../../../components/icons/eye";
+import { CopyIconButton } from "../../../../components/copy-icon-button";
+import accountService from "../../../../services/account";
+import PasswordAccount from "../../../../classes/accounts/password-account";
 
 const fake = Array(48).fill("x");
 

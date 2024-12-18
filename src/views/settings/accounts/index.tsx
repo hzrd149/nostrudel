@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { PasswordSigner, SimpleSigner } from "applesauce-signer";
+import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signer";
 import { useObservable } from "applesauce-react/hooks";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -10,21 +10,22 @@ import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/account-info-badge";
-import SimpleSignerBackup from "./simple-signer-backup";
-import PasswordSignerBackup from "./password-signer-backup";
+import SimpleSignerBackup from "./components/simple-signer-backup";
+import PasswordSignerBackup from "./components/password-signer-backup";
+import { ReactNode } from "react";
+import MigrateAccountToDevice from "./components/migrate-to-device";
 
 function AccountBackup() {
   const account = useCurrentAccount()!;
 
-  if (account.signer instanceof PasswordSigner && account.signer.ncryptsec) {
-    return <PasswordSignerBackup />;
-  }
-
-  if (account.signer instanceof SimpleSigner && account.signer.key) {
-    return <SimpleSignerBackup />;
-  }
-
-  return null;
+  return (
+    <>
+      {account.signer instanceof SimpleSigner && account.signer.key && <SimpleSignerBackup />}
+      {account.signer instanceof PasswordSigner && account.signer.ncryptsec && <SimpleSignerBackup />}
+      {(account.signer instanceof SimpleSigner || account.signer instanceof PasswordSigner) &&
+        SerialPortSigner.SUPPORTED && <MigrateAccountToDevice />}
+    </>
+  );
 }
 
 export default function AccountSettings() {

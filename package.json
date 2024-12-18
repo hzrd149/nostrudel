@@ -49,7 +49,7 @@
     "applesauce-lists": "^0.10.0",
     "applesauce-net": "^0.10.0",
     "applesauce-react": "^0.10.0",
-    "applesauce-signer": "^0.10.0",
+    "applesauce-signer": "0.0.0-next-20241218172722",
     "bech32": "^2.0.0",
     "blossom-client-sdk": "^2.1.0",
     "blossom-drive-sdk": "^0.4.1",

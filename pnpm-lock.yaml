@@ -112,8 +112,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0(typescript@5.7.2)
       applesauce-signer:
-        specifier: ^0.10.0
-        version: 0.10.0(typescript@5.7.2)
+        specifier: 0.0.0-next-20241218172722
+        version: 0.0.0-next-20241218172722(typescript@5.7.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1927,8 +1927,8 @@ packages:
   applesauce-react@0.10.0:
     resolution: {integrity: sha512-du4EC4cBM9bWbyRVllciPCNwwwKTEsTqSjsB5/h/tktfG/2ubiZfUsDD9o55o0eWx/drDabIN4sjnv3OEwvXww==}
 
-  applesauce-signer@0.10.0:
-    resolution: {integrity: sha512-2Cn2ZUxk47cBJBFoUl9DB37mjgg8/8GwTAG7csPqtooJ4nUh0ylO4Gh1Mr/401Lc8tjZJvpVBySWpCeXrnG1rQ==}
+  applesauce-signer@0.0.0-next-20241218172722:
+    resolution: {integrity: sha512-0DvkuVLCiFr7CjLeUr+AHxtiLBwOf7TiDBmpbVTdDgmNYo/hlvYOvgVDfISkpB8DRE1/44BlWBXFxbKmfVWkxg==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -6469,7 +6469,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signer@0.10.0(typescript@5.7.2):
+  applesauce-signer@0.0.0-next-20241218172722(typescript@5.7.2):
     dependencies:
       '@noble/hashes': 1.6.1
       '@noble/secp256k1': 1.7.1
