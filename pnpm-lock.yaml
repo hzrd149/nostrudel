@@ -327,7 +327,7 @@ importers:
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.10
-        version: 2.27.10
+        version: 2.27.11
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1050,8 +1050,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@changesets/apply-release-plan@7.0.6':
-    resolution: {integrity: sha512-TKhVLtiwtQOgMAC0fCJfmv93faiViKSDqr8oMEqrnNs99gtSC1sZh/aEMS9a+dseU1ESZRCK+ofLgGY7o0fw/Q==}
+  '@changesets/apply-release-plan@7.0.7':
+    resolution: {integrity: sha512-qnPOcmmmnD0MfMg9DjU1/onORFyRpDXkMMl2IJg9mECY6RnxL3wN0TCCc92b2sXt1jt8DgjAUUsZYGUGTdYIXA==}
 
   '@changesets/assemble-release-plan@6.0.5':
     resolution: {integrity: sha512-IgvBWLNKZd6k4t72MBTBK3nkygi0j3t3zdC1zrfusYo0KpdsvnDjrMM9vPnTCLCMlfNs55jRL4gIMybxa64FCQ==}
@@ -1059,12 +1059,12 @@ packages:
   '@changesets/changelog-git@0.2.0':
     resolution: {integrity: sha512-bHOx97iFI4OClIT35Lok3sJAwM31VbUM++gnMBV16fdbtBhgYu4dxsphBF/0AZZsyAHMrnM0yFcj5gZM1py6uQ==}
 
-  '@changesets/cli@2.27.10':
-    resolution: {integrity: sha512-PfeXjvs9OfQJV8QSFFHjwHX3QnUL9elPEQ47SgkiwzLgtKGyuikWjrdM+lO9MXzOE22FO9jEGkcs4b+B6D6X0Q==}
+  '@changesets/cli@2.27.11':
+    resolution: {integrity: sha512-1QislpE+nvJgSZZo9+Lj3Lno5pKBgN46dAV8IVxKJy9wX8AOrs9nn5pYVZuDpoxWJJCALmbfOsHkyxujgetQSg==}
     hasBin: true
 
-  '@changesets/config@3.0.4':
-    resolution: {integrity: sha512-+DiIwtEBpvvv1z30f8bbOsUQGuccnZl9KRKMM/LxUHuDu5oEjmN+bJQ1RIBKNJjfYMQn8RZzoPiX0UgPaLQyXw==}
+  '@changesets/config@3.0.5':
+    resolution: {integrity: sha512-QyXLSSd10GquX7hY0Mt4yQFMEeqnO5z/XLpbIr4PAkNNoQNKwDyiSrx4yd749WddusH1v3OSiA0NRAYmH/APpQ==}
 
   '@changesets/errors@0.2.0':
     resolution: {integrity: sha512-6BLOQUscTpZeGljvyQXlWOItQyU71kCdGz7Pi8H8zdw6BI0g3m43iL4xKUVPWtG+qrrL9DTjpdn8eYuCQSRpow==}
@@ -1072,8 +1072,8 @@ packages:
   '@changesets/get-dependents-graph@2.1.2':
     resolution: {integrity: sha512-sgcHRkiBY9i4zWYBwlVyAjEM9sAzs4wYVwJUdnbDLnVG3QwAaia1Mk5P8M7kraTOZN+vBET7n8KyB0YXCbFRLQ==}
 
-  '@changesets/get-release-plan@4.0.5':
-    resolution: {integrity: sha512-E6wW7JoSMcctdVakut0UB76FrrN3KIeJSXvB+DHMFo99CnC3ZVnNYDCVNClMlqAhYGmLmAj77QfApaI3ca4Fkw==}
+  '@changesets/get-release-plan@4.0.6':
+    resolution: {integrity: sha512-FHRwBkY7Eili04Y5YMOZb0ezQzKikTka4wL753vfUA5COSebt7KThqiuCN9BewE4/qFGgF/5t3AuzXx1/UAY4w==}
 
   '@changesets/get-version-range-type@0.4.0':
     resolution: {integrity: sha512-hwawtob9DryoGTpixy1D3ZXbGgJu1Rhr+ySH2PvTLHvkZuQ7sRT4oQwMh0hbqZH1weAooedEjRsbrWcGLCeyVQ==}
@@ -2299,8 +2299,8 @@ packages:
     resolution: {integrity: sha512-b8AmV3kfQaqWAuacbPuNbL6vahnOJflOhexLzMMNLga62+/nh0JzvJ0aO/5a5MVgUFGS7Hu1P9P03o3fJkDCyw==}
     engines: {node: '>=12'}
 
-  data-bind-mapper@1.0.0:
-    resolution: {integrity: sha512-FCR4YwhbDbknc9t8P3ebGUENQioe/qmAOioiDSxBYUfIp9ysbWUMLNtuym5LbhbfjsQe9N7lJGM2LMw1ZjcPdQ==}
+  data-bind-mapper@1.0.1:
+    resolution: {integrity: sha512-xWkgLj/mSDs/Y2flAMXwLKxnCh+rFScf4N8hSOtpsMxXYXui7CbtIUYP52VXQze9HhRND2Ua/AiEHZ8j/vtB0w==}
     engines: {node: '>=12'}
 
   data-view-buffer@1.0.1:
@@ -2904,8 +2904,8 @@ packages:
     resolution: {integrity: sha512-iPAjerrse27/ygGLxw+EBR9agv9Y6uLeYVJMu+QNCoouJ1/1ri0mGrcWpfCqFZuzzx3WjtwxG098X+n4OuRkPg==}
     engines: {node: '>= 0.4'}
 
-  is-shared-array-buffer@1.0.3:
-    resolution: {integrity: sha512-nA2hv5XIhLR3uVzDDfCIknerhx8XUKnstuOERPNNIinXG7v9u+ohXF67vxm4TPTEPU6lm61ZkwP3c9PCB97rhg==}
+  is-shared-array-buffer@1.0.4:
+    resolution: {integrity: sha512-ISWac8drv4ZGfwKl5slpHG9OwPNty4jOWPRIhBpxOoD+hqITiwuipOQ2bNthAzwA3B4fIjO4Nln74N0S9byq8A==}
     engines: {node: '>= 0.4'}
 
   is-stream@2.0.1:
@@ -2924,8 +2924,8 @@ packages:
     resolution: {integrity: sha512-9gGx6GTtCQM73BgmHQXfDmLtfjjTUDSyoxTCbp5WtoixAhfgsDirWIcVQ/IHpvI5Vgd5i/J5F7B9cN/WlVbC/w==}
     engines: {node: '>= 0.4'}
 
-  is-typed-array@1.1.14:
-    resolution: {integrity: sha512-lQUsHzcTb7rH57dajbOuZEuMDXjs9f04ZloER4QOpjpKcaw4f98BRUrs8aiO9Z4G7i7B0Xhgarg6SCgYcYi8Nw==}
+  is-typed-array@1.1.15:
+    resolution: {integrity: sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==}
     engines: {node: '>= 0.4'}
 
   is-weakmap@2.0.2:
@@ -3267,8 +3267,8 @@ packages:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
 
-  mime@4.0.4:
-    resolution: {integrity: sha512-v8yqInVjhXyqP6+Kw4fV3ZzeMRqEW6FotRsKXjRS5VMTNIuXsdRoAvklpoRgSqXm6o9VNH4/C0mgedko9DdLsQ==}
+  mime@4.0.6:
+    resolution: {integrity: sha512-4rGt7rvQHBbaSOF9POGkk1ocRP16Md1x36Xma8sz8h8/vfCUI2OtEIeCqe4Ofes853x4xDoPiFLIT47J5fI/7A==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -4113,8 +4113,8 @@ packages:
   textarea-caret@3.0.2:
     resolution: {integrity: sha512-gRzeti2YS4did7UJnPQ47wrjD+vp+CJIe9zbsu0bJ987d8QVLvLNG9757rqiQTIy4hGIeFauTTJt5Xkn51UkXg==}
 
-  three-forcegraph@1.42.9:
-    resolution: {integrity: sha512-sujFeXGbdeFHnMiuroImEp3dQl6aDsWr51qm1XLYA9ax+gUuKdRvLBZ9L3VY5saqngBLSyhkWHHMKlzK7xQ0vA==}
+  three-forcegraph@1.42.10:
+    resolution: {integrity: sha512-lKwVWY+/7e9smxK0iQ13WdzYfn9fB2hmQUeuegXgqpn5ARLlG2m0x/nkeLdv9gLlfXZ6nOKuT0m8RgZ2XqOrrQ==}
     engines: {node: '>=12'}
     peerDependencies:
       three: '>=0.118.3'
@@ -4197,12 +4197,12 @@ packages:
     resolution: {integrity: sha512-eaBzG6MxNzEn9kiwvtre90cXaNLkmadMWa1zQMs3XORCXNbsH/OewwbxC5ia9dCxIxnTAsSxXJaa/p5y8DlvJg==}
     engines: {node: '>=10'}
 
-  typed-array-buffer@1.0.2:
-    resolution: {integrity: sha512-gEymJYKZtKXzzBzM4jqa9w6Q1Jjm7x2d+sh19AdsD4wqnMPDYyvwpsIc2Q/835kHuo3BEQ7CjelGhfTsoBb2MQ==}
+  typed-array-buffer@1.0.3:
+    resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
     engines: {node: '>= 0.4'}
 
-  typed-array-byte-length@1.0.1:
-    resolution: {integrity: sha512-3iMJ9q0ao7WE9tWcaYKIptkNBuOIcZCCT0d4MRvuuH88fEoEH62IuQe0OtraD3ebQEoTRk8XCBoknUNc1Y67pw==}
+  typed-array-byte-length@1.0.3:
+    resolution: {integrity: sha512-BaXgOuIxz8n8pIq3e7Atg/7s+DpiYrxn4vdot3w9KbnBhcRQq6o3xemQdIfynqSeXeDrF32x+WvfzmOjPiY9lg==}
     engines: {node: '>= 0.4'}
 
   typed-array-byte-offset@1.0.3:
@@ -4415,8 +4415,8 @@ packages:
     resolution: {integrity: sha512-K4jVyjnBdgvc86Y6BkaLZEN933SwYOuBFkdmBu9ZfkcAbdVbpITnDmjvZ/aQjRXQrv5EPkTnD1s39GiiqbngCw==}
     engines: {node: '>= 0.4'}
 
-  which-typed-array@1.1.16:
-    resolution: {integrity: sha512-g+N+GAWiRj66DngFwHvISJd+ITsyphZvD1vChfVg6cEdnzy53GzB3oy0fUNlvhz7H7+MiqhYr26qxQShCpKTTQ==}
+  which-typed-array@1.1.17:
+    resolution: {integrity: sha512-i2prb5irfKvNFV84NNLOZaNiMx20sm/AG2u59hU+JsjraeD5xs9LgQa+VzU95e2Tn0YMc/4drYPgPV3QvRAPPA==}
     engines: {node: '>= 0.4'}
 
   which@2.0.2:
@@ -4541,7 +4541,7 @@ snapshots:
       accessor-fn: 1.5.1
       kapsule: 1.16.0
       three: 0.170.0
-      three-forcegraph: 1.42.9(three@0.170.0)
+      three-forcegraph: 1.42.10(three@0.170.0)
       three-render-objects: 1.32.1(three@0.170.0)
 
   '@ampproject/remapping@2.3.0':
@@ -5413,9 +5413,9 @@ snapshots:
       lodash.mergewith: 4.6.2
       react: 18.3.1
 
-  '@changesets/apply-release-plan@7.0.6':
+  '@changesets/apply-release-plan@7.0.7':
     dependencies:
-      '@changesets/config': 3.0.4
+      '@changesets/config': 3.0.5
       '@changesets/get-version-range-type': 0.4.0
       '@changesets/git': 3.0.2
       '@changesets/should-skip-package': 0.1.1
@@ -5442,15 +5442,15 @@ snapshots:
     dependencies:
       '@changesets/types': 6.0.0
 
-  '@changesets/cli@2.27.10':
+  '@changesets/cli@2.27.11':
     dependencies:
-      '@changesets/apply-release-plan': 7.0.6
+      '@changesets/apply-release-plan': 7.0.7
       '@changesets/assemble-release-plan': 6.0.5
       '@changesets/changelog-git': 0.2.0
-      '@changesets/config': 3.0.4
+      '@changesets/config': 3.0.5
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.2
-      '@changesets/get-release-plan': 4.0.5
+      '@changesets/get-release-plan': 4.0.6
       '@changesets/git': 3.0.2
       '@changesets/logger': 0.1.1
       '@changesets/pre': 2.0.1
@@ -5473,7 +5473,7 @@ snapshots:
       spawndamnit: 3.0.1
       term-size: 2.2.1
 
-  '@changesets/config@3.0.4':
+  '@changesets/config@3.0.5':
     dependencies:
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.2
@@ -5494,10 +5494,10 @@ snapshots:
       picocolors: 1.1.1
       semver: 7.6.3
 
-  '@changesets/get-release-plan@4.0.5':
+  '@changesets/get-release-plan@4.0.6':
     dependencies:
       '@changesets/assemble-release-plan': 6.0.5
-      '@changesets/config': 3.0.4
+      '@changesets/config': 3.0.5
       '@changesets/pre': 2.0.1
       '@changesets/read': 0.6.2
       '@changesets/types': 6.0.0
@@ -6583,7 +6583,7 @@ snapshots:
       '@scure/base': 1.2.1
       blossom-client-sdk: 0.7.0
       eventemitter3: 5.0.1
-      mime: 4.0.4
+      mime: 4.0.6
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.2)
     transitivePeerDependencies:
@@ -6914,7 +6914,7 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  data-bind-mapper@1.0.0:
+  data-bind-mapper@1.0.1:
     dependencies:
       accessor-fn: 1.5.1
 
@@ -7090,9 +7090,9 @@ snapshots:
       is-data-view: 1.0.2
       is-negative-zero: 2.0.3
       is-regex: 1.2.1
-      is-shared-array-buffer: 1.0.3
+      is-shared-array-buffer: 1.0.4
       is-string: 1.1.1
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
       is-weakref: 1.1.0
       math-intrinsics: 1.0.0
       object-inspect: 1.13.3
@@ -7104,12 +7104,12 @@ snapshots:
       string.prototype.trim: 1.2.10
       string.prototype.trimend: 1.0.9
       string.prototype.trimstart: 1.0.8
-      typed-array-buffer: 1.0.2
-      typed-array-byte-length: 1.0.1
+      typed-array-buffer: 1.0.3
+      typed-array-byte-length: 1.0.3
       typed-array-byte-offset: 1.0.3
       typed-array-length: 1.0.7
       unbox-primitive: 1.1.0
-      which-typed-array: 1.1.16
+      which-typed-array: 1.1.17
 
   es-define-property@1.0.1: {}
 
@@ -7550,7 +7550,7 @@ snapshots:
     dependencies:
       call-bound: 1.0.3
       get-intrinsic: 1.2.6
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
 
   is-date-object@1.1.0:
     dependencies:
@@ -7607,9 +7607,9 @@ snapshots:
 
   is-set@2.0.3: {}
 
-  is-shared-array-buffer@1.0.3:
+  is-shared-array-buffer@1.0.4:
     dependencies:
-      call-bind: 1.0.8
+      call-bound: 1.0.3
 
   is-stream@2.0.1: {}
 
@@ -7628,9 +7628,9 @@ snapshots:
       has-symbols: 1.1.0
       safe-regex-test: 1.1.0
 
-  is-typed-array@1.1.14:
+  is-typed-array@1.1.15:
     dependencies:
-      which-typed-array: 1.1.16
+      which-typed-array: 1.1.17
 
   is-weakmap@2.0.2: {}
 
@@ -8167,7 +8167,7 @@ snapshots:
       braces: 3.0.3
       picomatch: 2.3.1
 
-  mime@4.0.4: {}
+  mime@4.0.6: {}
 
   minimatch@3.1.2:
     dependencies:
@@ -9122,14 +9122,14 @@ snapshots:
 
   textarea-caret@3.0.2: {}
 
-  three-forcegraph@1.42.9(three@0.170.0):
+  three-forcegraph@1.42.10(three@0.170.0):
     dependencies:
       accessor-fn: 1.5.1
       d3-array: 3.2.4
       d3-force-3d: 3.0.5
       d3-scale: 4.0.2
       d3-scale-chromatic: 3.1.0
-      data-bind-mapper: 1.0.0
+      data-bind-mapper: 1.0.1
       kapsule: 1.16.0
       ngraph.forcelayout: 3.3.1
       ngraph.graph: 20.0.1
@@ -9203,19 +9203,19 @@ snapshots:
 
   type-fest@0.16.0: {}
 
-  typed-array-buffer@1.0.2:
+  typed-array-buffer@1.0.3:
     dependencies:
-      call-bind: 1.0.8
+      call-bound: 1.0.3
       es-errors: 1.3.0
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
 
-  typed-array-byte-length@1.0.1:
+  typed-array-byte-length@1.0.3:
     dependencies:
       call-bind: 1.0.8
       for-each: 0.3.3
       gopd: 1.2.0
       has-proto: 1.2.0
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
 
   typed-array-byte-offset@1.0.3:
     dependencies:
@@ -9224,7 +9224,7 @@ snapshots:
       for-each: 0.3.3
       gopd: 1.2.0
       has-proto: 1.2.0
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
       reflect.getprototypeof: 1.0.8
 
   typed-array-length@1.0.7:
@@ -9232,7 +9232,7 @@ snapshots:
       call-bind: 1.0.8
       for-each: 0.3.3
       gopd: 1.2.0
-      is-typed-array: 1.1.14
+      is-typed-array: 1.1.15
       possible-typed-array-names: 1.0.0
       reflect.getprototypeof: 1.0.8
 
@@ -9418,7 +9418,7 @@ snapshots:
       isarray: 2.0.5
       which-boxed-primitive: 1.1.1
       which-collection: 1.0.2
-      which-typed-array: 1.1.16
+      which-typed-array: 1.1.17
 
   which-collection@1.0.2:
     dependencies:
@@ -9427,10 +9427,11 @@ snapshots:
       is-weakmap: 2.0.2
       is-weakset: 2.0.4
 
-  which-typed-array@1.1.16:
+  which-typed-array@1.1.17:
     dependencies:
       available-typed-arrays: 1.0.7
       call-bind: 1.0.8
+      call-bound: 1.0.3
       for-each: 0.3.3
       gopd: 1.2.0
       has-tostringtag: 1.0.2
