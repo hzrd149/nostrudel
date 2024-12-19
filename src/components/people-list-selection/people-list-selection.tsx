@@ -59,7 +59,7 @@ export default function PeopleListSelection({
 } & Omit<ButtonProps, "children">) {
   const modal = useDisclosure();
   const account = useCurrentAccount();
-  const lists = useUserSets(account?.pubkey);
+  const lists = useUserSets(account?.pubkey).filter((list) => list.kind === kinds.Followsets);
   const { lists: favoriteLists } = useFavoriteLists();
   const { selected, setSelected, listEvent } = usePeopleListContext();
 
@@ -128,11 +128,9 @@ export default function PeopleListSelection({
               Lists
             </Heading>
             <SimpleGrid columns={2} spacing="2">
-              {lists
-                .filter((l) => l.kind === kinds.Followsets)
-                .map((list) => (
-                  <ListCard key={getEventUID(list)} list={list} onClick={() => selectList(list)} />
-                ))}
+              {lists.map((list) => (
+                <ListCard key={getEventUID(list)} list={list} onClick={() => selectList(list)} />
+              ))}
             </SimpleGrid>
             {favoriteLists.length > 0 && (
               <>

@@ -17,6 +17,7 @@ import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { RelayIcon } from "../../components/icons";
 import useFavoriteFeeds from "../../hooks/use-favorite-feeds";
 import { isEventInList } from "../../helpers/nostr/lists";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();
@@ -45,7 +46,9 @@ function DVMFeeds() {
           </Heading>
           <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
             {favoriteFeeds.map((feed) => (
-              <DVMCard key={getEventUID(feed)} dvm={feed} />
+              <ErrorBoundary key={getEventUID(feed)} event={feed}>
+                <DVMCard dvm={feed} />
+              </ErrorBoundary>
             ))}
           </SimpleGrid>
         </>
@@ -63,7 +66,9 @@ function DVMFeeds() {
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
           {DVMs.filter((feed) => !isEventInList(favorites, feed)).map((feed) => (
-            <DVMCard key={getEventUID(feed)} dvm={feed} />
+            <ErrorBoundary key={getEventUID(feed)} event={feed}>
+              <DVMCard dvm={feed} />
+            </ErrorBoundary>
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>

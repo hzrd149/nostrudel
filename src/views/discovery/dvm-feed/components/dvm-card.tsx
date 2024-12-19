@@ -1,12 +1,13 @@
-import { ButtonGroup, Card, CardProps, Flex, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
-import { Link as RouterLink, To } from "react-router-dom";
 import { useMemo } from "react";
+import { Card, CardProps, Flex, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
+import { Link as RouterLink, To } from "react-router-dom";
+import { getAddressPointerForEvent } from "applesauce-core/helpers";
 import { AddressPointer } from "nostr-tools/nip19";
 
 import { NostrEvent } from "../../../../types/nostr-event";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import { DVMAvatar } from "./dvm-avatar";
-import { getEventAddressPointer, getEventCoordinate } from "../../../../helpers/nostr/event";
+import { getEventCoordinate } from "../../../../helpers/nostr/event";
 import { DVMName } from "./dvm-name";
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
@@ -19,7 +20,7 @@ export default function DVMCard({
   ...props
 }: Omit<CardProps, "children"> & { dvm: NostrEvent; to?: To; onClick?: LinkOverlayProps["onClick"] }) {
   const metadata = JSON.parse(dvm.content);
-  const pointer: AddressPointer = useMemo(() => getEventAddressPointer(dvm), [dvm]);
+  const pointer: AddressPointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
 
   const ref = useEventIntersectionRef(dvm);
 
