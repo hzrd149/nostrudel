@@ -20,7 +20,7 @@ You can find more clients with more features on [nostrapps.com](https://www.nost
 
 While logging in with a secret key is supported. please don't. This is a web client, so there is always a chance of XXS attacks that could steal your secret key.
 
-I would recommend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x)
+I would recommend you use a browser extension like [Alby](https://getalby.com/) or [Nos2x](https://github.com/fiatjaf/nos2x).
 
 ## Running with docker
 
