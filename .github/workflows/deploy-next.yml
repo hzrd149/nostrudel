@@ -32,6 +32,8 @@ jobs:
           echo "VITE_APP_VERSION=$(jq -r .version ./package.json)" >> $GITHUB_ENV
 
       - name: Build
+        env:
+          VITE_TENOR_API_KEY: ${{ secrets.VITE_TENOR_API_KEY }}
         run: pnpm build
 
       - name: Redirect 404 to Index for SPA
