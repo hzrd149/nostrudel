@@ -47,10 +47,14 @@ export type AppSettingsV10 = Omit<AppSettingsV9, "version" | "defaultRelays"> & 
   showPubkeyColor: "none" | "avatar" | "underline";
 };
 
-export type AppSettings = AppSettingsV10;
+export type AppSettingsV11 = Omit<AppSettingsV10, "quickReactions" | "version"> & {
+  version: 11;
+};
+
+export type AppSettings = AppSettingsV11;
 
 export const defaultSettings: AppSettings = {
-  version: 10,
+  version: 11,
 
   // display
   theme: "default",
@@ -75,7 +79,6 @@ export const defaultSettings: AppSettings = {
   showReactions: true,
   autoDecryptDMs: false,
 
-  quickReactions: ["🤙", "❤️", "🤣", "😍", "🔥"],
   mediaUploadService: "nostr.build",
 
   // lightning

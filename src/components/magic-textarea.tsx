@@ -1,4 +1,4 @@
-import React, { LegacyRef, forwardRef } from "react";
+import React, { LegacyRef, forwardRef, useMemo } from "react";
 // NOTE: Do not remove Textarea or Input from the imports. they are used
 import { Image, InputProps, Textarea, Input, TextareaProps } from "@chakra-ui/react";
 import ReactTextareaAutocomplete, {
@@ -10,17 +10,23 @@ import "@webscopeio/react-textarea-autocomplete/style.css";
 import { nip19 } from "nostr-tools";
 import { matchSorter } from "match-sorter";
 import { useObservable } from "applesauce-react/hooks";
+import { type EmojiMartData } from "@emoji-mart/data";
+import { useAsync, useLocalStorage } from "react-use";
 
-import { Emoji, useContextEmojis } from "../providers/global/emoji-provider";
+import { useContextEmojis } from "../providers/global/emoji-provider";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
 import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
 import { userSearchDirectory } from "../services/username-search";
 
-export type PeopleToken = { pubkey: string; names: string[] };
-type Token = Emoji | PeopleToken;
+// Referencing Textarea and Input so they are not removed from the imports
+[Textarea, Input];
 
-function isEmojiToken(token: Token): token is Emoji {
+export type PeopleToken = { pubkey: string; names: string[] };
+export type EmojiToken = { id: string; name: string; keywords: string[]; char: string; url?: string };
+type Token = EmojiToken | PeopleToken;
+
+function isEmojiToken(token: Token): token is EmojiToken {
   return Reflect.has(token, "char");
 }
 function isPersonToken(token: Token): token is PeopleToken {
@@ -60,15 +66,63 @@ const Loading: ReactTextareaAutocompleteProps<
   React.TextareaHTMLAttributes<HTMLTextAreaElement>
 >["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
+function useEmojiTokens() {
+  const customEmojis = useContextEmojis();
+  const customEmojiTokens = useMemo(
+    () =>
+      customEmojis.map(
+        (emoji) =>
+          ({
+            id: emoji.name,
+            name: emoji.name,
+            url: emoji.url,
+            keywords: [emoji.name],
+            char: `:${emoji.name}:`,
+          }) satisfies EmojiToken,
+      ),
+    [customEmojis],
+  );
+
+  const { value: native } = useAsync(() => import("@emoji-mart/data") as Promise<{ default: EmojiMartData }>);
+  const nativeEmojisTokens = useMemo(() => {
+    if (!native) return [];
+
+    return Object.values(native.default.emojis).map(
+      (emoji) =>
+        ({
+          id: emoji.id,
+          name: emoji.name,
+          keywords: [emoji.id, emoji.name, ...emoji.keywords],
+          char: emoji.skins[0].native,
+        }) satisfies EmojiToken,
+    );
+  }, [native]);
+
+  // load local reaction frequency
+  const [frequently] = useLocalStorage("emoji-mart.frequently", {} as Record<string, number>, {
+    raw: false,
+    serializer: (v) => JSON.stringify(v),
+    deserializer: (str) => JSON.parse(str),
+  });
+
+  return useMemo(() => {
+    const all = [...nativeEmojisTokens, ...customEmojiTokens];
+
+    if (frequently) return all.sort((a, b) => (frequently[b.id] ?? 0) - (frequently[a.id] ?? 0));
+    else return all;
+  }, [nativeEmojisTokens, customEmojiTokens]);
+}
+
 function useAutocompleteTriggers() {
   const webOfTrust = useWebOfTrust();
-  const emojis = useContextEmojis();
   const directory = useObservable(userSearchDirectory) ?? [];
+  const emojis = useEmojiTokens();
 
   const triggers: TriggerType<Token> = {
     ":": {
       dataProvider: (token: string) => {
-        return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
+        if (!token) return emojis.slice(0, 10);
+        else return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
       },
       component: Item,
       output,
@@ -102,7 +156,7 @@ const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: Leg
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-ignore
+      // @ts-expect-error
       <ReactTextareaAutocomplete<Token, InputProps>
         {...props}
         textAreaComponent={Input}
@@ -121,7 +175,7 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-ignore
+      // @ts-expect-error
       <ReactTextareaAutocomplete<Token, TextareaProps>
         {...props}
         ref={instanceRef}

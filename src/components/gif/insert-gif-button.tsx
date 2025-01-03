@@ -1,9 +1,12 @@
+import { useCallback } from "react";
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { getTagValue } from "applesauce-core/helpers";
+
+import TenorGifIconButton from "./tenor-gif-icon-button";
 import Clapperboard from "../icons/clapperboard";
 import GifPickerModal from "./gif-picker-modal";
-import { NostrEvent } from "nostr-tools";
-import { useCallback } from "react";
-import { getTagValue } from "applesauce-core/helpers";
+import { TENOR_API_KEY } from "../../const";
 
 export default function InsertGifButton({
   onSelect,
@@ -26,10 +29,13 @@ export default function InsertGifButton({
     [onSelect, onSelectURL],
   );
 
-  return (
-    <>
-      <IconButton icon={<Clapperboard boxSize={5} />} onClick={modal.onOpen} {...props} />
-      {modal.isOpen && <GifPickerModal onClose={modal.onClose} isOpen onSelect={handleSelect} />}
-    </>
-  );
+  if (TENOR_API_KEY) {
+    return <TenorGifIconButton onSelect={onSelectURL} {...props} />;
+  } else
+    return (
+      <>
+        <IconButton icon={<Clapperboard boxSize={5} />} onClick={modal.onOpen} {...props} />
+        {modal.isOpen && <GifPickerModal onClose={modal.onClose} isOpen onSelect={handleSelect} />}
+      </>
+    );
 }

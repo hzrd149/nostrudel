@@ -37,7 +37,7 @@ export default function MessageBubble({
   const actions = (
     <>
       <NoteZapButton event={message} />
-      <AddReactionButton event={message} portal />
+      <AddReactionButton event={message} />
       {showThreadButton && <IconThreadButton event={message} aria-label="Open Thread" />}
     </>
   );
@@ -69,7 +69,7 @@ export default function MessageBubble({
       {hasReactions && (
         <CardFooter alignItems="center" display="flex" gap="2" px="2" pt="0" pb="2">
           <ButtonGroup size="xs" variant="ghost">
-            {actionPosition === "footer" ? actions : <AddReactionButton event={message} portal />}
+            {actionPosition === "footer" ? actions : <AddReactionButton event={message} />}
             <EventReactionButtons event={message} />
           </ButtonGroup>
           <Timestamp ml="auto" timestamp={message.created_at} />

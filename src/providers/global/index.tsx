@@ -6,7 +6,7 @@ import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-app-settings";
 import NotificationsProvider from "./notifications-provider";
-import { DefaultEmojiProvider, UserEmojiProvider } from "./emoji-provider";
+import { UserEmojiProvider } from "./emoji-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import DMTimelineProvider from "./dms-provider";
 import PublishProvider from "./publish-provider";
@@ -37,13 +37,11 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
           <PublishProvider>
             <NotificationsProvider>
               <DMTimelineProvider>
-                <DefaultEmojiProvider>
-                  <UserEmojiProvider>
-                    <EventFactoryProvider>
-                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                    </EventFactoryProvider>
-                  </UserEmojiProvider>
-                </DefaultEmojiProvider>
+                <UserEmojiProvider>
+                  <EventFactoryProvider>
+                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                  </EventFactoryProvider>
+                </UserEmojiProvider>
               </DMTimelineProvider>
             </NotificationsProvider>
           </PublishProvider>

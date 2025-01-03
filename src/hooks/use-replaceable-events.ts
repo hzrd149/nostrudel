@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { NostrEvent } from "nostr-tools";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { ReplaceableSetQuery } from "applesauce-core/queries";
 
@@ -10,7 +11,7 @@ export default function useReplaceableEvents(
   coordinates: string[] | CustomAddressPointer[] | undefined,
   additionalRelays?: Iterable<string>,
   opts: RequestOptions = {},
-) {
+): NostrEvent[] {
   const readRelays = useReadRelays(additionalRelays);
 
   const pointers = useMemo(() => {
@@ -39,6 +40,6 @@ export default function useReplaceableEvents(
     }
   }, [pointers, readRelays.urls.join("|")]);
 
-  const map = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
-  return Array.from(map?.values() ?? []);
+  const events = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
+  return events ? Object.values(events) : [];
 }
