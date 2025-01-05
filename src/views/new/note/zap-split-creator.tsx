@@ -12,13 +12,13 @@ import {
 import { CloseIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 
-import { AddIcon } from "../icons";
-import { normalizeToHexPubkey } from "../../helpers/nip19";
-import UserAvatar from "../user/user-avatar";
-import UserLink from "../user/user-link";
-import UserAutocomplete from "../user-autocomplete";
+import { AddIcon } from "../../../components/icons";
+import { normalizeToHexPubkey } from "../../../helpers/nip19";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserLink from "../../../components/user/user-link";
+import UserAutocomplete from "../../../components/user-autocomplete";
 
-type Split = { pubkey: string; weight: number };
+export type Split = { pubkey: string; weight: number };
 
 function validateNpub(input: string) {
   const pubkey = normalizeToHexPubkey(input);
@@ -48,9 +48,12 @@ function AddUserForm({ onSubmit }: { onSubmit: (values: Split) => void }) {
   });
 
   return (
-    <Flex as="form" gap="2" onSubmit={submit}>
-      <UserAutocomplete {...register("pubkey", { required: true, validate: validateNpub })} />
-      <IconButton icon={<AddIcon boxSize={5} />} aria-label="Add" type="submit" />
+    <Flex gap="2">
+      <UserAutocomplete
+        placeholder="Search users"
+        {...register("pubkey", { required: true, validate: validateNpub })}
+      />
+      <IconButton icon={<AddIcon boxSize={5} />} aria-label="Add" onClick={submit} />
     </Flex>
   );
 }

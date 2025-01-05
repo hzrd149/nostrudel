@@ -4,11 +4,11 @@ import { Link as RouterLink } from "react-router-dom";
 import { css } from "@emotion/react";
 import { useObservable } from "applesauce-react/hooks";
 
+import Plus from "../icons/plus";
 import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
 import NavItems from "./nav-items";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
-import { WritingIcon } from "../icons";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";
 import TaskManagerButtons from "./task-manager-buttons";
@@ -65,15 +65,15 @@ export default function DesktopSideNav(props: Omit<FlexProps, "children">) {
           <>
             <AccountSwitcher />
             <Button
-              leftIcon={<WritingIcon boxSize={6} />}
-              aria-label="Write Note"
-              title="Write Note"
-              onClick={() => openModal()}
+              as={RouterLink}
+              leftIcon={<Plus boxSize={6} />}
+              aria-label="Create new"
+              title="Create new"
               colorScheme="primary"
               size="lg"
-              isDisabled={account.readonly}
+              to="/new"
             >
-              Write Note
+              New
             </Button>
           </>
         )}

@@ -70,6 +70,7 @@ import Modem02 from "./icons/modem-02";
 import BookOpen01 from "./icons/book-open-01";
 import Edit04 from "./icons/edit-04";
 import Film02 from "./icons/film-02";
+import Camera01 from "./icons/camera-01";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -253,3 +254,5 @@ export const WikiIcon = BookOpen01;
 
 export const ArticleIcon = Edit04;
 export const VideoIcon = Film02;
+
+export const MediaIcon = Camera01

@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { IconButton, IconButtonProps, VisuallyHiddenInput } from "@chakra-ui/react";
 
-import { UploadImageIcon } from "../icons";
-import useTextAreaUploadFile from "../../hooks/use-textarea-upload-file";
+import { UploadImageIcon } from "../../../components/icons";
+import useTextAreaUploadFile from "../../../hooks/use-textarea-upload-file";
 
 export default function InsertImageButton({
   onUploaded,

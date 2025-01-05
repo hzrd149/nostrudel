@@ -109,6 +109,9 @@ import ArticleView from "./views/articles/article";
 import WalletView from "./views/wallet";
 import SupportView from "./views/support";
 import UserMediaPostsTab from "./views/user/media-posts";
+import NewView from "./views/new";
+import NewNoteView from "./views/new/note";
+import NewMediaPostView from "./views/new/media";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -253,6 +256,14 @@ const router = createHashRouter([
     path: "/",
     element: <RootPage />,
     children: [
+      {
+        path: "new",
+        children: [
+          { path: "", element: <NewView /> },
+          { path: "note", element: <NewNoteView /> },
+          { path: "media", element: <NewMediaPostView /> },
+        ],
+      },
       {
         path: "/u/:pubkey",
         element: <UserView />,

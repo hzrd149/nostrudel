@@ -10,6 +10,7 @@ import {
   ListsIcon,
   LiveStreamIcon,
   MapIcon,
+  MediaIcon,
   MuteIcon,
   SearchIcon,
   TorrentIcon,
@@ -23,7 +24,6 @@ import MessageQuestionSquare from "../../components/icons/message-question-squar
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
 import Users03 from "../../components/icons/users-03";
-import Camera01 from "../../components/icons/camera-01";
 
 export const internalApps: App[] = [
   {
@@ -36,7 +36,7 @@ export const internalApps: App[] = [
   {
     title: "Media",
     description: "Browser media posts",
-    icon: Camera01,
+    icon: MediaIcon,
     id: "media",
     to: "/media",
   },

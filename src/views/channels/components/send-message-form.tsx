@@ -12,7 +12,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
-import InsertImageButton from "../../../components/post-modal/insert-image-button";
+import InsertImageButton from "../../new/note/insert-image-button";
 
 export default function ChannelMessageForm({
   channel,

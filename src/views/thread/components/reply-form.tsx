@@ -16,7 +16,7 @@ import { TextNoteContents } from "../../../components/note/timeline-note/text-no
 import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
-import InsertImageButton from "../../../components/post-modal/insert-image-button";
+import InsertImageButton from "../../new/note/insert-image-button";
 
 export type ReplyFormProps = {
   item: ThreadItem;

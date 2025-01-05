@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { VisuallyHidden } from "@chakra-ui/react";
 import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
-import { multiServerUpload } from "blossom-client-sdk/actions/upload";
 import ReactDOMServer from "react-dom/server";
 import { Global, css } from "@emotion/react";
 

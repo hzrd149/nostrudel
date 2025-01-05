@@ -1,9 +1,8 @@
 import { Avatar, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import { useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, Link as RouterLink } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
 import MobileSideDrawer from "./mobile-side-drawer";
@@ -11,8 +10,6 @@ import Rocket02 from "../icons/rocket-02";
 
 export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { openModal } = useContext(PostModalContext);
-  const navigate = useNavigate();
   const account = useCurrentAccount();
 
   const location = useLocation();
@@ -26,50 +23,41 @@ export default function MobileBottomNav(props: Omit<FlexProps, "children">) {
         ) : (
           <Avatar size="sm" src="/apple-touch-icon.png" onClick={onOpen} cursor="pointer" />
         )}
+        <IconButton as={RouterLink} icon={<NotesIcon boxSize={6} />} aria-label="Home" flexGrow="1" size="md" to="/" />
         <IconButton
-          icon={<NotesIcon boxSize={6} />}
-          aria-label="Home"
-          onClick={() => navigate("/")}
-          flexGrow="1"
-          size="md"
-        />
-        <IconButton
+          as={RouterLink}
           icon={<SearchIcon boxSize={6} />}
           aria-label="Search"
-          onClick={() => navigate(`/search`)}
           flexGrow="1"
           size="md"
+          to="/search"
         />
         <IconButton
+          as={RouterLink}
           icon={<PlusCircleIcon boxSize={6} />}
-          aria-label="New Note"
-          onClick={() => {
-            openModal();
-          }}
+          aria-label="Create new"
+          title="Create new"
           variant="solid"
           colorScheme="primary"
-          isDisabled={account?.readonly ?? true}
+          to="/new"
         />
         <IconButton
+          as={RouterLink}
           icon={<DirectMessagesIcon boxSize={6} />}
           aria-label="Messages"
-          onClick={() => navigate(`/dm`)}
           flexGrow="1"
           size="md"
+          to="/dm"
         />
         <IconButton
+          as={RouterLink}
           icon={<NotificationsIcon boxSize={6} />}
           aria-label="Notifications"
-          onClick={() => navigate("/notifications")}
           flexGrow="1"
           size="md"
+          to="/notifications"
         />
-        <IconButton
-          icon={<Rocket02 boxSize={6} />}
-          aria-label="Launchpad"
-          onClick={() => navigate("/launchpad")}
-          isDisabled={account?.readonly ?? true}
-        />
+        <IconButton as={RouterLink} icon={<Rocket02 boxSize={6} />} aria-label="Launchpad" to="/launchpad" />
       </Flex>
       <MobileSideDrawer isOpen={isOpen} onClose={onClose} />
     </>

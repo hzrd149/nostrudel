@@ -1,10 +1,8 @@
-import { useContext } from "react";
 import { Button, Container, Flex, IconButton } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import RequireCurrentAccount from "../../providers/route/require-current-account";
-import { PostModalContext } from "../../providers/route/post-modal-provider";
 import AccountSwitcher from "../../components/layout/account-switcher";
 import { SettingsIcon } from "../../components/icons";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -15,31 +13,36 @@ import DMsCard from "./components/dms-card";
 import NotificationsCard from "./components/notifications-card";
 import ToolsCard from "./components/tools-card";
 import StreamsCard from "./components/streams-card";
+import Plus from "../../components/icons/plus";
 
 function LaunchpadPage() {
-  const { openModal } = useContext(PostModalContext);
-
   return (
     <VerticalPageLayout gap="4" direction="row" wrap="wrap">
       <Flex justifyContent="space-between" w="full">
-        <AccountSwitcher />
+        <Flex gap="2">
+          <AccountSwitcher />
+          <Button
+            as={RouterLink}
+            colorScheme="primary"
+            size="lg"
+            to="/new"
+            variant="outline"
+            leftIcon={<Plus boxSize={6} />}
+          >
+            New
+            <KeyboardShortcut letter="n" ml="2" />
+          </Button>
+        </Flex>
         <IconButton
           as={RouterLink}
           icon={<SettingsIcon boxSize={6} />}
           aria-label="Settings"
           title="Settings"
           size="lg"
-          borderRadius="50%"
           to="/settings"
         />
       </Flex>
-      <Flex gap="4" w="full">
-        <Button colorScheme="primary" size="lg" onClick={() => openModal()} variant="outline">
-          New Note
-          <KeyboardShortcut letter="n" ml="2" onPress={(e) => openModal()} />
-        </Button>
-        <SearchForm flex={1} />
-      </Flex>
+      <SearchForm flex={1} />
 
       <ErrorBoundary>
         <FeedsCard w="full" />

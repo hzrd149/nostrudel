@@ -7,7 +7,7 @@ import { unixNow } from "applesauce-core/helpers";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { LightningIcon } from "../../../components/icons";
-import InsertImageButton from "../../../components/post-modal/insert-image-button";
+import InsertImageButton from "../../new/note/insert-image-button";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import { TrustProvider } from "../../../providers/local/trust-provider";

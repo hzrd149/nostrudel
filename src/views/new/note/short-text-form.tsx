@@ -1,9 +1,5 @@
 import { useRef, useState } from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
   Flex,
   Button,
   Box,
@@ -25,6 +21,7 @@ import {
   AlertIcon,
   ButtonGroup,
   Text,
+  FlexProps,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { UnsignedEvent } from "nostr-tools";
@@ -32,52 +29,47 @@ import { useAsync, useThrottle } from "react-use";
 import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { Emoji, ZapSplit } from "applesauce-core/helpers";
 
-import { ChevronDownIcon, ChevronUpIcon } from "../icons";
-import PublishAction from "../../classes/nostr-publish-action";
-import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
-import { TrustProvider } from "../../providers/local/trust-provider";
-import MagicTextArea, { RefType } from "../magic-textarea";
-import { useContextEmojis } from "../../providers/global/emoji-provider";
-import CommunitySelect from "./community-select";
-import ZapSplitCreator from "../../views/new/note/zap-split-creator";
-import useCurrentAccount from "../../hooks/use-current-account";
-import useCacheForm from "../../hooks/use-cache-form";
-import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
-import MinePOW from "../pow/mine-pow";
-import useAppSettings from "../../hooks/use-app-settings";
-import { ErrorBoundary } from "../error-boundary";
-import { useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
-import { TextNoteContents } from "../note/timeline-note/text-note-contents";
-import localSettings from "../../services/local-settings";
-import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
-import InsertGifButton from "../gif/insert-gif-button";
-import InsertImageButton from "../../views/new/note/insert-image-button";
+import { useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
+import useCurrentAccount from "../../../hooks/use-current-account";
+import useAppSettings from "../../../hooks/use-app-settings";
+import localSettings from "../../../services/local-settings";
+import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
+import PublishAction from "../../../classes/nostr-publish-action";
+import { useContextEmojis } from "../../../providers/global/emoji-provider";
+import useCacheForm from "../../../hooks/use-cache-form";
+import MagicTextArea, { RefType } from "../../../components/magic-textarea";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
+import { ErrorBoundary } from "../../../components/error-boundary";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import InsertImageButton from "./insert-image-button";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
+import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
+import ZapSplitCreator, { Split } from "./zap-split-creator";
+import MinePOW from "../../../components/pow/mine-pow";
+import { PublishDetails } from "../../task-manager/publish-log/publish-details";
+import CommunitySelect from "../../../components/post-modal/community-select";
 
 type FormValues = {
-  subject: string;
   content: string;
   nsfw: boolean;
   nsfwReason: string;
   community: string;
-  split: Omit<ZapSplit, "percent" | "relay">[];
+  split: Split[];
   difficulty: number;
 };
 
-export type PostModalProps = {
+export type ShortTextNoteFormProps = {
   cacheFormKey?: string | null;
   initContent?: string;
   initCommunity?: string;
-  requireSubject?: boolean;
 };
 
-export default function PostModal({
-  isOpen,
-  onClose,
+export default function ShortTextNoteForm({
   cacheFormKey = "new-note",
   initContent = "",
   initCommunity = "",
-  requireSubject,
-}: Omit<ModalProps, "children"> & PostModalProps) {
+}: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
   const publish = usePublishEvent();
   const finalizeDraft = useFinalizeDraft();
   const account = useCurrentAccount()!;
@@ -87,18 +79,17 @@ export default function PostModal({
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishAction, setPublishAction] = useState<PublishAction>();
   const emojis = useContextEmojis();
-  const moreOptions = useDisclosure();
+  const advanced = useDisclosure();
 
   const factory = useEventFactory();
   const [draft, setDraft] = useState<UnsignedEvent>();
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
-      subject: "",
       content: initContent,
       nsfw: false,
       nsfwReason: "",
       community: initCommunity,
-      split: [] as Omit<ZapSplit, "percent" | "relay">[],
+      split: [] as Split[],
       difficulty: noteDifficulty || 0,
     },
     mode: "all",
@@ -125,7 +116,6 @@ export default function PostModal({
 
     // TODO: remove when NIP-72 communities are removed
     if (values.community) draft.tags.push(["a", values.community]);
-    if (values.subject) draft.tags.push(["subject", values.subject]);
 
     const unsigned = await finalizeDraft(draft);
 
@@ -161,18 +151,15 @@ export default function PostModal({
   const renderBody = () => {
     if (publishAction) {
       return (
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+        <Flex direction="column" gap="2">
           <PublishDetails pub={publishAction} />
-          <Button onClick={onClose} mt="2" ml="auto">
-            Close
-          </Button>
-        </ModalBody>
+        </Flex>
       );
     }
 
     if (miningTarget && draft) {
       return (
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+        <Flex direction="column" gap="2">
           <MinePOW
             draft={draft}
             targetPOW={miningTarget}
@@ -180,21 +167,23 @@ export default function PostModal({
             onSkip={publishPost}
             onComplete={publishPost}
           />
-        </ModalBody>
+        </Flex>
       );
     }
+
+    const showAdvanced =
+      advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
 
     // TODO: wrap this in a form
     return (
       <>
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
+        <Flex direction="column" gap="2">
           <MagicTextArea
             autoFocus
             mb="2"
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
-            rows={5}
+            rows={8}
             isRequired
             instanceRef={(inst) => (textAreaRef.current = inst)}
             onPaste={onPaste}
@@ -218,17 +207,21 @@ export default function PostModal({
             <Flex mr="auto" gap="2">
               <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
-              <Button
-                variant="link"
-                rightIcon={moreOptions.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                onClick={moreOptions.onToggle}
-              >
-                More Options
-              </Button>
             </Flex>
-            <Button onClick={onClose} variant="ghost">
-              Cancel
+          </Flex>
+          <Flex gap="2" alignItems="center" justifyContent="space-between">
+            <Button
+              variant="link"
+              rightIcon={advanced.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              onClick={advanced.onToggle}
+            >
+              More Options
             </Button>
+            {formState.isDirty && (
+              <Button variant="ghost" onClick={() => confirm("Clear draft?") && reset()} ms="auto">
+                Clear
+              </Button>
+            )}
             <Button
               colorScheme="primary"
               type="submit"
@@ -239,7 +232,7 @@ export default function PostModal({
               Post
             </Button>
           </Flex>
-          {moreOptions.isOpen && (
+          {showAdvanced && (
             <Flex direction={{ base: "column", lg: "row" }} gap="4">
               <Flex direction="column" gap="2" flex={1}>
                 <FormControl>
@@ -253,11 +246,11 @@ export default function PostModal({
                   )}
                 </Flex>
                 <FormControl>
-                  <FormLabel>POW Difficulty ({getValues().difficulty})</FormLabel>
+                  <FormLabel>POW Difficulty ({getValues("difficulty")})</FormLabel>
                   <Slider
                     aria-label="difficulty"
                     value={getValues("difficulty")}
-                    onChange={(v) => setValue("difficulty", v)}
+                    onChange={(v) => setValue("difficulty", v, { shouldDirty: true, shouldTouch: true })}
                     min={0}
                     max={40}
                     step={1}
@@ -278,13 +271,13 @@ export default function PostModal({
               <Flex direction="column" gap="2" flex={1}>
                 <ZapSplitCreator
                   splits={getValues().split}
-                  onChange={(splits) => setValue("split", splits, { shouldDirty: true })}
+                  onChange={(splits) => setValue("split", splits, { shouldDirty: true, shouldTouch: true })}
                   authorPubkey={account?.pubkey}
                 />
               </Flex>
             </Flex>
           )}
-        </ModalBody>
+        </Flex>
 
         {!addClientTag && promptAddClientTag.isOpen && (
           <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
@@ -309,12 +302,9 @@ export default function PostModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
-      <ModalOverlay />
-      <ModalContent>
-        {publishAction && <ModalCloseButton />}
-        {renderBody()}
-      </ModalContent>
-    </Modal>
+    <>
+      {publishAction && <ModalCloseButton />}
+      {renderBody()}
+    </>
   );
 }

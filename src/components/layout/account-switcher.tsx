@@ -61,7 +61,6 @@ export default function AccountSwitcher() {
         borderWidth={1}
         display="flex"
         gap="2"
-        mb="2"
         alignItems="center"
         flexGrow={1}
         onClick={onToggle}
