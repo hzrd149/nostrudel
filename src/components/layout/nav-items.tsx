@@ -49,9 +49,7 @@ export default function NavItems() {
   else if (location.pathname.startsWith("/relays")) active = "relays";
   else if (location.pathname.startsWith("/r/")) active = "relays";
   else if (location.pathname.startsWith("/lists")) active = "lists";
-  else if (location.pathname.startsWith("/communities")) active = "communities";
   else if (location.pathname.startsWith("/channels")) active = "channels";
-  else if (location.pathname.startsWith("/c/")) active = "communities";
   else if (location.pathname.startsWith("/goals")) active = "goals";
   else if (location.pathname.startsWith("/badges")) active = "badges";
   else if (location.pathname.startsWith("/emojis")) active = "emojis";
@@ -83,8 +81,8 @@ export default function NavItems() {
       if (apps.length < 3 && !apps.some((a) => a.id === "streams")) {
         apps.push(internal.find((app) => app.id === "streams")!);
       }
-      if (apps.length < 3 && !apps.some((a) => a.id === "communities")) {
-        apps.push(internal.find((app) => app.id === "communities")!);
+      if (apps.length < 3 && !apps.some((a) => a.id === "articles")) {
+        apps.push(internal.find((app) => app.id === "articles")!);
       }
       if (apps.length < 3 && !apps.some((a) => a.id === "channels")) {
         apps.push(internal.find((app) => app.id === "channels")!);

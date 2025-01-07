@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import { useForm } from "react-hook-form";
 
 export default function useSettingsForm() {

@@ -13,7 +13,7 @@ export type StreamShareButtonProps = Omit<ButtonProps, "children" | "onClick"> &
 export default function StreamShareButton({
   stream,
   "aria-label": ariaLabel,
-  title = "Quote repost",
+  title = "Quote share",
   ...props
 }: StreamShareButtonProps) {
   const { openModal } = useContext(PostModalContext);

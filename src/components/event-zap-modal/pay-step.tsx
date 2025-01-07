@@ -17,7 +17,7 @@ import UserLink from "../user/user-link";
 import { ChevronDownIcon, ChevronUpIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import { PropsWithChildren, useEffect, useState } from "react";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 
 function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) {
   return (

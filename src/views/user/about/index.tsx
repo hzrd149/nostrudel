@@ -42,7 +42,6 @@ import UserZapButton from "../components/user-zap-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import UserProfileBadges from "./user-profile-badges";
-import UserJoinedCommunities from "./user-joined-communities";
 import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
 import UserJoinedChanneled from "./user-joined-channels";
@@ -51,6 +50,7 @@ import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import UserAboutContent from "../../../components/user/user-about";
 import UserRecentEvents from "./user-recent-events";
+import useAppSettings, { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
@@ -98,6 +98,7 @@ export default function UserAboutTab() {
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);
+  const settings = useUserAppSettings(pubkey);
 
   const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
@@ -215,6 +216,13 @@ export default function UserAboutTab() {
             <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
           </Flex>
         )}
+
+        {settings?.primaryColor && (
+          <Flex gap="2">
+            <Box w="5" h="5" backgroundColor={settings.primaryColor} rounded="full" />
+            <Text>noStrudel theme color</Text>
+          </Flex>
+        )}
       </Flex>
 
       <UserProfileBadges pubkey={pubkey} px="2" />
@@ -254,7 +262,6 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
-      <UserJoinedCommunities pubkey={pubkey} />
       <UserJoinedChanneled pubkey={pubkey} />
 
       <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">

@@ -1,6 +1,7 @@
 import { ColorModeWithSystem } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
 
-export const APP_SETTINGS_KIND = 30078;
+export const APP_SETTINGS_KIND = kinds.Application;
 export const APP_SETTING_IDENTIFIER = "nostrudel-settings";
 
 export type AppSettingsV0 = {

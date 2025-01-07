@@ -1,5 +1,5 @@
 import { replaceDomain } from "../../../helpers/url";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import { renderGenericUrl } from "./common";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/reddit.js

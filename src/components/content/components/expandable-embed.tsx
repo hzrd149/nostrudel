@@ -2,7 +2,7 @@ import { PropsWithChildren, ReactNode } from "react";
 import EmbedActions from "./embed-actions";
 import { Link, useDisclosure } from "@chakra-ui/react";
 
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function ExpandableEmbed({
   children,

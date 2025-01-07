@@ -4,7 +4,7 @@ import { QueryStoreProvider } from "applesauce-react/providers";
 
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import NotificationsProvider from "./notifications-provider";
 import { UserEmojiProvider } from "./emoji-provider";
 import BreakpointProvider from "./breakpoint-provider";

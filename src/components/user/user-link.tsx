@@ -4,7 +4,7 @@ import { nip19 } from "nostr-tools";
 
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 
 export type UserLinkProps = LinkProps & {

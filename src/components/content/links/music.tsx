@@ -3,7 +3,7 @@ import { Box, useColorMode } from "@chakra-ui/react";
 import { EmbedEventPointer } from "../../embed-event";
 import { STEMSTR_RELAY } from "../../../helpers/nostr/stemstr";
 import ExpandableEmbed from "../components/expandable-embed";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 const setZIndex: CSSProperties = { zIndex: 1, position: "relative" };
 

@@ -6,7 +6,6 @@ import {
   ArticleIcon,
   BookmarkIcon,
   ChannelsIcon,
-  CommunityIcon,
   DirectMessagesIcon,
   EmojiPacksIcon,
   ListsIcon,
@@ -109,8 +108,6 @@ const KnownKinds: KnownKind[] = [
 
   { kind: kinds.Handlerinformation, name: "Application" },
   { kind: kinds.Handlerrecommendation, name: "App recommendation" },
-
-  { kind: kinds.CommunityDefinition, icon: CommunityIcon, name: "Communities" },
 
   { kind: kinds.BadgeAward, name: "Badge Award" },
 

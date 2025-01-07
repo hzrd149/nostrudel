@@ -38,13 +38,12 @@ import { PublishDetails } from "../../views/task-manager/publish-log/publish-det
 import { TrustProvider } from "../../providers/local/trust-provider";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
-import CommunitySelect from "./community-select";
 import ZapSplitCreator from "../../views/new/note/zap-split-creator";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useCacheForm from "../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
 import MinePOW from "../pow/mine-pow";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import { ErrorBoundary } from "../error-boundary";
 import { useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
@@ -54,11 +53,9 @@ import InsertGifButton from "../gif/insert-gif-button";
 import InsertImageButton from "../../views/new/note/insert-image-button";
 
 type FormValues = {
-  subject: string;
   content: string;
   nsfw: boolean;
   nsfwReason: string;
-  community: string;
   split: Omit<ZapSplit, "percent" | "relay">[];
   difficulty: number;
 };
@@ -66,8 +63,6 @@ type FormValues = {
 export type PostModalProps = {
   cacheFormKey?: string | null;
   initContent?: string;
-  initCommunity?: string;
-  requireSubject?: boolean;
 };
 
 export default function PostModal({
@@ -75,8 +70,6 @@ export default function PostModal({
   onClose,
   cacheFormKey = "new-note",
   initContent = "",
-  initCommunity = "",
-  requireSubject,
 }: Omit<ModalProps, "children"> & PostModalProps) {
   const publish = usePublishEvent();
   const finalizeDraft = useFinalizeDraft();
@@ -93,11 +86,9 @@ export default function PostModal({
   const [draft, setDraft] = useState<UnsignedEvent>();
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
-      subject: "",
       content: initContent,
       nsfw: false,
       nsfwReason: "",
-      community: initCommunity,
       split: [] as Omit<ZapSplit, "percent" | "relay">[],
       difficulty: noteDifficulty || 0,
     },
@@ -122,10 +113,6 @@ export default function PostModal({
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
       splits: values.split,
     });
-
-    // TODO: remove when NIP-72 communities are removed
-    if (values.community) draft.tags.push(["a", values.community]);
-    if (values.subject) draft.tags.push(["subject", values.subject]);
 
     const unsigned = await finalizeDraft(draft);
 
@@ -188,7 +175,6 @@ export default function PostModal({
     return (
       <>
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          {requireSubject && <Input {...register("subject", { required: true })} isRequired placeholder="Subject" />}
           <MagicTextArea
             autoFocus
             mb="2"
@@ -242,10 +228,6 @@ export default function PostModal({
           {moreOptions.isOpen && (
             <Flex direction={{ base: "column", lg: "row" }} gap="4">
               <Flex direction="column" gap="2" flex={1}>
-                <FormControl>
-                  <FormLabel>Post to community</FormLabel>
-                  <CommunitySelect {...register("community")} />
-                </FormControl>
                 <Flex gap="2" direction="column">
                   <Switch {...register("nsfw")}>NSFW</Switch>
                   {getValues().nsfw && (

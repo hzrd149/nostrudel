@@ -15,10 +15,10 @@ import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import POWIcon from "../../../components/pow/pow-icon";
-import RepostButton from "../../../components/note/timeline-note/components/repost-button";
+import ShareButton from "../../../components/note/timeline-note/components/share-button";
 import QuoteEventButton from "../../../components/note/quote-event-button";
 import NoteZapButton from "../../../components/note/note-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
@@ -114,7 +114,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
-        <RepostButton event={post.event} />
+        <ShareButton event={post.event} />
         <QuoteEventButton event={post.event} />
         <NoteZapButton event={post.event} />
       </ButtonGroup>

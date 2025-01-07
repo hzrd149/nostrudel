@@ -3,7 +3,7 @@ import { verifyEvent } from "nostr-tools";
 
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon, VerificationFailed } from "../icons";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 
 function EventVerificationIcon({ event }: { event: NostrEvent }) {
   const { showSignatureVerification } = useAppSettings();

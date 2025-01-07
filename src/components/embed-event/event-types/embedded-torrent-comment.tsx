@@ -15,7 +15,7 @@ import { getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { MouseEventHandler, useCallback } from "react";
 import { nip19 } from "nostr-tools";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function EmbeddedTorrentComment({
   comment,

@@ -5,7 +5,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import { TrustProvider, useTrustContext } from "../../providers/local/trust-provider";
 import BlurredImage from "../../components/blured-image";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

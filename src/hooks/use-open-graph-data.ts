@@ -1,7 +1,7 @@
 import { useAsync } from "react-use";
 import { fetchWithProxy } from "../helpers/request";
 import type { OgObjectInteral } from "../lib/open-graph-scraper/types";
-import useAppSettings from "./use-app-settings";
+import useAppSettings from "./use-user-app-settings";
 
 const pageExtensions = [".html", ".php", "htm"];
 

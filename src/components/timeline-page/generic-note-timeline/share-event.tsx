@@ -1,7 +1,6 @@
 import { memo } from "react";
-import { Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 import { kinds, nip18 } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import TimelineNote from "../../note/timeline-note";
@@ -13,20 +12,17 @@ import useSingleEvent from "../../../hooks/use-single-event";
 import { EmbedEvent } from "../../embed-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { parseHardcodedNoteContent } from "../../../helpers/nostr/event";
-import { getEventCommunityPointer } from "../../../helpers/nostr/communities";
 import LoadingNostrLink from "../../loading-nostr-link";
 import NoteMenu from "../../note/note-menu";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
-function RepostEvent({ event }: { event: NostrEvent }) {
+function ShareEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
   const hardCodedNote = parseHardcodedNoteContent(event);
 
   const pointer = nip18.getRepostedEventPointer(event);
   const loadedNote = useSingleEvent(pointer?.id, pointer?.relays);
   const note = hardCodedNote || loadedNote;
-
-  const communityCoordinate = getEventCommunityPointer(event);
 
   const ref = useEventIntersectionRef(event);
 
@@ -41,18 +37,7 @@ function RepostEvent({ event }: { event: NostrEvent }) {
             <UserLink pubkey={event.pubkey} />
           </Heading>
           <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
-          <Text as="span" whiteSpace="pre">
-            {communityCoordinate ? `Shared to` : `Shared`}
-          </Text>
-          {communityCoordinate && (
-            <Link
-              as={RouterLink}
-              to={`/c/${communityCoordinate.identifier}/${communityCoordinate.pubkey}`}
-              fontWeight="bold"
-            >
-              {communityCoordinate.identifier}
-            </Link>
-          )}
+          <Text as="span">Shared</Text>
           <NoteMenu event={event} size="sm" variant="link" aria-label="note options" ml="auto" />
         </Flex>
         {!note ? (
@@ -68,4 +53,4 @@ function RepostEvent({ event }: { event: NostrEvent }) {
   );
 }
 
-export default memo(RepostEvent);
+export default memo(ShareEvent);

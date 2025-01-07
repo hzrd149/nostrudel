@@ -9,7 +9,7 @@ import DebugEventButton from "../debug-modal/debug-event-button";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
-import RepostButton from "../note/timeline-note/components/repost-button";
+import ShareButton from "../note/timeline-note/components/share-button";
 import QuoteEventButton from "../note/quote-event-button";
 import MediaPostSlides from "./media-slides";
 import MediaPostContents from "./media-post-content";
@@ -55,7 +55,7 @@ export default function MediaPost({ post }: { post: NostrEvent }) {
           </ButtonGroup>
 
           <ButtonGroup size="sm" variant="ghost" ml="auto">
-            <RepostButton event={post} />
+            <ShareButton event={post} />
             <QuoteEventButton event={post} />
             <DebugEventButton event={post} variant="ghost" ml="auto" size="sm" alignSelf="flex-start" />
           </ButtonGroup>

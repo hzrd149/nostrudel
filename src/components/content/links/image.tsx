@@ -28,7 +28,7 @@ import {
 import { useRegisterSlide } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
 import { NostrEvent } from "../../../types/nostr-event";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../../helpers/image";
 import ExpandableEmbed from "../components/expandable-embed";

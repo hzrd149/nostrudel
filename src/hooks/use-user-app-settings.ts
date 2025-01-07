@@ -19,12 +19,19 @@ function buildAppSettingsEvent(settings: Partial<AppSettings>): EventTemplate {
   };
 }
 
+export function useUserAppSettings(pubkey: string) {
+  useReplaceableEvent({ kind: APP_SETTINGS_KIND, pubkey, identifier: APP_SETTING_IDENTIFIER });
+  return useStoreQuery(AppSettingsQuery, [pubkey]);
+}
+
 export default function useAppSettings() {
   const account = useCurrentAccount();
   const publish = usePublishEvent();
 
   // load synced settings
-  useReplaceableEvent(account?.pubkey && { kind: APP_SETTINGS_KIND, pubkey: account.pubkey });
+  useReplaceableEvent(
+    account?.pubkey && { kind: APP_SETTINGS_KIND, pubkey: account.pubkey, identifier: APP_SETTING_IDENTIFIER },
+  );
 
   const localSettings = account?.localSettings;
   const syncedSettings = useStoreQuery(AppSettingsQuery, account && [account.pubkey]);

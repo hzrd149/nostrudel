@@ -1,17 +1,21 @@
-import { Link as RouterLink } from "react-router-dom";
+import { useContext } from "react";
 import { Card, CardFooter, CardHeader, CardProps, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
+import { getTagValue } from "applesauce-core/helpers";
 
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
-import { getCommunityImage, getCommunityName } from "../../../helpers/nostr/communities";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function EmbeddedCommunity({
   community,
   ...props
 }: Omit<CardProps, "children"> & { community: NostrEvent }) {
-  const name = getCommunityName(community);
+  const name = getTagValue(community, "name") || getTagValue(community, "d");
+  const image = getTagValue(community, "image");
+  const naddr = useShareableEventAddress(community);
+  const { openAddress } = useContext(AppHandlerContext);
 
   return (
     <Card
@@ -21,7 +25,7 @@ export default function EmbeddedCommunity({
       gap="2"
       overflow="hidden"
       borderRadius="xl"
-      backgroundImage={getCommunityImage(community)}
+      backgroundImage={image}
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       backgroundPosition="center"
@@ -30,9 +34,7 @@ export default function EmbeddedCommunity({
     >
       <CardHeader pb="0">
         <Heading size="lg">
-          <LinkOverlay as={RouterLink} to={`/c/${encodeURIComponent(name)}/${nip19.npubEncode(community.pubkey)}`}>
-            {name}
-          </LinkOverlay>
+          <LinkOverlay onClick={() => naddr && openAddress(naddr)}>{name}</LinkOverlay>
         </Heading>
       </CardHeader>
       <CardFooter display="flex" alignItems="center" gap="2" pt="0">

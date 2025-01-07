@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 
 import { UnlockIcon } from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
 
 export default function DecryptPlaceholder({

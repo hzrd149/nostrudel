@@ -29,7 +29,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import ListFavoriteButton from "./list-favorite-button";
 import ListMenu from "./list-menu";
-import { CommunityIcon, NotesIcon } from "../../../components/icons";
+import { NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import NoteZapButton from "../../../components/note/note-zap-button";
@@ -40,11 +40,10 @@ import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
-export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
+export function ListCardContent({ list }: { list: NostrEvent }) {
   const people = getPubkeysFromList(list);
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
-  const communities = coordinates.filter((cord) => cord.kind === kinds.CommunityDefinition);
   const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);
   const references = getReferencesFromList(list);
 
@@ -68,11 +67,6 @@ export function ListCardContent({ list, ...props }: Omit<CardProps, "children"> 
       {articles.length > 0 && (
         <Text>
           <File02 /> {articles.length}
-        </Text>
-      )}
-      {communities.length > 0 && (
-        <Text>
-          <CommunityIcon boxSize={5} /> {communities.length}
         </Text>
       )}
     </SimpleGrid>

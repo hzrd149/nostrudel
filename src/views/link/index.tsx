@@ -53,7 +53,6 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === kinds.Followsets) return <Navigate to={`/lists/${link}`} replace />;
       if (k === kinds.Bookmarksets) return <Navigate to={`/lists/${link}`} replace />;
       if (k === kinds.BadgeDefinition) return <Navigate to={`/badges/${link}`} replace />;
-      if (k === kinds.CommunityDefinition) return <Navigate to={`/c/${link}`} replace />;
       if (k === FLARE_VIDEO_KIND) return <Navigate to={`/videos/${link}`} replace />;
       if (k === kinds.ChannelCreation) return <Navigate to={`/channels/${link}`} replace />;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;

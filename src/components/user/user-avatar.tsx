@@ -7,7 +7,7 @@ import { ProfileContent } from "applesauce-core/helpers";
 import { getIdenticon } from "../../helpers/identicon";
 import { safeUrl } from "../../helpers/parse";
 import { getDisplayName } from "../../helpers/nostr/profile";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";

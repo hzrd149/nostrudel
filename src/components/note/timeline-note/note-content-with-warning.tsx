@@ -4,7 +4,7 @@ import { getContentWarning } from "applesauce-core/helpers";
 import { TextNoteContents } from "./text-note-contents";
 import { useExpand } from "../../../providers/local/expanded";
 import ContentWarning from "../../content-warning";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function NoteContentWithWarning({ event }: { event: NostrEvent }) {
   const expand = useExpand();

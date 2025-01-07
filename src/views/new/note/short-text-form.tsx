@@ -29,7 +29,7 @@ import { Emoji } from "applesauce-core/helpers";
 
 import { useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import localSettings from "../../../services/local-settings";
 import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
 import PublishAction from "../../../classes/nostr-publish-action";
@@ -46,13 +46,11 @@ import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import ZapSplitCreator, { Split } from "./zap-split-creator";
 import MinePOW from "../../../components/pow/mine-pow";
 import { PublishDetails } from "../../task-manager/publish-log/publish-details";
-import CommunitySelect from "../../../components/post-modal/community-select";
 
 type FormValues = {
   content: string;
   nsfw: boolean;
   nsfwReason: string;
-  community: string;
   split: Split[];
   difficulty: number;
 };
@@ -60,13 +58,11 @@ type FormValues = {
 export type ShortTextNoteFormProps = {
   cacheFormKey?: string | null;
   initContent?: string;
-  initCommunity?: string;
 };
 
 export default function ShortTextNoteForm({
   cacheFormKey = "new-note",
   initContent = "",
-  initCommunity = "",
 }: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
   const publish = usePublishEvent();
   const finalizeDraft = useFinalizeDraft();
@@ -86,7 +82,6 @@ export default function ShortTextNoteForm({
       content: initContent,
       nsfw: false,
       nsfwReason: "",
-      community: initCommunity,
       split: [] as Split[],
       difficulty: noteDifficulty || 0,
     },
@@ -111,9 +106,6 @@ export default function ShortTextNoteForm({
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
       splits: values.split,
     });
-
-    // TODO: remove when NIP-72 communities are removed
-    if (values.community) draft.tags.push(["a", values.community]);
 
     const unsigned = await finalizeDraft(draft);
 
@@ -232,10 +224,6 @@ export default function ShortTextNoteForm({
         {showAdvanced && (
           <Flex direction={{ base: "column", lg: "row" }} gap="4">
             <Flex direction="column" gap="2" flex={1}>
-              <FormControl>
-                <FormLabel>Post to community</FormLabel>
-                <CommunitySelect {...register("community")} />
-              </FormControl>
               <Flex gap="2" direction="column">
                 <Switch {...register("nsfw")}>NSFW</Switch>
                 {getValues().nsfw && (

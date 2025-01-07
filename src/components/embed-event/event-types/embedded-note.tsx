@@ -16,7 +16,7 @@ import HoverLinkOverlay from "../../hover-link-overlay";
 import singleEventService from "../../../services/single-event";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const { showSignatureVerification } = useAppSettings();

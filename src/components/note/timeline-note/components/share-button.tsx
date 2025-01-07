@@ -5,27 +5,27 @@ import { NostrEvent } from "../../../../types/nostr-event";
 import { RepostIcon } from "../../../icons";
 import useEventCount from "../../../../hooks/use-event-count";
 import useCurrentAccount from "../../../../hooks/use-current-account";
-import RepostModal from "./repost-modal";
+import ShareModal from "./share-modal";
 
-export default function RepostButton({ event }: { event: NostrEvent }) {
+export default function ShareButton({ event }: { event: NostrEvent }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const account = useCurrentAccount();
-  const hasReposted = useEventCount(
+  const hasShared = useEventCount(
     account ? { "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] } : undefined,
   );
-  const repostCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
+  const ShareCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
 
   return (
     <>
-      {repostCount !== undefined && repostCount > 0 ? (
+      {ShareCount !== undefined && ShareCount > 0 ? (
         <Button
           leftIcon={<RepostIcon />}
           onClick={onOpen}
           title="Repost Note"
-          colorScheme={hasReposted ? "primary" : undefined}
+          colorScheme={hasShared ? "primary" : undefined}
         >
-          {repostCount}
+          {ShareCount}
         </Button>
       ) : (
         <IconButton
@@ -33,10 +33,10 @@ export default function RepostButton({ event }: { event: NostrEvent }) {
           onClick={onOpen}
           aria-label="Repost Note"
           title="Repost Note"
-          colorScheme={hasReposted ? "primary" : undefined}
+          colorScheme={hasShared ? "primary" : undefined}
         />
       )}
-      {isOpen && <RepostModal isOpen={isOpen} onClose={onClose} event={event} />}
+      {isOpen && <ShareModal isOpen={isOpen} onClose={onClose} event={event} />}
     </>
   );
 }

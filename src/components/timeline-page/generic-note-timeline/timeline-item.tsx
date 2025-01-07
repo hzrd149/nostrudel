@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
-import RepostEvent from "./repost-event";
+import ShareEvent from "./share-event";
 import StreamNote from "./stream-note";
 import RelayRecommendation from "./relay-recommendation";
 import BadgeAwardCard from "../../../views/badges/components/badge-award-card";
@@ -29,7 +29,7 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       break;
     case kinds.Repost:
     case kinds.GenericRepost:
-      content = <RepostEvent event={event} />;
+      content = <ShareEvent event={event} />;
       break;
     case kinds.LiveEvent:
       content = <StreamNote stream={event} />;

@@ -3,7 +3,6 @@ import {
   BadgeIcon,
   BookmarkIcon,
   ChannelsIcon,
-  CommunityIcon,
   DirectMessagesIcon,
   EmojiPacksIcon,
   GoalIcon,
@@ -39,13 +38,6 @@ export const internalApps: App[] = [
     icon: MediaIcon,
     id: "media",
     to: "/media",
-  },
-  {
-    title: "Communities",
-    description: "Create and manage communities",
-    icon: CommunityIcon,
-    id: "communities",
-    to: "/communities",
   },
   { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
@@ -87,13 +79,6 @@ export const internalTools: App[] = [
     icon: MessageQuestionSquare,
     id: "unknown",
     to: "/tools/unknown",
-  },
-  {
-    title: "Satellite CDN",
-    description: "Scalable media hosting for the nostr ecosystem",
-    image: "https://satellite.earth/image.png",
-    id: "satellite-cdn",
-    to: "/tools/satellite-cdn",
   },
   { title: "Map", description: "Explore events with geohashes", icon: MapIcon, id: "map", to: "/map" },
   {
@@ -187,6 +172,14 @@ export const externalTools: App[] = [
     description: "Advanced event deletion",
     to: "https://nostr-delete.vercel.app/",
     image: "https://nostr-delete.vercel.app/favicon.png",
+    isExternal: true,
+  },
+  {
+    title: "Satellite CDN",
+    description: "Scalable media hosting for the nostr ecosystem",
+    image: "https://satellite.earth/image.png",
+    id: "satellite-cdn",
+    to: "https://satellite.earth/cdn",
     isExternal: true,
   },
   {

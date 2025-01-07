@@ -23,7 +23,7 @@ import UserLink from "../../user/user-link";
 import NoteZapButton from "../note-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
-import RepostButton from "./components/repost-button";
+import ShareButton from "./components/share-button";
 import QuoteEventButton from "../quote-event-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
@@ -47,7 +47,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 import NotePublishedUsing from "../note-published-using";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -130,7 +130,7 @@ export function TimelineNote({
                 {showReplyButton && (
                   <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                 )}
-                <RepostButton event={event} />
+                <ShareButton event={event} />
                 <QuoteEventButton event={event} />
                 <NoteZapButton event={event} />
               </ButtonGroup>

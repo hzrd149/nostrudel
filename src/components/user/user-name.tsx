@@ -3,7 +3,7 @@ import { Text, TextProps } from "@chakra-ui/react";
 
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 
 function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: string }) {
   const metadata = useUserProfile(pubkey);

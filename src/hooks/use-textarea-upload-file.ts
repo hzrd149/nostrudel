@@ -5,7 +5,7 @@ import { nostrBuildUploadImage } from "../helpers/media-upload/nostr-build";
 import { RefType } from "../components/magic-textarea";
 import { useSigningContext } from "../providers/global/signing-provider";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
-import useAppSettings from "./use-app-settings";
+import useAppSettings from "./use-user-app-settings";
 import useUsersMediaServers from "./use-user-media-servers";
 import { simpleMultiServerUpload } from "../helpers/media-upload/blossom";
 import useCurrentAccount from "./use-current-account";

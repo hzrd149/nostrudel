@@ -70,12 +70,6 @@ const BadgesView = lazy(() => import("./views/badges"));
 const BadgesBrowseView = lazy(() => import("./views/badges/browse"));
 const BadgeDetailsView = lazy(() => import("./views/badges/badge-details"));
 
-const CommunitiesHomeView = lazy(() => import("./views/communities"));
-const CommunityFindByNameView = lazy(() => import("./views/community/find-by-name"));
-const CommunityView = lazy(() => import("./views/community/index"));
-const CommunityPendingView = lazy(() => import("./views/community/views/pending"));
-const CommunityNewestView = lazy(() => import("./views/community/views/newest"));
-
 import RelaysView from "./views/relays";
 import RelayView from "./views/relays/relay";
 import BrowseRelaySetsView from "./views/relays/browse-sets";
@@ -459,29 +453,10 @@ const router = createHashRouter([
         ],
       },
       {
-        path: "communities",
-        children: [{ path: "", element: <CommunitiesHomeView /> }],
-      },
-      {
         path: "articles",
         children: [
           { path: "", element: <ArticlesHomeView /> },
           { path: ":naddr", element: <ArticleView /> },
-        ],
-      },
-      {
-        path: "c/:community",
-        children: [
-          { path: "", element: <CommunityFindByNameView /> },
-          {
-            path: ":pubkey",
-            element: <CommunityView />,
-            children: [
-              { path: "", element: <CommunityNewestView /> },
-              { path: "newest", element: <CommunityNewestView /> },
-              { path: "pending", element: <CommunityPendingView /> },
-            ],
-          },
         ],
       },
       {

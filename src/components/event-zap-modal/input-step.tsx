@@ -7,7 +7,7 @@ import { humanReadableSats } from "../../helpers/lightning";
 import { LightningIcon } from "../icons";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { EmbedEvent, EmbedProps } from "../embed-event";
-import useAppSettings from "../../hooks/use-app-settings";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import CustomZapAmountOptions from "./zap-options";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";

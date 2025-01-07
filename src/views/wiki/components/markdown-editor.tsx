@@ -8,7 +8,7 @@ import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
 
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import useCurrentAccount from "../../../hooks/use-current-account";
 
 import { CharkaMarkdown } from "../../../components/markdown/markdown";

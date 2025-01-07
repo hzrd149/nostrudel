@@ -2,7 +2,7 @@ import { lazy, VideoHTMLAttributes } from "react";
 import styled from "@emotion/styled";
 
 import { isStreamURL, isVideoURL } from "../../../helpers/url";
-import useAppSettings from "../../../hooks/use-app-settings";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import ExpandableEmbed from "../components/expandable-embed";
 const LiveVideoPlayer = lazy(() => import("../../live-video-player"));
