@@ -114,6 +114,7 @@
     "three-stdlib": "^2.35.2",
     "tiny-lru": "^11.2.11",
     "unified": "^11.0.5",
+    "uuid": "^11.0.4",
     "vite-plugin-funding": "^0.1.0",
     "webln": "^0.3.2",
     "workbox-core": "7.0.0",

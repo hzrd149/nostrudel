@@ -144,6 +144,10 @@ const WikiCompareView = lazy(() => import("./views/wiki/compare"));
 const CreateWikiPageView = lazy(() => import("./views/wiki/create"));
 const EditWikiPageView = lazy(() => import("./views/wiki/edit"));
 
+const PodcastsHomeView = lazy(() => import("./views/podcasts"));
+const PodcastView = lazy(() => import("./views/podcasts/podcast"));
+const EpisodeView = lazy(() => import("./views/podcasts/podcast/episode"));
+
 const RootPage = () => {
   useSetColorMode();
 
@@ -363,6 +367,19 @@ const router = createHashRouter([
               </RequireCurrentAccount>
             ),
           },
+        ],
+      },
+      {
+        path: "podcasts",
+        element: (
+          <RequireCurrentAccount>
+            <Outlet />
+          </RequireCurrentAccount>
+        ),
+        children: [
+          { path: "", element: <PodcastsHomeView /> },
+          { path: ":guid", element: <PodcastView /> },
+          { path: ":guid/:episode", element: <EpisodeView /> },
         ],
       },
       {

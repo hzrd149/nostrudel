@@ -85,11 +85,11 @@ export default function PostSettings() {
 
         <FormControl>
           <Flex alignItems="center">
-            <FormLabel htmlFor="autoShowMedia" mb="0">
+            <FormLabel htmlFor="addClientTag" mb="0">
               Add client tag
             </FormLabel>
             <Switch
-              id="autoShowMedia"
+              id="addClientTag"
               isChecked={addClientTag}
               onChange={() => localSettings.addClientTag.next(!localSettings.addClientTag.value)}
             />

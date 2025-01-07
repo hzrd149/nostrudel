@@ -23,6 +23,7 @@ import MessageQuestionSquare from "../../components/icons/message-question-squar
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
 import Users03 from "../../components/icons/users-03";
+import Podcast from "../../components/icons/podcast";
 
 export const internalApps: App[] = [
   {
@@ -39,6 +40,7 @@ export const internalApps: App[] = [
     id: "media",
     to: "/media",
   },
+  // { title: "Podcasts", description: "Social podcasts", icon: Podcast, id: "podcasts", to: "/podcasts" },
   { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
     title: "Channels",
