@@ -218,8 +218,9 @@ export default function UserAboutTab() {
       </Flex>
 
       <UserProfileBadges pubkey={pubkey} px="2" />
+      <UserPinnedEvents pubkey={pubkey} />
       <Box px="2">
-        <Heading size="md">Recent activity:</Heading>
+        <Heading size="md">Recent events:</Heading>
         <UserRecentEvents pubkey={pubkey} />
       </Box>
       <UserStatsAccordion pubkey={pubkey} />
@@ -253,8 +254,6 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
-
-      <UserPinnedEvents pubkey={pubkey} />
       <UserJoinedCommunities pubkey={pubkey} />
       <UserJoinedChanneled pubkey={pubkey} />
 

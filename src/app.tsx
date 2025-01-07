@@ -50,7 +50,7 @@ import UserListsTab from "./views/user/lists";
 import UserGoalsTab from "./views/user/goals";
 import MutedByView from "./views/user/muted-by";
 import UserArticlesTab from "./views/user/articles";
-import UserDMsTab from "./views/user/dms";
+import UserMessagesTab from "./views/user/messages";
 const UserTorrentsTab = lazy(() => import("./views/user/torrents"));
 
 import ListsHomeView from "./views/lists";
@@ -124,7 +124,6 @@ const EventConsoleView = lazy(() => import("./views/tools/event-console"));
 const EventPublisherView = lazy(() => import("./views/tools/event-publisher"));
 const DMTimelineView = lazy(() => import("./views/tools/dm-timeline"));
 const TransformNoteView = lazy(() => import("./views/tools/transform-note"));
-const SatelliteCDNView = lazy(() => import("./views/tools/satellite-cdn"));
 const CorrectionsFeedView = lazy(() => import("./views/tools/corrections"));
 const NoStrudelUsersView = lazy(() => import("./views/tools/nostrudel-users/index"));
 
@@ -258,6 +257,11 @@ const router = createHashRouter([
     children: [
       {
         path: "new",
+        element: (
+          <RequireCurrentAccount>
+            <Outlet />
+          </RequireCurrentAccount>
+        ),
         children: [
           { path: "", element: <NewView /> },
           { path: "note", element: <NewNoteView /> },
@@ -286,7 +290,7 @@ const router = createHashRouter([
           { path: "relays", element: <UserRelaysTab /> },
           { path: "reports", element: <UserReportsTab /> },
           { path: "muted-by", element: <MutedByView /> },
-          { path: "dms", element: <UserDMsTab /> },
+          { path: "dms", element: <UserMessagesTab /> },
           { path: "torrents", element: <UserTorrentsTab /> },
         ],
       },
@@ -433,7 +437,6 @@ const router = createHashRouter([
           { path: "network-dm-graph", element: <NetworkDMGraphView /> },
           { path: "dm-timeline", element: <DMTimelineView /> },
           { path: "transform/:id", element: <TransformNoteView /> },
-          { path: "satellite-cdn", element: <SatelliteCDNView /> },
           { path: "unknown", element: <UnknownTimelineView /> },
           { path: "console", element: <EventConsoleView /> },
           { path: "corrections", element: <CorrectionsFeedView /> },

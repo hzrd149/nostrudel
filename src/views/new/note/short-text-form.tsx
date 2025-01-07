@@ -7,7 +7,6 @@ import {
   useDisclosure,
   Input,
   Switch,
-  ModalProps,
   FormLabel,
   FormControl,
   FormHelperText,
@@ -16,7 +15,6 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
-  ModalCloseButton,
   Alert,
   AlertIcon,
   ButtonGroup,
@@ -27,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { UnsignedEvent } from "nostr-tools";
 import { useAsync, useThrottle } from "react-use";
 import { useEventFactory, useObservable } from "applesauce-react/hooks";
-import { Emoji, ZapSplit } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-core/helpers";
 
 import { useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
@@ -148,163 +146,154 @@ export default function ShortTextNoteForm({
 
   const canSubmit = getValues().content.length > 0;
 
-  const renderBody = () => {
-    if (publishAction) {
-      return (
-        <Flex direction="column" gap="2">
-          <PublishDetails pub={publishAction} />
-        </Flex>
-      );
-    }
-
-    if (miningTarget && draft) {
-      return (
-        <Flex direction="column" gap="2">
-          <MinePOW
-            draft={draft}
-            targetPOW={miningTarget}
-            onCancel={() => setMiningTarget(0)}
-            onSkip={publishPost}
-            onComplete={publishPost}
-          />
-        </Flex>
-      );
-    }
-
-    const showAdvanced =
-      advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
-
-    // TODO: wrap this in a form
+  if (publishAction) {
     return (
-      <>
-        <Flex direction="column" gap="2">
-          <MagicTextArea
-            autoFocus
-            mb="2"
-            value={getValues().content}
-            onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
-            rows={8}
-            isRequired
-            instanceRef={(inst) => (textAreaRef.current = inst)}
-            onPaste={onPaste}
-            onKeyDown={(e) => {
-              if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
-            }}
-          />
-          {preview && preview.content.length > 0 && (
-            <Box>
-              <Heading size="sm">Preview:</Heading>
-              <Box borderWidth={1} borderRadius="md" p="2">
-                <ErrorBoundary>
-                  <TrustProvider trust>
-                    <TextNoteContents event={preview} />
-                  </TrustProvider>
-                </ErrorBoundary>
-              </Box>
-            </Box>
-          )}
-          <Flex gap="2" alignItems="center" justifyContent="flex-end">
-            <Flex mr="auto" gap="2">
-              <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
-              <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
-            </Flex>
-          </Flex>
-          <Flex gap="2" alignItems="center" justifyContent="space-between">
-            <Button
-              variant="link"
-              rightIcon={advanced.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-              onClick={advanced.onToggle}
-            >
-              More Options
-            </Button>
-            {formState.isDirty && (
-              <Button variant="ghost" onClick={() => confirm("Clear draft?") && reset()} ms="auto">
-                Clear
-              </Button>
-            )}
-            <Button
-              colorScheme="primary"
-              type="submit"
-              isLoading={formState.isSubmitting}
-              onClick={submit}
-              isDisabled={!canSubmit}
-            >
-              Post
-            </Button>
-          </Flex>
-          {showAdvanced && (
-            <Flex direction={{ base: "column", lg: "row" }} gap="4">
-              <Flex direction="column" gap="2" flex={1}>
-                <FormControl>
-                  <FormLabel>Post to community</FormLabel>
-                  <CommunitySelect {...register("community")} />
-                </FormControl>
-                <Flex gap="2" direction="column">
-                  <Switch {...register("nsfw")}>NSFW</Switch>
-                  {getValues().nsfw && (
-                    <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
-                  )}
-                </Flex>
-                <FormControl>
-                  <FormLabel>POW Difficulty ({getValues("difficulty")})</FormLabel>
-                  <Slider
-                    aria-label="difficulty"
-                    value={getValues("difficulty")}
-                    onChange={(v) => setValue("difficulty", v, { shouldDirty: true, shouldTouch: true })}
-                    min={0}
-                    max={40}
-                    step={1}
-                  >
-                    <SliderTrack>
-                      <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb />
-                  </Slider>
-                  <FormHelperText>
-                    The number of leading 0's in the event id. see{" "}
-                    <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
-                      NIP-13
-                    </Link>
-                  </FormHelperText>
-                </FormControl>
-              </Flex>
-              <Flex direction="column" gap="2" flex={1}>
-                <ZapSplitCreator
-                  splits={getValues().split}
-                  onChange={(splits) => setValue("split", splits, { shouldDirty: true, shouldTouch: true })}
-                  authorPubkey={account?.pubkey}
-                />
-              </Flex>
-            </Flex>
-          )}
-        </Flex>
-
-        {!addClientTag && promptAddClientTag.isOpen && (
-          <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
-            <AlertIcon hideBelow="lg" />
-            <Text>
-              Enable{" "}
-              <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
-                NIP-89
-              </Link>{" "}
-              client tags and let other users know what app you're using to write notes
-            </Text>
-            <ButtonGroup ml="auto" size="sm" variant="ghost">
-              <Button onClick={promptAddClientTag.onClose}>Close</Button>
-              <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
-                Enable
-              </Button>
-            </ButtonGroup>
-          </Alert>
-        )}
-      </>
+      <Flex direction="column" gap="2">
+        <PublishDetails pub={publishAction} />
+      </Flex>
     );
-  };
+  }
 
+  if (miningTarget && draft) {
+    return (
+      <Flex direction="column" gap="2">
+        <MinePOW
+          draft={draft}
+          targetPOW={miningTarget}
+          onCancel={() => setMiningTarget(0)}
+          onSkip={publishPost}
+          onComplete={publishPost}
+        />
+      </Flex>
+    );
+  }
+
+  const showAdvanced =
+    advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
+
+  // TODO: wrap this in a form
   return (
     <>
-      {publishAction && <ModalCloseButton />}
-      {renderBody()}
+      <Flex direction="column" gap="2">
+        <MagicTextArea
+          autoFocus
+          mb="2"
+          value={getValues().content}
+          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
+          rows={8}
+          isRequired
+          instanceRef={(inst) => (textAreaRef.current = inst)}
+          onPaste={onPaste}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
+          }}
+        />
+        {preview && preview.content.length > 0 && (
+          <Box>
+            <Heading size="sm">Preview:</Heading>
+            <Box borderWidth={1} borderRadius="md" p="2">
+              <ErrorBoundary>
+                <TrustProvider trust>
+                  <TextNoteContents event={preview} />
+                </TrustProvider>
+              </ErrorBoundary>
+            </Box>
+          </Box>
+        )}
+        <Flex gap="2" alignItems="center" justifyContent="flex-end">
+          <Flex mr="auto" gap="2">
+            <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+            <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+          </Flex>
+        </Flex>
+        <Flex gap="2" alignItems="center" justifyContent="space-between">
+          <Button
+            variant="link"
+            rightIcon={advanced.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            onClick={advanced.onToggle}
+          >
+            More Options
+          </Button>
+          {formState.isDirty && (
+            <Button variant="ghost" onClick={() => confirm("Clear draft?") && reset()} ms="auto">
+              Clear
+            </Button>
+          )}
+          <Button
+            colorScheme="primary"
+            type="submit"
+            isLoading={formState.isSubmitting}
+            onClick={submit}
+            isDisabled={!canSubmit}
+          >
+            Post
+          </Button>
+        </Flex>
+        {showAdvanced && (
+          <Flex direction={{ base: "column", lg: "row" }} gap="4">
+            <Flex direction="column" gap="2" flex={1}>
+              <FormControl>
+                <FormLabel>Post to community</FormLabel>
+                <CommunitySelect {...register("community")} />
+              </FormControl>
+              <Flex gap="2" direction="column">
+                <Switch {...register("nsfw")}>NSFW</Switch>
+                {getValues().nsfw && (
+                  <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
+                )}
+              </Flex>
+              <FormControl>
+                <FormLabel>POW Difficulty ({getValues("difficulty")})</FormLabel>
+                <Slider
+                  aria-label="difficulty"
+                  value={getValues("difficulty")}
+                  onChange={(v) => setValue("difficulty", v, { shouldDirty: true, shouldTouch: true })}
+                  min={0}
+                  max={40}
+                  step={1}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <FormHelperText>
+                  The number of leading 0's in the event id. see{" "}
+                  <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
+                    NIP-13
+                  </Link>
+                </FormHelperText>
+              </FormControl>
+            </Flex>
+            <Flex direction="column" gap="2" flex={1}>
+              <ZapSplitCreator
+                splits={getValues().split}
+                onChange={(splits) => setValue("split", splits, { shouldDirty: true, shouldTouch: true })}
+                authorPubkey={account?.pubkey}
+              />
+            </Flex>
+          </Flex>
+        )}
+      </Flex>
+
+      {!addClientTag && promptAddClientTag.isOpen && (
+        <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
+          <AlertIcon hideBelow="lg" />
+          <Text>
+            Enable{" "}
+            <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
+              NIP-89
+            </Link>{" "}
+            client tags and let other users know what app you're using to write notes
+          </Text>
+          <ButtonGroup ml="auto" size="sm" variant="ghost">
+            <Button onClick={promptAddClientTag.onClose}>Close</Button>
+            <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
+              Enable
+            </Button>
+          </ButtonGroup>
+        </Alert>
+      )}
     </>
   );
 }

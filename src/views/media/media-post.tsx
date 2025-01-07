@@ -1,8 +1,5 @@
-import { Box, ButtonGroup, Flex, Heading, Spinner } from "@chakra-ui/react";
+import { ButtonGroup, Flex, Heading, Spinner } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { COMMENT_KIND } from "applesauce-core/helpers";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { CommentsQuery } from "applesauce-core/queries";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
@@ -16,9 +13,6 @@ import { TrustProvider } from "../../providers/local/trust-provider";
 import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import RepostButton from "../../components/note/timeline-note/components/repost-button";
 import QuoteEventButton from "../../components/note/quote-event-button";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import EventZapIconButton from "../../components/zap/event-zap-icon-button";
 import AddReactionButton from "../../components/note/timeline-note/components/add-reaction-button";
