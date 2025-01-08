@@ -7,32 +7,32 @@ import useEventCount from "../../../../hooks/use-event-count";
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import ShareModal from "./share-modal";
 
-export default function ShareButton({ event }: { event: NostrEvent }) {
+export default function EventShareButton({ event, title = "Share Event" }: { event: NostrEvent; title?: string }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const account = useCurrentAccount();
   const hasShared = useEventCount(
     account ? { "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] } : undefined,
   );
-  const ShareCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
+  const shareCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
 
   return (
     <>
-      {ShareCount !== undefined && ShareCount > 0 ? (
+      {shareCount !== undefined && shareCount > 0 ? (
         <Button
           leftIcon={<RepostIcon />}
           onClick={onOpen}
-          title="Repost Note"
+          title={title}
           colorScheme={hasShared ? "primary" : undefined}
         >
-          {ShareCount}
+          {shareCount}
         </Button>
       ) : (
         <IconButton
           icon={<RepostIcon />}
           onClick={onOpen}
-          aria-label="Repost Note"
-          title="Repost Note"
+          aria-label={title}
+          title={title}
           colorScheme={hasShared ? "primary" : undefined}
         />
       )}

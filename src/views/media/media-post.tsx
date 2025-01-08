@@ -11,8 +11,8 @@ import MediaPostSlides from "../../components/media-post/media-slides";
 import MediaPostContents from "../../components/media-post/media-post-content";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import DebugEventButton from "../../components/debug-modal/debug-event-button";
-import ShareButton from "../../components/note/timeline-note/components/share-button";
-import QuoteEventButton from "../../components/note/quote-event-button";
+import EventShareButton from "../../components/note/timeline-note/components/event-share-button";
+import EventQuoteButton from "../../components/note/event-quote-button";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import EventZapIconButton from "../../components/zap/event-zap-icon-button";
 import AddReactionButton from "../../components/note/timeline-note/components/add-reaction-button";
@@ -30,8 +30,8 @@ function Header({ post }: { post: NostrEvent }) {
       </Flex>
 
       <ButtonGroup ml="auto">
-        <ShareButton event={post} />
-        <QuoteEventButton event={post} />
+        <EventShareButton event={post} />
+        <EventQuoteButton event={post} />
         <DebugEventButton event={post} />
       </ButtonGroup>
     </Flex>

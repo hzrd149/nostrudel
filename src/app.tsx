@@ -109,6 +109,7 @@ import NewMediaPostView from "./views/new/media";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
+const UserFilesTab = lazy(() => import("./views/user/files"));
 
 const ToolsHomeView = lazy(() => import("./views/tools"));
 const NetworkMuteGraphView = lazy(() => import("./views/tools/network-mute-graph"));
@@ -143,6 +144,9 @@ const WikiSearchView = lazy(() => import("./views/wiki/search"));
 const WikiCompareView = lazy(() => import("./views/wiki/compare"));
 const CreateWikiPageView = lazy(() => import("./views/wiki/create"));
 const EditWikiPageView = lazy(() => import("./views/wiki/edit"));
+
+const FilesHomeView = lazy(() => import("./views/files"));
+const FileDetailsView = lazy(() => import("./views/files/file"));
 
 const PodcastsHomeView = lazy(() => import("./views/podcasts"));
 const PodcastView = lazy(() => import("./views/podcasts/podcast"));
@@ -278,6 +282,7 @@ const router = createHashRouter([
           { path: "streams", element: <UserStreamsTab /> },
           { path: "tracks", element: <UserTracksTab /> },
           { path: "videos", element: <UserVideosTab /> },
+          { path: "files", element: <UserFilesTab /> },
           { path: "zaps", element: <UserZapsTab /> },
           { path: "reactions", element: <UserReactionsTab /> },
           { path: "lists", element: <UserListsTab /> },
@@ -400,6 +405,19 @@ const router = createHashRouter([
         children: [
           { path: "", element: <MediaFeedView /> },
           { path: ":pointer", element: <MediaPostView /> },
+        ],
+      },
+      {
+        path: "files",
+        children: [
+          {
+            path: "",
+            element: <FilesHomeView />,
+          },
+          {
+            path: ":nevent",
+            element: <FileDetailsView />,
+          },
         ],
       },
       {

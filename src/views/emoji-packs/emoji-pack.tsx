@@ -35,7 +35,7 @@ import Timestamp from "../../components/timestamp";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import EventZapButton from "../../components/zap/event-zap-button";
-import QuoteEventButton from "../../components/note/quote-event-button";
+import EventQuoteButton from "../../components/note/event-quote-button";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -176,7 +176,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
 
       <ButtonGroup variant="ghost">
         <EventZapButton event={pack} />
-        <QuoteEventButton event={pack} />
+        <EventQuoteButton event={pack} />
         <EmojiPackFavoriteButton pack={pack} />
       </ButtonGroup>
 

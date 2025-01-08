@@ -1,5 +1,21 @@
-import { useState } from "react";
-import { Flex, Image, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
+import { memo, useState } from "react";
+import {
+  Flex,
+  Image,
+  Link,
+  SimpleGrid,
+  Spacer,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { getTagValue } from "applesauce-core/helpers";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
@@ -21,97 +37,48 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { formatBytes } from "../../helpers/number";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 
-function ImageFile({ event }: { event: NostrEvent }) {
-  const parsed = parseImageFile(event);
-  const settings = useAppSettings();
-  const { trust } = useTrustContext();
+const FileRow = memo(({ file }: { file: NostrEvent }) => {
+  const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
+  const name = getTagValue(file, "name") || getTagValue(file, "summary") || "Unknown";
+  const type = getTagValue(file, "m");
+  const size = getTagValue(file, "size");
 
-  const ref = useEventIntersectionRef(event);
-
-  const shouldBlur = settings.blurImages && !trust;
-
-  // const showImage = useDisclosure();
-  // if (shouldBlur && parsed.blurhash && parsed.width && parsed.height && !showImage.isOpen) {
-  //   const aspect = parsed.width / parsed.height;
-  //   return (
-  //     <BlurhashImage
-  //       blurhash={parsed.blurhash}
-  //       width={64 * aspect}
-  //       height={64}
-  //       onClick={showImage.onOpen}
-  //       cursor="pointer"
-  //       w="full"
-  //     />
-  //   );
-  // }
-
-  const ImageComponent = shouldBlur ? BlurredImage : Image;
-  return (
-    <Flex
-      direction="column"
-      gap="2"
-      aspectRatio={1}
-      backgroundImage={parsed.url}
-      backgroundPosition="center"
-      backgroundSize="cover"
-      backgroundRepeat="no-repeat"
-      borderRadius="lg"
-      overflow="hidden"
-      ref={ref}
-    >
-      <Flex gap="2" alignItems="center" backgroundColor="blackAlpha.500" mt="auto" p="2">
-        <UserAvatarLink pubkey={event.pubkey} size="sm" />
-        <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated />
-        <Timestamp timestamp={event.created_at} />
-        <Spacer />
-        <EventZapButton event={event} size="sm" colorScheme="yellow" variant="outline" />
-      </Flex>
-    </Flex>
-  );
-}
-
-function VideoFile({ event }: { event: NostrEvent }) {
-  const url = getFileUrl(event);
-
-  const ref = useEventIntersectionRef(event);
+  const nevent = useShareableEventAddress(file);
 
   return (
-    <Flex direction="column" gap="2" ref={ref}>
-      <Flex gap="2" alignItems="center">
-        <UserAvatarLink pubkey={event.pubkey} size="sm" />
-        <UserLink pubkey={event.pubkey} fontWeight="bold" />
-      </Flex>
-      <video src={url} controls />
-    </Flex>
+    <Tr ref={ref}>
+      <Td maxW="xs">
+        <Link as={RouterLink} to={`/files/${nevent}`}>
+          {name}
+        </Link>
+      </Td>
+      <Td>
+        <Flex gap="2" alignItems="center">
+          <UserAvatarLink size="xs" pubkey={file.pubkey} />
+          <UserLink pubkey={file.pubkey} fontWeight="bold" />
+          <UserDnsIdentityIcon pubkey={file.pubkey} />
+        </Flex>
+      </Td>
+      <Td>{type}</Td>
+      <Td>{size && formatBytes(parseInt(size))}</Td>
+      <Td isNumeric>
+        <Timestamp timestamp={file.created_at} />
+      </Td>
+    </Tr>
   );
-}
+});
 
-function FileType({ event }: { event: NostrEvent }) {
-  const mimeType = event.tags.find((t) => t[0] === "m" && t[1])?.[1];
-
-  if (!mimeType) throw new Error("Missing MIME type");
-
-  if (IMAGE_TYPES.includes(mimeType)) {
-    return (
-      <TrustProvider trust>
-        <ImageFile event={event} />
-      </TrustProvider>
-    );
-  }
-  if (VIDEO_TYPES.includes(mimeType)) {
-    return <VideoFile event={event} />;
-  }
-  return <Text>Unknown mine type {mimeType}</Text>;
-}
-
-function FilesPage() {
+function FilesHomePage() {
   const { listId, filter } = usePeopleListContext();
   const relays = useReadRelays();
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>(IMAGE_TYPES);
 
-  const { loader, timeline: events } = useTimelineLoader(
+  const { loader, timeline: files } = useTimelineLoader(
     `${listId}-files`,
     relays,
     selectedTypes.length > 0 && !!filter ? { kinds: [FILE_KIND], "#m": selectedTypes, ...filter } : undefined,
@@ -126,23 +93,35 @@ function FilesPage() {
       </Flex>
 
       <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid minChildWidth="20rem" spacing="2">
-          {events?.map((event) => (
-            <ErrorBoundary key={event.id} event={event}>
-              <FileType event={event} />
-            </ErrorBoundary>
-          ))}
-        </SimpleGrid>
+        <TableContainer>
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Type</Th>
+                <Th>Size</Th>
+                <Th isNumeric>Created</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {files.map((file) => (
+                <ErrorBoundary key={file.id} event={file}>
+                  <FileRow file={file} />
+                </ErrorBoundary>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       </IntersectionObserverProvider>
       <TimelineActionAndStatus timeline={loader} />
     </VerticalPageLayout>
   );
 }
 
-export default function FilesView() {
+export default function FilesHomeView() {
   return (
     <PeopleListProvider>
-      <FilesPage />
+      <FilesHomePage />
     </PeopleListProvider>
   );
 }

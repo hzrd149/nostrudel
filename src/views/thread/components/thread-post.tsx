@@ -18,8 +18,8 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import POWIcon from "../../../components/pow/pow-icon";
-import ShareButton from "../../../components/note/timeline-note/components/share-button";
-import QuoteEventButton from "../../../components/note/quote-event-button";
+import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
+import EventQuoteButton from "../../../components/note/event-quote-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
 import BookmarkEventButton from "../../../components/note/bookmark-event";
@@ -114,8 +114,8 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
-        <ShareButton event={post.event} />
-        <QuoteEventButton event={post.event} />
+        <EventShareButton event={post.event} />
+        <EventQuoteButton event={post.event} />
         <EventZapButton event={post.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}

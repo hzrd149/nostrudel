@@ -31,7 +31,7 @@ import { ExternalLinkIcon } from "../../components/icons";
 import FileSearch01 from "../../components/icons/file-search-01";
 import EventZapButton from "../../components/zap/event-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
-import QuoteEventButton from "../../components/note/quote-event-button";
+import EventQuoteButton from "../../components/note/event-quote-button";
 import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -119,7 +119,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
           <Flex alignItems="flex-end" gap="2" ml="auto">
             <EventVoteButtons event={page} inline chevrons={false} />
             <ButtonGroup size="sm">
-              <QuoteEventButton event={page} />
+              <EventQuoteButton event={page} />
               <EventZapButton event={page} showEventPreview={false} />
               <WikiPageMenu page={page} aria-label="Page Options" />
             </ButtonGroup>

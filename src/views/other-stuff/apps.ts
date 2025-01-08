@@ -23,7 +23,7 @@ import MessageQuestionSquare from "../../components/icons/message-question-squar
 import UploadCloud01 from "../../components/icons/upload-cloud-01";
 import Edit04 from "../../components/icons/edit-04";
 import Users03 from "../../components/icons/users-03";
-import Podcast from "../../components/icons/podcast";
+import FileAttachment01 from "../../components/icons/file-attachment-01";
 
 export const internalApps: App[] = [
   {
@@ -58,6 +58,7 @@ export const internalApps: App[] = [
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   { title: "Videos", description: "Browse videos", icon: VideoIcon, id: "videos", to: "/videos" },
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
+  { title: "Files", description: "Browse files", icon: FileAttachment01, id: "files", to: "/files" },
 ];
 
 export const internalTools: App[] = [

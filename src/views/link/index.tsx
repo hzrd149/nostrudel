@@ -9,6 +9,7 @@ import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
+import { MEDIA_POST_KIND } from "../../helpers/nostr/media";
 
 function LoadUnknownAddress({ pointer, link }: { pointer: nip19.AddressPointer; link: string }) {
   const event = useReplaceableEvent(pointer, pointer.relays);
@@ -58,6 +59,8 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
       if (k === kinds.LongFormArticle) return <Navigate to={`/articles/${link}`} replace />;
       if (k === WIKI_PAGE_KIND) return <Navigate to={`/wiki/page/${link}`} replace />;
+      if (k === MEDIA_POST_KIND) return <Navigate to={`/media/${link}`} replace />;
+      if (k === kinds.FileMetadata) return <Navigate to={`/files/${link}`} replace />;
 
       if (!event && decoded.type === "naddr") return <LoadUnknownAddress pointer={decoded.data} link={link} />;
       if (!event && decoded.type === "nevent") return <LoadUnknownEvent pointer={decoded.data} link={link} />;

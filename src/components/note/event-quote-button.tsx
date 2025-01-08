@@ -6,10 +6,10 @@ import { QuoteEventIcon } from "../icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
 
-export default function QuoteEventButton({
+export default function EventQuoteButton({
   event,
   "aria-label": ariaLabel,
-  title = "Quote Note",
+  title = "Quote Event",
   ...props
 }: Omit<IconButtonProps, "children" | "onClick" | "aria-label"> & {
   event: NostrEvent;

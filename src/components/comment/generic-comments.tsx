@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Box,
   Button,
@@ -10,27 +11,27 @@ import {
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { COMMENT_KIND, getEventUID } from "applesauce-core/helpers";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { CommentsQuery, RepliesQuery } from "applesauce-core/queries";
 
-import Timestamp from "../../../components/timestamp";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import UserLink from "../../../components/user/user-link";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import ArticleCommentForm from "./article-comment-form";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
-import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../../../components/icons";
-import EventZapButton from "../../../components/zap/event-zap-button";
+import Timestamp from "../timestamp";
+import DebugEventButton from "../debug-modal/debug-event-button";
+import UserLink from "../user/user-link";
+import TextNoteContents from "../note/timeline-note/text-note-contents";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import UserAvatarLink from "../user/user-avatar-link";
+import UserDnsIdentity from "../user/user-dns-identity";
+import NoteReactions from "../note/timeline-note/components/note-reactions";
+import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../icons";
+import EventZapButton from "../zap/event-zap-button";
+import GenericCommentForm from "./generic-comment-form";
 
-function Comment({ comment }: { comment: NostrEvent }) {
+const Comment = memo(({ comment }: { comment: NostrEvent }) => {
   const reply = useDisclosure();
   const replies = useStoreQuery(RepliesQuery, [comment]);
   const expand = useDisclosure({ defaultIsOpen: true });
@@ -75,7 +76,7 @@ function Comment({ comment }: { comment: NostrEvent }) {
           )}
         </CardFooter>
       </Card>
-      {reply.isOpen && <ArticleCommentForm event={comment} onCancel={reply.onClose} onSubmitted={reply.onClose} />}
+      {reply.isOpen && <GenericCommentForm event={comment} onCancel={reply.onClose} onSubmitted={reply.onClose} />}
       {replies && replies.length > 2 && expand.isOpen && !all.isOpen && (
         <Button w="full" variant="link" p="2" onClick={all.onOpen}>
           Show more replies ({replies.length - 2})
@@ -90,16 +91,25 @@ function Comment({ comment }: { comment: NostrEvent }) {
       )}
     </>
   );
-}
+});
 
-export function ArticleComments({ article }: { article: NostrEvent }) {
+export function GenericComments({ event }: { event: NostrEvent }) {
   const readRelays = useReadRelays();
-  const { loader } = useTimelineLoader(`${getEventUID(article)}-comments`, readRelays, {
-    kinds: [COMMENT_KIND],
-    "#A": [getEventUID(article)],
-  });
+  const { loader } = useTimelineLoader(
+    `${getEventUID(event)}-comments`,
+    readRelays,
+    kinds.isParameterizedReplaceableKind(event.kind)
+      ? {
+          kinds: [COMMENT_KIND],
+          "#A": [getEventUID(event)],
+        }
+      : {
+          kinds: [COMMENT_KIND],
+          "#E": [event.id],
+        },
+  );
 
-  const comments = useStoreQuery(CommentsQuery, [article]);
+  const comments = useStoreQuery(CommentsQuery, [event]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (

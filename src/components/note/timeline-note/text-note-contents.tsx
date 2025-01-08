@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense } from "react";
 import { Box, BoxProps, Spinner } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useRenderedContent } from "applesauce-react/hooks";

@@ -12,7 +12,7 @@ import TrackDownloadButton from "./track-download-button";
 import TrackPlayer from "./track-player";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import TrackMenu from "./track-menu";
-import QuoteEventButton from "../../../components/note/quote-event-button";
+import EventQuoteButton from "../../../components/note/event-quote-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
@@ -45,7 +45,7 @@ export default function TrackCard({ track, ...props }: { track: NostrEvent } & O
           <Button leftIcon={<ReplyIcon />} isDisabled>
             Comment
           </Button>
-          <QuoteEventButton event={track} />
+          <EventQuoteButton event={track} />
           <EventZapButton event={track} />
         </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">

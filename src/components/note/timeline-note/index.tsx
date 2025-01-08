@@ -23,8 +23,8 @@ import UserLink from "../../user/user-link";
 import EventZapButton from "../../zap/event-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
-import ShareButton from "./components/share-button";
-import QuoteEventButton from "../quote-event-button";
+import EventShareButton from "./components/event-share-button";
+import EventQuoteButton from "../event-quote-button";
 import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../../providers/local/trust-provider";
@@ -130,8 +130,8 @@ export function TimelineNote({
                 {showReplyButton && (
                   <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                 )}
-                <ShareButton event={event} />
-                <QuoteEventButton event={event} />
+                <EventShareButton event={event} />
+                <EventQuoteButton event={event} />
                 <EventZapButton event={event} />
               </ButtonGroup>
               {!showReactionsOnNewLine && reactionButtons}

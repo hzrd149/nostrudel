@@ -21,9 +21,9 @@ import NoteReactions from "../../components/note/timeline-note/components/note-r
 import EventZapButton from "../../components/zap/event-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import BookmarkEventButton from "../../components/note/bookmark-event";
-import QuoteEventButton from "../../components/note/quote-event-button";
-import { ArticleComments } from "./components/article-comments";
-import ArticleCommentForm from "./components/article-comment-form";
+import EventQuoteButton from "../../components/note/event-quote-button";
+import { GenericComments } from "../../components/comment/generic-comments";
+import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { ThreadIcon } from "../../components/icons";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
@@ -55,7 +55,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         <ZapBubbles event={article} mb="2" />
         <Flex gap="2">
           <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
-          <QuoteEventButton event={article} size="sm" variant="ghost" />
+          <EventQuoteButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
         <Box fontSize="lg">
@@ -63,20 +63,20 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         </Box>
         <Flex gap="2">
           <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
-          <QuoteEventButton event={article} size="sm" variant="ghost" />
+          <EventQuoteButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
       </Box>
       <Flex mx="auto" maxW="4xl" w="full" gap="2" direction="column">
         {comment.isOpen ? (
-          <ArticleCommentForm event={article} onCancel={comment.onClose} onSubmitted={comment.onClose} />
+          <GenericCommentForm event={article} onCancel={comment.onClose} onSubmitted={comment.onClose} />
         ) : (
           <Button leftIcon={<ThreadIcon />} onClick={comment.onOpen} mr="auto">
             Comment
           </Button>
         )}
 
-        <ArticleComments article={article} />
+        <GenericComments event={article} />
       </Flex>
     </VerticalPageLayout>
   );

@@ -43,7 +43,7 @@ export default function UserMessagesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const readRelays = useAdditionalRelayContext();
 
-  const { loader, timeline: messages } = useTimelineLoader(pubkey + "-articles", readRelays, [
+  const { loader, timeline: messages } = useTimelineLoader(pubkey + "-messages", readRelays, [
     {
       authors: [pubkey],
       kinds: [kinds.EncryptedDirectMessage],

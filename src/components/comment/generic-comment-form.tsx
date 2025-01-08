@@ -5,18 +5,18 @@ import { getEventUID } from "applesauce-core/helpers";
 import { useForm } from "react-hook-form";
 import { useAsync, useThrottle } from "react-use";
 
-import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { useContextEmojis } from "../../../providers/global/emoji-provider";
-import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import useCacheForm from "../../../hooks/use-cache-form";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import { useContextEmojis } from "../../providers/global/emoji-provider";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
+import MagicTextArea, { RefType } from "../magic-textarea";
+import useCacheForm from "../../hooks/use-cache-form";
 import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
-import InsertImageButton from "../../new/note/insert-image-button";
-import InsertGifButton from "../../../components/gif/insert-gif-button";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import InsertImageButton from "../../views/new/note/insert-image-button";
+import InsertGifButton from "../gif/insert-gif-button";
+import { TrustProvider } from "../../providers/local/trust-provider";
+import TextNoteContents from "../note/timeline-note/text-note-contents";
 
-export default function ArticleCommentForm({
+export default function GenericCommentForm({
   event,
   onSubmitted,
   onCancel,

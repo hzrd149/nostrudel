@@ -9,8 +9,8 @@ import DebugEventButton from "../debug-modal/debug-event-button";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
-import ShareButton from "../note/timeline-note/components/share-button";
-import QuoteEventButton from "../note/quote-event-button";
+import EventShareButton from "../note/timeline-note/components/event-share-button";
+import EventQuoteButton from "../note/event-quote-button";
 import MediaPostSlides from "./media-slides";
 import MediaPostContents from "./media-post-content";
 import { getSharableEventAddress } from "../../services/relay-hints";
@@ -55,8 +55,8 @@ export default function MediaPost({ post }: { post: NostrEvent }) {
           </ButtonGroup>
 
           <ButtonGroup size="sm" variant="ghost" ml="auto">
-            <ShareButton event={post} />
-            <QuoteEventButton event={post} />
+            <EventShareButton event={post} />
+            <EventQuoteButton event={post} />
             <DebugEventButton event={post} variant="ghost" ml="auto" size="sm" alignSelf="flex-start" />
           </ButtonGroup>
         </CardFooter>

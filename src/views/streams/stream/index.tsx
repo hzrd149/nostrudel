@@ -45,7 +45,7 @@ import { AdditionalRelayProvider } from "../../../providers/local/additional-rel
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import QuoteEventButton from "../../../components/note/quote-event-button";
+import EventQuoteButton from "../../../components/note/event-quote-button";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import StreamOpenButton from "../components/stream-open-button";
 import StreamFavoriteButton from "../components/stream-favorite-button";
@@ -114,7 +114,7 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
         <ButtonGroup ml="auto">
           <StreamFavoriteButton stream={stream} />
           <StreamOpenButton stream={stream} />
-          <QuoteEventButton event={stream} title="Share stream" />
+          <EventQuoteButton event={stream} title="Share stream" />
           <DebugEventButton event={stream} />
           <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
         </ButtonGroup>
@@ -184,7 +184,7 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
           <ButtonGroup size="sm" ml="auto">
             <StreamFavoriteButton stream={stream} />
             <StreamOpenButton stream={stream} />
-            <QuoteEventButton event={stream} title="Share stream" />
+            <EventQuoteButton event={stream} title="Share stream" />
             <DebugEventButton event={stream} />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>

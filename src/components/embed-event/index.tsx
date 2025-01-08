@@ -38,6 +38,7 @@ const EmbeddedWikiPage = lazy(() => import("./event-types/embedded-wiki-page"));
 const EmbeddedStream = lazy(() => import("./event-types/embedded-stream"));
 const EmbeddedStreamMessage = lazy(() => import("./event-types/embedded-stream-message"));
 const EmbeddedStemstrTrack = lazy(() => import("./event-types/embedded-stemstr-track"));
+const EmbeddedFile = lazy(() => import("./event-types/embedded-file"));
 
 export type EmbedProps = {
   goalProps?: EmbeddedGoalOptions;
@@ -87,6 +88,8 @@ export function EmbedEvent({
         return <EmbeddedWikiPage page={event} {...cardProps} />;
       case kinds.Zap:
         return <EmbeddedZapRecept zap={event} {...cardProps} />;
+      case kinds.FileMetadata:
+        return <EmbeddedFile file={event} {...cardProps} />;
       case kinds.Handlerinformation:
         // if its a content DVM
         if (event.tags.some((t) => t[0] === "k" && t[1] === String(DVM_CONTENT_DISCOVERY_JOB_KIND)))
