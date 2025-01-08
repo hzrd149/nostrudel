@@ -7,7 +7,6 @@ import {
   FormErrorMessage,
   Code,
   Switch,
-  Select,
   Button,
   Heading,
   FormLabel,
@@ -17,10 +16,10 @@ import { useObservable } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
-import { RelayAuthMode } from "../../../classes/relay-pool";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/local-settings";
+import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -47,7 +46,6 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const defaultAuthenticationMode = useObservable(localSettings.defaultAuthenticationMode);
   const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
   const debugApi = useObservable(localSettings.debugApi);
 
@@ -57,17 +55,7 @@ export default function PrivacySettings() {
       <Flex direction="column" gap="4">
         <FormControl>
           <FormLabel>Default authorization behavior</FormLabel>
-          <Select
-            w="xs"
-            rounded="md"
-            flexShrink={0}
-            value={defaultAuthenticationMode}
-            onChange={(e) => localSettings.defaultAuthenticationMode.next(e.target.value as RelayAuthMode)}
-          >
-            <option value="always">Always authenticate</option>
-            <option value="ask">Ask every time</option>
-            <option value="never">Never authenticate</option>
-          </Select>
+          <DefaultAuthModeSelect w="xs" rounded="md" flexShrink={0} />
           <FormHelperText>How should the app handle relays requesting identification</FormHelperText>
         </FormControl>
 

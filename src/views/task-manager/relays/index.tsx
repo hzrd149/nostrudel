@@ -3,11 +3,15 @@ import {
   Badge,
   Box,
   Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Link,
   LinkBox,
   Select,
   SimpleGrid,
   Spacer,
+  Switch,
   Tab,
   TabIndicator,
   TabList,
@@ -35,6 +39,7 @@ import { RelayAuthMode } from "../../../classes/relay-pool";
 import Timestamp from "../../../components/timestamp";
 import localSettings from "../../../services/local-settings";
 import useForceUpdate from "../../../hooks/use-force-update";
+import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (
@@ -118,6 +123,8 @@ export default function TaskManagerRelays() {
 
   const challenges = Array.from(relayPoolService.challenges.entries()).filter(([r, c]) => r.connected && !!c.value);
 
+  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
+
   return (
     <Tabs position="relative" variant="unstyled" index={tabIndex} onChange={(i) => setTab(TABS[i])} isLazy>
       <TabList>
@@ -137,6 +144,22 @@ export default function TaskManagerRelays() {
           </SimpleGrid>
         </TabPanel>
         <TabPanel p="0">
+          <Flex gap="2" px="2" pt="2" alignItems="center">
+            <Text as="label" htmlFor="defaultAuthenticationMode">
+              Default:
+            </Text>
+            <DefaultAuthModeSelect id="defaultAuthenticationMode" w="auto" size="sm" rounded="md" />
+
+            <Switch
+              ms="4"
+              id="proactivelyAuthenticate"
+              isChecked={proactivelyAuthenticate}
+              onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
+            />
+            <Text as="label" htmlFor="proactivelyAuthenticate">
+              Proactively authenticate
+            </Text>
+          </Flex>
           <SimpleGrid spacing="2" columns={{ base: 1, md: 2 }} p="2">
             {challenges.map(([relay, challenge]) => (
               <RelayAuthCard key={relay.url} relay={relay} />

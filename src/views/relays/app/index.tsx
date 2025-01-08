@@ -1,5 +1,17 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Flex,
+  Heading,
+  Select,
+  SimpleGrid,
+  Switch,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { WarningIcon } from "@chakra-ui/icons";
 import { useObservable } from "applesauce-react/hooks";
@@ -22,6 +34,10 @@ import SelectRelaySet from "./select-relay-set";
 import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import localSettings from "../../../services/local-settings";
+import { RelayAuthMode } from "../../../classes/relay-pool";
+import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
+import HelpCircle from "../../../components/icons/help-circle";
 
 const JapaneseRelays = safeRelayUrls([
   "wss://r.kojira.io",
@@ -70,6 +86,8 @@ export default function AppRelays() {
 
   const sorted = useMemo(() => RelaySet.from(readRelays, writeRelays).urls.sort(), [readRelays, writeRelays]);
 
+  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
+
   return (
     <Flex gap="2" direction="column" overflow="auto hidden" flex={1}>
       <Flex gap="2" alignItems="center">
@@ -107,7 +125,31 @@ export default function AppRelays() {
       )}
 
       <Heading size="md" mt="2">
-        Set from:
+        Authentication
+      </Heading>
+
+      <Flex gap="2" alignItems="center">
+        <Text as="label" htmlFor="defaultAuthenticationMode">
+          Default:
+        </Text>
+        <DefaultAuthModeSelect size="sm" rounded="md" w="auto" />
+
+        <Switch
+          ms="4"
+          id="proactivelyAuthenticate"
+          isChecked={proactivelyAuthenticate}
+          onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
+        />
+        <Text as="label" htmlFor="proactivelyAuthenticate">
+          Proactively authenticate
+        </Text>
+        <Tooltip label="Authenticate to relays as soon as they send the authentication challenge">
+          <HelpCircle />
+        </Tooltip>
+      </Flex>
+
+      <Heading size="md" mt="2">
+        Set from
       </Heading>
       <Flex wrap="wrap" gap="2">
         {window.nostr && (
@@ -164,7 +206,7 @@ export default function AppRelays() {
       )}
 
       <Heading size="md" mt="2">
-        Presets:
+        Presets
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
         <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
