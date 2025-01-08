@@ -32,7 +32,7 @@ import ListMenu from "./list-menu";
 import { NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import NoteZapButton from "../../../components/note/note-zap-button";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import Link01 from "../../../components/icons/link-01";
 import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
@@ -113,7 +113,7 @@ function ListCardRender({
         <ListCardContent list={list} />
       </CardBody>
       <CardFooter p="2">
-        {!isSpecialList && <NoteZapButton event={list} size="sm" variant="ghost" />}
+        {!isSpecialList && <EventZapButton event={list} size="sm" variant="ghost" />}
         {!isSpecialList && <SimpleLikeButton event={list} variant="ghost" size="sm" />}
         <ButtonGroup size="sm" variant="ghost" ml="auto">
           <ListFavoriteButton list={list} />

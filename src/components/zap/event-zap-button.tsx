@@ -19,7 +19,7 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   showEventPreview?: boolean;
 };
 
-export default function NoteZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
+export default function EventZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useCurrentAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
   const zaps = useEventZaps(getEventUID(event)) ?? [];

@@ -18,7 +18,7 @@ import UserLink from "../../../components/user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
 import EmojiPackMenu from "./emoji-pack-menu";
-import NoteZapButton from "../../../components/note/note-zap-button";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
@@ -53,7 +53,7 @@ export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "child
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
         <ButtonGroup size="sm" variant="ghost">
-          <NoteZapButton event={pack} />
+          <EventZapButton event={pack} />
           <EmojiPackFavoriteButton pack={pack} />
         </ButtonGroup>
         <ButtonGroup size="sm" ml="auto" variant="ghost">

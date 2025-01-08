@@ -26,7 +26,7 @@ import VideoCard from "./components/video-card";
 import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
-import NoteZapButton from "../../components/note/note-zap-button";
+import EventZapButton from "../../components/zap/event-zap-button";
 import QuoteEventButton from "../../components/note/quote-event-button";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
@@ -56,7 +56,7 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
               {title}
             </Heading>
             <ButtonGroup ml="auto" size="sm" variant="ghost">
-              <NoteZapButton event={video} />
+              <EventZapButton event={video} />
               <SimpleLikeButton event={video} />
               <SimpleDislikeButton event={video} />
             </ButtonGroup>

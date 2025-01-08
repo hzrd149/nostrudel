@@ -16,7 +16,7 @@ import MimeTypePicker from "./mime-type-picker";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import Timestamp from "../../components/timestamp";
-import NoteZapButton from "../../components/note/note-zap-button";
+import EventZapButton from "../../components/zap/event-zap-button";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -65,7 +65,7 @@ function ImageFile({ event }: { event: NostrEvent }) {
         <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated />
         <Timestamp timestamp={event.created_at} />
         <Spacer />
-        <NoteZapButton event={event} size="sm" colorScheme="yellow" variant="outline" />
+        <EventZapButton event={event} size="sm" colorScheme="yellow" variant="outline" />
       </Flex>
     </Flex>
   );

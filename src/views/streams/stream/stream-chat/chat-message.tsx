@@ -6,7 +6,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ChatMessageContent from "./chat-message-content";
-import NoteZapButton from "../../../../components/note/note-zap-button";
+import EventZapButton from "../../../../components/zap/event-zap-button";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { getStreamHost } from "../../../../helpers/nostr/stream";
 
@@ -23,7 +23,7 @@ function ChatMessage({ event, stream }: { event: NostrEvent; stream: NostrEvent 
             <UserLink pubkey={event.pubkey} />
             {": "}
           </Text>
-          <NoteZapButton
+          <EventZapButton
             display="inline-block"
             event={event}
             size="xs"

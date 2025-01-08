@@ -9,7 +9,7 @@ import UserLink from "../../../components/user/user-link";
 import Magnet from "../../../components/icons/magnet";
 import { formatBytes } from "../../../helpers/number";
 import TorrentMenu from "./torrent-menu";
-import NoteZapButton from "../../../components/note/note-zap-button";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
@@ -70,7 +70,7 @@ function TorrentTableRow({ torrent }: { torrent: NostrEvent }) {
       </Td>
       <Td isNumeric>
         <ButtonGroup variant="ghost" size="xs">
-          <NoteZapButton event={torrent} />
+          <EventZapButton event={torrent} />
           <IconButton as={Link} icon={<Magnet />} aria-label="Magnet URI" isExternal href={magnetLink} />
           <TorrentMenu torrent={torrent} aria-label="More Options" ml="auto" />
         </ButtonGroup>

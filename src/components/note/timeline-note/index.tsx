@@ -20,7 +20,7 @@ import { useObservable } from "applesauce-react/hooks";
 
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
-import NoteZapButton from "../note-zap-button";
+import EventZapButton from "../../zap/event-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import EventVerificationIcon from "../../common-event/event-verification-icon";
 import ShareButton from "./components/share-button";
@@ -132,7 +132,7 @@ export function TimelineNote({
                 )}
                 <ShareButton event={event} />
                 <QuoteEventButton event={event} />
-                <NoteZapButton event={event} />
+                <EventZapButton event={event} />
               </ButtonGroup>
               {!showReactionsOnNewLine && reactionButtons}
               <Box flexGrow={1} />

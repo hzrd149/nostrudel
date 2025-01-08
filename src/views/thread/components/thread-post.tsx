@@ -20,7 +20,7 @@ import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-prop
 import POWIcon from "../../../components/pow/pow-icon";
 import ShareButton from "../../../components/note/timeline-note/components/share-button";
 import QuoteEventButton from "../../../components/note/quote-event-button";
-import NoteZapButton from "../../../components/note/note-zap-button";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
 import BookmarkEventButton from "../../../components/note/bookmark-event";
 import NoteMenu from "../../../components/note/note-menu";
@@ -116,7 +116,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
         <ShareButton event={post.event} />
         <QuoteEventButton event={post.event} />
-        <NoteZapButton event={post.event} />
+        <EventZapButton event={post.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />

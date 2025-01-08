@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-tools";
-import { Box, Flex, Heading, Image, Spinner, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
@@ -18,10 +18,13 @@ import MarkdownContent from "../../components/markdown/markdown";
 import ArticleMenu from "./components/article-menu";
 import ArticleTags from "./components/article-tags";
 import NoteReactions from "../../components/note/timeline-note/components/note-reactions";
-import NoteZapButton from "../../components/note/note-zap-button";
+import EventZapButton from "../../components/zap/event-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import BookmarkEventButton from "../../components/note/bookmark-event";
 import QuoteEventButton from "../../components/note/quote-event-button";
+import { ArticleComments } from "./components/article-comments";
+import ArticleCommentForm from "./components/article-comment-form";
+import { ThreadIcon } from "../../components/icons";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
@@ -29,8 +32,10 @@ function ArticlePage({ article }: { article: NostrEvent }) {
   const published = getArticlePublishDate(article);
   const summary = getArticleSummary(article);
 
+  const comment = useDisclosure();
+
   return (
-    <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="12">
+    <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="32">
       <Box mx="auto" maxW="4xl" w="full" mb="2">
         <ArticleMenu article={article} aria-label="More Options" float="right" />
         <Heading size="xl">{title}</Heading>
@@ -46,10 +51,10 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         <BookmarkEventButton event={article} aria-label="Bookmark" variant="ghost" float="right" size="sm" />
       </Box>
       {image && <Image src={image} maxW="6xl" w="full" mx="auto" maxH="60vh" />}
-      <Box mx="auto" maxW="4xl" w="full">
+      <Box mx="auto" maxW="4xl" w="full" mb="8">
         <ZapBubbles event={article} mb="2" />
         <Flex gap="2">
-          <NoteZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
+          <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
           <QuoteEventButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
@@ -57,11 +62,22 @@ function ArticlePage({ article }: { article: NostrEvent }) {
           <MarkdownContent event={article} />
         </Box>
         <Flex gap="2">
-          <NoteZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
+          <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} />
           <QuoteEventButton event={article} size="sm" variant="ghost" />
           <NoteReactions event={article} size="sm" variant="ghost" />
         </Flex>
       </Box>
+      <Flex mx="auto" maxW="4xl" w="full" gap="2" direction="column">
+        {comment.isOpen ? (
+          <ArticleCommentForm event={article} onCancel={comment.onClose} onSubmitted={comment.onClose} />
+        ) : (
+          <Button leftIcon={<ThreadIcon />} onClick={comment.onOpen} mr="auto">
+            Comment
+          </Button>
+        )}
+
+        <ArticleComments article={article} />
+      </Flex>
     </VerticalPageLayout>
   );
 }

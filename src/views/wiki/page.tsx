@@ -29,7 +29,7 @@ import { WIKI_RELAYS } from "../../const";
 import GitBranch01 from "../../components/icons/git-branch-01";
 import { ExternalLinkIcon } from "../../components/icons";
 import FileSearch01 from "../../components/icons/file-search-01";
-import NoteZapButton from "../../components/note/note-zap-button";
+import EventZapButton from "../../components/zap/event-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import QuoteEventButton from "../../components/note/quote-event-button";
 import WikiPageMenu from "./components/wiki-page-menu";
@@ -120,7 +120,7 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
             <EventVoteButtons event={page} inline chevrons={false} />
             <ButtonGroup size="sm">
               <QuoteEventButton event={page} />
-              <NoteZapButton event={page} showEventPreview={false} />
+              <EventZapButton event={page} showEventPreview={false} />
               <WikiPageMenu page={page} aria-label="Page Options" />
             </ButtonGroup>
           </Flex>

@@ -9,7 +9,7 @@ import useEventReactions from "../../hooks/use-event-reactions";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import { IconThreadButton } from "./thread-button";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
-import NoteZapButton from "../note/note-zap-button";
+import EventZapButton from "../zap/event-zap-button";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 
 export type MessageBubbleProps = {
@@ -36,7 +36,7 @@ export default function MessageBubble({
 
   const actions = (
     <>
-      <NoteZapButton event={message} />
+      <EventZapButton event={message} />
       <AddReactionButton event={message} />
       {showThreadButton && <IconThreadButton event={message} aria-label="Open Thread" />}
     </>
