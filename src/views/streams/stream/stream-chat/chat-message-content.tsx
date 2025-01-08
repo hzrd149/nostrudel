@@ -1,4 +1,5 @@
 import React from "react";
+import { useRenderedContent } from "applesauce-react/hooks";
 
 import {
   renderGenericUrl,
@@ -8,14 +9,20 @@ import {
   renderWavlakeUrl,
 } from "../../../../components/content/links";
 import { NostrEvent } from "../../../../types/nostr-event";
-import { useRenderedContent } from "applesauce-react/hooks";
 import { components } from "../../../../components/content";
+import { textNoteTransformers } from "applesauce-content/text";
+import { nipDefinitions } from "../../../../components/content/transform/nip-notation";
 
 const StreamChatMessageContentSymbol = Symbol.for("stream-chat-message-content");
+const transformers = [...textNoteTransformers, nipDefinitions];
 const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl];
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
-  const content = useRenderedContent(event, components, { linkRenderers, cacheKey: StreamChatMessageContentSymbol });
+  const content = useRenderedContent(event, components, {
+    transformers,
+    linkRenderers,
+    cacheKey: StreamChatMessageContentSymbol,
+  });
 
   return <>{content}</>;
 });
