@@ -8,7 +8,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
+import { FLARE_VIDEO_KIND, isValidVideo } from "../../helpers/nostr/video";
 import VideoCard from "./components/video-card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -32,7 +32,7 @@ function VideosPage() {
 
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }} spacing="2">
-          {videos?.map((video) => (
+          {videos.filter(isValidVideo).map((video) => (
             <ErrorBoundary key={getEventUID(video)} event={video}>
               <VideoCard video={video} />
             </ErrorBoundary>

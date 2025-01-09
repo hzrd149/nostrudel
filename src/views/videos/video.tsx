@@ -1,5 +1,5 @@
 import { Box, ButtonGroup, Flex, Heading, Spinner, Tag, Text } from "@chakra-ui/react";
-import { getEventUID } from "applesauce-core/helpers";
+import { getEventUID, isStreamURL } from "applesauce-core/helpers";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import {
@@ -28,6 +28,7 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import SimpleBookmarkButton from "../../components/simple-bookmark-button";
 import EventZapButton from "../../components/zap/event-zap-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
+import LiveVideoPlayer from "../../components/live-video-player";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();
@@ -50,7 +51,12 @@ function VideoDetailsPage({ video }: { video: NostrEvent }) {
     <VerticalPageLayout>
       <Flex gap="4">
         <Flex direction="column" gap="2" flexGrow={1}>
-          <Box as="video" src={url} w="full" maxH="95vh" controls poster={image || thumb} />
+          {isStreamURL(url) ? (
+            <LiveVideoPlayer stream={url} poster={image || thumb} />
+          ) : (
+            <Box as="video" src={url} w="full" maxH="95vh" controls poster={image || thumb} />
+          )}
+
           <Flex gap="2" overflow="hidden">
             <Heading size="md" my="2" isTruncated>
               {title}

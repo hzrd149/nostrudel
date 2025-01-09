@@ -1,26 +1,25 @@
+import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "../../types/nostr-event";
 
 export const FLARE_VIDEO_KIND = 34235;
 
 export function getVideoTitle(video: NostrEvent) {
-  const title = video.tags.find((t) => t[0] === "title")?.[1];
-  if (!title) throw new Error("Missing title");
-  return title;
+  return getTagValue(video, "title");
 }
 export function getVideoUrl(video: NostrEvent) {
-  const url = video.tags.find((t) => t[0] === "url")?.[1];
+  const url = getTagValue(video, "url");
   if (!url) throw new Error("Missing url");
   return url;
 }
 export function getVideoSummary(video: NostrEvent) {
-  return video.tags.find((t) => t[0] === "summary")?.[1];
+  return getTagValue(video, "summary");
 }
 export function getVideoSize(video: NostrEvent) {
-  const str = video.tags.find((t) => t[0] === "size")?.[1];
+  const str = getTagValue(video, "size");
   return str ? parseInt(str) || undefined : undefined;
 }
 export function getVideoDuration(video: NostrEvent) {
-  const str = video.tags.find((t) => t[0] === "duration")?.[1];
+  const str = getTagValue(video, "duration");
   return str ? parseInt(str) || undefined : undefined;
 }
 export function getVideoPublishDate(video: NostrEvent) {
@@ -28,7 +27,11 @@ export function getVideoPublishDate(video: NostrEvent) {
   return str ? parseInt(str) || undefined : undefined;
 }
 export function getVideoImages(video: NostrEvent) {
-  const thumb = video.tags.find((t) => t[0] === "thumb")?.[1];
-  const image = video.tags.find((t) => t[0] === "image")?.[1];
+  const thumb = getTagValue(video, "thumb");
+  const image = getTagValue(video, "image");
   return { thumb, image };
+}
+
+export function isValidVideo(video: NostrEvent) {
+  return video.tags.some((t) => t[0] === "url" && t[1]);
 }
