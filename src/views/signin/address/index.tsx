@@ -14,6 +14,7 @@ import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-but
 import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 import PubkeyAccount from "../../../classes/accounts/pubkey-account";
 import relayPoolService from "../../../services/relay-pool";
+import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
@@ -47,12 +48,17 @@ export default function LoginNostrAddressView() {
         const relays = safeRelayUrls(
           nip05.nip46Relays || rootNip05?.nip46Relays || rootNip05?.relays || nip05.relays || [],
         );
-        const signer = new NostrConnectSigner({ pubkey: nip05.pubkey, relays, pool: relayPoolService });
+        const signer = new NostrConnectSigner({
+          pubkey: nip05.pubkey,
+          relays,
+          ...createNostrConnectConnection(),
+        });
         await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-        const account = new NostrConnectAccount(signer.pubkey!, signer);
+        const pubkey = await signer.getPublicKey();
+        const account = new NostrConnectAccount(pubkey, signer);
         accountService.addAccount(account);
-        accountService.switchAccount(signer.pubkey!);
+        accountService.switchAccount(pubkey);
       } else if (nip05.pubkey) {
         accountService.addAccount(new PubkeyAccount(nip05.pubkey));
         accountService.switchAccount(nip05.pubkey);

@@ -20,8 +20,8 @@ import { RelayUrlInput } from "../../components/relay-url-input";
 import QrCodeSvg from "../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../components/copy-icon-button";
 import NostrConnectAccount from "../../classes/accounts/nostr-connect-account";
-import relayPoolService from "../../services/relay-pool";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../const";
+import { createNostrConnectConnection } from "../../classes/nostr-connect-connection";
 
 function ClientConnectForm() {
   const navigate = useNavigate();
@@ -44,13 +44,18 @@ function ClientConnectForm() {
   }, [relay, signer]);
 
   const create = useCallback(() => {
-    const c = new NostrConnectSigner({ relays: [relay], pool: relayPoolService });
+    const c = new NostrConnectSigner({ relays: [relay], ...createNostrConnectConnection() });
     setSigner(c);
-    c.waitForSigner().then(() => {
-      const account = new NostrConnectAccount(c.pubkey!, c);
+
+    c.waitForSigner().then(async () => {
+      const pubkey = await c.getPublicKey();
+      setListening(false);
+
+      const account = new NostrConnectAccount(pubkey, c);
       accountService.addAccount(account);
-      accountService.switchAccount(c.pubkey!);
+      accountService.switchAccount(pubkey);
     });
+
     setListening(true);
   }, [relay]);
 
@@ -109,7 +114,10 @@ export default function LoginNostrConnectView() {
 
     try {
       setLoading("Connecting...");
-      const client = await NostrConnectSigner.fromBunkerURI(connection, relayPoolService, NOSTR_CONNECT_PERMISSIONS);
+      const client = await NostrConnectSigner.fromBunkerURI(connection, {
+        ...createNostrConnectConnection(),
+        permissions: NOSTR_CONNECT_PERMISSIONS,
+      });
       const pubkey = await client.getPublicKey();
 
       const account = new NostrConnectAccount(pubkey, client);

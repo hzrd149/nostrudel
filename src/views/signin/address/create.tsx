@@ -32,7 +32,7 @@ import { safeRelayUrls } from "../../../helpers/relay";
 import { safeJson } from "../../../helpers/parse";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
-import relayPoolService from "../../../services/relay-pool";
+import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as ProfileContent;
@@ -93,13 +93,18 @@ export default function LoginNostrAddressCreate() {
       const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays || []);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 
-      const signer = new NostrConnectSigner({ pool: relayPoolService, relays, remote: nip05.pubkey });
+      const signer = new NostrConnectSigner({
+        relays,
+        remote: nip05.pubkey,
+        ...createNostrConnectConnection(),
+      });
 
       const createPromise = signer.createAccount(name, nip05.domain, undefined, NOSTR_CONNECT_PERMISSIONS);
       await createPromise;
       await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
-      const account = new NostrConnectAccount(signer.pubkey!, signer);
+      const pubkey = await signer.getPublicKey();
+      const account = new NostrConnectAccount(pubkey, signer);
 
       accountService.addAccount(account);
       accountService.switchAccount(account.pubkey);

@@ -1,14 +1,20 @@
 import { NostrConnectSigner, SimpleSigner } from "applesauce-signer/signers";
-import { hexToBytes } from "@noble/hashes/utils";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import { DEFAULT_NOSTR_CONNECT_RELAYS } from "../../const";
 import { Account } from "./account";
-import relayPoolService from "../../services/relay-pool";
+import { createNostrConnectConnection } from "../nostr-connect-connection";
 
 function createSigner(pubkey: string, relays: string[], secretKey?: string, provider?: string) {
   const signer = secretKey ? new SimpleSigner(hexToBytes(secretKey)) : undefined;
 
-  const client = new NostrConnectSigner({ pool: relayPoolService, pubkey, relays, signer, remote: provider });
+  const client = new NostrConnectSigner({
+    pubkey,
+    relays,
+    signer,
+    remote: provider,
+    ...createNostrConnectConnection(),
+  });
 
   return client;
 }
@@ -30,7 +36,13 @@ export default class NostrConnectAccount extends Account {
   }
 
   toJSON() {
-    const json = this.signer.toJSON();
+    const json = {
+      relays: this.signer.relays,
+      client: bytesToHex(this.signer.signer.key),
+      pubkey: this.pubkey,
+      remote: this.signer.remote,
+    };
+
     return {
       ...super.toJSON(),
       signerRelays: this.signer.relays,
