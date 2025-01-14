@@ -13,7 +13,6 @@ import Timestamp from "../../timestamp";
 import { CompactNoteContent } from "../../compact-note-content";
 import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import singleEventService from "../../../services/single-event";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 import useAppSettings from "../../../hooks/use-user-app-settings";
@@ -27,7 +26,6 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {
       e.preventDefault();
-      singleEventService.handleEvent(event);
       navigate(to);
     },
     [navigate, to],

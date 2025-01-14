@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { getAddressPointersFromList, getEventPointersFromList } from "applesauce-lists/helpers";
+import { getReplaceableUID } from "applesauce-core/helpers";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -36,7 +37,6 @@ import EventZapButton from "../../../components/zap/event-zap-button";
 import Link01 from "../../../components/icons/link-01";
 import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
-import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
@@ -75,7 +75,7 @@ export function ListCardContent({ list }: { list: NostrEvent }) {
 
 export function createListLink(list: NostrEvent) {
   const isSpecialList = isSpecialListKind(list.kind);
-  return "/lists/" + (isSpecialList ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list));
+  return "/lists/" + (isSpecialList ? getReplaceableUID(list.kind, list.pubkey) : getSharableEventAddress(list));
 }
 
 function ListCardRender({

@@ -146,7 +146,7 @@ function ListPage({ list }: { list: NostrEvent }) {
 export default function ListView() {
   const pointer = useParamsAddressPointer("addr", false);
 
-  const list = useReplaceableEvent(pointer, [], { alwaysRequest: true });
+  const list = useReplaceableEvent(pointer, [], true);
 
   if (!list)
     return (

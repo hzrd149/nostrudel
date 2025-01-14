@@ -42,10 +42,7 @@ function MediaServersPage() {
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
   const { mediaUploadService, updateSettings } = useAppSettings();
-  const { event, servers } = useUsersMediaServers(account.pubkey, undefined, {
-    alwaysRequest: true,
-    ignoreCache: true,
-  });
+  const { event, servers } = useUsersMediaServers(account.pubkey, undefined, true);
 
   const addServer = async (server: string) => {
     const draft = cloneEvent(USER_BLOSSOM_SERVER_LIST_KIND, event);

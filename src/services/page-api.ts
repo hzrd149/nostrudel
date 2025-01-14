@@ -6,7 +6,7 @@ import localSettings from "./local-settings";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
 import relayPoolService from "./relay-pool";
-import replaceableEventsService from "./replaceable-events";
+import replaceableEventLoader from "./replaceable-event-loader";
 import signingService from "./signing";
 import timelineCacheService from "./timeline-cache";
 import { userSearchDirectory } from "./username-search";
@@ -36,7 +36,7 @@ const noStrudel = {
   cacheRelay: localRelay,
 
   // other internal services
-  replaceableEventsService,
+  replaceableEventLoader,
   userSearchDirectory,
   readStatusService,
   relayInfoService,

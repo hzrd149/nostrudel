@@ -48,7 +48,7 @@ import UserJoinedChanneled from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import UserAboutContent from "../../../components/user/user-about";
+import UserAboutContent from "../../../components/user/user-about-content";
 import UserRecentEvents from "./user-recent-events";
 import useAppSettings, { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 

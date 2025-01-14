@@ -10,24 +10,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import PublishAction from "../../../classes/nostr-publish-action";
 import PublishActionStatusTag from "./action-status-tag";
-import { PublishContext } from "../../../providers/global/publish-provider";
-import { PublishDetails } from "./publish-details";
+import { PublishContext, PublishLogEntry } from "../../../providers/global/publish-provider";
+import { PublishLogEntryDetails } from "./entry-details";
 
-function PublishLogAction({ action }: { action: PublishAction }) {
+function PublishLogAction({ entry }: { entry: PublishLogEntry }) {
   return (
     <AccordionItem>
       <h2>
         <AccordionButton>
-          <Text isTruncated>{action.label}</Text>
+          <Text isTruncated>{entry.label}</Text>
           <Spacer />
-          <PublishActionStatusTag ml="auto" action={action} flexShrink={0} />
+          <PublishActionStatusTag ml="auto" entry={entry} flexShrink={0} />
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <PublishDetails pub={action} />
+        <PublishLogEntryDetails entry={entry} />
       </AccordionPanel>
     </AccordionItem>
   );
@@ -44,8 +43,8 @@ export default function PublishLogView() {
           No events published yet
         </Heading>
       )}
-      {reverseLog.map((action) => (
-        <PublishLogAction key={action.id} action={action} />
+      {reverseLog.map((entry) => (
+        <PublishLogAction key={entry.id} entry={entry} />
       ))}
     </Accordion>
   );

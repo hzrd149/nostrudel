@@ -1,15 +1,9 @@
-import { useEffect } from "react";
-
-import replaceableEventsService from "../services/replaceable-events";
-import { useReadRelays } from "./use-client-relays";
 import { useStoreQuery } from "applesauce-react/hooks";
 import TrustedMintsQuery from "../queries/trusted-mints";
+import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useTrustedMints(pubkey?: string) {
-  const relays = useReadRelays();
-  useEffect(() => {
-    if (pubkey) replaceableEventsService.requestEvent(relays, 10019, pubkey);
-  }, [pubkey, relays]);
+export default function useTrustedMints(pubkey?: string, force?: boolean) {
+  useReplaceableEvent(pubkey && { kind: 10019, pubkey }, undefined, force);
 
   return useStoreQuery(TrustedMintsQuery, pubkey ? [pubkey] : undefined);
 }

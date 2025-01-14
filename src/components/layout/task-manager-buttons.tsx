@@ -25,7 +25,7 @@ export default function TaskManagerButtons({ ...props }: Omit<FlexProps, "childr
         w="full"
       >
         Task Manager
-        {log.length > 0 && <PublishActionStatusTag action={log[log.length - 1]} />}
+        {log.length > 0 && <PublishActionStatusTag entry={log[log.length - 1]} />}
       </Button>
       {pendingAuth.length > 0 && (
         <Button

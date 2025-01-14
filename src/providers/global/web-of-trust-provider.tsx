@@ -5,7 +5,7 @@ import _throttle from "lodash.throttle";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { PubkeyGraph } from "../../classes/pubkey-graph";
-import replaceableEventsService from "../../services/replaceable-events";
+import replaceableEventLoader from "../../services/replaceable-event-loader";
 import { COMMON_CONTACT_RELAYS } from "../../const";
 import { eventStore } from "../../services/event-store";
 
@@ -40,11 +40,11 @@ export function loadSocialGraph(
   if (contacts) {
     handleEvent(contacts);
   } else {
-    replaceableEventsService.requestEvent(
-      relay ? [relay, ...COMMON_CONTACT_RELAYS] : COMMON_CONTACT_RELAYS,
+    replaceableEventLoader.next({
+      relays: relay ? [relay, ...COMMON_CONTACT_RELAYS] : COMMON_CONTACT_RELAYS,
       kind,
       pubkey,
-    );
+    });
 
     // wait for event to load
     const sub = eventStore.replaceable(kind, pubkey).subscribe((e) => {

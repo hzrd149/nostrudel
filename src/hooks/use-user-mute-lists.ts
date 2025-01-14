@@ -4,18 +4,13 @@ import { kinds } from "nostr-tools";
 import useReplaceableEvent from "./use-replaceable-event";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import useUserMuteList from "./use-user-mute-list";
-import { RequestOptions } from "../services/replaceable-events";
 
-export default function useUserMuteLists(
-  pubkey?: string,
-  additionalRelays?: Iterable<string>,
-  opts: RequestOptions = {},
-) {
-  const muteList = useUserMuteList(pubkey, additionalRelays, opts);
+export default function useUserMuteLists(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
+  const muteList = useUserMuteList(pubkey, additionalRelays, force);
   const altMuteList = useReplaceableEvent(
     pubkey && { kind: kinds.Followsets, pubkey, identifier: "mute" },
     additionalRelays,
-    opts,
+    force,
   );
 
   const pubkeys = useMemo(() => {

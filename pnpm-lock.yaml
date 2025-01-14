@@ -98,28 +98,31 @@ importers:
         version: 4.9.2(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       applesauce-channel:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-lists:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-loaders:
+        specifier: next
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-net:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       applesauce-signer:
         specifier: next
-        version: 0.0.0-next-20250111214201(typescript@5.7.3)
+        version: 0.0.0-next-20250114214607(typescript@5.7.3)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -244,11 +247,11 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(react@18.3.1)
       react-force-graph-2d:
-        specifier: ^1.26.1
-        version: 1.26.1(react@18.3.1)
+        specifier: ^1.26.2
+        version: 1.26.2(react@18.3.1)
       react-force-graph-3d:
-        specifier: ^1.25.1
-        version: 1.25.1(react@18.3.1)
+        specifier: ^1.25.2
+        version: 1.25.2(react@18.3.1)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@18.3.1)
@@ -301,8 +304,8 @@ importers:
         specifier: ^1.9.3
         version: 1.9.3(three@0.170.0)
       three-stdlib:
-        specifier: ^2.35.6
-        version: 2.35.6(three@0.170.0)
+        specifier: ^2.35.7
+        version: 2.35.7(three@0.170.0)
       tiny-lru:
         specifier: ^11.2.11
         version: 11.2.11
@@ -415,8 +418,8 @@ importers:
 
 packages:
 
-  3d-force-graph@1.74.5:
-    resolution: {integrity: sha512-CyneQqxoFwTGOqBVe8DSED0uQrU3q4+xpgvl0kbNHctv/kdBRgOKSSJgyB7j+08mUKaHchelMmwNVmQf5XaJrA==}
+  3d-force-graph@1.75.0:
+    resolution: {integrity: sha512-jZzLLBjA2lywFgGfS4RAkqD9VGdTo3Hvf3pJiY2IGohrJtahJas1XYwhPAALga3LtoKfN2Nzjl6vVshz2RrXSA==}
     engines: {node: '>=12'}
 
   '@ampproject/remapping@2.3.0':
@@ -755,8 +758,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/plugin-transform-nullish-coalescing-operator@7.26.5':
-    resolution: {integrity: sha512-OHqczNm4NTQlW1ghrVY43FPoiRzbmzNVbcgVnMKZN/RQYezHUSdjACjaX50CD3B7UIAjv39+MlsrVDb3v741FA==}
+  '@babel/plugin-transform-nullish-coalescing-operator@7.26.6':
+    resolution: {integrity: sha512-CKW8Vu+uUZneQCPtXmSBUC6NCAUdya26hWCElAWh5mVSlSRsmiCPUUDKb3Z0szng1hiAJa098Hkhg9o4SE35Qw==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1369,8 +1372,8 @@ packages:
     resolution: {integrity: sha512-BwGm8eGbPh59BVa1gI5yJMantBl/Fdps6X4p1ZACnmxz9vDINX8/3aFoOnDlF7yyA2boXWCsReVQSr26Q2yjiQ==}
     engines: {node: '>=14'}
 
-  '@getalby/sdk@3.8.2':
-    resolution: {integrity: sha512-0F4ub/e+t93V9wzR5Vr+Xdfhhy5kK+ZKls/J3yX2YBT27X1Rd3QIPLCTUFCb4RaV6a/e17aZAVJF8Af7r9BeAg==}
+  '@getalby/sdk@3.9.0':
+    resolution: {integrity: sha512-qgNXr4FsX0a+PPvWgb112Q8h1/ov31zVP4LjsDYr5+W0CkrRbW9pQnsHPycVPLB5H8k5WVRRNkxYBBoWIBAwyw==}
     engines: {node: '>=14'}
 
   '@jridgewell/gen-mapping@0.3.8':
@@ -1655,26 +1658,44 @@ packages:
   '@scure/bip39@1.5.1':
     resolution: {integrity: sha512-GnlufVSP9UdAo/H2Patfv22VTtpNTyfi+I3qCKpvuB5l1KWzEYx+l2TNpBy9Ksh4xTs3Rn06tBlpWCi/1Vz8gw==}
 
-  '@shikijs/core@1.26.1':
-    resolution: {integrity: sha512-yeo7sG+WZQblKPclUOKRPwkv1PyoHYkJ4gP9DzhFJbTdueKR7wYTI1vfF/bFi1NTgc545yG/DzvVhZgueVOXMA==}
+  '@shikijs/core@1.26.2':
+    resolution: {integrity: sha512-ORyu3MrY7dCC7FDLDsFSkBM9b/AT9/Y8rH+UQ07Rtek48pp0ZhQOMPTKolqszP4bBCas6FqTZQYt18BBamVl/g==}
 
-  '@shikijs/engine-javascript@1.26.1':
-    resolution: {integrity: sha512-CRhA0b8CaSLxS0E9A4Bzcb3LKBNpykfo9F85ozlNyArxjo2NkijtiwrJZ6eHa+NT5I9Kox2IXVdjUsP4dilsmw==}
+  '@shikijs/core@1.27.0':
+    resolution: {integrity: sha512-2RkIwaXVWxJQQw8JvqikTVe4gBxS3elH3qF3b7Ews1KdJc+TH9/nsVEftrtPn0bLOkdlMaGj5H2RBHpfWmRIcA==}
 
-  '@shikijs/engine-oniguruma@1.26.1':
-    resolution: {integrity: sha512-F5XuxN1HljLuvfXv7d+mlTkV7XukC1cawdtOo+7pKgPD83CAB1Sf8uHqP3PK0u7njFH0ZhoXE1r+0JzEgAQ+kg==}
+  '@shikijs/engine-javascript@1.26.2':
+    resolution: {integrity: sha512-ngkIu9swLVo9Zt5QBtz5Sk08vmPcwuj01r7pPK/Zjmo2U2WyKMK4WMUMmkdQiUacdcLth0zt8u1onp4zhkFXKQ==}
 
-  '@shikijs/langs@1.26.1':
-    resolution: {integrity: sha512-oz/TQiIqZejEIZbGtn68hbJijAOTtYH4TMMSWkWYozwqdpKR3EXgILneQy26WItmJjp3xVspHdiUxUCws4gtuw==}
+  '@shikijs/engine-javascript@1.27.0':
+    resolution: {integrity: sha512-1nzz37go+wb6uR97QSRtU4GEwx99efuucB6QI4R682wmPbti6LeWe5VcMNy8LJJt02GEYcZeJK6Lvq8YXBVNXA==}
 
-  '@shikijs/markdown-it@1.26.1':
-    resolution: {integrity: sha512-+1WSmaD1ANN0x15ud4oMw5RFgFdyT0FpU9OoE7MUbiaU9+pRtAjIx0viTVsbhBzJEG1oVUBzK1Wc6Wz7toiTZg==}
+  '@shikijs/engine-oniguruma@1.26.2':
+    resolution: {integrity: sha512-mlN7Qrs+w60nKrd7at7XkXSwz6728Pe34taDmHrG6LRHjzCqQ+ysg+/AT6/D2LMk0s2lsr71DjpI73430QP4/w==}
 
-  '@shikijs/themes@1.26.1':
-    resolution: {integrity: sha512-JDxVn+z+wgLCiUhBGx2OQrLCkKZQGzNH3nAxFir4PjUcYiyD8Jdms9izyxIogYmSwmoPTatFTdzyrRKbKlSfPA==}
+  '@shikijs/engine-oniguruma@1.27.0':
+    resolution: {integrity: sha512-x1XMJvQuToX2KhESav2cnaTFDEwpJ1bcczaXy8wlRWhPVVAGR/MxlWnJbhHFe+ETerQgdpLZN8l+EgO0rVfEFQ==}
 
-  '@shikijs/types@1.26.1':
-    resolution: {integrity: sha512-d4B00TKKAMaHuFYgRf3L0gwtvqpW4hVdVwKcZYbBfAAQXspgkbWqnFfuFl3MDH6gLbsubOcr+prcnsqah3ny7Q==}
+  '@shikijs/langs@1.26.2':
+    resolution: {integrity: sha512-o5cdPycB2Kw3IgncHxWopWPiTkjAj7dG01fLkkUyj3glb5ftxL/Opecq9F54opMlrgXy7ZIqDERvFLlUzsCOuA==}
+
+  '@shikijs/langs@1.27.0':
+    resolution: {integrity: sha512-6fBE0OL17XGYlNj8IuHfKtTALLk6+CVAXw8Rj2y/K8NP646/hows9+XwzIFcvFo3wZ0fPAcPKQ9pwG6a1FBevw==}
+
+  '@shikijs/markdown-it@1.26.2':
+    resolution: {integrity: sha512-5RCfBSpXuHkfWs+q1s7iJ8bjsPWZkoxgzcXQ7fz2XrfO9Ldp2Bo0IpLZZwcMt6WR5zMx1dV1YM9tAUOmhWIgPw==}
+
+  '@shikijs/themes@1.26.2':
+    resolution: {integrity: sha512-y4Pn6PM5mODz/e3yF6jAUG7WLKJzqL2tJ5qMJCUkMUB1VRgtQVvoa1cHh7NScryGXyrYGJ8nPnRDhdv2rw0xpA==}
+
+  '@shikijs/themes@1.27.0':
+    resolution: {integrity: sha512-L21LFq8hdsrBUXLh0fxKRURwE1brSlofK3Onutpwk71/EddfPqv60PG+Cg/KawPi8B04Mwp66EWw1shQjcYfBQ==}
+
+  '@shikijs/types@1.26.2':
+    resolution: {integrity: sha512-PO2jucx2FIdlLBPYbIUlMtWSLs5ulcRcuV93cR3T65lkK5SJP4MGBRt9kmWGXiQc0f7+FHj/0BEawditZcI/fQ==}
+
+  '@shikijs/types@1.27.0':
+    resolution: {integrity: sha512-oOJdIeOnGo+hbM7MH+Ejpksse2ASex4DVHdvBoKyY3+26GEzG9PwM85BeXNGxUZuVxtVKo43sZl0qtJs/K2Zow==}
 
   '@shikijs/vscode-textmate@10.0.1':
     resolution: {integrity: sha512-fTIQwLF+Qhuws31iw7Ncl1R3HUDtGwIipiJ9iU+UsDUwMhegFcQKQHd51nZjb7CArq0MvON8rbgCGQYWHUKAdg==}
@@ -1835,8 +1856,8 @@ packages:
   '@types/webscopeio__react-textarea-autocomplete@4.7.5':
     resolution: {integrity: sha512-B9YZ5KrKRcNNsh2v7tyc/tZ1rrPoyWoaXQvvfcG9pX85w9jy2HLnPPT7Kfms5TgzR3RGQ5TIvXQvmsizxdohyQ==}
 
-  '@types/webxr@0.5.20':
-    resolution: {integrity: sha512-JGpU6qiIJQKUuVSKx1GtQnHJGxRjtfGIhzO2ilq43VZZS//f1h1Sgexbdk+Lq+7569a6EYhOWrUpIruR/1Enmg==}
+  '@types/webxr@0.5.21':
+    resolution: {integrity: sha512-geZIAtLzjGmgY2JUi6VxXdCrTb99A7yP49lxLr2Nm/uIK0PkkxcEi4OGhoGDO4pxCf3JwGz2GiJL2Ej4K2bKaA==}
 
   '@types/zen-observable@0.8.7':
     resolution: {integrity: sha512-LKzNTjj+2j09wAo/vvVjzgw5qckJJzhdGgWHW7j69QIGdq/KnZrMAMIHQiWGl3Ccflh5/CudBAntTPYdprPltA==}
@@ -1932,29 +1953,32 @@ packages:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
 
-  applesauce-channel@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-xR3mgecG46ezSvtr3OAjF4RpTJ/4CyJ08vZ3w157dBfnPmYEj8Wsd4NuM8tzauYM/t4dmb8BxQ/ApjY7Fe+oYg==}
+  applesauce-channel@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-91f2Shv8zUAqhC9x6OS/n1Rdd9C/dkzlRQ217JYR7Bd8oc/+UGZqixGCu0YT/s5U0oTfD0jJ7Ah0E+Gj3jbLgw==}
 
-  applesauce-content@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-MhMWqqm66xRJyCTRVwFH8NU8SpQQV59RQ79v8Z23KA9AE57Jh1CtBYjZOLGbc/EZ8+yckH/kTG4SUFEGdb6wAA==}
+  applesauce-content@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-RDQ8+fLAZBT++VauZQcQint3loZ4i5siGJ0Cdk9nvKUhALzJZCgyGNak4n4EOJrhJYDC8+W8bz2dB8He/4HrBw==}
 
-  applesauce-core@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-Xu0JzS0TYNETOK20W07sXkHlsriHLtS8+ZkQ+9dWM9q8WyVpYw2OeMQ5vVjXrE93mV+Ec23vJWP2jul6Y8xY8Q==}
+  applesauce-core@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-f/Je4DiOLeqb+qeurg4mPu3yKGKcW/3I+Zd6OX+jnNvusDMaeYei31SFQ2meFvrYIX7Rla0u7tLRqUsBGeqgBg==}
 
-  applesauce-factory@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-Rn/sEQODbVZP7MjM3WvxlE5E/3EFiV7x3Ez/Yb24PchmtVysZvp5qszqBcrO/8hQWZyii/jWPVdsoqxIGx+QQA==}
+  applesauce-factory@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-Gu/GD2plys8nOjCa1TzBhie3HCTaeuUqfEv+BSMxzLq4QvPDvm5k7RNPo6QCVeUL2tZlsXD9X5yP4BLrPvfwyw==}
 
-  applesauce-lists@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-btBv87XNfy9qKHq7zUoEIil9jrL7xUmFRhqlJONvG4Lrwp7kpMTnfTqrdJrSXHI+1bGTxv70pK2cZL8qwOyZlw==}
+  applesauce-lists@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-fIqaFS8D+YN5E/NXFJqiyXZCNCT+h/4BHPC0d+gWfUFtsWNyaix+sjmMKoWO9oF85//BkVZOjCe/LH9hafTwzA==}
 
-  applesauce-net@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-gAk1m0vVwKoeUBnVacJKHgO9JvyqpCLNXKdK6WXBs9QQDrWHNrS6s6bPwnDqxIw6rOPhjCzbVysQ6fvrlRRnkw==}
+  applesauce-loaders@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-bKke8cnkCZGN+oALVb5UAReGwDpQb4TPoz8gFR4Aw70TXHEuoRkabk01KZkQuiLTaydPOYmfCmZMrg14daircA==}
 
-  applesauce-react@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-TpvEfTne0F+ryCfkscua6iJFoSj6E2RlbKNNfWIurgMZX4BMl/9yeb+LIadvX1oHaopU4h6e1u9wEYEbHRGzmw==}
+  applesauce-net@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-2gh/BgEYHcRi65yEPiuNg1PQ3GUjPrcAH3ewLhhjPe8kUBEohUZtjaxE5wZMAK/hAOTWgoF5MgHR85Oqt1w+nA==}
 
-  applesauce-signer@0.0.0-next-20250111214201:
-    resolution: {integrity: sha512-fyFxMTA2wFNprjYJCgM4aJrPqjUB3tvZED9/szkMZTW+9ImuzpD/1vbFu4XNF31bB67mCzM5X9O95H/rraWhxA==}
+  applesauce-react@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-Txvk1+3uJXbVp7LEJ+ZB5lYwkN79eSXijLqn8nxsZjWbzfPCst5FCMwq7UTwvpZGgD7yKbsrJ8X0u99tsVIwug==}
+
+  applesauce-signer@0.0.0-next-20250114214607:
+    resolution: {integrity: sha512-3G2Gxp1K6L2X12wf7z3ZpCOLQZo+VnUHA+ENdLGwfE68Yn68uAaWg4FiB87tXH+YFICLInqYt1juOJFcFr71ZQ==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -2427,8 +2451,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.80:
-    resolution: {integrity: sha512-LTrKpW0AqIuHwmlVNV+cjFYTnXtM9K37OGhpe0ZI10ScPSxqVSryZHIY3WnCS5NSYbBODRTZyhRMS2h5FAEqAw==}
+  electron-to-chromium@1.5.82:
+    resolution: {integrity: sha512-Zq16uk1hfQhyGx5GpwPAYDwddJuSGhtRhgOA2mCxANYaDT79nAeGnaXogMGng4KqLaJUVnOnuL0+TDop9nLOiA==}
 
   emittery@1.0.3:
     resolution: {integrity: sha512-tJdCJitoy2lrC2ldJcqN4vkqJ00lT+tOWNT1hBJjO/3FDMJa5TTIiYGCKGkn/WfCyOzUMObeohbVTj00fhiLiA==}
@@ -2472,8 +2496,8 @@ packages:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
 
-  es-object-atoms@1.0.0:
-    resolution: {integrity: sha512-MZ4iQ6JwHOBQjahnjwaC1ZtIBH+2ohjamzAO3oaHcXYup7qxjF2fixyH+Q71voWHeOkI2q/TnJao/KfXYIZWbw==}
+  es-object-atoms@1.1.0:
+    resolution: {integrity: sha512-Ujz8Al/KfOVR7fkaghAB1WvnLsdYxHDWmfoi2vlA2jZWRg31XhIC1a4B+/I24muD8iSbHxJ1JkrfqmWb65P/Mw==}
     engines: {node: '>= 0.4'}
 
   es-set-tostringtag@2.1.0:
@@ -2585,6 +2609,10 @@ packages:
     resolution: {integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==}
     engines: {node: '>=8'}
 
+  float-tooltip@1.5.0:
+    resolution: {integrity: sha512-CdpIbFdc7PSN+xhJXnAijWhha2vkdrrMRYpyfvrP3kKGJHJP404UrREVvMlKXQq2UXkb9G5oiyPTa5Kq6gRXjg==}
+    engines: {node: '>=12'}
+
   focus-lock@1.3.6:
     resolution: {integrity: sha512-Ik/6OCk9RQQ0T5Xw+hKNLWrjSMtv51dD4GRmJjbD5a58TIEpI5a5iXagKVl3Z5UuyslMCA8Xwnu76jQob62Yhg==}
     engines: {node: '>=10'}
@@ -2592,8 +2620,8 @@ packages:
   for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
 
-  force-graph@1.47.2:
-    resolution: {integrity: sha512-JGAURlgNGH2FrQGa6KcTiA2zreEW32ED6Mfh5UZHxERhyo3RabcftAVnVfgMziOtSl44bHuwdCuI4/afSTUZuQ==}
+  force-graph@1.48.0:
+    resolution: {integrity: sha512-OsHKas/BE54jaxC5lDia2yfJLZ0WnDPJAmtG5+AiSYRk9iNcXZ1l7Vf/YAoVttI9nl7YmW90iuXCcLu/HkFuPQ==}
     engines: {node: '>=12'}
 
   framer-motion@10.18.0:
@@ -3158,8 +3186,8 @@ packages:
   mdast-util-mdx-expression@2.0.1:
     resolution: {integrity: sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==}
 
-  mdast-util-mdx-jsx@3.1.3:
-    resolution: {integrity: sha512-bfOjvNt+1AcbPLTFMFWY149nJz0OjmewJs3LQQ5pIyVGxP4CdOqNVJL6kTaM5c68p8q82Xv3nCyFfUnuEcH3UQ==}
+  mdast-util-mdx-jsx@3.2.0:
+    resolution: {integrity: sha512-lj/z8v0r6ZtsN/cGNNtemmmfoLAFZnjMbNyLzBafjzikOM+glrjNHPlf6lQDOTccj9n5b0PPihEBbhneMyGs1Q==}
 
   mdast-util-mdxjs-esm@2.0.1:
     resolution: {integrity: sha512-EcmOpxsZ96CvlP03NghtH1EsLtr0n9Tm4lPUJUBccV9RwUOneqSycg19n5HGzCf+10LozMRSObtVr3ee1WoHtg==}
@@ -3413,8 +3441,8 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
-  oniguruma-to-es@0.10.0:
-    resolution: {integrity: sha512-zapyOUOCJxt+xhiNRPPMtfJkHGsZ98HHB9qJEkdT8BGytO/+kpe4m1Ngf0MzbzTmhacn11w9yGeDP6tzDhnCdg==}
+  oniguruma-to-es@1.0.0:
+    resolution: {integrity: sha512-kihvp0O4lFwf5tZMkfanwQLIZ9ORe9OeOFgZonH0BQeThgwfJiaZFeOfvvJVnJIM9TiVmx0RDD35hUJDR0++rQ==}
 
   os-tmpdir@1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
@@ -3515,8 +3543,8 @@ packages:
     resolution: {integrity: sha512-d7Uw+eZoloe0EHDIYoe+bQ5WXnGMOpmiZFTuMWCwpjzzkL2nTjcKiAk4hh8TjnGye2TwWOk3UXucZ+3rbmBa8Q==}
     engines: {node: '>= 0.4'}
 
-  postcss@8.4.49:
-    resolution: {integrity: sha512-OCVPnIObs4N29kxTjzLfUryOkvZEq+pf8jTF0lg8E7uETuWHA+v7j3c/xJmiqpX450191LlmZfUKkXxkTry7nA==}
+  postcss@8.5.1:
+    resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   potpack@1.0.2:
@@ -3648,14 +3676,14 @@ packages:
       '@types/react':
         optional: true
 
-  react-force-graph-2d@1.26.1:
-    resolution: {integrity: sha512-7dRD0zNjMpeNghc6dwqzKrdWz45kM1/RNQ7OfR/Y4t9cK02NvHjtmA5JeKePAmzZajqmQQFCbTtwxEfhKgcsww==}
+  react-force-graph-2d@1.26.2:
+    resolution: {integrity: sha512-yV9YUtpkA2uz2BbsscYjbXncoeM8sxiIrmHgV7pN+ObBaVBCUd+f8tj3973a8eKCqrdfH+LVgXet6N+2u2750A==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '*'
 
-  react-force-graph-3d@1.25.1:
-    resolution: {integrity: sha512-ET8ByYnUPpZDvkoonZZMDUiFFrqQKiKcl7spYOGwCytuoEFc+5Nk+72v1PgymvvoC6NuFXjEMUWpsEszusqCnA==}
+  react-force-graph-3d@1.25.2:
+    resolution: {integrity: sha512-F0LR8/GofXIvcoh7C9Zg1BRPBYqI87Zzr4ZRBekw9nsItA+dFvqc2bHcsCHR02NHysUUC2gZw2USVGVN2KMiyg==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '*'
@@ -3983,8 +4011,11 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shiki@1.26.1:
-    resolution: {integrity: sha512-Gqg6DSTk3wYqaZ5OaYtzjcdxcBvX5kCy24yvRJEgjT5U+WHlmqCThLuBUx0juyxQBi+6ug53IGeuQS07DWwpcw==}
+  shiki@1.26.2:
+    resolution: {integrity: sha512-iP7u2NA9A6JwRRCkIUREEX2cMhlYV5EBmbbSlfSRvPThwca8HBRbVkWuNWW+kw9+i6BSUZqqG6YeUs5dC2SjZw==}
+
+  shiki@1.27.0:
+    resolution: {integrity: sha512-PdrOqs36vGmftWETJJF6IJAUDS0ERYOYofHCBTHpLTvWLC8E/E6lyh+Xm1lMIZ/sBWT5uJSmri6NNW5ZDglMqQ==}
 
   side-channel-list@1.0.0:
     resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
@@ -4109,8 +4140,8 @@ packages:
   stylis@4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
 
-  stylis@4.3.4:
-    resolution: {integrity: sha512-osIBl6BGUmSfDkyH2mB7EFvCJntXDrLhKjHTRj/rK6xLH0yuPrHULDRQzKokSOD4VoorhtKpfcfW1GAntu8now==}
+  stylis@4.3.5:
+    resolution: {integrity: sha512-K7npNOKGRYuhAFFzkzMGfxFDpN6gDwf8hcMiE+uveTVbBgm93HrNP3ZDUpKqzZ4pG7TP6fmb+EMAQPjq9FqqvA==}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -4146,8 +4177,8 @@ packages:
     peerDependencies:
       three: '>=0.118.3'
 
-  three-render-objects@1.32.1:
-    resolution: {integrity: sha512-HcbVhMFwPxtxrrQYe+pD8HFZmx22lYuYZeHXcZlDdxqWyr5wAZgjD+vX23oALrmP3i1LW8udheXxbntwYmA9sw==}
+  three-render-objects@1.34.0:
+    resolution: {integrity: sha512-6/+Eq+zSdB/8MlBVhwbR75UJQQn439cZL8jf9qMVv6RLERXZ1CwzjVHdOb2hciQg2gWKHcy2qL7uyR6IOQwa/w==}
     engines: {node: '>=12'}
     peerDependencies:
       three: '>=0.168'
@@ -4158,8 +4189,8 @@ packages:
     peerDependencies:
       three: '>=0.86.0'
 
-  three-stdlib@2.35.6:
-    resolution: {integrity: sha512-8kkXc/7Fvsm3o/J7UqUgWZZ+qDYS0RTN8cwwGD0A4n0lP6wXf5FDdhJyTS8y/o+UMIexiv0ld78RPQoK6PFlVA==}
+  three-stdlib@2.35.7:
+    resolution: {integrity: sha512-k1oDqa1GYT4smhsN204DtmcQLfDuzSD4bbGmErTvUH40dpcwgBUgbwMzYYVWYB5tT7u0KBvAQpwuAPEXuwJVpQ==}
     peerDependencies:
       three: '>=0.128.0'
 
@@ -4558,13 +4589,13 @@ packages:
 
 snapshots:
 
-  3d-force-graph@1.74.5:
+  3d-force-graph@1.75.0:
     dependencies:
       accessor-fn: 1.5.1
       kapsule: 1.16.0
       three: 0.170.0
       three-forcegraph: 1.42.11(three@0.170.0)
-      three-render-objects: 1.32.1(three@0.170.0)
+      three-render-objects: 1.34.0(three@0.170.0)
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -4975,7 +5006,7 @@ snapshots:
       '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.26.5
 
-  '@babel/plugin-transform-nullish-coalescing-operator@7.26.5(@babel/core@7.26.0)':
+  '@babel/plugin-transform-nullish-coalescing-operator@7.26.6(@babel/core@7.26.0)':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.26.5
@@ -5162,7 +5193,7 @@ snapshots:
       '@babel/plugin-transform-modules-umd': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-named-capturing-groups-regex': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-new-target': 7.25.9(@babel/core@7.26.0)
-      '@babel/plugin-transform-nullish-coalescing-operator': 7.26.5(@babel/core@7.26.0)
+      '@babel/plugin-transform-nullish-coalescing-operator': 7.26.6(@babel/core@7.26.0)
       '@babel/plugin-transform-numeric-separator': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-object-rest-spread': 7.25.9(@babel/core@7.26.0)
       '@babel/plugin-transform-object-super': 7.25.9(@babel/core@7.26.0)
@@ -5834,7 +5865,7 @@ snapshots:
   '@getalby/bitcoin-connect@3.6.3(@types/react@18.3.18)(react@18.3.1)(typescript@5.7.3)':
     dependencies:
       '@getalby/lightning-tools': 5.1.2
-      '@getalby/sdk': 3.8.2(typescript@5.7.3)
+      '@getalby/sdk': 3.9.0(typescript@5.7.3)
       '@lightninglabs/lnc-web': 0.3.2-alpha
       qrcode-generator: 1.4.4
       zustand: 4.5.6(@types/react@18.3.18)(react@18.3.1)
@@ -5846,7 +5877,7 @@ snapshots:
 
   '@getalby/lightning-tools@5.1.2': {}
 
-  '@getalby/sdk@3.8.2(typescript@5.7.3)':
+  '@getalby/sdk@3.9.0(typescript@5.7.3)':
     dependencies:
       emittery: 1.0.3
       nostr-tools: 2.9.4(typescript@5.7.3)
@@ -6111,40 +6142,73 @@ snapshots:
       '@noble/hashes': 1.7.0
       '@scure/base': 1.2.1
 
-  '@shikijs/core@1.26.1':
+  '@shikijs/core@1.26.2':
     dependencies:
-      '@shikijs/engine-javascript': 1.26.1
-      '@shikijs/engine-oniguruma': 1.26.1
-      '@shikijs/types': 1.26.1
+      '@shikijs/engine-javascript': 1.26.2
+      '@shikijs/engine-oniguruma': 1.26.2
+      '@shikijs/types': 1.26.2
       '@shikijs/vscode-textmate': 10.0.1
       '@types/hast': 3.0.4
       hast-util-to-html: 9.0.4
 
-  '@shikijs/engine-javascript@1.26.1':
+  '@shikijs/core@1.27.0':
     dependencies:
-      '@shikijs/types': 1.26.1
+      '@shikijs/engine-javascript': 1.27.0
+      '@shikijs/engine-oniguruma': 1.27.0
+      '@shikijs/types': 1.27.0
       '@shikijs/vscode-textmate': 10.0.1
-      oniguruma-to-es: 0.10.0
+      '@types/hast': 3.0.4
+      hast-util-to-html: 9.0.4
 
-  '@shikijs/engine-oniguruma@1.26.1':
+  '@shikijs/engine-javascript@1.26.2':
     dependencies:
-      '@shikijs/types': 1.26.1
+      '@shikijs/types': 1.26.2
+      '@shikijs/vscode-textmate': 10.0.1
+      oniguruma-to-es: 1.0.0
+
+  '@shikijs/engine-javascript@1.27.0':
+    dependencies:
+      '@shikijs/types': 1.27.0
+      '@shikijs/vscode-textmate': 10.0.1
+      oniguruma-to-es: 1.0.0
+
+  '@shikijs/engine-oniguruma@1.26.2':
+    dependencies:
+      '@shikijs/types': 1.26.2
       '@shikijs/vscode-textmate': 10.0.1
 
-  '@shikijs/langs@1.26.1':
+  '@shikijs/engine-oniguruma@1.27.0':
     dependencies:
-      '@shikijs/types': 1.26.1
+      '@shikijs/types': 1.27.0
+      '@shikijs/vscode-textmate': 10.0.1
 
-  '@shikijs/markdown-it@1.26.1':
+  '@shikijs/langs@1.26.2':
+    dependencies:
+      '@shikijs/types': 1.26.2
+
+  '@shikijs/langs@1.27.0':
+    dependencies:
+      '@shikijs/types': 1.27.0
+
+  '@shikijs/markdown-it@1.26.2':
     dependencies:
       markdown-it: 14.1.0
-      shiki: 1.26.1
+      shiki: 1.26.2
 
-  '@shikijs/themes@1.26.1':
+  '@shikijs/themes@1.26.2':
     dependencies:
-      '@shikijs/types': 1.26.1
+      '@shikijs/types': 1.26.2
 
-  '@shikijs/types@1.26.1':
+  '@shikijs/themes@1.27.0':
+    dependencies:
+      '@shikijs/types': 1.27.0
+
+  '@shikijs/types@1.26.2':
+    dependencies:
+      '@shikijs/vscode-textmate': 10.0.1
+      '@types/hast': 3.0.4
+
+  '@shikijs/types@1.27.0':
     dependencies:
       '@shikijs/vscode-textmate': 10.0.1
       '@types/hast': 3.0.4
@@ -6301,7 +6365,7 @@ snapshots:
   '@types/three@0.160.0':
     dependencies:
       '@types/stats.js': 0.17.3
-      '@types/webxr': 0.5.20
+      '@types/webxr': 0.5.21
       fflate: 0.6.10
       meshoptimizer: 0.18.1
 
@@ -6315,7 +6379,7 @@ snapshots:
     dependencies:
       '@types/react': 18.3.18
 
-  '@types/webxr@0.5.20': {}
+  '@types/webxr@0.5.21': {}
 
   '@types/zen-observable@0.8.7': {}
 
@@ -6419,23 +6483,23 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  applesauce-channel@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-channel@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250114214607(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-content@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
       mdast-util-find-and-replace: 3.0.2
       nostr-tools: 2.10.4(typescript@5.7.3)
       remark: 15.0.1
@@ -6446,7 +6510,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-core@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
       '@scure/base': 1.2.1
       debug: 4.4.0
@@ -6460,23 +6524,23 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-factory@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250111214201(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-lists@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-lists@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.0
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250114214607(typescript@5.7.3)
       debug: 4.4.0
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
@@ -6484,9 +6548,20 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-net@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-loaders@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
+      nanoid: 5.0.9
+      nostr-tools: 2.10.4(typescript@5.7.3)
+      rx-nostr: 3.4.2
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  applesauce-net@0.0.0-next-20250114214607(typescript@5.7.3):
+    dependencies:
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
@@ -6494,11 +6569,11 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-react@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250111214201(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250114214607(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
       react: 18.3.1
       rxjs: 7.8.1
@@ -6506,13 +6581,13 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signer@0.0.0-next-20250111214201(typescript@5.7.3):
+  applesauce-signer@0.0.0-next-20250114214607(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.0
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.1
       '@types/dom-serial': 1.0.6
-      applesauce-core: 0.0.0-next-20250111214201(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
       debug: 4.4.0
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
@@ -6626,7 +6701,7 @@ snapshots:
   browserslist@4.24.4:
     dependencies:
       caniuse-lite: 1.0.30001692
-      electron-to-chromium: 1.5.80
+      electron-to-chromium: 1.5.82
       node-releases: 2.0.19
       update-browserslist-db: 1.1.2(browserslist@4.24.4)
 
@@ -6730,13 +6805,13 @@ snapshots:
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
       '@sagold/json-pointer': 5.1.2
-      '@shikijs/markdown-it': 1.26.1
+      '@shikijs/markdown-it': 1.26.2
       best-effort-json-parser: 1.1.2
       json-schema: 0.4.0
       json-schema-library: 9.3.5
       loglevel: 1.9.2
       markdown-it: 14.1.0
-      shiki: 1.26.1
+      shiki: 1.27.0
       yaml: 2.7.0
     optionalDependencies:
       '@codemirror/autocomplete': 6.18.4
@@ -7040,7 +7115,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.80: {}
+  electron-to-chromium@1.5.82: {}
 
   emittery@1.0.3: {}
 
@@ -7082,7 +7157,7 @@ snapshots:
       data-view-byte-offset: 1.0.1
       es-define-property: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       es-set-tostringtag: 2.1.0
       es-to-primitive: 1.3.0
       function.prototype.name: 1.1.8
@@ -7128,7 +7203,7 @@ snapshots:
 
   es-errors@1.3.0: {}
 
-  es-object-atoms@1.0.0:
+  es-object-atoms@1.1.0:
     dependencies:
       es-errors: 1.3.0
 
@@ -7246,6 +7321,11 @@ snapshots:
       locate-path: 5.0.0
       path-exists: 4.0.0
 
+  float-tooltip@1.5.0:
+    dependencies:
+      d3-selection: 3.0.0
+      kapsule: 1.16.0
+
   focus-lock@1.3.6:
     dependencies:
       tslib: 2.8.1
@@ -7254,7 +7334,7 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
-  force-graph@1.47.2:
+  force-graph@1.48.0:
     dependencies:
       '@tweenjs/tween.js': 25.0.0
       accessor-fn: 1.5.1
@@ -7267,6 +7347,7 @@ snapshots:
       d3-scale-chromatic: 3.1.0
       d3-selection: 3.0.0
       d3-zoom: 3.0.0
+      float-tooltip: 1.5.0
       index-array-by: 1.4.2
       kapsule: 1.16.0
       lodash-es: 4.17.21
@@ -7327,7 +7408,7 @@ snapshots:
       call-bind-apply-helpers: 1.0.1
       es-define-property: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       function-bind: 1.1.2
       get-proto: 1.0.1
       gopd: 1.2.0
@@ -7342,7 +7423,7 @@ snapshots:
   get-proto@1.0.1:
     dependencies:
       dunder-proto: 1.0.1
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
 
   get-symbol-description@1.1.0:
     dependencies:
@@ -7445,7 +7526,7 @@ snapshots:
       estree-util-is-identifier-name: 3.0.0
       hast-util-whitespace: 3.0.0
       mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.1.3
+      mdast-util-mdx-jsx: 3.2.0
       mdast-util-mdxjs-esm: 2.0.1
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
@@ -7909,7 +7990,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-jsx@3.1.3:
+  mdast-util-mdx-jsx@3.2.0:
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.4
@@ -8225,7 +8306,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       rtl-css-js: 1.16.1
       stacktrace-js: 2.0.2
-      stylis: 4.3.4
+      stylis: 4.3.5
 
   nanoid@3.3.8: {}
 
@@ -8317,7 +8398,7 @@ snapshots:
       call-bind: 1.0.8
       call-bound: 1.0.3
       define-properties: 1.2.1
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       has-symbols: 1.1.0
       object-keys: 1.1.1
 
@@ -8325,7 +8406,7 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
-  oniguruma-to-es@0.10.0:
+  oniguruma-to-es@1.0.0:
     dependencies:
       emoji-regex-xs: 1.0.0
       regex: 5.1.1
@@ -8426,7 +8507,7 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss@8.4.49:
+  postcss@8.5.1:
     dependencies:
       nanoid: 3.3.8
       picocolors: 1.1.1
@@ -8558,16 +8639,16 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.18
 
-  react-force-graph-2d@1.26.1(react@18.3.1):
+  react-force-graph-2d@1.26.2(react@18.3.1):
     dependencies:
-      force-graph: 1.47.2
+      force-graph: 1.48.0
       prop-types: 15.8.1
       react: 18.3.1
       react-kapsule: 2.5.6(react@18.3.1)
 
-  react-force-graph-3d@1.25.1(react@18.3.1):
+  react-force-graph-3d@1.25.2(react@18.3.1):
     dependencies:
-      3d-force-graph: 1.74.5
+      3d-force-graph: 1.75.0
       prop-types: 15.8.1
       react: 18.3.1
       react-kapsule: 2.5.6(react@18.3.1)
@@ -8748,7 +8829,7 @@ snapshots:
       define-properties: 1.2.1
       es-abstract: 1.23.9
       es-errors: 1.3.0
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       get-intrinsic: 1.2.7
       get-proto: 1.0.1
       which-builtin-type: 1.2.1
@@ -8976,7 +9057,7 @@ snapshots:
     dependencies:
       dunder-proto: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
 
   shebang-command@2.0.0:
     dependencies:
@@ -8984,14 +9065,25 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shiki@1.26.1:
+  shiki@1.26.2:
     dependencies:
-      '@shikijs/core': 1.26.1
-      '@shikijs/engine-javascript': 1.26.1
-      '@shikijs/engine-oniguruma': 1.26.1
-      '@shikijs/langs': 1.26.1
-      '@shikijs/themes': 1.26.1
-      '@shikijs/types': 1.26.1
+      '@shikijs/core': 1.26.2
+      '@shikijs/engine-javascript': 1.26.2
+      '@shikijs/engine-oniguruma': 1.26.2
+      '@shikijs/langs': 1.26.2
+      '@shikijs/themes': 1.26.2
+      '@shikijs/types': 1.26.2
+      '@shikijs/vscode-textmate': 10.0.1
+      '@types/hast': 3.0.4
+
+  shiki@1.27.0:
+    dependencies:
+      '@shikijs/core': 1.27.0
+      '@shikijs/engine-javascript': 1.27.0
+      '@shikijs/engine-oniguruma': 1.27.0
+      '@shikijs/langs': 1.27.0
+      '@shikijs/themes': 1.27.0
+      '@shikijs/types': 1.27.0
       '@shikijs/vscode-textmate': 10.0.1
       '@types/hast': 3.0.4
 
@@ -9085,7 +9177,7 @@ snapshots:
       define-properties: 1.2.1
       es-abstract: 1.23.9
       es-errors: 1.3.0
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       get-intrinsic: 1.2.7
       gopd: 1.2.0
       has-symbols: 1.1.0
@@ -9101,7 +9193,7 @@ snapshots:
       define-data-property: 1.1.4
       define-properties: 1.2.1
       es-abstract: 1.23.9
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
       has-property-descriptors: 1.0.2
 
   string.prototype.trimend@1.0.9:
@@ -9109,13 +9201,13 @@ snapshots:
       call-bind: 1.0.8
       call-bound: 1.0.3
       define-properties: 1.2.1
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
 
   string.prototype.trimstart@1.0.8:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-object-atoms: 1.0.0
+      es-object-atoms: 1.1.0
 
   stringify-entities@4.0.4:
     dependencies:
@@ -9144,7 +9236,7 @@ snapshots:
 
   stylis@4.2.0: {}
 
-  stylis@4.3.4: {}
+  stylis@4.3.5: {}
 
   supports-color@7.2.0:
     dependencies:
@@ -9186,10 +9278,11 @@ snapshots:
       three: 0.170.0
       tinycolor2: 1.6.0
 
-  three-render-objects@1.32.1(three@0.170.0):
+  three-render-objects@1.34.0(three@0.170.0):
     dependencies:
       '@tweenjs/tween.js': 25.0.0
       accessor-fn: 1.5.1
+      float-tooltip: 1.5.0
       kapsule: 1.16.0
       polished: 4.3.1
       three: 0.170.0
@@ -9198,11 +9291,11 @@ snapshots:
     dependencies:
       three: 0.170.0
 
-  three-stdlib@2.35.6(three@0.170.0):
+  three-stdlib@2.35.7(three@0.170.0):
     dependencies:
       '@types/draco3d': 1.4.10
       '@types/offscreencanvas': 2019.7.3
-      '@types/webxr': 0.5.20
+      '@types/webxr': 0.5.21
       draco3d: 1.5.7
       fflate: 0.6.10
       potpack: 1.0.2
@@ -9413,7 +9506,7 @@ snapshots:
   vite@5.4.11(terser@5.37.0):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.49
+      postcss: 8.5.1
       rollup: 4.30.1
     optionalDependencies:
       fsevents: 2.3.3

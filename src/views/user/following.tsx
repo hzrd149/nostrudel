@@ -13,7 +13,7 @@ export default function UserFollowingTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
   const contextRelays = useAdditionalRelayContext();
 
-  const contactsList = useUserContactList(pubkey, contextRelays, { alwaysRequest: true });
+  const contactsList = useUserContactList(pubkey, contextRelays, true);
 
   const people = contactsList ? getPubkeysFromList(contactsList) : [];
   const sorted = webOfTrust ? webOfTrust.sortByDistanceAndConnections(people, (p) => p.pubkey) : people;

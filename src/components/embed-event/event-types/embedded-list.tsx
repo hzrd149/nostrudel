@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { getReplaceableUID } from "applesauce-core/helpers";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getListDescription, getListName, isSpecialListKind } from "../../../helpers/nostr/lists";
@@ -7,11 +8,10 @@ import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
 import { ListCardContent } from "../../../views/lists/components/list-card";
-import { createCoordinate } from "../../../classes/batch-kind-pubkey-loader";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export default function EmbeddedSetOrList({ list, ...props }: Omit<CardProps, "children"> & { list: NostrEvent }) {
-  const link = isSpecialListKind(list.kind) ? createCoordinate(list.kind, list.pubkey) : getSharableEventAddress(list);
+  const link = isSpecialListKind(list.kind) ? getReplaceableUID(list.kind, list.pubkey) : getSharableEventAddress(list);
   const description = getListDescription(list);
 
   return (

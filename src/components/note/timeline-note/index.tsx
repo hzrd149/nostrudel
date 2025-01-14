@@ -39,7 +39,6 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import HoverLinkOverlay from "../../hover-link-overlay";
 import NoteCommunityMetadata from "./note-community-metadata";
 import NoteProxyLink from "./components/note-proxy-link";
-import singleEventService from "../../../services/single-event";
 import POWIcon from "../../pow/pow-icon";
 import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
@@ -89,13 +88,7 @@ export function TimelineNote({
           data-event-id={event.id}
           {...props}
         >
-          {clickable && (
-            <HoverLinkOverlay
-              as={RouterLink}
-              to={`/n/${getSharableEventAddress(event)}`}
-              onClick={() => singleEventService.handleEvent(event)}
-            />
-          )}
+          {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} />}
           <CardHeader p="2">
             <Flex flex="1" gap="2" alignItems="center">
               <UserAvatarLink pubkey={event.pubkey} size="sm" />
@@ -108,12 +101,7 @@ export function TimelineNote({
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
               {!hideDrawerButton && (
-                <OpenInDrawerButton
-                  to={`/n/${getSharableEventAddress(event)}`}
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => singleEventService.handleEvent(event)}
-                />
+                <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
               )}
             </Flex>
             <NoteCommunityMetadata event={event} />

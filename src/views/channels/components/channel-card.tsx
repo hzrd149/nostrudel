@@ -22,7 +22,6 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import singleEventService from "../../../services/single-event";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function ChannelCard({
@@ -51,11 +50,7 @@ export default function ChannelCard({
       <Flex direction="column" flex={1} overflow="hidden" h="full">
         <CardHeader p="2" display="flex" gap="2" alignItems="center">
           <Heading size="md" isTruncated>
-            <HoverLinkOverlay
-              as={RouterLink}
-              to={`/channels/${nip19.neventEncode({ id: channel.id })}`}
-              onClick={() => singleEventService.handleEvent(channel)}
-            >
+            <HoverLinkOverlay as={RouterLink} to={`/channels/${nip19.neventEncode({ id: channel.id })}`}>
               {metadata.name}
             </HoverLinkOverlay>
           </Heading>

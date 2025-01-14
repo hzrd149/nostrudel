@@ -4,7 +4,7 @@ import { map, throttleTime } from "rxjs/operators";
 import { getZapPayment } from "applesauce-core/helpers";
 
 import { getContentPointers, getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
-import singleEventService from "../services/single-event";
+import singleEventLoader from "../services/single-event-loader";
 import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
@@ -96,7 +96,7 @@ export default class AccountNotifications {
     const e = this.categorizeEvent(event);
 
     const loadEvent = (eventId: string, relays?: string[]) => {
-      singleEventService.requestEvent(eventId, RelaySet.from(clientRelaysService.readRelays.value, relays));
+      singleEventLoader.next({ id: eventId, relays: [...clientRelaysService.readRelays.value, ...(relays ?? [])] });
     };
 
     // load event quotes

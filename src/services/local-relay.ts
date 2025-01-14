@@ -1,13 +1,14 @@
 import dayjs from "dayjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
-import { fakeVerifyEvent } from "applesauce-core/helpers";
+import { fakeVerifyEvent, isFromCache } from "applesauce-core/helpers";
 
 import { logger } from "../helpers/debug";
 import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import localSettings from "./local-settings";
+import { eventStore } from "./event-store";
 
 // save the local relay from query params to localStorage
 const params = new URLSearchParams(location.search);
@@ -107,6 +108,13 @@ setInterval(() => {
     }
   }
 }, 60_000);
+
+// watch for new events and send them to the cache relay
+if (localRelay) {
+  eventStore.database.inserted.subscribe((event) => {
+    if (!isFromCache(event)) localRelay.publish(event);
+  });
+}
 
 if (import.meta.env.DEV) {
   //@ts-expect-error debug

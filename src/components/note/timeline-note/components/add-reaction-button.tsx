@@ -25,5 +25,5 @@ export default function AddReactionButton({
     }
     setLoading(false);
   };
-  return <ReactionIconButton onSelect={addReaction} isLoading={loading} />;
+  return <ReactionIconButton onSelect={addReaction} isLoading={loading} portal />;
 }

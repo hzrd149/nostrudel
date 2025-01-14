@@ -10,7 +10,6 @@ import { MultiSubscription } from "applesauce-net/subscription";
 
 import { logger } from "../helpers/debug";
 import { isReplaceable } from "../helpers/nostr/event";
-import replaceableEventsService from "../services/replaceable-events";
 import { mergeFilter } from "../helpers/nostr/filter";
 import { localRelay } from "../services/local-relay";
 import SuperMap from "./super-map";
@@ -84,9 +83,6 @@ export default class TimelineLoader {
 
   private seenInCache = new Set<string>();
   private handleEvent(event: NostrEvent, fromCache = false) {
-    // if this is a replaceable event, mirror it over to the replaceable event service
-    if (isReplaceable(event.kind)) replaceableEventsService.handleEvent(event);
-
     event = eventStore.add(event);
 
     // publish to local relay

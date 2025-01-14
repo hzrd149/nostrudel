@@ -55,7 +55,7 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 }
 
 function BookmarksPage({ pubkey }: { pubkey: string }) {
-  const { list } = userUserBookmarksList(pubkey, undefined, { alwaysRequest: true });
+  const { list } = userUserBookmarksList(pubkey, undefined, true);
 
   if (!list) return <Spinner />;
 

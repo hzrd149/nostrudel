@@ -27,8 +27,8 @@ import relayPoolService from "../services/relay-pool";
 import { isValidRelayURL } from "../helpers/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
 import { RelayFavicon } from "./relay-favicon";
-import singleEventService from "../services/single-event";
-import replaceableEventsService from "../services/replaceable-events";
+import singleEventLoader from "../services/single-event-loader";
+import replaceableEventLoader from "../services/replaceable-event-loader";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
 
 function SearchOnRelaysModal({
@@ -52,19 +52,17 @@ function SearchOnRelaysModal({
     setLoading(true);
     switch (decode.type) {
       case "naddr":
-        replaceableEventsService.requestEvent(
-          Array.from(relays),
-          decode.data.kind,
-          decode.data.pubkey,
-          decode.data.identifier,
-          { ignoreCache: true },
-        );
+        replaceableEventLoader.next({
+          ...decode.data,
+          relays: [...relays, ...(decode.data.relays ?? [])],
+          force: true,
+        });
         break;
       case "note":
-        singleEventService.requestEvent(decode.data, Array.from(relays));
+        singleEventLoader.next({ id: decode.data, relays: Array.from(relays) });
         break;
       case "nevent":
-        singleEventService.requestEvent(decode.data.id, Array.from(relays));
+        singleEventLoader.next({ id: decode.data.id, relays: Array.from(relays) });
         break;
     }
   };

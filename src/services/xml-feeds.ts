@@ -10,7 +10,7 @@ class XmlFeedsService {
     return this.parser.parseFromString(str, "application/xml");
   }
 
-  async requestFeed(url: string | URL, force = false): Promise<Document> {
+  async requestFeed(url: string | URL, force?: boolean): Promise<Document> {
     url = String(url);
 
     if (this.feeds.has(url) && !force) return this.feeds.get(url)!;

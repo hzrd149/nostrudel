@@ -3,7 +3,7 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { EventPointer } from "nostr-tools/nip19";
 import { Queries } from "applesauce-core";
 
-import singleEventService from "../services/single-event";
+import singleEventLoader from "../services/single-event-loader";
 import { useReadRelays } from "./use-client-relays";
 
 export default function useSingleEvent(id?: string | EventPointer, additionalRelays?: Iterable<string>) {
@@ -12,11 +12,10 @@ export default function useSingleEvent(id?: string | EventPointer, additionalRel
 
   useEffect(() => {
     if (pointer)
-      singleEventService.requestEvent(pointer.id, [
-        ...(pointer.relays ?? []),
-        ...readRelays,
-        ...(additionalRelays ?? []),
-      ]);
+      singleEventLoader.next({
+        id: pointer.id,
+        relays: [...(pointer.relays ?? []), ...readRelays, ...(additionalRelays ?? [])],
+      });
   }, [pointer, readRelays.urls.join("|")]);
 
   return useStoreQuery(Queries.SingleEventQuery, pointer ? [pointer.id] : undefined);

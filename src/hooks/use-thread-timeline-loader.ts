@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { kinds as eventKinds } from "nostr-tools";
 
 import useSingleEvent from "./use-single-event";
-import singleEventService from "../services/single-event";
+import singleEventLoader from "../services/single-event-loader";
 import useTimelineLoader from "./use-timeline-loader";
 import { getThreadReferences } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
@@ -36,11 +36,6 @@ export default function useThreadTimelineLoader(
         ]
       : undefined,
   );
-
-  // mirror all events to single event cache
-  useEffect(() => {
-    for (const e of events) singleEventService.handleEvent(e);
-  }, [events]);
 
   const rootEvent = useSingleEvent(rootPointer?.id, rootPointer?.relays);
   const allEvents = useMemo(() => {

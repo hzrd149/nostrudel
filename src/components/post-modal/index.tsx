@@ -33,8 +33,7 @@ import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { Emoji, ZapSplit } from "applesauce-core/helpers";
 
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
-import PublishAction from "../../classes/nostr-publish-action";
-import { PublishDetails } from "../../views/task-manager/publish-log/publish-details";
+import { PublishLogEntryDetails } from "../../views/task-manager/publish-log/entry-details";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import MagicTextArea, { RefType } from "../magic-textarea";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
@@ -45,7 +44,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hook
 import MinePOW from "../pow/mine-pow";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { ErrorBoundary } from "../error-boundary";
-import { useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
+import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
 import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
@@ -78,7 +77,7 @@ export default function PostModal({
   const addClientTag = useObservable(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
-  const [publishAction, setPublishAction] = useState<PublishAction>();
+  const [publishEntry, setPublishEntry] = useState<PublishLogEntry>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
 
@@ -132,7 +131,7 @@ export default function PostModal({
     unsigned = unsigned || draft || (await getDraft());
 
     const pub = await publish("Post", unsigned);
-    if (pub) setPublishAction(pub);
+    if (pub) setPublishEntry(pub);
   };
   const submit = handleSubmit(async (values) => {
     if (values.difficulty > 0) {
@@ -146,10 +145,10 @@ export default function PostModal({
   const canSubmit = getValues().content.length > 0;
 
   const renderBody = () => {
-    if (publishAction) {
+    if (publishEntry) {
       return (
         <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          <PublishDetails pub={publishAction} />
+          <PublishLogEntryDetails entry={publishEntry} />
           <Button onClick={onClose} mt="2" ml="auto">
             Close
           </Button>
@@ -294,7 +293,7 @@ export default function PostModal({
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
-        {publishAction && <ModalCloseButton />}
+        {publishEntry && <ModalCloseButton />}
         {renderBody()}
       </ModalContent>
     </Modal>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Queries } from "applesauce-core";
 import { useStoreQuery } from "applesauce-react/hooks";
 
-import singleEventService from "../services/single-event";
+import singleEventLoader from "../services/single-event-loader";
 import { useReadRelays } from "./use-client-relays";
 
 export default function useSingleEvents(ids?: string[], additionalRelays?: Iterable<string>) {
@@ -11,7 +11,7 @@ export default function useSingleEvents(ids?: string[], additionalRelays?: Itera
     if (!ids) return;
 
     for (const id of ids) {
-      singleEventService.requestEvent(id, readRelays);
+      singleEventLoader.next({ id, relays: [...readRelays] });
     }
   }, [ids, readRelays.urls.join("|")]);
 

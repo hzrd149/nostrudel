@@ -10,7 +10,7 @@ import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
-import replaceableEventsService from "./replaceable-events";
+import replaceableEventLoader from "./replaceable-event-loader";
 import { eventStore, queryStore } from "./event-store";
 import { Account } from "../classes/accounts/account";
 import { MultiSubscription } from "applesauce-net/subscription";
@@ -25,9 +25,7 @@ function downloadEvents(account: Account) {
   const cleanup: (() => void)[] = [];
 
   const requestReplaceable = (relays: Iterable<string>, kind: number, d?: string) => {
-    replaceableEventsService.requestEvent(relays, kind, account.pubkey, d, {
-      alwaysRequest: true,
-    });
+    replaceableEventLoader.next({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, force: true });
   };
 
   log("Loading outboxes");
@@ -41,15 +39,12 @@ function downloadEvents(account: Account) {
     requestReplaceable(mailboxes?.outboxes || relays, APP_SETTINGS_KIND, APP_SETTING_IDENTIFIER);
 
     log("Loading contacts list");
-    replaceableEventsService.requestEvent(
-      [...clientRelaysService.readRelays.value, ...COMMON_CONTACT_RELAYS],
-      kinds.Contacts,
-      account.pubkey,
-      undefined,
-      {
-        alwaysRequest: true,
-      },
-    );
+    replaceableEventLoader.next({
+      relays: [...clientRelaysService.readRelays.value, ...COMMON_CONTACT_RELAYS],
+      kind: kinds.Contacts,
+      pubkey: account.pubkey,
+      force: true,
+    });
 
     if (mailboxes?.outboxes && mailboxes.outboxes.length > 0) {
       log(`Loading delete events`);

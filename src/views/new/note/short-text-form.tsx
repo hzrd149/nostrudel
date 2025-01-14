@@ -27,12 +27,11 @@ import { useAsync, useThrottle } from "react-use";
 import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { Emoji } from "applesauce-core/helpers";
 
-import { useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
+import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import localSettings from "../../../services/local-settings";
 import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
-import PublishAction from "../../../classes/nostr-publish-action";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import useCacheForm from "../../../hooks/use-cache-form";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
@@ -45,7 +44,7 @@ import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import ZapSplitCreator, { Split } from "./zap-split-creator";
 import MinePOW from "../../../components/pow/mine-pow";
-import { PublishDetails } from "../../task-manager/publish-log/publish-details";
+import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
 
 type FormValues = {
   content: string;
@@ -71,7 +70,7 @@ export default function ShortTextNoteForm({
   const addClientTag = useObservable(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
-  const [publishAction, setPublishAction] = useState<PublishAction>();
+  const [published, setPublished] = useState<PublishLogEntry>();
   const emojis = useContextEmojis();
   const advanced = useDisclosure();
 
@@ -125,7 +124,7 @@ export default function ShortTextNoteForm({
     unsigned = unsigned || draft || (await getDraft());
 
     const pub = await publish("Post", unsigned);
-    if (pub) setPublishAction(pub);
+    if (pub) setPublished(pub);
   };
   const submit = handleSubmit(async (values) => {
     if (values.difficulty > 0) {
@@ -138,10 +137,10 @@ export default function ShortTextNoteForm({
 
   const canSubmit = getValues().content.length > 0;
 
-  if (publishAction) {
+  if (published) {
     return (
       <Flex direction="column" gap="2">
-        <PublishDetails pub={publishAction} />
+        <PublishLogEntryDetails entry={published} />
       </Flex>
     );
   }

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAsync, useStartTyping } from "react-use";
+import { useMemo, useState } from "react";
+import { useAsync } from "react-use";
 import { nip19, NostrEvent } from "nostr-tools";
 import { Button, ButtonGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
@@ -8,15 +8,12 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
 import { humanReadableSats } from "../../../helpers/lightning";
-import replaceableEventsService from "../../../services/replaceable-events";
-import UserAboutContent from "../../../components/user/user-about";
+import UserAboutContent from "../../../components/user/user-about-content";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
-  useEffect(() => replaceableEventsService.handleEvent(profile), [profile.id]);
-
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(profile.pubkey), [profile.pubkey]);
 
   return (

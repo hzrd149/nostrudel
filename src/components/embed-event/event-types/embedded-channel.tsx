@@ -7,7 +7,6 @@ import UserLink from "../../user/user-link";
 import { NostrEvent } from "../../../types/nostr-event";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import singleEventService from "../../../services/single-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 
 export default function EmbeddedChannel({
@@ -34,11 +33,7 @@ export default function EmbeddedChannel({
       <Flex direction="column" flex={1} overflow="hidden" h="full">
         <CardHeader p="2" display="flex" gap="2" alignItems="center">
           <Heading size="md" isTruncated>
-            <HoverLinkOverlay
-              as={RouterLink}
-              to={`/channels/${nip19.neventEncode({ id: channel.id })}`}
-              onClick={() => singleEventService.handleEvent(channel)}
-            >
+            <HoverLinkOverlay as={RouterLink} to={`/channels/${nip19.neventEncode({ id: channel.id })}`}>
               {metadata.name}
             </HoverLinkOverlay>
           </Heading>

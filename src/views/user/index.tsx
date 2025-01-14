@@ -77,7 +77,7 @@ const UserView = () => {
   const relayModal = useDisclosure();
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
-  const metadata = useUserProfile(pubkey, userTopRelays, { alwaysRequest: true });
+  const metadata = useUserProfile(pubkey, userTopRelays, true);
   useAppTitle(getDisplayName(metadata, pubkey));
 
   const matches = useMatches();

@@ -1,26 +1,60 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent, UnsignedEvent, kinds } from "nostr-tools";
-import { includeClientTag } from "applesauce-factory/operations";
 import { addSeenRelay } from "applesauce-core/helpers";
+import { OkPacketAgainstEvent } from "rx-nostr";
+import { BehaviorSubject } from "rxjs";
+import { nanoid } from "nanoid";
 
 import { useSigningContext } from "./signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import PublishAction from "../../classes/nostr-publish-action";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
-import { cloneEvent, getAllRelayHints, isReplaceable } from "../../helpers/nostr/event";
-import replaceableEventsService from "../../services/replaceable-events";
+import { getAllRelayHints } from "../../helpers/nostr/event";
 import { localRelay } from "../../services/local-relay";
 import deleteEventService from "../../services/delete-events";
-import localSettings from "../../services/local-settings";
-import { NEVER_ATTACH_CLIENT_TAG, NIP_89_CLIENT_APP } from "../../const";
 import { eventStore } from "../../services/event-store";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
+import rxNostr from "../../services/rx-nostr";
+
+export type PublishResults = { packets: OkPacketAgainstEvent[]; relays: Record<string, OkPacketAgainstEvent> };
+
+export class PublishLogEntry extends BehaviorSubject<PublishResults> {
+  public id = nanoid();
+
+  public done = false;
+  public packets: OkPacketAgainstEvent[] = [];
+  public relay: Record<string, OkPacketAgainstEvent> = {};
+
+  constructor(
+    public label: string,
+    public event: NostrEvent,
+    public relays: string[],
+  ) {
+    super({ packets: [], relays: {} });
+
+    rxNostr.send(event, { on: { relays: [...relays] } }).subscribe({
+      next: (packet) => {
+        if (packet.ok) {
+          addSeenRelay(event, packet.from);
+          eventStore.update(event);
+        }
+
+        this.packets.push(packet);
+        this.relay[packet.from] = packet;
+
+        this.next({ packets: this.packets, relays: this.relay });
+      },
+      complete: () => {
+        this.done = true;
+      },
+    });
+  }
+}
 
 type PublishContextType = {
-  log: PublishAction[];
+  log: PublishLogEntry[];
   finalizeDraft(draft: EventTemplate | NostrEvent): Promise<UnsignedEvent>;
   publishEvent(
     label: string,
@@ -28,21 +62,21 @@ type PublishContextType = {
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays: false,
-  ): Promise<PublishAction>;
+  ): Promise<PublishLogEntry>;
   publishEvent(
     label: string,
     event: EventTemplate | UnsignedEvent | NostrEvent,
     additionalRelays: Iterable<string> | undefined,
     quite: false,
     onlyAdditionalRelays?: boolean,
-  ): Promise<PublishAction>;
+  ): Promise<PublishLogEntry>;
   publishEvent(
     label: string,
     event: EventTemplate | UnsignedEvent | NostrEvent,
     additionalRelays?: Iterable<string> | undefined,
     quite?: boolean,
     onlyAdditionalRelays?: boolean,
-  ): Promise<PublishAction | undefined>;
+  ): Promise<PublishLogEntry | undefined>;
 };
 export const PublishContext = createContext<PublishContextType>({
   log: [],
@@ -63,7 +97,7 @@ export function useFinalizeDraft() {
 
 export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
-  const [log, setLog] = useState<PublishAction[]>([]);
+  const [log, setLog] = useState<PublishLogEntry[]>([]);
   const { requestSignature, finalizeDraft: signerFinalize } = useSigningContext();
   const account = useCurrentAccount();
   const outBoxes = useUserOutbox(account?.pubkey);
@@ -100,21 +134,18 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         // sign event
         const signed = !Reflect.has(event, "sig") ? await requestSignature(event) : (event as NostrEvent);
 
-        const pub = new PublishAction(label, relays, signed);
-        setLog((arr) => arr.concat(pub));
+        const entry = new PublishLogEntry(label, signed, [...relays]);
 
-        pub.onResult.subscribe((result) => {
-          if (result.success) addSeenRelay(signed, result.relay.url);
-        });
+        setLog((arr) => arr.concat(entry));
 
         // send it to the local relay
         if (localRelay) localRelay.publish(signed);
 
         // pass it to other services
         eventStore.add(signed);
-        if (isReplaceable(signed.kind)) replaceableEventsService.handleEvent(signed);
         if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);
-        return pub;
+
+        return entry;
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
         if (!quite) throw e;

@@ -216,7 +216,7 @@ export const ProfileEditView = () => {
   const publish = usePublishEvent();
   const readRelays = useReadRelays();
   const account = useCurrentAccount()!;
-  const metadata = useUserProfile(account.pubkey, readRelays, { alwaysRequest: true });
+  const metadata = useUserProfile(account.pubkey, readRelays, true);
 
   const defaultValues = useMemo<FormData>(
     () => ({

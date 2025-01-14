@@ -49,7 +49,7 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 function MailboxesPage() {
   const account = useCurrentAccount()!;
   const publish = usePublishEvent();
-  const mailboxes = useUserMailboxes(account.pubkey, undefined, { alwaysRequest: true, ignoreCache: true });
+  const mailboxes = useUserMailboxes(account.pubkey, undefined, true);
   const event = useReplaceableEvent({ kind: kinds.RelayList, pubkey: account.pubkey });
 
   const addRelay = useCallback(

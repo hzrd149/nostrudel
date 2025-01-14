@@ -107,7 +107,7 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   const publish = usePublishEvent();
   const account = useCurrentAccount()!;
   const { requestSignature } = useSigningContext();
-  const contacts = useUserContactList(account?.pubkey, [], { ignoreCache: true });
+  const contacts = useUserContactList(account?.pubkey, undefined, true);
   const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
 

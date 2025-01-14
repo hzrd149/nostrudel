@@ -18,7 +18,7 @@ export default function useStreamChatTimeline(stream: NostrEvent) {
   const starts = getStreamStartTime(stream);
   const ends = getStreamEndTime(stream);
 
-  const hostMuteFilter = useUserMuteFilter(host, [], { alwaysRequest: true });
+  const hostMuteFilter = useUserMuteFilter(host, [], true);
   const muteFilter = useClientSideMuteFilter();
 
   const eventFilter = useCallback(

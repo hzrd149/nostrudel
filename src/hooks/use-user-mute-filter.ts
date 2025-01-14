@@ -6,11 +6,10 @@ import useUserMuteList from "./use-user-mute-list";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { NostrEvent } from "../types/nostr-event";
 import { getStreamHost } from "../helpers/nostr/stream";
-import { RequestOptions } from "../services/replaceable-events";
 
-export default function useUserMuteFilter(pubkey?: string, additionalRelays?: string[], opts?: RequestOptions) {
+export default function useUserMuteFilter(pubkey?: string, additionalRelays?: string[], force?: boolean) {
   const account = useCurrentAccount();
-  const muteList = useUserMuteList(pubkey || account?.pubkey, additionalRelays, { ignoreCache: true, ...opts });
+  const muteList = useUserMuteList(pubkey || account?.pubkey, additionalRelays, force);
   const pubkeys = useMemo(() => (muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : []), [muteList]);
 
   return useCallback(

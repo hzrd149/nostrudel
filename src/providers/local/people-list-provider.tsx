@@ -44,7 +44,7 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
   const account = useCurrentAccount();
 
   const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId, [], { alwaysRequest: true });
+  const listEvent = useReplaceableEvent(listId, [], true);
 
   const people = listEvent && getPubkeysFromList(listEvent);
 

@@ -4,14 +4,18 @@ import { TimelineQuery } from "applesauce-core/queries";
 
 import { SET_KINDS, isJunkList } from "../helpers/nostr/lists";
 import { useReadRelays } from "./use-client-relays";
-import userSetsService from "../services/user-sets";
+import userSetsLoader from "../services/user-sets-loader";
 
-export default function useUserSets(pubkey?: string, additionalRelays?: Iterable<string>, alwaysRequest?: boolean) {
+export default function useUserSets(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
   const readRelays = useReadRelays(additionalRelays);
 
   useEffect(() => {
-    if (pubkey) userSetsService.requestSets(pubkey, readRelays, alwaysRequest);
-  }, [pubkey, readRelays.urls.join("|"), alwaysRequest]);
+    if (pubkey) {
+      for (const kind of SET_KINDS) {
+        userSetsLoader.next({ kind, pubkey, relays: [...readRelays], force });
+      }
+    }
+  }, [pubkey, readRelays.urls.join("|"), force]);
 
   return (
     useStoreQuery(

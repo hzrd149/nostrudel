@@ -4,13 +4,13 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { ReplaceableSetQuery } from "applesauce-core/queries";
 
 import { useReadRelays } from "./use-client-relays";
-import replaceableEventsService, { RequestOptions } from "../services/replaceable-events";
+import replaceableEventLoader from "../services/replaceable-event-loader";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
 
 export default function useReplaceableEvents(
   coordinates: string[] | CustomAddressPointer[] | undefined,
   additionalRelays?: Iterable<string>,
-  opts: RequestOptions = {},
+  force?: boolean,
 ): NostrEvent[] {
   const readRelays = useReadRelays(additionalRelays);
 
@@ -29,16 +29,17 @@ export default function useReplaceableEvents(
   // load events
   useEffect(() => {
     if (!pointers) return;
+
     for (const pointer of pointers) {
-      replaceableEventsService.requestEvent(
-        pointer.relays ? [...readRelays, ...pointer.relays] : readRelays,
-        pointer.kind,
-        pointer.pubkey,
-        pointer.identifier,
-        opts,
-      );
+      replaceableEventLoader.next({
+        relays: [...readRelays, ...(pointer.relays ?? [])],
+        kind: pointer.kind,
+        pubkey: pointer.pubkey,
+        identifier: pointer.identifier,
+        force,
+      });
     }
-  }, [pointers, readRelays.urls.join("|")]);
+  }, [pointers, readRelays.urls.join("|"), force]);
 
   const events = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
   return events ? Object.values(events) : [];

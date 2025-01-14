@@ -1,16 +1,11 @@
 import { useMemo } from "react";
-import { RequestOptions } from "../services/replaceable-events";
 import RelaySet from "../classes/relay-set";
 import useUserContactList from "./use-user-contact-list";
 import { RelayMode } from "../classes/relay";
 import { relaysFromContactsEvent } from "../helpers/nostr/contacts";
 
-export default function useUserContactRelays(
-  pubkey?: string,
-  additionalRelays?: Iterable<string>,
-  opts: RequestOptions = {},
-) {
-  const contacts = useUserContactList(pubkey, additionalRelays, opts);
+export default function useUserContactRelays(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
+  const contacts = useUserContactList(pubkey, additionalRelays, force);
 
   return useMemo(() => {
     if (!contacts) return undefined;

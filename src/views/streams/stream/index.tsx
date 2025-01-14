@@ -95,7 +95,7 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
   const image = getStreamImage(stream);
   const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
   const recording = getStreamRecording(stream);
-  const videoRecording = recording && isVideoURL(recording) ? recording : undefined;
+  const videoRecording = recording && (isVideoURL(recording) || isStreamURL(recording)) ? recording : undefined;
 
   useAppTitle(title);
 
@@ -170,7 +170,7 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
   const image = getStreamImage(stream);
   const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
   const recording = getStreamRecording(stream);
-  const videoRecording = recording && isVideoURL(recording) ? recording : undefined;
+  const videoRecording = recording && (isVideoURL(recording) || isStreamURL(recording)) ? recording : undefined;
 
   useAppTitle(title);
 
