@@ -6,12 +6,12 @@ import signingService from "./signing";
 import accountService from "./account";
 import { logger } from "../helpers/debug";
 
-type EncryptionType = "nip04" | "nip44";
+type EncryptionType = "nip04" | "nip44" | "nip17";
 
 class DecryptionContainer {
   /** event id */
   id: string;
-  type: "nip04" | "nip44";
+  type: EncryptionType;
   pubkey: string;
   cipherText: string;
 
@@ -51,6 +51,8 @@ class DecryptionCache {
         return await signingService.nip04Decrypt(container.cipherText, container.pubkey, account);
       case "nip44":
         return await signingService.nip44Decrypt(container.cipherText, container.pubkey, account);
+      case "nip17":
+        return await signingService.nip17Decrypt(container.cipherText, container.pubkey, account);
     }
   }
 
