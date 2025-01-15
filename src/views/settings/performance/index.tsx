@@ -9,14 +9,13 @@ import {
   FormErrorMessage,
   Select,
   Button,
-  Heading,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/local-settings";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function VerifyEventSettings() {
   const verifyEventMethod = useObservable(localSettings.verifyEventMethod);
@@ -49,94 +48,100 @@ export default function PerformanceSettings() {
   const enableKeyboardShortcuts = useObservable(localSettings.enableKeyboardShortcuts);
 
   return (
-    <VerticalPageLayout as="form" onSubmit={submit} flex={1}>
-      <Heading size="md">Performance Settings</Heading>
-      <Flex direction="column" gap="4">
-        <FormControl>
-          <Flex alignItems="center">
-            <FormLabel htmlFor="proxy-user-media" mb="0">
-              Proxy user media
-            </FormLabel>
-            <Switch id="proxy-user-media" {...register("proxyUserMedia")} />
-          </Flex>
-          <FormHelperText>
-            <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
-            <br />
-            <span>Side Effect: Some user pictures may not load or may be outdated</span>
-          </FormHelperText>
-        </FormControl>
-        <FormControl>
-          <FormLabel htmlFor="imageProxy" mb="0">
-            Image proxy service
-          </FormLabel>
-          <Input
-            id="imageProxy"
-            maxW="sm"
-            type="url"
-            {...register("imageProxy", {
-              setValueAs: (v) => safeUrl(v) || v,
-            })}
-          />
-          {formState.errors.imageProxy && <FormErrorMessage>{formState.errors.imageProxy.message}</FormErrorMessage>}
-          <FormHelperText>
-            <span>
-              A URL to an instance of{" "}
-              <Link href="https://github.com/willnorris/imageproxy" isExternal target="_blank">
-                willnorris/imageproxy
-              </Link>
-            </span>
-          </FormHelperText>
-        </FormControl>
-        <FormControl>
-          <Flex alignItems="center">
-            <FormLabel htmlFor="autoShowMedia" mb="0">
-              Show embeds
-            </FormLabel>
-            <Switch id="autoShowMedia" {...register("autoShowMedia")} />
-          </Flex>
-          <FormHelperText>Disabled: Embeds will show an expandable button</FormHelperText>
-        </FormControl>
-        <FormControl>
-          <Flex alignItems="center">
-            <FormLabel htmlFor="showReactions" mb="0">
-              Show reactions
-            </FormLabel>
-            <Switch id="showReactions" {...register("showReactions")} />
-          </Flex>
-          <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
-        </FormControl>
-        <FormControl>
-          <Flex alignItems="center">
-            <FormLabel htmlFor="enableKeyboardShortcuts" mb="0">
-              Enable keyboard shortcuts
-            </FormLabel>
-            <Switch
-              id="enableKeyboardShortcuts"
-              isChecked={enableKeyboardShortcuts}
-              onChange={(e) => localSettings.enableKeyboardShortcuts.next(e.currentTarget.checked)}
-            />
-          </Flex>
-        </FormControl>
-        <FormControl>
-          <Flex alignItems="center">
-            <FormLabel htmlFor="autoDecryptDMs" mb="0">
-              Automatically decrypt DMs
-            </FormLabel>
-            <Switch id="autoDecryptDMs" {...register("autoDecryptDMs")} />
-          </Flex>
-          <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
-        </FormControl>
-        <VerifyEventSettings />
+    <SimpleView
+      as="form"
+      onSubmit={submit}
+      gap="4"
+      title="Performance"
+      actions={
         <Button
           ml="auto"
           isLoading={formState.isLoading || formState.isValidating || formState.isSubmitting}
           isDisabled={!formState.isDirty}
           colorScheme="primary"
           type="submit"
+          flexShrink={0}
+          size="sm"
         >
-          Save Settings
+          Save
         </Button>
-      </Flex>
-    </VerticalPageLayout>
+      }
+    >
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="proxy-user-media" mb="0">
+            Proxy user media
+          </FormLabel>
+          <Switch id="proxy-user-media" {...register("proxyUserMedia")} />
+        </Flex>
+        <FormHelperText>
+          <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
+          <br />
+          <span>Side Effect: Some user pictures may not load or may be outdated</span>
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="imageProxy" mb="0">
+          Image proxy service
+        </FormLabel>
+        <Input
+          id="imageProxy"
+          maxW="sm"
+          type="url"
+          {...register("imageProxy", {
+            setValueAs: (v) => safeUrl(v) || v,
+          })}
+        />
+        {formState.errors.imageProxy && <FormErrorMessage>{formState.errors.imageProxy.message}</FormErrorMessage>}
+        <FormHelperText>
+          <span>
+            A URL to an instance of{" "}
+            <Link href="https://github.com/willnorris/imageproxy" isExternal target="_blank">
+              willnorris/imageproxy
+            </Link>
+          </span>
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="autoShowMedia" mb="0">
+            Show embeds
+          </FormLabel>
+          <Switch id="autoShowMedia" {...register("autoShowMedia")} />
+        </Flex>
+        <FormHelperText>Disabled: Embeds will show an expandable button</FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="showReactions" mb="0">
+            Show reactions
+          </FormLabel>
+          <Switch id="showReactions" {...register("showReactions")} />
+        </Flex>
+        <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="enableKeyboardShortcuts" mb="0">
+            Enable keyboard shortcuts
+          </FormLabel>
+          <Switch
+            id="enableKeyboardShortcuts"
+            isChecked={enableKeyboardShortcuts}
+            onChange={(e) => localSettings.enableKeyboardShortcuts.next(e.currentTarget.checked)}
+          />
+        </Flex>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="autoDecryptDMs" mb="0">
+            Automatically decrypt DMs
+          </FormLabel>
+          <Switch id="autoDecryptDMs" {...register("autoDecryptDMs")} />
+        </Flex>
+        <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
+      </FormControl>
+      <VerifyEventSettings />
+    </SimpleView>
   );
 }

@@ -8,6 +8,7 @@ import {
   NumberLocalStorageEntry,
 } from "../classes/local-settings/types";
 import { LocalStorageEntry } from "../classes/local-settings/entry";
+import { nanoid } from "nanoid";
 
 // local relay
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
@@ -59,6 +60,15 @@ const debugApi = new BooleanLocalStorageEntry("debug-api", false);
 // display settings
 const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
 
+// notifications
+const deviceId = new LocalStorageEntry("device-id", nanoid());
+
+const ntfyTopic = new LocalStorageEntry("ntfy-topic", nanoid());
+const ntfyServer = new LocalStorageEntry("ntfy-server", "https://ntfy.sh");
+
+// bakery
+const bakeryURL = new LocalStorageEntry<string>("bakery-url", "");
+
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
@@ -74,6 +84,10 @@ const localSettings = {
   defaultAuthenticationMode,
   proactivelyAuthenticate,
   debugApi,
+  deviceId,
+  ntfyTopic,
+  ntfyServer,
+  bakeryURL,
 };
 
 if (import.meta.env.DEV) {

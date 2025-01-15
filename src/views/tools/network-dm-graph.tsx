@@ -18,7 +18,7 @@ import {
 } from "three";
 
 import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserProfile from "../../hooks/use-user-profile";

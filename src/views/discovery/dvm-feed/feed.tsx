@@ -38,7 +38,7 @@ import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../../components/router/require-current-account";
 import { CodeIcon } from "../../../components/icons";
 import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";

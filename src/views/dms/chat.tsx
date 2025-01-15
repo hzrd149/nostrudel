@@ -6,7 +6,7 @@ import { NostrEvent, kinds } from "nostr-tools";
 import { ThreadIcon } from "../../components/icons";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";

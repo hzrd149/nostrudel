@@ -8,7 +8,6 @@ import WasmRelayCard from "./components/wasm-relay-card";
 import InternalRelayCard from "./components/internal-relay-card";
 import CitrineRelayCard from "./components/citrine-relay-card";
 import NostrRelayTrayCard from "./components/nostr-relay-tray-card";
-import SatelliteRelayCard from "./components/satellite-relay-card";
 import HostedRelayCard from "./components/hosted-relay-card";
 import MemoryRelayCard from "./components/memory-relay-card";
 import NoRelayCard from "./components/no-relay-card";
@@ -28,7 +27,6 @@ export default function CacheRelayView() {
       <InternalRelayCard />
       {WasmRelay.SUPPORTED && <WasmRelayCard />}
       {navigator.userAgent.includes("Android") ? <CitrineRelayCard /> : <NostrRelayTrayCard />}
-      {window.satellite && <SatelliteRelayCard />}
       {window.CACHE_RELAY_ENABLED && <HostedRelayCard />}
       <Button w="full" variant="link" p="4" onClick={showAdvanced.onToggle}>
         <Divider />

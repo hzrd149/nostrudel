@@ -2,8 +2,8 @@ import { Button, Container, Flex, IconButton } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
-import AccountSwitcher from "../../components/layout/account-switcher";
+import RequireCurrentAccount from "../../components/router/require-current-account";
+import AccountSwitcher from "../../components/legacy-layout/account-switcher";
 import { SettingsIcon } from "../../components/icons";
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";

@@ -4,7 +4,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../../components/router/require-current-account";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";

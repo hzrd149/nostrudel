@@ -5,7 +5,7 @@ import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user/user-avatar";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import Timestamp from "../../components/timestamp";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

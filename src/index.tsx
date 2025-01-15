@@ -2,13 +2,14 @@ import "./polyfill";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { GlobalProviders } from "./providers/global";
+import { registerServiceWorker } from "./services/worker";
 
 import funding from "virtual:funding";
 console.log("Funding", funding);
 
 import "./services/user-event-sync";
 import "./services/username-search";
-import "./services/page-api";
+import "./services/debug-api";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";
@@ -31,6 +32,7 @@ import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTimePlugin);
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { CAP_IS_WEB } from "./env";
 dayjs.extend(localizedFormat);
 
 // register nostr: protocol handler
@@ -42,6 +44,8 @@ if (import.meta.env.PROD) {
     console.log(e);
   }
 }
+
+if (CAP_IS_WEB) registerServiceWorker();
 
 const element = document.getElementById("root");
 if (!element) throw new Error("missing mount point");

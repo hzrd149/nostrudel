@@ -15,6 +15,8 @@ import Eye from "../../components/icons/eye";
 import ExtensionAccount from "../../classes/accounts/extension-account";
 import SerialPortAccount from "../../classes/accounts/serial-port-account";
 import AmberAccount from "../../classes/accounts/amber-account";
+import { AndroidNativeSigners } from "./native";
+import { CAP_IS_ANDROID } from "../../env";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -111,6 +113,7 @@ export default function LoginStartView() {
           />
         </ButtonGroup>
       )}
+      {CAP_IS_ANDROID && <AndroidNativeSigners />}
       <Flex w="full" alignItems="center" gap="4">
         <Divider />
         <Text fontWeight="bold">OR</Text>

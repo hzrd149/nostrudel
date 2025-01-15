@@ -60,8 +60,6 @@ async function createRelay() {
     } else if (safeRelayUrl(localRelayURL)) {
       return new AbstractRelay(safeRelayUrl(localRelayURL)!, { verifyEvent: fakeVerifyEvent });
     }
-  } else if (window.satellite) {
-    return new AbstractRelay(await window.satellite.getLocalRelay(), { verifyEvent: fakeVerifyEvent });
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
     return new AbstractRelay(new URL(protocol + location.host + "/local-relay").toString(), {

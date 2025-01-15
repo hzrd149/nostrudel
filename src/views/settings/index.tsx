@@ -17,6 +17,7 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
+import SimpleHeader from "../../components/layout/presets/simple-header";
 
 export default function SettingsView() {
   const account = useCurrentAccount();
@@ -28,7 +29,7 @@ export default function SettingsView() {
     return (
       <Flex overflow="hidden" flex={1} direction={{ base: "column", lg: "row" }}>
         <Flex overflowY="auto" overflowX="hidden" h="full" minW="xs" direction="column">
-          <Heading title="Settings" />
+          <SimpleHeader title="Settings" />
           <Flex direction="column" p="2" gap="2">
             {account && (
               <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>

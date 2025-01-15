@@ -1,8 +1,9 @@
 import { extendTheme, Theme, DeepPartial } from "@chakra-ui/react";
-import { containerTheme } from "./container";
 import chroma from "chroma-js";
 
 import defaultTheme from "./default";
+import { drawerTheme } from "./drawer";
+import { containerTheme } from "./container";
 
 function pallet(colors: string[]) {
   return [50, 100, 200, 300, 400, 500, 600, 700, 800, 900].reduce(
@@ -24,11 +25,16 @@ export default function buildTheme(
   maxBreakpoint?: (typeof breakpoints)[number],
 ) {
   const theme = extendTheme(getTheme(themeName), {
+    config: {
+      initialColorMode: "system",
+      useSystemColorMode: true,
+    },
     colors: {
       primary: pallet(chroma.scale([chroma(primaryColor).brighten(1), chroma(primaryColor).darken(1)]).colors(10)),
     },
     components: {
       Container: containerTheme,
+      Drawer: drawerTheme,
     },
     semanticTokens: {
       colors: {

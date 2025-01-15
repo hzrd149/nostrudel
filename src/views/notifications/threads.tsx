@@ -5,7 +5,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";

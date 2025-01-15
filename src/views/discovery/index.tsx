@@ -9,7 +9,7 @@ import DVMCard from "./dvm-feed/components/dvm-card";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import Telescope from "../../components/icons/telescope";
