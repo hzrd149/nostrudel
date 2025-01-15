@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import bakery from "../services/bakery";
+import { useObservable } from "applesauce-react/hooks";
+
+import { bakery$ } from "../services/bakery";
 
 const steps = [2, 2, 3, 3, 5, 5, 10, 20, 30, 60];
 
-/** @deprecated */
 export default function useReconnectAction() {
+  const bakery = useObservable(bakery$);
   const [tries, setTries] = useState(0);
   const [count, setCount] = useState(steps[0]);
   const [error, setError] = useState<Error>();

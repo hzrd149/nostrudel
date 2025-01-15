@@ -5,9 +5,10 @@ import { useObservable } from "applesauce-react/hooks";
 import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 import HyperInboundStatus from "./hyper-inbound";
 import HyperOutboundStatus from "./hyper-outbound";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 
 export default function HyperNetworkStatus() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const status = useNetworkOverviewReport();
 

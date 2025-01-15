@@ -2,13 +2,15 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
 
+import GlobalStyles from "./styles";
+
 import { ErrorBoundary } from "./components/error-boundary";
 import AppLayout from "./components/layout";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import { RouteProviders } from "./providers/route";
 import RequireCurrentAccount from "./components/router/require-current-account";
-import GlobalStyles from "./styles";
+import RequireBakery from "./components/router/require-bakery";
 
 import HomeView from "./views/home/index";
 const DiscoveryHomeView = lazy(() => import("./views/discovery/index"));
@@ -99,7 +101,6 @@ import UserMediaPostsTab from "./views/user/media-posts";
 import NewView from "./views/new";
 import NewNoteView from "./views/new/note";
 import NewMediaPostView from "./views/new/media";
-import ConnectionStatus from "./components/bakery/connection-status";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -146,11 +147,7 @@ const PodcastsHomeView = lazy(() => import("./views/podcasts"));
 const PodcastView = lazy(() => import("./views/podcasts/podcast"));
 const EpisodeView = lazy(() => import("./views/podcasts/podcast/episode"));
 
-// bakery views
-const ConnectView = lazy(() => import("./views/bakery/connect"));
-const RequireBakery = lazy(() => import("./components/router/require-bakery"));
-const BakerySetupView = lazy(() => import("./views/bakery/setup"));
-const BakeryAuthView = lazy(() => import("./views/bakery/connect/auth"));
+const BakerySetupView = lazy(() => import("./views/settings/bakery/setup"));
 const RequireBakeryAuth = lazy(() => import("./components/router/require-bakery-auth"));
 
 // setting views
@@ -162,6 +159,8 @@ import PrivacySettings from "./views/settings/privacy";
 import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
 import MediaServersView from "./views/settings/media-servers";
+const BakeryConnectView = lazy(() => import("./views/settings/bakery/connect"));
+const BakeryAuthView = lazy(() => import("./views/settings/bakery/connect/auth"));
 const NotificationSettingsView = lazy(() => import("./views/settings/bakery/notifications"));
 const BakeryGeneralSettingsView = lazy(() => import("./views/settings/bakery/general-settings"));
 const BakeryNetworkSettingsView = lazy(() => import("./views/settings/bakery/network"));
@@ -298,10 +297,21 @@ const router = createBrowserRouter([
           { path: "privacy", element: <PrivacySettings /> },
           { path: "lightning", element: <LightningSettings /> },
           { path: "performance", element: <PerformanceSettings /> },
+
+          { path: "bakery/connect", element: <BakeryConnectView /> },
           {
             path: "bakery",
+            element: (
+              <RequireBakery>
+                <Outlet />
+              </RequireBakery>
+            ),
             children: [
               { path: "", element: <BakeryGeneralSettingsView /> },
+              {
+                path: "auth",
+                element: <BakeryAuthView />,
+              },
               { path: "notifications", element: <NotificationSettingsView /> },
               {
                 path: "network",
@@ -559,52 +569,6 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <HomeView />,
-      },
-    ],
-  },
-  {
-    path: "/bakery",
-    children: [
-      {
-        path: "connect",
-        children: [
-          { path: "", element: <ConnectView /> },
-          {
-            path: "auth",
-            element: (
-              <RequireBakery>
-                <ConnectionStatus />
-                <BakeryAuthView />
-              </RequireBakery>
-            ),
-          },
-        ],
-      },
-      {
-        path: "setup",
-        element: <BakerySetupView />,
-      },
-      {
-        path: "",
-        element: (
-          <RequireBakery>
-            <RequireCurrentAccount>
-              <RequireBakeryAuth>
-                <AppLayout />
-              </RequireBakeryAuth>
-            </RequireCurrentAccount>
-          </RequireBakery>
-        ),
-        children: [
-          {
-            path: "search",
-            element: <SearchView />,
-          },
-          {
-            path: "",
-            element: <HomeView />,
-          },
-        ],
       },
     ],
   },

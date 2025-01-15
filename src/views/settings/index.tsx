@@ -19,12 +19,13 @@ import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
 import SimpleHeader from "../../components/layout/presets/simple-header";
-import bakery from "../../services/bakery";
 import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import Bell01 from "../../components/icons/bell-01";
 import Share07 from "../../components/icons/share-07";
 import Database01 from "../../components/icons/database-01";
 import Mail02 from "../../components/icons/mail-02";
+import { useObservable } from "applesauce-react/hooks";
+import { bakery$ } from "../../services/bakery";
 
 function DividerHeader({ title }: { title: string }) {
   return (
@@ -43,6 +44,8 @@ export default function SettingsView() {
   const match = useMatch("/settings");
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
+
+  const bakery = useObservable(bakery$)
 
   if (showMenu)
     return (
@@ -87,10 +90,10 @@ export default function SettingsView() {
               Database Tools
             </SimpleNavItem>
 
-            {bakery && (
+            {bakery ? (
               <>
-                <DividerHeader title="Relay" />
-                <SimpleNavItem to="/settings/bakery">Bakery</SimpleNavItem>
+                <DividerHeader title="bakery" />
+                <SimpleNavItem to="/settings/bakery">General</SimpleNavItem>
                 <SimpleNavItem to="/settings/bakery/notifications" leftIcon={<Bell01 boxSize={5} />}>
                   Notifications
                 </SimpleNavItem>
@@ -100,6 +103,11 @@ export default function SettingsView() {
                 <SimpleNavItem to="/settings/bakery/logs" leftIcon={<Database01 />}>
                   Service Logs
                 </SimpleNavItem>
+              </>
+            ) : (
+              <>
+                <DividerHeader title="bakery" />
+                <SimpleNavItem to="/settings/bakery/connect">Connect</SimpleNavItem>
               </>
             )}
 

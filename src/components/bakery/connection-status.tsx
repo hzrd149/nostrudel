@@ -1,10 +1,10 @@
 import { Alert, AlertDescription, AlertTitle, Button, Flex, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useObservable } from "applesauce-react/hooks";
 
 import WifiOff from "../icons/wifi-off";
-import bakery from "../../services/bakery";
 import useReconnectAction from "../../hooks/use-reconnect-action";
-import { useObservable } from "applesauce-react/hooks";
+import { bakery$ } from "../../services/bakery";
 
 function ReconnectPrompt() {
   const location = useLocation();
@@ -32,6 +32,7 @@ function ReconnectPrompt() {
 }
 
 export default function ConnectionStatus() {
+  const bakery = useObservable(bakery$);
   const connected = useObservable(bakery?.connectedSub);
 
   if (!bakery || connected) return null;

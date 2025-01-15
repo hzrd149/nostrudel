@@ -3,11 +3,12 @@ import { Button, Flex, Heading, Spinner } from "@chakra-ui/react";
 import { To, useLocation, Link as RouterLink, useNavigate } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
-import bakery from "../../services/bakery";
 import { useSigningContext } from "../../providers/global/signing-provider";
+import { bakery$ } from "../../services/bakery";
 
 export default function RequireBakeryAuth({ children }: PropsWithChildren) {
   const location = useLocation();
+  const bakery = useObservable(bakery$);
   const isFirstAuthentication = useObservable(bakery?.isFirstAuthentication);
   const connected = useObservable(bakery?.connectedSub);
   const authenticated = useObservable(bakery?.authenticated);

@@ -2,10 +2,11 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 
 export default function I2POutboundStatus() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const status = useNetworkOverviewReport();
 

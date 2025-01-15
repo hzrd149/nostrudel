@@ -8,7 +8,7 @@ import {
   enableNotifications,
   pushSubscription,
 } from "../../../../services/web-push-notifications";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 
 function WebPushNotificationStatus() {
   const toast = useToast();
@@ -74,9 +74,10 @@ function WebPushNotificationStatus() {
 }
 
 export default function WebPushNotificationSettings() {
+  const controlApi = useObservable(controlApi$);
   useEffect(() => {
     controlApi?.send(["CONTROL", "NOTIFICATIONS", "GET-VAPID-KEY"]);
-  }, []);
+  }, [controlApi]);
 
   return (
     <>

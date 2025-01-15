@@ -6,11 +6,12 @@ import { useObservable } from "applesauce-react/hooks";
 import NtfyNotificationSettings from "./ntfy";
 import OtherSubscriptions from "./other";
 import WebPushNotificationSettings from "./web-push";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 import SimpleView from "../../../../components/layout/presets/simple-view";
 import { CAP_IS_NATIVE, CAP_IS_WEB } from "../../../../env";
 
 function EmailForm() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const { register, handleSubmit, reset } = useForm({
     defaultValues: { email: config?.notificationEmail ?? "" },

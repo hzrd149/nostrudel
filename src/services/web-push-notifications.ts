@@ -1,7 +1,7 @@
 import { type WebPushChannel } from "@satellite-earth/core/types/control-api/notifications.js";
 import { nanoid } from "nanoid";
 
-import { controlApi } from "./bakery";
+import { getControlApi } from "./bakery";
 import { BehaviorSubject } from "rxjs";
 import { serviceWorkerRegistration } from "./worker";
 import localSettings from "./local-settings";
@@ -14,6 +14,8 @@ serviceWorkerRegistration.subscribe(async (registration) => {
 });
 
 export async function enableNotifications() {
+  const controlApi = getControlApi();
+
   if (!controlApi) throw new Error("Missing control api");
   const subscription = await serviceWorkerRegistration.value?.pushManager.subscribe({
     userVisibleOnly: true,
@@ -42,6 +44,8 @@ export async function enableNotifications() {
 }
 
 export async function disableNotifications() {
+  const controlApi = getControlApi();
+
   if (pushSubscription.value) {
     const key = pushSubscription.value.toJSON().keys?.p256dh;
     if (key) controlApi?.send(["CONTROL", "NOTIFICATIONS", "UNREGISTER", key]);

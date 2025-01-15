@@ -1,3 +1,5 @@
+import { BehaviorSubject, filter, mergeMap } from "rxjs";
+
 import { logger } from "../helpers/debug";
 import BakeryConnection from "../classes/bakery/bakery-connection";
 import BakeryControlApi from "../classes/bakery/control-api";
@@ -10,61 +12,67 @@ const log = logger.extend("bakery");
 
 export function setBakeryURL(url: string) {
   localSettings.bakeryURL.next(url);
-  location.reload();
 }
 export function clearBakeryURL() {
   localSettings.bakeryURL.clear();
-  location.reload();
 }
 
-let bakery: BakeryConnection | null = null;
+export const bakery$ = new BehaviorSubject<BakeryConnection | null>(null);
 
-if (localSettings.bakeryURL.value) {
+localSettings.bakeryURL.subscribe((url) => {
+  if (!URL.canParse(url)) return bakery$.next(null);
+
   try {
-    log("Using URL from localStorage");
-    bakery = new BakeryConnection(localSettings.bakeryURL.value);
+    const bakery = new BakeryConnection(localSettings.bakeryURL.value);
+
+    // add the bakery to the relay pool and connect
+    relayPoolService.relays.set(bakery.url, bakery);
+    relayPoolService.requestConnect(bakery);
+
+    bakery$.next(bakery);
   } catch (err) {
     log("Failed to create bakery connection, clearing storage");
     localSettings.bakeryURL.clear();
   }
-} else {
-  log("Unable to find private node URL");
-}
+});
 
-if (bakery) {
-  // add the bakery to the relay pool and connect
-  relayPoolService.relays.set(bakery.url, bakery);
-  relayPoolService.requestConnect(bakery);
+// automatically authenticate with bakery
+bakery$
+  .pipe(
+    filter((r) => r !== null),
+    mergeMap((r) => r.onChallenge),
+  )
+  .subscribe(async () => {
+    if (!bakery$.value) return;
 
-  // automatically authenticate with bakery
-  bakery.onChallenge.subscribe(async () => {
+    const account = accountService.current.value;
+    if (!account) return;
+
     try {
-      const savedAuth = localStorage.getItem("personal-node-auth");
-      if (savedAuth) {
-        if (savedAuth === "nostr") {
-          const account = accountService.current.value;
-          if (!account) return;
-
-          await bakery.authenticate((draft) => signingService.requestSignature(draft, account));
-        } else {
-          await bakery.authenticate(savedAuth);
-        }
-      }
+      await bakery$.value.authenticate((draft) => signingService.requestSignature(draft, account));
     } catch (err) {
       console.log("Failed to authenticate with bakery", err);
-      localStorage.removeItem("personal-node-auth");
     }
   });
-}
 
-const controlApi = bakery ? new BakeryControlApi(bakery) : undefined;
+export const controlApi$ = new BehaviorSubject<BakeryControlApi | null>(null);
+
+// create a control api for the bakery
+bakery$.subscribe((relay) => {
+  if (!relay) return controlApi$.next(null);
+  else controlApi$.next(new BakeryControlApi(relay));
+});
 
 if (import.meta.env.DEV) {
   // @ts-expect-error
-  window.bakery = bakery;
+  window.bakery = bakery$;
   // @ts-expect-error
-  window.controlApi = controlApi;
+  window.controlApi = controlApi$;
 }
 
-export { controlApi };
-export default bakery;
+export function getControlApi() {
+  return controlApi$.value;
+}
+export function getBakery() {
+  return bakery$.value;
+}

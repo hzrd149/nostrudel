@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import personalNode, { controlApi, clearBakeryURL } from "../../../../services/bakery";
+import { controlApi$, clearBakeryURL, bakery$ } from "../../../../services/bakery";
 import SimpleView from "../../../../components/layout/presets/simple-view";
+import { Navigate } from "react-router-dom";
 
-function NodeGeneralSettingsPage() {
+function BakeryGeneralSettingsPage() {
+  const bakery = useObservable(bakery$);
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const { register, handleSubmit, formState, reset } = useForm({
     defaultValues: config || {},
@@ -30,22 +33,19 @@ function NodeGeneralSettingsPage() {
   });
 
   const disconnect = () => {
-    if (confirm("Disconnect from personal node?")) {
-      clearBakeryURL();
-    }
+    if (confirm("Disconnect from bakery?")) clearBakeryURL();
   };
 
   return (
     <SimpleView title="Node Settings">
       <FormControl>
         <FormLabel>Bakery URL</FormLabel>
-        <Flex gap="2">
-          <Input readOnly value={personalNode!.url} maxW="xs" />
-          <Button isDisabled>Change</Button>
+        <Flex maxW="lg" gap="2">
+          <Input readOnly value={bakery!.url} />
+          <Button colorScheme="red" onClick={disconnect} variant="ghost" flexShrink={0}>
+            disconnect
+          </Button>
         </Flex>
-        <Button variant="link" colorScheme="red" mt="2" onClick={disconnect}>
-          disconnect
-        </Button>
       </FormControl>
 
       <Flex as="form" onSubmit={submit} direction="column" maxW="lg" gap="4">
@@ -75,5 +75,9 @@ function NodeGeneralSettingsPage() {
 }
 
 export default function BakeryGeneralSettingsView() {
-  return <>{personalNode ? <NodeGeneralSettingsPage /> : <Heading>Missing personal node connection</Heading>}</>;
+  const bakery = useObservable(bakery$);
+
+  if (!bakery) return <Navigate to="/settings/bakery/connect" />;
+
+  return <BakeryGeneralSettingsPage />;
 }

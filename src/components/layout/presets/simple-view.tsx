@@ -20,6 +20,7 @@ export default function SimpleView({
       <Flex
         direction="column"
         overflowY="auto"
+        overflowX="hidden"
         px={flush ? 0 : "4"}
         pt={flush ? 0 : "4"}
         pb={flush ? 0 : "max(1rem, var(--safe-bottom))"}

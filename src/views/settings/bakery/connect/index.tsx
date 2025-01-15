@@ -1,30 +1,21 @@
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Code,
-  Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Code, Flex, FormControl, FormLabel, Heading, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
-import bakery, { setBakeryURL } from "../../../services/bakery";
-import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
-import TextButton from "../../../components/dashboard/text-button";
+import SimpleView from "../../../../components/layout/presets/simple-view";
+import { bakery$, setBakeryURL } from "../../../../services/bakery";
+import QRCodeScannerButton from "../../../../components/qr-code/qr-code-scanner-button";
+import TextButton from "../../../../components/dashboard/text-button";
 
 function ConnectForm() {
   const [params] = useSearchParams();
+  const bakery = useObservable(bakery$);
   const { register, handleSubmit, formState, setValue } = useForm({
     defaultValues: {
       url: params.get("relay") ?? bakery?.url ?? "",
     },
+    mode: "all",
   });
 
   const handleScanData = (data: string) => {
@@ -42,31 +33,24 @@ function ConnectForm() {
 
   return (
     <Flex as="form" onSubmit={submit} gap="2" direction="column">
-      <Heading size="lg">Bakery</Heading>
       <FormControl>
         <FormLabel>Bakery URL</FormLabel>
         <Flex gap="2">
-          <Input type="text" {...register("url", { required: true })} isRequired placeholder="ws://127.0.0.1:2012" />
+          <Input type="text" {...register("url", { required: true })} isRequired placeholder="ws://localhost:2012" />
           <QRCodeScannerButton onData={handleScanData} />
         </Flex>
-        <FormHelperText>This is the URL to your bakery</FormHelperText>
       </FormControl>
-      <Flex>
-        {params.has("config") && (
-          <Button as={RouterLink} to="/" p="2" variant="link">
-            Back
-          </Button>
-        )}
-        <Button isLoading={formState.isSubmitting} type="submit" ml="auto" colorScheme="brand">
-          Connect
-        </Button>
-      </Flex>
+
+      <Button isLoading={formState.isSubmitting} type="submit" ml="auto" colorScheme="primary">
+        Connect
+      </Button>
     </Flex>
   );
 }
 
 function ConnectConfirmation() {
   const [params] = useSearchParams();
+  const bakery = useObservable(bakery$);
   const relay = params.get("relay");
   const navigate = useNavigate();
 
@@ -95,8 +79,9 @@ function ConnectConfirmation() {
   );
 }
 
-export default function ConnectView() {
+export default function BakeryConnectView() {
   const location = useLocation();
+  const bakery = useObservable(bakery$);
   const connected = useObservable(bakery?.connectedSub);
 
   const [params] = useSearchParams();
@@ -110,10 +95,8 @@ export default function ConnectView() {
   if (isRelayParamEqual) return <Navigate replace to="/" />;
 
   return (
-    <Flex w="full" h="full" alignItems="center" justifyContent="center">
-      <Flex direction="column" gap="2" w="full" maxW="sm" m="4">
-        {relayParam ? <ConnectConfirmation /> : <ConnectForm />}
-      </Flex>
-    </Flex>
+    <SimpleView title="Connect bakery" maxW="4xl">
+      <ConnectForm />
+    </SimpleView>
   );
 }

@@ -14,16 +14,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
+import { useObservable } from "applesauce-react/hooks";
 
 import useLogsReport from "../../../../hooks/reports/use-logs-report";
 import Timestamp from "../../../../components/timestamp";
 import SimpleView from "../../../../components/layout/presets/simple-view";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 import ServicesTree from "./service-tree";
 
 const convert = new Convert();
 
 export default function BakeryServiceLogsView() {
+  const controlApi = useObservable(controlApi$);
   const [service, setService] = useState<string | undefined>(undefined);
   const { report, logs } = useLogsReport(service);
   const raw = useDisclosure();

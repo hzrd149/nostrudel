@@ -14,17 +14,18 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { IconButton } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 
 import { UserAvatar } from "../../user/user-avatar";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import UserName from "../../user/user-name";
 import UserDnsIdentity from "../../user/user-dns-identity";
-// import ColorModeButton from '../../color-mode-button';
-import bakery from "../../../services/bakery";
 import { DirectMessagesIcon, RelayIcon, SearchIcon, SettingsIcon } from "../../icons";
+import { bakery$ } from "../../../services/bakery";
 
 export default function DrawerNav({ isOpen, onClose, ...props }: Omit<ModalProps, "children">) {
   const account = useCurrentAccount();
+  const bakery = useObservable(bakery$);
 
   return (
     <Drawer placement="left" onClose={onClose} isOpen={isOpen} {...props}>

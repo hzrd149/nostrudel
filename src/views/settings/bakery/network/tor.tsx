@@ -4,10 +4,11 @@ import { useObservable } from "applesauce-react/hooks";
 
 import TorOutboundStatus from "./tor-outbound";
 import TorInboundStatus from "./tor-inbound";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 
 export default function TorNetworkStatus() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const status = useNetworkOverviewReport();
 

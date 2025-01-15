@@ -4,11 +4,12 @@ import { Navigate, To, useLocation } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
-import bakery from "../../services/bakery";
 import useReconnectAction from "../../hooks/use-reconnect-action";
+import { bakery$ } from "../../services/bakery";
 
 function InitialConnectionOverlay() {
   const location = useLocation();
+  const bakery = useObservable(bakery$);
 
   const { error } = useReconnectAction();
 
@@ -24,7 +25,7 @@ function InitialConnectionOverlay() {
         variant="link"
         mt="4"
         as={RouterLink}
-        to="/bakery/connect"
+        to="/settings/bakery/connect"
         replace
         state={{ back: (location.state?.back ?? location) satisfies To }}
       >
@@ -36,12 +37,19 @@ function InitialConnectionOverlay() {
 
 export default function RequireBakery({ children }: PropsWithChildren & { requireConnection?: boolean }) {
   const location = useLocation();
+  const bakery = useObservable(bakery$);
   const connected = useObservable(bakery?.connectedSub);
   const isFirstConnection = useObservable(bakery?.isFirstConnection);
 
   // if there is no node connection, setup a connection
   if (!bakery)
-    return <Navigate to="/bakery/connect" replace state={{ back: (location.state?.back ?? location) satisfies To }} />;
+    return (
+      <Navigate
+        to="/settings/bakery/connect"
+        replace
+        state={{ back: (location.state?.back ?? location) satisfies To }}
+      />
+    );
 
   if (bakery && isFirstConnection && connected === false) return <InitialConnectionOverlay />;
 

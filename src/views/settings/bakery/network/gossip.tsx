@@ -5,10 +5,11 @@ import { safeRelayUrl } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 
 import useAsyncErrorHandler from "../../../../hooks/use-async-error-handler";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 import { RelayFavicon } from "../../../../components/relay-favicon";
 
 function BroadcastRelay({ relay }: { relay: string }) {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const remove = useAsyncErrorHandler(async () => {
     if (!config) return;
@@ -37,6 +38,7 @@ function BroadcastRelay({ relay }: { relay: string }) {
 }
 
 function AddRelayForm() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const { register, handleSubmit, reset } = useForm({ defaultValues: { url: "" } });
 
@@ -59,6 +61,7 @@ function AddRelayForm() {
 }
 
 function IntervalSelect() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
 
   return (
@@ -81,6 +84,7 @@ function IntervalSelect() {
 }
 
 export default function GossipSettings() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
 
   return (

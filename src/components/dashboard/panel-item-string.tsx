@@ -1,9 +1,10 @@
 import { PropsWithChildren, useState } from "react";
-import { Code, Flex, FormControl, FormLabel } from "@chakra-ui/react";
+import { ButtonGroup, Code, Flex, FormControl, FormLabel, IconButton } from "@chakra-ui/react";
 
 import QrCodeSvg from "../qr-code/qr-code-svg";
 import TextButton from "./text-button";
 import { CopyIconButton } from "../copy-icon-button";
+import { QrCodeIcon } from "../icons";
 
 export default function PanelItemString({
   children,
@@ -20,16 +21,20 @@ export default function PanelItemString({
   return (
     <FormControl>
       <FormLabel>{label}</FormLabel>
-      <Code bg="none" userSelect="all" fontFamily="monospace" mr="auto" maxW="full">
-        {value}
-      </Code>
-      <Flex gap="2" w="full" alignItems="center" wrap="wrap">
-        <CopyIconButton variant="link" value={value} fontFamily="monospace" aria-label="Copy value" />
-        {qr && (
-          <TextButton variant="link" onClick={() => setShowQR((v) => !v)}>
-            [qr]
-          </TextButton>
-        )}
+      <Flex gap="2">
+        <Code bg="none" userSelect="all" fontFamily="monospace" maxW="full" whiteSpace="pre" overflow="auto" p="1">
+          {value}
+        </Code>
+        <ButtonGroup size="sm" variant="ghost">
+          <CopyIconButton value={value} fontFamily="monospace" aria-label="Copy value" />
+          {qr && (
+            <IconButton
+              onClick={() => setShowQR((v) => !v)}
+              icon={<QrCodeIcon boxSize={5} />}
+              aria-label="show qrcode"
+            />
+          )}
+        </ButtonGroup>
       </Flex>
       {showQR && <QrCodeSvg content={value} style={{ maxWidth: "3in", marginTop: "1em" }} />}
       {children}

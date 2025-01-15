@@ -5,15 +5,17 @@ import { Navigate } from "react-router-dom";
 import { isHexKey } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 
-import personalNode, { controlApi, setBakeryURL } from "../../../services/bakery";
-import useRouteSearchValue from "../../../hooks/use-route-search-value";
-import dnsIdentityService from "../../../services/dns-identity";
-import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
+import { bakery$, controlApi$, setBakeryURL } from "../../../../services/bakery";
+import useRouteSearchValue from "../../../../hooks/use-route-search-value";
+import dnsIdentityService from "../../../../services/dns-identity";
+import QRCodeScannerButton from "../../../../components/qr-code/qr-code-scanner-button";
 
 export default function BakerySetupView() {
   const toast = useToast();
   const relayParam = useRouteSearchValue("relay");
   const authParam = useRouteSearchValue("auth");
+  const bakery = useObservable(bakery$);
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
 
   const { register, setValue, formState, handleSubmit } = useForm({
@@ -23,7 +25,7 @@ export default function BakerySetupView() {
 
   const submit = handleSubmit(async (values) => {
     try {
-      if (!personalNode) throw new Error("Missing personal node connection");
+      if (!bakery) throw new Error("Missing personal node connection");
       if (!controlApi) throw new Error("Missing control api connection");
       let pubkey: string = "";
 
@@ -63,7 +65,7 @@ export default function BakerySetupView() {
       if (!pubkey) throw new Error("Unable to find nostr public key");
       if (!authParam.value) throw new Error("Missing auth code");
 
-      await personalNode.authenticate(authParam.value);
+      await bakery.authenticate(authParam.value);
 
       controlApi.send(["CONTROL", "CONFIG", "SET", "owner", pubkey]);
     } catch (error) {
@@ -76,8 +78,8 @@ export default function BakerySetupView() {
   }
 
   if (relayParam.value) {
-    if (personalNode) {
-      if (new URL(personalNode.url).toString() !== new URL(relayParam.value).toString()) {
+    if (bakery) {
+      if (new URL(bakery.url).toString() !== new URL(relayParam.value).toString()) {
         setBakeryURL(relayParam.value);
       }
     } else setBakeryURL(relayParam.value);
@@ -95,7 +97,7 @@ export default function BakerySetupView() {
           </Flex>
           <FormHelperText>Enter the NIP-05, npub, or hex pubkey of the owner of this node</FormHelperText>
         </FormControl>
-        <Button type="submit" colorScheme="brand" isLoading={formState.isSubmitting} ml="auto">
+        <Button type="submit" colorScheme="primary" isLoading={formState.isSubmitting} ml="auto">
           Setup
         </Button>
       </Flex>

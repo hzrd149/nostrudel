@@ -3,9 +3,10 @@ import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-u
 import { useObservable } from "applesauce-react/hooks";
 
 import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
-import { controlApi } from "../../../../services/bakery";
+import { controlApi$ } from "../../../../services/bakery";
 
 export default function HyperOutboundStatus() {
+  const controlApi = useObservable(controlApi$);
   const config = useObservable(controlApi?.config);
   const status = useNetworkOverviewReport();
 

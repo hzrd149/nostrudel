@@ -2,11 +2,12 @@ import { ReportArguments, ControlResponse } from "@satellite-earth/core/types";
 import _throttle from "lodash.throttle";
 
 import BakeryControlApi from "../classes/bakery/control-api";
-import { controlApi } from "./bakery";
+import { controlApi$ } from "./bakery";
 import Report from "../classes/bakery/reports/report";
 import SuperMap from "../classes/super-map";
 import { logger } from "../helpers/debug";
 import { ReportClasses, ReportTypes } from "../classes/bakery/reports";
+import { BehaviorSubject } from "rxjs";
 
 class ReportManager {
   log = logger.extend("ReportManager");
@@ -86,11 +87,16 @@ class ReportManager {
   }
 }
 
-const reportManagerService = controlApi ? new ReportManager(controlApi) : undefined;
+const reportManager$ = new BehaviorSubject<ReportManager | null>(null);
+
+controlApi$.subscribe((api) => {
+  if (api) reportManager$.next(new ReportManager(api));
+  else reportManager$.next(null);
+});
 
 if (import.meta.env.DEV) {
   // @ts-expect-error
-  window.reportManagerService = reportManagerService;
+  window.reportManager$ = reportManager$;
 }
 
-export default reportManagerService;
+export default reportManager$;

@@ -14,15 +14,15 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-
-import bakery, { setBakeryURL } from "../../../services/bakery";
-import Panel from "../../../components/dashboard/panel";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import accountService from "../../../services/account";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import { useObservable } from "applesauce-react/hooks";
 
-export function PersonalNodeAuthPage() {
+import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useSigningContext } from "../../../../providers/global/signing-provider";
+import { bakery$, setBakeryURL } from "../../../../services/bakery";
+import accountService from "../../../../services/account";
+import Panel from "../../../../components/dashboard/panel";
+
+export function BakeryAuthPage() {
   const toast = useToast();
   const navigate = useNavigate();
   const account = useCurrentAccount();
@@ -30,6 +30,7 @@ export function PersonalNodeAuthPage() {
   const [search] = useSearchParams();
   const remember = useDisclosure({ defaultIsOpen: true });
   const location = useLocation();
+  const bakery = useObservable(bakery$);
 
   const { register, handleSubmit, formState } = useForm({
     defaultValues: { auth: search.get("auth") ?? "" },
@@ -87,7 +88,7 @@ export function PersonalNodeAuthPage() {
               <Checkbox isChecked={remember.isOpen} onChange={remember.onToggle}>
                 Remember Me
               </Checkbox>
-              <Button type="submit" size="sm" colorScheme="brand">
+              <Button type="submit" size="sm" colorScheme="primary">
                 Login
               </Button>
             </Flex>
@@ -125,11 +126,12 @@ export function PersonalNodeAuthPage() {
 
 export default function BakeryAuthView() {
   const location = useLocation();
+  const bakery = useObservable(bakery$);
   const authenticated = useObservable(bakery?.authenticated);
 
   if (authenticated) {
     return <Navigate to={location.state?.back ?? "/"} replace />;
   }
 
-  return <PersonalNodeAuthPage />;
+  return <BakeryAuthPage />;
 }
