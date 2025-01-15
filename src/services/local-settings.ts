@@ -63,6 +63,9 @@ const deviceId = new LocalStorageEntry("device-id", nanoid());
 const ntfyTopic = new LocalStorageEntry("ntfy-topic", nanoid());
 const ntfyServer = new LocalStorageEntry("ntfy-server", "https://ntfy.sh");
 
+// cache relay
+const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
+
 // bakery
 const bakeryURL = new LocalStorageEntry<string>("bakery-url", "");
 
@@ -84,6 +87,7 @@ const localSettings = {
   ntfyTopic,
   ntfyServer,
   bakeryURL,
+  cacheRelayURL,
 };
 
 if (import.meta.env.DEV) {

@@ -1,7 +1,5 @@
 import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 
-import BackButton from "../../../components/router/back-button";
-import { localRelay } from "../../../services/local-relay";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import WasmRelay from "../../../services/wasm-relay";
 import WasmRelayCard from "./components/wasm-relay-card";
@@ -12,9 +10,11 @@ import HostedRelayCard from "./components/hosted-relay-card";
 import MemoryRelayCard from "./components/memory-relay-card";
 import NoRelayCard from "./components/no-relay-card";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import useCacheRelay from "../../../hooks/use-cache-relay";
 
 export default function CacheRelayView() {
-  const showAdvanced = useDisclosure({ defaultIsOpen: localRelay?.url === ":none:" || localRelay?.url === ":memory:" });
+  const cacheRelay = useCacheRelay();
+  const showAdvanced = useDisclosure({ defaultIsOpen: cacheRelay?.url === ":none:" || cacheRelay?.url === ":memory:" });
 
   return (
     <SimpleView title="Cache Relay">

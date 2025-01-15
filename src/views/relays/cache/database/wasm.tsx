@@ -17,7 +17,7 @@ import {
 import { NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
 
-import { localRelay } from "../../../../services/local-relay";
+import { cacheRelay$ } from "../../../../services/cache-relay";
 import WasmRelay from "../../../../services/wasm-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
@@ -26,9 +26,9 @@ import ExportEventsButton from "./components/export-events-button";
 import localSettings from "../../../../services/local-settings";
 
 export default function WasmDatabasePage() {
-  const relay = localRelay;
-  if (!(relay instanceof WasmRelay)) return null;
-  const worker = relay.worker;
+  const cacheRelay = useObservable(cacheRelay$);
+  if (!(cacheRelay instanceof WasmRelay)) return null;
+  const worker = cacheRelay.worker;
   if (!worker) return null;
 
   const [summary, setSummary] = useState<Record<string, number>>();
@@ -82,13 +82,13 @@ export default function WasmDatabasePage() {
   const deleteDatabase = useCallback(async () => {
     try {
       setDeleting(true);
-      if (localRelay instanceof WasmRelay) {
-        await localRelay.wipe();
+      if (cacheRelay instanceof WasmRelay) {
+        await cacheRelay.wipe();
         location.reload();
       }
     } catch (error) {}
     setDeleting(false);
-  }, []);
+  }, [cacheRelay]);
 
   useEffect(() => {
     refresh();

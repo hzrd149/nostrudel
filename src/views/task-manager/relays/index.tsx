@@ -3,9 +3,6 @@ import {
   Badge,
   Box,
   Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
   Link,
   LinkBox,
   Select,
@@ -30,7 +27,6 @@ import { combineLatest, map } from "rxjs";
 import relayPoolService from "../../../services/relay-pool";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { localRelay } from "../../../services/local-relay";
 import { IconRelayAuthButton, useRelayAuthMethod } from "../../../components/relays/relay-auth-button";
 import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
@@ -40,6 +36,7 @@ import Timestamp from "../../../components/timestamp";
 import localSettings from "../../../services/local-settings";
 import useForceUpdate from "../../../hooks/use-force-update";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
+import useCacheRelay from "../../../hooks/use-cache-relay";
 
 function RelayCard({ relay }: { relay: AbstractRelay }) {
   return (
@@ -105,11 +102,12 @@ export default function TaskManagerRelays() {
   const update = useForceUpdate();
   useInterval(update, 2000);
 
+  const cacheRelay = useCacheRelay();
   const { value: tab, setValue: setTab } = useRouteSearchValue("tab", TABS[0]);
   const tabIndex = TABS.indexOf(tab);
 
   const relays = Array.from(relayPoolService.relays.values())
-    .filter((r) => r !== localRelay)
+    .filter((r) => r !== cacheRelay)
     .sort((a, b) => +b.connected - +a.connected || a.url.localeCompare(b.url));
 
   const observable = useMemo(
@@ -137,7 +135,7 @@ export default function TaskManagerRelays() {
       <TabPanels>
         <TabPanel p="0">
           <SimpleGrid spacing="2" columns={{ base: 1, md: 2 }} p="2">
-            {localRelay instanceof AbstractRelay && <RelayCard relay={localRelay} />}
+            {cacheRelay instanceof AbstractRelay && <RelayCard relay={cacheRelay} />}
             {relays.map((relay) => (
               <RelayCard key={relay.url} relay={relay} />
             ))}

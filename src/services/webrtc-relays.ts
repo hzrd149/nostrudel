@@ -8,7 +8,6 @@ import WebRtcRelayClient from "../classes/webrtc/webrtc-relay-client";
 import WebRtcRelayServer from "../classes/webrtc/webrtc-relay-server";
 import NostrWebRTCPeer from "../classes/webrtc/nostr-webrtc-peer";
 import verifyEventMethod from "./verify-event";
-import { localRelay } from "./local-relay";
 import localSettings from "./local-settings";
 import { DEFAULT_ICE_SERVERS } from "../const";
 
@@ -130,7 +129,7 @@ const signer = new SimpleSigner(localSettings.webRtcLocalIdentity.value);
 const broker = new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol", "wss://nostrue.com"]);
 broker.iceServers = DEFAULT_ICE_SERVERS;
 
-const webRtcRelaysService = new WebRtcRelaysService(broker, localRelay as AbstractRelay | null);
+const webRtcRelaysService = new WebRtcRelaysService(broker, null);
 
 webRtcRelaysService.start();
 

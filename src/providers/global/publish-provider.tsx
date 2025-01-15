@@ -11,7 +11,7 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { getAllRelayHints } from "../../helpers/nostr/event";
-import { localRelay } from "../../services/local-relay";
+import { getCacheRelay } from "../../services/cache-relay";
 import deleteEventService from "../../services/delete-events";
 import { eventStore } from "../../services/event-store";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -139,7 +139,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         setLog((arr) => arr.concat(entry));
 
         // send it to the local relay
-        if (localRelay) localRelay.publish(signed);
+        const cacheRelay = getCacheRelay();
+        if (cacheRelay) cacheRelay.publish(signed);
 
         // pass it to other services
         eventStore.add(signed);

@@ -1,20 +1,27 @@
+import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { localRelay } from "../../../../services/local-relay";
 import WasmRelay from "../../../../services/wasm-relay";
 import EnableWithDelete from "./enable-with-delete";
+import useCacheRelay from "../../../../hooks/use-cache-relay";
+import { setCacheRelayURL } from "../../../../services/cache-relay";
 
 export default function WasmRelayCard() {
-  const enabled = localRelay instanceof WasmRelay;
-  const enable = () => {
-    localStorage.setItem("localRelay", "nostr-idb://wasm-worker");
-    location.reload();
+  const cacheRelay = useCacheRelay();
+  const enabled = cacheRelay instanceof WasmRelay;
+  const [enabling, setEnabling] = useState(false);
+  const enable = async () => {
+    try {
+      setEnabling(true);
+      await setCacheRelayURL("nostr-idb://wasm-worker");
+    } catch (error) {}
+    setEnabling(false);
   };
 
   const wipe = async () => {
-    if (localRelay instanceof WasmRelay) {
-      await localRelay.wipe();
+    if (cacheRelay instanceof WasmRelay) {
+      await cacheRelay.wipe();
     } else {
       // import and delete database
       console.log("Importing worker to wipe database");
@@ -27,7 +34,7 @@ export default function WasmRelayCard() {
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Internal SQLite Cache</Heading>
-        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} />
+        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} isLoading={enabling} />
       </CardHeader>
       <CardBody p="4" pt="0">
         <Text mb="2">

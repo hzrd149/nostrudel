@@ -10,9 +10,9 @@ import SuperMap from "../classes/super-map";
 import BatchIdentifierLoader from "../classes/batch-identifier-loader";
 import BookOpen01 from "../components/icons/book-open-01";
 import processManager from "./process-manager";
-import { localRelay } from "./local-relay";
 import relayPoolService from "./relay-pool";
 import { eventStore } from "./event-store";
+import { getCacheRelay } from "./cache-relay";
 
 class DictionaryService {
   log = logger.extend("DictionaryService");
@@ -68,8 +68,9 @@ class DictionaryService {
     const subject = this.topics.get(topic);
     if (subject.value && !alwaysRequest) return subject;
 
-    if (localRelay) {
-      this.loaders.get(localRelay as AbstractRelay).requestEvents(topic);
+    const cacheRelay = getCacheRelay();
+    if (cacheRelay) {
+      this.loaders.get(cacheRelay as AbstractRelay).requestEvents(topic);
     }
 
     const relays = relayPoolService.getRelays(urls);
@@ -83,9 +84,10 @@ class DictionaryService {
   handleEvent(event: NostrEvent) {
     event = this.store.add(event);
 
+    const cacheRelay = getCacheRelay();
     // pretend it came from the local relay
     // TODO: remove this once DictionaryService uses subscriptions from event store
-    if (localRelay) this.loaders.get(localRelay as AbstractRelay).handleEvent(event);
+    if (cacheRelay) this.loaders.get(cacheRelay as AbstractRelay).handleEvent(event);
   }
 }
 

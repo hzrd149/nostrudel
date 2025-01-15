@@ -14,17 +14,18 @@ import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button
 import SearchResults from "./components/search-results";
 import useSearchRelays from "../../hooks/use-search-relays";
 import { useRelayInfo } from "../../hooks/use-relay-info";
-import { localRelay } from "../../services/local-relay";
 import WasmRelay from "../../services/wasm-relay";
 import relayPoolService from "../../services/relay-pool";
+import useCacheRelay from "../../hooks/use-cache-relay";
 
 export function SearchPage() {
+  const cacheRelay = useCacheRelay();
   const navigate = useNavigate();
   const searchRelays = useSearchRelays();
-  const { info: localRelayInfo } = useRelayInfo(localRelay instanceof AbstractRelay ? localRelay : undefined, true);
+  const { info: cacheRelayInfo } = useRelayInfo(cacheRelay instanceof AbstractRelay ? cacheRelay : undefined, true);
   const localSearchSupported =
-    localRelay instanceof WasmRelay ||
-    (localRelay instanceof AbstractRelay && !!localRelayInfo?.supported_nips?.includes(50));
+    cacheRelay instanceof WasmRelay ||
+    (cacheRelay instanceof AbstractRelay && !!cacheRelayInfo?.supported_nips?.includes(50));
 
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
@@ -33,21 +34,21 @@ export function SearchPage() {
 
   const relayURL = params.get("relay");
   const searchRelay = useMemo(() => {
-    if (relayURL === "local") return localRelay;
+    if (relayURL === "local") return cacheRelay;
     else if (relayURL) return relayPoolService.requestRelay(relayURL);
-    else if (localSearchSupported) return localRelay;
+    else if (localSearchSupported) return cacheRelay;
     else return relayPoolService.requestRelay(searchRelays[0]);
-  }, [relayURL, localSearchSupported, localRelay, searchRelays[0]]);
+  }, [relayURL, localSearchSupported, cacheRelay, searchRelays[0]]);
 
   const { register, handleSubmit, setValue } = useForm({
-    defaultValues: { query: searchQuery, relay: searchRelay === localRelay ? "local" : searchRelay?.url },
+    defaultValues: { query: searchQuery, relay: searchRelay === cacheRelay ? "local" : searchRelay?.url },
     mode: "all",
   });
 
   // reset the relay when the search relay changes
   useEffect(
-    () => setValue("relay", searchRelay === localRelay ? "local" : searchRelay?.url),
-    [searchRelay, localRelay],
+    () => setValue("relay", searchRelay === cacheRelay ? "local" : searchRelay?.url),
+    [searchRelay, cacheRelay],
   );
 
   const handleSearchText = (text: string) => {

@@ -1,12 +1,13 @@
 import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
 
-import { localRelay } from "../../../../services/local-relay";
+import useCacheRelay from "../../../../hooks/use-cache-relay";
+import localSettings from "../../../../services/local-settings";
 
 export default function HostedRelayCard() {
-  const enabled = localRelay?.url.includes(location.host + "/local-relay");
+  const cacheRelay = useCacheRelay();
+  const enabled = cacheRelay?.url.includes(location.host + "/local-relay");
   const enable = () => {
-    localStorage.removeItem("localRelay");
-    location.reload();
+    localSettings.cacheRelayURL.clear();
   };
 
   return (

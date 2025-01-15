@@ -1,15 +1,23 @@
 import { useAsync } from "react-use";
 import { Button, Card, CardBody, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
 
-import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, localRelay } from "../../../../services/local-relay";
+import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, setCacheRelayURL } from "../../../../services/cache-relay";
+import useCacheRelay from "../../../../hooks/use-cache-relay";
+import { useState } from "react";
 
 export default function NostrRelayTrayCard() {
+  const cacheRelay = useCacheRelay();
   const { value: available, loading: checking } = useAsync(checkNostrRelayTray);
 
-  const enabled = localRelay?.url.startsWith(NOSTR_RELAY_TRAY_URL);
-  const enable = () => {
-    localStorage.setItem("localRelay", NOSTR_RELAY_TRAY_URL);
-    location.reload();
+  const enabled = cacheRelay?.url.startsWith(NOSTR_RELAY_TRAY_URL);
+
+  const [enabling, setEnabling] = useState(false);
+  const enable = async () => {
+    try {
+      setEnabling(true);
+      await setCacheRelayURL(NOSTR_RELAY_TRAY_URL);
+    } catch (error) {}
+    setEnabling(false);
   };
 
   return (
@@ -20,7 +28,14 @@ export default function NostrRelayTrayCard() {
           GitHub
         </Link>
         {available || enabled ? (
-          <Button size="sm" colorScheme="primary" ml="auto" isLoading={checking} onClick={enable} isDisabled={enabled}>
+          <Button
+            size="sm"
+            colorScheme="primary"
+            ml="auto"
+            isLoading={checking || enabling}
+            onClick={enable}
+            isDisabled={enabled}
+          >
             {enabled ? "Enabled" : "Enable"}
           </Button>
         ) : (

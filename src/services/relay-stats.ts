@@ -1,15 +1,15 @@
 import _throttle from "lodash.throttle";
 import { Filter } from "nostr-tools";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, mergeMap } from "rxjs";
 
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
 import relayInfoService from "./relay-info";
-import { localRelay } from "./local-relay";
 import { MONITOR_STATS_KIND, SELF_REPORTED_KIND, getRelayURL } from "../helpers/nostr/relay-stats";
 import relayPoolService from "./relay-pool";
 import { alwaysVerify } from "./verify-event";
 import { eventStore } from "./event-store";
+import { getCacheRelay } from "./cache-relay";
 
 const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";
 const MONITOR_RELAY = "wss://relay.nostr.watch";
@@ -24,12 +24,12 @@ class RelayStatsService {
 
   constructor() {
     // load all stats from cache and subscribe to future ones
-    localRelay?.subscribe([{ kinds: [SELF_REPORTED_KIND, MONITOR_STATS_KIND] }], {
-      onevent: (e) => this.handleEvent(e, false),
+    getCacheRelay()?.subscribe([{ kinds: [SELF_REPORTED_KIND, MONITOR_STATS_KIND] }], {
+      onevent: (e) => this.handleEvent(e),
     });
   }
 
-  handleEvent(event: NostrEvent, cache = true) {
+  handleEvent(event: NostrEvent) {
     if (!alwaysVerify(event)) return;
 
     // ignore all events before NIP-66 start date
@@ -42,15 +42,9 @@ class RelayStatsService {
 
     const sub = this.monitorStats.get(relay);
     if (event.kind === SELF_REPORTED_KIND) {
-      if (!sub.value || event.created_at > sub.value.created_at) {
-        sub.next(event);
-        if (cache && localRelay) localRelay.publish(event);
-      }
+      if (!sub.value || event.created_at > sub.value.created_at) sub.next(event);
     } else if (event.kind === MONITOR_STATS_KIND) {
-      if (!sub.value || event.created_at > sub.value.created_at) {
-        sub.next(event);
-        if (cache && localRelay) localRelay.publish(event);
-      }
+      if (!sub.value || event.created_at > sub.value.created_at) sub.next(event);
     }
   }
 

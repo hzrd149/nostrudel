@@ -3,13 +3,13 @@ import _throttle from "lodash.throttle";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import SuperMap from "../classes/super-map";
-import { localRelay } from "./local-relay";
 import relayPoolService from "./relay-pool";
 import Process from "../classes/process";
 import { LightningIcon } from "../components/icons";
 import processManager from "./process-manager";
 import BatchRelationLoader from "../classes/batch-relation-loader";
 import { logger } from "../helpers/debug";
+import { getCacheRelay } from "./cache-relay";
 
 class EventZapsService {
   log = logger.extend("EventZapsService");
@@ -33,8 +33,9 @@ class EventZapsService {
   requestZaps(uid: string, urls: Iterable<string | URL | AbstractRelay>, alwaysRequest = true) {
     if (this.loaded.get(uid) && !alwaysRequest) return;
 
-    if (localRelay) {
-      this.loaders.get(localRelay as AbstractRelay).requestEvents(uid);
+    const cacheRelay = getCacheRelay();
+    if (cacheRelay) {
+      this.loaders.get(cacheRelay as AbstractRelay).requestEvents(uid);
     }
 
     const relays = relayPoolService.getRelays(urls);

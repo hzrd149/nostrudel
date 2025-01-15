@@ -25,7 +25,6 @@ import { useLocation, useSearchParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
-import { localRelay } from "../../../services/local-relay";
 import Play from "../../../components/icons/play";
 import ClockRewind from "../../../components/icons/clock-rewind";
 import HistoryDrawer from "./history-drawer";
@@ -39,6 +38,7 @@ import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
 import { safeJson } from "../../../helpers/parse";
 import relayPoolService from "../../../services/relay-pool";
+import useCacheRelay from "../../../hooks/use-cache-relay";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -51,6 +51,7 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 });
 
 export default function EventConsoleView() {
+  const cacheRelay = useCacheRelay();
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const historyDrawer = useDisclosure();
@@ -90,8 +91,8 @@ export default function EventConsoleView() {
 
       if (sub) sub.close();
 
-      if (!localRelay) throw new Error("Local relay disabled");
-      let r = localRelay!;
+      if (!cacheRelay) throw new Error("Local relay disabled");
+      let r = cacheRelay!;
       if (queryRelay.isOpen) {
         const url = validateRelayURL(relayURL);
         if (!relay || relay.url !== url.toString()) {
@@ -128,7 +129,7 @@ export default function EventConsoleView() {
       if (e instanceof Error) setError(e.message);
     }
     setLoading(false);
-  }, [queryRelay.isOpen, query, relayURL, relay, sub]);
+  }, [queryRelay.isOpen, query, relayURL, relay, sub, cacheRelay]);
 
   const submitRef = useRef(loadEvents);
   submitRef.current = loadEvents;
