@@ -54,7 +54,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
           {lastReceived && <MessagePreview message={lastReceived} pubkey={lastReceived.pubkey} />}
         </Flex>
       </CardBody>
-      <LinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}` + location.search} />
+      <LinkOverlay as={RouterLink} to={`/messages/${nip19.npubEncode(conversation.correspondent)}` + location.search} />
     </LinkBox>
   );
 }

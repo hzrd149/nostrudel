@@ -15,10 +15,10 @@ import {
 } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 
-import useLogsReport from "../../../../../hooks/reports/use-logs-report";
-import Timestamp from "../../../../../components/timestamp";
-import SimpleView from "../../../../../components/layout/presets/simple-view";
-import { controlApi } from "../../../../../services/bakery";
+import useLogsReport from "../../../../hooks/reports/use-logs-report";
+import Timestamp from "../../../../components/timestamp";
+import SimpleView from "../../../../components/layout/presets/simple-view";
+import { controlApi } from "../../../../services/bakery";
 import ServicesTree from "./service-tree";
 
 const convert = new Convert();

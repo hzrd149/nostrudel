@@ -5,7 +5,7 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
-import MobileSideDrawer from "./mobile-side-drawer";
+import MobileSideDrawer from "../layout/mobile/nav-drawer";
 import Rocket02 from "../icons/rocket-02";
 
 export default function MobileBottomNav(props: Omit<FlexProps, "children">) {

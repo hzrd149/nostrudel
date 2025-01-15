@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { NotificationChannel } from "@satellite-earth/core/types/control-api/notifications.js";
 
-import { controlApi } from "../../../../../services/bakery";
-import useNotificationChannelsReport from "../../../../../hooks/reports/use-notification-channels";
+import { controlApi } from "../../../../services/bakery";
+import useNotificationChannelsReport from "../../../../hooks/reports/use-notification-channels";
 
 function Channel({ channel }: { channel: NotificationChannel }) {
   let details: ReactNode = null;

@@ -7,7 +7,7 @@ import { useObservable } from "applesauce-react/hooks";
 import Plus from "../icons/plus";
 import useCurrentAccount from "../../hooks/use-current-account";
 import AccountSwitcher from "./account-switcher";
-import NavItems from "./nav-items";
+import NavItems from "../layout/nav-items";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { offlineMode } from "../../services/offline-mode";
 import WifiOff from "../icons/wifi-off";

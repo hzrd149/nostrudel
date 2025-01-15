@@ -38,6 +38,7 @@ export default function AccountSettings() {
   return (
     <SimpleView
       title="Account settings"
+      maxW="6xl"
       actions={
         <Button
           colorScheme="primary"

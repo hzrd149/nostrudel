@@ -1,47 +1,18 @@
-import { Button, Container, Flex, IconButton } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Container } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import RequireCurrentAccount from "../../components/router/require-current-account";
-import AccountSwitcher from "../../components/legacy-layout/account-switcher";
-import { SettingsIcon } from "../../components/icons";
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";
 import SearchForm from "./components/search-form";
-import KeyboardShortcut from "../../components/keyboard-shortcut";
 import DMsCard from "./components/dms-card";
 import NotificationsCard from "./components/notifications-card";
 import ToolsCard from "./components/tools-card";
 import StreamsCard from "./components/streams-card";
-import Plus from "../../components/icons/plus";
 
 function LaunchpadPage() {
   return (
     <VerticalPageLayout gap="4" direction="row" wrap="wrap">
-      <Flex justifyContent="space-between" w="full">
-        <Flex gap="2">
-          <AccountSwitcher />
-          <Button
-            as={RouterLink}
-            colorScheme="primary"
-            size="lg"
-            to="/new"
-            variant="outline"
-            leftIcon={<Plus boxSize={6} />}
-          >
-            New
-            <KeyboardShortcut letter="n" ml="2" />
-          </Button>
-        </Flex>
-        <IconButton
-          as={RouterLink}
-          icon={<SettingsIcon boxSize={6} />}
-          aria-label="Settings"
-          title="Settings"
-          size="lg"
-          to="/settings"
-        />
-      </Flex>
       <SearchForm flex={1} />
 
       <ErrorBoundary>

@@ -52,7 +52,11 @@ export const UserProfileMenu = ({
             {isMuted ? "Unmute User" : "Mute User"}
           </MenuItem>
         )}
-        <MenuItem icon={<DirectMessagesIcon fontSize="1.5em" />} as={RouterLink} to={`/dm/${nip19.npubEncode(pubkey)}`}>
+        <MenuItem
+          icon={<DirectMessagesIcon fontSize="1.5em" />}
+          as={RouterLink}
+          to={`/messages/${nip19.npubEncode(pubkey)}`}
+        >
           Direct messages
         </MenuItem>
         <MenuItem

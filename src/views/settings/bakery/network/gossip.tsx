@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { safeRelayUrl } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 
-import useAsyncErrorHandler from "../../../../../hooks/use-async-error-handler";
-import { controlApi } from "../../../../../services/bakery";
-import { RelayFavicon } from "../../../../../components/relay-favicon";
+import useAsyncErrorHandler from "../../../../hooks/use-async-error-handler";
+import { controlApi } from "../../../../services/bakery";
+import { RelayFavicon } from "../../../../components/relay-favicon";
 
 function BroadcastRelay({ relay }: { relay: string }) {
   const config = useObservable(controlApi?.config);

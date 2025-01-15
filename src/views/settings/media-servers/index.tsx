@@ -105,7 +105,12 @@ function MediaServersPage() {
   };
 
   return (
-    <SimpleView gap="2" title="Media Servers" actions={event && <DebugEventButton event={event} size="sm" ml="auto" />}>
+    <SimpleView
+      gap="2"
+      title="Media Servers"
+      actions={event && <DebugEventButton event={event} size="sm" ml="auto" />}
+      maxW="4xl"
+    >
       <Text fontStyle="italic" mt="-2">
         <Link href="https://github.com/hzrd149/blossom" target="_blank" color="blue.500">
           Blossom

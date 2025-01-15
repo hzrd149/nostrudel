@@ -10,7 +10,7 @@ export type App = {
   description: string;
   id: string;
   isExternal?: boolean;
-  to: To;
+  to: string;
 };
 
 export function AppIcon({ app, size }: { app: App; size: string }) {

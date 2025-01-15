@@ -4,7 +4,7 @@ import HyperNetworkStatus from "./hyper";
 import TorNetworkStatus from "./tor";
 import I2PNetworkStatus from "./i2p";
 import GossipSettings from "./gossip";
-import SimpleView from "../../../../../components/layout/presets/simple-view";
+import SimpleView from "../../../../components/layout/presets/simple-view";
 
 export default function BakeryNetworkSettingsView() {
   return (

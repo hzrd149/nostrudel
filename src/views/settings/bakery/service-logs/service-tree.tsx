@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import useServicesReport from "../../../../../hooks/reports/use-services-report";
-import { ChevronDownIcon, ChevronRightIcon } from "../../../../../components/icons";
+import useServicesReport from "../../../../hooks/reports/use-services-report";
+import { ChevronDownIcon, ChevronRightIcon } from "../../../../components/icons";
 
 type Service = {
   id: string;

@@ -10,6 +10,7 @@ export default function SimpleView({
   as,
   flush,
   gap,
+  maxW,
   ...props
 }: FlexProps & { flush?: boolean; actions?: ReactNode }) {
   return (
@@ -24,6 +25,8 @@ export default function SimpleView({
         pb={flush ? 0 : "max(1rem, var(--safe-bottom))"}
         gap={gap || "2"}
         flexGrow={1}
+        maxW={maxW}
+        w={maxW ? "full" : "initial"}
       >
         {children}
       </Flex>

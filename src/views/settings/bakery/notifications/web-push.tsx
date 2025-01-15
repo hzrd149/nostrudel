@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Alert, AlertIcon, Button, Code, Flex, Heading, Link, Text, useToast } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { serviceWorkerRegistration } from "../../../../../services/worker";
+import { serviceWorkerRegistration } from "../../../../services/worker";
 import {
   disableNotifications,
   enableNotifications,
   pushSubscription,
-} from "../../../../../services/web-push-notifications";
-import { controlApi } from "../../../../../services/bakery";
+} from "../../../../services/web-push-notifications";
+import { controlApi } from "../../../../services/bakery";
 
 function WebPushNotificationStatus() {
   const toast = useToast();

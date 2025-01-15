@@ -1,7 +1,7 @@
 import { Alert, AlertIcon, Spinner } from "@chakra-ui/react";
 
-import useNetworkOverviewReport from "../../../../../hooks/reports/use-network-status-report";
-import PanelItemString from "../../../../../components/dashboard/panel-item-string";
+import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import PanelItemString from "../../../../components/dashboard/panel-item-string";
 
 export default function TorInboundStatus() {
   const status = useNetworkOverviewReport();

@@ -1,14 +1,16 @@
 html,
-body,
-#root {
+body {
   margin: 0;
   height: 100%;
   width: 100%;
 }
 
+#root {
+  width: 100%;
+}
+
 body,
 #root {
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 

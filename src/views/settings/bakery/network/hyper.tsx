@@ -2,10 +2,10 @@ import { ReactNode } from "react";
 import { Alert, Button, Code, Flex, Heading, Link, Spinner, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import useNetworkOverviewReport from "../../../../../hooks/reports/use-network-status-report";
+import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 import HyperInboundStatus from "./hyper-inbound";
 import HyperOutboundStatus from "./hyper-outbound";
-import { controlApi } from "../../../../../services/bakery";
+import { controlApi } from "../../../../services/bakery";
 
 export default function HyperNetworkStatus() {
   const config = useObservable(controlApi?.config);

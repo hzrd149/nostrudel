@@ -38,7 +38,7 @@ function NodeGeneralSettingsPage() {
   return (
     <SimpleView title="Node Settings">
       <FormControl>
-        <FormLabel>Node URL</FormLabel>
+        <FormLabel>Bakery URL</FormLabel>
         <Flex gap="2">
           <Input readOnly value={personalNode!.url} maxW="xs" />
           <Button isDisabled>Change</Button>

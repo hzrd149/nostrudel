@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import useNetworkOverviewReport from "../../../../../hooks/reports/use-network-status-report";
-import { controlApi } from "../../../../../services/bakery";
+import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import { controlApi } from "../../../../services/bakery";
 
 export default function HyperOutboundStatus() {
   const config = useObservable(controlApi?.config);

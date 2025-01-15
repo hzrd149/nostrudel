@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Flex, Spinner } from "@chakra-ui/react";
 
@@ -13,8 +14,7 @@ import useUserContactRelays from "../../hooks/use-user-contact-relays";
 import UserSquare from "../../components/icons/user-square";
 import Image01 from "../../components/icons/image-01";
 import Server05 from "../../components/icons/server-05";
-import { Suspense } from "react";
-import SimpleNavItem from "../../components/simple-nav-item";
+import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 
 export default function RelaysView() {
   const account = useCurrentAccount();

@@ -154,7 +154,7 @@ export default function UserAboutTab() {
               size="sm"
               icon={<ChatIcon />}
               aria-label="Message"
-              to={`/dm/${npub ?? pubkey}`}
+              to={`/messages/${npub ?? pubkey}`}
             />
             <UserFollowButton pubkey={pubkey} size="sm" showLists />
             <UserProfileMenu pubkey={pubkey} aria-label="More Options" size="sm" />

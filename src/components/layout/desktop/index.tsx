@@ -1,28 +1,20 @@
-import { Flex } from "@chakra-ui/react";
+import { Suspense } from "react";
+import { Flex, Spinner } from "@chakra-ui/react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
 import DesktopSideNav from "./side-nav";
-import ConnectionStatus from "../connection-status";
 import { ErrorBoundary } from "../../error-boundary";
 
 export default function DesktopLayout() {
   return (
     <>
       <ScrollRestoration />
-      <ConnectionStatus />
-      <Flex
-        direction={{
-          base: "column",
-          md: "row",
-        }}
-        overflow="hidden"
-        h="full"
-      >
-        <DesktopSideNav />
+      <DesktopSideNav />
+      <Suspense fallback={<Spinner />}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
-      </Flex>
+      </Suspense>
     </>
   );
 }

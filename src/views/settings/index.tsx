@@ -1,8 +1,7 @@
-import { Divider, Flex, Heading, Link } from "@chakra-ui/react";
+import { Divider, Flex, Link, Spinner, Text } from "@chakra-ui/react";
 import { Outlet, useMatch } from "react-router-dom";
 
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import SimpleNavItem from "../../components/simple-nav-item";
 import { ErrorBoundary } from "../../components/error-boundary";
 import {
   AppearanceIcon,
@@ -18,6 +17,12 @@ import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
 import SimpleHeader from "../../components/layout/presets/simple-header";
+import bakery from "../../services/bakery";
+import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import Bell01 from "../../components/icons/bell-01";
+import Share07 from "../../components/icons/share-07";
+import Database01 from "../../components/icons/database-01";
+import { Suspense } from "react";
 
 export default function SettingsView() {
   const account = useCurrentAccount();
@@ -62,6 +67,28 @@ export default function SettingsView() {
               Database Tools
             </SimpleNavItem>
 
+            {bakery && (
+              <Flex direction="column" gap="2">
+                <Flex alignItems="center" gap="2">
+                  <Divider />
+                  <Text fontWeight="bold" fontSize="md">
+                    Bakery
+                  </Text>
+                  <Divider />
+                </Flex>
+                <SimpleNavItem to="/settings/bakery">Bakery</SimpleNavItem>
+                <SimpleNavItem to="/settings/bakery/notifications" leftIcon={<Bell01 boxSize={5} />}>
+                  Notifications
+                </SimpleNavItem>
+                <SimpleNavItem to="/settings/bakery/network" leftIcon={<Share07 boxSize={5} />}>
+                  Network
+                </SimpleNavItem>
+                <SimpleNavItem to="/settings/bakery/logs" leftIcon={<Database01 />}>
+                  Service Logs
+                </SimpleNavItem>
+              </Flex>
+            )}
+
             <Divider />
 
             <Flex alignItems="center">
@@ -73,17 +100,21 @@ export default function SettingsView() {
           </Flex>
         </Flex>
         {!isMobile && (
-          <ErrorBoundary>
-            <Outlet />
-          </ErrorBoundary>
+          <Suspense fallback={<Spinner />}>
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
+          </Suspense>
         )}
       </Flex>
     );
   }
 
   return (
-    <ErrorBoundary>
-      <Outlet />
-    </ErrorBoundary>
+    <Suspense fallback={<Spinner />}>
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
+    </Suspense>
   );
 }

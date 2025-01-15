@@ -4,7 +4,6 @@ import { Spinner } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import AppLayout from "./components/layout";
-import Layout from "./components/legacy-layout";
 import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import { RouteProviders } from "./providers/route";
@@ -78,7 +77,6 @@ import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
 import AppRelays from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
-import MediaServersView from "./views/settings/media-servers";
 import NIP05RelaysView from "./views/relays/nip05";
 import DatabaseView from "./views/relays/cache/database";
 import ContactListRelaysView from "./views/relays/contact-list";
@@ -99,6 +97,7 @@ import PerformanceSettings from "./views/settings/performance";
 import PrivacySettings from "./views/settings/privacy";
 import PostSettings from "./views/settings/post";
 import AccountSettings from "./views/settings/accounts";
+import MediaServersView from "./views/settings/media-servers";
 import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
 import WalletView from "./views/wallet";
@@ -107,6 +106,7 @@ import UserMediaPostsTab from "./views/user/media-posts";
 import NewView from "./views/new";
 import NewNoteView from "./views/new/note";
 import NewMediaPostView from "./views/new/media";
+import ConnectionStatus from "./components/bakery/connection-status";
 const TracksView = lazy(() => import("./views/tracks"));
 const UserTracksTab = lazy(() => import("./views/user/tracks"));
 const UserVideosTab = lazy(() => import("./views/user/videos"));
@@ -159,23 +159,17 @@ const RequireBakery = lazy(() => import("./components/router/require-bakery"));
 const BakerySetupView = lazy(() => import("./views/bakery/setup"));
 const BakeryAuthView = lazy(() => import("./views/bakery/connect/auth"));
 const RequireBakeryAuth = lazy(() => import("./components/router/require-bakery-auth"));
-const DisplaySettingsView = lazy(() => import("./views/bakery/settings/tabs/display-settings"));
-const NotificationSettingsView = lazy(() => import("./views/bakery/settings/tabs/notifications"));
-const BakeryGeneralSettingsView = lazy(() => import("./views/bakery/settings/tabs/general-settings"));
-const BakeryNetworkSettingsView = lazy(() => import("./views/bakery/settings/tabs/network"));
-const BakeryServiceLogsView = lazy(() => import("./views/bakery/settings/tabs/service-logs"));
+const NotificationSettingsView = lazy(() => import("./views/settings/bakery/notifications"));
+const BakeryGeneralSettingsView = lazy(() => import("./views/settings/bakery/general-settings"));
+const BakeryNetworkSettingsView = lazy(() => import("./views/settings/bakery/network"));
+const BakeryServiceLogsView = lazy(() => import("./views/settings/bakery/service-logs"));
 
 const RootPage = () => {
   useSetColorMode();
 
   return (
     <RouteProviders>
-      <Layout>
-        <ScrollRestoration />
-        <Suspense fallback={<Spinner />}>
-          <Outlet />
-        </Suspense>
-      </Layout>
+      <AppLayout />
     </RouteProviders>
   );
 };
@@ -223,50 +217,6 @@ const router = createHashRouter([
     ],
   },
   {
-    path: "streams/moderation",
-    element: (
-      <RouteProviders>
-        <StreamModerationView />
-      </RouteProviders>
-    ),
-  },
-  {
-    path: "streams/:naddr",
-    element: (
-      <RouteProviders>
-        <StreamView />
-      </RouteProviders>
-    ),
-  },
-  {
-    path: "map",
-    element: <MapView />,
-  },
-  {
-    path: "launchpad",
-    element: (
-      <RouteProviders>
-        <LaunchpadView />
-      </RouteProviders>
-    ),
-  },
-  {
-    path: "/discovery/relays",
-    element: (
-      <RouteProviders>
-        <RelayDiscoveryView />
-      </RouteProviders>
-    ),
-  },
-  {
-    path: "/tools/publisher",
-    element: (
-      <RouteProviders>
-        <EventPublisherView />
-      </RouteProviders>
-    ),
-  },
-  {
     path: "/",
     element: <RootPage />,
     children: [
@@ -282,6 +232,14 @@ const router = createHashRouter([
           { path: "note", element: <NewNoteView /> },
           { path: "media", element: <NewMediaPostView /> },
         ],
+      },
+      {
+        path: "launchpad",
+        element: <LaunchpadView />,
+      },
+      {
+        path: "map",
+        element: <MapView />,
       },
       {
         path: "/u/:pubkey",
@@ -334,6 +292,22 @@ const router = createHashRouter([
           { path: "lightning", element: <LightningSettings /> },
           { path: "performance", element: <PerformanceSettings /> },
           { path: "media-servers", element: <MediaServersView /> },
+          {
+            path: "bakery",
+            children: [
+              { path: "", element: <BakeryGeneralSettingsView /> },
+              { path: "notifications", element: <NotificationSettingsView /> },
+              {
+                path: "network",
+                element: (
+                  <RequireBakeryAuth>
+                    <BakeryNetworkSettingsView />
+                  </RequireBakeryAuth>
+                ),
+              },
+              { path: "logs", element: <BakeryServiceLogsView /> },
+            ],
+          },
         ],
       },
       {
@@ -421,6 +395,14 @@ const router = createHashRouter([
         ],
       },
       {
+        path: "streams/moderation",
+        element: <StreamModerationView />,
+      },
+      {
+        path: "streams/:naddr",
+        element: <StreamView />,
+      },
+      {
         path: "files",
         children: [
           {
@@ -466,7 +448,7 @@ const router = createHashRouter([
       },
       { path: "search", element: <SearchView /> },
       {
-        path: "dm",
+        path: "messages",
         element: <DirectMessagesView />,
         children: [{ path: ":pubkey", element: <DirectMessageChatView /> }],
       },
@@ -483,7 +465,15 @@ const router = createHashRouter([
           { path: "console", element: <EventConsoleView /> },
           { path: "corrections", element: <CorrectionsFeedView /> },
           { path: "nostrudel-users", element: <NoStrudelUsersView /> },
+          {
+            path: "publisher",
+            element: <EventPublisherView />,
+          },
         ],
+      },
+      {
+        path: "/discovery/relays",
+        element: <RelayDiscoveryView />,
       },
       {
         path: "lists",
@@ -577,7 +567,7 @@ const router = createHashRouter([
             path: "auth",
             element: (
               <RequireBakery>
-                {/* <ConnectionStatus /> */}
+                <ConnectionStatus />
                 <BakeryAuthView />
               </RequireBakery>
             ),
@@ -588,28 +578,6 @@ const router = createHashRouter([
         path: "setup",
         element: <BakerySetupView />,
       },
-      // {
-      //   path: "network",
-      //   element: (
-      //     <RequireBakery>
-      //       <RequireBakeryAuth>
-      //         <AppLayout />
-      //       </RequireBakeryAuth>
-      //     </RequireBakery>
-      //   ),
-      //   children: [
-      //     {
-      //       path: "",
-      //       element: <NetworkView />,
-      //       children: [
-      //         {
-      //           path: "",
-      //           element: <OverviewList />,
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
       {
         path: "",
         element: (
@@ -622,56 +590,9 @@ const router = createHashRouter([
           </RequireBakery>
         ),
         children: [
-          // {
-          //   path: "messages",
-          //   element: <MessagesView />,
-          //   children: [
-          //     {
-          //       path: "p/:pubkey",
-          //       element: <DirectMessageConversationView />,
-          //     },
-          //   ],
-          // },
-          // {
-          //   path: "profile/:pubkey",
-          //   element: <UserProfileView />,
-          //   children: [
-          //     { path: "", element: <UserSummaryView /> },
-          //     { path: "summary", element: <UserSummaryView /> },
-          //     { path: "messages", element: <DirectMessageConversationView /> },
-          //     { path: "notes", element: <UserNotesView /> },
-          //     { path: "articles", element: <UserArticlesView /> },
-          //   ],
-          // },
           {
             path: "search",
             element: <SearchView />,
-          },
-          {
-            path: "settings",
-            element: <SettingsView />,
-            children: [
-              { path: "", element: <DisplaySettingsView /> },
-              { path: "display", element: <DisplaySettingsView /> },
-              { path: "notifications", element: <NotificationSettingsView /> },
-              {
-                path: "general",
-                element: (
-                  <RequireBakeryAuth>
-                    <BakeryGeneralSettingsView />
-                  </RequireBakeryAuth>
-                ),
-              },
-              {
-                path: "network",
-                element: (
-                  <RequireBakeryAuth>
-                    <BakeryNetworkSettingsView />
-                  </RequireBakeryAuth>
-                ),
-              },
-              { path: "logs", element: <BakeryServiceLogsView /> },
-            ],
           },
           {
             path: "",

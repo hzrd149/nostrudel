@@ -61,6 +61,8 @@ function StreamsPage() {
   const liveStreams = streams.filter((stream) => getStreamStatus(stream) === "live");
   const endedStreams = streams.filter((stream) => getStreamStatus(stream) === "ended");
 
+  const columns = { base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 };
+
   return (
     <VerticalPageLayout>
       <Flex gap="2" wrap="wrap" alignItems="center">
@@ -75,7 +77,7 @@ function StreamsPage() {
             <Heading size="lg" mt="2">
               Favorites
             </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+            <SimpleGrid columns={columns} spacing="2">
               {favorites.map((stream) => (
                 <StreamCard key={getEventUID(stream)} stream={stream} />
               ))}
@@ -85,7 +87,7 @@ function StreamsPage() {
         <Heading size="lg" mt="2">
           Live
         </Heading>
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+        <SimpleGrid columns={columns} spacing="2">
           {liveStreams.map((stream) => (
             <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
@@ -95,7 +97,7 @@ function StreamsPage() {
             <Heading size="lg" mt="4">
               Ended
             </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+            <SimpleGrid columns={columns} spacing="2">
               {endedStreams.map((stream) => (
                 <StreamCard key={getEventUID(stream)} stream={stream} />
               ))}

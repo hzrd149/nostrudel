@@ -1,7 +1,7 @@
 import { Alert, AlertIcon } from "@chakra-ui/react";
 
-import useNetworkOverviewReport from "../../../../../hooks/reports/use-network-status-report";
-import PanelItemString from "../../../../../components/dashboard/panel-item-string";
+import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import PanelItemString from "../../../../components/dashboard/panel-item-string";
 
 export default function HyperInboundStatus() {
   const status = useNetworkOverviewReport();

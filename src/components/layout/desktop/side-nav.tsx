@@ -1,13 +1,28 @@
-import { Flex, IconButton, Menu, MenuButton, MenuDivider, MenuItem, MenuList } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { createContext, useState } from "react";
+import {
+  Flex,
+  FlexProps,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Spacer,
+} from "@chakra-ui/react";
 
 import UserAvatar from "../../user/user-avatar";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import accountService from "../../../services/account";
 import UserName from "../../user/user-name";
 import UserDnsIdentity from "../../user/user-dns-identity";
-import { DirectMessagesIcon, SettingsIcon, SearchIcon, RelayIcon } from "../../icons";
-import Home05 from "../../icons/home-05";
+import { ChevronLeftIcon, ChevronRightIcon, SettingsIcon } from "../../icons";
+import Plus from "../../icons/plus";
+import NavItem from "../nav-items/nav-item";
+import NavItems from "../nav-items";
+import useRootPadding from "../../../hooks/use-root-padding";
+
+export const ExpandedContext = createContext(false);
 
 function UserAccount() {
   const account = useCurrentAccount()!;
@@ -37,76 +52,49 @@ function UserAccount() {
   );
 }
 
-export default function DesktopSideNav() {
+export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">) {
   const account = useCurrentAccount();
+  const [expanded, setExpanded] = useState(true);
+
+  useRootPadding({ left: expanded ? "var(--chakra-sizes-64)" : "var(--chakra-sizes-16)" });
 
   return (
-    <Flex
-      direction="column"
-      gap="2"
-      px="2"
-      py="2"
-      shrink={0}
-      borderRightWidth={1}
-      pt="calc(var(--chakra-space-2) + var(--safe-top))"
-      pb="calc(var(--chakra-space-2) + var(--safe-bottom))"
-    >
-      {account && <UserAccount />}
-      <IconButton
-        as={RouterLink}
-        aria-label="Search"
-        title="Search"
-        icon={<Home05 boxSize={5} />}
-        w="12"
-        h="12"
-        fontSize="24"
-        variant="outline"
-        to="/"
-      />
-      <IconButton
-        as={RouterLink}
-        aria-label="Search"
-        title="Search"
-        icon={<SearchIcon boxSize={5} />}
-        w="12"
-        h="12"
-        fontSize="24"
-        variant="outline"
-        to="/search"
-      />
-      <IconButton
-        as={RouterLink}
-        aria-label="Messages"
-        title="Messages"
-        icon={<DirectMessagesIcon boxSize={5} />}
-        w="12"
-        h="12"
-        fontSize="24"
-        variant="outline"
-        to="/messages"
-      />
-      <IconButton
-        w="12"
-        h="12"
-        as={RouterLink}
-        aria-label="Network"
-        title="Network"
-        icon={<RelayIcon boxSize={6} />}
-        variant="outline"
-        to="/network"
-      />
-      <IconButton
-        as={RouterLink}
-        w="12"
-        h="12"
-        aria-label="Settings"
-        title="Settings"
-        mt="auto"
-        variant="outline"
-        icon={<SettingsIcon boxSize={5} />}
-        to="/settings"
-      />
-      {/* {explore.isOpen && <ExploreCommunitiesModal isOpen onClose={explore.onClose} />} */}
-    </Flex>
+    <ExpandedContext.Provider value={expanded}>
+      <Flex
+        direction="column"
+        gap="2"
+        px="2"
+        py="2"
+        shrink={0}
+        borderRightWidth={1}
+        pt="calc(var(--chakra-space-2) + var(--safe-top))"
+        pb="calc(var(--chakra-space-2) + var(--safe-bottom))"
+        w={expanded ? "64" : "16"}
+        position="fixed"
+        left="0"
+        bottom="0"
+        top="0"
+        {...props}
+      >
+        <IconButton
+          aria-label={expanded ? "Close" : "Open"}
+          title={expanded ? "Close" : "Open"}
+          size="sm"
+          variant="ghost"
+          onClick={() => setExpanded(!expanded)}
+          icon={expanded ? <ChevronLeftIcon boxSize={5} /> : <ChevronRightIcon boxSize={5} />}
+          position="absolute"
+          bottom="4"
+          right="-4"
+        />
+        {account && <UserAccount />}
+        <NavItem icon={Plus} label="Create new" colorScheme="primary" to="/new" variant="solid" />
+
+        <NavItems />
+
+        <Spacer />
+        <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
+      </Flex>
+    </ExpandedContext.Provider>
   );
 }

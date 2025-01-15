@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { controlApi } from "../../../../../services/bakery";
-import useNetworkOverviewReport from "../../../../../hooks/reports/use-network-status-report";
+import { controlApi } from "../../../../services/bakery";
+import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 
 export default function TorOutboundStatus() {
   const config = useObservable(controlApi?.config);
