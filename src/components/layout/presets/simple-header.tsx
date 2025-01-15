@@ -9,7 +9,12 @@ export default function SimpleHeader({ children, title, ...props }: FlexProps) {
       alignItems="center"
       gap="2"
       minH="14"
+      position="sticky"
+      top="var(--safe-top)"
       mt="var(--safe-top)"
+      backgroundColor="var(--chakra-colors-chakra-body-bg)"
+      zIndex={1}
+      {...props}
     >
       <BackIconButton hideFrom="lg" />
       <Heading fontWeight="bold" size="md" ml={{ base: 0, md: "2" }} whiteSpace="pre" isTruncated>

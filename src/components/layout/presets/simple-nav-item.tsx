@@ -13,6 +13,7 @@ export default function SimpleNavItem({
       as={RouterLink}
       to={to}
       justifyContent="flex-start"
+      flexShrink={0}
       {...props}
       variant="outline"
       colorScheme={match ? "primary" : undefined}

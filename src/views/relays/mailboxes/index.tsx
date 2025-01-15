@@ -61,7 +61,7 @@ function MailboxesPage() {
   );
 
   return (
-    <SimpleView title="Mailboxes" actions={event && <DebugEventButton event={event} size="sm" ml="auto" />}>
+    <SimpleView title="Mailboxes" actions={event && <DebugEventButton event={event} size="sm" ml="auto" />} maxW="4xl">
       <Text fontStyle="italic" mt="-2">
         Mailbox relays are a way for other users to find your events, or send you events. they are defined in{" "}
         <Link

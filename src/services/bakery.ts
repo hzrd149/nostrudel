@@ -1,7 +1,7 @@
 import { BehaviorSubject, filter, mergeMap } from "rxjs";
 
 import { logger } from "../helpers/debug";
-import BakeryConnection from "../classes/bakery/bakery-connection";
+import BakeryRelay from "../classes/bakery/bakery-connection";
 import BakeryControlApi from "../classes/bakery/control-api";
 import signingService from "./signing";
 import accountService from "./account";
@@ -17,13 +17,13 @@ export function clearBakeryURL() {
   localSettings.bakeryURL.clear();
 }
 
-export const bakery$ = new BehaviorSubject<BakeryConnection | null>(null);
+export const bakery$ = new BehaviorSubject<BakeryRelay | null>(null);
 
 localSettings.bakeryURL.subscribe((url) => {
   if (!URL.canParse(url)) return bakery$.next(null);
 
   try {
-    const bakery = new BakeryConnection(localSettings.bakeryURL.value);
+    const bakery = new BakeryRelay(localSettings.bakeryURL.value);
 
     // add the bakery to the relay pool and connect
     relayPoolService.relays.set(bakery.url, bakery);
@@ -42,14 +42,17 @@ bakery$
     filter((r) => r !== null),
     mergeMap((r) => r.onChallenge),
   )
-  .subscribe(async () => {
-    if (!bakery$.value) return;
+  .subscribe(async (challenge) => {
+    if (!challenge) return;
+
+    const bakery = bakery$.value;
+    if (!bakery) return;
 
     const account = accountService.current.value;
     if (!account) return;
 
     try {
-      await bakery$.value.authenticate((draft) => signingService.requestSignature(draft, account));
+      await bakery.authenticate((draft) => signingService.requestSignature(draft, account));
     } catch (err) {
       console.log("Failed to authenticate with bakery", err);
     }
@@ -65,9 +68,9 @@ bakery$.subscribe((relay) => {
 
 if (import.meta.env.DEV) {
   // @ts-expect-error
-  window.bakery = bakery$;
+  window.bakery$ = bakery$;
   // @ts-expect-error
-  window.controlApi = controlApi$;
+  window.controlApi$ = controlApi$;
 }
 
 export function getControlApi() {

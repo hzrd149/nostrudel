@@ -127,7 +127,7 @@ export function BakeryAuthPage() {
 export default function BakeryAuthView() {
   const location = useLocation();
   const bakery = useObservable(bakery$);
-  const authenticated = useObservable(bakery?.authenticated);
+  const authenticated = useObservable(bakery?.authenticated$);
 
   if (authenticated) {
     return <Navigate to={location.state?.back ?? "/"} replace />;

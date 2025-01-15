@@ -14,7 +14,7 @@ export default function SimpleView({
   ...props
 }: FlexProps & { flush?: boolean; actions?: ReactNode }) {
   return (
-    <Flex as={as} flex={1} direction="column" overflow="hidden" pr="var(--safe-right)" pl="var(--safe-left)" {...props}>
+    <Flex as={as} flex={1} direction="column" pr="var(--safe-right)" pl="var(--safe-left)" {...props}>
       <SimpleHeader title={title}>{actions}</SimpleHeader>
 
       <Flex

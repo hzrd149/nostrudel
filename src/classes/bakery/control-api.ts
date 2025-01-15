@@ -4,7 +4,7 @@ import { PrivateNodeConfig } from "@satellite-earth/core/types";
 import { DatabaseStats } from "@satellite-earth/core/types/control-api/database.js";
 import EventEmitter from "eventemitter3";
 
-import BakeryConnection from "./bakery-connection";
+import BakeryRelay from "./bakery-connection";
 
 type EventMap = {
   message: [ControlResponse];
@@ -12,18 +12,18 @@ type EventMap = {
 };
 
 export default class BakeryControlApi extends EventEmitter<EventMap> {
-  node: BakeryConnection;
+  node: BakeryRelay;
 
   config = new BehaviorSubject<PrivateNodeConfig | undefined>(undefined);
   /** @deprecated this should be a report */
   databaseStats = new Subject<DatabaseStats>();
-  vapidKey = new BehaviorSubject<string|undefined>(undefined);
+  vapidKey = new BehaviorSubject<string | undefined>(undefined);
 
-  constructor(node: BakeryConnection) {
+  constructor(node: BakeryRelay) {
     super();
     this.node = node;
 
-    this.node.authenticated.subscribe((authenticated) => {
+    this.node.authenticated$.subscribe((authenticated) => {
       this.emit("authenticated", authenticated);
       if (authenticated) {
         this.node.sendControlMessage(["CONTROL", "CONFIG", "SUBSCRIBE"]);
@@ -32,7 +32,7 @@ export default class BakeryControlApi extends EventEmitter<EventMap> {
       }
     });
 
-    this.node.onControlResponse.subscribe(this.handleControlResponse.bind(this));
+    this.node.controlResponse$.subscribe(this.handleControlResponse.bind(this));
   }
 
   handleControlResponse(response: ControlResponse) {

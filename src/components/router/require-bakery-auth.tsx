@@ -9,9 +9,9 @@ import { bakery$ } from "../../services/bakery";
 export default function RequireBakeryAuth({ children }: PropsWithChildren) {
   const location = useLocation();
   const bakery = useObservable(bakery$);
-  const isFirstAuthentication = useObservable(bakery?.isFirstAuthentication);
-  const connected = useObservable(bakery?.connectedSub);
-  const authenticated = useObservable(bakery?.authenticated);
+  const isFirstAuthentication = useObservable(bakery?.isFirstAuthentication$);
+  const connected = useObservable(bakery?.connected$);
+  const authenticated = useObservable(bakery?.authenticated$);
   const challenge = useObservable(bakery?.onChallenge);
   const { requestSignature } = useSigningContext();
   const navigate = useNavigate();

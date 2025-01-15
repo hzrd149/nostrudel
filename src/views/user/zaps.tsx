@@ -109,7 +109,7 @@ const UserZapsTab = () => {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+      <VerticalPageLayout maxW="4xl" mx="auto">
         <Flex gap="2" alignItems="center" wrap="wrap">
           <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
             <option value="both">Note & Profile Zaps</option>

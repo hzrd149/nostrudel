@@ -82,7 +82,7 @@ function ConnectConfirmation() {
 export default function BakeryConnectView() {
   const location = useLocation();
   const bakery = useObservable(bakery$);
-  const connected = useObservable(bakery?.connectedSub);
+  const connected = useObservable(bakery?.connected$);
 
   const [params] = useSearchParams();
   const relayParam = params.get("relay");

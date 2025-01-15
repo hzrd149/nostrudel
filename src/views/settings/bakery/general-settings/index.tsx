@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, Textarea } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
+import { firstValueFrom } from "rxjs";
 
 import { controlApi$, clearBakeryURL, bakery$ } from "../../../../services/bakery";
 import SimpleView from "../../../../components/layout/presets/simple-view";
@@ -19,17 +20,13 @@ function BakeryGeneralSettingsPage() {
   useEffect(() => reset(config, { keepDirty: false }), [config]);
 
   const submit = handleSubmit(async (values) => {
+    if (!controlApi) return;
     await controlApi?.send(["CONTROL", "CONFIG", "SET", "name", values.name]);
     await controlApi?.send(["CONTROL", "CONFIG", "SET", "description", values.description]);
     await controlApi?.send(["CONTROL", "CONFIG", "SET", "hyperEnabled", values.hyperEnabled]);
 
     // wait for control api to send config back
-    await new Promise<void>((res) => {
-      const sub = controlApi?.config.subscribe(() => {
-        res();
-        sub?.unsubscribe();
-      });
-    });
+    await firstValueFrom(controlApi?.config);
   });
 
   const disconnect = () => {

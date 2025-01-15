@@ -17,7 +17,7 @@ export default function CacheRelayView() {
   const showAdvanced = useDisclosure({ defaultIsOpen: cacheRelay?.url === ":none:" || cacheRelay?.url === ":memory:" });
 
   return (
-    <SimpleView title="Cache Relay">
+    <SimpleView title="Cache Relay" maxW="4xl">
       <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
         The cache relay is used to cache events locally so they can be loaded quickly
       </Text>

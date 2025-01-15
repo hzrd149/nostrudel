@@ -34,19 +34,16 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
         overscroll="none"
         {...props}
       >
+        <AccountSwitcher />
+        <NavItems />
         <IconButton
           aria-label={collapsed ? "Open" : "Close"}
           title={collapsed ? "Open" : "Close"}
           size="sm"
           variant="ghost"
           onClick={() => setCollapsed(!collapsed)}
-          icon={collapsed ? <ChevronRightIcon boxSize={5} /> : <ChevronLeftIcon boxSize={5} />}
-          position="absolute"
-          bottom="4"
-          right="-4"
+          icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
         />
-        <AccountSwitcher />
-        <NavItems />
       </Flex>
     </CollapsedContext.Provider>
   );

@@ -5,23 +5,24 @@ import { ControlMessage, ControlResponse } from "@satellite-earth/core/types";
 import createDefer, { Deferred } from "../deferred";
 import { logger } from "../../helpers/debug";
 
-export default class BakeryConnection extends Relay {
+export default class BakeryRelay extends Relay {
   log = logger.extend("BakeryConnection");
-  isFirstConnection = new BehaviorSubject(true);
-  isFirstAuthentication = new BehaviorSubject(true);
-  connectedSub = new BehaviorSubject(false);
-  authenticated = new BehaviorSubject(false);
-  onControlResponse = new Subject<ControlResponse>();
+
+  isFirstConnection$ = new BehaviorSubject(true);
+  isFirstAuthentication$ = new BehaviorSubject(true);
+  connected$ = new BehaviorSubject(false);
+  authenticated$ = new BehaviorSubject(false);
+  controlResponse$ = new Subject<ControlResponse>();
 
   constructor(url: string) {
     super(url);
 
     // override _connected property
     Object.defineProperty(this, "_connected", {
-      get: () => this.connectedSub.value,
+      get: () => this.connected$.value,
       set: (v) => {
-        this.connectedSub.next(v);
-        if (v && this.isFirstConnection.value) this.isFirstConnection.next(false);
+        this.connected$.next(v);
+        if (v && this.isFirstConnection$.value) this.isFirstConnection$.next(false);
       },
     });
   }
@@ -29,15 +30,15 @@ export default class BakeryConnection extends Relay {
   sentAuthId = "";
   authPromise: Deferred<string> | null = null;
 
-  onChallenge = new Subject<string | undefined>();
+  onChallenge = new Subject<string>();
 
   authenticate(auth: string | ((evt: EventTemplate) => Promise<VerifiedEvent>)) {
     if (!this.connected) throw new Error("Not connected");
 
-    if (!this.authenticated.value && !this.authPromise) {
+    if (!this.authenticated$.value && !this.authPromise) {
       this.authPromise = createDefer<string>();
 
-      if (this.isFirstAuthentication.value) this.authPromise.then(() => this.isFirstAuthentication.next(false));
+      if (this.isFirstAuthentication$.value) this.authPromise.then(() => this.isFirstAuthentication$.next(false));
 
       // CONTROL auth
       if (typeof auth === "string") {
@@ -48,7 +49,7 @@ export default class BakeryConnection extends Relay {
       // NIP-42 auth
       this.auth(auth)
         .then((response) => {
-          this.authenticated.next(true);
+          this.authenticated$.next(true);
           this.authPromise?.resolve(response);
           this.authPromise = null;
         })
@@ -85,17 +86,15 @@ export default class BakeryConnection extends Relay {
   }
 
   onclose = () => {
-    this.authenticated.next(false);
+    this.authenticated$.next(false);
     // @ts-expect-error
     this.connectionPromise = undefined;
-    // remove the old challenge
-    this.onChallenge.next(undefined);
   };
 
   close(): void {
     super.close();
 
-    this.authenticated.next(false);
+    this.authenticated$.next(false);
     // @ts-expect-error
     this.connectionPromise = undefined;
   }
@@ -110,7 +109,7 @@ export default class BakeryConnection extends Relay {
     switch (response[1]) {
       case "AUTH":
         if (response[2] === "SUCCESS") {
-          this.authenticated.next(true);
+          this.authenticated$.next(true);
           this.authPromise?.resolve("Success");
         } else if (response[2] === "INVALID") {
           this.authPromise?.reject(new Error(response[3]));
@@ -118,7 +117,7 @@ export default class BakeryConnection extends Relay {
         this.authPromise = null;
         break;
       default:
-        this.onControlResponse.next(response);
+        this.controlResponse$.next(response);
         break;
     }
   }

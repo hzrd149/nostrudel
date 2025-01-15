@@ -33,7 +33,7 @@ function ReconnectPrompt() {
 
 export default function ConnectionStatus() {
   const bakery = useObservable(bakery$);
-  const connected = useObservable(bakery?.connectedSub);
+  const connected = useObservable(bakery?.connected$);
 
   if (!bakery || connected) return null;
   return <ReconnectPrompt />;

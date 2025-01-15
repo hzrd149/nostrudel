@@ -22,7 +22,7 @@ export default function UserArticlesTab() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+      <VerticalPageLayout maxW="6xl" mx="auto">
         {articles?.map((article) => (
           <ErrorBoundary key={article.id} event={article}>
             <ArticleCard article={article} />
