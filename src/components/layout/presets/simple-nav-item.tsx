@@ -15,7 +15,7 @@ export default function SimpleNavItem({
       justifyContent="flex-start"
       {...props}
       variant="outline"
-      colorScheme={match ? "brand" : undefined}
+      colorScheme={match ? "primary" : undefined}
     >
       {children}
     </Button>

@@ -74,6 +74,9 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
         left="0"
         bottom="0"
         top="0"
+        zIndex="modal"
+        overflowY="auto"
+        overflowX="hidden"
         {...props}
       >
         <IconButton

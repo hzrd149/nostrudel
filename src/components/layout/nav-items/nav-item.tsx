@@ -32,6 +32,7 @@ export default function NavItem({
         justifyContent="flex-start"
         colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
         to={to}
+        flexShrink={0}
       >
         {label}
       </Button>
@@ -46,6 +47,7 @@ export default function NavItem({
         fontSize="24"
         variant={variant || "ghost"}
         to={to}
+        flexShrink={0}
         colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
       />
     );

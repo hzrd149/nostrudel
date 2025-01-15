@@ -7,6 +7,7 @@ import webRtcRelaysService from "../../../services/webrtc-relays";
 import { QrCodeIcon } from "../../../components/icons";
 import Connection from "./components/connection";
 import useForceUpdate from "../../../hooks/use-force-update";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function WebRtcRelaysView() {
   const update = useForceUpdate();
@@ -22,11 +23,9 @@ export default function WebRtcRelaysView() {
   const unanswered = webRtcRelaysService.pendingIncoming.length;
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px={{ base: "2", lg: 0 }}>
-      <Flex gap="2" alignItems="center" wrap="wrap">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">WebRTC Relays</Heading>
-
+    <SimpleView
+      title="WebRTC Relay"
+      actions={
         <ButtonGroup size="sm" ml="auto">
           <Button as={RouterLink} to="/relays/webrtc/pair" leftIcon={<QrCodeIcon />}>
             Pair{unanswered > 0 ? ` (${unanswered})` : ""}
@@ -35,8 +34,8 @@ export default function WebRtcRelaysView() {
             Connect
           </Button>
         </ButtonGroup>
-      </Flex>
-
+      }
+    >
       <Text fontStyle="italic" mt="-2">
         WebRTC Relays are temporary relays that can be accessed over{" "}
         <Link href="https://webrtc.org/" target="_blank" color="blue.500">
@@ -63,6 +62,6 @@ export default function WebRtcRelaysView() {
           No connections yet, use the "Invite" or "Connect" buttons to connect to peer
         </Alert>
       )}
-    </Flex>
+    </SimpleView>
   );
 }

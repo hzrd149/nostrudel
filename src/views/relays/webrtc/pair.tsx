@@ -33,6 +33,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useUserProfile from "../../../hooks/use-user-profile";
 import useForceUpdate from "../../../hooks/use-force-update";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function NameForm() {
   const publish = usePublishEvent();
@@ -92,12 +93,7 @@ export default function WebRtcPairView() {
   const uri = "webrtc+nostr:" + npub;
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px={{ base: "2", lg: 0 }}>
-      <Flex gap="2" alignItems="center" wrap="wrap">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Pair with WebRTC relay</Heading>
-      </Flex>
-
+    <SimpleView title="Pair with WebRTC relay">
       <Text fontStyle="italic" mt="-2">
         Share this URI with other users to allow them to connect to your local relay
       </Text>
@@ -146,6 +142,6 @@ export default function WebRtcPairView() {
           No connections requests
         </Alert>
       )}
-    </Flex>
+    </SimpleView>
   );
 }

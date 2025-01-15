@@ -1,17 +1,5 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Flex,
-  Heading,
-  Select,
-  SimpleGrid,
-  Switch,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Switch, Text, Tooltip } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { WarningIcon } from "@chakra-ui/icons";
 import { useObservable } from "applesauce-react/hooks";
@@ -19,7 +7,6 @@ import { useObservable } from "applesauce-react/hooks";
 import { offlineMode } from "../../../services/offline-mode";
 import WifiOff from "../../../components/icons/wifi-off";
 import Wifi from "../../../components/icons/wifi";
-import BackButton from "../../../components/router/back-button";
 import AddRelayForm from "./add-relay-form";
 import clientRelaysService, { recommendedReadRelays, recommendedWriteRelays } from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
@@ -35,9 +22,9 @@ import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import localSettings from "../../../services/local-settings";
-import { RelayAuthMode } from "../../../classes/relay-pool";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import HelpCircle from "../../../components/icons/help-circle";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 const JapaneseRelays = safeRelayUrls([
   "wss://r.kojira.io",
@@ -89,22 +76,19 @@ export default function AppRelays() {
   const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1}>
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg" px={{ base: 0, lg: "2" }}>
-          App Relays
-        </Heading>
+    <SimpleView
+      title="App Relays"
+      actions={
         <Button
           onClick={() => offlineMode.next(!offline)}
           leftIcon={offline ? <WifiOff /> : <Wifi />}
           ml="auto"
-          size={{ base: "sm", lg: "md" }}
+          size="sm"
         >
           {offline ? "Offline" : "Online"}
         </Button>
-      </Flex>
-
+      }
+    >
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are stored locally and are used for everything in the app
       </Text>
@@ -212,6 +196,6 @@ export default function AppRelays() {
         <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
         <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
       </SimpleGrid>
-    </Flex>
+    </SimpleView>
   );
 }

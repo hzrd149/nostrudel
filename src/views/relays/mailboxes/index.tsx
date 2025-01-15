@@ -19,6 +19,7 @@ import AddRelayForm from "../app/add-relay-form";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { COMMON_CONTACT_RELAYS } from "../../../const";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
@@ -61,12 +62,7 @@ function MailboxesPage() {
   );
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px="2">
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Mailboxes</Heading>
-        {event && <DebugEventButton event={event} size="sm" ml="auto" />}
-      </Flex>
+    <SimpleView title="Mailboxes" actions={event && <DebugEventButton event={event} size="sm" ml="auto" />}>
       <Text fontStyle="italic" mt="-2">
         Mailbox relays are a way for other users to find your events, or send you events. they are defined in{" "}
         <Link
@@ -106,7 +102,7 @@ function MailboxesPage() {
           <RelayLine key={url} relay={url} mode={RelayMode.WRITE} list={event ?? undefined} />
         ))}
       <AddRelayForm onSubmit={(r) => addRelay(r, RelayMode.WRITE)} />
-    </Flex>
+    </SimpleView>
   );
 }
 

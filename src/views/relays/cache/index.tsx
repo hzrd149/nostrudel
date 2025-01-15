@@ -11,16 +11,13 @@ import NostrRelayTrayCard from "./components/nostr-relay-tray-card";
 import HostedRelayCard from "./components/hosted-relay-card";
 import MemoryRelayCard from "./components/memory-relay-card";
 import NoRelayCard from "./components/no-relay-card";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function CacheRelayView() {
   const showAdvanced = useDisclosure({ defaultIsOpen: localRelay?.url === ":none:" || localRelay?.url === ":memory:" });
 
   return (
-    <Flex gap="2" direction="column" flex={1}>
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Cache Relay</Heading>
-      </Flex>
+    <SimpleView title="Cache Relay">
       <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
         The cache relay is used to cache events locally so they can be loaded quickly
       </Text>
@@ -42,6 +39,6 @@ export default function CacheRelayView() {
           <NoRelayCard />
         </>
       )}
-    </Flex>
+    </SimpleView>
   );
 }

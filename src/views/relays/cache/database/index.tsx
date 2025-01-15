@@ -7,6 +7,7 @@ import BackButton from "../../../../components/router/back-button";
 import { localRelay } from "../../../../services/local-relay";
 import WasmRelay from "../../../../services/wasm-relay";
 import MemoryRelay from "../../../../classes/memory-relay";
+import SimpleView from "../../../../components/layout/presets/simple-view";
 
 const MemoryDatabasePage = lazy(() => import("./memory"));
 const WasmDatabasePage = lazy(() => import("./wasm"));
@@ -26,16 +27,5 @@ export default function DatabaseView() {
   else if (localRelay instanceof CacheRelay) content = <InternalDatabasePage />;
   else if (localRelay instanceof MemoryRelay) content = <MemoryDatabasePage />;
 
-  return (
-    <Flex gap="2" direction="column" flex={1}>
-      <Flex gap="2" direction="column">
-        <Flex gap="2">
-          <BackButton hideFrom="lg" size="sm" />
-          <Heading size="lg">Database Tools</Heading>
-        </Flex>
-
-        {content}
-      </Flex>
-    </Flex>
-  );
+  return <SimpleView title="Event Cache">{content}</SimpleView>;
 }

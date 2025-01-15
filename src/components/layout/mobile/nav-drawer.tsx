@@ -17,6 +17,8 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import NavItems from "../nav-items";
 import TaskManagerButtons from "../../legacy-layout/task-manager-buttons";
 import { ExpandedContext } from "../desktop/side-nav";
+import NavItem from "../nav-items/nav-item";
+import { SettingsIcon } from "../../icons";
 
 export default function NavDrawer({ ...props }: Omit<DrawerProps, "children">) {
   const account = useCurrentAccount();
@@ -42,6 +44,7 @@ export default function NavDrawer({ ...props }: Omit<DrawerProps, "children">) {
                 Sign in
               </Button>
             )}
+            <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
             <TaskManagerButtons mt="auto" flexShrink={0} />
           </DrawerBody>
         </ExpandedContext.Provider>

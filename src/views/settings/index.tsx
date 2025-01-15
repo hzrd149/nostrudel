@@ -30,7 +30,7 @@ export default function SettingsView() {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
 
-  if (showMenu) {
+  if (showMenu)
     return (
       <Flex overflow="hidden" flex={1} direction={{ base: "column", lg: "row" }}>
         <Flex overflowY="auto" overflowX="hidden" h="full" minW="xs" direction="column">
@@ -108,13 +108,12 @@ export default function SettingsView() {
         )}
       </Flex>
     );
-  }
-
-  return (
-    <Suspense fallback={<Spinner />}>
-      <ErrorBoundary>
-        <Outlet />
-      </ErrorBoundary>
-    </Suspense>
-  );
+  else
+    return (
+      <Suspense fallback={<Spinner />}>
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
+      </Suspense>
+    );
 }

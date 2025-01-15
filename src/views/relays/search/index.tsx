@@ -26,6 +26,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import AddRelayForm from "../app/add-relay-form";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function RelayEntry({
   url,
@@ -116,13 +117,7 @@ export default function SearchRelaysView() {
   };
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1}>
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg" px={{ base: 0, lg: "2" }}>
-          Search Relays
-        </Heading>
-      </Flex>
+    <SimpleView title="Search Relays">
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are used to search for users and content
       </Text>
@@ -161,6 +156,6 @@ export default function SearchRelaysView() {
       ))}
 
       <AddRelayForm onSubmit={(relay) => addRelay(relay)} supportedNips={[50]} />
-    </Flex>
+    </SimpleView>
   );
 }
