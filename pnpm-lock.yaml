@@ -301,8 +301,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       rx-nostr:
-        specifier: ^3.4.2
-        version: 3.4.2
+        specifier: ^3.5.0
+        version: 3.5.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -5143,8 +5143,8 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  rx-nostr@3.4.2:
-    resolution: {integrity: sha512-K8SCWyYIE5cd4I8KUfHK207uINyjcU4AY2/G1SlsVEMGbk5IFe28vgqSt87p2JUxzfm4g0/4oWevAlVAERIokw==}
+  rx-nostr@3.5.0:
+    resolution: {integrity: sha512-SFk/WTYKW1GAecyxLKNQlkdedrFfGDeT8nz8wTFriIqd2I6jSV5lm7jBkStcnB4ncDK7GOf4QoLcZfxA+OqaQw==}
 
   rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
@@ -8509,7 +8509,7 @@ snapshots:
       applesauce-core: 0.0.0-next-20250114214607(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
-      rx-nostr: 3.4.2
+      rx-nostr: 3.5.0
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
@@ -11950,7 +11950,7 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  rx-nostr@3.4.2:
+  rx-nostr@3.5.0:
     dependencies:
       nostr-typedef: 0.9.0
       rxjs: 7.8.1

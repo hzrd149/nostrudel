@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { Button, ComponentWithAs, IconButton, IconButtonProps, IconProps } from "@chakra-ui/react";
-import { To, Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { ExpandedContext } from "../desktop/side-nav";
+import { CollapsedContext } from "../context";
 
 export default function NavItem({
   to,
@@ -17,27 +17,10 @@ export default function NavItem({
   colorScheme?: IconButtonProps["colorScheme"];
   variant?: IconButtonProps["variant"];
 }) {
-  const expanded = useContext(ExpandedContext);
+  const collapsed = useContext(CollapsedContext);
   const location = useLocation();
 
-  if (expanded)
-    return (
-      <Button
-        as={RouterLink}
-        aria-label={label}
-        title={label}
-        leftIcon={<Icon boxSize={5} />}
-        variant={variant || "link"}
-        py="2"
-        justifyContent="flex-start"
-        colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
-        to={to}
-        flexShrink={0}
-      >
-        {label}
-      </Button>
-    );
-  else
+  if (collapsed)
     return (
       <IconButton
         as={RouterLink}
@@ -50,5 +33,22 @@ export default function NavItem({
         flexShrink={0}
         colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
       />
+    );
+  else
+    return (
+      <Button
+        as={RouterLink}
+        aria-label={label}
+        title={label}
+        leftIcon={<Icon boxSize={5} />}
+        variant={variant || "link"}
+        p="2"
+        justifyContent="flex-start"
+        colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
+        to={to}
+        flexShrink={0}
+      >
+        {label}
+      </Button>
     );
 }

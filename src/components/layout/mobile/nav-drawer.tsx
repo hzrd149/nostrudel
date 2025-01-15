@@ -1,24 +1,9 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerOverlay,
-  DrawerProps,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Avatar, Drawer, DrawerBody, DrawerContent, DrawerOverlay, DrawerProps, Flex, Text } from "@chakra-ui/react";
 
-import AccountSwitcher from "../../legacy-layout/account-switcher";
+import AccountSwitcher from "../nav-items/account-switcher";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import NavItems from "../nav-items";
-import TaskManagerButtons from "../../legacy-layout/task-manager-buttons";
-import { ExpandedContext } from "../desktop/side-nav";
-import NavItem from "../nav-items/nav-item";
-import { SettingsIcon } from "../../icons";
+import { CollapsedContext } from "../context";
 
 export default function NavDrawer({ ...props }: Omit<DrawerProps, "children">) {
   const account = useCurrentAccount();
@@ -27,7 +12,7 @@ export default function NavDrawer({ ...props }: Omit<DrawerProps, "children">) {
     <Drawer placement="left" {...props}>
       <DrawerOverlay />
       <DrawerContent>
-        <ExpandedContext.Provider value={true}>
+        <CollapsedContext.Provider value={false}>
           <DrawerBody display="flex" flexDirection="column" px="4" pt="4" overflowY="auto" overflowX="hidden" gap="2">
             {account ? (
               <AccountSwitcher />
@@ -38,16 +23,8 @@ export default function NavDrawer({ ...props }: Omit<DrawerProps, "children">) {
               </Flex>
             )}
             <NavItems />
-            <Box h="2" />
-            {!account && (
-              <Button as={RouterLink} to="/signin" colorScheme="primary" flexShrink={0}>
-                Sign in
-              </Button>
-            )}
-            <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
-            <TaskManagerButtons mt="auto" flexShrink={0} />
           </DrawerBody>
-        </ExpandedContext.Provider>
+        </CollapsedContext.Provider>
       </DrawerContent>
     </Drawer>
   );

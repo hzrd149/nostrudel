@@ -92,11 +92,7 @@ export default function AccountSettings() {
             <AccountTypeBadge account={account} ml="4" />
 
             <ButtonGroup size="sm" ml="auto">
-              <Button
-                onClick={() => accountService.switchAccount(account.pubkey)}
-                colorScheme="primary"
-                variant="ghost"
-              >
+              <Button onClick={() => accountService.switchAccount(account.pubkey)} variant="ghost">
                 Switch
               </Button>
               <Button

@@ -1,6 +1,4 @@
-import { BehaviorSubject } from "rxjs";
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 
 import MobileBottomNav from "./bottom-nav";
 import { ErrorBoundary } from "../../error-boundary";

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ButtonProps } from "@chakra-ui/react";
+import { ButtonProps, Spacer } from "@chakra-ui/react";
 import { useLocation } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
@@ -11,6 +11,7 @@ import {
   SearchIcon,
   NotesIcon,
   LightningIcon,
+  SettingsIcon,
 } from "../../icons";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import PuzzlePiece01 from "../../icons/puzzle-piece-01";
@@ -22,6 +23,8 @@ import { internalApps, internalTools } from "../../../views/other-stuff/apps";
 import { App } from "../../../views/other-stuff/component/app-card";
 import NavItem from "./nav-item";
 import { QuestionIcon } from "@chakra-ui/icons";
+import TaskManagerButtons from "../../legacy-layout/task-manager-buttons";
+import Plus from "../../icons/plus";
 
 export default function NavItems() {
   const location = useLocation();
@@ -91,6 +94,9 @@ export default function NavItems() {
 
   return (
     <>
+      {account && account.readonly !== false && (
+        <NavItem icon={Plus} label="Create new" colorScheme="primary" to="/new" variant="solid" />
+      )}
       <NavItem to="/launchpad" icon={Rocket02} label="Launchpad" />
       <NavItem to="/" icon={NotesIcon} colorScheme={location.pathname === "/" ? "primary" : "gray"} label="Notes" />
       <NavItem label="Discover" to="/discovery" icon={PuzzlePiece01} />
@@ -107,7 +113,10 @@ export default function NavItems() {
         <NavItem key={app.id} to={app.to} icon={app.icon || QuestionIcon} label={app.title} />
       ))}
       <NavItem to="/other-stuff" icon={Package} label="More" />
+      <Spacer />
       <NavItem to="/support" icon={LightningIcon} label="Support" />
+      <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
+      <TaskManagerButtons mt="auto" flexShrink={0} />
     </>
   );
 }
