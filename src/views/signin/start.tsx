@@ -16,7 +16,7 @@ import ExtensionAccount from "../../classes/accounts/extension-account";
 import SerialPortAccount from "../../classes/accounts/serial-port-account";
 import AmberAccount from "../../classes/accounts/amber-account";
 import { AndroidNativeSigners } from "./native";
-import { CAP_IS_ANDROID } from "../../env";
+import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
 
 export default function LoginStartView() {
   const location = useLocation();
@@ -98,7 +98,7 @@ export default function LoginStartView() {
           />
         </ButtonGroup>
       )}
-      {AmberClipboardSigner.SUPPORTED && (
+      {CAP_IS_WEB && AmberClipboardSigner.SUPPORTED && (
         <ButtonGroup colorScheme="orange" w="full">
           <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
             Use Amber

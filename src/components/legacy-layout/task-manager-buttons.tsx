@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Button, Flex, FlexProps, IconButton } from "@chakra-ui/react";
+import { Button, Flex, FlexProps } from "@chakra-ui/react";
 
 import { PublishContext } from "../../providers/global/publish-provider";
 import { useTaskManagerContext } from "../../views/task-manager/provider";
