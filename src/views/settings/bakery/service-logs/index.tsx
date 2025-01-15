@@ -50,7 +50,7 @@ export default function BakeryServiceLogsView() {
   }, [logs?.length]);
 
   return (
-    <SimpleView title="Service Logs">
+    <SimpleView title="Service Logs" maxH="100vh">
       <Flex gap="4" alignItems="center" flexShrink={0}>
         <Button onClick={drawer.onOpen} hideFrom="2xl">
           Select Service

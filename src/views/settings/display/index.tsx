@@ -9,14 +9,12 @@ import {
   Select,
   Textarea,
   Link,
-  Heading,
   Button,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
 import localSettings from "../../../services/local-settings";
 import useSettingsForm from "../use-settings-form";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function DisplaySettings() {
@@ -24,7 +22,6 @@ export default function DisplaySettings() {
 
   const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
   const enableNoteDrawer = useObservable(localSettings.enableNoteThreadDrawer);
-  const showBrandLogo = useObservable(localSettings.showBrandLogo);
 
   return (
     <SimpleView
@@ -181,21 +178,6 @@ export default function DisplaySettings() {
         </Flex>
         <FormHelperText>
           <span>Enabled: Clicking on an embedded note will open it in a side drawer</span>
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="showBrandLogo" mb="0">
-            Show noStrudel logo
-          </FormLabel>
-          <Switch
-            id="showBrandLogo"
-            isChecked={showBrandLogo}
-            onChange={(e) => localSettings.showBrandLogo.next(e.currentTarget.checked)}
-          />
-        </Flex>
-        <FormHelperText>
-          <span>Show / Hide the noStrudel logo in the side nav</span>
         </FormHelperText>
       </FormControl>
       <FormControl>

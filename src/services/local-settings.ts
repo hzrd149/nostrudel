@@ -57,9 +57,6 @@ const defaultAuthenticationMode = new LocalStorageEntry("default-relay-auth-mode
 const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
 const debugApi = new BooleanLocalStorageEntry("debug-api", false);
 
-// display settings
-const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
-
 // notifications
 const deviceId = new LocalStorageEntry("device-id", nanoid());
 
@@ -80,7 +77,6 @@ const localSettings = {
   addClientTag,
   verifyEventMethod,
   enableKeyboardShortcuts,
-  showBrandLogo,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
   debugApi,

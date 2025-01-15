@@ -37,7 +37,7 @@ function BakeryGeneralSettingsPage() {
   };
 
   return (
-    <SimpleView title="Node Settings">
+    <SimpleView title="Node Settings" maxW="4xl" gap="4">
       <FormControl>
         <FormLabel>Bakery URL</FormLabel>
         <Flex maxW="lg" gap="2">
@@ -50,14 +50,14 @@ function BakeryGeneralSettingsPage() {
 
       <Flex as="form" onSubmit={submit} direction="column" maxW="lg" gap="4">
         <FormControl isRequired>
-          <FormLabel>Node Name</FormLabel>
+          <FormLabel>Bakery Name</FormLabel>
           <Input type="text" {...register("name", { required: true })} isRequired autoComplete="off" />
-          <FormHelperText>The publicly visible name of your node</FormHelperText>
+          <FormHelperText>The publicly visible name of your bakery relay</FormHelperText>
         </FormControl>
         <FormControl>
           <FormLabel>Description</FormLabel>
           <Textarea {...register("description")} />
-          <FormHelperText>A short description about your node</FormHelperText>
+          <FormHelperText>A short description about your bakery</FormHelperText>
         </FormControl>
 
         <Button

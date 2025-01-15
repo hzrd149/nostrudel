@@ -62,7 +62,7 @@ function RelaySetCard({ label, read, write }: { label: string; read: Iterable<st
   );
 }
 
-export default function AppRelays() {
+export default function AppRelaysView() {
   const account = useCurrentAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
@@ -78,6 +78,7 @@ export default function AppRelays() {
   return (
     <SimpleView
       title="App Relays"
+      maxW="6xl"
       actions={
         <Button
           onClick={() => offlineMode.next(!offline)}

@@ -31,7 +31,7 @@ export default function NavItem({
         variant={variant || "ghost"}
         to={to}
         flexShrink={0}
-        colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
+        colorScheme={colorScheme || (location.pathname.startsWith(to) ? "primary" : undefined)}
       />
     );
   else
@@ -44,7 +44,7 @@ export default function NavItem({
         variant={variant || "link"}
         p="2"
         justifyContent="flex-start"
-        colorScheme={colorScheme || location.pathname.startsWith(to) ? "primary" : undefined}
+        colorScheme={colorScheme || (location.pathname.startsWith(to) ? "primary" : undefined)}
         to={to}
         flexShrink={0}
       >

@@ -45,23 +45,10 @@ function EmailForm() {
 
 export default function NotificationSettingsView() {
   return (
-    <SimpleView title="Notifications">
-      <Flex direction="column" maxW="2xl" gap="4">
-        {(CAP_IS_WEB || import.meta.env.DEV) && (
-          <>
-            <WebPushNotificationSettings />
-            <Divider />
-          </>
-        )}
-
-        {(CAP_IS_NATIVE || import.meta.env.DEV) && (
-          <>
-            <NtfyNotificationSettings />
-            <Divider />
-          </>
-        )}
-        <OtherSubscriptions />
-      </Flex>
+    <SimpleView title="Notifications" maxW="4xl" gap="4">
+      {(CAP_IS_WEB || import.meta.env.DEV) && <WebPushNotificationSettings />}
+      {(CAP_IS_NATIVE || import.meta.env.DEV) && <NtfyNotificationSettings />}
+      <OtherSubscriptions />
     </SimpleView>
   );
 }

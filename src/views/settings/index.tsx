@@ -11,6 +11,7 @@ import {
   LightningIcon,
   NotesIcon,
   PerformanceIcon,
+  RelayIcon,
   SearchIcon,
   SpyIcon,
 } from "../../components/icons";
@@ -45,7 +46,7 @@ export default function SettingsView() {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
 
-  const bakery = useObservable(bakery$)
+  const bakery = useObservable(bakery$);
 
   if (showMenu)
     return (
@@ -74,6 +75,12 @@ export default function SettingsView() {
             <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
               Display
             </SimpleNavItem>
+            <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
+              Relays
+            </SimpleNavItem>
+            <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
+              Cache
+            </SimpleNavItem>
             <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
               Posts
             </SimpleNavItem>
@@ -92,7 +99,7 @@ export default function SettingsView() {
 
             {bakery ? (
               <>
-                <DividerHeader title="bakery" />
+                <DividerHeader title="Bakery" />
                 <SimpleNavItem to="/settings/bakery">General</SimpleNavItem>
                 <SimpleNavItem to="/settings/bakery/notifications" leftIcon={<Bell01 boxSize={5} />}>
                   Notifications

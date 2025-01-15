@@ -76,7 +76,7 @@ import RelayView from "./views/relays/relay";
 import BrowseRelaySetsView from "./views/relays/browse-sets";
 import CacheRelayView from "./views/relays/cache";
 import RelaySetView from "./views/relays/relay-set";
-import AppRelays from "./views/relays/app";
+import AppRelaysView from "./views/relays/app";
 import MailboxesView from "./views/relays/mailboxes";
 import NIP05RelaysView from "./views/relays/nip05";
 import DatabaseView from "./views/relays/cache/database";
@@ -292,8 +292,10 @@ const router = createBrowserRouter([
           { path: "media-servers", element: <MediaServersView /> },
           { path: "search-relays", element: <SearchRelaysView /> },
 
-          { path: "post", element: <PostSettings /> },
+          { path: "relays", element: <AppRelaysView /> },
+          { path: "cache", element: <CacheRelayView /> },
           { path: "display", element: <DisplaySettings /> },
+          { path: "post", element: <PostSettings /> },
           { path: "privacy", element: <PrivacySettings /> },
           { path: "lightning", element: <LightningSettings /> },
           { path: "performance", element: <PerformanceSettings /> },
@@ -330,8 +332,8 @@ const router = createBrowserRouter([
         path: "relays",
         element: <RelaysView />,
         children: [
-          { path: "", element: <AppRelays /> },
-          { path: "app", element: <AppRelays /> },
+          { path: "", element: <AppRelaysView /> },
+          { path: "app", element: <AppRelaysView /> },
           {
             path: "cache",
             children: [
