@@ -42,8 +42,16 @@ function RelayEntry({
   const { info } = useRelayInfo(url);
 
   return (
-    <Flex key={url} gap="2" alignItems="center" pl="2">
-      <RelayFavicon relay={url} size="xs" outline="2px solid" />
+    <Flex
+      key={url}
+      gap="2"
+      alignItems="center"
+      p="2"
+      borderWidth="1px"
+      borderRadius="lg"
+      borderColor={isDefault ? "primary.500" : undefined}
+    >
+      <RelayFavicon relay={url} size="sm" outline="2px solid" />
       <Box overflow="hidden">
         <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
           {url}
@@ -60,7 +68,7 @@ function RelayEntry({
           Default
         </Button>
         <IconButton
-          aria-label="Remove Relay"
+          aria-label="Remove relay"
           icon={<CloseIcon />}
           colorScheme="red"
           onClick={() => onRemove()}
@@ -117,7 +125,7 @@ export default function SearchRelaysView() {
   };
 
   return (
-    <SimpleView title="Search Relays">
+    <SimpleView title="Search Relays" maxW="4xl">
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are used to search for users and content
       </Text>

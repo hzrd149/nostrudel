@@ -18,7 +18,6 @@ const BlindspotFeedView = lazy(() => import("./views/discovery/blindspot/feed"))
 const RelayDiscoveryView = lazy(() => import("./views/discovery/relays/index"));
 const MediaFeedView = lazy(() => import("./views/media/index"));
 const MediaPostView = lazy(() => import("./views/media/media-post"));
-import SettingsView from "./views/settings";
 import NostrLinkView from "./views/link";
 import ProfileView from "./views/profile";
 const HashTagView = lazy(() => import("./views/hashtag"));
@@ -91,13 +90,7 @@ const VideoDetailsView = lazy(() => import("./views/videos/video"));
 import BookmarksView from "./views/bookmarks";
 import TaskManagerProvider from "./views/task-manager/provider";
 import SearchRelaysView from "./views/relays/search";
-import DisplaySettings from "./views/settings/display";
-import LightningSettings from "./views/settings/lightning";
-import PerformanceSettings from "./views/settings/performance";
-import PrivacySettings from "./views/settings/privacy";
-import PostSettings from "./views/settings/post";
-import AccountSettings from "./views/settings/accounts";
-import MediaServersView from "./views/settings/media-servers";
+
 import ArticlesHomeView from "./views/articles";
 import ArticleView from "./views/articles/article";
 import WalletView from "./views/wallet";
@@ -159,6 +152,16 @@ const RequireBakery = lazy(() => import("./components/router/require-bakery"));
 const BakerySetupView = lazy(() => import("./views/bakery/setup"));
 const BakeryAuthView = lazy(() => import("./views/bakery/connect/auth"));
 const RequireBakeryAuth = lazy(() => import("./components/router/require-bakery-auth"));
+
+// setting views
+import SettingsView from "./views/settings";
+import DisplaySettings from "./views/settings/display";
+import LightningSettings from "./views/settings/lightning";
+import PerformanceSettings from "./views/settings/performance";
+import PrivacySettings from "./views/settings/privacy";
+import PostSettings from "./views/settings/post";
+import AccountSettings from "./views/settings/accounts";
+import MediaServersView from "./views/settings/media-servers";
 const NotificationSettingsView = lazy(() => import("./views/settings/bakery/notifications"));
 const BakeryGeneralSettingsView = lazy(() => import("./views/settings/bakery/general-settings"));
 const BakeryNetworkSettingsView = lazy(() => import("./views/settings/bakery/network"));
@@ -278,7 +281,6 @@ const router = createBrowserRouter([
         element: <SettingsView />,
         children: [
           { path: "", element: <DisplaySettings /> },
-          { path: "post", element: <PostSettings /> },
           {
             path: "accounts",
             element: (
@@ -287,11 +289,15 @@ const router = createBrowserRouter([
               </RequireCurrentAccount>
             ),
           },
+          { path: "mailboxes", element: <MailboxesView /> },
+          { path: "media-servers", element: <MediaServersView /> },
+          { path: "search-relays", element: <SearchRelaysView /> },
+
+          { path: "post", element: <PostSettings /> },
           { path: "display", element: <DisplaySettings /> },
           { path: "privacy", element: <PrivacySettings /> },
           { path: "lightning", element: <LightningSettings /> },
           { path: "performance", element: <PerformanceSettings /> },
-          { path: "media-servers", element: <MediaServersView /> },
           {
             path: "bakery",
             children: [

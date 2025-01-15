@@ -6,10 +6,12 @@ import {
   AlertTitle,
   Box,
   Button,
+  ButtonGroup,
   CloseButton,
   Divider,
   Flex,
   Heading,
+  IconButton,
   Input,
   Link,
   Modal,
@@ -37,6 +39,7 @@ import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { isServerTag } from "../../../helpers/nostr/blossom";
 import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { CloseIcon } from "@chakra-ui/icons";
 
 function MediaServersPage() {
   const toast = useToast();
@@ -168,30 +171,33 @@ function MediaServersPage() {
             borderColor={i === 0 ? "primary.500" : undefined}
           >
             <MediaServerFavicon server={server.toString()} size="sm" />
-            <Link href={server.toString()} target="_blank" color="blue.500" fontSize="lg">
+            <Link href={server.toString()} target="_blank" fontSize="lg">
               {new URL(server).hostname}
             </Link>
 
-            <Button
-              ml="auto"
-              variant={i === 0 ? "solid" : "outline"}
-              colorScheme={i === 0 ? "primary" : undefined}
-              size="sm"
-              onClick={() => makeDefault(server.toString())}
-              isDisabled={i === 0}
-            >
-              Default
-            </Button>
-            <CloseButton onClick={() => removeServer(server.toString())} />
+            <ButtonGroup size="sm" ml="auto">
+              <Button
+                variant={i === 0 ? "solid" : "ghost"}
+                colorScheme={i === 0 ? "primary" : undefined}
+                onClick={() => makeDefault(server.toString())}
+                isDisabled={i === 0}
+              >
+                Default
+              </Button>
+              <IconButton
+                aria-label="Remove server"
+                icon={<CloseIcon />}
+                colorScheme="red"
+                onClick={() => removeServer(server.toString())}
+                variant="ghost"
+              />
+            </ButtonGroup>
           </Flex>
         ))}
       </Flex>
 
       {mediaUploadService === "blossom" && (
         <>
-          <Heading size="sm" mt="2">
-            Add media server
-          </Heading>
           <Flex as="form" onSubmit={submit} gap="2">
             <Input {...register("server", { required: true })} required placeholder="https://cdn.satellite.earth" />
             <Button type="submit" colorScheme="primary">

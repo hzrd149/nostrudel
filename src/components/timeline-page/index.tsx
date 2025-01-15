@@ -12,6 +12,7 @@ import { NostrEvent } from "../../types/nostr-event";
 import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import VerticalPageLayout from "../vertical-page-layout";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -58,11 +59,11 @@ export default function TimelinePage({
   };
   return (
     <IntersectionObserverProvider callback={callback}>
-      <Flex direction="column" gap="2" {...props}>
+      <VerticalPageLayout maxW="6xl" mx="auto" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus timeline={loader} />
-      </Flex>
+      </VerticalPageLayout>
     </IntersectionObserverProvider>
   );
 }

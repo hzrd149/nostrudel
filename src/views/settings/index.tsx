@@ -1,4 +1,5 @@
-import { Divider, Flex, Link, Spinner, Text } from "@chakra-ui/react";
+import { Suspense } from "react";
+import { Divider, Flex, Link, Spacer, Spinner, Text } from "@chakra-ui/react";
 import { Outlet, useMatch } from "react-router-dom";
 
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
@@ -10,6 +11,7 @@ import {
   LightningIcon,
   NotesIcon,
   PerformanceIcon,
+  SearchIcon,
   SpyIcon,
 } from "../../components/icons";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -22,7 +24,19 @@ import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import Bell01 from "../../components/icons/bell-01";
 import Share07 from "../../components/icons/share-07";
 import Database01 from "../../components/icons/database-01";
-import { Suspense } from "react";
+import Mail02 from "../../components/icons/mail-02";
+
+function DividerHeader({ title }: { title: string }) {
+  return (
+    <Flex alignItems="center" gap="2">
+      <Divider />
+      <Text fontWeight="bold" fontSize="md">
+        {title}
+      </Text>
+      <Divider />
+    </Flex>
+  );
+}
 
 export default function SettingsView() {
   const account = useCurrentAccount();
@@ -37,23 +51,29 @@ export default function SettingsView() {
           <SimpleHeader title="Settings" />
           <Flex direction="column" p="2" gap="2">
             {account && (
-              <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>
-                Accounts
-              </SimpleNavItem>
+              <>
+                <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>
+                  Accounts
+                </SimpleNavItem>
+                <SimpleNavItem to="/settings/mailboxes" leftIcon={<Mail02 boxSize={6} />}>
+                  Mailboxes
+                </SimpleNavItem>
+                <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={6} />}>
+                  Media Servers
+                </SimpleNavItem>
+                <SimpleNavItem to="/settings/search-relays" leftIcon={<SearchIcon boxSize={6} />}>
+                  Search Relays
+                </SimpleNavItem>
+              </>
             )}
+
+            <DividerHeader title="App" />
             <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
               Display
             </SimpleNavItem>
             <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
               Posts
             </SimpleNavItem>
-            {account && (
-              <>
-                <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={6} />}>
-                  Media Servers
-                </SimpleNavItem>
-              </>
-            )}
             <SimpleNavItem to="/settings/performance" leftIcon={<PerformanceIcon boxSize={5} />}>
               Performance
             </SimpleNavItem>
@@ -68,14 +88,8 @@ export default function SettingsView() {
             </SimpleNavItem>
 
             {bakery && (
-              <Flex direction="column" gap="2">
-                <Flex alignItems="center" gap="2">
-                  <Divider />
-                  <Text fontWeight="bold" fontSize="md">
-                    Bakery
-                  </Text>
-                  <Divider />
-                </Flex>
+              <>
+                <DividerHeader title="Relay" />
                 <SimpleNavItem to="/settings/bakery">Bakery</SimpleNavItem>
                 <SimpleNavItem to="/settings/bakery/notifications" leftIcon={<Bell01 boxSize={5} />}>
                   Notifications
@@ -86,15 +100,14 @@ export default function SettingsView() {
                 <SimpleNavItem to="/settings/bakery/logs" leftIcon={<Database01 />}>
                   Service Logs
                 </SimpleNavItem>
-              </Flex>
+              </>
             )}
 
-            <Divider />
-
             <Flex alignItems="center">
-              <Link isExternal href="https://github.com/hzrd149/nostrudel" flex={1}>
+              <Link isExternal href="https://github.com/hzrd149/nostrudel">
                 <GithubIcon /> Github
               </Link>
+              <Spacer />
               <VersionButton />
             </Flex>
           </Flex>

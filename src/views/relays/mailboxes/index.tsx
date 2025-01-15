@@ -13,7 +13,6 @@ import { RelayMode } from "../../../classes/relay";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import BackButton from "../../../components/router/back-button";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import AddRelayForm from "../app/add-relay-form";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
