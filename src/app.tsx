@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createHashRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router-dom";
 import { Spinner } from "@chakra-ui/react";
 
 import { ErrorBoundary } from "./components/error-boundary";
@@ -184,7 +184,7 @@ const NoLayoutPage = () => {
   );
 };
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: "signin",
     element: <SigninView />,

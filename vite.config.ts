@@ -18,15 +18,17 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "prompt",
-      // strategies: "injectManifest",
-      // srcDir: "src",
-      // filename: "sw.ts",
-      // devOptions: {
-      //   // NOTE: ESM service workers is not supported by firefox
-      //   type: "module",
-      //   enabled: true,
-      // },
+      strategies: "injectManifest",
+      registerType: "autoUpdate",
+      injectRegister: null,
+      srcDir: "src",
+      filename: "worker.ts",
+      injectManifest: {
+        minify: false,
+        sourcemap: true,
+        // This increase the cache limit to 4mB
+        maximumFileSizeToCacheInBytes: 2097152 * 2,
+      },
       workbox: {
         // This increase the cache limit to 4mB
         maximumFileSizeToCacheInBytes: 2097152 * 2,
@@ -51,33 +53,23 @@ export default defineConfig({
         scope: "/",
         shortcuts: [
           {
-            name: "Notifications",
-            url: "/#/notifications",
-            description: "",
-          },
-          {
             name: "Notes",
-            url: "/#/",
+            url: "/",
             description: "",
           },
           {
             name: "Notifications",
-            url: "/#/notifications",
+            url: "/notifications",
             description: "",
           },
           {
             name: "Messages",
-            url: "/#/dm",
+            url: "/messages",
             description: "",
           },
           {
             name: "Streams",
-            url: "/#/streams",
-            description: "",
-          },
-          {
-            name: "Wiki",
-            url: "/#/wiki",
+            url: "/streams",
             description: "",
           },
         ],
