@@ -21,7 +21,6 @@ export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
-  const enableNoteDrawer = useObservable(localSettings.enableNoteThreadDrawer);
 
   return (
     <SimpleView
@@ -163,21 +162,6 @@ export default function DisplaySettings() {
         </Flex>
         <FormHelperText>
           <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="enableNoteDrawer" mb="0">
-            Open embedded notes in side drawer
-          </FormLabel>
-          <Switch
-            id="enableNoteDrawer"
-            isChecked={enableNoteDrawer}
-            onChange={() => localSettings.enableNoteThreadDrawer.next(!localSettings.enableNoteThreadDrawer.value)}
-          />
-        </Flex>
-        <FormHelperText>
-          <span>Enabled: Clicking on an embedded note will open it in a side drawer</span>
         </FormHelperText>
       </FormControl>
       <FormControl>

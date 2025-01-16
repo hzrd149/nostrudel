@@ -6,7 +6,6 @@ import GlobalStyles from "./styles";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import AppLayout from "./components/layout";
-import DrawerSubViewProvider from "./providers/drawer-sub-view-provider";
 import { RouteProviders } from "./providers/route";
 import useSetColorMode from "./hooks/use-set-color-mode";
 
@@ -138,11 +137,9 @@ export const App = () => (
   <ErrorBoundary>
     <GlobalStyles />
     <TaskManagerProvider parentRouter={router}>
-      <DrawerSubViewProvider parentRouter={router}>
-        <Suspense fallback={<Spinner />}>
-          <RouterProvider router={router} />
-        </Suspense>
-      </DrawerSubViewProvider>
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </TaskManagerProvider>
   </ErrorBoundary>
 );

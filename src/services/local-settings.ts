@@ -14,14 +14,6 @@ import { nanoid } from "nanoid";
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
 const wasmPersistForDays = new NullableNumberLocalStorageEntry("wasm-relay-oldest-event", 365);
 
-// note behavior
-const enableNoteThreadDrawer = new LocalStorageEntry(
-  "enable-note-thread-drawer",
-  false,
-  (raw) => raw === "true",
-  (v) => String(v),
-);
-
 const hideZapBubbles = new BooleanLocalStorageEntry("hide-zap-bubbles", false);
 
 // webrtc relay
@@ -72,7 +64,6 @@ const bakeryURL = new LocalStorageEntry<string>("bakery-url", "");
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
-  enableNoteThreadDrawer,
   hideZapBubbles,
   webRtcLocalIdentity,
   webRtcSignalingRelays,

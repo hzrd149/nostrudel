@@ -34,7 +34,6 @@ import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../../views/thread/components/reply-form";
 import { getThreadReferences } from "../../../helpers/nostr/event";
 import Timestamp from "../../timestamp";
-import OpenInDrawerButton from "../open-in-drawer-button";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import NoteCommunityMetadata from "./note-community-metadata";
@@ -100,9 +99,6 @@ export function TimelineNote({
               <NotePublishedUsing event={event} />
               <Flex grow={1} />
               {showSignatureVerification && <EventVerificationIcon event={event} />}
-              {!hideDrawerButton && (
-                <OpenInDrawerButton to={`/n/${getSharableEventAddress(event)}`} size="sm" variant="ghost" />
-              )}
             </Flex>
             <NoteCommunityMetadata event={event} />
             {showReplyLine && <ReplyContext event={event} />}
