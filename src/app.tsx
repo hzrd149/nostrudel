@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration } from "react-router";
+import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, Location } from "react-router";
 
 import GlobalStyles from "./styles";
 
@@ -12,16 +12,14 @@ import useSetColorMode from "./hooks/use-set-color-mode";
 
 import TaskManagerProvider from "./views/task-manager/provider";
 
-/*
-  TODO: update scroll restoration to use a different key then location.key
-  the location.key changes when location.state changes, but that should not change the scroll position
-*/
+const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
+
 const RootPage = () => {
   useSetColorMode();
 
   return (
     <RouteProviders>
-      <ScrollRestoration />
+      <ScrollRestoration getKey={getScrollKey} />
       <AppLayout />
     </RouteProviders>
   );
@@ -29,7 +27,7 @@ const RootPage = () => {
 const NoLayoutPage = () => {
   return (
     <RouteProviders>
-      <ScrollRestoration />
+      <ScrollRestoration getKey={getScrollKey} />
       <Suspense fallback={<Spinner />}>
         <Outlet />
       </Suspense>

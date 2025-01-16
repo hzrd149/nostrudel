@@ -1,9 +1,9 @@
-import { useObservable } from 'applesauce-react/hooks';
+import { useObservable } from "applesauce-react/hooks";
 
-import useReport from '../use-report';
+import useReport from "../use-report";
 
 export default function useNetworkOverviewReport() {
-	const report = useReport('NETWORK_STATUS', 'network-status', {});
+  const report = useReport("NETWORK_STATUS", "network-status", {});
 
-	return useObservable(report?.status);
+  return useObservable(report?.status);
 }
