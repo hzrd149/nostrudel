@@ -1,7 +1,7 @@
+import { ReactNode } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 
 import SimpleHeader from "./simple-header";
-import { ReactNode } from "react";
 
 export default function SimpleView({
   children,
@@ -20,8 +20,6 @@ export default function SimpleView({
 
       <Flex
         direction="column"
-        overflowY="auto"
-        overflowX="hidden"
         px={flush ? 0 : "4"}
         pt={flush ? 0 : "4"}
         pb={flush ? 0 : "max(1rem, var(--safe-bottom))"}

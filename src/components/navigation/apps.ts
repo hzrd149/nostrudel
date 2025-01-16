@@ -1,3 +1,5 @@
+import { ComponentWithAs, IconProps } from "@chakra-ui/react";
+
 import {
   ArticleIcon,
   BadgeIcon,
@@ -11,21 +13,52 @@ import {
   MapIcon,
   MediaIcon,
   MuteIcon,
+  NotesIcon,
+  NotificationsIcon,
   SearchIcon,
   TorrentIcon,
   TrackIcon,
   VideoIcon,
   WikiIcon,
-} from "../../components/icons";
-import { App } from "./component/app-card";
-import ShieldOff from "../../components/icons/shield-off";
-import MessageQuestionSquare from "../../components/icons/message-question-square";
-import UploadCloud01 from "../../components/icons/upload-cloud-01";
-import Edit04 from "../../components/icons/edit-04";
-import Users03 from "../../components/icons/users-03";
-import FileAttachment01 from "../../components/icons/file-attachment-01";
+} from "../icons";
+import ShieldOff from "../icons/shield-off";
+import MessageQuestionSquare from "../icons/message-question-square";
+import UploadCloud01 from "../icons/upload-cloud-01";
+import Edit04 from "../icons/edit-04";
+import Users03 from "../icons/users-03";
+import FileAttachment01 from "../icons/file-attachment-01";
+import Rocket02 from "../icons/rocket-02";
+import PuzzlePiece01 from "../icons/puzzle-piece-01";
+
+export type App = {
+  icon?: ComponentWithAs<"svg", IconProps>;
+  image?: string;
+  title: string;
+  description: string;
+  id: string;
+  isExternal?: boolean;
+  to: string;
+};
 
 export const internalApps: App[] = [
+  { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
+  { title: "Launchpad", description: "Quick account overview", icon: Rocket02, id: "launchpad", to: "/launchpad" },
+  { title: "Discover", description: "Discover new feeds", icon: PuzzlePiece01, id: "discover", to: "/discovery" },
+  {
+    title: "Notifications",
+    description: "Notifications feed",
+    icon: NotificationsIcon,
+    id: "notifications",
+    to: "/notifications",
+  },
+  {
+    title: "Messages",
+    description: "Direct Messages",
+    icon: DirectMessagesIcon,
+    id: "messages",
+    to: "/messages",
+  },
+  { title: "Search", description: "Search for users and notes", icon: SearchIcon, id: "search", to: "/search" },
   {
     title: "Streams",
     description: "Watch live streams",
@@ -218,5 +251,7 @@ export const externalTools: App[] = [
     isExternal: true,
   },
 ];
+
+export const defaultFavoriteApps = ["launchpad", "notes", "discover", "notifications", "messages", "search"];
 
 export const allApps = [...internalApps, ...internalTools, ...externalTools];

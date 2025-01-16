@@ -15,7 +15,7 @@ export default function SimpleHeader({ children, title, ...props }: Omit<FlexPro
       top="var(--safe-top)"
       mt="var(--safe-top)"
       backgroundColor="var(--chakra-colors-chakra-body-bg)"
-      zIndex="popover"
+      zIndex="modal"
       {...props}
     >
       <BackIconButton hideFrom="lg" />

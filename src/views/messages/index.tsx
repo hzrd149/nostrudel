@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import { Outlet, Link as RouterLink, useLocation, useParams } from "react-router";
+import { Link as RouterLink, useLocation } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
@@ -21,6 +21,8 @@ import { CheckIcon } from "../../components/icons";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
+import ContainedParentView from "../../components/layout/presets/contained-parent-view";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useEventIntersectionRef(message);
@@ -59,8 +61,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
   );
 }
 
-function DirectMessagesPage() {
-  const params = useParams();
+function MessagesHomePage() {
   const { people } = usePeopleListContext();
 
   const account = useCurrentAccount()!;
@@ -76,44 +77,28 @@ function DirectMessagesPage() {
     return filtered.sort((a, b) => b.messages[0].created_at - a.messages[0].created_at);
   }, [messages, people, account.pubkey]);
 
-  const isChatOpen = !!params.pubkey;
-
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <Flex gap="4" h={{ base: "calc(100vh - 3.5rem)", md: "100vh" }} overflow="hidden">
-      <Flex
-        gap="2"
-        direction="column"
-        w={!isChatOpen ? { base: "full", lg: "sm" } : "sm"}
-        overflowX="hidden"
-        overflowY="auto"
-        py="2"
-        px={{ base: "2", lg: 0 }}
-        hideBelow={!isChatOpen ? undefined : "xl"}
-      >
-        <Flex gap="2">
-          <PeopleListSelection flexShrink={0} />
-        </Flex>
-        <IntersectionObserverProvider callback={callback}>
-          {conversations.map((conversation) => (
-            <ConversationCard key={conversation.pubkeys.join("-")} conversation={conversation} />
-          ))}
-        </IntersectionObserverProvider>
-        <TimelineActionAndStatus timeline={timeline} />
+    <ContainedParentView path="/messages" width="md">
+      <Flex gap="2">
+        <PeopleListSelection flexShrink={0} size="sm" />
       </Flex>
-      <Flex gap="2" direction="column" flex={1} hideBelow={!isChatOpen ? "xl" : undefined} overflow="hidden">
-        <Outlet />
-      </Flex>
-    </Flex>
+      <IntersectionObserverProvider callback={callback}>
+        {conversations.map((conversation) => (
+          <ConversationCard key={conversation.pubkeys.join("-")} conversation={conversation} />
+        ))}
+      </IntersectionObserverProvider>
+      <TimelineActionAndStatus timeline={timeline} />
+    </ContainedParentView>
   );
 }
 
-export default function DirectMessagesView() {
+export default function MessagesHomeView() {
   return (
     <RequireCurrentAccount>
       <PeopleListProvider initList="global">
-        <DirectMessagesPage />
+        <MessagesHomePage />
       </PeopleListProvider>
     </RequireCurrentAccount>
   );

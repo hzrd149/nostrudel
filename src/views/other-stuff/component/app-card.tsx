@@ -1,17 +1,9 @@
-import { Link as RouterLink, To } from "react-router";
-import { Card, ComponentWithAs, Flex, Heading, IconProps, Image, LinkBox, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router";
+import { Card, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-
-export type App = {
-  icon?: ComponentWithAs<"svg", IconProps>;
-  image?: string;
-  title: string;
-  description: string;
-  id: string;
-  isExternal?: boolean;
-  to: string;
-};
+import { App } from "../../../components/navigation/apps";
+import AppFavoriteButton from "../../../components/navigation/app-favorite-button";
 
 export function AppIcon({ app, size }: { app: App; size: string }) {
   if (app.icon) {
@@ -21,7 +13,15 @@ export function AppIcon({ app, size }: { app: App; size: string }) {
   return null;
 }
 
-export default function AppCard({ app, onClick }: { app: App; onClick?: () => void }) {
+export default function AppCard({
+  app,
+  canFavorite = true,
+  onClick,
+}: {
+  app: App;
+  onClick?: () => void;
+  canFavorite?: boolean;
+}) {
   return (
     <Flex as={LinkBox} gap="4" alignItems="flex-start">
       <Card p="3" borderRadius="lg">
@@ -41,6 +41,8 @@ export default function AppCard({ app, onClick }: { app: App; onClick?: () => vo
         </Heading>
         <Text>{app.description}</Text>
       </Flex>
+
+      {canFavorite && <AppFavoriteButton app={app} variant="ghost" ms="auto" my="2" mr="2" />}
     </Flex>
   );
 }

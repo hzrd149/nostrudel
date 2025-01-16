@@ -1,5 +1,5 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router";
 import { NostrEvent, kinds } from "nostr-tools";
 
@@ -12,7 +12,6 @@ import useCurrentAccount from "../../hooks/use-current-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
 import SendMessageForm from "./components/send-message-form";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ThreadDrawer from "./components/thread-drawer";
@@ -24,8 +23,10 @@ import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { truncateId } from "../../helpers/string";
 import useRouterMarker from "../../hooks/use-router-marker";
-import { BackIconButton } from "../../components/router/back-button";
 import decryptionCacheService from "../../services/decryption-cache";
+import SimpleView from "../../components/layout/presets/simple-view";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import SimpleHeader from "../../components/layout/presets/simple-header";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
@@ -113,14 +114,17 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   return (
     <ThreadsProvider timeline={loader}>
-      <IntersectionObserverProvider callback={callback}>
-        <Card size="sm" flexShrink={0} p="2" flexDirection="row">
-          <Flex gap="2" alignItems="center">
-            <BackIconButton />
-            <UserAvatar pubkey={pubkey} size="sm" />
-            <UserLink pubkey={pubkey} fontWeight="bold" />
-            <UserDnsIdentity pubkey={pubkey} onlyIcon />
-          </Flex>
+      <Flex flex={1} direction="column" pr="var(--safe-right)" pl="var(--safe-left)" h="full" overflow="hidden">
+        <SimpleHeader
+          position="initial"
+          title={
+            <Flex gap="2" alignItems="center">
+              <UserAvatar pubkey={pubkey} size="sm" />
+              <UserLink pubkey={pubkey} fontWeight="bold" />
+              <UserDnsIdentityIcon pubkey={pubkey} />
+            </Flex>
+          }
+        >
           <ButtonGroup ml="auto">
             {!autoDecryptDMs && (
               <Button onClick={decryptAll} isLoading={loading}>
@@ -134,16 +138,19 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
               onClick={openDrawerList}
             />
           </ButtonGroup>
-        </Card>
-        <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column-reverse" gap="2" py="4" px="2">
-          <ChatLog messages={messages} />
-          <TimelineActionAndStatus timeline={loader} />
-        </Flex>
-        <SendMessageForm flexShrink={0} pubkey={pubkey} />
-        {location.state?.thread && (
-          <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
-        )}
-      </IntersectionObserverProvider>
+        </SimpleHeader>
+
+        <IntersectionObserverProvider callback={callback}>
+          <Flex h="0" flex={1} overflowX="hidden" overflowY="auto" direction="column-reverse" gap="2" py="4" px="2">
+            <ChatLog messages={messages} />
+            <TimelineActionAndStatus timeline={loader} />
+          </Flex>
+          <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
+          {location.state?.thread && (
+            <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
+          )}
+        </IntersectionObserverProvider>
+      </Flex>
     </ThreadsProvider>
   );
 }

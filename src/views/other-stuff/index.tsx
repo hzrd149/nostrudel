@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Heading, Input, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import AppCard, { App } from "./component/app-card";
+import AppCard from "./component/app-card";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useRecentIds from "../../hooks/use-recent-ids";
-import { allApps, externalTools, internalTools } from "./apps";
+import { allApps, App, externalTools, internalTools } from "../../components/navigation/apps";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 const tabs = ["all", "tools", "3rd-party-tools"];
@@ -51,7 +51,14 @@ export default function OtherStuffView() {
             <SimpleGrid spacing="2" columns={columns}>
               {recentApps.slice(0, 6).map((id) => {
                 const app = allApps.find((a) => a.id === id);
-                return app ? <AppCard key={app.id} app={app} onClick={() => useApp(app.id)} /> : null;
+                return app ? (
+                  <AppCard
+                    key={app.id}
+                    app={app}
+                    onClick={() => useApp(app.id)}
+                    canFavorite={!externalTools.includes(app)}
+                  />
+                ) : null;
               })}
             </SimpleGrid>
           </>
@@ -72,7 +79,12 @@ export default function OtherStuffView() {
           <TabPanels>
             <TabPanel as={SimpleGrid} spacing="2" columns={columns} px="0" py="4">
               {allApps.sort(sortByName).map((app) => (
-                <AppCard key={app.id} app={app} onClick={() => useApp(app.id)} />
+                <AppCard
+                  key={app.id}
+                  app={app}
+                  onClick={() => useApp(app.id)}
+                  canFavorite={!externalTools.includes(app)}
+                />
               ))}
             </TabPanel>
             <TabPanel as={SimpleGrid} spacing="2" columns={columns} px="0" py="4">
@@ -82,7 +94,7 @@ export default function OtherStuffView() {
             </TabPanel>
             <TabPanel as={SimpleGrid} spacing="2" columns={columns} px="0" py="4">
               {externalTools.sort(sortByName).map((app) => (
-                <AppCard key={app.id} app={app} onClick={() => useApp(app.id)} />
+                <AppCard key={app.id} app={app} onClick={() => useApp(app.id)} canFavorite={false} />
               ))}
             </TabPanel>
           </TabPanels>
