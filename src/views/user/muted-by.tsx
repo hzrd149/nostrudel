@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
-import { Link as RouterLink, useOutletContext } from "react-router-dom";
+import { Link as RouterLink, useOutletContext } from "react-router";
 import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../components/user/user-avatar-link";

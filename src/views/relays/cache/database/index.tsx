@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { Link, Text } from "@chakra-ui/react";
 import { CacheRelay } from "nostr-idb";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import WasmRelay from "../../../../services/wasm-relay";
 import MemoryRelay from "../../../../classes/memory-relay";

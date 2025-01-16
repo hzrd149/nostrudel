@@ -1,6 +1,6 @@
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { Button, ButtonGroup, Flex, Heading, SimpleGrid, SkeletonText, Spinner } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
@@ -16,6 +16,7 @@ import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EmbedEvent } from "../../components/embed-event";
 import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/event";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
   const { isLoading, removeBookmark } = useEventBookmarkActions(event);
@@ -60,30 +61,33 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
   if (!list) return <Spinner />;
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" alignItems="center" mb="4">
-        <UserAvatarLink pubkey={pubkey} />
-        <Heading size="md">
-          <UserName pubkey={list.pubkey} />
-          's Bookmarks
-        </Heading>
-        <ListMenu ml="auto" size="sm" list={list} aria-label="More options" />
-      </Flex>
-      <Flex gap="2" direction="column" maxW="4xl" mx="auto" overflow="hidden" w="full">
-        {Array.from(list.tags)
-          .reverse()
-          .map((tag) => {
-            if (isETag(tag)) {
-              const pointer = eTagToEventPointer(tag);
-              return <BookmarkEventItem key={pointer.id} pointer={pointer} />;
-            } else if (isATag(tag)) {
-              const pointer = aTagToAddressPointer(tag);
-              return <BookmarkAddressItem key={tag[1]} pointer={pointer} />;
-            }
-            return null;
-          })}
-      </Flex>
-    </VerticalPageLayout>
+    <SimpleView
+      title={
+        <Flex gap="2" alignItems="center">
+          <UserAvatarLink pubkey={pubkey} size="sm" />
+          <Heading size="md">
+            <UserName pubkey={list.pubkey} />
+            's Bookmarks
+          </Heading>
+        </Flex>
+      }
+      actions={<ListMenu ml="auto" size="sm" list={list} aria-label="More options" />}
+      maxW="4xl"
+      center
+    >
+      {Array.from(list.tags)
+        .reverse()
+        .map((tag) => {
+          if (isETag(tag)) {
+            const pointer = eTagToEventPointer(tag);
+            return <BookmarkEventItem key={pointer.id} pointer={pointer} />;
+          } else if (isATag(tag)) {
+            const pointer = aTagToAddressPointer(tag);
+            return <BookmarkAddressItem key={tag[1]} pointer={pointer} />;
+          }
+          return null;
+        })}
+    </SimpleView>
   );
 }
 

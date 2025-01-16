@@ -12,7 +12,7 @@ import {
 } from "react";
 import { Button, Flex, FlexProps, Spacer, useDisclosure } from "@chakra-ui/react";
 import { useUnmount } from "react-use";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import styled from "@emotion/styled";
 
 import Lightbox, { RenderSlideContainerProps, Slide } from "yet-another-react-lightbox";

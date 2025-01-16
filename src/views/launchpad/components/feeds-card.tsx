@@ -10,7 +10,7 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { kinds } from "nostr-tools";
 
 import useUserSets from "../../../hooks/use-user-lists";

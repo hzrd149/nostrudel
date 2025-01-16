@@ -12,7 +12,7 @@ import {
 import { nip19 } from "nostr-tools";
 
 import { containerProps } from "./common";
-import { CopyIconButton } from "../../components/copy-icon-button";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { hexToBytes } from "@noble/hashes/utils";

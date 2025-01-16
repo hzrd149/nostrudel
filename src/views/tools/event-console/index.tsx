@@ -21,7 +21,7 @@ import { useLocalStorage } from "react-use";
 import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import stringify from "json-stringify-deterministic";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";

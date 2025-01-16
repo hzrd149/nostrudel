@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
-import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
+import { useNavigate, useSearchParams, Link as RouterLink } from "react-router";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { useForm } from "react-hook-form";
 

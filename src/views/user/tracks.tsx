@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { Box, SimpleGrid } from "@chakra-ui/react";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";

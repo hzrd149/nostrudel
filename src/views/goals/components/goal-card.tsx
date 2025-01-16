@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";

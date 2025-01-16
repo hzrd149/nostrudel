@@ -12,7 +12,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { IconButton } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 

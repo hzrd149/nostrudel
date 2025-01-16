@@ -1,8 +1,8 @@
 import { Box, Button, Card, CardBody, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { useSet } from "react-use";
 
-import { useRelayInfo } from "../../hooks/use-relay-info";
-import { RelayFavicon } from "../../components/relay-favicon";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import { RelayFavicon } from "../../../components/relay-favicon";
 import { containerProps } from "./common";
 
 function RelayButton({ url, selected, onClick }: { url: string; selected: boolean; onClick: () => void }) {

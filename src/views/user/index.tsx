@@ -25,8 +25,8 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Outlet, useMatches, useNavigate } from "react-router";
 
-import { Outlet, useMatches, useNavigate } from "react-router-dom";
 import useUserProfile from "../../hooks/use-user-profile";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import { useAppTitle } from "../../hooks/use-app-title";
@@ -69,7 +69,7 @@ function useUserBestOutbox(pubkey: string, count: number = 4) {
   return !count ? sorted : sorted.slice(0, count);
 }
 
-const UserView = () => {
+export default function UserView() {
   const { pubkey, relays: pointerRelays = [] } = useParamsProfilePointer();
   const navigate = useNavigate();
   const [relayCount, setRelayCount] = useState(4);
@@ -154,6 +154,4 @@ const UserView = () => {
       </Modal>
     </>
   );
-};
-
-export default UserView;
+}

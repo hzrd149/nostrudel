@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router";
 
 type Actions = {
   setValue: (v: string | null | ((v: string | null) => string | null), replace?: boolean) => void;

@@ -1,6 +1,6 @@
 import { NostrEvent, nip19 } from "nostr-tools";
 import { Flex, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { getThreadReferences, truncatedId } from "../../../../helpers/nostr/event";
 import UserLink from "../../../user/user-link";

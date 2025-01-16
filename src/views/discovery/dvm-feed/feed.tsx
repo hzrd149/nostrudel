@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import {
   DVM_CONTENT_DISCOVERY_JOB_KIND,

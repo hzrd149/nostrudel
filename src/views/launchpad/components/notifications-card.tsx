@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";

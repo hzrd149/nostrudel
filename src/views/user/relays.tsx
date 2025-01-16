@@ -1,4 +1,4 @@
-import { useOutletContext, Link as RouterLink } from "react-router-dom";
+import { useOutletContext, Link as RouterLink } from "react-router";
 import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakra-ui/react";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";

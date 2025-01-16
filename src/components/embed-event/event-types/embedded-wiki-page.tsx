@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { nip19 } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";

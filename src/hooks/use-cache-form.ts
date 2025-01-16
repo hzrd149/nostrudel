@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { FieldValues, UseFormGetValues, UseFormReset, UseFormStateReturn } from "react-hook-form";
-import { useBeforeUnload } from "react-router-dom";
+import { useBeforeUnload } from "react-router";
 
 import { logger } from "../helpers/debug";
 

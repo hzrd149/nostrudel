@@ -1,6 +1,6 @@
 import { Button, Flex, FlexProps, Input } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default function WikiSearchForm({ ...props }: Omit<FlexProps, "children">) {
   const navigate = useNavigate();

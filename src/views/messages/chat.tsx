@@ -1,6 +1,6 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Card, Flex, IconButton } from "@chakra-ui/react";
-import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router";
 import { NostrEvent, kinds } from "nostr-tools";
 
 import { ThreadIcon } from "../../components/icons";

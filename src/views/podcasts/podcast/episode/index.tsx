@@ -1,4 +1,4 @@
-import { Navigate, useParams, useSearchParams, Link as RouterLink } from "react-router-dom";
+import { Navigate, useParams, useSearchParams, Link as RouterLink } from "react-router";
 import VerticalPageLayout from "../../../../components/vertical-page-layout";
 import { Button, Flex, Heading, Image, Spinner, Text } from "@chakra-ui/react";
 import ChevronLeft from "../../../../components/icons/chevron-left";

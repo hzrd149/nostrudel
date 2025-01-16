@@ -1,5 +1,5 @@
 import { Avatar, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../../icons";
 import useRootPadding from "../../../hooks/use-root-padding";

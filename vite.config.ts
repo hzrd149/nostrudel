@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import fundingPlugin from "vite-plugin-funding";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 console.log("Build with:");
 for (const [key, value] of Object.entries(process.env)) {
@@ -14,9 +14,16 @@ export default defineConfig({
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        // don't create any chunks smaller than 500kB
+        experimentalMinChunkSize: 1024 * 100,
+      },
+    },
   },
   plugins: [
     react(),
+    tsconfigPaths(),
     VitePWA({
       strategies: "injectManifest",
       registerType: "autoUpdate",
@@ -27,11 +34,11 @@ export default defineConfig({
         minify: false,
         sourcemap: true,
         // This increase the cache limit to 4mB
-        maximumFileSizeToCacheInBytes: 2097152 * 2,
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 4,
       },
       workbox: {
         // This increase the cache limit to 4mB
-        maximumFileSizeToCacheInBytes: 2097152 * 2,
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 4,
       },
       manifest: {
         name: "noStrudel",
@@ -85,6 +92,5 @@ export default defineConfig({
         ],
       },
     }),
-    fundingPlugin({ types: ["lightning"] }),
   ],
 });

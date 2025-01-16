@@ -23,7 +23,7 @@ import {
   IconButton,
   Spinner,
 } from "@chakra-ui/react";
-import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from "react-router-dom";
+import { Location, RouteObject, RouterProvider, To, createMemoryRouter, useNavigate } from "react-router";
 
 import { ErrorBoundary } from "../components/error-boundary";
 import ThreadView from "../views/thread";

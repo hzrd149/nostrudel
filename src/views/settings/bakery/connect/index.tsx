@@ -1,4 +1,4 @@
-import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router";
 import { Box, Button, Code, Flex, FormControl, FormLabel, Heading, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useObservable } from "applesauce-react/hooks";

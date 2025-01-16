@@ -13,7 +13,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { EventTemplate, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import { CloseIcon } from "@chakra-ui/icons";

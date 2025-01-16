@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
@@ -16,12 +16,14 @@ export default function UserListsTab() {
   const genericSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Genericlists);
   const bookmarkSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Bookmarksets);
 
+  const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
+
   return (
     <VerticalPageLayout>
       <Heading size="md" mt="2">
         Special lists
       </Heading>
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+      <SimpleGrid columns={columns} spacing="2">
         <ListCard cord={`${kinds.Contacts}:${pubkey}`} hideCreator />
         <ListCard cord={`${kinds.Mutelist}:${pubkey}`} hideCreator />
         <ListCard cord={`${kinds.Pinlist}:${pubkey}`} hideCreator />
@@ -35,7 +37,7 @@ export default function UserListsTab() {
           <Heading size="md" mt="2">
             People lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {followSets.map((set) => (
               <ListCard key={getEventUID(set)} list={set} hideCreator />
             ))}
@@ -48,7 +50,7 @@ export default function UserListsTab() {
           <Heading size="md" mt="2">
             Generic lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {genericSets.map((set) => (
               <ListCard key={getEventUID(set)} list={set} hideCreator />
             ))}
@@ -61,7 +63,7 @@ export default function UserListsTab() {
           <Heading size="md" mt="2">
             Bookmark sets
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {bookmarkSets.map((set) => (
               <ListCard key={getEventUID(set)} list={set} hideCreator />
             ))}

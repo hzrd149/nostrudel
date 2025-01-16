@@ -12,7 +12,7 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { NostrEvent } from "nostr-tools";
 
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";

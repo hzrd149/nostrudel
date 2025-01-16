@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserLink from "../../user/user-link";

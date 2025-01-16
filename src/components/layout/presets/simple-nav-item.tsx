@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { useMatch, Link as RouterLink } from "react-router-dom";
+import { useMatch, Link as RouterLink } from "react-router";
 
 export default function SimpleNavItem({
   children,

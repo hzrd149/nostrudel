@@ -1,5 +1,5 @@
 import { Button, Center, Divider, Flex, Heading, Link, SimpleGrid, Spacer } from "@chakra-ui/react";
-import { Navigate, Link as RouterLink } from "react-router-dom";
+import { Navigate, Link as RouterLink } from "react-router";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
@@ -59,7 +59,7 @@ function UserGoalsManagerPage() {
   );
 }
 
-export default function GoalsView() {
+export default function GoalsHomeView() {
   const account = useCurrentAccount();
 
   return (

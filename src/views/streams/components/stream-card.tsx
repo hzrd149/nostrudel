@@ -12,7 +12,7 @@ import {
   LinkOverlay,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";

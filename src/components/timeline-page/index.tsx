@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";

@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink, Navigate } from "react-router";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
@@ -23,6 +23,8 @@ function ListsHomePage() {
   const genericSets = sets.filter((event) => event.kind === kinds.Genericlists);
   const bookmarkSets = sets.filter((event) => event.kind === kinds.Bookmarksets);
 
+  const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
+
   return (
     <VerticalPageLayout>
       <Flex gap="2">
@@ -38,7 +40,7 @@ function ListsHomePage() {
       <Heading size="lg" mt="2">
         Special lists
       </Heading>
-      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+      <SimpleGrid columns={columns} spacing="2">
         <ListCard cord={`${kinds.Contacts}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${kinds.Mutelist}:${account.pubkey}`} hideCreator />
         <ListCard cord={`${kinds.Pinlist}:${account.pubkey}`} hideCreator />
@@ -50,7 +52,7 @@ function ListsHomePage() {
           <Heading size="lg" mt="2">
             People lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {followSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
@@ -62,7 +64,7 @@ function ListsHomePage() {
           <Heading size="lg" mt="2">
             Generic lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {genericSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
@@ -74,7 +76,7 @@ function ListsHomePage() {
           <Heading size="lg" mt="2">
             Bookmark lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {bookmarkSets.map((event) => (
               <ListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
@@ -86,7 +88,7 @@ function ListsHomePage() {
           <Heading size="lg" mt="2">
             Favorite lists
           </Heading>
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
+          <SimpleGrid columns={columns} spacing="2">
             {favoriteLists.map((event) => (
               <ListCard key={getEventUID(event)} list={event} />
             ))}

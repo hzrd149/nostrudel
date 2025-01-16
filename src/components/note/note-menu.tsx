@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { BroadcastEventIcon } from "../icons";
 import { NostrEvent } from "../../types/nostr-event";

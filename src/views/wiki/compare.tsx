@@ -11,7 +11,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
+import { Navigate, useParams, Link as RouterLink } from "react-router";
 
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";

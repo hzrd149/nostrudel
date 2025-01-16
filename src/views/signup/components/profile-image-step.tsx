@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Avatar, Button, Flex, Heading, VisuallyHiddenInput } from "@chakra-ui/react";
 
-import ImagePlus from "../../components/icons/image-plus";
+import ImagePlus from "../../../components/icons/image-plus";
 import { containerProps } from "./common";
 
 export default function ProfileImageStep({

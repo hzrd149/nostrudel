@@ -17,7 +17,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";

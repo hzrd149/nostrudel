@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import { Alert, AlertIcon, Button, Link, Spacer, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { offlineMode } from "../../services/offline-mode";

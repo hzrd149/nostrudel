@@ -1,6 +1,6 @@
 import { memo, ReactNode, useCallback, useMemo } from "react";
 import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
 import { BehaviorSubject } from "rxjs";
@@ -182,12 +182,7 @@ function NotificationsPage() {
             showReposts={showReposts}
             showUnknown={showUnknown}
           />
-          <ButtonGroup>
-            <PeopleListSelection flexShrink={0} />
-            <Button as={RouterLink} to="/notifications/threads">
-              Threads
-            </Button>
-          </ButtonGroup>
+          <PeopleListSelection flexShrink={0} />
         </Flex>
       </Flex>
 

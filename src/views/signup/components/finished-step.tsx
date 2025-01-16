@@ -1,13 +1,13 @@
 import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { ProfileContent } from "applesauce-core/helpers";
 import { useAsync } from "react-use";
 
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
 import { containerProps } from "./common";
-import { UserFollowButton } from "../../components/user/user-follow-button";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
 
 type TrendingApi = {
   profiles: {

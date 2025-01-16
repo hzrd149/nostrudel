@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
@@ -7,7 +7,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getEventUID } from "../../helpers/nostr/event";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import EmojiPackCard from "../emoji-packs/components/emoji-pack-card";
+import EmojiPackCard from "../emojis/components/emoji-pack-card";
 import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";

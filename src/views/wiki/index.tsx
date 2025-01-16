@@ -1,5 +1,5 @@
 import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid, useInterval } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";

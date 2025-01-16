@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Button, ComponentWithAs, IconButton, IconButtonProps, IconProps } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router";
 
 import { CollapsedContext } from "../context";
 

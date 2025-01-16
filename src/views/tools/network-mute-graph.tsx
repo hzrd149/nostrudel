@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Mesh, MeshBasicMaterial, SRGBColorSpace, SphereGeometry, Sprite, SpriteMaterial, TextureLoader } from "three";
 import { kinds } from "nostr-tools";
@@ -121,7 +121,7 @@ function NetworkGraphPage() {
   );
 }
 
-export default function NetworkGraphView() {
+export default function NetworkMuteGraphView() {
   return (
     <RequireCurrentAccount>
       <NetworkGraphPage />

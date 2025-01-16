@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Router, Location, To, createMemoryRouter, RouteObject } from "react-router-dom";
+import { Router, Location, To, createMemoryRouter, RouteObject } from "react-router";
 import { logger } from "../../helpers/debug";
 import InspectRelayView from "./relays/inspect-relay";
 

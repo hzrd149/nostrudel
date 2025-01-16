@@ -1,5 +1,5 @@
 import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { EditIcon, GhostIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";

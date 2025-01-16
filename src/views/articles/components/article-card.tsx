@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Box, Card, Flex, Heading, LinkBox, Spacer, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import {
   getArticleImage,

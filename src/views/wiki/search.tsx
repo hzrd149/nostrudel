@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { Button, Flex, Heading, Input, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
 import { Subscription, getEventUID } from "nostr-idb";

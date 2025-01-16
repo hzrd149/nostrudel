@@ -13,7 +13,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";

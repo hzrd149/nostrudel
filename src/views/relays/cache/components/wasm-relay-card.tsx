@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import WasmRelay from "../../../../services/wasm-relay";
 import EnableWithDelete from "./enable-with-delete";

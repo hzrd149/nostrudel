@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, Heading, Link, Text, useInterval } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";

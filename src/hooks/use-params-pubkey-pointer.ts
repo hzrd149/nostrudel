@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { nip19 } from "nostr-tools";
 import type { ProfilePointer } from "nostr-tools/nip19";
 import { isHexKey } from "../helpers/nip19";

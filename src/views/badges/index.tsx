@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { kinds } from "nostr-tools";
 
 import { ExternalLinkIcon } from "../../components/icons";
@@ -70,9 +70,7 @@ function BadgesPage() {
   );
 }
 
-export default function BadgesView() {
-  // const account = useCurrentAccount();
-  // return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
+export default function BadgesHomeView() {
   return (
     <PeopleListProvider>
       <BadgesPage />

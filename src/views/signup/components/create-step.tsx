@@ -5,12 +5,12 @@ import { bytesToHex } from "@noble/hashes/utils";
 import { ProfileContent, unixNow } from "applesauce-core/helpers";
 
 import { containerProps } from "./common";
-import { nostrBuildUploadImage } from "../../helpers/media-upload/nostr-build";
-import accountService from "../../services/account";
-import { COMMON_CONTACT_RELAYS } from "../../const";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import NsecAccount from "../../classes/accounts/nsec-account";
+import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
+import accountService from "../../../services/account";
+import { COMMON_CONTACT_RELAYS } from "../../../const";
+import { DraftNostrEvent } from "../../../types/nostr-event";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import NsecAccount from "../../../classes/accounts/nsec-account";
 
 export default function CreateStep({
   metadata,

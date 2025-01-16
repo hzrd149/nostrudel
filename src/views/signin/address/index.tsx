@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardProps, Flex, FormControl, FormLabel, Image, Input, Text, useToast } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router";
 import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
 import { useDebounce } from "react-use";
 

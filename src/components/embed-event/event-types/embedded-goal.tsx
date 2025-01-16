@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useMemo } from "react";
 
 import { NostrEvent } from "../../../types/nostr-event";

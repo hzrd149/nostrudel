@@ -1,7 +1,7 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

@@ -1,7 +1,9 @@
+import { ReactNode } from "react";
 import { Flex, FlexProps, Heading } from "@chakra-ui/react";
+
 import { BackIconButton } from "../../router/back-button";
 
-export default function SimpleHeader({ children, title, ...props }: FlexProps) {
+export default function SimpleHeader({ children, title, ...props }: Omit<FlexProps, "title"> & { title?: ReactNode }) {
   return (
     <Flex
       p="2"
@@ -13,7 +15,7 @@ export default function SimpleHeader({ children, title, ...props }: FlexProps) {
       top="var(--safe-top)"
       mt="var(--safe-top)"
       backgroundColor="var(--chakra-colors-chakra-body-bg)"
-      zIndex={1}
+      zIndex="popover"
       {...props}
     >
       <BackIconButton hideFrom="lg" />

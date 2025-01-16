@@ -17,7 +17,7 @@ import {
 import { NostrEvent } from "nostr-tools";
 import { ExtraProps } from "react-markdown";
 import { getEventUID } from "nostr-idb";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 
 import { useReadRelays } from "../../hooks/use-client-relays";

@@ -16,7 +16,7 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router";
 import { Global, css } from "@emotion/react";
 import { NostrEvent } from "nostr-tools";
 

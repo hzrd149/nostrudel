@@ -1,5 +1,5 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import {
   Box,
   Button,
@@ -30,6 +30,9 @@ import UserDnsIdentity from "../../user/user-dns-identity";
 import NavItem from "./nav-item";
 import LogIn01 from "../../icons/log-in-01";
 import { CollapsedContext } from "../context";
+import Users02 from "../../icons/users-02";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 function AccountItem({ account, onClick }: { account: Account; onClick?: () => void }) {
   const pubkey = account.pubkey;
@@ -80,23 +83,24 @@ export default function AccountSwitcher() {
   return (
     <>
       {account ? (
-        <Flex
-          as="button"
-          gap="2"
-          alignItems="center"
-          onClick={modal.onToggle}
-          flexShrink={0}
-          overflow="hidden"
-          outline="none"
-        >
-          <UserAvatar pubkey={account.pubkey} noProxy size="md" />
+        <Flex gap="2" alignItems="center" flexShrink={0} overflow="hidden">
+          <UserAvatarLink pubkey={account.pubkey} noProxy size="md" />
           {!collapsed && (
-            <Flex overflow="hidden" direction="column" w="Full" alignItems="flex-start">
-              <Text whiteSpace="nowrap" fontWeight="bold" fontSize="lg" isTruncated>
-                {getDisplayName(metadata, account.pubkey)}
-              </Text>
-              <UserDnsIdentity pubkey={account.pubkey} />
-            </Flex>
+            <>
+              <Flex overflow="hidden" direction="column" w="Full" alignItems="flex-start">
+                <UserLink pubkey={account.pubkey} fontWeight="bold" isTruncated whiteSpace="nowrap" />
+                <UserDnsIdentity pubkey={account.pubkey} />
+              </Flex>
+              <IconButton
+                ms="auto"
+                aria-label="Switch account"
+                onClick={modal.onToggle}
+                flexShrink={0}
+                size="md"
+                variant="ghost"
+                icon={<Users02 boxSize={5} />}
+              />
+            </>
           )}
         </Flex>
       ) : (

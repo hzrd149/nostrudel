@@ -1,6 +1,6 @@
 import { MouseEventHandler, useCallback } from "react";
 import { Card, CardProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";

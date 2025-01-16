@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { Thread, ThreadQuery } from "applesauce-core/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";

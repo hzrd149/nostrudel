@@ -6,7 +6,7 @@ import { firstValueFrom } from "rxjs";
 
 import { controlApi$, clearBakeryURL, bakery$ } from "../../../../services/bakery";
 import SimpleView from "../../../../components/layout/presets/simple-view";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 function BakeryGeneralSettingsPage() {
   const bakery = useObservable(bakery$);

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Spacer } from "@chakra-ui/react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { nip19 } from "nostr-tools";
 
 import {
@@ -50,7 +50,7 @@ export default function NavItems() {
 
   return (
     <>
-      {account && account.readonly !== false && (
+      {account && !account.readonly && (
         <NavItem icon={Plus} label="Create new" colorScheme="primary" to="/new" variant="solid" />
       )}
       <NavItem to="/launchpad" icon={Rocket02} label="Launchpad" />

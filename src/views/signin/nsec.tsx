@@ -16,7 +16,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { generateSecretKey, getPublicKey, nip19 } from "nostr-tools";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { hexToBytes } from "@noble/hashes/utils";
 import { useForm } from "react-hook-form";
 import { decrypt } from "nostr-tools/nip49";

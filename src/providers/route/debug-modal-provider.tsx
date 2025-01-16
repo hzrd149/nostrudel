@@ -3,7 +3,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo, use
 
 import EventDebugModal from "../../components/debug-modal/event-debug-modal";
 import useRouteStateValue from "../../hooks/use-route-state-value";
-import { UNSAFE_DataRouterContext } from "react-router-dom";
+import { UNSAFE_DataRouterContext } from "react-router";
 import useRouterMarker from "../../hooks/use-router-marker";
 
 export const DebugModalContext = createContext({

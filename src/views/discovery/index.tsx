@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Card, Flex, Heading, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 

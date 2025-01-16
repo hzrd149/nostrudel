@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, Flex, Heading, Image, LinkBox, Spinner } from "@chakra-ui/react";
-import { To, Link as RouterLink } from "react-router-dom";
+import { To, Link as RouterLink } from "react-router";
 
 import {
   FeedPointer,

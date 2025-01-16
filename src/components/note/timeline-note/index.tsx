@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 
 import NoteMenu from "../note-menu";

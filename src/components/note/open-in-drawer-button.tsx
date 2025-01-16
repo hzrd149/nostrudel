@@ -1,6 +1,6 @@
 import { MouseEventHandler, useCallback } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { To } from "react-router-dom";
+import { To } from "react-router";
 
 import { DrawerIcon } from "../icons";
 import { useNavigateInDrawer } from "../../providers/drawer-sub-view-provider";

@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, Flex, Heading, Image, LinkBox } from "@chakra-ui/react";
-import { Link as RouterLink, useParams, useSearchParams } from "react-router-dom";
+import { Link as RouterLink, useParams, useSearchParams } from "react-router";
 
 import { getXPathString } from "../../../helpers/nostr/podcasts";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";

@@ -11,8 +11,9 @@ export default function SimpleView({
   flush,
   gap,
   maxW,
+  center,
   ...props
-}: FlexProps & { flush?: boolean; actions?: ReactNode }) {
+}: Omit<FlexProps, "title"> & { flush?: boolean; actions?: ReactNode; title?: ReactNode; center?: boolean }) {
   return (
     <Flex as={as} flex={1} direction="column" pr="var(--safe-right)" pl="var(--safe-left)" {...props}>
       <SimpleHeader title={title}>{actions}</SimpleHeader>
@@ -28,6 +29,7 @@ export default function SimpleView({
         flexGrow={1}
         maxW={maxW}
         w={maxW ? "full" : "initial"}
+        mx={center ? "auto" : undefined}
       >
         {children}
       </Flex>

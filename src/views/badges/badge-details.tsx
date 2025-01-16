@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { kinds } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
 import {

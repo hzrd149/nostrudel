@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { nip25 } from "nostr-tools";
 

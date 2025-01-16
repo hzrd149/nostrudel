@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle, Button, Flex, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router";
 import { useObservable } from "applesauce-react/hooks";
 
 import WifiOff from "../icons/wifi-off";

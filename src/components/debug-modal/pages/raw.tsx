@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Code } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { EditIcon } from "../../icons";
 import { CopyButton } from "../../copy-icon-button";

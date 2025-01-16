@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text, useToast } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import {
   getArticleImage,

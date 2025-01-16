@@ -1,9 +1,10 @@
 import { Card, CardBody, ComponentWithAs, Flex, Heading, IconProps, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { MediaIcon, NotesIcon } from "../../components/icons";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 const NEW_TYPES: { title: string; path: string; summary?: string; icon: ComponentWithAs<"svg", IconProps> }[] = [
   { title: "Text Note", path: "/new/note", summary: "A short text post with media", icon: NotesIcon },
@@ -12,8 +13,7 @@ const NEW_TYPES: { title: string; path: string; summary?: string; icon: Componen
 
 export default function NewView() {
   return (
-    <VerticalPageLayout>
-      <Heading size="lg">Create new...</Heading>
+    <SimpleView title="Create new">
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap="2">
         {NEW_TYPES.map(({ title, path, icon: Icon, summary }) => (
           <Card as={LinkBox}>
@@ -32,6 +32,6 @@ export default function NewView() {
           </Card>
         ))}
       </SimpleGrid>
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }

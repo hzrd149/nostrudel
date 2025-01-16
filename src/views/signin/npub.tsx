@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useToast } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import accountService from "../../services/account";

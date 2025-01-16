@@ -1,6 +1,6 @@
 import { Flex, Input, Modal, ModalContent, ModalOverlay, ModalProps, Text } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useAsync, useThrottle } from "react-use";
 import { matchSorter } from "match-sorter";
 import { useObservable } from "applesauce-react/hooks";

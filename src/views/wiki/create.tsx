@@ -12,7 +12,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { EventTemplate, nip19 } from "nostr-tools";
 import dayjs from "dayjs";

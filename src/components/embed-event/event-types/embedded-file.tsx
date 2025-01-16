@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { getTagValue } from "applesauce-core/helpers";
 
 import { getArticlePublishDate } from "../../../helpers/nostr/long-form";

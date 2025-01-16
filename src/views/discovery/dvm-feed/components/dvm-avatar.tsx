@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { nip19 } from "nostr-tools";
 import { Box, BoxProps } from "@chakra-ui/react";
 

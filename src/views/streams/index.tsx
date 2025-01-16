@@ -109,7 +109,7 @@ function StreamsPage() {
     </VerticalPageLayout>
   );
 }
-export default function StreamsView() {
+export default function StreamHomeView() {
   return (
     <AdditionalRelayProvider
       relays={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}

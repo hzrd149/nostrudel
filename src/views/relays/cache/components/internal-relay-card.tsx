@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from "@chakra-ui/react";
 import { CacheRelay, clearDB } from "nostr-idb";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { localDatabase, setCacheRelayURL } from "../../../../services/cache-relay";
 import EnableWithDelete from "../components/enable-with-delete";
