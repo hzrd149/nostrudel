@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 export default function useRootPadding(padding?: { left?: string; top?: string; right?: string; bottom?: string }) {
   useEffect(() => {
-    const root = document.getElementById("root");
+    const root = document.body;
     if (!root) return;
 
     if (padding?.top) root.style.paddingTop = padding.top;

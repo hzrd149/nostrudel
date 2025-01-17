@@ -145,7 +145,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <ChatLog messages={messages} />
             <TimelineActionAndStatus timeline={loader} />
           </Flex>
-          <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
+          <SendMessageForm flexShrink={0} pubkey={pubkey} p="2" />
           {location.state?.thread && (
             <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
           )}

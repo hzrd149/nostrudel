@@ -21,7 +21,6 @@ import { CheckIcon } from "../../components/icons";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
-import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import ContainedParentView from "../../components/layout/presets/contained-parent-view";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {

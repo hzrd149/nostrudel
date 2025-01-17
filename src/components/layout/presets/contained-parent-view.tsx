@@ -1,6 +1,6 @@
 import { PropsWithChildren, Suspense } from "react";
 import { Outlet, useMatch } from "react-router";
-import { Box, Flex, FlexProps, Spinner } from "@chakra-ui/react";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import SimpleHeader from "./simple-header";
@@ -11,35 +11,26 @@ export default function ContainedParentView({
   path,
   title,
   width = "xs",
-}: PropsWithChildren<{ path: string; title?: string; width?: FlexProps["w"]; contain?: boolean }>) {
+}: PropsWithChildren<{ path: string; title?: string; width?: "xs" | "sm" | "md" }>) {
   const match = useMatch(path);
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
 
-  if (showMenu)
-    return (
-      <Flex flex={1} overflow="hidden" h="full" maxH="100vh">
-        <Flex width={width} direction="column">
-          {title && <SimpleHeader title={title} position="initial" />}
-          <Flex direction="column" p="2" gap="2" overflowY="auto" overflowX="hidden">
+  return (
+    <Flex data-type="contained-view" h="100vh" overflow="hidden" direction={{ base: "column", lg: "row" }}>
+      {showMenu && (
+        <Flex w={{ base: "full", lg: width }} direction="column" overflowY="auto" overflowX="hidden" h="full">
+          {title && <SimpleHeader title={title} />}
+          <Flex direction="column" p="2" gap="2">
             {children}
           </Flex>
         </Flex>
-        {!isMobile && (
-          <Suspense fallback={<Spinner />}>
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
-          </Suspense>
-        )}
-      </Flex>
-    );
-  else
-    return (
+      )}
       <Suspense fallback={<Spinner />}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
       </Suspense>
-    );
+    </Flex>
+  );
 }
