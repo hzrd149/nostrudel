@@ -9,11 +9,11 @@ export default function DesktopLayout() {
   return (
     <>
       <DesktopSideNav />
-      <Suspense fallback={<Spinner />}>
-        <ErrorBoundary>
+      <ErrorBoundary>
+        <Suspense fallback={<Spinner />}>
           <Outlet />
-        </ErrorBoundary>
-      </Suspense>
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
 }

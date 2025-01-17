@@ -18,7 +18,7 @@ export default function ContainedParentView({
 
   if (showMenu)
     return (
-      <Flex flex={1} overflow="hidden" h="full">
+      <Flex flex={1} overflow="hidden" h="full" maxH="100vh">
         <Flex width={width} direction="column">
           {title && <SimpleHeader title={title} position="initial" />}
           <Flex direction="column" p="2" gap="2" overflowY="auto" overflowX="hidden">

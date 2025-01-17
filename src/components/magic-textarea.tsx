@@ -55,9 +55,9 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
 
 function output(token: Token) {
   if (isEmojiToken(token)) {
-    return token.char;
+    return token.char || "";
   } else if (isPersonToken(token)) {
-    return "nostr:" + nip19.npubEncode(token.pubkey);
+    return "nostr:" + nip19.npubEncode(token.pubkey) || "";
   } else return "";
 }
 
