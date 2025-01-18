@@ -1,8 +1,6 @@
-import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const MediaFeedView = lazy(() => import("."));
-const MediaPostView = lazy(() => import("./media-post"));
+import MediaFeedView from ".";
+import MediaPostView from "./media-post";
 
 export default [
   { index: true, Component: MediaFeedView },

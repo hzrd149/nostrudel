@@ -1,8 +1,6 @@
-import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const ArticlesHomeView = lazy(() => import("."));
-const ArticleView = lazy(() => import("./article"));
+import ArticlesHomeView from ".";
+import ArticleView from "./article";
 
 export default [
   { index: true, Component: ArticlesHomeView },

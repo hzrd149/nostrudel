@@ -1,9 +1,7 @@
-import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const TorrentsView = lazy(() => import("."));
-const NewTorrentView = lazy(() => import("./new"));
-const TorrentDetailsView = lazy(() => import("./torrent"));
+import TorrentsView from ".";
+import NewTorrentView from "./new";
+import TorrentDetailsView from "./torrent";
 
 export default [
   { index: true, Component: TorrentsView },

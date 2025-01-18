@@ -1,19 +1,21 @@
 import { lazy } from "react";
 import { Outlet, RouteObject } from "react-router";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 
-const SettingsView = lazy(() => import("."));
-const DisplaySettings = lazy(() => import("./display"));
-const RequireCurrentAccount = lazy(() => import("../../components/router/require-current-account"));
-const AccountSettings = lazy(() => import("./accounts"));
-const MailboxesView = lazy(() => import("../relays/mailboxes"));
-const MediaServersView = lazy(() => import("./media-servers"));
-const SearchRelaysView = lazy(() => import("../relays/search"));
-const AppRelaysView = lazy(() => import("../relays/app"));
-const CacheRelayView = lazy(() => import("../relays/cache"));
-const PostSettings = lazy(() => import("./post"));
-const PrivacySettings = lazy(() => import("./privacy"));
-const LightningSettings = lazy(() => import("./lightning"));
-const PerformanceSettings = lazy(() => import("./performance"));
+import SettingsView from ".";
+import DisplaySettings from "./display";
+import AccountSettings from "./accounts";
+import MailboxesView from "../relays/mailboxes";
+import MediaServersView from "./media-servers";
+import SearchRelaysView from "../relays/search";
+import AppRelaysView from "../relays/app";
+import CacheRelayView from "../relays/cache";
+import PostSettings from "./post";
+import PrivacySettings from "./privacy";
+import LightningSettings from "./lightning";
+import PerformanceSettings from "./performance";
+
+// bakery settings
 const BakeryConnectView = lazy(() => import("./bakery/connect"));
 const RequireBakery = lazy(() => import("../../components/router/require-bakery"));
 const BakeryGeneralSettingsView = lazy(() => import("./bakery/general-settings"));

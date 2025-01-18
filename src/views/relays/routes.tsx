@@ -1,20 +1,19 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const RelaysView = lazy(() => import("."));
-const AppRelaysView = lazy(() => import("./app"));
-const CacheRelayView = lazy(() => import("./cache"));
-const DatabaseView = lazy(() => import("./cache/database"));
-const MailboxesView = lazy(() => import("./mailboxes"));
-const SearchRelaysView = lazy(() => import("./search"));
-const MediaServersView = lazy(() => import("../settings/media-servers"));
-const NIP05RelaysView = lazy(() => import("./nip05"));
-const ContactListRelaysView = lazy(() => import("./contact-list"));
+import RelaysView from ".";
+import AppRelaysView from "./app";
+import CacheRelayView from "./cache";
+import DatabaseView from "./cache/database";
+import MailboxesView from "./mailboxes";
+import SearchRelaysView from "./search";
+import MediaServersView from "../settings/media-servers";
+import NIP05RelaysView from "./nip05";
+import ContactListRelaysView from "./contact-list";
 const WebRtcRelaysView = lazy(() => import("./webrtc"));
 const WebRtcConnectView = lazy(() => import("./webrtc/connect"));
 const WebRtcPairView = lazy(() => import("./webrtc/pair"));
-const BrowseRelaySetsView = lazy(() => import("./browse-sets"));
-const RelaySetView = lazy(() => import("./relay-set"));
+import BrowseRelaySetsView from "./browse-sets";
+import RelaySetView from "./relay-set";
 
 export default [
   {

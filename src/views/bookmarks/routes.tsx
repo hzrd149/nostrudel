@@ -1,7 +1,5 @@
-import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const BookmarksView = lazy(() => import("."));
+import BookmarksView from ".";
 
 export default [
   { index: true, element: <BookmarksView /> },

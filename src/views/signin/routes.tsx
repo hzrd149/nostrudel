@@ -1,13 +1,11 @@
-import { lazy } from "react";
 import { RouteObject } from "react-router";
-
-const LoginView = lazy(() => import("."));
-const LoginStartView = lazy(() => import("./start"));
-const LoginNpubView = lazy(() => import("./npub"));
-const LoginNsecView = lazy(() => import("./nsec"));
-const LoginNostrAddressView = lazy(() => import("./address"));
-const LoginNostrAddressCreate = lazy(() => import("./address/create"));
-const LoginNostrConnectView = lazy(() => import("./nostr-connect"));
+import LoginView from ".";
+import LoginStartView from "./start";
+import LoginNpubView from "./npub";
+import LoginNsecView from "./nsec";
+import LoginNostrAddressView from "./address";
+import LoginNostrAddressCreate from "./address/create";
+import LoginNostrConnectView from "./nostr-connect";
 
 export default [
   {

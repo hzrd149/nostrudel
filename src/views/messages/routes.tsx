@@ -1,9 +1,7 @@
-import { lazy } from "react";
 import { Center } from "@chakra-ui/react";
 import { RouteObject } from "react-router";
-
-const DirectMessagesView = lazy(() => import("."));
-const DirectMessageChatView = lazy(() => import("./chat"));
+import DirectMessagesView from ".";
+import DirectMessageChatView from "./chat";
 
 export default [
   {

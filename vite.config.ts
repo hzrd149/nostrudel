@@ -34,11 +34,11 @@ export default defineConfig({
         minify: false,
         sourcemap: true,
         // This increase the cache limit to 4mB
-        maximumFileSizeToCacheInBytes: 1024 * 1024 * 4,
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 8,
       },
       workbox: {
         // This increase the cache limit to 4mB
-        maximumFileSizeToCacheInBytes: 1024 * 1024 * 4,
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 8,
       },
       manifest: {
         name: "noStrudel",

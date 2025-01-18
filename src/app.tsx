@@ -11,42 +11,20 @@ import useSetColorMode from "./hooks/use-set-color-mode";
 
 import TaskManagerProvider from "./views/task-manager/provider";
 
-const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
-
-const RootPage = () => {
-  useSetColorMode();
-
-  return (
-    <RouteProviders>
-      <ScrollRestoration getKey={getScrollKey} />
-      <AppLayout />
-    </RouteProviders>
-  );
-};
-const NoLayoutPage = () => {
-  return (
-    <RouteProviders>
-      <ScrollRestoration getKey={getScrollKey} />
-      <Suspense fallback={<Spinner />}>
-        <Outlet />
-      </Suspense>
-    </RouteProviders>
-  );
-};
-
 // one off views
 import NostrLinkView from "./views/link";
-const HomeView = lazy(() => import("./views/home"));
-const ProfileView = lazy(() => import("./views/profile"));
-const MapView = lazy(() => import("./views/map"));
-const LaunchpadView = lazy(() => import("./views/launchpad"));
-const OtherStuffView = lazy(() => import("./views/other-stuff"));
-const ThreadView = lazy(() => import("./views/thread"));
-const NotificationsView = lazy(() => import("./views/notifications"));
+import HomeView from "./views/home";
+import ThreadView from "./views/thread";
+import SupportView from "./views/support";
+import ProfileView from "./views/profile";
+import SearchView from "./views/search";
+import LaunchpadView from "./views/launchpad";
+import NotificationsView from "./views/notifications";
+import OtherStuffView from "./views/other-stuff";
+
 const RelayView = lazy(() => import("./views/relays/relay"));
-const SearchView = lazy(() => import("./views/search"));
-const SupportView = lazy(() => import("./views/support"));
 const TracksView = lazy(() => import("./views/tracks"));
+const MapView = lazy(() => import("./views/map"));
 const HashTagView = lazy(() => import("./views/hashtag"));
 
 // routes
@@ -74,6 +52,28 @@ import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
 import podcastsRoutes from "./views/podcasts/routes";
+
+const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
+
+const RootPage = () => {
+  useSetColorMode();
+
+  return (
+    <RouteProviders>
+      <ScrollRestoration getKey={getScrollKey} />
+      <AppLayout />
+    </RouteProviders>
+  );
+};
+
+const NoLayoutPage = () => {
+  return (
+    <RouteProviders>
+      <ScrollRestoration getKey={getScrollKey} />
+      <Outlet />
+    </RouteProviders>
+  );
+};
 
 const router = createBrowserRouter([
   {

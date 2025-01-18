@@ -1,11 +1,12 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router";
+import UserView from ".";
+import UserAboutTab from "./about";
+import UserNotesTab from "./notes";
+import UserArticlesTab from "./articles";
+import UserMediaPostsTab from "./media-posts";
 
-const UserView = lazy(() => import("."));
-const UserAboutTab = lazy(() => import("./about"));
-const UserNotesTab = lazy(() => import("./notes"));
-const UserArticlesTab = lazy(() => import("./articles"));
-const UserMediaPostsTab = lazy(() => import("./media-posts"));
+// other stuff
 const UserStreamsTab = lazy(() => import("./streams"));
 const UserTracksTab = lazy(() => import("./tracks"));
 const UserFilesTab = lazy(() => import("./files"));
