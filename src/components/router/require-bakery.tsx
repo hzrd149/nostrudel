@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { Button, Code, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
-import { Navigate, To, useLocation } from "react-router";
-import { Link as RouterLink } from "react-router";
+import { Navigate, To, useLocation } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
 import useReconnectAction from "../../hooks/use-reconnect-action";

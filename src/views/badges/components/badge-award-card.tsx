@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Button, Card, Flex, Image, Link, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { getBadgeAwardBadge, getBadgeAwardPubkeys, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardProps, Flex, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
-import { Link as RouterLink, To } from "react-router";
+import { Link as RouterLink, To } from "react-router-dom";
 import { getAddressPointerForEvent } from "applesauce-core/helpers";
 import { AddressPointer } from "nostr-tools/nip19";
 

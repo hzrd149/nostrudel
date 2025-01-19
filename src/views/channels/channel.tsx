@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel/queries";

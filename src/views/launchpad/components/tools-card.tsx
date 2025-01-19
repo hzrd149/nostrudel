@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Heading, Input, Link, SimpleGrid } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import useRecentIds from "../../../hooks/use-recent-ids";
 import { allApps } from "../../../components/navigation/apps";

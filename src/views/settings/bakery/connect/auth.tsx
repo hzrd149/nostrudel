@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { EventTemplate, VerifiedEvent } from "nostr-tools";
-import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Button,
   Checkbox,

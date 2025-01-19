@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 
 import MobileBottomNav from "./bottom-nav";
 import { ErrorBoundary } from "../../error-boundary";

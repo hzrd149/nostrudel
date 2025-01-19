@@ -1,5 +1,5 @@
 import { Card, CardBody, ComponentWithAs, Flex, Heading, IconProps, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { MediaIcon, NotesIcon } from "../../components/icons";

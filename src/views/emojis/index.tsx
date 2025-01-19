@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { getAddressPointersFromList } from "applesauce-lists/helpers";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import useCurrentAccount from "../../hooks/use-current-account";

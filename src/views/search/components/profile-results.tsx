@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useAsync } from "react-use";
 import { nip19, NostrEvent } from "nostr-tools";
 import { Button, ButtonGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";

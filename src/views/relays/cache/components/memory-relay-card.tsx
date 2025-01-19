@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import MemoryRelay from "../../../../classes/memory-relay";
 import useCacheRelay from "../../../../hooks/use-cache-relay";

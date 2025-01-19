@@ -1,6 +1,6 @@
 import { memo, ReactNode, useCallback, useMemo } from "react";
 import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
 import { BehaviorSubject } from "rxjs";

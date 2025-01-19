@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { kinds, nip19, NostrEvent } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";

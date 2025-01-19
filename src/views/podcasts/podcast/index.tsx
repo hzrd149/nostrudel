@@ -1,4 +1,4 @@
-import { Navigate, useParams, useSearchParams } from "react-router";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import {
   FeedPointer,
   getPodcastDescription,

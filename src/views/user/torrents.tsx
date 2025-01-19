@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";

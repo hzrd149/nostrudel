@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import RelaysView from ".";
 import AppRelaysView from "./app";
 import CacheRelayView from "./cache";

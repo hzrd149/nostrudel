@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";

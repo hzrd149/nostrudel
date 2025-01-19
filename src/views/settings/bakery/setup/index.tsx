@@ -1,7 +1,7 @@
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, useToast } from "@chakra-ui/react";
 import { getPublicKey, nip19 } from "nostr-tools";
 import { useForm } from "react-hook-form";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { isHexKey } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 

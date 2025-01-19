@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 const ChannelsHomeView = lazy(() => import("."));
 const ChannelView = lazy(() => import("./channel"));

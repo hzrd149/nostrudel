@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { MenuItem } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";

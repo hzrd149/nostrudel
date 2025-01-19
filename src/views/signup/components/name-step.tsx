@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, Input, Text, Textarea } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { ProfileContent } from "applesauce-core/helpers";
-import { Link as RouterLink, useLocation } from "react-router";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { AppIcon, containerProps } from "./common";
 

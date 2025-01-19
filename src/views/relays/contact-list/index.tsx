@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
 import BackButton from "../../../components/router/back-button";
 import useCurrentAccount from "../../../hooks/use-current-account";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { RelayFavicon } from "../../../components/relay-favicon";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";

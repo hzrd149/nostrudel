@@ -20,7 +20,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayFavicon } from "../../../components/relay-favicon";

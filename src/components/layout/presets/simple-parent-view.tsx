@@ -1,5 +1,5 @@
 import { PropsWithChildren, Suspense } from "react";
-import { Outlet, useMatch } from "react-router";
+import { Outlet, useMatch } from "react-router-dom";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";

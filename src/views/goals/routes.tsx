@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 const GoalsHomeView = lazy(() => import("."));
 const GoalsBrowseView = lazy(() => import("./browse"));

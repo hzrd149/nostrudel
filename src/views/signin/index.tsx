@@ -1,5 +1,5 @@
 import { Avatar, Flex, Heading } from "@chakra-ui/react";
-import { Navigate, Outlet, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useCurrentAccount from "../../hooks/use-current-account";
 
 export default function LoginView() {

@@ -1,7 +1,7 @@
 import { Button, Flex } from "@chakra-ui/react";
 import { memo, useCallback } from "react";
 import { kinds } from "nostr-tools";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

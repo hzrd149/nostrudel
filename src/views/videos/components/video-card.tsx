@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, CardHeader, CardProps, Heading, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";

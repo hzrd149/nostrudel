@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 import SignupView from ".";
 

@@ -30,7 +30,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { Category, TORRENT_KIND, torrentCatagories } from "../../helpers/nostr/torrents";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 

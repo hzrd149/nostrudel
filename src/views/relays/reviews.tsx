@@ -1,5 +1,5 @@
 import { Button, Flex, Heading } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";

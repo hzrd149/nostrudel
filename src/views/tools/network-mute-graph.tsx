@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Mesh, MeshBasicMaterial, SRGBColorSpace, SphereGeometry, Sprite, SpriteMaterial, TextureLoader } from "three";
 import { kinds } from "nostr-tools";

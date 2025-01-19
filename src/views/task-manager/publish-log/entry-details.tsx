@@ -10,7 +10,7 @@ import {
   Progress,
   Spinner,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 import { OkPacketAgainstEvent } from "rx-nostr";
 

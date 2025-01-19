@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";

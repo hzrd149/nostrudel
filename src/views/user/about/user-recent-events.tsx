@@ -1,6 +1,6 @@
 import { Badge, Button, ButtonProps, ComponentWithAs, Flex, IconProps, useDisclosure } from "@chakra-ui/react";
 import { Filter, kinds, nip19, NostrEvent } from "nostr-tools";
-import { Link as RouteLink, To } from "react-router";
+import { Link as RouteLink, To } from "react-router-dom";
 
 import {
   ArticleIcon,

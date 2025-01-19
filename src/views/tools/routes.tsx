@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 const ToolsHomeView = lazy(() => import("."));
 const NetworkDMGraphView = lazy(() => import("./network-dm-graph"));

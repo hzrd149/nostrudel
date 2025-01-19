@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import type { EventPointer } from "nostr-tools/nip19";
 

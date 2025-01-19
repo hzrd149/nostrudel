@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
 import accountService from "../../services/account";

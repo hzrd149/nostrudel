@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Flex, Select } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { kinds, NostrEvent } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
 

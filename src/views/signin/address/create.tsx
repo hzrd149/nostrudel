@@ -15,7 +15,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
 import { ProfileContent } from "applesauce-core/helpers";

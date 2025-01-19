@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 import { ButtonGroup, IconButton, Link, Td, Tr } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { NostrEvent } from "../../../types/nostr-event";

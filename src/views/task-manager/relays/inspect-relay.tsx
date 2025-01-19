@@ -12,7 +12,7 @@ import {
   Text,
   useInterval,
 } from "@chakra-ui/react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";

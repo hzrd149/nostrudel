@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Flex } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import { ProfileContent } from "applesauce-core/helpers";
 
 import NameStep from "./components/name-step";

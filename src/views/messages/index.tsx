@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 

@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { SimpleGrid } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 

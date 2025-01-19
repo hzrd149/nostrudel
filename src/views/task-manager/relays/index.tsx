@@ -18,7 +18,7 @@ import {
   Text,
   useInterval,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { useObservable } from "applesauce-react/hooks";

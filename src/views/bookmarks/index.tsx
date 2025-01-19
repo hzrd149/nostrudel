@@ -1,6 +1,6 @@
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { Button, ButtonGroup, Flex, Heading, SimpleGrid, SkeletonText, Spinner } from "@chakra-ui/react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";

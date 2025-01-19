@@ -1,6 +1,6 @@
 import { Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
-import { useOutletContext, Link as RouterLink } from "react-router";
+import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";

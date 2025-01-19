@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import RequireCurrentAccount from "../../../components/router/require-current-account";

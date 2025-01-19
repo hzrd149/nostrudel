@@ -10,7 +10,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
 

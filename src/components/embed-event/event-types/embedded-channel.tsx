@@ -1,4 +1,4 @@
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { Box, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 

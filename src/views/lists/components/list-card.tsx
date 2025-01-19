@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import {
   ButtonGroup,
   Card,

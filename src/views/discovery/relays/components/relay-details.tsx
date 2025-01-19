@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { NostrEvent } from "nostr-tools";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { SelectedContext } from "../selected-context";
 import { getTagValue } from "../../../../helpers/nostr/event";

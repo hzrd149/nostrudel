@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import TorrentsView from ".";
 import NewTorrentView from "./new";
 import TorrentDetailsView from "./torrent";

@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { getReplaceableUID } from "applesauce-core/helpers";
 
 import { NostrEvent } from "../../../types/nostr-event";

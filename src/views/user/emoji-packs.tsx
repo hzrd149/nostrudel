@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 

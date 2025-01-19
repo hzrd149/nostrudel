@@ -11,7 +11,7 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
 import UserAvatarLink from "../../user/user-avatar-link";

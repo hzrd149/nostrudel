@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 const VideosView = lazy(() => import("."));
 const VideoDetailsView = lazy(() => import("./video"));

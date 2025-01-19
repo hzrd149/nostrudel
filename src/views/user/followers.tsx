@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Flex, SimpleGrid } from "@chakra-ui/react";
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { Event, kinds } from "nostr-tools";
 
 import { useReadRelays } from "../../hooks/use-client-relays";

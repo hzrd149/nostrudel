@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import { ExternalLinkIcon } from "../../components/icons";

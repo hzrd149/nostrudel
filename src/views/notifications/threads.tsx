@@ -2,7 +2,7 @@ import { MouseEventHandler, useCallback, useMemo } from "react";
 import { AvatarGroup, Box, Button, ButtonGroup, Flex, LinkBox, Text, useDisclosure } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
-import { Link as RouterLink, useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import useCurrentAccount from "../../hooks/use-current-account";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

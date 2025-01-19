@@ -1,4 +1,4 @@
-import { useOutletContext, Link as RouterLink } from "react-router";
+import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Button,

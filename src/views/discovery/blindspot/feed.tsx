@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";

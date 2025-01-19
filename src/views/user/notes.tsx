@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Flex, Spacer } from "@chakra-ui/react";
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import { isReply, isRepost } from "../../helpers/nostr/event";

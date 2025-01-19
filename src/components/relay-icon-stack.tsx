@@ -12,7 +12,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { RelayFavicon } from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";

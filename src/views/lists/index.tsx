@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useNavigate, Link as RouterLink, Navigate } from "react-router";
+import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 

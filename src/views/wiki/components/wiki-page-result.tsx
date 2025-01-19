@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Box, Button, ButtonGroup, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent, nip19 } from "nostr-tools";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../../helpers/nostr/wiki";

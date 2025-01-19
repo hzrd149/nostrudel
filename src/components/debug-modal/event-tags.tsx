@@ -1,7 +1,7 @@
 import { MouseEventHandler, useCallback } from "react";
 import { Box, Button, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent, nip19 } from "nostr-tools";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { getAddressPointerFromATag, getEventPointerFromETag } from "applesauce-core/helpers";
 
 import { Tag, isATag, isETag, isPTag } from "../../types/nostr-event";

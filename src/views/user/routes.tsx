@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import UserView from ".";
 import UserAboutTab from "./about";
 import UserNotesTab from "./notes";

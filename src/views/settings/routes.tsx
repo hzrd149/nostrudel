@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Outlet, RouteObject } from "react-router";
+import { Outlet, RouteObject } from "react-router-dom";
 import RequireCurrentAccount from "../../components/router/require-current-account";
 
 import SettingsView from ".";

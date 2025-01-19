@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import RequireCurrentAccount from "../../components/router/require-current-account";
 
 const PodcastsHomeView = lazy(() => import("."));

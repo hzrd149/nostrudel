@@ -1,6 +1,6 @@
 import { Code, Flex, FlexProps, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19, nip25 } from "nostr-tools";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useCurrentAccount from "../../../hooks/use-current-account";

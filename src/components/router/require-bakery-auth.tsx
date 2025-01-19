@@ -1,6 +1,6 @@
 import { PropsWithChildren, useEffect, useRef } from "react";
 import { Button, Flex, Heading, Spinner } from "@chakra-ui/react";
-import { To, useLocation, Link as RouterLink, useNavigate } from "react-router";
+import { To, useLocation, Link as RouterLink, useNavigate } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
 import { useSigningContext } from "../../providers/global/signing-provider";

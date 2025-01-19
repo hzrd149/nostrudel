@@ -13,7 +13,7 @@ import {
   ModalProps,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
 

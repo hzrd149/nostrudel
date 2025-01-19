@@ -1,5 +1,5 @@
 import { Flex, Text } from "@chakra-ui/react";
-import { useOutletContext } from "react-router";
+import { useOutletContext } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import { NoteLink } from "../../components/note/note-link";

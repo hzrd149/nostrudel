@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import RequireCurrentAccount from "../../components/router/require-current-account";
 import { lazy } from "react";
 

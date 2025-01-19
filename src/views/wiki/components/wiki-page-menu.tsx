@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-tools";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { MenuItem } from "@chakra-ui/react";
 
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";

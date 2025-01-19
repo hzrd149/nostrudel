@@ -1,4 +1,4 @@
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { Card, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";

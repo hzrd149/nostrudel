@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, AlertTitle, Spinner } from "@chakra-ui/react";
-import { Navigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router-dom";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
 
 import { ErrorBoundary } from "../../components/error-boundary";

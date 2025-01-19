@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, Link } from "@chakra-ui/react";
-import { Navigate, useParams, Link as RouterLink } from "react-router";
+import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 

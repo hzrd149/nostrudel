@@ -1,5 +1,5 @@
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";

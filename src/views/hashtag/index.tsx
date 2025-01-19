@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply, isRepost } from "../../helpers/nostr/event";

@@ -14,7 +14,7 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
 
 import UserAvatarLink from "../../user/user-avatar-link";

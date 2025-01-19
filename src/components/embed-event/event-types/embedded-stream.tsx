@@ -1,5 +1,5 @@
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
 import StreamStatusBadge from "../../../views/streams/components/status-badge";

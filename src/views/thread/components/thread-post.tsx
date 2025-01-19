@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { ThreadItem } from "applesauce-core/queries";
 
 import ReplyForm from "./reply-form";

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Flex } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";

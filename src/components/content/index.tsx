@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { ComponentMap } from "applesauce-react/hooks";
 
 import Mention from "./components/mention";

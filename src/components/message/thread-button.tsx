@@ -1,5 +1,5 @@
 import { Button, IconButton, IconButtonProps } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
 import UserAvatar from "../user/user-avatar";

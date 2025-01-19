@@ -1,5 +1,5 @@
 import { Card, CardProps, Divider, Flex, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router";
+import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { isATag } from "applesauce-core/helpers";
 

@@ -4,7 +4,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Filter, kinds } from "nostr-tools";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useDebounce, useObservable } from "react-use";
 import {
   Group,

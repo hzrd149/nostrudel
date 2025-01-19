@@ -25,7 +25,7 @@ import {
   Tabs,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Outlet, useMatches, useNavigate } from "react-router";
+import { Outlet, useMatches, useNavigate } from "react-router-dom";
 
 import useUserProfile from "../../hooks/use-user-profile";
 import { getDisplayName } from "../../helpers/nostr/profile";

@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import LoginView from ".";
 import LoginStartView from "./start";
 import LoginNpubView from "./npub";

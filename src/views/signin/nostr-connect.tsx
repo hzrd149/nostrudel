@@ -11,7 +11,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
 
 import accountService from "../../services/account";

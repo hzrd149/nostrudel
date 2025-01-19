@@ -1,5 +1,5 @@
 import { lazy, useMemo } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import {
   Button,
   ButtonGroup,

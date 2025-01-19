@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signer";
 import { useObservable } from "applesauce-react/hooks";
 

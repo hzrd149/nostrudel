@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, Location } from "react-router";
+import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, Location } from "react-router-dom";
 
 import GlobalStyles from "./styles";
 

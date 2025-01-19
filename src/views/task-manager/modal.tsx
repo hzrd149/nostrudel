@@ -9,7 +9,7 @@ import {
   ModalProps,
   Spinner,
 } from "@chakra-ui/react";
-import { RouterProvider, createMemoryRouter } from "react-router";
+import { RouterProvider, createMemoryRouter } from "react-router-dom";
 
 type Router = ReturnType<typeof createMemoryRouter>;
 

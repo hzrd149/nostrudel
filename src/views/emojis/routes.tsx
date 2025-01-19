@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 
 const EmojisHomeView = lazy(() => import("."));
 const EmojiPacksBrowseView = lazy(() => import("./browse"));

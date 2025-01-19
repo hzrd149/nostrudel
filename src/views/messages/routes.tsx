@@ -1,5 +1,5 @@
 import { Center } from "@chakra-ui/react";
-import { RouteObject } from "react-router";
+import { RouteObject } from "react-router-dom";
 import DirectMessagesView from ".";
 import DirectMessageChatView from "./chat";
 

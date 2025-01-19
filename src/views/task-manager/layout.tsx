@@ -1,5 +1,5 @@
 import { Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const tabs = ["publish-log", "relays", "processes", "database"];
 

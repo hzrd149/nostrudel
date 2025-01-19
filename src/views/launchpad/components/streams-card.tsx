@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 

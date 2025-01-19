@@ -1,4 +1,4 @@
-import { Outlet, RouteObject } from "react-router";
+import { Outlet, RouteObject } from "react-router-dom";
 import RequireCurrentAccount from "../../components/router/require-current-account";
 import DiscoveryHomeView from ".";
 import DVMFeedView from "./dvm-feed/feed";
