@@ -29,5 +29,13 @@ export default function TorInboundStatus() {
           Start tor hidden service...
         </Alert>
       );
-  } else return <PanelItemString label="Onion Address" value={status.tor.inbound.address ?? "Loading..."} qr />;
+  } else
+    return (
+      <PanelItemString
+        label="Onion Address"
+        value={status.tor.inbound.address}
+        isLoading={!status.tor.inbound.address}
+        qr
+      />
+    );
 }

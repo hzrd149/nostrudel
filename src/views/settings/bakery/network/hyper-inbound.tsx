@@ -29,5 +29,13 @@ export default function HyperInboundStatus() {
           Starting HyperDHT node...
         </Alert>
       );
-  } else return <PanelItemString label="Hyper Address" value={status.hyper.inbound.address ?? "Loading..."} qr />;
+  } else
+    return (
+      <PanelItemString
+        label="Hyper Address"
+        value={status.hyper.inbound.address}
+        isLoading={!status.hyper.inbound.address}
+        qr
+      />
+    );
 }

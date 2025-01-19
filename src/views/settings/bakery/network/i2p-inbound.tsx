@@ -29,5 +29,13 @@ export default function I2PInboundStatus() {
           Start I2P tunnel...
         </Alert>
       );
-  } else return <PanelItemString label="I2P Address" value={status.i2p.inbound.address ?? "Loading..."} qr />;
+  } else
+    return (
+      <PanelItemString
+        label="I2P Address"
+        value={status.i2p.inbound.address}
+        isLoading={!status.i2p.inbound.address}
+        qr
+      />
+    );
 }
