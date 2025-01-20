@@ -100,8 +100,8 @@ export default function SettingsView() {
         </>
       ) : (
         <>
-          <DividerHeader title="bakery" />
-          <SimpleNavItem to="/settings/bakery/connect">Connect</SimpleNavItem>
+          {/* <DividerHeader title="bakery" />
+            <SimpleNavItem to="/settings/bakery/connect">Connect</SimpleNavItem> */}
         </>
       )}
 
