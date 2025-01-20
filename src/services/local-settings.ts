@@ -8,18 +8,11 @@ import {
   NumberLocalStorageEntry,
 } from "../classes/local-settings/types";
 import { LocalStorageEntry } from "../classes/local-settings/entry";
+import { nanoid } from "nanoid";
 
 // local relay
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
 const wasmPersistForDays = new NullableNumberLocalStorageEntry("wasm-relay-oldest-event", 365);
-
-// note behavior
-const enableNoteThreadDrawer = new LocalStorageEntry(
-  "enable-note-thread-drawer",
-  false,
-  (raw) => raw === "true",
-  (v) => String(v),
-);
 
 const hideZapBubbles = new BooleanLocalStorageEntry("hide-zap-bubbles", false);
 
@@ -56,13 +49,21 @@ const defaultAuthenticationMode = new LocalStorageEntry("default-relay-auth-mode
 const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
 const debugApi = new BooleanLocalStorageEntry("debug-api", false);
 
-// display settings
-const showBrandLogo = new BooleanLocalStorageEntry("show-brand-logo", true);
+// notifications
+const deviceId = new LocalStorageEntry("device-id", nanoid());
+
+const ntfyTopic = new LocalStorageEntry("ntfy-topic", nanoid());
+const ntfyServer = new LocalStorageEntry("ntfy-server", "https://ntfy.sh");
+
+// cache relay
+const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
+
+// bakery
+const bakeryURL = new LocalStorageEntry<string>("bakery-url", "");
 
 const localSettings = {
   idbMaxEvents,
   wasmPersistForDays,
-  enableNoteThreadDrawer,
   hideZapBubbles,
   webRtcLocalIdentity,
   webRtcSignalingRelays,
@@ -70,10 +71,14 @@ const localSettings = {
   addClientTag,
   verifyEventMethod,
   enableKeyboardShortcuts,
-  showBrandLogo,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
   debugApi,
+  deviceId,
+  ntfyTopic,
+  ntfyServer,
+  bakeryURL,
+  cacheRelayURL,
 };
 
 if (import.meta.env.DEV) {

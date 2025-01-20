@@ -3,12 +3,12 @@ import { Flex } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProfileContent } from "applesauce-core/helpers";
 
-import NameStep from "./name-step";
-import ProfileImageStep from "./profile-image-step";
-import RelayStep from "./relay-step";
-import CreateStep from "./create-step";
-import BackupStep from "./backup-step";
-import FinishedStep from "./finished-step";
+import NameStep from "./components/name-step";
+import ProfileImageStep from "./components/profile-image-step";
+import RelayStep from "./components/relay-step";
+import CreateStep from "./components/create-step";
+import BackupStep from "./components/backup-step";
+import FinishedStep from "./components/finished-step";
 
 export default function SignupView() {
   const step = useParams().step || "name";

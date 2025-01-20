@@ -3,18 +3,36 @@ import { useNavigate } from "react-router-dom";
 
 import { ChevronLeftIcon } from "../icons";
 
-export default function BackButton({ ...props }: Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
+export default function BackButton({
+  fallback,
+  ...props
+}: { fallback?: string } & Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
   const navigate = useNavigate();
   return (
-    <IconButton icon={<ChevronLeftIcon boxSize={6} />} aria-label="Back" {...props} onClick={() => navigate(-1)}>
+    <IconButton
+      icon={<ChevronLeftIcon boxSize={6} />}
+      variant="ghost"
+      aria-label="Back"
+      {...props}
+      onClick={() => (history.state.idx === 0 ? navigate(fallback ?? "/") : navigate(-1))}
+    >
       Back
     </IconButton>
   );
 }
 
-export function BackIconButton({ ...props }: Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
+export function BackIconButton({
+  fallback,
+  ...props
+}: { fallback?: string } & Omit<IconButtonProps, "onClick" | "children" | "aria-label">) {
   const navigate = useNavigate();
   return (
-    <IconButton icon={<ChevronLeftIcon boxSize={6} />} aria-label="Back" {...props} onClick={() => navigate(-1)} />
+    <IconButton
+      icon={<ChevronLeftIcon boxSize={6} />}
+      aria-label="Back"
+      variant="ghost"
+      {...props}
+      onClick={() => (history.state.idx === 0 ? navigate(fallback ?? "/") : navigate(-1))}
+    />
   );
 }

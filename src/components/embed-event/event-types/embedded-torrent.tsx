@@ -24,14 +24,12 @@ import Timestamp from "../../timestamp";
 import Magnet from "../../icons/magnet";
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { formatBytes } from "../../../helpers/number";
-import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
-  const enableDrawer = useObservable(localSettings.enableNoteThreadDrawer);
-  const navigate = enableDrawer ? useNavigateInDrawer() : useNavigate();
+  const navigate = useNavigate();
   const link = `/torrents/${getSharableEventAddress(torrent)}`;
 
   const handleClick = useCallback<MouseEventHandler>(

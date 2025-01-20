@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { ButtonGroup, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
-import { localRelay } from "../../../../services/local-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
@@ -10,37 +10,39 @@ import ExportEventsButton from "./components/export-events-button";
 import MemoryRelay from "../../../../classes/memory-relay";
 import { getSortedKinds } from "../../../../helpers/nostr/event";
 import useForceUpdate from "../../../../hooks/use-force-update";
-
-async function importEvents(events: NostrEvent[]) {
-  for (const event of events) {
-    localRelay?.publish(event);
-  }
-}
-async function exportEvents() {
-  if (localRelay instanceof MemoryRelay) {
-    return Array.from(localRelay.store.database.iterateTime(0, Infinity));
-  }
-  return [];
-}
+import { cacheRelay$ } from "../../../../services/cache-relay";
 
 export default function MemoryDatabasePage() {
+  const cacheRelay = useObservable(cacheRelay$);
   const update = useForceUpdate();
 
   useEffect(() => {
-    if (localRelay instanceof MemoryRelay) {
-      const sub = localRelay.store.database.inserted.subscribe(update);
+    if (cacheRelay instanceof MemoryRelay) {
+      const sub = cacheRelay.store.database.inserted.subscribe(update);
       return () => sub.unsubscribe();
     }
   }, []);
 
+  const importEvents = async (events: NostrEvent[]) => {
+    for (const event of events) {
+      cacheRelay?.publish(event);
+    }
+  };
+  const exportEvents = async () => {
+    if (cacheRelay instanceof MemoryRelay) {
+      return Array.from(cacheRelay.store.database.iterateTime(0, Infinity));
+    }
+    return [];
+  };
+
   const count = useMemo(() => {
-    if (localRelay instanceof MemoryRelay) return localRelay.store.database.events.size;
+    if (cacheRelay instanceof MemoryRelay) return cacheRelay.store.database.events.size;
     return 0;
   }, [update]);
 
   const kinds = useMemo(() => {
-    if (localRelay instanceof MemoryRelay) {
-      return getSortedKinds(Array.from(localRelay.store.database.iterateTime(0, Infinity)));
+    if (cacheRelay instanceof MemoryRelay) {
+      return getSortedKinds(Array.from(cacheRelay.store.database.iterateTime(0, Infinity)));
     }
     return {};
   }, [update]);

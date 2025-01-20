@@ -110,7 +110,7 @@ export default function ThreadView() {
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
   return (
-    <VerticalPageLayout px={{ base: 0, md: "2" }}>
+    <VerticalPageLayout maxW="6xl" mx="auto" w="full">
       {!focusedEvent && (
         <>
           <Heading my="4">

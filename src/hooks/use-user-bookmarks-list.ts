@@ -5,7 +5,7 @@ import { getAddressPointersFromList, getEventPointersFromList } from "applesauce
 import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function userUserBookmarksList(pubkey?: string, relays: string[] = [], force=false) {
+export default function userUserBookmarksList(pubkey?: string, relays: string[] = [], force = false) {
   const account = useCurrentAccount();
   const key = pubkey ?? account?.pubkey;
 

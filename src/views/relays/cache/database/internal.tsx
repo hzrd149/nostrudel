@@ -20,7 +20,7 @@ import { useAsync } from "react-use";
 import { NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
 
-import { localDatabase } from "../../../../services/local-relay";
+import { localDatabase } from "../../../../services/cache-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";

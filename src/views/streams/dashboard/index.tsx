@@ -9,7 +9,7 @@ import "./styles.css";
 import "react-mosaic-component/react-mosaic-component.css";
 
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../../components/router/require-current-account";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";

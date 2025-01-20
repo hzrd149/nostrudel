@@ -1,8 +1,32 @@
-html,
-body,
-#root {
+html {
   margin: 0;
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+}
+
+body {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* uncomment this to emulate iphone notch and navbar */
+  /* --safe-top: 30px;
+  --safe-bottom: 30px;
+  --safe-right: env(safe-area-inset-right);
+  --safe-left: env(safe-area-inset-left); */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }

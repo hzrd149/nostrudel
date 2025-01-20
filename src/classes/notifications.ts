@@ -10,7 +10,6 @@ import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { eventStore, queryStore } from "../services/event-store";
-import RelaySet from "./relay-set";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 

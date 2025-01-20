@@ -1,5 +1,6 @@
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
@@ -12,16 +13,14 @@ import HoverLinkOverlay from "../../hover-link-overlay";
 import { getThreadReferences } from "../../../helpers/nostr/event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { getTorrentTitle } from "../../../helpers/nostr/torrents";
-import { useNavigateInDrawer } from "../../../providers/drawer-sub-view-provider";
 import { MouseEventHandler, useCallback } from "react";
-import { nip19 } from "nostr-tools";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function EmbeddedTorrentComment({
   comment,
   ...props
 }: Omit<CardProps, "children"> & { comment: NostrEvent }) {
-  const navigate = useNavigateInDrawer();
+  const navigate = useNavigate();
   const { showSignatureVerification } = useAppSettings();
   const refs = getThreadReferences(comment);
   const torrent = useSingleEvent(refs.root?.e?.id, refs.root?.e?.relays);

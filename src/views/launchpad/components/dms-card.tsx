@@ -36,7 +36,7 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
       <UserAvatar pubkey={conversation.correspondent} />
       <Flex direction="column" overflow="hidden">
         <Flex gap="2">
-          <HoverLinkOverlay as={RouterLink} to={`/dm/${nip19.npubEncode(conversation.correspondent)}`}>
+          <HoverLinkOverlay as={RouterLink} to={`/messages/${nip19.npubEncode(conversation.correspondent)}`}>
             <UserName pubkey={conversation.correspondent} />
           </HoverLinkOverlay>
           <UserDnsIdentity pubkey={conversation.correspondent} onlyIcon />

@@ -59,7 +59,7 @@ function UserGoalsManagerPage() {
   );
 }
 
-export default function GoalsView() {
+export default function GoalsHomeView() {
   const account = useCurrentAccount();
 
   return (

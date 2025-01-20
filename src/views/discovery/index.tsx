@@ -9,7 +9,7 @@ import DVMCard from "./dvm-feed/components/dvm-card";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import RequireCurrentAccount from "../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../components/router/require-current-account";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import Telescope from "../../components/icons/telescope";
@@ -44,7 +44,7 @@ function DVMFeeds() {
           <Heading size="md" mt="4">
             Favorite Feeds
           </Heading>
-          <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
+          <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3, "2xl": 4 }} spacing="2">
             {favoriteFeeds.map((feed) => (
               <ErrorBoundary key={getEventUID(feed)} event={feed}>
                 <DVMCard dvm={feed} />
@@ -64,7 +64,7 @@ function DVMFeeds() {
         </Link>
       </Text>
       <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
+        <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3, "2xl": 4 }} spacing="2">
           {DVMs.filter((feed) => !isEventInList(favorites, feed)).map((feed) => (
             <ErrorBoundary key={getEventUID(feed)} event={feed}>
               <DVMCard dvm={feed} />
@@ -79,8 +79,8 @@ function DVMFeeds() {
 function DiscoveryHomePage() {
   return (
     <VerticalPageLayout>
-      <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3 }} spacing="2">
-        <Card as={LinkBox} display="block" p="4" maxW="lg">
+      <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3, "2xl": 4 }} spacing="2">
+        <Card as={LinkBox} display="block" p="4">
           <Telescope boxSize={16} float="left" ml="2" my="2" mr="6" />
           <Flex direction="column">
             <Heading size="md">
@@ -91,7 +91,7 @@ function DiscoveryHomePage() {
             <Text>What are other users seeing that you are not?</Text>
           </Flex>
         </Card>
-        <Card as={LinkBox} display="block" p="4" maxW="lg">
+        <Card as={LinkBox} display="block" p="4">
           <RelayIcon boxSize={16} float="left" ml="2" my="2" mr="6" />
           <Flex direction="column">
             <Heading size="md">

@@ -11,6 +11,7 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import localSettings from "../../../services/local-settings";
 import useForceUpdate from "../../../hooks/use-force-update";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function WebRtcConnectView() {
   const update = useForceUpdate();
@@ -41,12 +42,7 @@ export default function WebRtcConnectView() {
     .filter(({ pubkey }) => !webRtcRelaysService.broker.peers.has(pubkey));
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px={{ base: "2", lg: 0 }}>
-      <Flex gap="2" alignItems="center" wrap="wrap">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Connect to WebRTC Relay</Heading>
-      </Flex>
-
+    <SimpleView title="Connect to WebRTC Relay">
       <Text fontStyle="italic" mt="-2">
         Scan or paste the WebRTC Connection URI of the relay you wish to connect to
       </Text>
@@ -114,6 +110,6 @@ export default function WebRtcConnectView() {
           No connections requests
         </Alert>
       )}
-    </Flex>
+    </SimpleView>
   );
 }

@@ -17,11 +17,13 @@ export default function EnableWithDelete({
   enable,
   enabled,
   wipe,
+  isLoading,
   ...props
 }: Omit<ButtonGroupProps, "children"> & {
   enable: () => void;
   enabled: boolean;
   wipe: () => Promise<void>;
+  isLoading?: boolean;
 }) {
   const [deleting, setDeleting] = useState(false);
   const wipeDatabase = useCallback(async () => {
@@ -39,7 +41,7 @@ export default function EnableWithDelete({
         {enabled ? "Enabled" : "Enable"}
       </Button>
       <Menu>
-        <MenuButton as={IconButton} icon={<ChevronDownIcon />} aria-label="More options" />
+        <MenuButton as={IconButton} icon={<ChevronDownIcon />} aria-label="More options" isLoading={isLoading} />
         <MenuList>
           <MenuItem icon={<Trash01 />} color="red.500" onClick={wipeDatabase}>
             Clear Database

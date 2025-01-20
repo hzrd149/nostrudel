@@ -34,7 +34,7 @@ import useCurrentAccount from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user/user-avatar";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { TEMPLATES } from "./templates";
-import RequireCurrentAccount from "../../../providers/route/require-current-account";
+import RequireCurrentAccount from "../../../components/router/require-current-account";
 import VariableEditor from "./components/variable-editor";
 import EventTemplateEditor from "./components/event-template-editor";
 import useRouteStateValue from "../../../hooks/use-route-state-value";

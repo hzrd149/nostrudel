@@ -3,7 +3,7 @@ import { Button, Card, CardBody, CardHeader, CardProps, Heading, Input, Link, Si
 import { Link as RouterLink } from "react-router-dom";
 
 import useRecentIds from "../../../hooks/use-recent-ids";
-import { allApps } from "../../other-stuff/apps";
+import { allApps } from "../../../components/navigation/apps";
 import AppCard from "../../other-stuff/component/app-card";
 
 export default function ToolsCard({ ...props }: Omit<CardProps, "children">) {

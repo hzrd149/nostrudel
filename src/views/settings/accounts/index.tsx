@@ -14,6 +14,8 @@ import SimpleSignerBackup from "./components/simple-signer-backup";
 import PasswordSignerBackup from "./components/password-signer-backup";
 import { ReactNode } from "react";
 import MigrateAccountToDevice from "./components/migrate-to-device";
+import SimpleHeader from "../../../components/layout/presets/simple-header";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function AccountBackup() {
   const account = useCurrentAccount()!;
@@ -34,11 +36,11 @@ export default function AccountSettings() {
   const navigate = useNavigate();
 
   return (
-    <VerticalPageLayout flex={1}>
-      <Flex gap="2" alignItems="center">
-        <Heading size="md">Account Settings</Heading>
+    <SimpleView
+      title="Account settings"
+      maxW="6xl"
+      actions={
         <Button
-          variant="outline"
           colorScheme="primary"
           ml="auto"
           size="sm"
@@ -49,8 +51,8 @@ export default function AccountSettings() {
         >
           Add Account
         </Button>
-      </Flex>
-
+      }
+    >
       <Flex gap="2" alignItems="center" wrap="wrap">
         <UserAvatar pubkey={account.pubkey} />
         <Box lineHeight={1}>
@@ -90,11 +92,7 @@ export default function AccountSettings() {
             <AccountTypeBadge account={account} ml="4" />
 
             <ButtonGroup size="sm" ml="auto">
-              <Button
-                onClick={() => accountService.switchAccount(account.pubkey)}
-                colorScheme="primary"
-                variant="ghost"
-              >
+              <Button onClick={() => accountService.switchAccount(account.pubkey)} variant="ghost">
                 Switch
               </Button>
               <Button
@@ -106,6 +104,6 @@ export default function AccountSettings() {
             </ButtonGroup>
           </Flex>
         ))}
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }

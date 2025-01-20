@@ -51,7 +51,7 @@ export default function ReactionIconButton({
     </Suspense>
   );
 
-  if (useModal) {
+  if (useModal)
     return (
       <>
         <IconButton
@@ -68,7 +68,7 @@ export default function ReactionIconButton({
         </Modal>
       </>
     );
-  } else
+  else
     return (
       <Popover isLazy isOpen={isOpen} onOpen={open.on} onClose={open.off}>
         <PopoverTrigger>

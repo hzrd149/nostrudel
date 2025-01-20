@@ -3,7 +3,7 @@ import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import { SchemaV1, SchemaV10, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV9 } from "./schema";
 import { logger } from "../../helpers/debug";
-import { localDatabase } from "../local-relay";
+import { localDatabase } from "../cache-relay";
 
 const log = logger.extend("Database");
 

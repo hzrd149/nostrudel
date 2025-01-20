@@ -5,10 +5,10 @@ import { TrustProvider } from "../../../providers/local/trust-provider";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import Timestamp from "../../timestamp";
-import DecryptPlaceholder from "../../../views/dms/components/decrypt-placeholder";
+import DecryptPlaceholder from "../../../views/messages/components/decrypt-placeholder";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
-import DirectMessageContent from "../../../views/dms/components/direct-message-content";
+import DirectMessageContent from "../../../views/messages/components/direct-message-content";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 
 export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children"> & { dm: NostrEvent }) {

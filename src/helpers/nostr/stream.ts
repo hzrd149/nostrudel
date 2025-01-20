@@ -1,6 +1,7 @@
 import { getEventPointerFromETag, getTagValue, safeRelayUrl } from "applesauce-core/helpers";
 
 import { NostrEvent, isPTag } from "../../types/nostr-event";
+import dayjs from "dayjs";
 
 export type StreamStatus = "live" | "ended" | "planned";
 
@@ -15,7 +16,8 @@ export function getStreamImage(stream: NostrEvent) {
 }
 
 export function getStreamStatus(stream: NostrEvent): StreamStatus {
-  return (getTagValue(stream, "status") as StreamStatus) || "ended";
+  if (dayjs.unix(stream.created_at).isBefore(dayjs().subtract(2, "weeks"))) return "ended";
+  else return (getTagValue(stream, "status") as StreamStatus) || "ended";
 }
 
 export function getStreamHost(stream: NostrEvent) {

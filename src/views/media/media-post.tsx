@@ -50,7 +50,7 @@ function Actions({ post }: { post: NostrEvent }) {
 
 function HorizontalLayout({ post }: { post: NostrEvent }) {
   return (
-    <Flex direction="column" pt="2" pb="4" gap="2" px="2" w="auto" h="100vh" overflow="hidden">
+    <Flex direction="column" pt="2" pb="4" gap="2" px="2" w="full" h="100vh" overflow="hidden" maxW="8xl" mx="auto">
       <Header post={post} />
 
       <Flex direction="row" gap="2" overflow="hidden" h="full">
@@ -94,7 +94,7 @@ function VerticalLayout({ post }: { post: NostrEvent }) {
 }
 
 function MediaPostPage({ post }: { post: NostrEvent }) {
-  const Layout = useBreakpointValue({ base: VerticalLayout, lg: HorizontalLayout }) || VerticalLayout;
+  const Layout = useBreakpointValue({ base: VerticalLayout, xl: HorizontalLayout }) || VerticalLayout;
 
   return (
     <TrustProvider trust>

@@ -11,6 +11,7 @@ import useUserContactList from "../../../hooks/use-user-contact-list";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function ContactListRelaysView() {
   const account = useCurrentAccount();
@@ -38,11 +39,10 @@ export default function ContactListRelaysView() {
   if (relays === undefined) return <Spinner />;
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1} px={{ base: "2", lg: 0 }}>
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg">Contact List Relays</Heading>
-        {relays && (
+    <SimpleView
+      title="Contact list relays"
+      actions={
+        relays && (
           <Button
             colorScheme="red"
             onClick={clearRelays}
@@ -53,9 +53,9 @@ export default function ContactListRelaysView() {
           >
             Clear Relays
           </Button>
-        )}
-      </Flex>
-
+        )
+      }
+    >
       <Text fontStyle="italic" mt="-2">
         Some apps store relays in your contacts list (kind-3)
         <br />
@@ -96,6 +96,6 @@ export default function ContactListRelaysView() {
           ))}
         </>
       )}
-    </Flex>
+    </SimpleView>
   );
 }

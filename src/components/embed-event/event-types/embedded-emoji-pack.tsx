@@ -16,8 +16,8 @@ import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import EmojiPackFavoriteButton from "../../../views/emoji-packs/components/emoji-pack-favorite-button";
-import EmojiPackMenu from "../../../views/emoji-packs/components/emoji-pack-menu";
+import EmojiPackFavoriteButton from "../../../views/emojis/components/emoji-pack-favorite-button";
+import EmojiPackMenu from "../../../views/emojis/components/emoji-pack-menu";
 import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
 import { getSharableEventAddress } from "../../../services/relay-hints";

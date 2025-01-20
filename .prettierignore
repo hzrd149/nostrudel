@@ -3,3 +3,5 @@ dist
 public/lib
 stats.html
 pnpm-lock.yaml
+android
+ios

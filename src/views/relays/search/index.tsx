@@ -26,6 +26,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { RelayFavicon } from "../../../components/relay-favicon";
 import AddRelayForm from "../app/add-relay-form";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 function RelayEntry({
   url,
@@ -41,8 +42,16 @@ function RelayEntry({
   const { info } = useRelayInfo(url);
 
   return (
-    <Flex key={url} gap="2" alignItems="center" pl="2">
-      <RelayFavicon relay={url} size="xs" outline="2px solid" />
+    <Flex
+      key={url}
+      gap="2"
+      alignItems="center"
+      p="2"
+      borderWidth="1px"
+      borderRadius="lg"
+      borderColor={isDefault ? "primary.500" : undefined}
+    >
+      <RelayFavicon relay={url} size="sm" outline="2px solid" />
       <Box overflow="hidden">
         <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
           {url}
@@ -59,7 +68,7 @@ function RelayEntry({
           Default
         </Button>
         <IconButton
-          aria-label="Remove Relay"
+          aria-label="Remove relay"
           icon={<CloseIcon />}
           colorScheme="red"
           onClick={() => onRemove()}
@@ -116,13 +125,7 @@ export default function SearchRelaysView() {
   };
 
   return (
-    <Flex gap="2" direction="column" overflow="auto hidden" flex={1}>
-      <Flex gap="2" alignItems="center">
-        <BackButton hideFrom="lg" size="sm" />
-        <Heading size="lg" px={{ base: 0, lg: "2" }}>
-          Search Relays
-        </Heading>
-      </Flex>
+    <SimpleView title="Search Relays" maxW="4xl">
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are used to search for users and content
       </Text>
@@ -161,6 +164,6 @@ export default function SearchRelaysView() {
       ))}
 
       <AddRelayForm onSubmit={(relay) => addRelay(relay)} supportedNips={[50]} />
-    </Flex>
+    </SimpleView>
   );
 }

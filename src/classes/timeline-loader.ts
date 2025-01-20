@@ -9,9 +9,7 @@ import { shareLatestValue } from "applesauce-core/observable";
 import { MultiSubscription } from "applesauce-net/subscription";
 
 import { logger } from "../helpers/debug";
-import { isReplaceable } from "../helpers/nostr/event";
 import { mergeFilter } from "../helpers/nostr/filter";
-import { localRelay } from "../services/local-relay";
 import SuperMap from "./super-map";
 import ChunkedRequest from "./chunked-request";
 import relayPoolService from "../services/relay-pool";
@@ -19,6 +17,7 @@ import Process from "./process";
 import AlignHorizontalCentre02 from "../components/icons/align-horizontal-centre-02";
 import processManager from "../services/process-manager";
 import { eventStore, queryStore } from "../services/event-store";
+import { getCacheRelay } from "../services/cache-relay";
 
 const BLOCK_SIZE = 100;
 
@@ -85,9 +84,6 @@ export default class TimelineLoader {
   private handleEvent(event: NostrEvent, fromCache = false) {
     event = eventStore.add(event);
 
-    // publish to local relay
-    if (!fromCache && this.useCache && localRelay && !this.seenInCache.has(event.id)) localRelay.publish(event);
-
     if (fromCache) this.seenInCache.add(event.id);
   }
   private handleChunkFinished() {
@@ -137,8 +133,9 @@ export default class TimelineLoader {
 
     // recreate cache chunk loader
     if (this.cacheLoader) this.disconnectFromChunkLoader(this.cacheLoader);
-    if (localRelay && this.useCache) {
-      this.cacheLoader = new ChunkedRequest(localRelay, this.filters, this.log.extend("cache-relay"));
+    const cacheRelay = getCacheRelay();
+    if (cacheRelay && this.useCache) {
+      this.cacheLoader = new ChunkedRequest(cacheRelay, this.filters, this.log.extend("cache-relay"));
       this.connectToChunkLoader(this.cacheLoader);
     }
 

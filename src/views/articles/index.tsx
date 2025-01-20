@@ -42,7 +42,7 @@ function ArticlesHomePage() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <VerticalPageLayout>
+    <VerticalPageLayout maxW="6xl" mx="auto">
       <Flex gap="2">
         <Heading>Articles</Heading>
         <PeopleListSelection />

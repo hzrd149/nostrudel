@@ -70,9 +70,7 @@ function BadgesPage() {
   );
 }
 
-export default function BadgesView() {
-  // const account = useCurrentAccount();
-  // return account ? <BadgesPage /> : <Navigate to="/lists/browse" />;
+export default function BadgesHomeView() {
   return (
     <PeopleListProvider>
       <BadgesPage />

@@ -8,6 +8,7 @@ import NsecAccount from "../classes/accounts/nsec-account";
 import PasswordAccount from "../classes/accounts/password-account";
 import PubkeyAccount from "../classes/accounts/pubkey-account";
 import SerialPortAccount from "../classes/accounts/serial-port-account";
+import AndroidSignerAccount from "../classes/accounts/android-signer-account";
 import { logger } from "../helpers/debug";
 import db from "./db";
 import { AppSettings } from "../helpers/app-settings";
@@ -71,6 +72,8 @@ class AccountService {
         return new SerialPortAccount(data.pubkey).fromJSON(data);
       case "nostr-connect":
         return new NostrConnectAccount(data.pubkey).fromJSON(data);
+      case "android-signer":
+        return new AndroidSignerAccount(data.pubkey).fromJSON(data);
     }
   }
 

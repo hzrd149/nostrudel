@@ -52,7 +52,7 @@ function Wallet({ wallet }: { wallet: NostrEvent }) {
   );
 }
 
-export default function WalletView() {
+export default function WalletHomeView() {
   const account = useCurrentAccount()!;
 
   const readRelays = useReadRelays();

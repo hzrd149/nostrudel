@@ -1,7 +1,8 @@
 import { NostrConnectConnectionMethods } from "applesauce-signer";
 import { Filter, NostrEvent } from "nostr-tools";
-import relayPoolService from "../services/relay-pool";
 import { MultiSubscription } from "applesauce-net/subscription";
+
+import relayPoolService from "../services/relay-pool";
 
 export function createNostrConnectConnection(): NostrConnectConnectionMethods {
   const sub = new MultiSubscription(relayPoolService);

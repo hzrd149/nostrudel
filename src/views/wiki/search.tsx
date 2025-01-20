@@ -11,12 +11,14 @@ import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { subscribeMany } from "../../helpers/relay";
 import { DEFAULT_SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
-import { localRelay } from "../../services/local-relay";
+import { cacheRelay$ } from "../../services/cache-relay";
 import WikiPageResult from "./components/wiki-page-result";
 import dictionaryService from "../../services/dictionary";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import { useObservable } from "applesauce-react/hooks";
 
 export default function WikiSearchView() {
+  const cacheRelay = useObservable(cacheRelay$);
   const webOfTrust = useWebOfTrust();
   const { value: query, setValue: setQuery } = useRouteSearchValue("q");
   if (!query) return <Navigate to="/wiki" />;
@@ -46,13 +48,13 @@ export default function WikiSearchView() {
       oneose: () => remoteSearchSub.close(),
     });
 
-    if (localRelay) {
-      const localSearchSub: Subscription = localRelay.subscribe([filter], {
+    if (cacheRelay) {
+      const localSearchSub: Subscription = cacheRelay.subscribe([filter], {
         onevent: handleEvent,
         oneose: () => localSearchSub.close(),
       });
     }
-  }, [query, setResults]);
+  }, [query, setResults, cacheRelay]);
 
   const sorted = webOfTrust ? webOfTrust.sortByDistanceAndConnections(results, (p) => p.pubkey) : results;
 
