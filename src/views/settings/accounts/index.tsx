@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signer";
 import { useObservable } from "applesauce-react/hooks";
 
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
@@ -11,10 +10,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/account-info-badge";
 import SimpleSignerBackup from "./components/simple-signer-backup";
-import PasswordSignerBackup from "./components/password-signer-backup";
-import { ReactNode } from "react";
 import MigrateAccountToDevice from "./components/migrate-to-device";
-import SimpleHeader from "../../../components/layout/presets/simple-header";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 function AccountBackup() {

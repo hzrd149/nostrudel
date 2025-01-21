@@ -29,7 +29,7 @@ export type AppSettingsV0 = {
 export type AppSettingsV1 = Omit<AppSettingsV0, "version"> & {
   version: 1;
   mutedWords?: string;
-  maxPageWidth: "none" | "md" | "lg" | "xl";
+  maxPageWidth: "none" | "sm" | "md" | "lg" | "xl" | "full";
 };
 export type AppSettingsV2 = Omit<AppSettingsV1, "version"> & { version: 2; theme: string };
 export type AppSettingsV3 = Omit<AppSettingsV2, "version"> & { version: 3; quickReactions: string[] };

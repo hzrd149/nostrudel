@@ -15,6 +15,7 @@ import ArticleCard from "./components/article-card";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { getArticleTitle } from "../../helpers/nostr/long-form";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 function ArticlesHomePage() {
   const relays = useReadRelays();
@@ -41,8 +42,10 @@ function ArticlesHomePage() {
   });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
+  const maxWidth = useMaxPageWidth();
+
   return (
-    <VerticalPageLayout maxW="6xl" mx="auto">
+    <VerticalPageLayout maxW={maxWidth} mx="auto">
       <Flex gap="2">
         <Heading>Articles</Heading>
         <PeopleListSelection />

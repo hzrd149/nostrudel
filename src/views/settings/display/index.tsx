@@ -74,13 +74,15 @@ export default function DisplaySettings() {
           Max Page width
         </FormLabel>
         <Select id="maxPageWidth" {...register("maxPageWidth")} maxW="sm">
-          <option value="none">None</option>
-          <option value="md">Medium (~768px)</option>
-          <option value="lg">Large (~992px)</option>
-          <option value="xl">Extra Large (~1280px)</option>
+          <option value="none">Default</option>
+          <option value="full">Full</option>
+          <option value="sm">Small</option>
+          <option value="md">Medium</option>
+          <option value="lg">Large</option>
+          <option value="xl">Extra Large</option>
         </Select>
         <FormHelperText>
-          <span>Setting this will restrict the width of app on desktop</span>
+          <span>Setting this will restrict the width of the timeline</span>
         </FormHelperText>
       </FormControl>
       <FormControl>

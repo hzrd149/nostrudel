@@ -9,6 +9,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import ArticleCard from "../articles/components/article-card";
 import { ErrorBoundary } from "../../components/error-boundary";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 export default function UserArticlesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -20,9 +21,11 @@ export default function UserArticlesTab() {
   });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
+  const maxWidth = useMaxPageWidth();
+
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout maxW="6xl" mx="auto">
+      <VerticalPageLayout maxW={maxWidth} mx="auto">
         {articles?.map((article) => (
           <ErrorBoundary key={article.id} event={article}>
             <ArticleCard article={article} />

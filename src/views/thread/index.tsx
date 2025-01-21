@@ -19,6 +19,7 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../components/icons";
 import TimelineNote from "../../components/note/timeline-note";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 function CollapsedReplies({
   pointer,
@@ -109,8 +110,9 @@ export default function ThreadView() {
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
+  const maxWidth = useMaxPageWidth("6xl");
   return (
-    <VerticalPageLayout maxW="6xl" mx="auto" w="full">
+    <VerticalPageLayout maxW={maxWidth} mx="auto" w="full">
       {!focusedEvent && (
         <>
           <Heading my="4">

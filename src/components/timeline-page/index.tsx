@@ -13,6 +13,8 @@ import { getMatchLink } from "../../helpers/regexp";
 import TimelineHealth from "./timeline-health";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import VerticalPageLayout from "../vertical-page-layout";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 export function useTimelinePageEventFilter() {
   const [params, setParams] = useSearchParams();
@@ -40,6 +42,7 @@ export default function TimelinePage({
 >) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
+  const { maxPageWidth } = useAppSettings();
   const viewParam = useRouteSearchValue("view", "timeline");
   const mode = (viewParam.value as TimelineViewType) ?? "timeline";
 
@@ -57,9 +60,11 @@ export default function TimelinePage({
         return null;
     }
   };
+
+  const maxWidth = useMaxPageWidth("6xl");
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout maxW="6xl" mx="auto" {...props}>
+      <VerticalPageLayout maxW={maxWidth} mx="auto" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus timeline={loader} />

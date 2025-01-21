@@ -34,6 +34,7 @@ import NoteReactions from "../../../components/note/timeline-note/components/not
 import FileMenu from "../components/file-menu";
 import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
 import { formatBytes } from "../../../helpers/number";
+import useMaxPageWidth from "../../../hooks/use-max-page-width";
 
 function FileDetailsPage({ file }: { file: NostrEvent }) {
   const name = getTagValue(file, "name") || getTagValue(file, "x");
@@ -43,6 +44,8 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
   const size = getTagValue(file, "size");
   const sha256 = getTagValue(file, "x");
   const comment = useDisclosure();
+
+  const maxWidth = useMaxPageWidth();
 
   return (
     <VerticalPageLayout>
@@ -61,7 +64,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
 
       <Flex
         direction="column"
-        maxW="6xl"
+        maxW={maxWidth}
         mx="auto"
         w="full"
         maxH="2xl"
@@ -74,7 +77,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
         </TrustProvider>
       </Flex>
 
-      <Flex mx="auto" maxW="6xl" w="full" gap="2" direction="column">
+      <Flex mx="auto" maxW={maxWidth} w="full" gap="2" direction="column">
         <Flex gap="2">
           {type && <Text>{type}</Text>}
           {size && <Text>{formatBytes(parseInt(size))}</Text>}
@@ -89,7 +92,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
           </Box>
         )}
 
-        <Divider mx="auto" maxW="6xl" w="full" />
+        <Divider mx="auto" maxW={maxWidth} w="full" />
         {summary && <Text whiteSpace="pre-line">{summary}</Text>}
         <Flex gap="2" wrap="wrap">
           <ButtonGroup gap="2" size="sm" variant="ghost">

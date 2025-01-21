@@ -1,8 +1,9 @@
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
-import { Button, ButtonGroup, Flex, Heading, SimpleGrid, SkeletonText, Spinner } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, SkeletonText, Spinner } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
+import { getAddressPointerFromATag, getEventPointerFromETag, isATag, isETag } from "applesauce-core/helpers";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import useCurrentAccount from "../../hooks/use-current-account";
 import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -10,13 +11,12 @@ import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
 import UserName from "../../components/user/user-name";
 import ListMenu from "../lists/components/list-menu";
 import UserAvatarLink from "../../components/user/user-avatar-link";
-import { NostrEvent, isATag, isETag } from "../../types/nostr-event";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { EmbedEvent } from "../../components/embed-event";
-import { aTagToAddressPointer, eTagToEventPointer } from "../../helpers/nostr/event";
 import SimpleView from "../../components/layout/presets/simple-view";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
   const { isLoading, removeBookmark } = useEventBookmarkActions(event);
@@ -57,6 +57,7 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 
 function BookmarksPage({ pubkey }: { pubkey: string }) {
   const { list } = userUserBookmarksList(pubkey, undefined, true);
+  const maxWidth = useMaxPageWidth();
 
   if (!list) return <Spinner />;
 
@@ -72,17 +73,17 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
         </Flex>
       }
       actions={<ListMenu ml="auto" size="sm" list={list} aria-label="More options" />}
-      maxW="4xl"
+      maxW={maxWidth}
       center
     >
       {Array.from(list.tags)
         .reverse()
         .map((tag) => {
           if (isETag(tag)) {
-            const pointer = eTagToEventPointer(tag);
+            const pointer = getEventPointerFromETag(tag);
             return <BookmarkEventItem key={pointer.id} pointer={pointer} />;
           } else if (isATag(tag)) {
-            const pointer = aTagToAddressPointer(tag);
+            const pointer = getAddressPointerFromATag(tag);
             return <BookmarkAddressItem key={tag[1]} pointer={pointer} />;
           }
           return null;

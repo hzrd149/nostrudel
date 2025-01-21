@@ -15,11 +15,8 @@ import { queryStore } from "../../services/event-store";
 import EventFactoryProvider from "./event-factory-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
-  const { theme: themeName, primaryColor, maxPageWidth } = useAppSettings();
-  const theme = useMemo(
-    () => buildTheme(themeName, primaryColor, maxPageWidth !== "none" ? maxPageWidth : undefined),
-    [themeName, primaryColor, maxPageWidth],
-  );
+  const { theme: themeName, primaryColor } = useAppSettings();
+  const theme = useMemo(() => buildTheme(themeName, primaryColor), [themeName, primaryColor]);
 
   return (
     <ChakraProvider theme={theme} colorModeManager={localStorageManager}>
