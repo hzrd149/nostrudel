@@ -28,6 +28,7 @@ import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { CAP_IS_WEB } from "./env";
 import { App } from "./app";
+import { logger } from "./helpers/debug";
 dayjs.extend(relativeTimePlugin);
 dayjs.extend(localizedFormat);
 
@@ -41,15 +42,18 @@ if (import.meta.env.PROD) {
   }
 }
 
-// if web, register service worker
-if (CAP_IS_WEB) {
-  const { registerServiceWorker } = await import("./services/worker");
-  registerServiceWorker();
-}
-
+logger("Rendering app");
 const root = document.getElementById("root")!;
 createRoot(root).render(
   <GlobalProviders>
     <App />
   </GlobalProviders>,
 );
+
+// // if web, register service worker
+// // NOTE: this should happen after the app renders so it does not stop the app from rendering
+// if (CAP_IS_WEB) {
+//   logger("Loading service worker");
+//   const { registerServiceWorker } = await import("./services/worker");
+//   await registerServiceWorker();
+// }

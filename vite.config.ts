@@ -14,22 +14,17 @@ export default defineConfig({
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        // don't create any chunks smaller than 500kB
-        experimentalMinChunkSize: 1024 * 100,
-      },
-    },
+    minify: false,
   },
   plugins: [
     react(),
     tsconfigPaths(),
     VitePWA({
-      strategies: "injectManifest",
+      // strategies: "injectManifest",
+      // srcDir: "src",
+      // filename: "worker.ts",
       registerType: "autoUpdate",
-      injectRegister: null,
-      srcDir: "src",
-      filename: "worker.ts",
+      // injectRegister: null,
       injectManifest: {
         minify: false,
         sourcemap: true,

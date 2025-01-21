@@ -53,14 +53,14 @@ import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
 import podcastsRoutes from "./views/podcasts/routes";
 
-const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
+// const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
 
 const RootPage = () => {
   useSetColorMode();
 
   return (
     <RouteProviders>
-      <ScrollRestoration getKey={getScrollKey} />
+      <ScrollRestoration />
       <AppLayout />
     </RouteProviders>
   );
@@ -69,7 +69,7 @@ const RootPage = () => {
 const NoLayoutPage = () => {
   return (
     <RouteProviders>
-      <ScrollRestoration getKey={getScrollKey} />
+      <ScrollRestoration />
       <Outlet />
     </RouteProviders>
   );

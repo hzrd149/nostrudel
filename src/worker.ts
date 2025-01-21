@@ -1,4 +1,4 @@
-//  / <reference no-default-lib="true"/>
+/// <reference no-default-lib="true"/>
 /// <reference lib="ES2022" />
 /// <reference lib="DOM" />
 /// <reference lib="webworker" />

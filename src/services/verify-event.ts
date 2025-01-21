@@ -3,6 +3,7 @@ import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
 import { fakeVerifyEvent } from "applesauce-core/helpers/event";
 import { logger } from "../helpers/debug";
 import localSettings from "./local-settings";
+import { distinctUntilChanged } from "rxjs";
 
 const log = logger.extend("VerifyEvent");
 let verifyEventMethod: typeof internalVerifyEvent;
@@ -64,5 +65,4 @@ async function updateVerifyMethod() {
   }
 }
 
-localSettings.verifyEventMethod.subscribe(updateVerifyMethod);
-await updateVerifyMethod();
+localSettings.verifyEventMethod.pipe(distinctUntilChanged()).subscribe(updateVerifyMethod);

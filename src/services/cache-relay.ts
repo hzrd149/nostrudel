@@ -1,4 +1,4 @@
-import { BehaviorSubject, pairwise } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, pairwise } from "rxjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { fakeVerifyEvent, isFromCache } from "applesauce-core/helpers";
@@ -86,7 +86,7 @@ export const cacheRelay$ = new BehaviorSubject<
 >(null);
 
 // create a new cache relay instance when the url changes
-localSettings.cacheRelayURL.subscribe(async (url) => {
+localSettings.cacheRelayURL.pipe(distinctUntilChanged()).subscribe(async (url) => {
   if (cacheRelay$.value && cacheRelay$.value.url === url) return;
 
   const relay = await connectRelay(url);
