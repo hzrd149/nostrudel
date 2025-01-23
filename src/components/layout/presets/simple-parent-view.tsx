@@ -1,5 +1,5 @@
 import { PropsWithChildren, Suspense } from "react";
-import { Outlet, useMatch } from "react-router-dom";
+import { Outlet, OutletProps, useMatch } from "react-router-dom";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
 
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
@@ -11,7 +11,8 @@ export default function SimpleParentView({
   path,
   title,
   width = "xs",
-}: PropsWithChildren<{ path: string; title?: string; width?: "xs" | "sm" | "md" }>) {
+  context,
+}: PropsWithChildren<{ path: string; title?: string; width?: "xs" | "sm" | "md"; context?: OutletProps["context"] }>) {
   const match = useMatch(path);
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
@@ -37,7 +38,7 @@ export default function SimpleParentView({
         {!isMobile && (
           <Suspense fallback={<Spinner />}>
             <ErrorBoundary>
-              <Outlet />
+              <Outlet context={context} />
             </ErrorBoundary>
           </Suspense>
         )}
@@ -47,7 +48,7 @@ export default function SimpleParentView({
     return (
       <Suspense fallback={<Spinner />}>
         <ErrorBoundary>
-          <Outlet />
+          <Outlet context={context} />
         </ErrorBoundary>
       </Suspense>
     );

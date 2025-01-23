@@ -4,7 +4,6 @@ import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router
 import { NostrEvent, kinds } from "nostr-tools";
 
 import { ThreadIcon } from "../../components/icons";
-import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import RequireCurrentAccount from "../../components/router/require-current-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -24,9 +23,10 @@ import useAppSettings from "../../hooks/use-user-app-settings";
 import { truncateId } from "../../helpers/string";
 import useRouterMarker from "../../hooks/use-router-marker";
 import decryptionCacheService from "../../services/decryption-cache";
-import SimpleView from "../../components/layout/presets/simple-view";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import SimpleHeader from "../../components/layout/presets/simple-header";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
@@ -114,43 +114,40 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   return (
     <ThreadsProvider timeline={loader}>
-      <Flex flex={1} direction="column" pr="var(--safe-right)" pl="var(--safe-left)" h="full" overflow="hidden">
-        <SimpleHeader
-          position="initial"
+      <IntersectionObserverProvider callback={callback}>
+        <ContainedSimpleView
+          reverse
           title={
             <Flex gap="2" alignItems="center">
-              <UserAvatar pubkey={pubkey} size="sm" />
+              <UserAvatarLink pubkey={pubkey} size="sm" />
               <UserLink pubkey={pubkey} fontWeight="bold" />
               <UserDnsIdentityIcon pubkey={pubkey} />
             </Flex>
           }
+          actions={
+            <ButtonGroup ml="auto">
+              {!autoDecryptDMs && (
+                <Button onClick={decryptAll} isLoading={loading}>
+                  Decrypt All
+                </Button>
+              )}
+              <IconButton
+                aria-label="Threads"
+                title="Threads"
+                icon={<ThreadIcon boxSize={5} />}
+                onClick={openDrawerList}
+              />
+            </ButtonGroup>
+          }
+          bottom={<SendMessageForm flexShrink={0} pubkey={pubkey} p="2" />}
         >
-          <ButtonGroup ml="auto">
-            {!autoDecryptDMs && (
-              <Button onClick={decryptAll} isLoading={loading}>
-                Decrypt All
-              </Button>
-            )}
-            <IconButton
-              aria-label="Threads"
-              title="Threads"
-              icon={<ThreadIcon boxSize={5} />}
-              onClick={openDrawerList}
-            />
-          </ButtonGroup>
-        </SimpleHeader>
-
-        <IntersectionObserverProvider callback={callback}>
-          <Flex h="0" flex={1} overflowX="hidden" overflowY="auto" direction="column-reverse" gap="2" py="4" px="2">
-            <ChatLog messages={messages} />
-            <TimelineActionAndStatus timeline={loader} />
-          </Flex>
-          <SendMessageForm flexShrink={0} pubkey={pubkey} p="2" />
+          <ChatLog messages={messages} />
+          <TimelineActionAndStatus timeline={loader} />
           {location.state?.thread && (
             <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
           )}
-        </IntersectionObserverProvider>
-      </Flex>
+        </ContainedSimpleView>
+      </IntersectionObserverProvider>
     </ThreadsProvider>
   );
 }

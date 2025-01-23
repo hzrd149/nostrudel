@@ -5,8 +5,8 @@ import { kinds } from "nostr-tools";
 
 import { isJunkList } from "../../helpers/nostr/lists";
 import ListCard from "../lists/components/list-card";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import useUserSets from "../../hooks/use-user-lists";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -19,7 +19,7 @@ export default function UserListsTab() {
   const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
 
   return (
-    <VerticalPageLayout>
+    <SimpleView title="Lists">
       <Heading size="md" mt="2">
         Special lists
       </Heading>
@@ -70,6 +70,6 @@ export default function UserListsTab() {
           </SimpleGrid>
         </>
       )}
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }

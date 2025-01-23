@@ -10,7 +10,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import StreamCard from "../streams/components/stream-card";
-import VerticalPageLayout from "../../components/vertical-page-layout";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 export default function UserStreamsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -27,15 +27,15 @@ export default function UserStreamsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <SimpleView title="Streams">
+      <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 }} spacing="2">
           {streams.map((stream) => (
             <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
         </SimpleGrid>
         <TimelineActionAndStatus timeline={loader} />
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }

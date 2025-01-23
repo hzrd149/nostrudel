@@ -7,13 +7,13 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import Timestamp from "../../components/timestamp";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { formatBytes } from "../../helpers/number";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
@@ -52,8 +52,8 @@ export default function UserFilesTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <SimpleView title="Files">
+      <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
             <Thead>
@@ -72,7 +72,7 @@ export default function UserFilesTab() {
           </Table>
         </TableContainer>
         <TimelineActionAndStatus timeline={loader} />
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }

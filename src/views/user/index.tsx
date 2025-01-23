@@ -1,32 +1,3 @@
-import { Suspense, useState } from "react";
-import {
-  Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  List,
-  ListItem,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Spinner,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { Outlet, useMatches, useNavigate } from "react-router-dom";
-
 import useUserProfile from "../../hooks/use-user-profile";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import { useAppTitle } from "../../hooks/use-app-title";
@@ -34,11 +5,17 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
 import { unique } from "../../helpers/array";
-import { RelayFavicon } from "../../components/relay-favicon";
-import Header from "./components/header";
-import { ErrorBoundary } from "../../components/error-boundary";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
+import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import { Box, Flex, Heading, IconButton } from "@chakra-ui/react";
+import UserAvatar from "../../components/user/user-avatar";
+import { DirectMessagesIcon } from "../../components/icons";
+import RouterLink from "../../components/router-link";
+import UserName from "../../components/user/user-name";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
+import UserAboutContent from "../../components/user/user-about-content";
 
 const tabs = [
   { label: "About", path: "about" },
@@ -71,87 +48,53 @@ function useUserBestOutbox(pubkey: string, count: number = 4) {
 
 export default function UserView() {
   const { pubkey, relays: pointerRelays = [] } = useParamsProfilePointer();
-  const navigate = useNavigate();
-  const [relayCount, setRelayCount] = useState(4);
-  const userTopRelays = useUserBestOutbox(pubkey, relayCount);
-  const relayModal = useDisclosure();
+  const userTopRelays = useUserBestOutbox(pubkey, 4);
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
   const metadata = useUserProfile(pubkey, userTopRelays, true);
   useAppTitle(getDisplayName(metadata, pubkey));
 
-  const matches = useMatches();
-  const lastMatch = matches[matches.length - 1];
-
-  const activeTab = tabs.indexOf(tabs.find((t) => lastMatch.pathname.endsWith(t.path)) ?? tabs[0]);
-
   return (
-    <>
-      <AdditionalRelayProvider relays={readRelays}>
-        <Flex direction="column" alignItems="stretch" gap="2">
-          <Header pubkey={pubkey} showRelaySelectionModal={relayModal.onOpen} />
-          <Tabs
-            display="flex"
-            flexDirection="column"
-            flexGrow="1"
-            isLazy
-            index={activeTab}
-            onChange={(v) => navigate(tabs[v].path, { replace: true })}
-            colorScheme="primary"
-            h="full"
-          >
-            <TabList overflowX="auto" overflowY="hidden" flexShrink={0}>
-              {tabs.map(({ label }) => (
-                <Tab key={label} whiteSpace="pre">
-                  {label}
-                </Tab>
-              ))}
-            </TabList>
-
-            <TabPanels>
-              {tabs.map(({ label }) => (
-                <TabPanel key={label} p={0}>
-                  <ErrorBoundary>
-                    <Suspense fallback={<Spinner />}>
-                      <Outlet context={{ pubkey, setRelayCount }} />
-                    </Suspense>
-                  </ErrorBoundary>
-                </TabPanel>
-              ))}
-            </TabPanels>
-          </Tabs>
+    <AdditionalRelayProvider relays={readRelays}>
+      <SimpleParentView path="/u/:pubkey" context={{ pubkey }}>
+        <Flex
+          direction="column"
+          gap="2"
+          p="4"
+          pt="max(1rem, var(--safe-top))"
+          backgroundImage={metadata?.banner && `url(${metadata?.banner})`}
+          backgroundPosition="center"
+          backgroundRepeat="no-repeat"
+          backgroundSize="cover"
+          position="relative"
+          rounded="md"
+        >
+          <UserAvatar pubkey={pubkey} size="xl" float="left" />
+          {/* <IconButton
+            icon={<DirectMessagesIcon boxSize={5} />}
+            as={RouterLink}
+            to={`/messages/${pubkey}`}
+            aria-label="Direct Message"
+            colorScheme="blue"
+            rounded="full"
+            position="absolute"
+            bottom="-6"
+            right="4"
+            size="lg"
+          /> */}
         </Flex>
-      </AdditionalRelayProvider>
-
-      <Modal isOpen={relayModal.isOpen} onClose={relayModal.onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader pb="1">Relay selection</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <List spacing="2">
-              {userTopRelays.map((url) => (
-                <ListItem key={url}>
-                  <RelayFavicon relay={url} size="xs" mr="2" />
-                  {url}
-                </ListItem>
-              ))}
-            </List>
-
-            <FormControl>
-              <FormLabel>Max relays</FormLabel>
-              <NumberInput min={0} step={1} value={relayCount} onChange={(v) => setRelayCount(parseInt(v) || 0)}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <FormHelperText>set to 0 to connect to all relays</FormHelperText>
-            </FormControl>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
+        <Flex direction="column" overflow="hidden">
+          <Heading size="md">
+            <UserName pubkey={pubkey} isTruncated />
+          </Heading>
+          <UserDnsIdentity pubkey={pubkey} fontSize="sm" />
+        </Flex>
+        {tabs.map(({ label, path }) => (
+          <SimpleNavItem key={label} to={`./${path}`}>
+            {label}
+          </SimpleNavItem>
+        ))}
+      </SimpleParentView>
+    </AdditionalRelayProvider>
   );
 }

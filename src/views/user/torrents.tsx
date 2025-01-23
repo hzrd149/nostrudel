@@ -11,6 +11,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
 import TorrentTableRow from "../torrents/components/torrent-table-row";
 import { NostrEvent } from "../../types/nostr-event";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 export default function UserTorrentsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -29,8 +30,8 @@ export default function UserTorrentsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <SimpleView title="Torrents">
+      <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
             <Thead>
@@ -48,7 +49,7 @@ export default function UserTorrentsTab() {
         </TableContainer>
 
         <TimelineActionAndStatus timeline={loader} />
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }

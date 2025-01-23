@@ -12,6 +12,7 @@ import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 export default function UserEmojiPacksTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
@@ -28,8 +29,8 @@ export default function UserEmojiPacksTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <SimpleView title="Emojis">
+      <IntersectionObserverProvider callback={callback}>
         {packs.length > 0 && (
           <>
             <Heading size="lg" mt="2">
@@ -54,7 +55,7 @@ export default function UserEmojiPacksTab() {
             </SimpleGrid>
           </>
         )}
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }

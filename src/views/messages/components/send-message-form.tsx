@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 
-import { Button, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
@@ -13,6 +13,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useCacheForm from "../../../hooks/use-cache-form";
 import decryptionCacheService from "../../../services/decryption-cache";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 
 export default function SendMessageForm({
   pubkey,
@@ -99,8 +100,13 @@ export default function SendMessageForm({
             }}
           />
           <Flex gap="2" direction="column">
-            <Button type="submit">Send</Button>
-            <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+            <ButtonGroup size="sm">
+              <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+              <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
+            </ButtonGroup>
+            <Button type="submit" colorScheme="primary">
+              Send
+            </Button>
           </Flex>
         </>
       )}

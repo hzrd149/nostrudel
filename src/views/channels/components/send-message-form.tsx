@@ -13,6 +13,8 @@ import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertImageButton from "../../new/note/insert-image-button";
+import ReactionIconButton from "../../../components/reactions/reaction-icon-button";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 
 export default function ChannelMessageForm({
   channel,
@@ -82,11 +84,12 @@ export default function ChannelMessageForm({
             }}
           />
           <Flex gap="2" direction="column">
-            <Button type="submit">Send</Button>
             <ButtonGroup size="sm">
               <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+              <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
             </ButtonGroup>
+            <Button type="submit">Send</Button>
           </Flex>
         </>
       )}

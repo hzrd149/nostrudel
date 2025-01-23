@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
@@ -26,6 +26,9 @@ import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { truncateId } from "../../helpers/string";
+import SimpleView from "../../components/layout/presets/simple-view";
+import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
+import ChannelImage from "./components/channel-image";
 
 const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
   const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];
@@ -82,36 +85,26 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   return (
     <ThreadsProvider timeline={loader}>
       <IntersectionObserverProvider callback={callback}>
-        <Flex h="full" overflow="hidden" direction="column" p="2" gap="2" flexGrow={1}>
-          <Flex gap="2" alignItems="center">
-            <Button leftIcon={<ChevronLeftIcon />} onClick={() => navigate(-1)}>
-              Back
-            </Button>
-            <Heading hideBelow="lg" size="lg">
+        <ContainedSimpleView
+          reverse
+          title={
+            <Flex gap="2" alignItems="center">
+              <ChannelImage channel={channel} w="10" rounded="md" />
               {metadata?.name}
-            </Heading>
-            <Spacer />
-            <ChannelJoinButton channel={channel} hideBelow="lg" />
-            <Button onClick={drawer.onOpen}>Channel Info</Button>
-            <ChannelMenu channel={channel} aria-label="More Options" />
-          </Flex>
-
-          <Flex
-            h="0"
-            flexGrow={1}
-            overflowX="hidden"
-            overflowY="scroll"
-            direction="column-reverse"
-            gap="2"
-            py="4"
-            px="2"
-          >
-            <ChannelChatLog timeline={loader} channel={channel} />
-            <TimelineActionAndStatus timeline={loader} />
-          </Flex>
-
-          <ChannelMessageForm channel={channel} />
-        </Flex>
+            </Flex>
+          }
+          actions={
+            <ButtonGroup size="sm" ms="auto">
+              <ChannelJoinButton channel={channel} hideBelow="lg" />
+              <Button onClick={drawer.onOpen}>Channel Info</Button>
+              <ChannelMenu channel={channel} aria-label="More Options" />
+            </ButtonGroup>
+          }
+          bottom={<ChannelMessageForm channel={channel} p="2" />}
+        >
+          <ChannelChatLog timeline={loader} channel={channel} />
+          <TimelineActionAndStatus timeline={loader} />
+        </ContainedSimpleView>
         {drawer.isOpen && <ChannelMetadataDrawer isOpen onClose={drawer.onClose} channel={channel} size="lg" />}
       </IntersectionObserverProvider>
     </ThreadsProvider>

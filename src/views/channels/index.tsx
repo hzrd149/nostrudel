@@ -1,61 +1,65 @@
-import { useCallback } from "react";
-import { kinds } from "nostr-tools";
-import { Flex, SimpleGrid } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Link } from "@chakra-ui/react";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import ChannelCard from "./components/channel-card";
 import { useReadRelays } from "../../hooks/use-client-relays";
-
-function ChannelsHomePage() {
-  const relays = useReadRelays();
-  const { filter, listId } = usePeopleListContext();
-
-  const clientMuteFilter = useClientSideMuteFilter();
-  const eventFilter = useCallback(
-    (e: NostrEvent) => {
-      if (clientMuteFilter(e)) return false;
-      return true;
-    },
-    [clientMuteFilter],
-  );
-  const { loader, timeline: channels } = useTimelineLoader(
-    `${listId}-channels`,
-    relays,
-    filter ? { ...filter, kinds: [kinds.ChannelCreation] } : undefined,
-    { eventFilter },
-  );
-  const callback = useTimelineCurserIntersectionCallback(loader);
-
-  return (
-    <VerticalPageLayout>
-      <Flex gap="2">
-        <PeopleListSelection />
-      </Flex>
-      <IntersectionObserverProvider callback={callback}>
-        <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
-          {channels?.map((channel) => (
-            <ErrorBoundary key={channel.id}>
-              <ChannelCard channel={channel} additionalRelays={relays} />
-            </ErrorBoundary>
-          ))}
-        </SimpleGrid>
-      </IntersectionObserverProvider>
-    </VerticalPageLayout>
-  );
-}
+import ContainedParentView from "../../components/layout/presets/contained-parent-view";
+import useUserChannelsList from "../../hooks/use-user-channels-list";
+import useSingleEvents from "../../hooks/use-single-events";
+import RouterLink from "../../components/router-link";
 
 export default function ChannelsHomeView() {
+  const relays = useReadRelays();
+  const { pointers } = useUserChannelsList();
+  const channels = useSingleEvents(pointers.map((p) => p.id));
+
   return (
-    <PeopleListProvider>
-      <ChannelsHomePage />
-    </PeopleListProvider>
+    <ContainedParentView
+      title="Public channels"
+      path="/channels"
+      width="sm"
+      actions={
+        <Button as={RouterLink} to="explore" ms="auto" size="sm">
+          Explore
+        </Button>
+      }
+    >
+      <Alert status="info">
+        <AlertIcon />
+        <Box>
+          <AlertTitle>Deprecated</AlertTitle>
+          <AlertDescription>
+            <Link href="https://github.com/nostr-protocol/nips/blob/master/28.md">NIP-28</Link> public channels a
+            deprecated in favor of <Link href="https://github.com/nostr-protocol/nips/blob/master/29.md">NIP-29</Link>{" "}
+            relay based groups
+          </AlertDescription>
+        </Box>
+      </Alert>
+      {channels?.map((channel) => (
+        <ErrorBoundary key={channel.id}>
+          <ChannelCard channel={channel} additionalRelays={relays} />
+        </ErrorBoundary>
+      ))}
+
+      {channels.length === 0 && (
+        <Alert
+          status="info"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            No channels
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">Looks like you have not joined any channels.</AlertDescription>
+          <Button as={RouterLink} to="explore" variant="link" p="2">
+            Explore
+          </Button>
+        </Alert>
+      )}
+    </ContainedParentView>
   );
 }
