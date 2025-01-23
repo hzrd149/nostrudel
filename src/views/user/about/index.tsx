@@ -44,13 +44,14 @@ import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import UserProfileBadges from "./user-profile-badges";
 import UserPinnedEvents from "./user-pinned-events";
 import UserStatsAccordion from "./user-stats-accordion";
-import UserJoinedChanneled from "./user-joined-channels";
+import UserJoinedChannels from "./user-joined-channels";
 import { getTextColor } from "../../../helpers/color";
 import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserRecentEvents from "./user-recent-events";
 import useAppSettings, { useUserAppSettings } from "../../../hooks/use-user-app-settings";
+import UserJoinedGroups from "./user-joined-groups";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
@@ -264,7 +265,8 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
-      <UserJoinedChanneled pubkey={pubkey} />
+      <UserJoinedGroups pubkey={pubkey} />
+      <UserJoinedChannels pubkey={pubkey} />
 
       <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">
         <ModalOverlay />

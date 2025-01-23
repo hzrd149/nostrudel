@@ -47,6 +47,7 @@ import bookmarksRoutes from "./views/bookmarks/routes";
 import articlesRoutes from "./views/articles/routes";
 import torrentsRoutes from "./views/torrents/routes";
 import channelsRoutes from "./views/channels/routes";
+import groupsRoutes from "./views/groups/routes";
 import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
@@ -108,6 +109,7 @@ const router = createBrowserRouter(
         { path: "notifications", Component: NotificationsView },
         { path: "media", children: mediaRoutes },
         { path: "streams", children: streamsRoutes },
+        { path: "groups", children: groupsRoutes },
         { path: "tools", children: toolsRoutes },
         { path: "discovery", children: discoveryRoutes },
         { path: "wiki", children: wikiRoutes },

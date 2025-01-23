@@ -1,20 +1,14 @@
-import { EventTemplate, kinds, validateEvent } from "nostr-tools";
+import { EventTemplate, kinds } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import {
-  getAddressPointerFromATag,
-  getEventPointerFromETag,
-  getNip10References,
-  parseCoordinate,
-} from "applesauce-core/helpers";
+import { getAddressPointerFromATag, getEventPointerFromETag, getNip10References } from "applesauce-core/helpers";
 
 import { ATag, ETag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
-import { safeJson } from "../parse";
 import { safeDecode } from "../nip19";
-import { safeRelayUrl, safeRelayUrls } from "../relay";
+import { safeRelayUrl } from "../relay";
 import RelaySet from "../../classes/relay-set";
 import { truncateId } from "../string";
 import { createATagFromAddressPointer, createETagFromEventPointer } from "applesauce-factory/helpers";
@@ -169,18 +163,6 @@ export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
 };
 
 export { parseCoordinate } from "applesauce-core/helpers/pointers";
-
-export function parseHardcodedNoteContent(event: NostrEvent) {
-  const json = safeJson<NostrEvent>(event.content);
-  if (!json) return null;
-
-  // ensure the note has tags
-  json.tags = json.tags || [];
-
-  validateEvent(json);
-
-  return (json as NostrEvent) ?? null;
-}
 
 export function sortByDate(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;

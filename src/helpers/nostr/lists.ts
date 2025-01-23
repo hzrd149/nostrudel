@@ -7,6 +7,8 @@ import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
 import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-lists/helpers";
 
+export const USER_GROUPS_LIST_KIND = 10009;
+
 export const LIST_KINDS = [
   kinds.Mutelist,
   kinds.Pinlist,
@@ -19,6 +21,7 @@ export const LIST_KINDS = [
   kinds.InterestsList,
   kinds.UserEmojiList,
   kinds.DirectMessageRelaysList,
+  USER_GROUPS_LIST_KIND,
 ];
 export const SET_KINDS = [
   kinds.Followsets,
