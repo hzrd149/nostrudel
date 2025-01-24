@@ -4,10 +4,11 @@ import { Flex, FlexProps, IconButton, IconButtonProps, Text } from "@chakra-ui/r
 import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
 import useCurrentAccount from "../../hooks/use-current-account";
 import useEventReactions from "../../hooks/use-event-reactions";
-import { draftEventReaction, getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
+import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { useEventFactory } from "applesauce-react/hooks";
 
 export default function EventVoteButtons({
   event,
@@ -25,6 +26,7 @@ export default function EventVoteButtons({
   const publish = usePublishEvent();
   const reactions = useEventReactions(event);
   const additionalRelays = useAdditionalRelayContext();
+  const factory = useEventFactory();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
   const { vote, up, down } = getEventReactionScore(grouped);
@@ -36,11 +38,11 @@ export default function EventVoteButtons({
   const addVote = useCallback(
     async (vote: string) => {
       setLoading(true);
-      const draft = draftEventReaction(event, vote);
-      await publish("Reaction", draft, additionalRelays);
+      const draft = await factory.reaction(event, vote);
+      await publish("Vote", draft, additionalRelays);
       setLoading(false);
     },
-    [event, publish, additionalRelays],
+    [event, publish, additionalRelays, factory],
   );
 
   const upIcon = chevrons ? <ChevronUpIcon boxSize={6} /> : <LikeIcon />;

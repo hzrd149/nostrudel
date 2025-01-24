@@ -18,7 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
-import { ProfileContent } from "applesauce-core/helpers";
+import { ProfileContent, safeParse } from "applesauce-core/helpers";
 
 import useNip05Providers from "../../../hooks/use-nip05-providers";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -29,7 +29,6 @@ import dnsIdentityService from "../../../services/dns-identity";
 import useUserProfile from "../../../hooks/use-user-profile";
 import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";
-import { safeJson } from "../../../helpers/parse";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
@@ -74,7 +73,7 @@ export default function LoginNostrAddressCreate() {
   const [selected, setSelected] = useState<NostrEvent>();
   const userMetadata = useUserProfile(selected?.pubkey);
   const providerMetadata = useMemo<ProfileContent | undefined>(
-    () => selected && safeJson(selected.content, undefined),
+    () => selected && safeParse(selected.content),
     [selected],
   );
 

@@ -5,7 +5,12 @@ import { getPointerFromTag } from "applesauce-core/helpers";
 import { PTag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 import { getRelayVariations, safeRelayUrls } from "../relay";
-import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-lists/helpers";
+import {
+  getProfilePointersFromList,
+  isAddressPointerInList,
+  isEventPointerInList,
+  isProfilePointerInList,
+} from "applesauce-lists/helpers";
 
 export const USER_GROUPS_LIST_KIND = 10009;
 
@@ -33,6 +38,7 @@ export const SET_KINDS = [
   kinds.Curationsets,
 ];
 
+/** @deprecated this should be moved out to applesauce-list */
 export function getListName(event: NostrEvent) {
   if (event.kind === kinds.Contacts) return "Following";
   if (event.kind === kinds.Mutelist) return "Mute";
@@ -48,16 +54,22 @@ export function getListName(event: NostrEvent) {
     event.tags.find(isDTag)?.[1]
   );
 }
+
+/** @deprecated this should be moved out to applesauce-factory */
 export function setListName(draft: EventTemplate, name: string) {
   replaceOrAddSimpleTag(draft, "name", name);
 }
+
+/** @deprecated this should be moved out to applesauce-factory */
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
 }
+/** @deprecated this should be moved out to applesauce-factory */
 export function setListDescription(draft: EventTemplate, description: string) {
   replaceOrAddSimpleTag(draft, "description", description);
 }
 
+/** Filters out empty and junk lists created by other clients */
 export function isJunkList(event: NostrEvent) {
   const name = event.tags.find(isDTag)?.[1];
   if (!name) return false;
@@ -70,6 +82,7 @@ export function isSpecialListKind(kind: number) {
   return kind === kinds.Contacts || LIST_KINDS.includes(kind);
 }
 
+/** @deprecated applesauce should have a way to close lists */
 export function cloneList(list: NostrEvent, keepCreatedAt = false): EventTemplate {
   return {
     kind: list.kind,
@@ -79,24 +92,23 @@ export function cloneList(list: NostrEvent, keepCreatedAt = false): EventTemplat
   };
 }
 
+/** @deprecated use getProfilePointersFromList instead */
 export function getPubkeysFromList(event: NostrEvent | EventTemplate) {
   return event.tags.filter(isPTag).map((t) => ({ pubkey: t[1], relay: t[2], petname: t[3] }));
 }
+
+/**
+ * returns a list of parsed "r" tags from a list
+ * @note this might not even be needed anymore
+ */
 export function getReferencesFromList(event: NostrEvent | EventTemplate) {
   return event.tags.filter(isRTag).map((t) => ({ url: t[1], petname: t[2] }));
 }
+
+/** @deprecated this should be moved to applesauce-lists if its still needed */
 export function getRelaysFromList(event: NostrEvent | EventTemplate) {
   if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
   else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
-}
-
-export function getPointersFromList(event: NostrEvent | EventTemplate) {
-  return event.tags.map(getPointerFromTag).filter((r) => r !== null);
-}
-
-export function isRelayInList(list: NostrEvent, relay: string) {
-  const relays = getRelaysFromList(list);
-  return getRelayVariations(relay).some((r) => relays.includes(r));
 }
 
 /** @deprecated */

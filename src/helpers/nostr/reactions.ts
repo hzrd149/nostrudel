@@ -1,8 +1,4 @@
-import { kinds } from "nostr-tools";
-import dayjs from "dayjs";
-
-import { DraftNostrEvent, NostrEvent, Tag } from "../../types/nostr-event";
-import { getEventCoordinate, isReplaceable } from "./event";
+import { NostrEvent } from "../../types/nostr-event";
 
 export type ReactionGroup = { emoji: string; url?: string; name?: string; count: number; pubkeys: string[] };
 
@@ -20,27 +16,6 @@ export function groupReactions(reactions: NostrEvent[]) {
     }
   }
   return Array.from(Object.values(groups)).sort((a, b) => b.pubkeys.length - a.pubkeys.length);
-}
-
-export function draftEventReaction(event: NostrEvent, emoji = "+", url?: string) {
-  const tags: Tag[] = [
-    ["e", event.id],
-    ["p", event.pubkey],
-  ];
-
-  let content = emoji;
-  if (url && !content.startsWith(":") && !content.endsWith(":")) content = ":" + content + ":";
-
-  const draft: DraftNostrEvent = {
-    kind: kinds.Reaction,
-    content,
-    tags: isReplaceable(event.kind) ? [...tags, ["a", getEventCoordinate(event)]] : tags,
-    created_at: dayjs().unix(),
-  };
-
-  if (url) draft.tags.push(["emoji", emoji.replaceAll(/(^:|:$)/g, ""), url]);
-
-  return draft;
 }
 
 export function getEventReactionScore(grouped: ReactionGroup[]) {

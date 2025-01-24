@@ -14,6 +14,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { safeParse } from "applesauce-core/helpers/json";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings } from "../../../helpers/app-settings";
@@ -21,7 +22,6 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { safeJson } from "../../../helpers/parse";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
@@ -71,7 +71,7 @@ export default function NoStrudelUsersView() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   const users = timeline
-    .map((event) => ({ event, settings: safeJson<Partial<AppSettings>>(event.content) }))
+    .map((event) => ({ event, settings: safeParse<Partial<AppSettings>>(event.content) }))
     .filter((s) => !!s.settings) as { event: NostrEvent; settings: Partial<AppSettings> }[];
 
   const colors = new Set(users.map((u) => u.settings.primaryColor).filter((c) => !!c) as string[]);

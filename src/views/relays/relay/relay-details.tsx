@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Heading, Text, useColorModeValue, useTheme, useToast } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text, useToast } from "@chakra-ui/react";
 
 import {
   Chart as ChartJS,
@@ -14,18 +14,18 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Filter } from "nostr-tools";
-import _throttle from "lodash.throttle";
 
 import { useAppTitle } from "../../../hooks/use-app-title";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { NostrEvent } from "../../../types/nostr-event";
 import { groupByTime } from "../../../helpers/notification";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import EventStore from "../../../classes/event-store";
-import { getSortedKinds, sortByDate } from "../../../helpers/nostr/event";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getSortedKinds } from "../../../helpers/nostr/event";
 import relayPoolService from "../../../services/relay-pool";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../components/charts/event-kinds-table";
+import { unixNow } from "applesauce-core/helpers";
+import { eventStore } from "../../../services/event-store";
 
 ChartJS.register(
   ArcElement,
@@ -95,28 +95,24 @@ function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartDat
 }
 
 export default function RelayDetailsTab({ relay }: { relay: string }) {
+  const toast = useToast();
   useAppTitle(`${relay} - Details`);
 
-  const toast = useToast();
-  const theme = useTheme();
-  const token = theme.semanticTokens.colors["chakra-body-text"];
-  const color = useColorModeValue(token._light, token._dark) as string;
-
+  const last = useRef(unixNow());
+  const events = useRef(new Map());
   const [_, update] = useState<object>();
-  const store = useMemo(() => new EventStore(), []);
 
   const [loading, setLoading] = useState(false);
   const loadMore = useCallback(() => {
     setLoading(true);
     const query: Filter = { limit: 500 };
-    const last = store.getLastEvent();
-    if (last) query.until = last.created_at;
+    if (last.current) query.until = last.current;
 
-    const throttleUpdate = _throttle(() => update({}), 100);
     const sub = relayPoolService.requestRelay(relay).subscribe([query], {
       onevent: (event) => {
-        store.addEvent(event);
-        throttleUpdate();
+        events.current.set(event.id, event);
+        last.current = event.created_at;
+        eventStore.add(event, relay);
       },
       oneose: () => sub.close(),
       onclose: (reason) => {
@@ -124,18 +120,16 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
         setLoading(false);
       },
     });
-  }, [relay, update, store]);
+  }, [relay, update]);
 
   useEffect(() => loadMore(), [relay, loadMore]);
 
-  const events = Array.from(store.events.values()).sort(sortByDate);
-
-  const kinds = getSortedKinds(events);
+  const kinds = getSortedKinds(Array.from(events.current.values()));
 
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
-        <Text>Events loaded: {events.length}</Text>
+        <Text>Events loaded: {events.current.size}</Text>
         <Button size="sm" onClick={loadMore} isLoading={loading}>
           Load more
         </Button>
@@ -148,13 +142,6 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
         <Card p="2" minW="xs">
           <EventKindsTable kinds={kinds} />
         </Card>
-        {/* <Card p="2" w="full" aspectRatio={16 / 9}>
-          <Heading size="sm">Event kinds over time</Heading>
-          <Line
-            data={buildLineChartData(events, 60)}
-            options={{ color, responsive: true, plugins: { colors: { forceOverride: true } } }}
-          />
-        </Card> */}
       </Flex>
     </VerticalPageLayout>
   );

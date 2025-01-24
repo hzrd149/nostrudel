@@ -6,8 +6,8 @@ import { SimpleSigner } from "applesauce-signer";
 import dayjs from "dayjs";
 
 import NostrWebRTCPeer, { Pool, RTCDescriptionEventKind, Signer } from "./nostr-webrtc-peer";
-import { isHex } from "../../helpers/nip19";
 import { logger } from "../../helpers/debug";
+import { isHex } from "applesauce-core/helpers";
 
 type EventMap = {
   call: [NostrEvent];

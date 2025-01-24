@@ -33,6 +33,7 @@ export function getPubkeyExpiration(muteList: NostrEvent, pubkey: string) {
   return isPubkeyInList(muteList, pubkey) ? Infinity : 0;
 }
 
+/** @todo this should be handled by applesauce-factory */
 export function createEmptyMuteList(): DraftNostrEvent {
   return {
     created_at: dayjs().unix(),
@@ -42,6 +43,7 @@ export function createEmptyMuteList(): DraftNostrEvent {
   };
 }
 
+/** @todo this should be updated to use applesauce-factory when it supports updating lists */
 export function muteListAddPubkey(muteList: NostrEvent | DraftNostrEvent, pubkey: string, expiration = Infinity) {
   let draft = listAddPerson(muteList, pubkey);
   if (expiration < Infinity) {
@@ -53,6 +55,8 @@ export function muteListAddPubkey(muteList: NostrEvent | DraftNostrEvent, pubkey
 
   return draft;
 }
+
+/** @todo this should be updated to use applesauce-factory when it supports updating lists */
 export function muteListRemovePubkey(muteList: NostrEvent | DraftNostrEvent, pubkey: string) {
   let draft = listRemovePerson(muteList, pubkey);
 
@@ -67,6 +71,7 @@ export function muteListRemovePubkey(muteList: NostrEvent | DraftNostrEvent, pub
   return draft;
 }
 
+/** @todo this should be updated to use applesauce-factory when it supports updating lists */
 export function pruneExpiredPubkeys(muteList: NostrEvent | DraftNostrEvent) {
   const expirations = getPubkeysExpiration(muteList);
   const now = dayjs().unix();

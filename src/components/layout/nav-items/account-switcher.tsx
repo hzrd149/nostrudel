@@ -21,7 +21,7 @@ import useUserProfile from "../../../hooks/use-user-profile";
 import accountService from "../../../services/account";
 import { LogoutIcon } from "../../icons";
 import UserAvatar from "../../user/user-avatar";
-import AccountTypeBadge from "../../account-info-badge";
+import AccountTypeBadge from "../../accounts/account-info-badge";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import { Account } from "../../../classes/accounts/account";
 import { useObservable } from "applesauce-react/hooks";

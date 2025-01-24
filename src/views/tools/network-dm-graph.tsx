@@ -5,7 +5,7 @@ import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Filter, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-import { useDebounce, useObservable } from "react-use";
+import { useDebounce } from "react-use";
 import {
   Group,
   Mesh,
@@ -22,7 +22,6 @@ import RequireCurrentAccount from "../../components/router/require-current-accou
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserProfile from "../../hooks/use-user-profile";
-import EventStore from "../../classes/event-store";
 import { isPTag } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -30,6 +29,8 @@ import { subscribeMany } from "../../helpers/relay";
 import useUserProfiles from "../../hooks/use-user-profiles";
 import { eventStore } from "../../services/event-store";
 import { getProfileContent } from "applesauce-core/helpers";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineQuery } from "applesauce-core/queries";
 
 type NodeType = { id: string; image?: string; name?: string };
 
@@ -47,12 +48,10 @@ function NetworkDMGraphPage() {
   const [until, setUntil] = useState(dayjs().unix());
   const [since, setSince] = useState(dayjs().subtract(1, "week").unix());
 
-  const store = useMemo(() => new EventStore(), []);
   const [fetchData] = useDebounce(
     () => {
       if (!contacts) return;
 
-      store.clear();
       const filter: Filter = {
         authors: contactsPubkeys,
         kinds: [kinds.EncryptedDirectMessage],
@@ -60,23 +59,27 @@ function NetworkDMGraphPage() {
         until,
       };
       const sub = subscribeMany(Array.from(relays), [filter], {
-        onevent: (event) => store.addEvent(event),
+        onevent: (event) => eventStore.add(event),
         oneose: () => sub.close(),
       });
     },
     2 * 1000,
-    [relays, store, contactsPubkeys, since, until],
+    [relays, contactsPubkeys, since, until],
   );
   useEffect(() => {
     fetchData();
-  }, [relays, store, contactsPubkeys, since, until]);
+  }, [relays, contactsPubkeys, since, until]);
 
   const selfMetadata = useUserProfile(account.pubkey);
   const userProfiles = useUserProfiles(contactsPubkeys);
 
-  const newEventTrigger = useObservable(store.onEvent);
+  // get all DM events
+  const events = useStoreQuery(TimelineQuery, [
+    { since, until, authors: contactsPubkeys, kinds: [kinds.EncryptedDirectMessage] },
+  ]);
+
   const graphData = useMemo(() => {
-    if (store.events.size === 0) return { nodes: [], links: [] };
+    if (!events || events.length === 0) return { nodes: [], links: [] };
 
     const nodes: Record<string, NodeObject<NodeType>> = {};
     const links: Record<string, LinkObject<NodeType>> = {};
@@ -99,7 +102,7 @@ function NetworkDMGraphPage() {
       return nodes[pubkey];
     };
 
-    for (const [_, dm] of store.events) {
+    for (const dm of events) {
       const author = dm.pubkey;
       const receiver = dm.tags.find(isPTag)?.[1];
       if (!receiver) continue;
@@ -111,7 +114,7 @@ function NetworkDMGraphPage() {
     }
 
     return { nodes: Object.values(nodes), links: Object.values(links) };
-  }, [contactsPubkeys, account.pubkey, userProfiles, selfMetadata, newEventTrigger]);
+  }, [contactsPubkeys, account.pubkey, userProfiles, selfMetadata, events?.length]);
 
   return (
     <Flex direction="column" gap="2" h="full" pt="2">

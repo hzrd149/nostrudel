@@ -1,5 +1,5 @@
+import { safeParse } from "applesauce-core/helpers/json";
 import { NostrEvent, Tag, isETag } from "../../types/nostr-event";
-import { safeJson } from "../parse";
 
 export const DVM_STATUS_KIND = 7000;
 
@@ -19,7 +19,7 @@ type DVMMetadata = {
   nip90Params?: Record<string, { required: boolean; values: string[] }>;
 };
 export function parseDVMMetadata(event: NostrEvent) {
-  const metadata = safeJson(event.content, {});
+  const metadata = safeParse(event.content) || {};
   return metadata as DVMMetadata;
 }
 

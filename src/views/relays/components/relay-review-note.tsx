@@ -1,11 +1,11 @@
 import { Card, CardBody, CardHeader, Link } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { safeParse } from "applesauce-core/helpers/json";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import StarRating from "../../../components/star-rating";
-import { safeJson } from "../../../helpers/parse";
 import { NostrEvent } from "../../../types/nostr-event";
 import { Metadata } from "./relay-card";
 import Timestamp from "../../../components/timestamp";
@@ -14,7 +14,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {
   const ratingJson = event.tags.find((t) => t[0] === "l" && t[3])?.[3];
-  const rating = ratingJson ? (safeJson(ratingJson, undefined) as { quality: number } | undefined) : undefined;
+  const rating = ratingJson ? safeParse<{ quality: number }>(ratingJson) : undefined;
 
   const url = event.tags.find((t) => t[0] === "r")?.[1];
 

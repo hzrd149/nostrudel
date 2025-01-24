@@ -8,7 +8,7 @@ import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import accountService from "../../../services/account";
-import AccountTypeBadge from "../../../components/account-info-badge";
+import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 import SimpleSignerBackup from "./components/simple-signer-backup";
 import MigrateAccountToDevice from "./components/migrate-to-device";
 import SimpleView from "../../../components/layout/presets/simple-view";

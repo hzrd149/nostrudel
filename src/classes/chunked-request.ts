@@ -21,6 +21,7 @@ const DEFAULT_CHUNK_SIZE = 100;
 
 export type EventFilter = (event: NostrEvent) => boolean;
 
+/** @deprecated this should be replaced with a rx-nostr based timeline loader */
 export default class ChunkedRequest {
   id: string;
   process: Process;

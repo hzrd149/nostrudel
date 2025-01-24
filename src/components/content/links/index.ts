@@ -8,5 +8,4 @@ export * from "./reddit";
 export * from "./simplex";
 export * from "./twitter";
 export * from "./video";
-export * from "./wiki";
 export * from "./youtube";

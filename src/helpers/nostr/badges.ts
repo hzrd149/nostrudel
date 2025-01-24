@@ -1,5 +1,5 @@
+import { getProfilePointerFromPTag, isPTag } from "applesauce-core/helpers";
 import { ATag, NostrEvent, isATag, isETag } from "../../types/nostr-event";
-import { getPubkeysFromList } from "./lists";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
 
@@ -31,17 +31,12 @@ export function getBadgeThumbnails(event: NostrEvent) {
 }
 
 export function getBadgeAwardPubkeys(event: NostrEvent) {
-  return getPubkeysFromList(event);
+  return event.tags.filter(isPTag).map(getProfilePointerFromPTag);
 }
 export function getBadgeAwardBadge(event: NostrEvent) {
   const badgeCord = event.tags.find(isATag)?.[1];
   if (!badgeCord) throw new Error("Missing badge reference");
   return badgeCord;
-}
-export function validateBadgeAwardEvent(event: NostrEvent) {
-  getBadgeAwardPubkeys(event);
-  getBadgeAwardBadge(event);
-  return true;
 }
 
 export function parseProfileBadges(profileBadges: NostrEvent) {

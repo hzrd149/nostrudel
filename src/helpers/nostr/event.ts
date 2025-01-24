@@ -138,16 +138,6 @@ export function getEventCoordinate(event: NostrEvent) {
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
 }
 
-/** @deprecated use getEventPointerFromETag instead */
-export function eTagToEventPointer(tag: ETag): EventPointer {
-  return getEventPointerFromETag(tag);
-}
-
-/** @deprecated use getAddressPointerFromATag instead*/
-export function aTagToAddressPointer(tag: ATag): AddressPointer {
-  return getAddressPointerFromATag(tag);
-}
-
 /** @deprecated use createATagFromAddressPointer instead*/
 export function addressPointerToATag(pointer: AddressPointer): ATag {
   return createATagFromAddressPointer(pointer) as ATag;

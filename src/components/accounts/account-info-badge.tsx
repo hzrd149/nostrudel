@@ -1,5 +1,5 @@
 import { Badge, BadgeProps } from "@chakra-ui/react";
-import { Account } from "../classes/accounts/account";
+import { Account } from "../../classes/accounts/account";
 
 export default function AccountTypeBadge({ account, ...props }: BadgeProps & { account: Account }) {
   let color = "gray";

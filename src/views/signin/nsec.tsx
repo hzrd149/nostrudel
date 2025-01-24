@@ -20,8 +20,9 @@ import { useNavigate } from "react-router-dom";
 import { hexToBytes } from "@noble/hashes/utils";
 import { useForm } from "react-hook-form";
 import { decrypt } from "nostr-tools/nip49";
+import { isHexKey } from "applesauce-core/helpers";
 
-import { isHexKey, safeDecode } from "../../helpers/nip19";
+import { safeDecode } from "../../helpers/nip19";
 import accountService from "../../services/account";
 import NsecAccount from "../../classes/accounts/nsec-account";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";

@@ -22,6 +22,7 @@ import { Subscription as IDBSubscription } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import stringify from "json-stringify-deterministic";
 import { useLocation, useSearchParams } from "react-router-dom";
+import { safeParse } from "applesauce-core/helpers/json";
 
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
@@ -36,7 +37,6 @@ import { DownloadIcon, ShareIcon } from "../../../components/icons";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import { validateRelayURL } from "../../../helpers/relay";
 import FilterEditor from "./filter-editor";
-import { safeJson } from "../../../helpers/parse";
 import relayPoolService from "../../../services/relay-pool";
 import useCacheRelay from "../../../hooks/use-cache-relay";
 
@@ -67,7 +67,7 @@ export default function EventConsoleView() {
     if (params.has("filter") || location.state?.filter) {
       const str = params.get("filter");
       if (str) {
-        const f = safeJson(str, null);
+        const f = safeParse(str);
         if (f) return JSON.stringify(f, null, 2);
       } else if (typeof location.state.filter === "object") {
         return JSON.stringify(location.state.filter, null, 2);

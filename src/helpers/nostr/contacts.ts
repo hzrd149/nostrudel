@@ -1,11 +1,11 @@
 import { NostrEvent } from "nostr-tools";
+import { safeParse } from "applesauce-core/helpers/json";
 import { RelayMode } from "../../classes/relay";
-import { safeJson } from "../parse";
 import { safeRelayUrl } from "../relay";
 
 type RelayJson = Record<string, { read: boolean; write: boolean }>;
 export function relaysFromContactsEvent(event: NostrEvent) {
-  const relayJson = safeJson(event.content, {}) as RelayJson;
+  const relayJson = safeParse<RelayJson>(event.content) || {};
 
   const relays: { url: string; mode: RelayMode }[] = [];
   for (const [url, opts] of Object.entries(relayJson)) {

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { kinds } from "nostr-tools";
 import { Photo } from "react-photo-album";
+import { Expressions } from "applesauce-content/helpers";
 
-import { getMatchLink } from "../../../helpers/regexp";
 import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
 import { EmbeddedImageProps } from "../../content/links";
@@ -41,7 +41,7 @@ export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) 
 
     for (const event of timeline) {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
-      const urls = event.content.matchAll(getMatchLink());
+      const urls = event.content.matchAll(Expressions.link);
 
       const i = 0;
       for (const match of urls) {

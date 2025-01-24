@@ -8,7 +8,10 @@ import deleteEventService from "../services/delete-events";
 
 export type EventFilter = (event: NostrEvent) => boolean;
 
-/** a class used to store and sort events */
+/**
+ * a class used to store and sort events
+ * @deprecated there shouldn't be a need for one-off event stores now that EventStore from applesauce is used
+ */
 export default class EventStore {
   id = nanoid(8);
   name?: string;

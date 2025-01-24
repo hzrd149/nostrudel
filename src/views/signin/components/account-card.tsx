@@ -5,7 +5,7 @@ import { getDisplayName } from "../../../helpers/nostr/profile";
 import useUserProfile from "../../../hooks/use-user-profile";
 import accountService from "../../../services/account";
 import UserAvatar from "../../../components/user/user-avatar";
-import AccountTypeBadge from "../../../components/account-info-badge";
+import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 import { Account } from "../../../classes/accounts/account";
 
 export default function AccountCard({ account }: { account: Account }) {

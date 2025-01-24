@@ -13,7 +13,6 @@ import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 import PubkeyAccount from "../../../classes/accounts/pubkey-account";
-import relayPoolService from "../../../services/relay-pool";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 export default function LoginNostrAddressView() {

@@ -1,6 +1,6 @@
-import { kinds, validateEvent } from "nostr-tools";
-import { NostrEvent, isATag, isDTag, isETag, isPTag } from "../../types/nostr-event";
-import { getMatchLink, getMatchNostrLink } from "../regexp";
+import { kinds } from "nostr-tools";
+
+import { NostrEvent, isATag, isDTag, isPTag } from "../../types/nostr-event";
 import { parseCoordinate } from "./event";
 
 /** @deprecated */
