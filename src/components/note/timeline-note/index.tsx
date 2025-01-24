@@ -77,7 +77,9 @@ export function TimelineNote({
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
 
-  const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />;
+  const reactionButtons = showReactions && (
+    <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" zIndex={1} />
+  );
 
   return (
     <TrustProvider event={event}>
@@ -111,7 +113,7 @@ export function TimelineNote({
             {!hideZapBubbles && <ZapBubbles event={event} w="full" />}
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
-              <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true}>
+              <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true} zIndex={1}>
                 {showReplyButton && (
                   <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                 )}
@@ -121,7 +123,7 @@ export function TimelineNote({
               </ButtonGroup>
               {!showReactionsOnNewLine && reactionButtons}
               <Box flexGrow={1} />
-              <ButtonGroup size="sm" variant="ghost">
+              <ButtonGroup size="sm" variant="ghost" zIndex={1}>
                 <NoteProxyLink event={event} />
                 <BookmarkEventButton event={event} aria-label="Bookmark note" />
                 <NoteMenu event={event} aria-label="More Options" />
