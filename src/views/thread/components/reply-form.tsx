@@ -17,6 +17,7 @@ import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertImageButton from "../../new/note/insert-image-button";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 
 export type ReplyFormProps = {
   item: ThreadItem;
@@ -83,8 +84,11 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         }}
       />
       <Flex gap="2" alignItems="center">
-        <InsertImageButton onUploaded={insertText} size="sm" aria-label="Upload image" />
-        <InsertGifButton onSelectURL={insertText} aria-label="Add gif" size="sm" />
+        <ButtonGroup size="sm">
+          <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+          <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+          <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
+        </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button type="submit" colorScheme="primary" size="sm">

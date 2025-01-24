@@ -55,7 +55,7 @@ export default function ReactionIconButton({
     return (
       <>
         <IconButton
-          icon={<AddReactionIcon />}
+          icon={<AddReactionIcon boxSize="1.3em" />}
           aria-label="Add Reaction"
           title="Add Reaction"
           onClick={open.on}
@@ -72,7 +72,12 @@ export default function ReactionIconButton({
     return (
       <Popover isLazy isOpen={isOpen} onOpen={open.on} onClose={open.off}>
         <PopoverTrigger>
-          <IconButton icon={<AddReactionIcon />} aria-label="Add Reaction" title="Add Reaction" {...props} />
+          <IconButton
+            icon={<AddReactionIcon boxSize="1.3em" />}
+            aria-label="Add Reaction"
+            title="Add Reaction"
+            {...props}
+          />
         </PopoverTrigger>
         {portal ? (
           <Portal>

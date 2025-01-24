@@ -45,6 +45,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import ZapSplitCreator, { Split } from "./zap-split-creator";
 import MinePOW from "../../../components/pow/mine-pow";
 import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 
 type FormValues = {
   content: string;
@@ -195,6 +196,7 @@ export default function ShortTextNoteForm({
           <Flex mr="auto" gap="2">
             <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
             <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+            <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
           </Flex>
         </Flex>
         <Flex gap="2" alignItems="center" justifyContent="space-between">

@@ -34,7 +34,7 @@ export default function InsertGifButton({
   } else
     return (
       <>
-        <IconButton icon={<Clapperboard boxSize={5} />} onClick={modal.onOpen} {...props} />
+        <IconButton icon={<Clapperboard boxSize="1.3em" />} onClick={modal.onOpen} {...props} />
         {modal.isOpen && <GifPickerModal onClose={modal.onClose} isOpen onSelect={handleSelect} />}
       </>
     );

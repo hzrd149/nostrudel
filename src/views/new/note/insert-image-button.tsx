@@ -14,7 +14,7 @@ export default function InsertImageButton({
   return (
     <>
       <IconButton
-        icon={<UploadImageIcon boxSize={6} />}
+        icon={<UploadImageIcon boxSize="1.3em" />}
         onClick={() => imageUploadRef.current?.click()}
         isLoading={uploading}
         {...props}
