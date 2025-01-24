@@ -12,7 +12,6 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Heading,
   Switch,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
@@ -20,7 +19,6 @@ import { useObservable } from "applesauce-react/hooks";
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import useCurrentAccount from "../../../hooks/use-current-account";
 import useSettingsForm from "../use-settings-form";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import localSettings from "../../../services/local-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
@@ -117,6 +115,16 @@ export default function PostSettings() {
           </Link>{" "}
           client tags on events
         </FormHelperText>
+      </FormControl>
+
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="mirrorBlobsOnShare" mb="0">
+            Always mirror media
+          </FormLabel>
+          <Switch id="mirrorBlobsOnShare" {...register("mirrorBlobsOnShare")} />
+        </Flex>
+        <FormHelperText>Copy all media to your personal blossom servers when sharing notes</FormHelperText>
       </FormControl>
     </SimpleView>
   );

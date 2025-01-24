@@ -5,17 +5,14 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import EventVerificationIcon from "../../common-event/event-verification-icon";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { NoteLink } from "../../note/note-link";
 import Timestamp from "../../timestamp";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import useAppSettings from "../../../hooks/use-user-app-settings";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
-  const { showSignatureVerification } = useAppSettings();
   const navigate = useNavigate();
   const to = `/n/${getSharableEventAddress(event)}`;
 
@@ -38,7 +35,6 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
           </NoteLink>
           <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
           <Spacer />
-          {showSignatureVerification && <EventVerificationIcon event={event} />}
         </Flex>
         <CompactNoteContent px="2" event={event} maxLength={96} />
       </Card>

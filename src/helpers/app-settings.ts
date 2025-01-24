@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 export const APP_SETTINGS_KIND = kinds.Application;
 export const APP_SETTING_IDENTIFIER = "nostrudel-settings";
 
-export type AppSettingsV0 = {
+type AppSettingsV0 = {
   version: 0;
   colorMode: ColorModeWithSystem;
   defaultRelays: string[];
@@ -12,7 +12,6 @@ export type AppSettingsV0 = {
   autoShowMedia: boolean;
   proxyUserMedia: boolean;
   showReactions: boolean;
-  /** @deprecated */
   showSignatureVerification: boolean;
 
   autoPayWithWebLN: boolean;
@@ -26,36 +25,41 @@ export type AppSettingsV0 = {
   redditRedirect?: string;
   youtubeRedirect?: string;
 };
-export type AppSettingsV1 = Omit<AppSettingsV0, "version"> & {
+type AppSettingsV1 = Omit<AppSettingsV0, "version"> & {
   version: 1;
   mutedWords?: string;
   maxPageWidth: "none" | "sm" | "md" | "lg" | "xl" | "full";
 };
-export type AppSettingsV2 = Omit<AppSettingsV1, "version"> & { version: 2; theme: string };
-export type AppSettingsV3 = Omit<AppSettingsV2, "version"> & { version: 3; quickReactions: string[] };
-export type AppSettingsV4 = Omit<AppSettingsV3, "version"> & { version: 4; loadOpenGraphData: boolean };
-export type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideUsernames: boolean };
-export type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
-export type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; autoDecryptDMs: boolean };
-export type AppSettingsV8 = Omit<AppSettingsV7, "version"> & {
+type AppSettingsV2 = Omit<AppSettingsV1, "version"> & { version: 2; theme: string };
+type AppSettingsV3 = Omit<AppSettingsV2, "version"> & { version: 3; quickReactions: string[] };
+type AppSettingsV4 = Omit<AppSettingsV3, "version"> & { version: 4; loadOpenGraphData: boolean };
+type AppSettingsV5 = Omit<AppSettingsV4, "version"> & { version: 5; hideUsernames: boolean };
+type AppSettingsV6 = Omit<AppSettingsV5, "version"> & { version: 6; noteDifficulty: number | null };
+type AppSettingsV7 = Omit<AppSettingsV6, "version"> & { version: 7; autoDecryptDMs: boolean };
+type AppSettingsV8 = Omit<AppSettingsV7, "version"> & {
   version: 8;
   mediaUploadService: "nostr.build" | "blossom";
 };
-export type AppSettingsV9 = Omit<AppSettingsV8, "version"> & { version: 9; removeEmojisInUsernames: boolean };
+type AppSettingsV9 = Omit<AppSettingsV8, "version"> & { version: 9; removeEmojisInUsernames: boolean };
 
-export type AppSettingsV10 = Omit<AppSettingsV9, "version" | "defaultRelays"> & {
+type AppSettingsV10 = Omit<AppSettingsV9, "version" | "defaultRelays"> & {
   version: 10;
   showPubkeyColor: "none" | "avatar" | "underline";
 };
 
-export type AppSettingsV11 = Omit<AppSettingsV10, "quickReactions" | "version"> & {
+type AppSettingsV11 = Omit<AppSettingsV10, "quickReactions" | "version"> & {
   version: 11;
 };
 
-export type AppSettings = AppSettingsV11;
+type AppSettingsV12 = Omit<AppSettingsV11, "showSignatureVerification" | "version"> & {
+  version: 12;
+  mirrorBlobsOnShare: boolean;
+};
+
+export type AppSettings = AppSettingsV12;
 
 export const defaultSettings: AppSettings = {
-  version: 11,
+  version: 12,
 
   // display
   theme: "default",
@@ -69,12 +73,11 @@ export const defaultSettings: AppSettings = {
   autoShowMedia: true,
   showContentWarning: true,
   loadOpenGraphData: true,
-  /** @deprecated */
-  showSignatureVerification: false,
 
   // posting
   noteDifficulty: null,
   proxyUserMedia: false,
+  mirrorBlobsOnShare: false,
 
   // performance
   showReactions: true,

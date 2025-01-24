@@ -142,7 +142,7 @@
     "@capacitor/core": "^6.2.0",
     "@capacitor/ios": "^6.2.0",
     "@capacitor/preferences": "^6.0.3",
-    "@changesets/cli": "^2.27.11",
+    "@changesets/cli": "^2.27.12",
     "@types/canvas-confetti": "^1.9.0",
     "@types/chroma-js": "^2.4.5",
     "@types/debug": "^4.1.12",

@@ -22,7 +22,6 @@ import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
 import EventZapButton from "../../zap/event-zap-button";
 import { ExpandProvider } from "../../../providers/local/expanded";
-import EventVerificationIcon from "../../common-event/event-verification-icon";
 import EventShareButton from "./components/event-share-button";
 import EventQuoteButton from "../event-quote-button";
 import { ReplyIcon } from "../../icons";
@@ -67,7 +66,7 @@ export function TimelineNote({
   ...props
 }: TimelineNoteProps) {
   const account = useCurrentAccount();
-  const { showReactions, showSignatureVerification } = useAppSettings();
+  const { showReactions } = useAppSettings();
   const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 
@@ -98,7 +97,6 @@ export function TimelineNote({
               <POWIcon event={event} boxSize={5} />
               <NotePublishedUsing event={event} />
               <Flex grow={1} />
-              {showSignatureVerification && <EventVerificationIcon event={event} />}
             </Flex>
             <NoteCommunityMetadata event={event} />
             {showReplyLine && <ReplyContext event={event} />}
