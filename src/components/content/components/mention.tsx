@@ -12,7 +12,7 @@ const Mention: ComponentMap["mention"] = ({ node }) => {
     case "nevent":
     case "naddr":
     case "note":
-      return <EmbedEventPointer pointer={node.decoded} />;
+      return <EmbedEventPointer pointer={node.decoded} zIndex={1} />;
 
     default:
       return null;

@@ -105,7 +105,10 @@ export function EmbedEvent({
   return <Suspense fallback={<Spinner />}>{renderContent()}</Suspense>;
 }
 
-export function EmbedEventPointer({ pointer, ...props }: { pointer: DecodeResult } & EmbedProps) {
+export function EmbedEventPointer({
+  pointer,
+  ...props
+}: { pointer: DecodeResult } & EmbedProps & Omit<CardProps, "children">) {
   switch (pointer.type) {
     case "note": {
       const event = useSingleEvent(pointer.data);
