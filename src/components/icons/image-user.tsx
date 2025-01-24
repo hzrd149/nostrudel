@@ -11,6 +11,7 @@ const ImageUser = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="waxL"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Placeholder = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="F4XR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

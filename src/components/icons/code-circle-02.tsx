@@ -11,6 +11,7 @@ const CodeCircle02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RgUi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

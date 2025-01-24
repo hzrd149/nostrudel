@@ -11,6 +11,7 @@ const CurrencyEuroCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Oimf"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

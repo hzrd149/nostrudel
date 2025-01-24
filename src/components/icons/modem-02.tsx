@@ -11,6 +11,7 @@ const Modem02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ChWg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

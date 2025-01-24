@@ -11,6 +11,7 @@ const Toggle03Right = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="HUj1"
     ></path>,
     <path
       d="M16 14.5C17.3807 14.5 18.5 13.3807 18.5 12C18.5 10.6193 17.3807 9.5 16 9.5C14.6193 9.5 13.5 10.6193 13.5 12C13.5 13.3807 14.6193 14.5 16 14.5Z"
@@ -19,6 +20,7 @@ const Toggle03Right = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mTDy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

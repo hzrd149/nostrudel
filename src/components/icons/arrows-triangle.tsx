@@ -11,6 +11,7 @@ const ArrowsTriangle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9SxE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

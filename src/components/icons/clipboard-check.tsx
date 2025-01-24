@@ -11,6 +11,7 @@ const ClipboardCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7Cu9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Ticket02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="hRUq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

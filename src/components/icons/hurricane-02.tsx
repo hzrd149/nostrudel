@@ -11,6 +11,7 @@ const Hurricane02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="D2Hy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

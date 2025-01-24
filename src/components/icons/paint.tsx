@@ -11,6 +11,7 @@ const Paint = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f0pe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

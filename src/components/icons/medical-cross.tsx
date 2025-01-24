@@ -11,6 +11,7 @@ const MedicalCross = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="nn1y"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

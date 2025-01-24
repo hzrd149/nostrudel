@@ -11,6 +11,7 @@ const LayoutTop = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qMjl"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

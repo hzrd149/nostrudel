@@ -11,6 +11,7 @@ const Crop01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="b6Z-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Cube04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Bn3D"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

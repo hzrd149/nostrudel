@@ -11,6 +11,7 @@ const Telescope = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-eks"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

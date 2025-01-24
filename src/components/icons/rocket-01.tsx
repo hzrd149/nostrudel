@@ -11,6 +11,7 @@ const Rocket01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NP3p"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

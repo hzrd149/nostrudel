@@ -11,6 +11,7 @@ const ParagraphSpacing = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xyQH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

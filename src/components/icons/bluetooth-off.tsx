@@ -11,6 +11,7 @@ const BluetoothOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="G410"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

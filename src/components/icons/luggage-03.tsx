@@ -11,6 +11,7 @@ const Luggage03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5MD8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

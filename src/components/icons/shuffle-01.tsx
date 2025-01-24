@@ -11,6 +11,7 @@ const Shuffle01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CO5p"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

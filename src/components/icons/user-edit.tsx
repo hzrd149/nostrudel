@@ -11,6 +11,7 @@ const UserEdit = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zxV_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

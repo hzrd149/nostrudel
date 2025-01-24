@@ -11,6 +11,7 @@ const ImageX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lCgq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

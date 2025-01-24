@@ -11,6 +11,7 @@ const Table = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="v92V"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

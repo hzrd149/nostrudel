@@ -11,6 +11,7 @@ const SlashOctagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KmrU"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

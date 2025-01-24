@@ -11,6 +11,7 @@ const Drop = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LTUO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

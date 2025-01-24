@@ -11,6 +11,7 @@ const Scan = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7gOe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

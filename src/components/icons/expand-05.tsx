@@ -11,6 +11,7 @@ const Expand05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="cbZz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

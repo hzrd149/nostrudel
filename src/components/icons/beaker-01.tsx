@@ -11,6 +11,7 @@ const Beaker01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XLqs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

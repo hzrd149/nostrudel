@@ -11,6 +11,7 @@ const BluetoothOn = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="OvhH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

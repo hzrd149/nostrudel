@@ -11,6 +11,7 @@ const MinusSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="AWRC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const LogIn02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="vVE_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

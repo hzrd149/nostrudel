@@ -11,6 +11,7 @@ const CodeSquare01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QMOr"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

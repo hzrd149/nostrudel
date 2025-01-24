@@ -11,6 +11,7 @@ const PhoneHangUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pPy0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

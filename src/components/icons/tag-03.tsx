@@ -11,6 +11,7 @@ const Tag03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="EADs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

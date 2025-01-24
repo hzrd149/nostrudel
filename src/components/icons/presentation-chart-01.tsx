@@ -11,6 +11,7 @@ const PresentationChart01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zOlZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

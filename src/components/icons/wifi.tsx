@@ -11,6 +11,7 @@ const Wifi = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FvZC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

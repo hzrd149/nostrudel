@@ -11,6 +11,7 @@ const BookOpen02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="iG3Q"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

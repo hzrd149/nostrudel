@@ -11,6 +11,7 @@ const Tablet01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Zpgh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

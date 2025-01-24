@@ -11,6 +11,7 @@ const Target01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="b3mF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

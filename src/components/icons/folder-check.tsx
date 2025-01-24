@@ -11,6 +11,7 @@ const FolderCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="x4UL"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

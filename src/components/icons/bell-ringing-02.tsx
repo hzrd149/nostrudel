@@ -11,6 +11,7 @@ const BellRinging02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="nvZ9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

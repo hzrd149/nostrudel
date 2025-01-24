@@ -11,6 +11,7 @@ const LayoutAlt03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="h_3g"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

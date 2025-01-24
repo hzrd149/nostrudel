@@ -11,6 +11,7 @@ const FlexAlignLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gMnt"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

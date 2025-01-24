@@ -11,6 +11,7 @@ const ImageUserCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="unfx"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

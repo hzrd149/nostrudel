@@ -11,6 +11,7 @@ const PaintPour = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2w8Y"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

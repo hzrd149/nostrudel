@@ -11,6 +11,7 @@ const Trophy02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9kBX"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

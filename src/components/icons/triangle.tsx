@@ -11,6 +11,7 @@ const Triangle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7om9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

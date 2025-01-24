@@ -11,6 +11,7 @@ const Codepen = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="SV8O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const MagicWand02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="k1k9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="cvBi"
     ></path>,
     <path
       d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
@@ -19,6 +20,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ppjS"
     ></path>,
     <path
       d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z"
@@ -27,6 +29,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8LPQ"
     ></path>,
     <path
       d="M19 6C19.5523 6 20 5.55228 20 5C20 4.44772 19.5523 4 19 4C18.4477 4 18 4.44772 18 5C18 5.55228 18.4477 6 19 6Z"
@@ -35,6 +38,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Z5gu"
     ></path>,
     <path
       d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z"
@@ -43,6 +47,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-gcw"
     ></path>,
     <path
       d="M19 20C19.5523 20 20 19.5523 20 19C20 18.4477 19.5523 18 19 18C18.4477 18 18 18.4477 18 19C18 19.5523 18.4477 20 19 20Z"
@@ -51,6 +56,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="I3Dd"
     ></path>,
     <path
       d="M5 6C5.55228 6 6 5.55228 6 5C6 4.44772 5.55228 4 5 4C4.44772 4 4 4.44772 4 5C4 5.55228 4.44772 6 5 6Z"
@@ -59,6 +65,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="cPC_"
     ></path>,
     <path
       d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
@@ -67,6 +74,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="X8S5"
     ></path>,
     <path
       d="M5 20C5.55228 20 6 19.5523 6 19C6 18.4477 5.55228 18 5 18C4.44772 18 4 18.4477 4 19C4 19.5523 4.44772 20 5 20Z"
@@ -75,6 +83,7 @@ const DotsGrid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="igjv"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

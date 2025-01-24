@@ -11,6 +11,7 @@ const ZapSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="uExF"
     ></path>,
     <path
       d="M12 6L7.4336 12.2269C7.13256 12.6374 6.98205 12.8427 6.9869 13.0142C6.99113 13.1634 7.06185 13.303 7.17972 13.3947C7.31514 13.5 7.56967 13.5 8.07872 13.5H12V18L16.5664 11.7731C16.8674 11.3626 17.018 11.1573 17.0131 10.9858C17.0089 10.8366 16.9381 10.697 16.8203 10.6053C16.6849 10.5 16.4303 10.5 15.9213 10.5H12V6Z"
@@ -19,6 +20,7 @@ const ZapSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="TT9E"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const LogIn01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xd5M"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

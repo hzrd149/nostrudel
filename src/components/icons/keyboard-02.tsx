@@ -11,6 +11,7 @@ const Keyboard02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="_DJd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

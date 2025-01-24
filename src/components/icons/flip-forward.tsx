@@ -11,6 +11,7 @@ const FlipForward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KiLp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

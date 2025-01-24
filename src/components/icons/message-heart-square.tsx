@@ -11,6 +11,7 @@ const MessageHeartSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="iiDn"
     ></path>,
     <path
       d="M11.9969 7.69925C11.0972 6.6604 9.59689 6.38095 8.46961 7.33223C7.34234 8.2835 7.18364 9.87399 8.06889 10.9991C8.61733 11.6961 9.99389 12.9691 10.962 13.837C11.3176 14.1557 11.4953 14.3151 11.7087 14.3793C11.8918 14.4344 12.1021 14.4344 12.2851 14.3793C12.4985 14.3151 12.6763 14.1557 13.0319 13.837C13.9999 12.9691 15.3765 11.6961 15.9249 10.9991C16.8102 9.87399 16.6709 8.2735 15.5242 7.33223C14.3776 6.39096 12.8966 6.6604 11.9969 7.69925Z"
@@ -21,6 +22,7 @@ const MessageHeartSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-7Ni"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

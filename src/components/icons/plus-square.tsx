@@ -11,6 +11,7 @@ const PlusSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="yq3U"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

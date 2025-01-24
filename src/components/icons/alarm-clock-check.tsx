@@ -11,6 +11,7 @@ const AlarmClockCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DkUs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const PackageMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="taBP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

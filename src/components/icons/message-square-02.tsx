@@ -11,6 +11,7 @@ const MessageSquare02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="q5gh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

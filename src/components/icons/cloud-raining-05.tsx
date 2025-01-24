@@ -11,6 +11,7 @@ const CloudRaining05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0IbA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

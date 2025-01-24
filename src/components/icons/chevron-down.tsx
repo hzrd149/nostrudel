@@ -11,6 +11,7 @@ const ChevronDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w3dr"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

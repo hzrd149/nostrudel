@@ -11,6 +11,7 @@ const FlexAlignTop = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zi6E"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

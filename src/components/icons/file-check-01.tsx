@@ -11,6 +11,7 @@ const FileCheck01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="kirq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

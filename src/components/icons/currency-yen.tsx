@@ -11,6 +11,7 @@ const CurrencyYen = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qfxa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

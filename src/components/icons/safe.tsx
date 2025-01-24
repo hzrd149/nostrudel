@@ -11,6 +11,7 @@ const Safe = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BqKI"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

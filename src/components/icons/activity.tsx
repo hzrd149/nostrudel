@@ -11,6 +11,7 @@ const Activity = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qB4r"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

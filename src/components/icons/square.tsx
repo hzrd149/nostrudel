@@ -11,6 +11,7 @@ const Square = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="fCLU"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

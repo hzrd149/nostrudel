@@ -11,6 +11,7 @@ const CameraLens = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="i5V8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

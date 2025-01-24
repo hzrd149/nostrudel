@@ -11,6 +11,7 @@ const RightIndent02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lrqW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

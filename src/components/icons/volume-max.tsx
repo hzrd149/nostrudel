@@ -11,6 +11,7 @@ const VolumeMax = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="h9cG"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

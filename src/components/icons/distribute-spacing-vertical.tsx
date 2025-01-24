@@ -11,6 +11,7 @@ const DistributeSpacingVertical = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0l1E"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

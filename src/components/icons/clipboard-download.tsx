@@ -11,6 +11,7 @@ const ClipboardDownload = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="49Gk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

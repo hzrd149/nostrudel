@@ -11,6 +11,7 @@ const Snowflake01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UAlb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

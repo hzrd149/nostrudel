@@ -11,6 +11,7 @@ const MoonEclipse = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xY5g"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

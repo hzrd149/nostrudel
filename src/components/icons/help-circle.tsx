@@ -11,6 +11,7 @@ const HelpCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="4HEi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

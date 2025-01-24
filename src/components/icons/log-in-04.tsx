@@ -11,6 +11,7 @@ const LogIn04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xEj4"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

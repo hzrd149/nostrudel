@@ -11,6 +11,7 @@ const ArrowSquareDownLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2-Wh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

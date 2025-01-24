@@ -11,6 +11,7 @@ const CurrencyEuro = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JhoO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

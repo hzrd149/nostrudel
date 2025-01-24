@@ -11,6 +11,7 @@ const ImageRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="oIpA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

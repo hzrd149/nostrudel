@@ -11,6 +11,7 @@ const Skew = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5E6n"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

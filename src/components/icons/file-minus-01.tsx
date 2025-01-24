@@ -11,6 +11,7 @@ const FileMinus01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="HBvo"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Copy06 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zUOD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

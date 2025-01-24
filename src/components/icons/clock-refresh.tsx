@@ -11,6 +11,7 @@ const ClockRefresh = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mVPo"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

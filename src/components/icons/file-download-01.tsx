@@ -11,6 +11,7 @@ const FileDownload01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YIT2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

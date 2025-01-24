@@ -11,6 +11,7 @@ const FolderLock = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zuT_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

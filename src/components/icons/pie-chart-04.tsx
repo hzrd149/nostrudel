@@ -11,6 +11,7 @@ const PieChart04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="uGYi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

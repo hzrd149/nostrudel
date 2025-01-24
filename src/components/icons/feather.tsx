@@ -11,6 +11,7 @@ const Feather = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="q2Bf"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Underline01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XLST"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

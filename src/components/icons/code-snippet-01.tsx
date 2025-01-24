@@ -11,6 +11,7 @@ const CodeSnippet01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UEkD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

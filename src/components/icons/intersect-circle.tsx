@@ -11,6 +11,7 @@ const IntersectCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wyrz"
     ></path>,
     <path
       d="M15 22C18.866 22 22 18.866 22 15C22 11.134 18.866 8 15 8C11.134 8 8 11.134 8 15C8 18.866 11.134 22 15 22Z"
@@ -19,6 +20,7 @@ const IntersectCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Q3Us"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

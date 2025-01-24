@@ -11,6 +11,7 @@ const ZoomIn = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="EYRg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

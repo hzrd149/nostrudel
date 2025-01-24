@@ -11,6 +11,7 @@ const BookmarkX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bDNp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

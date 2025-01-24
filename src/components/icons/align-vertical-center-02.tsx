@@ -11,6 +11,7 @@ const AlignVerticalCenter02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="SXkh"
     ></path>,
     <path
       d="M20 16V8C20 7.06812 20 6.60218 19.8478 6.23463C19.6448 5.74458 19.2554 5.35523 18.7654 5.15224C18.3978 5 17.9319 5 17 5C16.0681 5 15.6022 5 15.2346 5.15224C14.7446 5.35523 14.3552 5.74458 14.1522 6.23463C14 6.60218 14 7.06812 14 8V16C14 16.9319 14 17.3978 14.1522 17.7654C14.3552 18.2554 14.7446 18.6448 15.2346 18.8478C15.6022 19 16.0681 19 17 19C17.9319 19 18.3978 19 18.7654 18.8478C19.2554 18.6448 19.6448 18.2554 19.8478 17.7654C20 17.3978 20 16.9319 20 16Z"
@@ -19,6 +20,7 @@ const AlignVerticalCenter02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Wire"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ClockStopwatch = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CUiK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

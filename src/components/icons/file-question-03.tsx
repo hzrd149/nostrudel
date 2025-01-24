@@ -11,6 +11,7 @@ const FileQuestion03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="y37O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

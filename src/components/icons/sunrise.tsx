@@ -11,6 +11,7 @@ const Sunrise = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="OMsF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Passport = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MYVM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

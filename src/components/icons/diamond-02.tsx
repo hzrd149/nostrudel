@@ -11,6 +11,7 @@ const Diamond02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PjqS"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

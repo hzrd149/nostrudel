@@ -11,6 +11,7 @@ const MessageAlertCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="vT73"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Coins04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="jYBD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

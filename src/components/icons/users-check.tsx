@@ -11,6 +11,7 @@ const UsersCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FplH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

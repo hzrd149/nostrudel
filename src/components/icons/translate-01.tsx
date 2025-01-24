@@ -11,6 +11,7 @@ const Translate01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="oUgH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

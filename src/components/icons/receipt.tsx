@@ -11,6 +11,7 @@ const Receipt = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="eN7O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

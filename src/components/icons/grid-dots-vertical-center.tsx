@@ -11,6 +11,7 @@ const GridDotsVerticalCenter = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="C5j-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

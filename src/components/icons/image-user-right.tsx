@@ -11,6 +11,7 @@ const ImageUserRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PiW3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

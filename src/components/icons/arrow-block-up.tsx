@@ -11,6 +11,7 @@ const ArrowBlockUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="eDpR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

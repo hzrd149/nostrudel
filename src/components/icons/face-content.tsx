@@ -11,6 +11,7 @@ const FaceContent = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w2Dp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

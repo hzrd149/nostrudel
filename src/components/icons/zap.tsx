@@ -11,6 +11,7 @@ const Zap = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PqIb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

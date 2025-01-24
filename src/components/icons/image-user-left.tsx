@@ -11,6 +11,7 @@ const ImageUserLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wps_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

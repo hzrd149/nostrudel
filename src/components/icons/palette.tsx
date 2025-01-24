@@ -11,6 +11,7 @@ const Palette = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JVVK"
     ></path>,
     <path
       d="M7 13C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11C6.44772 11 6 11.4477 6 12C6 12.5523 6.44772 13 7 13Z"
@@ -19,6 +20,7 @@ const Palette = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bjf4"
     ></path>,
     <path
       d="M16 9C16.5523 9 17 8.55228 17 8C17 7.44772 16.5523 7 16 7C15.4477 7 15 7.44772 15 8C15 8.55228 15.4477 9 16 9Z"
@@ -27,6 +29,7 @@ const Palette = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="oXqr"
     ></path>,
     <path
       d="M10 8C10.5523 8 11 7.55228 11 7C11 6.44772 10.5523 6 10 6C9.44772 6 9 6.44772 9 7C9 7.55228 9.44772 8 10 8Z"
@@ -35,6 +38,7 @@ const Palette = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UMn2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

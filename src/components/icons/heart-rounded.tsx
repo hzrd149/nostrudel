@@ -11,6 +11,7 @@ const HeartRounded = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NoR9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

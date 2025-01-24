@@ -11,6 +11,7 @@ const ArrowCircleBrokenLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WGwk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

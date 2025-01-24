@@ -11,6 +11,7 @@ const BookmarkCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ceR5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

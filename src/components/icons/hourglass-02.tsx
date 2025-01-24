@@ -11,6 +11,7 @@ const Hourglass02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9yyK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

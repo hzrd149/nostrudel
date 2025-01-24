@@ -11,6 +11,7 @@ const Trash04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="J7Jl"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

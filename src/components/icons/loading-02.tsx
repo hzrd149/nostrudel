@@ -11,6 +11,7 @@ const Loading02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="34Fd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

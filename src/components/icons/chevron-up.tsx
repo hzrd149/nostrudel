@@ -11,6 +11,7 @@ const ChevronUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="c_jQ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

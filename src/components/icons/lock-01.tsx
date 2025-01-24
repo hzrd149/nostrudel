@@ -11,6 +11,7 @@ const Lock01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2EEe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

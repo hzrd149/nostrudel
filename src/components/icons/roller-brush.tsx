@@ -11,6 +11,7 @@ const RollerBrush = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="H2te"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

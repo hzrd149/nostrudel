@@ -11,6 +11,7 @@ const Transform = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="eFnK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const AnnotationHeart = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="crCp"
     ></path>,
     <path
       d="M11.9973 8.33059C11.1975 7.4216 9.8639 7.17708 8.86188 8.00945C7.85986 8.84182 7.71879 10.2335 8.50568 11.2179C8.97361 11.8033 10.1197 12.8531 10.9719 13.6079C11.3237 13.9195 11.4996 14.0753 11.7114 14.1385C11.8925 14.1926 12.102 14.1926 12.2832 14.1385C12.4949 14.0753 12.6708 13.9195 13.0226 13.6079C13.8748 12.8531 15.0209 11.8033 15.4888 11.2179C16.2757 10.2335 16.1519 8.83306 15.1326 8.00945C14.1134 7.18584 12.797 7.4216 11.9973 8.33059Z"
@@ -21,6 +22,7 @@ const AnnotationHeart = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GfD-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

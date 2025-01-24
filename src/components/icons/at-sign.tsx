@@ -11,6 +11,7 @@ const AtSign = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XEEz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

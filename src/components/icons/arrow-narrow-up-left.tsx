@@ -11,6 +11,7 @@ const ArrowNarrowUpLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="S89v"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

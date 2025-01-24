@@ -11,6 +11,7 @@ const ClockFastForward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="odHw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

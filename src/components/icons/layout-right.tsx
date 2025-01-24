@@ -11,6 +11,7 @@ const LayoutRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9KwN"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

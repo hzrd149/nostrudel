@@ -11,6 +11,7 @@ const XCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="sTve"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

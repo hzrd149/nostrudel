@@ -11,6 +11,7 @@ const LineChartUp01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Yoxs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

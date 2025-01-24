@@ -11,6 +11,7 @@ const Tool01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="oKLo"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

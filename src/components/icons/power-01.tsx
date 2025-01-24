@@ -11,6 +11,7 @@ const Power01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UkCn"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

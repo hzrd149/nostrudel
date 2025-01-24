@@ -11,6 +11,7 @@ const Flash = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Znkp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

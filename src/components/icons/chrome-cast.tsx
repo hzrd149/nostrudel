@@ -11,6 +11,7 @@ const ChromeCast = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Z3nR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

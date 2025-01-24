@@ -11,6 +11,7 @@ const AnnotationAlert = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="EOb0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

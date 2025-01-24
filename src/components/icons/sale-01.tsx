@@ -11,6 +11,7 @@ const Sale01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zbWh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

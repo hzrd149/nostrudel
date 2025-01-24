@@ -11,6 +11,7 @@ const Sun = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wehd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

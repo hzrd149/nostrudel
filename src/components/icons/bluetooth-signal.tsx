@@ -11,6 +11,7 @@ const BluetoothSignal = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="htFf"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

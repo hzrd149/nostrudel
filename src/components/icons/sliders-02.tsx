@@ -11,6 +11,7 @@ const Sliders02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WpGa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

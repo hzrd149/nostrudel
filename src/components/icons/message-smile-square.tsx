@@ -11,6 +11,7 @@ const MessageSmileSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RY2a"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

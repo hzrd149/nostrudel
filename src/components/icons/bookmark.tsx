@@ -11,6 +11,7 @@ const Bookmark = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CHA-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

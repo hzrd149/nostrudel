@@ -11,6 +11,7 @@ const NavigationPointerOff02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DxrI"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Paperclip = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="aPAZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

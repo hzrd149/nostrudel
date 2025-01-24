@@ -11,6 +11,7 @@ const Dropper = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="_UCD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Mail05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="jmo6"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

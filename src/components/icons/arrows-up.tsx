@@ -11,6 +11,7 @@ const ArrowsUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Icfi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

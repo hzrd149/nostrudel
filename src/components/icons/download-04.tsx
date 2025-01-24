@@ -11,6 +11,7 @@ const Download04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="odYC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

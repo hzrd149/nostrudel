@@ -11,6 +11,7 @@ const Shield03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Yim3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

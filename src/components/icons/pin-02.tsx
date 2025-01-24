@@ -11,6 +11,7 @@ const Pin02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Ondm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

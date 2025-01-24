@@ -11,6 +11,7 @@ const Ruler = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="tCF5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

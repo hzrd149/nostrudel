@@ -11,6 +11,7 @@ const Hash01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="AL1J"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

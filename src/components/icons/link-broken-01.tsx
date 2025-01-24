@@ -11,6 +11,7 @@ const LinkBroken01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-Der"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

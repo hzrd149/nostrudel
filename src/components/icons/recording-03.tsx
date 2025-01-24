@@ -11,6 +11,7 @@ const Recording03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="VwgA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

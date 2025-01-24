@@ -11,6 +11,7 @@ const AlertSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="VBNi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Clapperboard = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="fYGZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

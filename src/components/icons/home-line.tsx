@@ -11,6 +11,7 @@ const HomeLine = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Ooj3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

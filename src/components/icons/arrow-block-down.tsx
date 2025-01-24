@@ -11,6 +11,7 @@ const ArrowBlockDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UbI2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

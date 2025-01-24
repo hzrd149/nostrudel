@@ -11,6 +11,7 @@ const LineChartDown01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KGMe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

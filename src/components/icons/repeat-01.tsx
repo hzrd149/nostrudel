@@ -11,6 +11,7 @@ const Repeat01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QkWz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

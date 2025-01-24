@@ -11,6 +11,7 @@ const GamingPad02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Q-YP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

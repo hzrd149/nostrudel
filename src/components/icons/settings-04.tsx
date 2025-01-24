@@ -11,6 +11,7 @@ const Settings04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KWB6"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

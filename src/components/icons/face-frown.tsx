@@ -11,6 +11,7 @@ const FaceFrown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="OO8w"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

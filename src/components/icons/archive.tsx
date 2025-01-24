@@ -11,6 +11,7 @@ const Archive = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="tbZB"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

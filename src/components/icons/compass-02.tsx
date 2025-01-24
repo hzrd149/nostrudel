@@ -11,6 +11,7 @@ const Compass02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="csvO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

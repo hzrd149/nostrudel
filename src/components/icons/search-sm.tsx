@@ -11,6 +11,7 @@ const SearchSm = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="k30F"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

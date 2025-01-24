@@ -11,6 +11,7 @@ const NotificationBox = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Mdq2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const PencilLine = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1lbH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

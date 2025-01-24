@@ -11,6 +11,7 @@ const CreditCardMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mM7z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

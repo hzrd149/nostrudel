@@ -11,6 +11,7 @@ const Dotpoints02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zVD6"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

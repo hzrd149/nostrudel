@@ -11,6 +11,7 @@ const Wallet04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QvNp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

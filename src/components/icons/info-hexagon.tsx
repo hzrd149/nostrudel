@@ -11,6 +11,7 @@ const InfoHexagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-oGj"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

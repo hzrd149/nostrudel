@@ -11,6 +11,7 @@ const DistributeSpacingHorizontal = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WZAD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

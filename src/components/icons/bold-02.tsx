@@ -11,6 +11,7 @@ const Bold02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7GPs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

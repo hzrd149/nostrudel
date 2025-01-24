@@ -11,6 +11,7 @@ const Pencil02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BNMe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

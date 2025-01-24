@@ -11,6 +11,7 @@ const Gift02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Vq6r"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

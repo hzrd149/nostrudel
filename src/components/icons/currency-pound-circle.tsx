@@ -11,6 +11,7 @@ const CurrencyPoundCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Bixn"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

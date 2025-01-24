@@ -11,6 +11,7 @@ const Upload01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DYi3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

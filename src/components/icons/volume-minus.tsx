@@ -11,6 +11,7 @@ const VolumeMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="T-nE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

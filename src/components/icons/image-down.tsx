@@ -11,6 +11,7 @@ const ImageDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Bv9i"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FileLock02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BB6K"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Cloud02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LN_r"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FileShield01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="U8a3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

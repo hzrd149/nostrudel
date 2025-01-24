@@ -11,6 +11,7 @@ const ThumbsDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qigs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

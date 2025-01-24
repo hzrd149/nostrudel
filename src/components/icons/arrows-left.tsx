@@ -11,6 +11,7 @@ const ArrowsLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PhfT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

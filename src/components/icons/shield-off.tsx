@@ -11,6 +11,7 @@ const ShieldOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-fp8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

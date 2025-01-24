@@ -11,6 +11,7 @@ const MarkerPin02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="A4Ez"
     ></path>,
     <path
       d="M12 22C14 18 20 15.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15.4183 10 18 12 22Z"
@@ -19,6 +20,7 @@ const MarkerPin02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zhz2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

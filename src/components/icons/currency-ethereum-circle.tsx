@@ -11,6 +11,7 @@ const CurrencyEthereumCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="D2nT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

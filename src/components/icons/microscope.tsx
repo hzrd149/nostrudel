@@ -11,6 +11,7 @@ const Microscope = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MNHc"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

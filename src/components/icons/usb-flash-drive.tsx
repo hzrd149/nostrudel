@@ -11,6 +11,7 @@ const UsbFlashDrive = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Zl4o"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

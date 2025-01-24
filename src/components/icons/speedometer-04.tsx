@@ -11,6 +11,7 @@ const Speedometer04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="txsx"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

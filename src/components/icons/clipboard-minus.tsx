@@ -11,6 +11,7 @@ const ClipboardMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ULXH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

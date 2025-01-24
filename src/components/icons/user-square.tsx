@@ -11,6 +11,7 @@ const UserSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f_Vg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

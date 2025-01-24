@@ -11,6 +11,7 @@ const Maximize01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="K1oP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

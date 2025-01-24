@@ -11,6 +11,7 @@ const CurrencyBitcoinCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="uBDR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

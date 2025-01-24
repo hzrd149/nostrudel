@@ -11,6 +11,7 @@ const LayersTwo02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ApmK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

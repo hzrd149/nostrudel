@@ -11,6 +11,7 @@ const Check = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5WwR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

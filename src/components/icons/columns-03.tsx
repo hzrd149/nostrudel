@@ -11,6 +11,7 @@ const Columns03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5r9I"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

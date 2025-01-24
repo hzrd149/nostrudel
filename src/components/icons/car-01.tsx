@@ -11,6 +11,7 @@ const Car01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pI8z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

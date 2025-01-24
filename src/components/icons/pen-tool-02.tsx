@@ -11,6 +11,7 @@ const PenTool02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Bequ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

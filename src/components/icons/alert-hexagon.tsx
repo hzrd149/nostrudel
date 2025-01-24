@@ -11,6 +11,7 @@ const AlertHexagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="fPPk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

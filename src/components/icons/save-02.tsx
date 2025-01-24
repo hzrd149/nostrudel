@@ -11,6 +11,7 @@ const Save02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0-t0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

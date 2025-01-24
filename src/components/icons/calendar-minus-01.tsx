@@ -11,6 +11,7 @@ const CalendarMinus01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="rOHe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

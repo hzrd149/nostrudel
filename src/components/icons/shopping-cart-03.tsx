@@ -11,6 +11,7 @@ const ShoppingCart03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Eo-5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

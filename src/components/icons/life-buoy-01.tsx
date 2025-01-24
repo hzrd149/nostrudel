@@ -11,6 +11,7 @@ const LifeBuoy01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5zil"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

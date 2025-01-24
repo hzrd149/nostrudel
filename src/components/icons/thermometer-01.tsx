@@ -11,6 +11,7 @@ const Thermometer01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5xCe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

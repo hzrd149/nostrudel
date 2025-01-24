@@ -11,6 +11,7 @@ const ArrowCircleBrokenDownLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="T4gs"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

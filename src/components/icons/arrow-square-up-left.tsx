@@ -11,6 +11,7 @@ const ArrowSquareUpLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FEEA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

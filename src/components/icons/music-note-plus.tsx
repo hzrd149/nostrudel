@@ -11,6 +11,7 @@ const MusicNotePlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WFPB"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

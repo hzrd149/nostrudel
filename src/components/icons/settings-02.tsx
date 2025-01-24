@@ -11,6 +11,7 @@ const Settings02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="p1IO"
     ></path>,
     <path
       d="M12 15C13.6568 15 15 13.6569 15 12C15 10.3431 13.6568 9 12 9C10.3431 9 8.99998 10.3431 8.99998 12C8.99998 13.6569 10.3431 15 12 15Z"
@@ -19,6 +20,7 @@ const Settings02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MgRJ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

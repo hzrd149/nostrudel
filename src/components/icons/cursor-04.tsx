@@ -11,6 +11,7 @@ const Cursor04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3gHD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

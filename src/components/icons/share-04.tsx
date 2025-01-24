@@ -11,6 +11,7 @@ const Share04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ApCm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const BookmarkMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="HraY"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

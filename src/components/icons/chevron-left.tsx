@@ -11,6 +11,7 @@ const ChevronLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zSe_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

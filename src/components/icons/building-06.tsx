@@ -11,6 +11,7 @@ const Building06 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="rB2G"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

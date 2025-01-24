@@ -11,6 +11,7 @@ const Server02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BnCx"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

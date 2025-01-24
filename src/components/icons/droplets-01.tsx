@@ -11,6 +11,7 @@ const Droplets01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-UvA"
     ></path>,
     <path
       d="M8 9C8 10.6569 6.65685 12 5 12C3.34315 12 2 10.6569 2 9C2 6.84315 5 2 5 2C5 2 8 6.84315 8 9Z"
@@ -19,6 +20,7 @@ const Droplets01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="4xGp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

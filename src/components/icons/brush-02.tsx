@@ -11,6 +11,7 @@ const Brush02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Syeh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Sale02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GQSq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

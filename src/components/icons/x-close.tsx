@@ -11,6 +11,7 @@ const XClose = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3wFm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

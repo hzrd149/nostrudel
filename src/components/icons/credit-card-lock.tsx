@@ -11,6 +11,7 @@ const CreditCardLock = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9Gel"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

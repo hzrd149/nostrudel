@@ -11,6 +11,7 @@ const WatchSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3oqO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

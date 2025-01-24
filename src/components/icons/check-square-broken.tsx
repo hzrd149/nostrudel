@@ -11,6 +11,7 @@ const CheckSquareBroken = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="c1WP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

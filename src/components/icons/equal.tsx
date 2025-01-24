@@ -11,6 +11,7 @@ const Equal = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="rqX5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

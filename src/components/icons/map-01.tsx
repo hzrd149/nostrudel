@@ -11,6 +11,7 @@ const Map01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Nnml"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

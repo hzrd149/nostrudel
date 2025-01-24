@@ -11,6 +11,7 @@ const MessageXSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MXet"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

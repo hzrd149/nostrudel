@@ -11,6 +11,7 @@ const FaceHappy = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="EV1I"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

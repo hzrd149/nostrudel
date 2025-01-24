@@ -11,6 +11,7 @@ const FileSearch03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="6R52"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

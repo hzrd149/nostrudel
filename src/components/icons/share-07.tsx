@@ -11,6 +11,7 @@ const Share07 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bM1k"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

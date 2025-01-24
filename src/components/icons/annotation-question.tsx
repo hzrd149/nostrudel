@@ -11,6 +11,7 @@ const AnnotationQuestion = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WZZV"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

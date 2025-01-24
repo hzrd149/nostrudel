@@ -11,6 +11,7 @@ const CodeCircle01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Vdo-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

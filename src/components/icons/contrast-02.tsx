@@ -11,6 +11,7 @@ const Contrast02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pP4q"
     ></path>,
     <path
       d="M12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5V18.5Z"
@@ -19,6 +20,7 @@ const Contrast02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Tz-X"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

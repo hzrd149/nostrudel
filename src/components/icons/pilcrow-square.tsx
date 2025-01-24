@@ -11,6 +11,7 @@ const PilcrowSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lCqW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

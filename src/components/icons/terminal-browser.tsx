@@ -11,6 +11,7 @@ const TerminalBrowser = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RDEj"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

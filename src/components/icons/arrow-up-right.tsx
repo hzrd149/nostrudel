@@ -11,6 +11,7 @@ const ArrowUpRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="N__i"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

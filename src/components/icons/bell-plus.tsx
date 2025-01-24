@@ -11,6 +11,7 @@ const BellPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pmgd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

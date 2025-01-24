@@ -11,6 +11,7 @@ const CreditCardDownload = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MCOy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

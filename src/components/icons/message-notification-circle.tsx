@@ -11,6 +11,7 @@ const MessageNotificationCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f4pZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

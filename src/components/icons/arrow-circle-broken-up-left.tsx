@@ -11,6 +11,7 @@ const ArrowCircleBrokenUpLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YWoa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

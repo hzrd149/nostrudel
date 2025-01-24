@@ -11,6 +11,7 @@ const Glasses01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-HKb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

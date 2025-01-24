@@ -11,6 +11,7 @@ const Colors = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="e5Zv"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

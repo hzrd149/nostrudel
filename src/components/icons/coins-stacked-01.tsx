@@ -11,6 +11,7 @@ const CoinsStacked01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Qvh8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

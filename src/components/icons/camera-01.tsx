@@ -11,6 +11,7 @@ const Camera01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RhDF"
     ></path>,
     <path
       d="M12 16.5C14.2091 16.5 16 14.7091 16 12.5C16 10.2909 14.2091 8.5 12 8.5C9.79086 8.5 8 10.2909 8 12.5C8 14.7091 9.79086 16.5 12 16.5Z"
@@ -19,6 +20,7 @@ const Camera01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3OiE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

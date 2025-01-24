@@ -11,6 +11,7 @@ const FastForward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="OGGS"
     ></path>,
     <path
       d="M2 16.437C2 17.567 2 18.1321 2.22827 18.4091C2.42657 18.6497 2.72579 18.7841 3.0374 18.7724C3.39609 18.759 3.81839 18.3836 4.66298 17.6329L9.65466 13.1958C10.12 12.7822 10.3526 12.5754 10.4383 12.3312C10.5136 12.1168 10.5136 11.8831 10.4383 11.6687C10.3526 11.4245 10.12 11.2177 9.65466 10.8041L4.66298 6.36706C3.81839 5.61631 3.39609 5.24093 3.0374 5.22751C2.72579 5.21584 2.42657 5.35021 2.22827 5.59086C2 5.86787 2 6.43288 2 7.56291V16.437Z"
@@ -19,6 +20,7 @@ const FastForward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YsvC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

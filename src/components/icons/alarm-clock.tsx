@@ -11,6 +11,7 @@ const AlarmClock = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w-Tp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

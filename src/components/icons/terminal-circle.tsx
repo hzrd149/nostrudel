@@ -11,6 +11,7 @@ const TerminalCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RQ4q"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

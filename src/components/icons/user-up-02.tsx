@@ -11,6 +11,7 @@ const UserUp02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="kTSG"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

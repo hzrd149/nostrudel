@@ -11,6 +11,7 @@ const ImageUserPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="THcA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

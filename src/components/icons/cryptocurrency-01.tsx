@@ -11,6 +11,7 @@ const Cryptocurrency01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8MOd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

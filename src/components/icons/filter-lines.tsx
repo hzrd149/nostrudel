@@ -11,6 +11,7 @@ const FilterLines = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PGBd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

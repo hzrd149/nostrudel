@@ -11,6 +11,7 @@ const CreditCardPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wekf"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

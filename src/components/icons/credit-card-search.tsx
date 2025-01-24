@@ -11,6 +11,7 @@ const CreditCardSearch = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pXeB"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

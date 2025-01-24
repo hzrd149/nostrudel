@@ -11,6 +11,7 @@ const GridDotsBottom = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="6p6f"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

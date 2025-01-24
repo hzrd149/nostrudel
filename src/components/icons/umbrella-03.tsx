@@ -11,6 +11,7 @@ const Umbrella03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3uPh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

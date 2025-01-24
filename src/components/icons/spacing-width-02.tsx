@@ -11,6 +11,7 @@ const SpacingWidth02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KyPg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

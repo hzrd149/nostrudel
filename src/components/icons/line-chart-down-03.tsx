@@ -11,6 +11,7 @@ const LineChartDown03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FXch"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ClockCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="sPOn"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

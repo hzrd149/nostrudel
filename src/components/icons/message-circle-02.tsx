@@ -11,6 +11,7 @@ const MessageCircle02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Az_C"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

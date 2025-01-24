@@ -11,6 +11,7 @@ const FolderCode = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="M2od"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

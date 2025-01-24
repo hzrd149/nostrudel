@@ -11,6 +11,7 @@ const RefreshCcw01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gwnp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

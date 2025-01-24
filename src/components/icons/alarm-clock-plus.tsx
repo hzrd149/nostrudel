@@ -11,6 +11,7 @@ const AlarmClockPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="y9VM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

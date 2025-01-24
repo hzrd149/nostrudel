@@ -11,6 +11,7 @@ const ZapOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8jJy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

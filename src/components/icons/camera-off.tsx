@@ -11,6 +11,7 @@ const CameraOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PJM7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Power02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pnt7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

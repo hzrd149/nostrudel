@@ -11,6 +11,7 @@ const CheckVerified02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XtKE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

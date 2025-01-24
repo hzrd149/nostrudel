@@ -11,6 +11,7 @@ const FolderDownload = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0KSm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

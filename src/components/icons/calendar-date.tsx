@@ -11,6 +11,7 @@ const CalendarDate = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="IHHw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

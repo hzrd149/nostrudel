@@ -11,6 +11,7 @@ const AnnotationDots = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="5Y0t"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

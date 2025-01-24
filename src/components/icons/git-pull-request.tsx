@@ -11,6 +11,7 @@ const GitPullRequest = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="m87O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

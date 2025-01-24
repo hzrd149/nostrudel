@@ -11,6 +11,7 @@ const CalendarHeart02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3nC0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

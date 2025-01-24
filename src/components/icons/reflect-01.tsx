@@ -11,6 +11,7 @@ const Reflect01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Uawg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

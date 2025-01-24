@@ -11,6 +11,7 @@ const Briefcase02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="4c4k"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

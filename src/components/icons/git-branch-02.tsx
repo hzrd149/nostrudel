@@ -11,6 +11,7 @@ const GitBranch02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QtPY"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Pentagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MMgc"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const NavigationPointer01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ry3O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ArrowDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GPB2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

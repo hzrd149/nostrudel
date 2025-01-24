@@ -11,6 +11,7 @@ const CurrencyRubleCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ohn2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const MessageDotsCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pBHZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

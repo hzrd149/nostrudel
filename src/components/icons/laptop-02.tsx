@@ -11,6 +11,7 @@ const Laptop02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="TSHT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

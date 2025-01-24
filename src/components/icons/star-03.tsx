@@ -11,6 +11,7 @@ const Star03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f1D5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

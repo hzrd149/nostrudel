@@ -11,6 +11,7 @@ const Key01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9geR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

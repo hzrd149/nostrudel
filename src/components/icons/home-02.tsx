@@ -11,6 +11,7 @@ const Home02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Tz4s"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

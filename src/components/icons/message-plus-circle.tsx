@@ -11,6 +11,7 @@ const MessagePlusCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7l7H"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

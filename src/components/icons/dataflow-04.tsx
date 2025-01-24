@@ -11,6 +11,7 @@ const Dataflow04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ljUg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

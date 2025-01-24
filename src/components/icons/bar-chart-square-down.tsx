@@ -11,6 +11,7 @@ const BarChartSquareDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="a91-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

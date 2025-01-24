@@ -11,6 +11,7 @@ const SunSetting01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0EUd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

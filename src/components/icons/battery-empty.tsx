@@ -11,6 +11,7 @@ const BatteryEmpty = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="p2Cp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

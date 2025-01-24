@@ -11,6 +11,7 @@ const BracketsEllipses = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3H8c"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

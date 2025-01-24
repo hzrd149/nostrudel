@@ -11,6 +11,7 @@ const MessageCheckCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="cNbn"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

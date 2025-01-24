@@ -11,6 +11,7 @@ const UserMinus01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KkzW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

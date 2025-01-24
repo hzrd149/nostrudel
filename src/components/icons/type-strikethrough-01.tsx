@@ -11,6 +11,7 @@ const TypeStrikethrough01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="sYuD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

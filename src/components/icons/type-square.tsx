@@ -11,6 +11,7 @@ const TypeSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FSf9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

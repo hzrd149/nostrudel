@@ -11,6 +11,7 @@ const Route = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="g68z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

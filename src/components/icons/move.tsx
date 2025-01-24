@@ -11,6 +11,7 @@ const Move = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="vMsC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

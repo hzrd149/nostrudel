@@ -11,6 +11,7 @@ const Atom01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ry29"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

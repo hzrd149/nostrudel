@@ -11,6 +11,7 @@ const ChevronSelectorHorizontal = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="649s"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

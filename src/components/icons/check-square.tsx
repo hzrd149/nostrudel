@@ -11,6 +11,7 @@ const CheckSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qfRj"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

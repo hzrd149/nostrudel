@@ -11,6 +11,7 @@ const CodeBrowser = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2oP7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const CloudOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JpDS"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

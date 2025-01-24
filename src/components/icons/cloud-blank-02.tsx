@@ -11,6 +11,7 @@ const CloudBlank02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZYTT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

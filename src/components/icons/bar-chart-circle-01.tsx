@@ -11,6 +11,7 @@ const BarChartCircle01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gtP0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

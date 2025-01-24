@@ -11,6 +11,7 @@ const CloudSnowing01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="4SqY"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

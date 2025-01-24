@@ -11,6 +11,7 @@ const ArrowSquareUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PPiG"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

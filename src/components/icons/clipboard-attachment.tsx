@@ -11,6 +11,7 @@ const ClipboardAttachment = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="A-2w"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

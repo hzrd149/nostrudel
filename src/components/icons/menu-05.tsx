@@ -11,6 +11,7 @@ const Menu05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="jsAi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

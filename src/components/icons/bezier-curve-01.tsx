@@ -11,6 +11,7 @@ const BezierCurve01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CNc0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const DownloadCloud01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="fX9C"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

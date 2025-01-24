@@ -11,6 +11,7 @@ const UsersPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="tWwT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

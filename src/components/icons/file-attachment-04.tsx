@@ -11,6 +11,7 @@ const FileAttachment04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="aAsS"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Globe05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bvdk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

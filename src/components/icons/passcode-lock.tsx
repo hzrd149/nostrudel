@@ -11,6 +11,7 @@ const PasscodeLock = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="syWw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

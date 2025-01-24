@@ -11,6 +11,7 @@ const GitBranch01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="h3k7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

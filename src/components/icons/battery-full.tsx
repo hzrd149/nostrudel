@@ -11,6 +11,7 @@ const BatteryFull = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="rW72"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Film02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mK7k"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const VolumeX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pzBR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

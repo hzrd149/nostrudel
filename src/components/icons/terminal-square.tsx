@@ -11,6 +11,7 @@ const TerminalSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pRLY"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

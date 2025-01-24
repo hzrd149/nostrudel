@@ -11,6 +11,7 @@ const AlertCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Ik-G"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

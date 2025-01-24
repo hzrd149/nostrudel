@@ -11,6 +11,7 @@ const Microphone01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GBFJ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

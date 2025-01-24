@@ -11,6 +11,7 @@ const MicrophoneOff01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pv3l"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

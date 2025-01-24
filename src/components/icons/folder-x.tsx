@@ -11,6 +11,7 @@ const FolderX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="jPoe"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

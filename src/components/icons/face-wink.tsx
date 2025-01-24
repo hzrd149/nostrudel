@@ -11,6 +11,7 @@ const FaceWink = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YOj1"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

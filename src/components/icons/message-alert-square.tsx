@@ -11,6 +11,7 @@ const MessageAlertSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lbUX"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

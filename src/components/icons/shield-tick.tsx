@@ -11,6 +11,7 @@ const ShieldTick = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w7Cw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

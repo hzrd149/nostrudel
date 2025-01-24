@@ -11,6 +11,7 @@ const PlusCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0Ctp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

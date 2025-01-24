@@ -11,6 +11,7 @@ const Reflect02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PuBT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

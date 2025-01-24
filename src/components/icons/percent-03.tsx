@@ -11,6 +11,7 @@ const Percent03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Y1u8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

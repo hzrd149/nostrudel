@@ -11,6 +11,7 @@ const CpuChip02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PNyk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

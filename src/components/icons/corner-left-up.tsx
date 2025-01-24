@@ -11,6 +11,7 @@ const CornerLeftUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="h_l7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

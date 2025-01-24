@@ -11,6 +11,7 @@ const PhonePlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LHWz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

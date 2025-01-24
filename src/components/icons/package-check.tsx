@@ -11,6 +11,7 @@ const PackageCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UuVR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

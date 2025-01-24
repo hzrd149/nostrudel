@@ -11,6 +11,7 @@ const Airplay = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Kic8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

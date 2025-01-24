@@ -11,6 +11,7 @@ const Hearts = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XYyW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FolderPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="D51g"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

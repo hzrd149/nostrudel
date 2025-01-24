@@ -11,6 +11,7 @@ const ZoomOut = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xqjK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

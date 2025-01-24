@@ -11,6 +11,7 @@ const CircleCut = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BqrH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

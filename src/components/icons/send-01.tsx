@@ -11,6 +11,7 @@ const Send01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="_Y7i"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

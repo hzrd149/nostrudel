@@ -11,6 +11,7 @@ const BatteryLow = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="VKnz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

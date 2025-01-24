@@ -11,6 +11,7 @@ const Voicemail = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="C3r4"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

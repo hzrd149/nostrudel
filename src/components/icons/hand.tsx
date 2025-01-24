@@ -11,6 +11,7 @@ const Hand = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="iE66"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

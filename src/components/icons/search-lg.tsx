@@ -11,6 +11,7 @@ const SearchLg = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LgdW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Terminal = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3I0k"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FlipBackward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="iiDF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

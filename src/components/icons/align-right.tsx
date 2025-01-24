@@ -11,6 +11,7 @@ const AlignRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="thMu"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

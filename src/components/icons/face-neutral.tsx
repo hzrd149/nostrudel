@@ -11,6 +11,7 @@ const FaceNeutral = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="dY82"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

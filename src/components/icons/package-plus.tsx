@@ -11,6 +11,7 @@ const PackagePlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wZ20"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ShieldZap = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="r8KG"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

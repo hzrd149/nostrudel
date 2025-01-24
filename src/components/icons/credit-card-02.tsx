@@ -11,6 +11,7 @@ const CreditCard02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Pnmj"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -10,6 +10,7 @@ const Magnet = createIcon({
       stroke="currentColor"
       fill="currentColor"
       strokeWidth="0.332843"
+      key="JbUZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

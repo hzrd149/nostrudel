@@ -11,6 +11,7 @@ const Bank = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="44PN"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

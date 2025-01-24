@@ -11,6 +11,7 @@ const Shield02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="VXsh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

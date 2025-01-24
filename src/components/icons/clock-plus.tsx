@@ -11,6 +11,7 @@ const ClockPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GJ1p"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

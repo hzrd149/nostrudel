@@ -11,6 +11,7 @@ const AlarmClockMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-hY4"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

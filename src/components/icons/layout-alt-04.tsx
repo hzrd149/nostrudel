@@ -11,6 +11,7 @@ const LayoutAlt04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="SJSl"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

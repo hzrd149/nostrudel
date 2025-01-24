@@ -11,6 +11,7 @@ const BoldSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JAgy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

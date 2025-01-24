@@ -11,6 +11,7 @@ const Anchor = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="a2dC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

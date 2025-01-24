@@ -11,6 +11,7 @@ const Clock = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Hwu2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

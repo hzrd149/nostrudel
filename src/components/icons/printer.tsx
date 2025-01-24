@@ -11,6 +11,7 @@ const Printer = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Oq0H"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const BookmarkAdd = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="UNoF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

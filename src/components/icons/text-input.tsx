@@ -11,6 +11,7 @@ const TextInput = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="x6h9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

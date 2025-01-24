@@ -11,6 +11,7 @@ const FaceSmile = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="d1dK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

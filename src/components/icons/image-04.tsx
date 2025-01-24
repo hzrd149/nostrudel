@@ -11,6 +11,7 @@ const Image04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gRJ-"
     ></path>,
     <path
       d="M9 9.5L6 15H18L13.5 7.5L11 11L9 9.5Z"
@@ -19,6 +20,7 @@ const Image04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="oskZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

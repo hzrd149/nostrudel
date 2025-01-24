@@ -11,6 +11,7 @@ const RefreshCw04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9wbP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

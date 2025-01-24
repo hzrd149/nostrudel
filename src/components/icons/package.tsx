@@ -11,6 +11,7 @@ const Package = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="t8AO"
     ></path>,
     <path
       d="M16.5 9.5L7.5 4.5"
@@ -19,6 +20,7 @@ const Package = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Sj7z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

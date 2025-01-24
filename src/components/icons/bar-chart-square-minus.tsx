@@ -11,6 +11,7 @@ const BarChartSquareMinus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7Ypk"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

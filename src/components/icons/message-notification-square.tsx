@@ -11,6 +11,7 @@ const MessageNotificationSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Wa6F"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Announcement01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DRby"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

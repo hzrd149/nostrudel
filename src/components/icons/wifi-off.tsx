@@ -11,6 +11,7 @@ const WifiOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZyL5"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

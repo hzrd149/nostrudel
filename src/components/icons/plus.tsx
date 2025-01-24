@@ -11,6 +11,7 @@ const Plus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NEd3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

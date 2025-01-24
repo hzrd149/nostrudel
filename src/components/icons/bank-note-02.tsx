@@ -11,6 +11,7 @@ const BankNote02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="VZa_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

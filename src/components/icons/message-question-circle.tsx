@@ -11,6 +11,7 @@ const MessageQuestionCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Z-Bl"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

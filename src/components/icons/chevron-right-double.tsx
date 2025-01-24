@@ -11,6 +11,7 @@ const ChevronRightDouble = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="kspP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

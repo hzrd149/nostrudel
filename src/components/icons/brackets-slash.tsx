@@ -11,6 +11,7 @@ const BracketsSlash = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="SlZu"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

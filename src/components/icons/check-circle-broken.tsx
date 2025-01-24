@@ -11,6 +11,7 @@ const CheckCircleBroken = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="sgxO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

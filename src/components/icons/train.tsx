@@ -11,6 +11,7 @@ const Train = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GxZq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

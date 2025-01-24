@@ -11,6 +11,7 @@ const ShieldPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Eo-P"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FaceIdSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0F-0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const CurrencyRuble = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wSw0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

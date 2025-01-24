@@ -11,6 +11,7 @@ const CurrencyDollar = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Qi9c"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

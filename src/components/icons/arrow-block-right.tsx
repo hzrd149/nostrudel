@@ -11,6 +11,7 @@ const ArrowBlockRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XXqb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

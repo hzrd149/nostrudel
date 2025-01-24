@@ -11,6 +11,7 @@ const User02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="r2G-"
     ></path>,
     <path
       d="M12 12C14.4853 12 16.5 9.98528 16.5 7.5C16.5 5.01472 14.4853 3 12 3C9.51469 3 7.49997 5.01472 7.49997 7.5C7.49997 9.98528 9.51469 12 12 12Z"
@@ -19,6 +20,7 @@ const User02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="whBI"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

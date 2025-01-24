@@ -11,6 +11,7 @@ const Certificate01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="H_OF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

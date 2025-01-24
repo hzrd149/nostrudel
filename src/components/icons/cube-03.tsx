@@ -11,6 +11,7 @@ const Cube03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zlvA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

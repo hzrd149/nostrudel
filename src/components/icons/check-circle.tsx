@@ -11,6 +11,7 @@ const CheckCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bPJM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

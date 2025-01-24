@@ -11,6 +11,7 @@ const Infinity = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="vmrl"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const AnnotationX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="hyUo"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

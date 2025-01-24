@@ -11,6 +11,7 @@ const AlignJustify = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zI5_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

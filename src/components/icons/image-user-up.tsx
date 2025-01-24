@@ -11,6 +11,7 @@ const ImageUserUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3be3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ArrowCircleRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="c-G_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

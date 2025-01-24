@@ -11,6 +11,7 @@ const EqualNot = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="W7u_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

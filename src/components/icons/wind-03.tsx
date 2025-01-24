@@ -11,6 +11,7 @@ const Wind03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BZvE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

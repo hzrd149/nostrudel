@@ -11,6 +11,7 @@ const GitCommit = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="kJ5H"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

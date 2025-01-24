@@ -11,6 +11,7 @@ const StrikethroughSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CREa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

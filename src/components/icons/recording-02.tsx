@@ -11,6 +11,7 @@ const Recording02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Ndbb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

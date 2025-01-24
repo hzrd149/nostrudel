@@ -11,6 +11,7 @@ const File02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wSnN"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

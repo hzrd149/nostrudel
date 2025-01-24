@@ -11,6 +11,7 @@ const FlashOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FHl_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

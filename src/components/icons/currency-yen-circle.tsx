@@ -11,6 +11,7 @@ const CurrencyYenCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xjqV"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Figma = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JQ9l"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const MarkerPin06 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xhdd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

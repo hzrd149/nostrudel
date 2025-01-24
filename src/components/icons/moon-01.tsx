@@ -11,6 +11,7 @@ const Moon01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GJcI"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

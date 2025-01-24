@@ -11,6 +11,7 @@ const Webcam01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JVgU"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

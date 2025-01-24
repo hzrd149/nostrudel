@@ -11,6 +11,7 @@ const XSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="wG7j"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

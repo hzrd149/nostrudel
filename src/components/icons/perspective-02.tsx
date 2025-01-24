@@ -11,6 +11,7 @@ const Perspective02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="y-3T"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

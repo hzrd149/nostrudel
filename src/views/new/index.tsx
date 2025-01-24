@@ -1,7 +1,6 @@
 import { Card, CardBody, ComponentWithAs, Flex, Heading, IconProps, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import { MediaIcon, NotesIcon } from "../../components/icons";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import SimpleView from "../../components/layout/presets/simple-view";
@@ -16,7 +15,7 @@ export default function NewView() {
     <SimpleView title="Create new">
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap="2">
         {NEW_TYPES.map(({ title, path, icon: Icon, summary }) => (
-          <Card as={LinkBox}>
+          <Card key={title} as={LinkBox}>
             <CardBody display="flex" gap="4">
               <Icon boxSize={10} />
               <Flex gap="2" flexDirection="column">

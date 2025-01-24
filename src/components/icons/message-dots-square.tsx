@@ -11,6 +11,7 @@ const MessageDotsSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RZ2g"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

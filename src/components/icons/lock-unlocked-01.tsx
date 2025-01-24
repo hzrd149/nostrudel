@@ -11,6 +11,7 @@ const LockUnlocked01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="IDi-"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

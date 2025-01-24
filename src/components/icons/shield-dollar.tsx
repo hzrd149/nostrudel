@@ -11,6 +11,7 @@ const ShieldDollar = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="USVp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

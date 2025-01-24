@@ -11,6 +11,7 @@ const ImagePlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="9Xyx"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

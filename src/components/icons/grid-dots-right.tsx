@@ -11,6 +11,7 @@ const GridDotsRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="J8DL"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

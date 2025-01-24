@@ -11,6 +11,7 @@ const VideoRecorderOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qeNi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

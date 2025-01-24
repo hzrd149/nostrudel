@@ -11,6 +11,7 @@ const MessageChatSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="aAVg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

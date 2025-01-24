@@ -11,6 +11,7 @@ const PhoneOutgoing02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="V29N"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

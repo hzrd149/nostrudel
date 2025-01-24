@@ -11,6 +11,7 @@ const Italic01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NS_Q"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

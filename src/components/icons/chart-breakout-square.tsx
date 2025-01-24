@@ -11,6 +11,7 @@ const ChartBreakoutSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="_1Qn"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

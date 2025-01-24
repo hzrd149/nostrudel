@@ -11,6 +11,7 @@ const Asterisk01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CeNX"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

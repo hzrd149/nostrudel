@@ -11,6 +11,7 @@ const Attachment01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="haH6"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

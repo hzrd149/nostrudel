@@ -11,6 +11,7 @@ const AnnotationCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Y03f"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

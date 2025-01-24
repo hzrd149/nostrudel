@@ -11,6 +11,7 @@ const Edit02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="A8ht"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

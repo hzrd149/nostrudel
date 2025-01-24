@@ -11,6 +11,7 @@ const ParagraphWrap = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="znyj"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

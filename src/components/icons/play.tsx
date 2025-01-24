@@ -11,6 +11,7 @@ const Play = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xOaF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

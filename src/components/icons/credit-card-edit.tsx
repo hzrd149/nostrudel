@@ -11,6 +11,7 @@ const CreditCardEdit = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3cG0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

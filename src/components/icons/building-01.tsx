@@ -11,6 +11,7 @@ const Building01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GyIm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

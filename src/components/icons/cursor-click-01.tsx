@@ -11,6 +11,7 @@ const CursorClick01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MSvD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

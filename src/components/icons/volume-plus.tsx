@@ -11,6 +11,7 @@ const VolumePlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="hug8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

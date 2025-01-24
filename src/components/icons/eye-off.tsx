@@ -11,6 +11,7 @@ const EyeOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="tfh_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

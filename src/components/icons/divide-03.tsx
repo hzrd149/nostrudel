@@ -11,6 +11,7 @@ const Divide03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WL9U"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

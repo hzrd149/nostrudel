@@ -11,6 +11,7 @@ const ThumbsUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8cIH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

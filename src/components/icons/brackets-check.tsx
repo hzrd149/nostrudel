@@ -11,6 +11,7 @@ const BracketsCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QW5s"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

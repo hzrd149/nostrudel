@@ -11,6 +11,7 @@ const Settings03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QDTI"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

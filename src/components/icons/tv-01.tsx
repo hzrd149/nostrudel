@@ -11,6 +11,7 @@ const Tv01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NiHX"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const LayoutGrid02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bmcT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

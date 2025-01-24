@@ -11,6 +11,7 @@ const UnderlineSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JQ-7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

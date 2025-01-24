@@ -11,6 +11,7 @@ const ImageIndentRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QxIM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

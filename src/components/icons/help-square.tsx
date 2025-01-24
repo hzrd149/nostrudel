@@ -11,6 +11,7 @@ const HelpSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="qNy1"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

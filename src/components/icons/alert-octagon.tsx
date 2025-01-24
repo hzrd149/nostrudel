@@ -11,6 +11,7 @@ const AlertOctagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="q8Ia"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

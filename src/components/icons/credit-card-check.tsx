@@ -11,6 +11,7 @@ const CreditCardCheck = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lZEc"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

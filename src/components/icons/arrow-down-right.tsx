@@ -11,6 +11,7 @@ const ArrowDownRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="WEl7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

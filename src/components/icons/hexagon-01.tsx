@@ -11,6 +11,7 @@ const Hexagon01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8XMR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

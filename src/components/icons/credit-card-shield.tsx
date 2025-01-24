@@ -11,6 +11,7 @@ const CreditCardShield = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1vEr"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

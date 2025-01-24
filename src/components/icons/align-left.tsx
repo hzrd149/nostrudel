@@ -11,6 +11,7 @@ const AlignLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2Lri"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Subscript = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="865T"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

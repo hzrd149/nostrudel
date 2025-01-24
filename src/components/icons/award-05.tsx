@@ -11,6 +11,7 @@ const Award05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PvBY"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

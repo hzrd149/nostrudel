@@ -11,6 +11,7 @@ const PhoneCall02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gb7R"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ReverseLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="AbHi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

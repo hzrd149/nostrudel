@@ -11,6 +11,7 @@ const Backpack = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BX7z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

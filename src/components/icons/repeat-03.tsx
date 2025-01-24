@@ -11,6 +11,7 @@ const Repeat03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Lnf0"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

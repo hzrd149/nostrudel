@@ -11,6 +11,7 @@ const Flag02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7c3i"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

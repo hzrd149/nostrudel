@@ -11,6 +11,7 @@ const CloudSun03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="802I"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

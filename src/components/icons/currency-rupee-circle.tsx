@@ -11,6 +11,7 @@ const CurrencyRupeeCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3ggF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

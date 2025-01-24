@@ -11,6 +11,7 @@ const BatteryCharging02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JlZ8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

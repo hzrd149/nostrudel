@@ -11,6 +11,7 @@ const Waves = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LlQR"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

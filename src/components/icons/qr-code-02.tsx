@@ -11,6 +11,7 @@ const QrCode02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="E9Ta"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

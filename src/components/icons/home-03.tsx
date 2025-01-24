@@ -11,6 +11,7 @@ const Home03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Zeab"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const BatteryMid = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mer3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

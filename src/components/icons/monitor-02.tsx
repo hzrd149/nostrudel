@@ -11,6 +11,7 @@ const Monitor02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KbyE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

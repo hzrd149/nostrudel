@@ -11,6 +11,7 @@ const AlignVerticalCenter01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="xRX8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

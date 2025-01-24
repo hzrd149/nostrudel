@@ -11,6 +11,7 @@ const LetterSpacing01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="SbVU"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

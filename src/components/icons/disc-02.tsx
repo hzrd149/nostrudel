@@ -11,6 +11,7 @@ const Disc02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="uGA2"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

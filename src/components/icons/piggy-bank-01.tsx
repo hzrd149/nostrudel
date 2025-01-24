@@ -11,6 +11,7 @@ const PiggyBank01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="z3LZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

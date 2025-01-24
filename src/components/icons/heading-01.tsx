@@ -11,6 +11,7 @@ const Heading01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="yS29"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

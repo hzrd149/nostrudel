@@ -11,6 +11,7 @@ const ZapFast = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LMA9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

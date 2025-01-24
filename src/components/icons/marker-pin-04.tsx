@@ -11,6 +11,7 @@ const MarkerPin04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pWcd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

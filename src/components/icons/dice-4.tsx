@@ -11,6 +11,7 @@ const Dice4 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="yv7p"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

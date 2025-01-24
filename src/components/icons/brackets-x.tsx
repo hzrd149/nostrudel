@@ -11,6 +11,7 @@ const BracketsX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="J4B7"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FileHeart02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="zyWH"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

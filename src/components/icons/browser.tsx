@@ -11,6 +11,7 @@ const Browser = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1b7T"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

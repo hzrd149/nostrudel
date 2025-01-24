@@ -11,6 +11,7 @@ const ClockSnooze = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="JvfT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const CurrencyEthereum = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZIOq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

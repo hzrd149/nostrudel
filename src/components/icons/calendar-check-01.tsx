@@ -11,6 +11,7 @@ const CalendarCheck01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="aw3I"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

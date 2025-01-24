@@ -11,6 +11,7 @@ const Compass = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="RveT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

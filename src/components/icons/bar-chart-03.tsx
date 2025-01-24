@@ -11,6 +11,7 @@ const BarChart03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Qb0m"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

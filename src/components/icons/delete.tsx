@@ -11,6 +11,7 @@ const Delete = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="yOr1"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

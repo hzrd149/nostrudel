@@ -11,6 +11,7 @@ const Rss02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="J9uQ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const LogOut03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="-Aix"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

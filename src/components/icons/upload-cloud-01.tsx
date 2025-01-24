@@ -11,6 +11,7 @@ const UploadCloud01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="moyK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

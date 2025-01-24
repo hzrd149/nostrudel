@@ -11,6 +11,7 @@ const Fingerprint02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="do9l"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

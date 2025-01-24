@@ -11,6 +11,7 @@ const VolumeMin = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="EbbT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

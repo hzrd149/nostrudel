@@ -11,6 +11,7 @@ const GraduationHat02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ky6h"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

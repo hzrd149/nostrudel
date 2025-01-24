@@ -11,6 +11,7 @@ const AlarmClockOff = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MQfZ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

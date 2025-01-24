@@ -11,6 +11,7 @@ const ArrowNarrowDownRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="KLKz"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

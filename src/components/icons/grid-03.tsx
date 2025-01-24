@@ -11,6 +11,7 @@ const Grid03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="dkBO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

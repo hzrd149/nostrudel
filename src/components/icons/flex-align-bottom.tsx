@@ -11,6 +11,7 @@ const FlexAlignBottom = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ePy_"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

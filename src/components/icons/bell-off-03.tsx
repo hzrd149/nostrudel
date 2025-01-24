@@ -11,6 +11,7 @@ const BellOff03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0QUL"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

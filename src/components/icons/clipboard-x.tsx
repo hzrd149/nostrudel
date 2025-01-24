@@ -11,6 +11,7 @@ const ClipboardX = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7jnE"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

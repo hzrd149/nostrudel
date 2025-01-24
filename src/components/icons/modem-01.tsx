@@ -11,6 +11,7 @@ const Modem01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NgGP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

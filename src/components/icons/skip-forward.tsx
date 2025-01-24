@@ -11,6 +11,7 @@ const SkipForward = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="d61T"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

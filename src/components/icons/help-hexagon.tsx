@@ -11,6 +11,7 @@ const HelpHexagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FrbB"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

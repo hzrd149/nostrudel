@@ -11,6 +11,7 @@ const Home01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="CFjp"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

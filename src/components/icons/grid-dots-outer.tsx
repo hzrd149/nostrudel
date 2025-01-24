@@ -11,6 +11,7 @@ const GridDotsOuter = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2d-3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

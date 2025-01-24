@@ -11,6 +11,7 @@ const File05 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="PFhm"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

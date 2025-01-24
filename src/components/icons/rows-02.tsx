@@ -11,6 +11,7 @@ const Rows02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3aTF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

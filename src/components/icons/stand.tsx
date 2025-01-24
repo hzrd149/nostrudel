@@ -11,6 +11,7 @@ const Stand = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="kPlh"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

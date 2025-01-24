@@ -11,6 +11,7 @@ const ArrowSquareUpRight = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="BZgi"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

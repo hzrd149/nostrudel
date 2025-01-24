@@ -11,6 +11,7 @@ const Link04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="4BbM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

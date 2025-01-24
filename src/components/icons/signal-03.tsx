@@ -11,6 +11,7 @@ const Signal03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="C-Ty"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

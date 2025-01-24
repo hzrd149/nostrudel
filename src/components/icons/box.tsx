@@ -11,6 +11,7 @@ const Box = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="sERy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

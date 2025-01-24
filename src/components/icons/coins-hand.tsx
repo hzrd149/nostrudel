@@ -11,6 +11,7 @@ const CoinsHand = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w25O"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

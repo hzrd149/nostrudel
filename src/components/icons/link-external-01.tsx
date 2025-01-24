@@ -11,6 +11,7 @@ const LinkExternal01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="h4tT"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

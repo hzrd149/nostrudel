@@ -11,6 +11,7 @@ const Folder = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="a4LV"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

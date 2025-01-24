@@ -11,6 +11,7 @@ const SwitchHorizontal02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="U7dS"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

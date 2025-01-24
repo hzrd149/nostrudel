@@ -11,6 +11,7 @@ const Lightbulb03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="vKn9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

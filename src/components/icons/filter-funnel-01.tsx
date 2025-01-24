@@ -11,6 +11,7 @@ const FilterFunnel01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="eYtW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const Sliders03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="mn2u"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

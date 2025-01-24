@@ -11,6 +11,7 @@ const Globe03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="dUaP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

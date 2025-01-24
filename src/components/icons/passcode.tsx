@@ -11,6 +11,7 @@ const Passcode = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="3LEK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

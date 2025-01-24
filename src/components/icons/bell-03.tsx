@@ -11,6 +11,7 @@ const Bell03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="bNws"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

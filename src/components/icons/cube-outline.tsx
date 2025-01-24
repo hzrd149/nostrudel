@@ -11,6 +11,7 @@ const CubeOutline = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="dciy"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

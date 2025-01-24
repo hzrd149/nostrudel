@@ -11,6 +11,7 @@ const HomeSmile = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="33TU"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

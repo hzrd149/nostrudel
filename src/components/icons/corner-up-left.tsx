@@ -11,6 +11,7 @@ const CornerUpLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Mm3Z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

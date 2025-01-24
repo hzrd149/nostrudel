@@ -11,6 +11,7 @@ const FaceId = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Atuw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

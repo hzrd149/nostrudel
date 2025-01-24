@@ -11,6 +11,7 @@ const ShoppingBag01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1Tlx"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

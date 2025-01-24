@@ -11,6 +11,7 @@ const AlertTriangle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="6ZeA"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

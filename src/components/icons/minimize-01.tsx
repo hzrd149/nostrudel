@@ -11,6 +11,7 @@ const Minimize01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DO6U"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

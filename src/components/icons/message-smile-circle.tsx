@@ -11,6 +11,7 @@ const MessageSmileCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZXLa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

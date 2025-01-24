@@ -11,6 +11,7 @@ const Eraser = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pFcO"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

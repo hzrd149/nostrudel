@@ -11,6 +11,7 @@ const CreditCardRefresh = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8kWa"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

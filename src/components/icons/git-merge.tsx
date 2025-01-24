@@ -11,6 +11,7 @@ const GitMerge = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Dl1R"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

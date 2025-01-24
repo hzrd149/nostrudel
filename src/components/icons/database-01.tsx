@@ -11,6 +11,7 @@ const Database01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NbQN"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const TrendUp02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="2i6R"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

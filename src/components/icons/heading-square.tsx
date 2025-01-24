@@ -11,6 +11,7 @@ const HeadingSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="8r3Q"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

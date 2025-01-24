@@ -11,6 +11,7 @@ const CameraPlus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Q67L"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

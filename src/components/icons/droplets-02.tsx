@@ -11,6 +11,7 @@ const Droplets02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FSbM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

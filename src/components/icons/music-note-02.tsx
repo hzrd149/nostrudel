@@ -11,6 +11,7 @@ const MusicNote02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="q47a"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

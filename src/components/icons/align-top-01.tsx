@@ -11,6 +11,7 @@ const AlignTop01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="w9N9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

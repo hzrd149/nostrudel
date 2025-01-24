@@ -11,6 +11,7 @@ const ImageUp = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LoJV"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

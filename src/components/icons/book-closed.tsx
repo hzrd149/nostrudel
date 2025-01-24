@@ -11,6 +11,7 @@ const BookClosed = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="OhcJ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

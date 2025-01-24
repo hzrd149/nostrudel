@@ -11,6 +11,7 @@ const BluetoothConnect = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Bi_a"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

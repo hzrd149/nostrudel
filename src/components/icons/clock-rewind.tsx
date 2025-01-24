@@ -11,6 +11,7 @@ const ClockRewind = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f7ao"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

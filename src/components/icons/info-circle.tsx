@@ -11,6 +11,7 @@ const InfoCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="7m3D"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const FileX01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="MFlM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

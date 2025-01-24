@@ -11,6 +11,7 @@ const AlignHorizontalCentre01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZOx4"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

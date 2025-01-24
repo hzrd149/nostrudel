@@ -11,6 +11,7 @@ const MessageCheckSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Louq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

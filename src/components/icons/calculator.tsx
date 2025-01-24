@@ -11,6 +11,7 @@ const Calculator = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="LvVV"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

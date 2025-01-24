@@ -11,6 +11,7 @@ const Award04 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YowP"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

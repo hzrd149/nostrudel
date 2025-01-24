@@ -11,6 +11,7 @@ const PhonePause = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="f2tr"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

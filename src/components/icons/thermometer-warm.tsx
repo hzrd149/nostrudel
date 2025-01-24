@@ -11,6 +11,7 @@ const ThermometerWarm = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="QPOD"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

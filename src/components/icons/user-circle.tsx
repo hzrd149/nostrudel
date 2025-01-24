@@ -11,6 +11,7 @@ const UserCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ZLGL"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const LogOut02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Gf5t"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

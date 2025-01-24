@@ -11,6 +11,7 @@ const User03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ftKF"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

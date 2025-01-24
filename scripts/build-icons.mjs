@@ -1,8 +1,9 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import fs from "fs/promises";
 import path from "path";
 import camelcase from "camelcase";
 import * as prettier from "prettier";
+import { nanoid } from "nanoid";
 
 const prettierConfig = JSON.parse(await fs.readFile(".prettierrc", { encoding: "utf-8" }));
 
@@ -35,6 +36,9 @@ for (const filename of iconsList) {
     if (path.attribs["fill"]) {
       path.attribs["fill"] = "currentColor";
     } else path.attribs["fill"] = "none";
+
+    // add a "key" attribute to make react happy
+    path.attribs["key"] = nanoid(4);
 
     paths.push($.html(path));
   }

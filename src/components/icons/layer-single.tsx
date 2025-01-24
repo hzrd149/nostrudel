@@ -11,6 +11,7 @@ const LayerSingle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Fpg8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

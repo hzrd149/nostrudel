@@ -11,6 +11,7 @@ const Virus = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="drd9"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

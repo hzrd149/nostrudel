@@ -11,6 +11,7 @@ const Speaker03 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="ys01"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

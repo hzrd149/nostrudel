@@ -11,6 +11,7 @@ const ItalicSquare = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Uzls"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

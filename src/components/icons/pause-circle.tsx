@@ -11,6 +11,7 @@ const PauseCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Wc0d"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

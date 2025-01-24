@@ -11,6 +11,7 @@ const Toggle01Right = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XRLJ"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

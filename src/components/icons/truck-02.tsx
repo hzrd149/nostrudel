@@ -11,6 +11,7 @@ const Truck02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="IMg8"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

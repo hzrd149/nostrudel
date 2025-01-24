@@ -11,6 +11,7 @@ const Tram = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Hfaq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

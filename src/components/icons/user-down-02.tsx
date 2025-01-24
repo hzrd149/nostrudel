@@ -11,6 +11,7 @@ const UserDown02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="6EIr"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

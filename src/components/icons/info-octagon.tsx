@@ -11,6 +11,7 @@ const InfoOctagon = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="u1CW"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

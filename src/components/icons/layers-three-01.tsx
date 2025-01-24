@@ -11,6 +11,7 @@ const LayersThree01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="0gM6"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

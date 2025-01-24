@@ -11,6 +11,7 @@ const FolderShield = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gPG3"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

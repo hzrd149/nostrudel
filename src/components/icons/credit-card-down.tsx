@@ -11,6 +11,7 @@ const CreditCardDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Z-Du"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

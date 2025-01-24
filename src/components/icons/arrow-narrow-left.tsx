@@ -11,6 +11,7 @@ const ArrowNarrowLeft = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="GeMK"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

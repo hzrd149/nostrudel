@@ -11,6 +11,7 @@ const GlobeSlated02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1UWN"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

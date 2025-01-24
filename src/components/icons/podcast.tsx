@@ -11,6 +11,7 @@ const Podcast = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="y3gw"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

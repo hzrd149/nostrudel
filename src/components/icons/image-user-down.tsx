@@ -11,6 +11,7 @@ const ImageUserDown = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="XYLq"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

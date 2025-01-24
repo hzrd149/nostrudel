@@ -11,6 +11,7 @@ const MinusCircle = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="gT9l"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

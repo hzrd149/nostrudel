@@ -11,6 +11,7 @@ const CoinsSwap01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="DQCg"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

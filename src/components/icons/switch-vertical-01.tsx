@@ -11,6 +11,7 @@ const SwitchVertical01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="lfXd"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

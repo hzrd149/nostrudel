@@ -11,6 +11,7 @@ const Menu01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="dYB4"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

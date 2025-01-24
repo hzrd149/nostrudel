@@ -11,6 +11,7 @@ const ChevronSelectorVertical = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="c0qb"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

@@ -11,6 +11,7 @@ const ChevronUpDouble = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="_D3v"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

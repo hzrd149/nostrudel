@@ -11,6 +11,7 @@ const PuzzlePiece01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Hb0E"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

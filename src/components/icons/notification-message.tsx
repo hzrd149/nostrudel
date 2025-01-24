@@ -11,6 +11,7 @@ const NotificationMessage = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="aqts"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

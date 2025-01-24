@@ -11,6 +11,7 @@ const CreditCardUpload = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="6opC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

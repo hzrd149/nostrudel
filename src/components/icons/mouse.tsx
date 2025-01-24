@@ -11,6 +11,7 @@ const Mouse = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="FCkM"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

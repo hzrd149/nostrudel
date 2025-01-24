@@ -11,6 +11,7 @@ const ScissorsCut01 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="Cw2B"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

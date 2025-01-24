@@ -11,6 +11,7 @@ const HorizontalBarChart02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="YW8J"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

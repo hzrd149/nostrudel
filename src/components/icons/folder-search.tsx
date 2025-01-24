@@ -11,6 +11,7 @@ const FolderSearch = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="S66z"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

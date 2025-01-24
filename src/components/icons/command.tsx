@@ -11,6 +11,7 @@ const Command = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="1MrB"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

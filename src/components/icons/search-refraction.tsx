@@ -11,6 +11,7 @@ const SearchRefraction = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="iR3J"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

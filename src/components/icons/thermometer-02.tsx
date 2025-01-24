@@ -11,6 +11,7 @@ const Thermometer02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="pq8b"
     ></path>,
     <path
       d="M12 18.5C12.5523 18.5 13 18.0523 13 17.5C13 16.9477 12.5523 16.5 12 16.5C11.4477 16.5 11 16.9477 11 17.5C11 18.0523 11.4477 18.5 12 18.5Z"
@@ -19,6 +20,7 @@ const Thermometer02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="HliG"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },

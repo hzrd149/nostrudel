@@ -11,6 +11,7 @@ const Scale02 = createIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
+      key="NtZC"
     ></path>,
   ],
   defaultProps: { boxSize: 4 },
