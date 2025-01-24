@@ -6,7 +6,6 @@ import { BlossomClient } from "blossom-client-sdk";
 import { saveAs } from "file-saver";
 
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { useSigningContext } from "../../../providers/global/signing-provider";
 import { DownloadIcon } from "../../../components/icons";
 
@@ -75,7 +74,7 @@ export default function FileDownloadButton({
   };
 
   return (
-    <Button onClick={download} leftIcon={<DownloadIcon boxSize="1.2em" />} {...props}>
+    <Button onClick={download} leftIcon={<DownloadIcon boxSize="1.2em" />} isLoading={loading} {...props}>
       {children || "Download"}
     </Button>
   );
