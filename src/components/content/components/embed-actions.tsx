@@ -25,10 +25,14 @@ export default function EmbedActions({
 
   return (
     <ButtonGroup variant="link" size="sm" {...props}>
-      <Button onClick={() => onToggle(!open)}>
+      <Button onClick={() => onToggle(!open)} zIndex={1}>
         [ {label} {open ? <ChevronDownIcon /> : <ChevronUpIcon />} ]
       </Button>
-      {navigator.clipboard && url && <Button onClick={copy}>{copied ? "[ Copied ]" : "[ Copy ]"}</Button>}
+      {navigator.clipboard && url && (
+        <Button onClick={copy} zIndex={1}>
+          {copied ? "[ Copied ]" : "[ Copy ]"}
+        </Button>
+      )}
       {open && url && (
         <Button as={Link} href={url.toString()} isExternal>
           [ Open ]
