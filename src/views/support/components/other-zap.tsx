@@ -1,4 +1,4 @@
-import { Box, Card, CardBody, CardHeader, Flex, Spacer, Text, TextProps } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
@@ -8,9 +8,9 @@ import TextNoteContents from "../../../components/note/timeline-note/text-note-c
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { TrustProvider } from "../../../providers/local/trust-provider";
+import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
 export function OtherZap({ zap }: { zap: NostrEvent }) {
   const sender = getZapSender(zap);
@@ -36,7 +36,7 @@ export function OtherZap({ zap }: { zap: NostrEvent }) {
 
         <Flex gap="2" ml="auto" alignItems="center">
           <Timestamp timestamp={zap.created_at} />
-          <DebugEventButton event={zap} size="sm" variant="ghost" />
+          <ZapReceiptMenu zap={zap} size="sm" variant="ghost" aria-label="More options" />
         </Flex>
       </CardHeader>
 

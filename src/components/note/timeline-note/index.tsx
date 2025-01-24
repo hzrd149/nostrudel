@@ -1,6 +1,7 @@
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 import {
   Box,
+  BoxProps,
   ButtonGroup,
   Card,
   CardBody,
@@ -13,11 +14,12 @@ import {
   LinkBox,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
 import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
+import styled from "@emotion/styled";
 
+import { NostrEvent } from "../../../types/nostr-event";
+import UserAvatarLink from "../../user/user-avatar-link";
 import NoteMenu from "../note-menu";
 import UserLink from "../../user/user-link";
 import EventZapButton from "../../zap/event-zap-button";
@@ -45,6 +47,7 @@ import { getSharableEventAddress } from "../../../services/relay-hints";
 import localSettings from "../../../services/local-settings";
 import NotePublishedUsing from "../note-published-using";
 import useAppSettings from "../../../hooks/use-user-app-settings";
+import ShowMoreContainer from "../show-more-container";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
   event: NostrEvent;
@@ -101,7 +104,7 @@ export function TimelineNote({
             <NoteCommunityMetadata event={event} />
             {showReplyLine && <ReplyContext event={event} />}
           </CardHeader>
-          <CardBody p="0">
+          <CardBody as={ShowMoreContainer} p="0">
             <NoteContentWithWarning event={event} />
           </CardBody>
           <CardFooter padding="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">

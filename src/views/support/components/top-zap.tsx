@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Flex, Spacer, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
@@ -7,9 +7,9 @@ import UserLink from "../../../components/user/user-link";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { TrustProvider } from "../../../providers/local/trust-provider";
+import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
 export function TopZap({ zap }: { zap: NostrEvent }) {
   const sender = getZapSender(zap);
@@ -36,7 +36,7 @@ export function TopZap({ zap }: { zap: NostrEvent }) {
 
         <Flex justifyContent="flex-end" gap="2">
           <Timestamp timestamp={zap.created_at} />
-          <DebugEventButton event={zap} size="xs" variant="ghost" />
+          <ZapReceiptMenu zap={zap} size="sm" variant="ghost" aria-label="More options" />
         </Flex>
       </CardHeader>
 
